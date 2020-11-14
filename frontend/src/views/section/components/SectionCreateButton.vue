@@ -1,7 +1,7 @@
 <template>
   <Dialog :close="close">
     <template slot="trigger">
-      <v-btn @click="initLineView" class="mx-2 absolute right-30 z-1 edge-create-button" fab color="amber">
+      <v-btn @click="initLineView" class="mx-2 absolute right-30 z-1 section-create-button" fab color="amber">
         <v-icon>mdi-plus</v-icon>
       </v-btn>
     </template>
@@ -9,9 +9,9 @@
       <div class="width-100 text-center mt-6">구간 추가</div>
     </template>
     <template slot="text">
-      <v-form ref="edgeForm" v-model="valid" @submit.prevent>
+      <v-form ref="sectionForm" v-model="valid" @submit.prevent>
         <v-select
-          v-model="edgeForm.lineId"
+          v-model="sectionForm.lineId"
           :items="lineNameViews"
           @change="onChangeLine"
           label="노선 선택"
@@ -23,10 +23,10 @@
         ></v-select>
         <div class="d-flex">
           <v-select
-            v-model="edgeForm.lineStationId"
+            v-model="sectionForm.upStationId"
             class="pr-5"
-            :items="lineStationsNameViews"
-            label="등록된 역"
+            :items="allStationsView"
+            label="상행역"
             width="400"
             color="grey darken-1"
             item-color="amber darken-3"
@@ -34,20 +34,10 @@
             dense
           ></v-select>
           <v-select
-            v-model="edgeForm.toward"
-            :items="toward"
-            label="방향"
-            width="50"
-            color="grey darken-1"
-            item-color="amber darken-3"
-            outlined
-            dense
-          ></v-select>
-          <v-select
-            v-model="edgeForm.targetStationId"
+            v-model="sectionForm.downStationId"
             class="pl-5"
             :items="allStationsView"
-            label="추가할 역"
+            label="하행역"
             width="400"
             color="grey darken-1"
             item-color="amber darken-3"
@@ -58,7 +48,7 @@
       </v-form>
     </template>
     <template slot="action">
-      <v-btn :disabled="!valid" @click.prevent="onCreateEdge" color="amber">확인</v-btn>
+      <v-btn :disabled="!valid" @click.prevent="onCreateSection" color="amber">확인</v-btn>
     </template>
   </Dialog>
 </template>
@@ -70,10 +60,10 @@ import dialog from '@/mixins/dialog'
 import validator from '@/utils/validator'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
-import { CREATE_EDGE, CREATE_LINE, DELETE_LINE, EDIT_LINE, FETCH_LINE, FETCH_LINES, FETCH_STATIONS } from '@/store/shared/actionTypes'
+import { CREATE_SECTION, CREATE_LINE, DELETE_LINE, EDIT_LINE, FETCH_LINE, FETCH_LINES, FETCH_STATIONS } from '@/store/shared/actionTypes'
 
 export default {
-  name: 'EdgeCreateButton',
+  name: 'SectionCreateButton',
   mixins: [dialog],
   components: { Dialog },
   computed: {
@@ -81,7 +71,7 @@ export default {
   },
   methods: {
     ...mapMutations([SHOW_SNACKBAR]),
-    ...mapActions([FETCH_LINES, CREATE_LINE, DELETE_LINE, EDIT_LINE, FETCH_LINE, FETCH_STATIONS, CREATE_EDGE]),
+    ...mapActions([FETCH_LINES, CREATE_LINE, DELETE_LINE, EDIT_LINE, FETCH_LINE, FETCH_STATIONS, CREATE_SECTION]),
     initLineView() {
       if (this.lines.length > 0) {
         this.lineNameViews = this.lines.map(line => {
@@ -94,7 +84,7 @@ export default {
     },
     async initLineStationsView() {
       try {
-        this.selectedLine = await this.fetchLine(this.edgeForm.lineId)
+        this.selectedLine = await this.fetchLine(this.sectionForm.lineId)
         if (this.selectedLine.stations && this.selectedLine.stations.length > 0) {
           this.lineStationsNameViews = this.selectedLine.stations.map((station) => {
             return {
@@ -123,63 +113,53 @@ export default {
       }
     },
     setLineColor(color) {
-      this.edgeForm.color = color
+      this.sectionForm.color = color
     },
     isValid() {
-      return this.$refs.edgeForm.validate()
+      return this.$refs.sectionForm.validate()
     },
     onChangeLine() {
       this.initLineStationsView()
       this.initAllStationsView()
     },
-    async onCreateEdge() {
+    async onCreateSection() {
       if (!this.isValid()) {
         return
       }
       try {
-        await this.createEdge({
+        await this.createSection({
           lineId: this.selectedLine.id,
-          edge: this.edgeForm
+          section: this.sectionForm
         })
         this.closeDialog()
         this.fetchLines()
         this.fetchLine(this.selectedLine.id)
-        this.$refs.edgeForm.resetValidation()
-        this.initEdgeForm()
+        this.$refs.sectionForm.resetValidation()
+        this.initSectionForm()
         this.showSnackbar(SNACKBAR_MESSAGES.COMMON.SUCCESS)
       } catch (e) {
         this.showSnackbar(SNACKBAR_MESSAGES.COMMON.FAIL)
       }
     },
-    initEdgeForm() {
-      this.edgeForm = {
+    initSectionForm() {
+      this.sectionForm = {
         lineId: '',
-        lineStationId: '',
-        targetStationId: ''
+        upStationId: '',
+        downStationId: ''
       }
     }
   },
   data() {
     return {
       rules: { ...validator },
-      edgeForm: {
+      sectionForm: {
         lineId: '',
-        lineStationId: '',
-        targetStationId: ''
+        upStationId: '',
+        downStationId: ''
       },
       selectedLine: {},
       lineStationsNameViews: [],
       allStationsView: [],
-      toward:[
-        {
-          text: "의 상행으로",
-          value: "UP"
-        },
-        {
-          text: "의 하행으로",
-          value: "DOWN"
-        }
-      ],
       lineNameViews: [],
       valid: false
     }
@@ -188,7 +168,7 @@ export default {
 </script>
 
 <style lange="scss" scoped>
-.edge-create-button {
+.section-create-button {
   bottom: -25px;
 }
 </style>

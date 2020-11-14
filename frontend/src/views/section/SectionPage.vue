@@ -18,7 +18,7 @@
               outlined
               dense
             ></v-select>
-            <EdgeCreateButton />
+            <SectionCreateButton />
           </div>
           <v-divider />
           <div class="mt-10 overflow-y-auto">
@@ -34,7 +34,7 @@
                         <v-list-item-title v-text="station.name"></v-list-item-title>
                       </v-list-item-content>
                       <v-list-item-action class="flex-row">
-                        <EdgeDeleteButton :line-id="activeLine.id" :station-id="station.id" />
+                        <SectionDeleteButton :line-id="activeLine.id" :station-id="station.id" />
                       </v-list-item-action>
                     </v-list-item>
                   </template>
@@ -56,16 +56,16 @@
 </template>
 
 <script>
-import EdgeCreateButton from '@/views/edge/components/EdgeCreateButton'
+import SectionCreateButton from '@/views/section/components/SectionCreateButton'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { FETCH_LINE, FETCH_LINES } from '@/store/shared/actionTypes'
-import EdgeDeleteButton from '@/views/edge/components/EdgeDeleteButton'
+import SectionDeleteButton from '@/views/section/components/SectionDeleteButton'
 import { SNACKBAR_MESSAGES } from '@/utils/constants'
 import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
 
 export default {
-  name: 'EdgePage',
-  components: { EdgeDeleteButton, EdgeCreateButton },
+  name: 'SectionPage',
+  components: { SectionDeleteButton, SectionCreateButton },
   created() {
     this.initLinesView()
   },
@@ -109,7 +109,6 @@ export default {
     return {
       lineNamesViews: [],
       activeLineId: {},
-      lineStation: {},
       activeLine: {}
     }
   }

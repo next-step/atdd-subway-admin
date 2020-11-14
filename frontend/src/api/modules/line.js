@@ -1,4 +1,5 @@
 import ApiService from '@/api'
+import station from "../../store/modules/station";
 
 const BASE_URL = '/lines'
 
@@ -18,11 +19,11 @@ const LineService = {
   delete(lineId) {
     return ApiService.delete(`${BASE_URL}/${lineId}`)
   },
-  deleteStation({ lineId, stationId }) {
-    return ApiService.delete(`${BASE_URL}/${lineId}/line-stations/${stationId}`)
+  createSection({ lineId, section }) {
+    return ApiService.post(`${BASE_URL}/${lineId}/sections`, section)
   },
-  createEdge({ lineId, edge }) {
-    return ApiService.post(`${BASE_URL}/${lineId}/line-stations`, edge)
+  deleteSection({ lineId, stationId }) {
+    return ApiService.delete(`${BASE_URL}/${lineId}/sections?stationId=${stationId}`)
   }
 }
 

@@ -13,9 +13,10 @@ const validator = {
     name: [(v) => !!v || '이름 입력이 필요합니다.'],
     color: [(v) => !!v || '색상 입력이 필요합니다.'],
   },
-  edge: {
+  section: {
     upStationId: [(v) => !!v || '상행역을 선택하세요.'],
-    downStationId: [(v) => !!v || '하행역을 선택하세요.']
+    downStationId: [(v) => !!v || '하행역을 선택하세요.'],
+    distance: [(v) => !!v || '거리 입력이 필요합니다.']
   },
   member: {
     email: [(v) => !!v || '이메일 입력이 필요합니다.', (v) => /.+@.+/.test(v) || '유효한 이메일을 입력해주세요'],

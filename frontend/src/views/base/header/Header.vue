@@ -41,7 +41,7 @@ export default {
         },
         {
           _id: 3,
-          link: '/edges',
+          link: '/sections',
           text: '구간 관리'
         }
       ]

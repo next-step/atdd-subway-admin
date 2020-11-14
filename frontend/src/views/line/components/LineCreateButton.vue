@@ -43,6 +43,16 @@
               dense
           ></v-select>
         </div>
+        <div class="d-flex">
+          <v-text-field
+              v-model="lineForm.distance"
+              :rules="rules.section.distance"
+              color="grey darken-1"
+              label="거리"
+              placeholder="거리"
+              outlined
+          ></v-text-field>
+        </div>
         <div>
           <v-text-field v-model="lineForm.color" :rules="rules.line.color" :value="lineForm.color" label="노선 색상" filled disabled></v-text-field>
           <p>
@@ -102,7 +112,8 @@ export default {
           name: '',
           color: '',
           upStationId: '',
-          downStationId: ''
+          downStationId: '',
+          distance: ''
         }
         this.$refs.lineForm.resetValidation()
         this.closeDialog()
@@ -136,7 +147,8 @@ export default {
         name: '',
         color: '',
         upStationId: '',
-        downStationId: ''
+        downStationId: '',
+        distance: ''
       },
       valid: false,
       lineColors: [...LINE_COLORS],

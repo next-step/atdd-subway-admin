@@ -96,7 +96,7 @@
                       <template slot="text">
                         <div class="px-2">
                           <p>출발 시간을 기준으로 가장 빠른 경로를 안내해드립니다.</p>
-                          <v-form ref="edgeForm" v-model="valid" @submit.prevent>
+                          <v-form ref="sectionForm" v-model="valid" @submit.prevent>
                             <v-row>
                               <v-col cols="4">
                                 <v-select

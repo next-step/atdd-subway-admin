@@ -7,9 +7,9 @@
         </v-toolbar>
         <v-card-text class="overflow-y-auto pa-0">
           <v-list dense class="max-height-300px">
-            <v-list-item v-for="(edge, index) in line.stations" :key="index">
+            <v-list-item v-for="(sesction, index) in line.stations" :key="index">
               <v-list-item-content>
-                <v-list-item-title v-text="edge.station.name"></v-list-item-title>
+                <v-list-item-title v-text="sesction.station.name"></v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>

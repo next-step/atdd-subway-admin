@@ -1,5 +1,5 @@
 import { SET_LINE, SET_LINES } from '@/store/shared/mutationTypes'
-import { CREATE_LINE, DELETE_LINE, FETCH_LINES, EDIT_LINE, DELETE_LINE_STATION, CREATE_EDGE, FETCH_LINE } from '@/store/shared/actionTypes'
+import { CREATE_LINE, DELETE_LINE, FETCH_LINES, EDIT_LINE, DELETE_SECTION, CREATE_SECTION, FETCH_LINE } from '@/store/shared/actionTypes'
 import LineService from '@/api/modules/line'
 
 const state = {
@@ -46,11 +46,11 @@ const actions = {
   async [DELETE_LINE]({ commit }, lineId) {
     return LineService.delete(lineId)
   },
-  async [DELETE_LINE_STATION]({ commit }, { lineId, stationId }) {
-    return LineService.deleteStation({ lineId, stationId })
+  async [DELETE_SECTION]({ commit }, { lineId, stationId }) {
+    return LineService.deleteSection({ lineId, stationId })
   },
-  async [CREATE_EDGE]({ commit }, { lineId, edge }) {
-    return LineService.createEdge({ lineId, edge })
+  async [CREATE_SECTION]({ commit }, { lineId, section }) {
+    return LineService.createSection({ lineId, section })
   }
 }
 
