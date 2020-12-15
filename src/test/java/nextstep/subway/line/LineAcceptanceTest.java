@@ -4,16 +4,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.step.LineAcceptanceStep;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import static nextstep.subway.line.step.LineAcceptanceStep.NEW_LINE_CREATED;
-import static nextstep.subway.line.step.LineAcceptanceStep.REQUEST_CREATE_NEW_LINE;
+import static nextstep.subway.line.step.LineAcceptanceStep.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -36,14 +31,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
+        String lineName = "9호선";
+        String lineColor = "금색";
+
         // given
         // 지하철_노선_등록되어_있음
+        NEW_LINE_ALREADY_CREATED(lineName, lineColor);
 
         // when
         // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = REQUEST_CREATE_NEW_LINE(lineName, lineColor);
 
         // then
         // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
