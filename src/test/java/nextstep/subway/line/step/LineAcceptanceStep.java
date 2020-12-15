@@ -33,6 +33,15 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> REQUEST_LINES() {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines")
+                .then()
+                .log().all()
+                .extract();
+    }
+
     public static void NEW_LINE_CREATED(
             final ExtractableResponse<Response> response, final String lineName, final String lineColor
     ) {
