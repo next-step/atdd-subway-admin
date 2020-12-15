@@ -5,9 +5,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,5 +54,18 @@ public class LineAcceptanceStep {
         assertThat(response.header("Location")).isNotEmpty();
         assertThat(lineResponse.getColor()).isEqualTo(lineColor);
         assertThat(lineResponse.getName()).isEqualTo(lineName);
+    }
+
+    public static void LINES_INCLUDED_IN_LIST(
+            ExtractableResponse<Response> line1CreatedResponse, ExtractableResponse<Response> line2CreatedResponse,
+            ExtractableResponse<Response> listResponse
+    ) {
+        List<Long> expectedLineIds = Arrays.asList(line1CreatedResponse, line2CreatedResponse).stream()
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
+        List<Long> resultLineIds = listResponse.jsonPath().getList(".", LineResponse.class).stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 }
