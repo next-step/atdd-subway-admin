@@ -8,6 +8,9 @@ import nextstep.subway.station.application.exceptions.AlreadyExistLineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 public class LineService {
@@ -24,7 +27,16 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public void isAlreadyExistLine(final String name, final String color) {
+    public List<LineResponse> getAllLines() {
+        List<Line> lines = lineRepository.findAll();
+
+        return lines.stream()
+                .map(it -> LineResponse.of(it))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    protected void isAlreadyExistLine(final String name, final String color) {
         if (lineRepository.existsByNameAndColor(name, color)) {
             throw new AlreadyExistLineException("이미 존재하는 지하철을 또 추가할 수 없습니다.");
         }

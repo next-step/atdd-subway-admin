@@ -4,9 +4,12 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
 
 import static nextstep.subway.line.step.LineAcceptanceStep.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,16 +53,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
+        String line1Name = "9호선";
+        String line2Name = "2호선";
+        String line1Color = "금색";
+        String line2Color = "초록색";
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> line1CreatedResponse
+                = NEW_LINE_ALREADY_CREATED(line1Name, line1Color);
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> line2CreatedResponse
+                = NEW_LINE_ALREADY_CREATED(line2Name, line2Color);
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines")
+                .then()
+                .log().all()
+                .extract();
 
         // then
         // 지하철_노선_목록_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
+        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+        LineResponse line1Response = line1CreatedResponse.as(LineResponse.class);
+        LineResponse line2Response = line2CreatedResponse.as(LineResponse.class);
+        assertThat(lineResponses).contains(line1Response, line2Response);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
