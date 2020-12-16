@@ -51,6 +51,14 @@ public class LineController {
         return ResponseEntity.ok(URI.create("/lines/" + line.getId()));
     }
 
+    @DeleteMapping("/{lineId}")
+    public ResponseEntity deleteLine(
+            @PathVariable("lineId") Long lineId
+    ) {
+        lineService.deleteLine(lineId);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(AlreadyExistLineException.class)
     public ResponseEntity handleAlreadyExistLineException(AlreadyExistLineException e) {
         return ResponseEntity.badRequest().build();
