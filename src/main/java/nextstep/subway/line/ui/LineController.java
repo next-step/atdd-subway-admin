@@ -7,6 +7,7 @@ import nextstep.subway.station.application.exceptions.AlreadyExistLineException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.net.URI;
 import java.util.List;
 
@@ -29,6 +30,14 @@ public class LineController {
     public ResponseEntity getLines() {
         List<LineResponse> lineResponses = lineService.getAllLines();
         return ResponseEntity.ok().body(lineResponses);
+    }
+
+    @GetMapping("/{lineId}")
+    public ResponseEntity getLine(
+            @PathVariable("lineId") Long lineId
+    ) {
+        LineResponse lineResponse = lineService.getLine(lineId);
+        return ResponseEntity.ok().body(lineResponse);
     }
 
     @ExceptionHandler(AlreadyExistLineException.class)

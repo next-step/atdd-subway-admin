@@ -65,7 +65,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] 컨트롤러 구현
 - [ ] 지하철 조회 기능
   - [X] 지하철 조회 인수 테스트 작성
-  - [ ] 서비스 레이어 구현(w. 유닛 테스트)
+  - [X] 서비스 레이어 구현(w. 유닛 테스트)
   - [ ] 컨트롤러 구현
 - [ ] 지하철 삭제 기능
   - [ ] 지하철 삭제 인수 테스트 작성
