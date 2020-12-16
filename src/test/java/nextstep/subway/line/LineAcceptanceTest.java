@@ -144,13 +144,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
+        String lineName = "2020호선";
+        String lineColor = "무지개색";
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createdResponse = LINE_ALREADY_CREATED(lineName, lineColor);
+        Long createdId = EXTRACT_ID_FROM_RESPONSE_LOCATION(createdResponse);
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/" + createdId)
+                .then()
+                .log().all()
+                .extract();
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
