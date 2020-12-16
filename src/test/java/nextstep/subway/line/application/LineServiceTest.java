@@ -109,4 +109,15 @@ class LineServiceTest {
         assertThat(updatedLine.getName()).isEqualTo(changeName);
         assertThat(updatedLine.getColor()).isEqualTo(changeColor);
     }
+
+    @DisplayName("존재하지 않는 특정 라인의 정보를 수정 시도할 경우 예외가 발생한닫.")
+    @Test
+    void updateLineWhenLineNotExistTest() {
+        Long notExistLineId = 0L;
+        String name = "notExist";
+        String color = "notExist";
+
+        assertThatThrownBy(() -> lineService.updateLine(notExistLineId, name, color))
+                .isInstanceOf(LineNotFoundException.class);
+    }
 }
