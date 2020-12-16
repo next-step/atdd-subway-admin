@@ -33,7 +33,7 @@ public class Section extends BaseEntity {
     }
 
     public Section(final Line line, final Station upStation, final Station downStation, final Long distance) {
-        validate(upStation, downStation);
+        validate(upStation, downStation, distance);
         validateDistance(distance);
         this.line = line;
         this.upStation = upStation;
@@ -41,7 +41,12 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    private void validate(final Station upStation, final Station downStation) {
+    private void validate(final Station upStation, final Station downStation, final Long distance) {
+        validateStations(upStation, downStation);
+        validateDistance(distance);
+    }
+
+    private void validateStations(final Station upStation, final Station downStation) {
         if (upStation.equals(downStation)) {
             throw new InvalidSectionException("상행역과 하행역은 같은 역일 수 없습니다.");
         }
