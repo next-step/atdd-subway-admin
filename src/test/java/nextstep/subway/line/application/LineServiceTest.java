@@ -8,8 +8,8 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
-import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.StationFixtures;
+import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.domain.exceptions.StationNotExistException;
 import nextstep.subway.station.dto.StationResponse;
 import org.hibernate.exception.ConstraintViolationException;
@@ -47,11 +47,11 @@ class LineServiceTest {
     private SectionRepository sectionRepository;
 
     @Mock
-    private StationService stationService;
+    private StationRepository stationRepository;
 
     @BeforeEach
     void setup() {
-        lineService = new LineService(lineRepository, sectionRepository, stationService);
+        lineService = new LineService(lineRepository, sectionRepository, stationRepository);
     }
 
     @DisplayName("Line 생성 시 Section도 같이 생성된다.")
@@ -63,8 +63,8 @@ class LineServiceTest {
         Long downStationId = 2L;
         Long distance = 3L;
         given(lineRepository.save(any())).willReturn(new Line(lineName, lineColor));
-        given(stationService.getStation(upStationId)).willReturn(StationFixtures.ID1_STATION);
-        given(stationService.getStation(downStationId)).willReturn(StationFixtures.ID2_STATION);
+        given(stationRepository.findById(upStationId)).willReturn(Optional.of(StationFixtures.ID1_STATION));
+        given(stationRepository.findById(downStationId)).willReturn(Optional.of(StationFixtures.ID2_STATION));
 
         LineResponse lineResponse = lineService.saveLine(
                 new LineRequest(lineName, lineColor, upStationId, downStationId, distance));
@@ -85,7 +85,7 @@ class LineServiceTest {
         Long downStationId = 44L;
         Long distance = 3L;
         given(lineRepository.save(any())).willReturn(new Line(lineName, lineColor));
-        given(stationService.getStation(upStationId)).willThrow(StationNotExistException.class);
+        given(stationRepository.findById(upStationId)).willThrow(StationNotExistException.class);
 
         assertThatThrownBy(() -> lineService.saveLine(
                 new LineRequest(lineName, lineColor, upStationId, downStationId, distance))

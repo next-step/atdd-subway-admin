@@ -9,6 +9,8 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.domain.exceptions.StationNotExistException;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,21 +24,23 @@ import java.util.stream.Collectors;
 public class LineService {
     private LineRepository lineRepository;
     private SectionRepository sectionRepository;
-    private StationService stationService;
+    private StationRepository stationRepository;
 
     public LineService(
-            LineRepository lineRepository, SectionRepository sectionRepository, StationService stationService
+            LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository
     ) {
         this.lineRepository = lineRepository;
         this.sectionRepository = sectionRepository;
-        this.stationService = stationService;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line savedLine = lineRepository.save(request.toLine());
 
-        Station upStation = stationService.getStation(request.getUpStationId());
-        Station downStation = stationService.getStation(request.getDownStationId());
+        Station upStation = stationRepository.findById(request.getUpStationId())
+                .orElseThrow(() -> new StationNotExistException("존재하지 않는 역을 상행종점으로 등록할 수 없습니다."));
+        Station downStation = stationRepository.findById(request.getDownStationId())
+                .orElseThrow(() -> new StationNotExistException("존재하지 않는 역을 하행종점으로 등록할 수 없습니다."));;
 
         Section section = new Section(savedLine, upStation, downStation, request.getDistance());
         sectionRepository.save(section);
