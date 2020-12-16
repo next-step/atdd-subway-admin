@@ -112,19 +112,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> response = LINE_ALREADY_CREATED(lineName, lineColor);
-        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(response);
-        LineRequest lineRequest = new LineRequest(lineName, lineColor);
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> resultResponse = RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/" + lineId)
-                .then()
-                .log().all()
-                .extract();
+        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(response);
+        LineRequest lineRequest = new LineRequest(lineName, lineColor);
+        ExtractableResponse<Response> resultResponse = REQUEST_LINE_UPDATE(lineId, lineRequest);
 
         // then
         // 지하철_노선_수정됨

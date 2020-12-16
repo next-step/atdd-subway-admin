@@ -78,6 +78,17 @@ public class LineAcceptanceStep {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    public static ExtractableResponse<Response> REQUEST_LINE_UPDATE(Long lineId, LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + lineId)
+                .then()
+                .log().all()
+                .extract();
+    }
+
     public static Long EXTRACT_ID_FROM_RESPONSE_LOCATION(ExtractableResponse<Response> response) {
         return Long.parseLong(response.header("location").split("/")[2]);
     }
