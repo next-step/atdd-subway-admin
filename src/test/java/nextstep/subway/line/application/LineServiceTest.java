@@ -120,4 +120,14 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.updateLine(notExistLineId, name, color))
                 .isInstanceOf(LineNotFoundException.class);
     }
+
+    @DisplayName("특정 라인을 삭제할 수 있다.")
+    @Test
+    void deleteLineTest() {
+        Long deleteTargetId = 1L;
+
+        lineService.deleteLine(deleteTargetId);
+
+        verify(lineRepository).deleteById(deleteTargetId);
+    }
 }
