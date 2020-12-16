@@ -62,8 +62,8 @@ class LineServiceTest {
         Long downStationId = 2L;
         Long distance = 3L;
         given(lineRepository.save(any())).willReturn(new Line(lineName, lineColor));
-        given(stationService.getStation(upStationId)).willReturn(StationResponse.of(StationFixtures.ID1_STATION));
-        given(stationService.getStation(downStationId)).willReturn(StationResponse.of(StationFixtures.ID2_STATION));
+        given(stationService.getStation(upStationId)).willReturn(StationFixtures.ID1_STATION);
+        given(stationService.getStation(downStationId)).willReturn(StationFixtures.ID2_STATION);
 
         LineResponse lineResponse = lineService.saveLine(
                 new LineRequest(lineName, lineColor, upStationId, downStationId, distance));
