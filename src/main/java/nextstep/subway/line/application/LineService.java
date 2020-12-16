@@ -5,7 +5,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.application.exceptions.AlreadyExistLineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,13 +40,6 @@ public class LineService {
                 .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
 
         return LineResponse.of(line);
-    }
-
-    @Transactional(readOnly = true)
-    void isAlreadyExistLine(final String name, final String color) {
-        if (lineRepository.existsByNameAndColor(name, color)) {
-            throw new AlreadyExistLineException("이미 존재하는 지하철을 또 추가할 수 없습니다.");
-        }
     }
 
     public Line updateLine(Long lineId, String changeName, String changeColor) {

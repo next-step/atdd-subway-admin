@@ -5,7 +5,6 @@ import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.application.exceptions.AlreadyExistLineException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
