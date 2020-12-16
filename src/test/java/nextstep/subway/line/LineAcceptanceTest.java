@@ -153,12 +153,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/" + createdId)
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = REQUEST_LINE_DELETE(createdId);
 
         // then
         // 지하철_노선_삭제됨

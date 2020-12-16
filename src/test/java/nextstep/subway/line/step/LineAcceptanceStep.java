@@ -89,6 +89,15 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> REQUEST_LINE_DELETE(Long lineId) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete("/lines/" + lineId)
+                .then()
+                .log().all()
+                .extract();
+    }
+
     public static Long EXTRACT_ID_FROM_RESPONSE_LOCATION(ExtractableResponse<Response> response) {
         return Long.parseLong(response.header("location").split("/")[2]);
     }
