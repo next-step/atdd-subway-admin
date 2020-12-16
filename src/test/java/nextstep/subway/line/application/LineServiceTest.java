@@ -110,7 +110,7 @@ class LineServiceTest {
         assertThat(updatedLine.getColor()).isEqualTo(changeColor);
     }
 
-    @DisplayName("존재하지 않는 특정 라인의 정보를 수정 시도할 경우 예외가 발생한닫.")
+    @DisplayName("존재하지 않는 특정 라인의 정보를 수정 시도할 경우 예외가 발생한다.")
     @Test
     void updateLineWhenLineNotExistTest() {
         Long notExistLineId = 0L;
@@ -129,5 +129,13 @@ class LineServiceTest {
         lineService.deleteLine(deleteTargetId);
 
         verify(lineRepository).deleteById(deleteTargetId);
+    }
+
+    @DisplayName("존재하지 않는 특정 라인을 삭제 시도할 경우 예외가 발생한다.")
+    @Test
+    void deleteWithNotExistLine() {
+        Long notExistId = 4L;
+
+        assertThatThrownBy(() -> lineService.deleteLine(notExistId)).isInstanceOf(LineNotFoundException.class);
     }
 }
