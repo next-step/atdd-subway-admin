@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.exceptions.AlreadyExistLineException;
@@ -41,7 +42,12 @@ public class LineController {
     }
 
     @ExceptionHandler(AlreadyExistLineException.class)
-    public ResponseEntity AlreadyExistLineException(AlreadyExistLineException e) {
+    public ResponseEntity handleAlreadyExistLineException(AlreadyExistLineException e) {
         return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(LineNotFoundException.class)
+    public ResponseEntity handleLineNotFoundException(LineNotFoundException e) {
+        return ResponseEntity.notFound().build();
     }
 }
