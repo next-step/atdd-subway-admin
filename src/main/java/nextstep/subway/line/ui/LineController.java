@@ -2,6 +2,7 @@ package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.application.exceptions.LineNotFoundException;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.exceptions.AlreadyExistLineException;
@@ -39,6 +40,15 @@ public class LineController {
     ) {
         LineResponse lineResponse = lineService.getLine(lineId);
         return ResponseEntity.ok().body(lineResponse);
+    }
+
+    @PutMapping("/{lineId}")
+    public ResponseEntity updateLine(
+            @PathVariable("lineId") Long lineId,
+            @RequestBody LineRequest lineRequest
+    ) {
+        Line line = lineService.updateLine(lineId, lineRequest.getName(), lineRequest.getColor());
+        return ResponseEntity.ok(URI.create("/lines/" + line.getId()));
     }
 
     @ExceptionHandler(AlreadyExistLineException.class)
