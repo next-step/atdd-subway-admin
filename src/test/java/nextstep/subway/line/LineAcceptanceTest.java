@@ -81,7 +81,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createdResponse = LINE_ALREADY_CREATED(lineName, lineColor);
-        Long createdLineId = Long.parseLong(createdResponse.header("Location").split("/")[2]);
+        Long createdLineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(createdResponse);
 
         // when
         // 지하철_노선_조회_요청

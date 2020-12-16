@@ -70,11 +70,15 @@ public class LineAcceptanceStep {
             ExtractableResponse<Response> listResponse
     ) {
         List<Long> expectedLineIds = Arrays.asList(line1CreatedResponse, line2CreatedResponse).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .map(it -> EXTRACT_ID_FROM_RESPONSE_LOCATION(it))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = listResponse.jsonPath().getList(".", LineResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    public static Long EXTRACT_ID_FROM_RESPONSE_LOCATION(ExtractableResponse<Response> response) {
+        return Long.parseLong(response.header("location").split("/")[2]);
     }
 }
