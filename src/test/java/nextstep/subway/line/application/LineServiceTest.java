@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineFixtures;
 import nextstep.subway.line.domain.LineRepository;
@@ -81,5 +82,13 @@ class LineServiceTest {
         LineResponse response = lineService.getLine(lineId);
 
         assertThat(response.getId()).isEqualTo(lineId);
+    }
+
+    @DisplayName("등록되지 않은 특정 라인을 조회 시도 시 예외 발생")
+    @Test
+    void getLineFailTest() {
+        Long lineId = 1L;
+
+        assertThatThrownBy(() -> lineService.getLine(lineId)).isInstanceOf(LineNotFoundException.class);
     }
 }
