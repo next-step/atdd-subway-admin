@@ -5,14 +5,15 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.domain.exceptions.StationNotExistException;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,8 +33,14 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        Line savedLine = lineRepository.save(request.toLine());
+
+        Station upStation = stationService.getStation(request.getUpStationId());
+        Station downStation = stationService.getStation(request.getDownStationId());
+
+//        new Section(savedLine, upStation, downStation, request.getDistance());
+
+        return LineResponse.of(savedLine, Arrays.asList(upStation, downStation));
     }
 
     @Transactional(readOnly = true)

@@ -9,8 +9,8 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.domain.StationFixtures;
+import nextstep.subway.station.dto.StationResponse;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,12 +61,15 @@ class LineServiceTest {
         Long upStationId = 1L;
         Long downStationId = 2L;
         Long distance = 3L;
+        given(lineRepository.save(any())).willReturn(new Line(lineName, lineColor));
+        given(stationService.getStation(upStationId)).willReturn(StationResponse.of(StationFixtures.ID1_STATION));
+        given(stationService.getStation(downStationId)).willReturn(StationResponse.of(StationFixtures.ID2_STATION));
 
         LineResponse lineResponse = lineService.saveLine(
                 new LineRequest(lineName, lineColor, upStationId, downStationId, distance));
 
-        List<Long> stationIds = lineResponse.getStations().stream()
-                .map(Station::getId)
+        List<Long> stationIds = lineResponse.getStationResponses().stream()
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
         verify(sectionRepository).save(any(Section.class));
         assertThat(stationIds).contains(upStationId, downStationId);

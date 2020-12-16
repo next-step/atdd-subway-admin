@@ -37,9 +37,9 @@ class StationServiceTest {
         Station mockStation = new Station(stationName);
         given(stationRepository.findById(stationId)).willReturn(Optional.of(mockStation));
 
-        StationResponse response = stationService.getStation(stationId);
+        Station station = stationService.getStation(stationId);
 
-        assertThat(response.getName()).isEqualTo(stationName);
+        assertThat(station.getName()).isEqualTo(stationName);
     }
 
     @DisplayName("존재하지 않는 특정 역의 정보 조회 시도 시 예외 발생")
