@@ -45,6 +45,15 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> REQUEST_ONE_SPECIFIC_LINE(Long lineId) {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + lineId)
+                .then()
+                .log().all()
+                .extract();
+    }
+
     public static void NEW_LINE_CREATED(
             final ExtractableResponse<Response> response, final String lineName, final String lineColor
     ) {
