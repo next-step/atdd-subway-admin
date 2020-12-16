@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -8,7 +7,6 @@ import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import static nextstep.subway.line.step.LineAcceptanceStep.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -158,5 +156,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 제거 시도 시 실패")
+    @Test
+    void deleteLineFailTest() {
+        Long notExistLineId = 4L;
+        // given
+        // 지하철_노선_등록되어_있지_않음
+
+        // when
+        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = REQUEST_LINE_DELETE(notExistLineId);
+
+        // then
+        // 지하철_노선_제거_실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }
