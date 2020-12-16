@@ -25,7 +25,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
@@ -90,5 +92,21 @@ class LineServiceTest {
         Long lineId = 1L;
 
         assertThatThrownBy(() -> lineService.getLine(lineId)).isInstanceOf(LineNotFoundException.class);
+    }
+
+    @DisplayName("특정 라인의 정보를 수정할 수 있다.")
+    @Test
+    void updateLineTest() {
+        Long lineId = 1L;
+        String changeName = "비 내리는 호남선";
+        String changeColor = "남행열차색";
+        Line mockLine = new Line("원본", "원본");
+
+        given(lineRepository.findById(lineId)).willReturn(Optional.of(mockLine));
+
+        Line updatedLine = lineService.updateLine(lineId, changeName, changeColor);
+
+        assertThat(updatedLine.getName()).isEqualTo(changeName);
+        assertThat(updatedLine.getColor()).isEqualTo(changeColor);
     }
 }

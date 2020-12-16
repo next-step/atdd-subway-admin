@@ -50,4 +50,13 @@ public class LineService {
             throw new AlreadyExistLineException("이미 존재하는 지하철을 또 추가할 수 없습니다.");
         }
     }
+
+    public Line updateLine(Long lineId, String changeName, String changeColor) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
+        Line updateLine = new Line(changeName, changeColor);
+        line.update(updateLine);
+
+        return line;
+    }
 }
