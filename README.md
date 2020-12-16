@@ -75,3 +75,24 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] 지하철 삭제 인수 테스트 작성
   - [X] 서비스 레이어 구현(w. 유닛 테스트)
   - [X] 컨트롤러 구현
+  
+## Step2. 지하철 노선 구간 조회
+### Todo-list
+- Section
+  - Line <-> Station 간 관계는 다대다 매핑 관계이다. (환승역이 존재)
+  - 이 다대다 관계를 중간에서 관리해주기 위한 엔티티로써 관리 된다.
+  - [X] Section <-> Line N:1 관계를 형성한다.
+  - [X] Section <-> Station N:1 관계를 형성한다.
+    - [ ] Station은 상행역, 하행역이 각각 하나씩 있다.
+    - [ ] 상행역, 하행역은 같은 역일 수 없다.
+  - [ ] 해당 Section의 거리를 속성으로 갖는다.
+    - [ ] Section의 거리는 0일 수 없다.
+  - [ ] Section이 저장되는 순간 연관된 Line, Station들도 모두 저장되야 한다.
+- Line
+  - [ ] Line <-> Section 1:N 관계를 갖도록 변경
+- Station
+  - [ ] Station <-> Section 1:N 관계를 갖도록 변경
+- 인수 테스트
+  - [ ] 새로운 Line 생성 인수 테스트 작성
+    - [ ] 상행종점, 하행종점을 입력해야 생성되도록 만든다.
+    - [ ] 응답으로 등록된 역들의 정보를 반환한다.
