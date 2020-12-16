@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineFixtures;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -69,5 +70,16 @@ class LineServiceTest {
                         0
                 )
         );
+    }
+
+    @DisplayName("등록된 특정 라인을 조회할 수 있다.")
+    @Test
+    void getLineTest() {
+        Long lineId = 1L;
+        given(lineRepository.findById(lineId)).willReturn(Optional.of(LineFixtures.ID1_LINE));
+
+        LineResponse response = lineService.getLine(lineId);
+
+        assertThat(response.getId()).isEqualTo(lineId);
     }
 }

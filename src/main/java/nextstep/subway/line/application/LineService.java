@@ -36,7 +36,14 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    protected void isAlreadyExistLine(final String name, final String color) {
+    public LineResponse getLine(Long lineId) {
+        Line line = lineRepository.findById(lineId).orElse(null);
+
+        return LineResponse.of(line);
+    }
+
+    @Transactional(readOnly = true)
+    void isAlreadyExistLine(final String name, final String color) {
         if (lineRepository.existsByNameAndColor(name, color)) {
             throw new AlreadyExistLineException("이미 존재하는 지하철을 또 추가할 수 없습니다.");
         }
