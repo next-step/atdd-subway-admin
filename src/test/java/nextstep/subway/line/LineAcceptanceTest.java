@@ -4,14 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static nextstep.subway.line.step.LineAcceptanceStep.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,7 +36,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // given
         // 지하철_노선_등록되어_있음
-        NEW_LINE_ALREADY_CREATED(lineName, lineColor);
+        LINE_ALREADY_CREATED(lineName, lineColor);
 
         // when
         // 지하철_노선_생성_요청
@@ -62,10 +57,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> line1CreatedResponse
-                = NEW_LINE_ALREADY_CREATED(line1Name, line1Color);
+                = LINE_ALREADY_CREATED(line1Name, line1Color);
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> line2CreatedResponse
-                = NEW_LINE_ALREADY_CREATED(line2Name, line2Color);
+                = LINE_ALREADY_CREATED(line2Name, line2Color);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -81,14 +76,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
+        String lineName = "9호선";
+        String lineColor = "금색";
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createdResponse = LINE_ALREADY_CREATED(lineName, lineColor);
+        Long createdLineId = Long.parseLong(createdResponse.header("Location").split("/")[2]);
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + createdLineId)
+                .then()
+                .log().all()
+                .extract();
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")

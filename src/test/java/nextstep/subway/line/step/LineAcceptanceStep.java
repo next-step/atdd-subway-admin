@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceStep {
-    public static ExtractableResponse<Response> NEW_LINE_ALREADY_CREATED(
+    public static ExtractableResponse<Response> LINE_ALREADY_CREATED(
             final String lineName, final String lineColor
     ) {
         return REQUEST_CREATE_NEW_LINE(lineName, lineColor);
