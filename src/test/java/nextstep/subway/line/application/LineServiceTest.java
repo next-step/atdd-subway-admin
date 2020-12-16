@@ -125,6 +125,7 @@ class LineServiceTest {
     @Test
     void deleteLineTest() {
         Long deleteTargetId = 1L;
+        given(lineRepository.findById(deleteTargetId)).willReturn(Optional.ofNullable(LineFixtures.ID1_LINE));
 
         lineService.deleteLine(deleteTargetId);
 
