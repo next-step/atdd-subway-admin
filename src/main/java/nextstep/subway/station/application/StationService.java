@@ -2,6 +2,7 @@ package nextstep.subway.station.application;
 
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.domain.exceptions.StationNotExistException;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,14 @@ public class StationService {
         return stations.stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public StationResponse getStation(Long stationId) {
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(() -> new StationNotExistException("존재하지 않는 역입니다."));
+
+        return StationResponse.of(station);
     }
 
     public void deleteStationById(Long id) {

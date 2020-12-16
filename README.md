@@ -87,10 +87,13 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [X] 상행역, 하행역은 같은 역일 수 없다.
   - [X] 해당 Section의 거리를 속성으로 갖는다.
     - [X] Section의 거리는 0일 수 없다.
-- Line
-  - [ ] Line <-> Section 1:N 관계를 갖도록 변경
-- Station
-  - [ ] Station <-> Section 1:N 관계를 갖도록 변경
+- 아래 요구사항들은 양방향 연관관계가 필수인지 다시 생각해보고 결정할 것
+  - Line
+    - [ ] Line <-> Section 1:N 관계를 갖도록 변경
+  - Station
+    - [ ] Station <-> Section 1:N 관계를 갖도록 변경
+- LineService
+  - [ ] 신규 노선 생성 시 Section도 생성 후 저장
 - 인수 테스트
   - [ ] 새로운 Line 생성 인수 테스트 작성
     - [ ] 상행종점, 하행종점을 입력해야 생성되도록 만든다.

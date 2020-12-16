@@ -6,6 +6,11 @@ import nextstep.subway.line.domain.LineFixtures;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,9 +42,34 @@ class LineServiceTest {
     @Mock
     private LineRepository lineRepository;
 
+    @Mock
+    private SectionRepository sectionRepository;
+
+    @Mock
+    private StationService stationService;
+
     @BeforeEach
     void setup() {
-        lineService = new LineService(lineRepository);
+        lineService = new LineService(lineRepository, sectionRepository, stationService);
+    }
+
+    @DisplayName("Line 생성 시 Section도 같이 생성된다.")
+    @Test
+    void createNewLineTest() {
+        String lineName = "9호선";
+        String lineColor = "금색";
+        Long upStationId = 1L;
+        Long downStationId = 2L;
+        Long distance = 3L;
+
+        LineResponse lineResponse = lineService.saveLine(
+                new LineRequest(lineName, lineColor, upStationId, downStationId, distance));
+
+        List<Long> stationIds = lineResponse.getStations().stream()
+                .map(Station::getId)
+                .collect(Collectors.toList());
+        verify(sectionRepository).save(any(Section.class));
+        assertThat(stationIds).contains(upStationId, downStationId);
     }
 
     @DisplayName("이미 존재하는 라인을 또 생성 시 예외가 발생한다.")
@@ -46,10 +77,14 @@ class LineServiceTest {
     void createNewLineFailTest() {
         String lineName = "alreadyExist";
         String lineColor = "alreadyExist";
+        Long upStationId = 1L;
+        Long downStationId = 2L;
+        Long distance = 3L;
         given(lineRepository.save(any())).willThrow(ConstraintViolationException.class);
 
-        assertThatThrownBy(() -> lineService.saveLine(new LineRequest(lineName, lineColor)))
-                .isInstanceOf(ConstraintViolationException.class);
+        assertThatThrownBy(() -> lineService.saveLine(
+                new LineRequest(lineName, lineColor, upStationId, downStationId, distance))
+        ).isInstanceOf(ConstraintViolationException.class);
     }
 
     @DisplayName("등록된 라인 목록을 조회할 수 있다.")
