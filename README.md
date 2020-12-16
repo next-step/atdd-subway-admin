@@ -83,8 +83,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - 이 다대다 관계를 중간에서 관리해주기 위한 엔티티로써 관리 된다.
   - [X] Section <-> Line N:1 관계를 형성한다.
   - [X] Section <-> Station N:1 관계를 형성한다.
-    - [ ] Station은 상행역, 하행역이 각각 하나씩 있다.
-    - [ ] 상행역, 하행역은 같은 역일 수 없다.
+    - [X] Station은 상행역, 하행역이 각각 하나씩 있다.
+    - [X] 상행역, 하행역은 같은 역일 수 없다.
   - [ ] 해당 Section의 거리를 속성으로 갖는다.
     - [ ] Section의 거리는 0일 수 없다.
   - [ ] Section이 저장되는 순간 연관된 Line, Station들도 모두 저장되야 한다.
