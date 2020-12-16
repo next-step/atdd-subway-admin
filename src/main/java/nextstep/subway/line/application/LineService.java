@@ -22,7 +22,6 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        isAlreadyExistLine(request.getName(), request.getColor());
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }

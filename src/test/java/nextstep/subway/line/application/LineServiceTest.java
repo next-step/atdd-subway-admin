@@ -6,7 +6,7 @@ import nextstep.subway.line.domain.LineFixtures;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.application.exceptions.AlreadyExistLineException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,12 +44,12 @@ class LineServiceTest {
     @DisplayName("이미 존재하는 라인을 또 생성 시 예외가 발생한다.")
     @Test
     void createNewLineFailTest() {
-        String lineName = "testLine";
-        String lineColor = "gold";
-        given(lineRepository.existsByNameAndColor(lineName, lineColor)).willReturn(true);
+        String lineName = "alreadyExist";
+        String lineColor = "alreadyExist";
+        given(lineRepository.save(any())).willThrow(ConstraintViolationException.class);
 
         assertThatThrownBy(() -> lineService.saveLine(new LineRequest(lineName, lineColor)))
-                .isInstanceOf(AlreadyExistLineException.class);
+                .isInstanceOf(ConstraintViolationException.class);
     }
 
     @DisplayName("등록된 라인 목록을 조회할 수 있다.")
