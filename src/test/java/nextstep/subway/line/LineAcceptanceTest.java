@@ -124,6 +124,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
+    @Test
+    void updateWithNotExistLine() {
+        Long notExistId = 4L;
+        LineRequest lineRequest = new LineRequest("notExist", "notExist");
+        // given
+        // 등록된_지하철_노선_없음
+
+        // when
+        // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = REQUEST_LINE_UPDATE(notExistId, lineRequest);
+
+        // then
+        // 지하철_노선_찾을수_없음
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
