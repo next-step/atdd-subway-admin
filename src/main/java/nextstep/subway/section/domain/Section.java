@@ -5,10 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.exceptions.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 public class Section extends BaseEntity {
@@ -19,12 +16,15 @@ public class Section extends BaseEntity {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "line_id")
     private Line line;
 
     @ManyToOne
+    @JoinColumn(name = "up_station_id")
     private Station upStation;
 
     @ManyToOne
+    @JoinColumn(name = "down_station_id")
     private Station downStation;
 
     private Long distance;

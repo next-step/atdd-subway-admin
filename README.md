@@ -85,9 +85,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] Section <-> Station N:1 관계를 형성한다.
     - [X] Station은 상행역, 하행역이 각각 하나씩 있다.
     - [X] 상행역, 하행역은 같은 역일 수 없다.
-  - [ ] 해당 Section의 거리를 속성으로 갖는다.
-    - [ ] Section의 거리는 0일 수 없다.
-  - [ ] Section이 저장되는 순간 연관된 Line, Station들도 모두 저장되야 한다.
+  - [X] 해당 Section의 거리를 속성으로 갖는다.
+    - [X] Section의 거리는 0일 수 없다.
 - Line
   - [ ] Line <-> Section 1:N 관계를 갖도록 변경
 - Station
