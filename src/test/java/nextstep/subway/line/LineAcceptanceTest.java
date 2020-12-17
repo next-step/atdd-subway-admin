@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    // TODO: v2 완성되면 대체할 것
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -26,6 +27,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_생성됨
         NEW_LINE_CREATED(response, lineName, lineColor);
+    }
+
+    @DisplayName("상행종점, 하행좀점을 포함해서 지하철 노선을 생성한다.")
+    @Test
+    void createLineV2() {
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")

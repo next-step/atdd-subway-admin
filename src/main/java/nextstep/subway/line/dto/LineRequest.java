@@ -9,7 +9,8 @@ public class LineRequest {
     private Long downStationId;
     private Long distance;
 
-    public LineRequest() {
+    protected LineRequest() {
+        // for serialize
     }
 
     public LineRequest(String name, String color) {

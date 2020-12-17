@@ -76,7 +76,7 @@ class LineServiceTest {
         assertThat(stationIds).contains(upStationId, downStationId);
     }
 
-    @DisplayName("존재 하지 않는 역을 종점역으로 Line 생성 시 예외가 발생한다.")
+    @DisplayName("존재하지 않는 역을 종점역으로 Line 생성 시 예외가 발생한다.")
     @Test
     void createNewLineWithNotExistStationTest() {
         String lineName = "9호선";

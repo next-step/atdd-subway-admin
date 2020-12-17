@@ -93,7 +93,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - Station
     - [ ] Station <-> Section 1:N 관계를 갖도록 변경
 - LineService
-  - [ ] 신규 노선 생성 시 Section도 생성 후 저장
+  - [X] 신규 노선 생성 시 Section도 생성 후 저장
 - 인수 테스트
   - [ ] 새로운 Line 생성 인수 테스트 작성
     - [ ] 상행종점, 하행종점을 입력해야 생성되도록 만든다.

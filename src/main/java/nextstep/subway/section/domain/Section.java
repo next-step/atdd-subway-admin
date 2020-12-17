@@ -12,7 +12,7 @@ public class Section extends BaseEntity {
     private static final Long MIN_DISTANCE = 0L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
