@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행종점, 하행좀점을 포함해서 지하철 노선을 생성한다.")
     @Test
-    void createLineV2() {
+    void createLine() {
         String lineName = "비 내리는 호남선";
         String lineColor = "남행열차색";
         Long distance = 5L;
@@ -51,9 +51,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(responseStationIds).contains(upStationId, downStationId);
     }
 
+    @DisplayName("거리가 0인 지하철 노선을 생성한다.")
+    @Test
+    void createLineWithZeroDistance() {
+        // given
+        // 상행종점역이 등록되어 있다.
+        // and 하행종점역이 등록되어 있다.
+
+        // when
+        // 거리가 0인 노선을 생성 요청
+
+        // then
+        // 노선 생성 실패함
+    }
+
+    @DisplayName("상행종점역이나 하행종점역 없이 지하철 노선을 생성한다.")
+    @Test
+    void createLineWithoutEndStation() {
+        // when
+        // 상행종점역이나 하행종점역이 빠진채로 노선 생성 요청
+
+        // then
+        // 노선 생성 실패함
+    }
+
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void createLineWithAlreadyExistLine() {
         String lineName = "9호선";
         String lineColor = "금색";
         Long distance = 5L;
