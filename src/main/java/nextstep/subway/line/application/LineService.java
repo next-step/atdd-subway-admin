@@ -65,6 +65,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    // TODO: 향후에는 Station까지 변경될 경우 변경 예정
     public Line updateLine(Long lineId, String changeName, String changeColor) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));

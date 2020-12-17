@@ -17,10 +17,6 @@ public class LineRequest {
         // for serialize
     }
 
-    public LineRequest(String name, String color) {
-        this(name, color, null, null, null);
-    }
-
     public LineRequest(String name, String color, Long upStationId, Long downStationId, Long distance) {
         this.name = name;
         this.color = color;

@@ -213,7 +213,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_수정_요청
         Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(response);
-        LineRequest lineRequest = new LineRequest(lineName, lineColor);
+        LineRequest lineRequest = new LineRequest(lineName, lineColor, upStationId, downStationId, 12L);
         ExtractableResponse<Response> resultResponse = REQUEST_LINE_UPDATE(lineId, lineRequest);
 
         // then
@@ -225,12 +225,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateWithNotExistLine() {
         Long notExistId = 4L;
-        LineRequest lineRequest = new LineRequest("notExist", "notExist");
         // given
+        // 상행선역 등록되어 있음
+        ExtractableResponse<Response> upStationResponse = CREATED_STATION(new StationRequest("갱남역"));
+        // 하행선역 등록되어 있음
+        ExtractableResponse<Response> downStationResponse = CREATED_STATION(new StationRequest("서초역"));
         // 등록된_지하철_노선_없음
 
         // when
         // 지하철_노선_수정_요청
+        Long upStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(upStationResponse);
+        Long downStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(downStationResponse);
+        LineRequest lineRequest = new LineRequest(
+                "notExist", "notExist", upStationId, downStationId, 10L);
         ExtractableResponse<Response> response = REQUEST_LINE_UPDATE(notExistId, lineRequest);
 
         // then
