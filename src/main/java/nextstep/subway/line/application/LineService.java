@@ -75,7 +75,9 @@ public class LineService {
     }
 
     public void deleteLine(Long lineId) {
-        this.getLine(lineId);
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
+        sectionRepository.deleteAllByLine(line);
         lineRepository.deleteById(lineId);
     }
 }

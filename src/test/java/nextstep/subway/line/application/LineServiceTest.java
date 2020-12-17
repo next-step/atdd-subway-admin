@@ -184,6 +184,7 @@ class LineServiceTest {
 
         lineService.deleteLine(deleteTargetId);
 
+        verify(sectionRepository).deleteAllByLine(any(Line.class));
         verify(lineRepository).deleteById(deleteTargetId);
     }
 
