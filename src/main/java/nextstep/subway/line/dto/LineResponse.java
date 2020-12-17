@@ -30,6 +30,7 @@ public class LineResponse {
     }
 
     // TODO: 향후 사라질 of
+    // Line을 조회하는 기능 재구현 시 삭제 예정(해당 기능에서 아래의 Station까지 모두 필요한 내용으로 변경 예정)
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), null,
                 line.getCreatedDate(), line.getModifiedDate());
