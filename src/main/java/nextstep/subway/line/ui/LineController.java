@@ -5,6 +5,7 @@ import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.exceptions.InvalidSectionException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,5 +68,10 @@ public class LineController {
     @ExceptionHandler(LineNotFoundException.class)
     public ResponseEntity handleLineNotFoundException(LineNotFoundException e) {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(InvalidSectionException.class)
+    public ResponseEntity handleInvalidSectionException(InvalidSectionException e) {
+        return ResponseEntity.badRequest().build();
     }
 }
