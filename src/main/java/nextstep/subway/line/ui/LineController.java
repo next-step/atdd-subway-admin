@@ -28,6 +28,12 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
+    @PostMapping("/v2")
+    public ResponseEntity createLineV2(@RequestBody LineRequest lineRequest) {
+        LineResponse lineResponse = lineService.saveLine(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
+    }
+
     @GetMapping
     public ResponseEntity getLines() {
         List<LineResponse> lineResponses = lineService.getAllLines();

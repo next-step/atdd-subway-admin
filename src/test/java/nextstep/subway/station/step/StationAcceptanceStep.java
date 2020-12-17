@@ -7,6 +7,10 @@ import nextstep.subway.station.dto.StationRequest;
 import org.springframework.http.MediaType;
 
 public class StationAcceptanceStep {
+    public static ExtractableResponse<Response> CREATED_STATION(StationRequest stationRequest) {
+        return REQUEST_CREATE_NEW_STATION(stationRequest);
+    }
+
     public static ExtractableResponse<Response> REQUEST_CREATE_NEW_STATION(StationRequest stationRequest) {
         return RestAssured.given().log().all().
                 body(stationRequest).
