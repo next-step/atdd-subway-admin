@@ -8,6 +8,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.exceptions.InvalidSectionException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
@@ -24,7 +25,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity createLine(@Validated @RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
@@ -46,7 +47,7 @@ public class LineController {
     @PutMapping("/{lineId}")
     public ResponseEntity updateLine(
             @PathVariable("lineId") Long lineId,
-            @RequestBody LineRequest lineRequest
+            @Validated @RequestBody LineRequest lineRequest
     ) {
         Line line = lineService.updateLine(lineId, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok(URI.create("/lines/" + line.getId()));

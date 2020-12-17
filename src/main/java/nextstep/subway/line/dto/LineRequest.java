@@ -2,10 +2,14 @@ package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
 
+import javax.validation.constraints.NotNull;
+
 public class LineRequest {
     private String name;
     private String color;
+    @NotNull(message = "상행성역은 필수값입니다.")
     private Long upStationId;
+    @NotNull(message = "하행선역은 필수값입니다.")
     private Long downStationId;
     private Long distance;
 

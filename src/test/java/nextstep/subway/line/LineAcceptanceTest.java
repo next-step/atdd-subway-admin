@@ -78,11 +78,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행종점역이나 하행종점역 없이 지하철 노선을 생성한다.")
     @Test
     void createLineWithoutEndStation() {
+        String lineName = "퇴근선";
+        String lineColor = "천국의 색";
         // when
         // 상행종점역이나 하행종점역이 빠진채로 노선 생성 요청
+        ExtractableResponse<Response> response = REQUEST_CREATE_NEW_LINE(
+                new LineRequest(lineName, lineColor, null, null, 12L)
+        );
 
         // then
         // 노선 생성 실패함
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
