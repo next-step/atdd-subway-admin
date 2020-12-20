@@ -69,7 +69,7 @@ class LineServiceTest {
         LineResponse lineResponse = lineService.saveLine(
                 new LineRequest(lineName, lineColor, upStationId, downStationId, distance));
 
-        List<Long> stationIds = lineResponse.getStationResponses().stream()
+        List<Long> stationIds = lineResponse.getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
         verify(sectionRepository).save(any(Section.class));

@@ -13,18 +13,18 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stationResponses = new ArrayList<>();
+    private List<StationResponse> stations = new ArrayList<>();
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     public LineResponse(
-            Long id, String name, String color, List<StationResponse> stationResponses,
+            Long id, String name, String color, List<StationResponse> stations,
             LocalDateTime createdDate, LocalDateTime modifiedDate
     ) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stationResponses = stationResponses;
+        this.stations = stations;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
@@ -57,8 +57,8 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStationResponses() {
-        return stationResponses;
+    public List<StationResponse> getStations() {
+        return stations;
     }
 
     public LocalDateTime getCreatedDate() {

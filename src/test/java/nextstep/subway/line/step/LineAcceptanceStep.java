@@ -55,7 +55,7 @@ public class LineAcceptanceStep {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         LineResponse lineResponse = response.as(LineResponse.class);
         assertThat(lineResponse.getName()).isEqualTo(lineName);
-        List<Long> responseStationIds = lineResponse.getStationResponses().stream()
+        List<Long> responseStationIds = lineResponse.getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(responseStationIds).contains(upStationId, downStationId);
