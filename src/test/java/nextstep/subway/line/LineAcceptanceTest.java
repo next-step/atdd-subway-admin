@@ -147,7 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("상행종점역이나 하행종점역 없이 지하철 노선을 생성한다.")
+    @DisplayName("지하철 생성 시 필수인 값이 빠진채로 신규 지하철 노선 생성")
     @Test
     void createLineWithoutEndStation() {
         String lineName = "퇴근선";
