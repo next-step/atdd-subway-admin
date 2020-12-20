@@ -1,0 +1,27 @@
+package nextstep.subway.line.domain;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class SectionsTest {
+    @DisplayName("중복 없이 역 ID 목록을 가져올 수 있다.")
+    @Test
+    void getStationsTest() {
+        Long station1Id = 1L;
+        Long station2Id = 2L;
+        Long station3Id = 3L;
+        int expectedSize = 3;
+
+        Sections sections = new Sections();
+        sections.add(new Section(1L, station1Id, station2Id, 3L));
+        sections.add(new Section(2L, station2Id, station3Id, 5L));
+
+        List<Long> stationIds = sections.getStationIds();
+
+        assertThat(stationIds).hasSize(expectedSize);
+    }
+}

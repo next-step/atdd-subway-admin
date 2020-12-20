@@ -6,6 +6,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -19,5 +21,12 @@ public class Sections {
 
     public void add(final Section section) {
         this.sections.add(section);
+    }
+
+    public List<Long> getStationIds() {
+        return sections.stream()
+                .flatMap(it -> it.getStationIds().stream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

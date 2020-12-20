@@ -4,6 +4,8 @@ import nextstep.subway.common.ValueObjectId;
 import nextstep.subway.line.domain.exceptions.InvalidSectionException;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -27,6 +29,10 @@ public class Section extends ValueObjectId {
 
     public Section(final Long upStationId, final Long downStationId, final Long distance) {
         this(null, upStationId, downStationId, distance);
+    }
+
+    List<Long> getStationIds() {
+        return Arrays.asList(upStationId, downStationId);
     }
 
     private void validate(final Long upStationId, final Long downStationId, final Long distance) {

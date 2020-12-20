@@ -131,11 +131,18 @@ class LineServiceTest {
     @Test
     void getLineTest() {
         Long lineId = 1L;
+        int expectedSize = 2;
+        LocalDateTime now = LocalDateTime.now();
         given(lineRepository.findById(lineId)).willReturn(Optional.of(LineFixtures.ID1_LINE));
+        given(safeStationDomainService.getStationsSafely(any())).willReturn(Arrays.asList(
+                new SafeStationInfo(1L, "test1", now, now),
+                new SafeStationInfo(2L, "test2", now, now)
+        ));
 
         LineResponse response = lineService.getLine(lineId);
 
         assertThat(response.getId()).isEqualTo(lineId);
+        assertThat(response.getStations().size()).isEqualTo(expectedSize);
     }
 
     @DisplayName("등록되지 않은 특정 라인을 조회 시도 시 예외 발생")
