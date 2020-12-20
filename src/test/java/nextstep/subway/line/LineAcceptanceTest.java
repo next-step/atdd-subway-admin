@@ -190,7 +190,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LINES_INCLUDED_IN_LIST(line1CreatedResponse, line2CreatedResponse, response);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("특정 지하철 노선을 조회한다.")
     @Test
     void getLine() {
         String lineName = "9호선";
@@ -215,6 +215,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        RESPONSE_INCLUDED_STATIONS(response, upStationId, downStationId);
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 조회한다.")

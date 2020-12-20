@@ -98,4 +98,16 @@ public class LineAcceptanceStep {
     public static Long EXTRACT_ID_FROM_RESPONSE_LOCATION(ExtractableResponse<Response> response) {
         return Long.parseLong(response.header("location").split("/")[2]);
     }
+
+    public static void RESPONSE_INCLUDED_STATIONS(
+            ExtractableResponse<Response> response, Long upStationId, Long downStationId
+    ) {
+        LineResponse lineResponse = response.as(LineResponse.class);
+
+        List<Long> stationIds = lineResponse.getStations().stream()
+                .map(SafeStationInfo::getId)
+                .collect(Collectors.toList());
+
+        assertThat(stationIds).contains(upStationId, downStationId);
+    }
 }
