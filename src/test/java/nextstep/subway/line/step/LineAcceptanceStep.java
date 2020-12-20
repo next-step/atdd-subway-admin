@@ -48,17 +48,6 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
-    public static void NEW_LINE_CREATED(
-            final ExtractableResponse<Response> response, final String lineName, final String lineColor
-    ) {
-        LineResponse lineResponse = response.as(LineResponse.class);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotEmpty();
-        assertThat(lineResponse.getColor()).isEqualTo(lineColor);
-        assertThat(lineResponse.getName()).isEqualTo(lineName);
-    }
-
     public static void LINES_INCLUDED_IN_LIST(
             ExtractableResponse<Response> line1CreatedResponse, ExtractableResponse<Response> line2CreatedResponse,
             ExtractableResponse<Response> listResponse
