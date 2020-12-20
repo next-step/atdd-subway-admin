@@ -179,4 +179,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 특정 지하철 노선 조회 기능 리팩토링(역 정보들도 보이도록 변경)
   - [ ] SafeStationDomainService에서 데이터의 정렬을 보장하도록 기능 구현
   - [X] Sections에서 중복 없이 등록된 역 목록을 받을 수 있도록 기능 구현
-- [ ] 사용자가 정상적으로 정보를 조회할 수 있도록 DTO에 getter 추가
+- [X] 사용자가 정상적으로 정보를 조회할 수 있도록 DTO에 getter 추가
+- [ ] SafeStationInfo 도메인이 외부로 직접 노출되지 않도록 DTO 변환 작업 추가
