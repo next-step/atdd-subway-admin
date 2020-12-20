@@ -1,16 +1,10 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.line.application.exceptions.LineNotFoundException;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineFixtures;
-import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.SafeStationInfo;
+import nextstep.subway.line.domain.*;
+import nextstep.subway.line.domain.exceptions.StationNotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.StationFixtures;
-import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.domain.exceptions.StationNotExistException;
-import nextstep.subway.station.dto.StationInfo;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +16,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,11 +38,11 @@ class LineServiceTest {
     private LineRepository lineRepository;
 
     @Mock
-    private StationRepository stationRepository;
+    private SafeStationDomainService safeStationDomainService;
 
     @BeforeEach
     void setup() {
-        lineService = new LineService(lineRepository, stationRepository);
+        lineService = new LineService(lineRepository, safeStationDomainService);
     }
 
     @DisplayName("Line 생성 시 Section도 같이 생성된다.")
@@ -58,9 +53,12 @@ class LineServiceTest {
         Long upStationId = 1L;
         Long downStationId = 2L;
         Long distance = 3L;
+        LocalDateTime now = LocalDateTime.now();
         given(lineRepository.save(any())).willReturn(new Line(lineName, lineColor));
-        given(stationRepository.findById(upStationId)).willReturn(Optional.of(StationFixtures.ID1_STATION));
-        given(stationRepository.findById(downStationId)).willReturn(Optional.of(StationFixtures.ID2_STATION));
+        given(safeStationDomainService.getStationSafely(upStationId))
+                .willReturn(new SafeStationInfo(upStationId, "up", now, null));
+        given(safeStationDomainService.getStationSafely(downStationId))
+                .willReturn(new SafeStationInfo(downStationId, "down", now, null));
 
         LineResponse lineResponse = lineService.saveLine(
                 new LineRequest(lineName, lineColor, upStationId, downStationId, distance));
@@ -79,11 +77,11 @@ class LineServiceTest {
         Long upStationId = 4L;
         Long downStationId = 44L;
         Long distance = 3L;
-        given(stationRepository.findById(upStationId)).willThrow(StationNotExistException.class);
+        given(safeStationDomainService.getStationSafely(upStationId)).willThrow(StationNotFoundException.class);
 
         assertThatThrownBy(() -> lineService.saveLine(
                 new LineRequest(lineName, lineColor, upStationId, downStationId, distance))
-        ).isInstanceOf(StationNotExistException.class);
+        ).isInstanceOf(StationNotFoundException.class);
     }
 
     @DisplayName("이미 존재하는 라인을 또 생성 시 예외가 발생한다.")
@@ -94,8 +92,11 @@ class LineServiceTest {
         Long upStationId = 1L;
         Long downStationId = 2L;
         Long distance = 3L;
-        given(stationRepository.findById(upStationId)).willReturn(Optional.of(StationFixtures.ID1_STATION));
-        given(stationRepository.findById(downStationId)).willReturn(Optional.of(StationFixtures.ID2_STATION));
+        LocalDateTime now = LocalDateTime.now();
+        given(safeStationDomainService.getStationSafely(upStationId))
+                .willReturn(new SafeStationInfo(upStationId, "up", now, null));
+        given(safeStationDomainService.getStationSafely(downStationId))
+                .willReturn(new SafeStationInfo(downStationId, "down", now, null));
         given(lineRepository.save(any())).willThrow(ConstraintViolationException.class);
 
         assertThatThrownBy(() -> lineService.saveLine(

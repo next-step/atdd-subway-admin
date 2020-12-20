@@ -4,15 +4,14 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.exceptions.InvalidSectionException;
+import nextstep.subway.line.domain.exceptions.StationNotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.exceptions.StationNotExistException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.net.URI;
 import java.util.List;
 
@@ -77,8 +76,8 @@ public class LineController {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(StationNotExistException.class)
-    public ResponseEntity handleStationNotExistException(StationNotExistException e) {
+    @ExceptionHandler(StationNotFoundException.class)
+    public ResponseEntity handleStationNotFoundException(StationNotFoundException e) {
         return ResponseEntity.badRequest().build();
     }
 }

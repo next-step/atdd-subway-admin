@@ -6,10 +6,10 @@ import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LineStationDomainService implements SafeStation {
+public class SafeStationDomainService implements SafeStation {
     private StationService stationService;
 
-    public LineStationDomainService(final StationService stationService) {
+    public SafeStationDomainService(final StationService stationService) {
         this.stationService = stationService;
     }
 

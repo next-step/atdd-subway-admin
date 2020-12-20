@@ -18,8 +18,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-class LineStationDomainServiceTest {
-    private LineStationDomainService lineStationDomainService;
+class SafeStationDomainServiceTest {
+    private SafeStationDomainService safeStationDomainService;
 
     @Mock
     private StationService stationService;
@@ -29,7 +29,7 @@ class LineStationDomainServiceTest {
 
     @BeforeEach
     void setup() {
-        lineStationDomainService = new LineStationDomainService(stationService);
+        safeStationDomainService = new SafeStationDomainService(stationService);
     }
 
     @DisplayName("Station 정보를 안전하게 Line 도메인에 속한 정보로 해석해서 가져올 수 있다.")
@@ -41,7 +41,7 @@ class LineStationDomainServiceTest {
         given(stationService.getStation(stationId))
                 .willReturn(StationFixtures.createStationFixture(stationId, stationName, now));
 
-        SafeStationInfo safeStationInfo = lineStationDomainService.getStationSafely(stationId);
+        SafeStationInfo safeStationInfo = safeStationDomainService.getStationSafely(stationId);
 
         assertThat(safeStationInfo).isNotNull();
         assertThat(safeStationInfo).isEqualTo(new SafeStationInfo(1L, stationName, now, null));
@@ -54,7 +54,7 @@ class LineStationDomainServiceTest {
         given(stationService.getStation(notExistStationId))
                 .willThrow(new StationNotExistException("Station Aggregate Error"));
 
-        assertThatThrownBy(() -> lineStationDomainService.getStationSafely(notExistStationId))
+        assertThatThrownBy(() -> safeStationDomainService.getStationSafely(notExistStationId))
                 .isInstanceOf(StationNotFoundException.class);
     }
 }

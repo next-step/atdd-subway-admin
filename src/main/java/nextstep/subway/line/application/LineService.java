@@ -4,9 +4,6 @@ import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.domain.exceptions.StationNotExistException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,20 +13,21 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class LineService implements SafeStation {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+public class LineService {
+    private final LineRepository lineRepository;
+    private final SafeStationDomainService safeStationDomainService;
 
     public LineService(
-            LineRepository lineRepository, StationRepository stationRepository
+            LineRepository lineRepository, SafeStationDomainService safeStationDomainService
     ) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.safeStationDomainService = safeStationDomainService;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest request) {
-        SafeStationInfo upStation = this.getStationSafely(request.getUpStationId());
-        SafeStationInfo downStation = this.getStationSafely(request.getDownStationId());
+        SafeStationInfo upStation = this.safeStationDomainService.getStationSafely(request.getUpStationId());
+        SafeStationInfo downStation = this.safeStationDomainService.getStationSafely(request.getDownStationId());
 
         Line line = this.createLine(request.getName(), request.getColor(), request.getUpStationId(),
                 request.getDownStationId(), request.getDistance());
@@ -70,14 +68,6 @@ public class LineService implements SafeStation {
         lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
         lineRepository.deleteById(lineId);
-    }
-
-    @Override
-    public SafeStationInfo getStationSafely(final Long stationId) {
-        Station station = stationRepository.findById(stationId)
-                .orElseThrow(() -> new StationNotExistException("존재하지 않는 역입니다."));
-
-        return SafeStationInfo.of(station);
     }
 
     Line createLine(
