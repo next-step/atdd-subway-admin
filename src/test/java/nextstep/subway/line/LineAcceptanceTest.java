@@ -101,6 +101,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("상행종점역과 하행종점역을 같은 지하철 역으로 지하철 노선을 생성한다.")
+    @Test
+    void createLineWithSameUpDownStationTest() {
+        String stationName = "몽촌토성";
+        String lineName = "2호선";
+        String lineColor = "초록색";
+        Long distance = 10L;
+        // given
+        // 역이 생성되어 있다.
+        ExtractableResponse<Response> stationCreateResponse = CREATED_STATION(new StationRequest(stationName));
+        Long stationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(stationCreateResponse);
+
+        // when
+        // 상행종점역과 하행종점역을 같은 역으로 신규 지하철 노선을 생성한다.
+        ExtractableResponse<Response> response = REQUEST_CREATE_NEW_LINE(
+                new LineRequest(lineName, lineColor, stationId, stationId, distance));
+
+        // then
+        // 지하철 노성 생성 실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("거리가 0인 지하철 노선을 생성한다.")
     @Test
     void createLineWithZeroDistance() {
