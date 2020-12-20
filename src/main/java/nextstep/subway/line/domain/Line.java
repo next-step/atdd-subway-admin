@@ -12,6 +12,7 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
+    private Sections sections = new Sections();
 
     public Line() {
     }

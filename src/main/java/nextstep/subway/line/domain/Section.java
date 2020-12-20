@@ -1,7 +1,7 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.common.ValueObjectId;
-import nextstep.subway.section.domain.exceptions.InvalidSectionException;
+import nextstep.subway.line.domain.exceptions.InvalidSectionException;
 
 import javax.persistence.*;
 import java.util.Objects;

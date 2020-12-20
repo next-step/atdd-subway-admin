@@ -5,13 +5,10 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
-import nextstep.subway.station.application.StationService;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.domain.exceptions.StationNotExistException;
-import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,9 +70,8 @@ public class LineService {
     }
 
     public void deleteLine(Long lineId) {
-        Line line = lineRepository.findById(lineId)
+        lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
-        sectionRepository.deleteAllByLine(line);
         lineRepository.deleteById(lineId);
     }
 }

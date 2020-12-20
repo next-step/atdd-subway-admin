@@ -6,8 +6,6 @@ import nextstep.subway.line.domain.LineFixtures;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.StationFixtures;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.domain.exceptions.StationNotExistException;
@@ -44,14 +42,11 @@ class LineServiceTest {
     private LineRepository lineRepository;
 
     @Mock
-    private SectionRepository sectionRepository;
-
-    @Mock
     private StationRepository stationRepository;
 
     @BeforeEach
     void setup() {
-        lineService = new LineService(lineRepository, sectionRepository, stationRepository);
+        lineService = new LineService(lineRepository, stationRepository);
     }
 
     @DisplayName("Line 생성 시 Section도 같이 생성된다.")
@@ -72,7 +67,6 @@ class LineServiceTest {
         List<Long> stationIds = lineResponse.getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
-        verify(sectionRepository).save(any(Section.class));
         assertThat(stationIds).contains(upStationId, downStationId);
     }
 
@@ -184,7 +178,6 @@ class LineServiceTest {
 
         lineService.deleteLine(deleteTargetId);
 
-        verify(sectionRepository).deleteAllByLine(any(Line.class));
         verify(lineRepository).deleteById(deleteTargetId);
     }
 

@@ -157,9 +157,14 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - Section의 생성은 Line에 종속적으로 일어나게 되는데, Section을 다루는 과정에서 불필요하게 Line 외 다른 도메인이 섞이게 됨
     - 도메인 로직을 서비스가 아닌 도메인에서 안전하게 처리할 수 있도록 Section 위에 Sections 일급 컬렉션을 만들고 VO로 변경하면 도메인 로직을 숨기 용이함
     - 추가로 Line, Station 간 결합도를 크게 낮출 수 있음
-  - [ ] Section을 VO 형태로 변경
+  - [X] Section을 VO 형태로 변경
     - Line 제거
     - Station 객체 의존성 제거 후 단순 ID 값만 보관하도록 변경
-  - [ ] Sections 일급 컬렉션 추가
-    - [ ] VO로 다룰 수 있도록 Embedded 타입 설정
-  - [ ] Line field를 Sections 일급 컬렉션으로 변경
+  - [X] Sections 일급 컬렉션 추가
+    - [X] VO로 다룰 수 있도록 Embedded 타입 설정
+  - [X] Line field를 Sections 일급 컬렉션으로 변경
+  - [ ] LineFactory 도메인 서비스 추가
+    - 라인 생성 시 Sation 존재 여부에 대한 의존성이 있기 때문에 라인이 정상적으로 생성됐는지 확인이 어렵기 때문에 변경
+  - [ ] Station DIP 레이어 추가
+    - Line 도메인에서 Station에 대한 의존도가 있기 때문에 Station의 변경 사항이 Line에 직접적으로 영향을 끼침
+    - 이를 방지하기 위한 중간 레이어 구성
