@@ -51,7 +51,10 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
 
-        return LineResponse.of(line);
+        List<Long> stationIds = line.getStationIds();
+        List<SafeStationInfo> safeStationInfos = safeStationDomainService.getStationsSafely(stationIds);
+
+        return LineResponse.of(line, safeStationInfos);
     }
 
     // TODO: 향후에는 Station까지 변경될 경우 변경 예정
