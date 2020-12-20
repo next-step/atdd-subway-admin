@@ -51,6 +51,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(responseStationIds).contains(upStationId, downStationId);
     }
 
+    @DisplayName("존재하지 않는 역을 상행 종점역이나 하행 종점역으로 지정하고 지하철 노선을 생성한다.")
+    @Test
+    void createLineWithoutStation() {
+        String upStationName = "잠실";
+        String lineName = "2호선";
+        String lineColor = "녹색";
+        Long notExistDownStationId = 44L;
+        Long distance = 3L;
+        // given
+        // 상행 종점역만 생성되어 있다.
+        ExtractableResponse<Response> upStationCreatedResponse = CREATED_STATION(new StationRequest(upStationName));
+        Long upStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(upStationCreatedResponse);
+
+        // when
+        // 지하철 노선 생성을 요청한다.
+        ExtractableResponse<Response> response = REQUEST_CREATE_NEW_LINE(
+                new LineRequest(lineName, lineColor, upStationId, notExistDownStationId, distance));
+
+        // then
+        // 지하철 노선 등록 실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("거리가 0인 지하철 노선을 생성한다.")
     @Test
     void createLineWithZeroDistance() {

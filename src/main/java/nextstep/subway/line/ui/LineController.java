@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.exceptions.InvalidSectionException;
+import nextstep.subway.station.domain.exceptions.StationNotExistException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -73,6 +74,11 @@ public class LineController {
 
     @ExceptionHandler(InvalidSectionException.class)
     public ResponseEntity handleInvalidSectionException(InvalidSectionException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(StationNotExistException.class)
+    public ResponseEntity handleStationNotExistException(StationNotExistException e) {
         return ResponseEntity.badRequest().build();
     }
 }
