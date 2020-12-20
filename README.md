@@ -98,7 +98,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - 사용자가 필요한 모든 정보를 입력하고 새로운 지하철 노선 등록을 요청한다.
     - then
       - 지하철 노선 등록 실패
-  - [ ] 시나리오3: 이미 존재하는 지하철 노선명으로 새로운 노선을 등록
+  - [X] 시나리오3: 이미 존재하는 지하철 노선명으로 새로운 노선을 등록
     - given
       - 상행종점역이 등록되어 있다.
       - and 하행종점역이 등록되어 있다.

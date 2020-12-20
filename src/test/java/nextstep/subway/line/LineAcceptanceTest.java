@@ -74,6 +74,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    @Test
+    void createLineWithAlreadyExistLine() {
+        String lineName = "9호선";
+        String lineColor = "금색";
+        Long distance = 5L;
+
+        // given
+        // 지하철_노선_등록되어_있음
+        // and 상행역 생성되어 있음
+        // and 하행역 생성되어 있음
+        ExtractableResponse<Response> upStationCreated = CREATED_STATION(new StationRequest("갱남역"));
+        ExtractableResponse<Response> downStationCreated = CREATED_STATION(new StationRequest("서초역"));
+        Long upStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(upStationCreated);
+        Long downStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(downStationCreated);
+        LineRequest lineRequest = new LineRequest(lineName, lineColor, upStationId, downStationId, distance);
+        LINE_ALREADY_CREATED(lineRequest);
+
+        // when
+        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = REQUEST_CREATE_NEW_LINE(lineRequest);
+
+        // then
+        // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("거리가 0인 지하철 노선을 생성한다.")
     @Test
     void createLineWithZeroDistance() {
@@ -111,33 +138,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 노선 생성 실패함
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
-    @Test
-    void createLineWithAlreadyExistLine() {
-        String lineName = "9호선";
-        String lineColor = "금색";
-        Long distance = 5L;
-
-        // given
-        // 지하철_노선_등록되어_있음
-        // and 상행역 생성되어 있음
-        // and 하행역 생성되어 있음
-        ExtractableResponse<Response> upStationCreated = CREATED_STATION(new StationRequest("갱남역"));
-        ExtractableResponse<Response> downStationCreated = CREATED_STATION(new StationRequest("서초역"));
-        Long upStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(upStationCreated);
-        Long downStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(downStationCreated);
-        LineRequest lineRequest = new LineRequest(lineName, lineColor, upStationId, downStationId, distance);
-        LINE_ALREADY_CREATED(lineRequest);
-
-        // when
-        // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = REQUEST_CREATE_NEW_LINE(lineRequest);
-
-        // then
-        // 지하철_노선_생성_실패됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
