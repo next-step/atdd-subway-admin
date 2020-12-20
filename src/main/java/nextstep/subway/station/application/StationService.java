@@ -40,6 +40,11 @@ public class StationService {
                 .orElseThrow(() -> new StationNotExistException("존재하지 않는 역입니다."));
     }
 
+    @Transactional(readOnly = true)
+    public List<Station> getStations(List<Long> ids) {
+        return stationRepository.findAllById(ids);
+    }
+
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
