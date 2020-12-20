@@ -23,14 +23,12 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
-    private SectionRepository sectionRepository;
     private StationRepository stationRepository;
 
     public LineService(
-            LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository
+            LineRepository lineRepository, StationRepository stationRepository
     ) {
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
     }
 
@@ -42,8 +40,7 @@ public class LineService {
         Station downStation = stationRepository.findById(request.getDownStationId())
                 .orElseThrow(() -> new StationNotExistException("존재하지 않는 역을 하행종점으로 등록할 수 없습니다."));;
 
-        Section section = new Section(savedLine, upStation, downStation, request.getDistance());
-        sectionRepository.save(section);
+        Section section = new Section(upStation.getId(), downStation.getId(), request.getDistance());
 
         return LineResponse.of(savedLine, Arrays.asList(upStation, downStation));
     }

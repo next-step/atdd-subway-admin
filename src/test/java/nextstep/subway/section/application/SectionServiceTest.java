@@ -30,8 +30,9 @@ class SectionServiceTest {
     @Test
     void saveSectionTest() {
         Long distance = 3L;
-        Section mockSection = new Section(LineFixtures.ID1_LINE, StationFixtures.ID1_STATION,
-                StationFixtures.ID2_STATION, distance);
+        Long downStationId = 1L;
+        Long upStationId = 2L;
+        Section mockSection = new Section(upStationId, downStationId, distance);
 
         sectionService.createNewSection(mockSection);
 

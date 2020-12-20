@@ -1,53 +1,41 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
+import nextstep.subway.common.ValueObjectId;
 import nextstep.subway.section.domain.exceptions.InvalidSectionException;
-import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section extends ValueObjectId {
     private static final Long MIN_DISTANCE = 0L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "line_id")
-    private Line line;
-
-    @ManyToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
+    private Long upStationId;
+    private Long downStationId;
     private Long distance;
 
     protected Section() {
     }
 
-    public Section(final Line line, final Station upStation, final Station downStation, final Long distance) {
-        validate(upStation, downStation, distance);
-        validateDistance(distance);
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
+    Section(final Long id, final Long upStationId, final Long downStationId, final Long distance) {
+        validate(upStationId, downStationId, distance);
+        super.setId(id);
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    private void validate(final Station upStation, final Station downStation, final Long distance) {
-        validateStations(upStation, downStation);
+    public Section(final Long upStationId, final Long downStationId, final Long distance) {
+        this(null, upStationId, downStationId, distance);
+    }
+
+    private void validate(final Long upStationId, final Long downStationId, final Long distance) {
+        validateStations(upStationId, downStationId);
         validateDistance(distance);
     }
 
-    private void validateStations(final Station upStation, final Station downStation) {
-        if (upStation.equals(downStation)) {
+    private void validateStations(final Long upStationId, final Long downStationId) {
+        if (upStationId.equals(downStationId)) {
             throw new InvalidSectionException("상행역과 하행역은 같은 역일 수 없습니다.");
         }
     }
@@ -56,5 +44,18 @@ public class Section extends BaseEntity {
         if (distance.equals(MIN_DISTANCE)) {
             throw new InvalidSectionException("거리가 0인 구간은 생성할 수 없습니다.");
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Section section = (Section) o;
+        return Objects.equals(upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId) && Objects.equals(distance, section.distance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStationId, downStationId, distance);
     }
 }
