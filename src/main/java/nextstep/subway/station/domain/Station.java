@@ -3,6 +3,8 @@ package nextstep.subway.station.domain;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class Station extends BaseEntity {
@@ -30,5 +32,9 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    void updateCreatedDate(final LocalDateTime localDateTime) {
+        super.setCreatedDate(localDateTime);
     }
 }
