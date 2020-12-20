@@ -1,11 +1,9 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.line.application.exceptions.LineNotFoundException;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.domain.exceptions.StationNotExistException;
@@ -18,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class LineService {
+public class LineService implements SafeStation {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
 
@@ -30,14 +28,13 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line savedLine = lineRepository.save(request.toLine());
+        SafeStationInfo upStation = this.getStationSafely(request.getUpStationId());
+        SafeStationInfo downStation = this.getStationSafely(request.getDownStationId());
 
-        Station upStation = stationRepository.findById(request.getUpStationId())
-                .orElseThrow(() -> new StationNotExistException("존재하지 않는 역을 상행종점으로 등록할 수 없습니다."));
-        Station downStation = stationRepository.findById(request.getDownStationId())
-                .orElseThrow(() -> new StationNotExistException("존재하지 않는 역을 하행종점으로 등록할 수 없습니다."));;
+        Line line = this.createLine(request.getName(), request.getColor(), request.getUpStationId(),
+                request.getDownStationId(), request.getDistance());
 
-        Section section = new Section(upStation.getId(), downStation.getId(), request.getDistance());
+        Line savedLine = lineRepository.save(line);
 
         return LineResponse.of(savedLine, Arrays.asList(upStation, downStation));
     }
@@ -73,5 +70,23 @@ public class LineService {
         lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
         lineRepository.deleteById(lineId);
+    }
+
+    @Override
+    public SafeStationInfo getStationSafely(final Long stationId) {
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(() -> new StationNotExistException("존재하지 않는 역입니다."));
+
+        return SafeStationInfo.of(station);
+    }
+
+    Line createLine(
+            final String lineName, final String lineColor, final Long upStationId,
+            final Long downStationId, final Long distance
+    ) {
+        Line line = new Line(lineName, lineColor);
+        line.addNewSection(upStationId, downStationId, distance);
+
+        return line;
     }
 }

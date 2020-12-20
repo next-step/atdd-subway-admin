@@ -4,12 +4,13 @@ import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineFixtures;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.StationFixtures;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.domain.exceptions.StationNotExistException;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.dto.StationInfo;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,7 +66,7 @@ class LineServiceTest {
                 new LineRequest(lineName, lineColor, upStationId, downStationId, distance));
 
         List<Long> stationIds = lineResponse.getStations().stream()
-                .map(StationResponse::getId)
+                .map(SafeStationInfo::getId)
                 .collect(Collectors.toList());
         assertThat(stationIds).contains(upStationId, downStationId);
     }
@@ -78,7 +79,6 @@ class LineServiceTest {
         Long upStationId = 4L;
         Long downStationId = 44L;
         Long distance = 3L;
-        given(lineRepository.save(any())).willReturn(new Line(lineName, lineColor));
         given(stationRepository.findById(upStationId)).willThrow(StationNotExistException.class);
 
         assertThatThrownBy(() -> lineService.saveLine(
@@ -94,6 +94,8 @@ class LineServiceTest {
         Long upStationId = 1L;
         Long downStationId = 2L;
         Long distance = 3L;
+        given(stationRepository.findById(upStationId)).willReturn(Optional.of(StationFixtures.ID1_STATION));
+        given(stationRepository.findById(downStationId)).willReturn(Optional.of(StationFixtures.ID2_STATION));
         given(lineRepository.save(any())).willThrow(ConstraintViolationException.class);
 
         assertThatThrownBy(() -> lineService.saveLine(
@@ -187,5 +189,20 @@ class LineServiceTest {
         Long notExistId = 4L;
 
         assertThatThrownBy(() -> lineService.deleteLine(notExistId)).isInstanceOf(LineNotFoundException.class);
+    }
+
+    @DisplayName("신규 노선을 안전하게 생성할 수 있다.")
+    @Test
+    void createLineTest() {
+        String lineName = "2호선";
+        String lineColor = "green";
+        Long upStationId = 1L;
+        Long downStationId = 2L;
+        Long distance = 3L;
+        int expectedSize = 1;
+
+        Line line = lineService.createLine(lineName, lineColor, upStationId, downStationId, distance);
+
+        assertThat(line.getSectionsSize()).isEqualTo(expectedSize);
     }
 }

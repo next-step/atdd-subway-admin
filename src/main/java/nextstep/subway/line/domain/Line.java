@@ -43,4 +43,12 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
+
+    public int getSectionsSize() {
+        return sections.size();
+    }
+
+    public void addNewSection(final Long upStationId, final Long downStationId, final Long distance) {
+        this.sections.add(new Section(upStationId, downStationId, distance));
+    }
 }

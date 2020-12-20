@@ -1,8 +1,8 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.line.domain.SafeStationInfo;
+import nextstep.subway.station.dto.StationInfo;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,12 +13,12 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stations = new ArrayList<>();
+    private List<SafeStationInfo> stations = new ArrayList<>();
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     public LineResponse(
-            Long id, String name, String color, List<StationResponse> stations,
+            Long id, String name, String color, List<SafeStationInfo> stations,
             LocalDateTime createdDate, LocalDateTime modifiedDate
     ) {
         this.id = id;
@@ -36,12 +36,8 @@ public class LineResponse {
                 line.getCreatedDate(), line.getModifiedDate());
     }
 
-    public static LineResponse of(Line line, List<Station> stations) {
-        List<StationResponse> stationsResponses = stations.stream()
-                .map(StationResponse::of)
-                .collect(Collectors.toList());
-
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationsResponses,
+    public static LineResponse of(Line line, List<SafeStationInfo> safeStationInfos) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), safeStationInfos,
                 line.getCreatedDate(), line.getModifiedDate());
     }
 
@@ -57,7 +53,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStations() {
+    public List<SafeStationInfo> getStations() {
         return stations;
     }
 
