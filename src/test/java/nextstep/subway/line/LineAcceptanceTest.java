@@ -3,11 +3,17 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationInfo;
 import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.line.step.LineAcceptanceStep.*;
 import static nextstep.subway.station.step.StationAcceptanceStep.CREATED_STATION;
@@ -216,6 +222,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         RESPONSE_INCLUDED_STATIONS(response, upStationId, downStationId);
+
+        // TODO: extract method
+        StationInfo stationInfo = upStationCreated.as(StationInfo.class);
+        LineResponse lineResponse = response.as(LineResponse.class);
+        List<String> stationNames = lineResponse.getStations().stream()
+                .map(SafeStationInfo::getName)
+                .collect(Collectors.toList());
+        assertThat(stationNames).contains(stationInfo.getName());
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 조회한다.")

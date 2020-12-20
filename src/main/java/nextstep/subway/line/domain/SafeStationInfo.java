@@ -26,6 +26,18 @@ public class SafeStationInfo {
         return id;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
