@@ -151,9 +151,15 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] 새로운 Line 생성 인수 테스트 작성
     - [X] 상행종점, 하행종점을 입력해야 생성되도록 만든다.
     - [X] 응답으로 등록된 역들의 정보를 반환한다.
-- Line, Station 관계 변경
+- Line, Station 관계 변경(VO Collection을 이용한 느슨한 관계 설정)
   - 변경사유
     - 제이슨과 DM으로 질의응답 중 Line, Station을 중간 오브젝트로 관리할 경우의 문제점에 대해 알게 됨
     - Section의 생성은 Line에 종속적으로 일어나게 되는데, Section을 다루는 과정에서 불필요하게 Line 외 다른 도메인이 섞이게 됨
     - 도메인 로직을 서비스가 아닌 도메인에서 안전하게 처리할 수 있도록 Section 위에 Sections 일급 컬렉션을 만들고 VO로 변경하면 도메인 로직을 숨기 용이함
     - 추가로 Line, Station 간 결합도를 크게 낮출 수 있음
+  - [ ] Section을 VO 형태로 변경
+    - Line 제거
+    - Station 객체 의존성 제거 후 단순 ID 값만 보관하도록 변경
+  - [ ] Sections 일급 컬렉션 추가
+    - [ ] VO로 다룰 수 있도록 Embedded 타입 설정
+  - [ ] Line field를 Sections 일급 컬렉션으로 변경
