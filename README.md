@@ -166,5 +166,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] Station DIP 레이어 추가
     - Line 도메인에서 Station에 대한 의존도가 있기 때문에 Station의 변경 사항이 Line에 직접적으로 영향을 끼침
     - 이를 방지하기 위한 중간 레이어 구성
-  - [ ] LineFactory 도메인 서비스 추가
+  - [X] LineFactory 도메인 서비스 추가
     - 라인 생성 시 Sation 존재 여부에 대한 의존성이 있기 때문에 라인이 정상적으로 생성됐는지 확인이 어렵기 때문에 변경
