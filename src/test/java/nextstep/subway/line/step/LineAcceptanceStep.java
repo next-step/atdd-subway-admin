@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -46,6 +47,18 @@ public class LineAcceptanceStep {
                 .then()
                 .log().all()
                 .extract();
+    }
+
+    public static void LINE_CREATE_SUCCESS(
+            ExtractableResponse<Response> response, String lineName, Long upStationId, Long downStationId
+    ) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineResponse lineResponse = response.as(LineResponse.class);
+        assertThat(lineResponse.getName()).isEqualTo(lineName);
+        List<Long> responseStationIds = lineResponse.getStationResponses().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(responseStationIds).contains(upStationId, downStationId);
     }
 
     public static void LINES_INCLUDED_IN_LIST(

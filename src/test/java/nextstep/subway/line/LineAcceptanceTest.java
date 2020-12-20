@@ -42,13 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철 노선 생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LineResponse lineResponse = response.as(LineResponse.class);
-        assertThat(lineResponse.getName()).isEqualTo(lineName);
-        List<Long> responseStationIds = lineResponse.getStationResponses().stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-        assertThat(responseStationIds).contains(upStationId, downStationId);
+        LINE_CREATE_SUCCESS(response, lineName, upStationId, downStationId);
     }
 
     @DisplayName("존재하지 않는 역을 상행 종점역이나 하행 종점역으로 지정하고 지하철 노선을 생성한다.")
