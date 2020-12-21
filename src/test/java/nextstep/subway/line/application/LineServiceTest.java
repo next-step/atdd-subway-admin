@@ -20,7 +20,6 @@ import nextstep.subway.line.exception.LineNotFoundException;
 
 @DisplayName("LineService 단위테스트")
 class LineServiceTest extends BaseTest {
-	public static final long NOT_FOUND_ID = 999L;
 
 	@Autowired
 	private LineService lineService;

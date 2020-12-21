@@ -13,6 +13,7 @@ public class LineTestFixture {
 	public static final String EXAMPLE_LINE1_COLOR = "파란색";
 	public static final String EXAMPLE_LINE2_COLOR = "녹색";
 	public static final String LINE_URL_PREFIX = "/lines";
+	public static final long NOT_FOUND_ID = 999L;
 
 	public static ExtractableResponse<Response> requestCreateLine(LineRequest lineRequest) {
 		return RestAssured.given().log().all()
