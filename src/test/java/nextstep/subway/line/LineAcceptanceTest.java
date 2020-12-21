@@ -120,9 +120,18 @@ public class LineAcceptanceTest extends BaseTest {
 
 		// when
 		// 지하철_노선_수정_요청
+		String changeName = "3호선";
+		String changeColor = "핑크색";
+		ExtractableResponse<Response> response = requestUpdateLine(exampleLine1.getId(),
+			LineRequest.of(changeName, changeColor));
 
 		// then
 		// 지하철_노선_수정됨
+		LineResponse lineResponse = response.as(LineResponse.class);
+
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(lineResponse.getName()).isEqualTo(changeName);
+		assertThat(lineResponse.getColor()).isEqualTo(changeColor);
 	}
 
 	@DisplayName("지하철 노선을 제거한다.")

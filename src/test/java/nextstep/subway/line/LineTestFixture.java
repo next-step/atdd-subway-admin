@@ -47,4 +47,16 @@ public class LineTestFixture {
 			.all()
 			.extract();
 	}
+
+	public static ExtractableResponse<Response> requestUpdateLine(Long id, LineRequest lineRequest) {
+		return RestAssured.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.body(lineRequest)
+			.when()
+			.put(String.format("%s/%s", LINE_URL_PREFIX, id))
+			.then()
+			.log()
+			.all()
+			.extract();
+	}
 }
