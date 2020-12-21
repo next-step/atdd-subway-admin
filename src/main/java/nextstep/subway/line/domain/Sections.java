@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
@@ -18,7 +20,7 @@ public class Sections {
         return sections.size();
     }
 
-    public void add(final Section section) {
+    public void initFirstSection(final Section section) {
         this.sections.add(section);
     }
 
@@ -27,5 +29,11 @@ public class Sections {
                 .flatMap(it -> it.getStationIds().stream())
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public void addSection(final Section section) {
+        if (sections.size() == 0) {
+            throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
+        }
     }
 }

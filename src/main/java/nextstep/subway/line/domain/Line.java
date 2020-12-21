@@ -50,7 +50,7 @@ public class Line extends BaseEntity {
     }
 
     public void addNewSection(final Long upStationId, final Long downStationId, final Long distance) {
-        this.sections.add(new Section(upStationId, downStationId, distance));
+        this.sections.initFirstSection(new Section(upStationId, downStationId, distance));
     }
 
     public List<Long> getStationIds() {
