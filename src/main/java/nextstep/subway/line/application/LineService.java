@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -13,13 +14,11 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LineService {
-	private LineRepository lineRepository;
 
-	public LineService(LineRepository lineRepository) {
-		this.lineRepository = lineRepository;
-	}
+	private final LineRepository lineRepository;
 
 	@Transactional
 	public LineResponse saveLine(LineRequest request) {

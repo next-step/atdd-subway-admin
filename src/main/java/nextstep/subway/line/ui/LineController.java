@@ -15,18 +15,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/lines")
 public class LineController {
-	private final LineService lineService;
 
-	public LineController(final LineService lineService) {
-		this.lineService = lineService;
-	}
+	private final LineService lineService;
 
 	@PostMapping
 	public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {

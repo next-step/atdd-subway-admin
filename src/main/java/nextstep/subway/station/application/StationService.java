@@ -6,19 +6,18 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StationService {
-	private final StationRepository stationRepository;
 
-	public StationService(StationRepository stationRepository) {
-		this.stationRepository = stationRepository;
-	}
+	private final StationRepository stationRepository;
 
 	@Transactional
 	public StationResponse saveStation(StationRequest stationRequest) {

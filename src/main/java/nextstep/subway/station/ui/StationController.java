@@ -12,17 +12,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 @RestController
+@RequiredArgsConstructor
 public class StationController {
-	private final StationService stationService;
 
-	public StationController(StationService stationService) {
-		this.stationService = stationService;
-	}
+	private final StationService stationService;
 
 	@PostMapping("/stations")
 	public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
