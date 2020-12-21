@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,5 +54,22 @@ class SectionsTest {
     @Test
     void addWhenSectionSameWithDownStationTest() {
 
+    }
+
+    @DisplayName("전달된 Section과 역이 하나라도 일치하는 Section을 모두 찾아낸다.")
+    @Test
+    void findCandidateSectionsTest() {
+        Section targetSection = new Section(1L, 2L, 3L);
+        Section section12 = new Section(1L, 2L, 3L);
+        Section section21 = new Section(2L, 1L, 3L);
+        Section section13 = new Section(1L, 3L, 3L);
+        Section section32 = new Section(3L, 2L, 3L);
+        Section section34 = new Section(3L, 4L, 3L);
+
+        Sections sections = new Sections(Arrays.asList(section12, section21, section13, section32, section34));
+
+        List<Section> candidateSections = sections.findCandidateSections(targetSection);
+
+        assertThat(candidateSections).contains(section12, section13, section32);
     }
 }

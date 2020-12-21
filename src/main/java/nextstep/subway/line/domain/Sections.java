@@ -14,7 +14,15 @@ import java.util.stream.Collectors;
 public class Sections {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
-    private List<Section> sections = new ArrayList<>();
+    private List<Section> sections;
+
+    Sections() {
+        this(new ArrayList<>());
+    }
+
+    Sections(final List<Section> sections) {
+        this.sections = sections;
+    }
 
     public int size() {
         return sections.size();
@@ -49,5 +57,11 @@ public class Sections {
 
     boolean contains(final Section section) {
         return this.sections.contains(section);
+    }
+
+    public List<Section> findCandidateSections(final Section section) {
+        return this.sections.stream()
+                .filter(it -> it.isSameUpStation(section) || it.isSameDownStation(section))
+                .collect(Collectors.toList());
     }
 }
