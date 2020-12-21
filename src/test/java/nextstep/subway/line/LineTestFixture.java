@@ -8,7 +8,6 @@ import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 
 public class LineTestFixture {
-
 	public static final String EXAMPLE_LINE1_NAME = "1호선";
 	public static final String EXAMPLE_LINE2_NAME = "2호선";
 	public static final String EXAMPLE_LINE1_COLOR = "파란색";

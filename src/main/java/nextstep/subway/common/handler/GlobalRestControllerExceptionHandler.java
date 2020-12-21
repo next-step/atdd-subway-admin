@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import lombok.extern.slf4j.Slf4j;
+import nextstep.subway.line.exception.LineNotFoundException;
 
 @Slf4j
 @RestControllerAdvice(annotations = RestController.class)
@@ -24,5 +25,11 @@ public class GlobalRestControllerExceptionHandler {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public void handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
 		log.error("HttpMessageNotReadableException : ", e);
+	}
+
+	@ExceptionHandler(LineNotFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public void handleNotFoundException(LineNotFoundException e) {
+		log.error("LineNotFoundException : ", e);
 	}
 }
