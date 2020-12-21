@@ -38,11 +38,11 @@ class LineServiceTest {
     private LineRepository lineRepository;
 
     @Mock
-    private SafeStationDomainService safeStationDomainService;
+    private SafeStationAdapter safeStationAdapter;
 
     @BeforeEach
     void setup() {
-        lineService = new LineService(lineRepository, safeStationDomainService);
+        lineService = new LineService(lineRepository, safeStationAdapter);
     }
 
     @DisplayName("Line 생성 시 Section도 같이 생성된다.")
@@ -55,9 +55,9 @@ class LineServiceTest {
         Long distance = 3L;
         LocalDateTime now = LocalDateTime.now();
         given(lineRepository.save(any())).willReturn(new Line(lineName, lineColor));
-        given(safeStationDomainService.getStationSafely(upStationId))
+        given(safeStationAdapter.getStationSafely(upStationId))
                 .willReturn(new SafeStationInfo(upStationId, "up", now, null));
-        given(safeStationDomainService.getStationSafely(downStationId))
+        given(safeStationAdapter.getStationSafely(downStationId))
                 .willReturn(new SafeStationInfo(downStationId, "down", now, null));
 
         LineResponse lineResponse = lineService.saveLine(
@@ -77,7 +77,7 @@ class LineServiceTest {
         Long upStationId = 4L;
         Long downStationId = 44L;
         Long distance = 3L;
-        given(safeStationDomainService.getStationSafely(upStationId)).willThrow(StationNotFoundException.class);
+        given(safeStationAdapter.getStationSafely(upStationId)).willThrow(StationNotFoundException.class);
 
         assertThatThrownBy(() -> lineService.saveLine(
                 new LineRequest(lineName, lineColor, upStationId, downStationId, distance))
@@ -93,9 +93,9 @@ class LineServiceTest {
         Long downStationId = 2L;
         Long distance = 3L;
         LocalDateTime now = LocalDateTime.now();
-        given(safeStationDomainService.getStationSafely(upStationId))
+        given(safeStationAdapter.getStationSafely(upStationId))
                 .willReturn(new SafeStationInfo(upStationId, "up", now, null));
-        given(safeStationDomainService.getStationSafely(downStationId))
+        given(safeStationAdapter.getStationSafely(downStationId))
                 .willReturn(new SafeStationInfo(downStationId, "down", now, null));
         given(lineRepository.save(any())).willThrow(ConstraintViolationException.class);
 
@@ -134,7 +134,7 @@ class LineServiceTest {
         int expectedSize = 2;
         LocalDateTime now = LocalDateTime.now();
         given(lineRepository.findById(lineId)).willReturn(Optional.of(LineFixtures.ID1_LINE));
-        given(safeStationDomainService.getStationsSafely(any())).willReturn(Arrays.asList(
+        given(safeStationAdapter.getStationsSafely(any())).willReturn(Arrays.asList(
                 new SafeStationInfo(1L, "test1", now, now),
                 new SafeStationInfo(2L, "test2", now, now)
         ));

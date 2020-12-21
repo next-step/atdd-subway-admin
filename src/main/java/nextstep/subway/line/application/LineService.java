@@ -15,19 +15,19 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
-    private final SafeStationDomainService safeStationDomainService;
+    private final SafeStationAdapter safeStationAdapter;
 
     public LineService(
-            LineRepository lineRepository, SafeStationDomainService safeStationDomainService
+            LineRepository lineRepository, SafeStationAdapter safeStationAdapter
     ) {
         this.lineRepository = lineRepository;
-        this.safeStationDomainService = safeStationDomainService;
+        this.safeStationAdapter = safeStationAdapter;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        SafeStationInfo upStation = this.safeStationDomainService.getStationSafely(request.getUpStationId());
-        SafeStationInfo downStation = this.safeStationDomainService.getStationSafely(request.getDownStationId());
+        SafeStationInfo upStation = this.safeStationAdapter.getStationSafely(request.getUpStationId());
+        SafeStationInfo downStation = this.safeStationAdapter.getStationSafely(request.getDownStationId());
 
         Line line = this.createLine(request.getName(), request.getColor(), request.getUpStationId(),
                 request.getDownStationId(), request.getDistance());
@@ -52,7 +52,7 @@ public class LineService {
                 .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
 
         List<Long> stationIds = line.getStationIds();
-        List<SafeStationInfo> safeStationInfos = safeStationDomainService.getStationsSafely(stationIds);
+        List<SafeStationInfo> safeStationInfos = safeStationAdapter.getStationsSafely(stationIds);
 
         return LineResponse.of(line, safeStationInfos);
     }

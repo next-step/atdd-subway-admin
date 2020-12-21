@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class SafeStationDomainService implements SafeStation {
+public class SafeStationAdapter implements SafeStation {
     private StationService stationService;
 
-    public SafeStationDomainService(final StationService stationService) {
+    public SafeStationAdapter(final StationService stationService) {
         this.stationService = stationService;
     }
 
