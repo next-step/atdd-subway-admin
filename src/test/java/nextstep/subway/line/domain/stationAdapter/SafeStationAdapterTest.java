@@ -1,8 +1,6 @@
 package nextstep.subway.line.domain.stationAdapter;
 
 import nextstep.subway.line.domain.exceptions.StationNotFoundException;
-import nextstep.subway.line.domain.stationAdapter.SafeStationAdapter;
-import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationFixtures;

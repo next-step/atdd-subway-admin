@@ -3,7 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.ValueObjectId;
 import nextstep.subway.line.domain.exceptions.InvalidSectionException;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
