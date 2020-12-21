@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.*;
 import nextstep.subway.line.domain.exceptions.StationNotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.StationInLineResponse;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,7 +65,7 @@ class LineServiceTest {
                 new LineRequest(lineName, lineColor, upStationId, downStationId, distance));
 
         List<Long> stationIds = lineResponse.getStations().stream()
-                .map(SafeStationInfo::getId)
+                .map(StationInLineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(stationIds).contains(upStationId, downStationId);
     }

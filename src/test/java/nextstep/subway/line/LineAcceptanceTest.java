@@ -6,6 +6,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.StationInLineResponse;
 import nextstep.subway.station.dto.StationInfo;
 import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -227,7 +228,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationInfo stationInfo = upStationCreated.as(StationInfo.class);
         LineResponse lineResponse = response.as(LineResponse.class);
         List<String> stationNames = lineResponse.getStations().stream()
-                .map(SafeStationInfo::getName)
+                .map(StationInLineResponse::getName)
                 .collect(Collectors.toList());
         assertThat(stationNames).contains(stationInfo.getName());
     }

@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.line.domain.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.StationInLineResponse;
 import nextstep.subway.station.dto.StationInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -57,7 +58,7 @@ public class LineAcceptanceStep {
         LineResponse lineResponse = response.as(LineResponse.class);
         assertThat(lineResponse.getName()).isEqualTo(lineName);
         List<Long> responseStationIds = lineResponse.getStations().stream()
-                .map(SafeStationInfo::getId)
+                .map(StationInLineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(responseStationIds).contains(upStationId, downStationId);
     }
@@ -105,7 +106,7 @@ public class LineAcceptanceStep {
         LineResponse lineResponse = response.as(LineResponse.class);
 
         List<Long> stationIds = lineResponse.getStations().stream()
-                .map(SafeStationInfo::getId)
+                .map(StationInLineResponse::getId)
                 .collect(Collectors.toList());
 
         assertThat(stationIds).contains(upStationId, downStationId);

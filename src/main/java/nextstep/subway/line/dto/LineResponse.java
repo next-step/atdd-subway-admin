@@ -13,12 +13,12 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<SafeStationInfo> stations = new ArrayList<>();
+    private List<StationInLineResponse> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     public LineResponse(
-            Long id, String name, String color, List<SafeStationInfo> stations,
+            Long id, String name, String color, List<StationInLineResponse> stations,
             LocalDateTime createdDate, LocalDateTime modifiedDate
     ) {
         this.id = id;
@@ -30,7 +30,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line, List<SafeStationInfo> safeStationInfos) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), safeStationInfos,
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), parseSafeStationInfos(safeStationInfos),
                 line.getCreatedDate(), line.getModifiedDate());
     }
 
@@ -46,7 +46,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<SafeStationInfo> getStations() {
+    public List<StationInLineResponse> getStations() {
         return stations;
     }
 
@@ -56,5 +56,15 @@ public class LineResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    private static List<StationInLineResponse> parseSafeStationInfos(final List<SafeStationInfo> safeStationInfos) {
+        if (safeStationInfos == null) {
+            return new ArrayList<>();
+        }
+
+        return safeStationInfos.stream()
+                .map(StationInLineResponse::of)
+                .collect(Collectors.toList());
     }
 }
