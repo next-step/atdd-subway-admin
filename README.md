@@ -187,8 +187,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - 기능: 새로운 지하철 구간 등록하기
   - [ ] 시나리오1: 종점 사이에 새로운 지하철 구간 등록
     - given
-      - 상행종점역이 등록되어 있다.
-      - and 하행종점역이 등록되어 있다.
+      - 등록된 구간이 있음
+      - and 새로 등록할 구간의 역들이 등록되어 있음
     - when
       - 사용자가 상행 종점역과 연결되는 구간을 추가 요청한다.(or 사용자가 하행 종점역과 연결되는 구간을 추가 요청한다.)
     - then
