@@ -56,7 +56,7 @@ class SectionsTest {
 
     }
 
-    @DisplayName("전달된 Section과 역이 하나라도 일치하는 Section을 모두 찾아낸다.")
+    @DisplayName("전달된 Section과 상행역, 하행역 중 하나라도 일치하는 Section을 모두 찾아낸다.")
     @Test
     void findCandidateSectionsTest() {
         Section targetSection = new Section(1L, 2L, 3L);

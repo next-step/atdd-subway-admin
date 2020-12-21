@@ -59,7 +59,7 @@ public class Sections {
         return this.sections.contains(section);
     }
 
-    public List<Section> findCandidateSections(final Section section) {
+    List<Section> findCandidateSections(final Section section) {
         return this.sections.stream()
                 .filter(it -> it.isSameUpStation(section) || it.isSameDownStation(section))
                 .collect(Collectors.toList());
