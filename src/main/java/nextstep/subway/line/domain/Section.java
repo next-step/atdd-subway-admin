@@ -35,6 +35,14 @@ public class Section extends ValueObjectId {
         return Arrays.asList(upStationId, downStationId);
     }
 
+    boolean isSameUpStation(final Section thatSection) {
+        return this.upStationId.equals(thatSection.upStationId);
+    }
+
+    boolean isSameDownStation(final Section thatSection) {
+        return this.downStationId.equals(thatSection.downStationId);
+    }
+
     private void validate(final Long upStationId, final Long downStationId, final Long distance) {
         validateStations(upStationId, downStationId);
         validateDistance(distance);

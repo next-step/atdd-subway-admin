@@ -196,8 +196,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   
 ### 시나리오 Todo-list
   - [ ] 시나리오1
-    - [ ] SectionRequest DTO 추가
+    - [X] SectionRequest DTO 추가
     - [ ] Sections 일급 컬렉션에 새로운 Section 추가 기능 구현
       - [ ] 기존 구간 중 상행역과 연결되는 경우의 추가 기능 구현
       - [ ] 기존 구간 중 하행역과 연결되는 경우의 추가 기능 구현
       - [ ] 추가 요청에 따라 위 두가지 경우를 판단해서 추가하는 기능 구현
+      - [ ] Section 끼리 상행역, 하행역 중 어느 역과 일치하는지 확인가능
