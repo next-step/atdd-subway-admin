@@ -3,6 +3,10 @@ package nextstep.subway.line;
 import static nextstep.subway.line.LineTestFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,9 +21,14 @@ import nextstep.subway.line.dto.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends BaseTest {
 
+	private LineResponse exampleLine1;
+
 	@BeforeEach
 	void setup() {
-		requestCreateLine(LineRequest.of(EXAMPLE_LINE1_NAME, EXAMPLE_LINE1_COLOR));
+		exampleLine1 = requestCreateLine(
+			LineRequest.of(EXAMPLE_LINE1_NAME, EXAMPLE_LINE1_COLOR)
+		).as(LineResponse.class);
+
 		requestCreateLine(LineRequest.of(EXAMPLE_LINE2_NAME, EXAMPLE_LINE2_COLOR));
 	}
 
@@ -69,10 +78,19 @@ public class LineAcceptanceTest extends BaseTest {
 
 		// when
 		// 지하철_노선_목록_조회_요청
+		ExtractableResponse<Response> response = requestGetLines();
 
 		// then
 		// 지하철_노선_목록_응답됨
 		// 지하철_노선_목록_포함됨
+		List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+		List<String> lineNames = CollectionUtils.emptyIfNull(lineResponses)
+			.stream()
+			.map(LineResponse::getName)
+			.collect(Collectors.toList());
+
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(lineNames).contains(EXAMPLE_LINE1_NAME, EXAMPLE_LINE2_NAME);
 	}
 
 	@DisplayName("지하철 노선을 조회한다.")
@@ -83,9 +101,15 @@ public class LineAcceptanceTest extends BaseTest {
 
 		// when
 		// 지하철_노선_조회_요청
+		ExtractableResponse<Response> response = requestGetLineById(exampleLine1.getId());
 
 		// then
 		// 지하철_노선_응답됨
+		LineResponse lineResponse = response.as(LineResponse.class);
+
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(lineResponse.getName()).isEqualTo(EXAMPLE_LINE1_NAME);
+		assertThat(lineResponse.getColor()).isEqualTo(EXAMPLE_LINE1_COLOR);
 	}
 
 	@DisplayName("지하철 노선을 수정한다.")

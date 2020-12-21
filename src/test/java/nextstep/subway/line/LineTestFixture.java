@@ -26,4 +26,26 @@ public class LineTestFixture {
 			.all()
 			.extract();
 	}
+
+	public static ExtractableResponse<Response> requestGetLines() {
+		return RestAssured.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.get(LINE_URL_PREFIX)
+			.then()
+			.log()
+			.all()
+			.extract();
+	}
+
+	public static ExtractableResponse<Response> requestGetLineById(Long id) {
+		return RestAssured.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.get(String.format("%s/%s", LINE_URL_PREFIX, id))
+			.then()
+			.log()
+			.all()
+			.extract();
+	}
 }
