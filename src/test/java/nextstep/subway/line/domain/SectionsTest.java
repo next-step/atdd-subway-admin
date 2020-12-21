@@ -36,6 +36,7 @@ class SectionsTest {
                 .isInstanceOf(InvalidSectionsActionException.class);
     }
 
+    // TODO: 기능을 좀 더 세분화 해야한다.
     @DisplayName("기존역 중 상행역과 일치하는 Section을 추가할 수 있다.")
     @Test
     void addWhenSectionSameWithUpStationTest() {
