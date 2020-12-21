@@ -28,7 +28,6 @@ public class SafeStationAdapter implements SafeStation {
         }
     }
 
-    // TODO: ID 순으로 정렬되는 요구사항까지 여기 반영되도록 한다(Station에서 정렬이 어떻게 될지 믿을 수 없다.)
     public List<SafeStationInfo> getStationsSafely(final List<Long> ids) {
         List<Station> stations = stationService.getStations(ids);
         System.out.println(stations.get(0));

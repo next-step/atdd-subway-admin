@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.StationInLineResponse;
+import nextstep.subway.station.dto.StationInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -99,7 +100,7 @@ public class LineAcceptanceStep {
     }
 
     public static void RESPONSE_INCLUDED_STATIONS(
-            ExtractableResponse<Response> response, Long upStationId, Long downStationId
+            ExtractableResponse<Response> response, StationInfo upStation, StationInfo downStation
     ) {
         LineResponse lineResponse = response.as(LineResponse.class);
 
@@ -107,6 +108,11 @@ public class LineAcceptanceStep {
                 .map(StationInLineResponse::getId)
                 .collect(Collectors.toList());
 
-        assertThat(stationIds).contains(upStationId, downStationId);
+        List<String> stationNames = lineResponse.getStations().stream()
+                .map(StationInLineResponse::getName)
+                .collect(Collectors.toList());
+
+        assertThat(stationIds).contains(upStation.getId(), downStation.getId());
+        assertThat(stationNames).contains(upStation.getName(), downStation.getName());
     }
 }
