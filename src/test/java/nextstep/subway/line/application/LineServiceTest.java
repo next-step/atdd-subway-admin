@@ -118,4 +118,25 @@ class LineServiceTest extends BaseTest {
 			});
 
 	}
+
+	@DisplayName("deleteLine 메서드는 대상 노선 ID를 전달하면 삭제할 수 있다.")
+	@Test
+	void deleteLine() {
+		lineService.deleteLine(exampleLine2.getId());
+
+		assertThatExceptionOfType(LineNotFoundException.class)
+			.isThrownBy(() -> {
+				lineService.getLineById(exampleLine2.getId());
+			});
+	}
+
+	@DisplayName("deleteLine 메서드는 없는 노선 ID를 전달하면 LineNotFoundException이 발생한다.")
+	@Test
+	void deleteLineThrow() {
+		assertThatExceptionOfType(LineNotFoundException.class)
+			.isThrownBy(() -> {
+				lineService.deleteLine(NOT_FOUND_ID);
+			});
+
+	}
 }

@@ -46,6 +46,11 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
+	@Transactional
+	public void deleteLine(Long id) {
+		lineRepository.delete(findById(id));
+	}
+
 	private Line findById(Long id) {
 		return lineRepository.findById(id)
 			.orElseThrow(() -> new LineNotFoundException("노선 정보를 찾을 수 없습니다."));
