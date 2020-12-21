@@ -142,8 +142,10 @@ public class LineAcceptanceTest extends BaseTest {
 
 		// when
 		// 지하철_노선_제거_요청
+		ExtractableResponse<Response> response = requestDeleteLine(exampleLine1.getId());
 
 		// then
 		// 지하철_노선_삭제됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 }
