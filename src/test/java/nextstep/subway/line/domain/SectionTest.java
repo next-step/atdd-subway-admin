@@ -23,4 +23,10 @@ class SectionTest {
 
         assertThat(section1.isSameDownStation(section2)).isTrue();
     }
+
+    @DisplayName("Section 간 비교를 통해 Section 추가 정책을 판단할 수 있다.")
+    @Test
+    void getSectionAddStrategyTest() {
+
+    }
 }
