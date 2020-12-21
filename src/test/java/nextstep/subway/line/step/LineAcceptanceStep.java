@@ -3,11 +3,9 @@ package nextstep.subway.line.step;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.line.domain.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.StationInLineResponse;
-import nextstep.subway.station.dto.StationInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 

@@ -2,6 +2,8 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.*;
+import nextstep.subway.line.domain.stationAdapter.SafeStationAdapter;
+import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;

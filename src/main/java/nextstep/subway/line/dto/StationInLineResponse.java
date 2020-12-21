@@ -1,6 +1,6 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.SafeStationInfo;
+import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
 
 import java.time.LocalDateTime;
 

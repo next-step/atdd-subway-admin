@@ -1,8 +1,7 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.SafeStationInfo;
-import nextstep.subway.station.dto.StationInfo;
+import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
