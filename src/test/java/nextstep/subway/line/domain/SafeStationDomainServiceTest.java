@@ -66,30 +66,30 @@ class SafeStationDomainServiceTest {
                 .isInstanceOf(StationNotFoundException.class);
     }
 
-    @DisplayName("Station ID 목록으로 Station 정보를 안전하게 받아올 수 있다.")
-    @ParameterizedTest
-    @MethodSource("getStationsSafelyResource")
-    void getStationsSafely(List<Station> mockStations, int expectedSize) {
+    @DisplayName("Station ID 목록으로 Station 정보를 ID 오름차순으로 정렬해서 안전하게 받아올 수 있다.")
+    @Test
+    void getStationsSafely() {
+        // given
         Long station1Id = 1L;
         Long station2Id = 2L;
-        List<Long> stationIds = Arrays.asList(station1Id, station2Id);
+        Long station3Id = 3L;
+        int expectedSize = 3;
+        LocalDateTime now = LocalDateTime.now();
+        List<Station> mockStations = Arrays.asList(
+                StationFixtures.createStationFixture(station3Id, "test3", now),
+                StationFixtures.createStationFixture(station1Id, "test2", now),
+                StationFixtures.createStationFixture(station2Id, "test2", now)
+        );
+        List<Long> stationIds = Arrays.asList(station3Id, station2Id, station1Id);
 
         given(stationService.getStations(stationIds)).willReturn(mockStations);
 
+        // when
         List<SafeStationInfo> safeStationInfos = safeStationDomainService.getStationsSafely(stationIds);
 
+        // then
         assertThat(safeStationInfos).hasSize(expectedSize);
-    }
-    public static Stream<Arguments> getStationsSafelyResource() {
-        return Stream.of(
-                Arguments.of(
-                        Arrays.asList(
-                                StationFixtures.createStationFixture(1L, "test", LocalDateTime.now()),
-                                StationFixtures.createStationFixture(2L, "test2", LocalDateTime.now())
-                        ),
-                        2
-                ),
-                Arguments.of(new ArrayList<>(), 0)
-        );
+        assertThat(safeStationInfos.get(0).getId()).isEqualTo(station1Id);
+        assertThat(safeStationInfos.get(2).getId()).isEqualTo(station3Id);
     }
 }

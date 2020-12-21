@@ -5,6 +5,7 @@ import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ public class SafeStationDomainService implements SafeStation {
 
         return stations.stream()
                 .map(SafeStationInfo::of)
+                .sorted(Comparator.comparingLong(SafeStationInfo::getId))
                 .collect(Collectors.toList());
     }
 }
