@@ -39,6 +39,13 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
+	@Transactional
+	public LineResponse updateLine(Long id, LineRequest request) {
+		Line line = findById(id);
+		line.update(request);
+		return LineResponse.of(line);
+	}
+
 	private Line findById(Long id) {
 		return lineRepository.findById(id)
 			.orElseThrow(() -> new LineNotFoundException("노선 정보를 찾을 수 없습니다."));

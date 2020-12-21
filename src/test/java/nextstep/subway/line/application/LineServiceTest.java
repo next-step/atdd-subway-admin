@@ -90,4 +90,32 @@ class LineServiceTest extends BaseTest {
 				lineService.getLineById(NOT_FOUND_ID);
 			});
 	}
+
+	@DisplayName("updateLine 메서드는 대상 노선 ID와 변경될 정보를 전달하면 노선정보를 수정할 수 있다.")
+	@Test
+	void updateLine() {
+		String changeName = "5호선";
+		String changeColor = "노란색";
+
+		LineResponse line = lineService.updateLine(exampleLine1.getId(), LineRequest.of(changeName, changeColor));
+
+		assertAll(
+			() -> assertThat(line.getId()).isNotNull(),
+			() -> assertThat(line.getName()).contains(changeName),
+			() -> assertThat(line.getColor()).contains(changeColor)
+		);
+	}
+
+	@DisplayName("updateLine 메서드는 없는 노선 ID를 전달하면 LineNotFoundException이 발생한다.")
+	@Test
+	void updateLineThrow() {
+		String changeName = "5호선";
+		String changeColor = "노란색";
+
+		assertThatExceptionOfType(LineNotFoundException.class)
+			.isThrownBy(() -> {
+				lineService.updateLine(NOT_FOUND_ID, LineRequest.of(changeName, changeColor));
+			});
+
+	}
 }

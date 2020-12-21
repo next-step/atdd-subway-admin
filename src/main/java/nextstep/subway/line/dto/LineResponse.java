@@ -3,6 +3,7 @@ package nextstep.subway.line.dto;
 import java.time.LocalDateTime;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.exception.LineNotFoundException;
 
 public class LineResponse {
 	private Long id;
@@ -23,6 +24,9 @@ public class LineResponse {
 	}
 
 	public static LineResponse of(Line line) {
+		if (line == null) {
+			throw new LineNotFoundException("노선 정보를 찾을 수 없습니다.");
+		}
 		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(),
 			line.getModifiedDate());
 	}
