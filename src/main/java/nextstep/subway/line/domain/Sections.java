@@ -35,5 +35,19 @@ public class Sections {
         if (sections.size() == 0) {
             throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
         }
+        List<Section> sameUpStationSections = sections.stream()
+                .filter(it -> it.isSameUpStation(section))
+                .collect(Collectors.toList());
+        if (sameUpStationSections.size() > 1) {
+            throw new InvalidSectionsActionException("수행할 수 없는 동작입니다.");
+        }
+        if (sameUpStationSections.size() == 1) {
+            this.sections.add(section);
+            sameUpStationSections.get(0).updateUpStation(section);
+        }
+    }
+
+    boolean contains(final Section section) {
+        return this.sections.contains(section);
     }
 }

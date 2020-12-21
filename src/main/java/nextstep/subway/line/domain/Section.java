@@ -43,6 +43,11 @@ public class Section extends ValueObjectId {
         return this.downStationId.equals(thatSection.downStationId);
     }
 
+    void updateUpStation(final Section section) {
+        this.upStationId = section.downStationId;
+        this.distance = this.distance - section.distance;
+    }
+
     private void validate(final Long upStationId, final Long downStationId, final Long distance) {
         validateStations(upStationId, downStationId);
         validateDistance(distance);

@@ -39,7 +39,13 @@ class SectionsTest {
     @DisplayName("기존역 중 상행역과 일치하는 Section을 추가할 수 있다.")
     @Test
     void addWhenSectionSameWithUpStationTest() {
+        Sections sections = new Sections();
+        sections.initFirstSection(new Section(1L, 2L, 10L));
 
+        sections.addSection(new Section(1L, 3L, 5L));
+
+        assertThat(sections.contains(new Section(1L, 3L, 5L))).isTrue();
+        assertThat(sections.contains(new Section(3L, 2L, 5L))).isTrue();
     }
 
     @DisplayName("기존역 중 하행역과 일치하는 Section을 추가할 수 있다.")
