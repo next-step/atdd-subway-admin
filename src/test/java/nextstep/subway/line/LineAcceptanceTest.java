@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.utils.LocationUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -69,12 +70,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        long lineId = LocationUtil.getLocation(지하철_노선_등록되어_있음("신분당선"));
 
         // when
         // 지하철_노선_조회_요청
-
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
         // then
         // 지하철_노선_응답됨
+        지하철_노선_응답됨(response);
     }
 
     @DisplayName("지하철 노선을 수정한다.")

@@ -61,4 +61,17 @@ public class LineAcceptanceStepTest {
     public static void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    public static void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(long lineId) {
+        return RestAssured.given().log().all().
+                when().
+                get("/lines/{id}", lineId).
+                then().
+                log().all().
+                extract();
+    }
 }
