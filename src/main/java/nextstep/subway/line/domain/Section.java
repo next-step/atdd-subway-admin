@@ -43,6 +43,10 @@ public class Section extends ValueObjectId {
         return this.downStationId.equals(thatSection.downStationId);
     }
 
+    boolean isSameUpWithThatDown(final Section thatSection) {
+        return this.upStationId.equals(thatSection.downStationId);
+    }
+
     void updateUpStation(final Section section) {
         this.upStationId = section.downStationId;
         this.distance = this.distance - section.distance;

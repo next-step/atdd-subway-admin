@@ -43,6 +43,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    // TODO: 기능 구현 다 한 뒤에 나눠야 함. 너무 큼
     public boolean addSection(final Section newSection) {
         int originalSize = this.sections.size();
 
@@ -50,6 +51,14 @@ public class Sections {
             throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
         }
 
+        // 상행역일 경우 추가하는 로직 진행
+        Section endUpSection = findEndUpSection();
+        if (endUpSection.isSameUpWithThatDown(newSection)) {
+            this.sections.add(newSection);
+            return (this.sections.size() == originalSize + 1);
+        }
+
+        // 상행역이 아닐 때만 일반 로직 진행
         TargetSectionSelector targetSectionSelector = new TargetSectionSelector(this.sections);
         Section targetSection = targetSectionSelector.findTargetSection(newSection);
 
@@ -60,7 +69,11 @@ public class Sections {
         return (this.sections.size() == originalSize + 1);
     }
 
-    public Section findEndUpSection() {
+    boolean contains(final Section section) {
+        return this.sections.contains(section);
+    }
+
+    Section findEndUpSection() {
         List<Long> singleStationIds = calculateSingleStationIds();
 
         return this.sections.stream().filter(it -> it.isUpStationBelongsTo(singleStationIds))
@@ -81,9 +94,5 @@ public class Sections {
                 .filter(it -> it.getValue() == 1L)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-    }
-
-    boolean contains(final Section section) {
-        return this.sections.contains(section);
     }
 }
