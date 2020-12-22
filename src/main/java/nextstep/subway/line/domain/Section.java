@@ -39,6 +39,10 @@ public class Section extends ValueObjectId {
         return this.upStationId.equals(thatSection.upStationId);
     }
 
+    boolean isSameUpStationId(final Long upStationId) {
+        return this.upStationId.equals(upStationId);
+    }
+
     boolean isSameDownStation(final Section thatSection) {
         return this.downStationId.equals(thatSection.downStationId);
     }
@@ -51,6 +55,10 @@ public class Section extends ValueObjectId {
     void updateDownStation(final Section section) {
         this.downStationId = section.upStationId;
         this.distance = this.distance - section.distance;
+    }
+
+    Long getUpStationId() {
+        return this.upStationId;
     }
 
     private void validate(final Long upStationId, final Long downStationId, final Long distance) {

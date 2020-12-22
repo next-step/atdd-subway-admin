@@ -24,7 +24,7 @@ class SectionsTest {
         sections.initFirstSection(new Section(1L, station1Id, station2Id, 3L));
         sections.initFirstSection(new Section(2L, station2Id, station3Id, 5L));
 
-        List<Long> stationIds = sections.getStationIds();
+        List<Long> stationIds = sections.getStationIdsWithoutDup();
 
         assertThat(stationIds).hasSize(expectedSize);
     }
@@ -66,5 +66,19 @@ class SectionsTest {
         assertThat(sections.contains(new Section(1L, 2L, 10L))).isTrue();
         assertThat(sections.contains(new Section(2L, 4L, 5L))).isTrue();
         assertThat(sections.contains(new Section(4L, 3L, 5L))).isTrue();
+    }
+
+    @DisplayName("상행 종점역 구간을 찾아낼 수 있다.")
+    @Test
+    void findEndUpSectionTest() {
+        Section endUpStation = new Section(1L, 2L, 10L);
+
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
+                endUpStation,
+                new Section(2L, 3L, 10L),
+                new Section (3L, 4L, 10L)
+        )));
+
+        assertThat(sections.findEndUpSection()).isEqualTo(endUpStation);
     }
 }

@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
+import nextstep.subway.line.domain.exceptions.EndUpStationNotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -8,7 +9,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.counting;
 
 @Embeddable
 public class Sections {
@@ -32,7 +37,7 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public List<Long> getStationIds() {
+    public List<Long> getStationIdsWithoutDup() {
         return sections.stream()
                 .flatMap(it -> it.getStationIds().stream())
                 .distinct()
@@ -54,6 +59,29 @@ public class Sections {
         this.sections.add(newSection);
 
         return (this.sections.size() == originalSize + 1);
+    }
+
+    public Section findEndUpSection() {
+        List<Long> singleStationIds = calculateSingStationIds();
+
+        return this.sections.stream().filter(it -> singleStationIds.contains(it.getUpStationId()))
+                .findFirst()
+                .orElseThrow(() -> new EndUpStationNotFoundException("상행종점역 구간을 찾을 수 없습니다."));
+    }
+
+    List<Long> getStationIds() {
+        return sections.stream()
+                .flatMap(it -> it.getStationIds().stream())
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> calculateSingStationIds() {
+        return this.getStationIds().stream()
+                .collect(Collectors.groupingBy(Function.identity(), counting()))
+                .entrySet().stream()
+                .filter(it -> it.getValue() == 1L)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     boolean contains(final Section section) {
