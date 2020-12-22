@@ -48,6 +48,11 @@ public class Section extends ValueObjectId {
         this.distance = this.distance - section.distance;
     }
 
+    void updateDownStation(final Section section) {
+        this.downStationId = section.upStationId;
+        this.distance = this.distance - section.distance;
+    }
+
     private void validate(final Long upStationId, final Long downStationId, final Long distance) {
         validateStations(upStationId, downStationId);
         validateDistance(distance);

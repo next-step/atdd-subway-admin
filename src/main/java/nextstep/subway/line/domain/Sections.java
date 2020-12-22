@@ -45,6 +45,10 @@ public class Sections {
         }
 
         Section targetSection = findSameWithUpStation(newSection);
+        if (targetSection == null) {
+            targetSection = findSameWithDownStation(newSection);
+        }
+
         AddSectionPolicy addSectionPolicy = AddSectionPolicy.find(targetSection, newSection);
         addSectionPolicy.calculateOriginalSection(targetSection, newSection);
         this.sections.add(newSection);
@@ -57,6 +61,13 @@ public class Sections {
     Section findSameWithUpStation(final Section section) {
         return this.sections.stream()
                 .filter(it -> it.isSameUpStation(section) && !it.isSameDownStation(section))
+                .findFirst()
+                .orElse(null);
+    }
+
+    Section findSameWithDownStation(final Section section) {
+        return this.sections.stream()
+                .filter(it -> !it.isSameUpStation(section) && it.isSameDownStation(section))
                 .findFirst()
                 .orElse(null);
     }

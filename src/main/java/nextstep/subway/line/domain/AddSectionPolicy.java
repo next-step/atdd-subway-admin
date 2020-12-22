@@ -9,15 +9,12 @@ public enum AddSectionPolicy {
     ADD_WITH_UP_STATION(
             true,
             false,
-            (Section originalSection, Section newSection) -> {
-                originalSection.updateUpStation(newSection);
-                return originalSection;
-            }
+            Section::updateUpStation
     ),
     ADD_WITH_DOWN_STATION(
             false,
             true,
-            (Section originalSection, Section newSection) -> null
+            Section::updateDownStation
     );
 
     private final boolean isSameUpStation;

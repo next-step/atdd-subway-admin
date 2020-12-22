@@ -38,7 +38,6 @@ class SectionsTest {
                 .isInstanceOf(InvalidSectionsActionException.class);
     }
 
-    // TODO: 기능을 좀 더 세분화 해야한다.
     @DisplayName("기존역 중 상행역과 일치하는 Section을 추가할 수 있다.")
     @Test
     void addWhenSectionSameWithUpStationTest() {
@@ -57,6 +56,15 @@ class SectionsTest {
     @DisplayName("기존역 중 하행역과 일치하는 Section을 추가할 수 있다.")
     @Test
     void addWhenSectionSameWithDownStationTest() {
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
+                new Section(1L, 2L, 10L),
+                new Section(2L, 3L, 10L)
+        )));
 
+        sections.addSection(new Section(4L, 3L, 5L));
+
+        assertThat(sections.contains(new Section(1L, 2L, 10L))).isTrue();
+        assertThat(sections.contains(new Section(2L, 4L, 5L))).isTrue();
+        assertThat(sections.contains(new Section(4L, 3L, 5L))).isTrue();
     }
 }
