@@ -64,3 +64,19 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 7. 지하철 노선 삭제 인수테스트 구현하기
 8. 지하철 노선 삭제 단위테스트 구현 및 기능 구현하기
 9. 코드 리팩토링 
+
+## Step 2
+
+1. 노선 생성 시 종점역 추가하기
+    - LineRequest 전달 받을 필드 추가
+    - LineRequest 필드 추가에 따른 Line 인수 테스트 수정
+    - LineRequest 필드 추가에 따른 Line 단위 테스트 수정
+    - Station정보를 가져오는 서비스 메서드 작성
+    - Section 구간 정보 추가 
+    - Line과 연관 관계 설정 및 필드 추가
+
+2. 노선 조회 응답 결과에 등록된 구간을 참고하여 역 목록 응답 추가
+    - LineResponse 역목록을 포함하도록 수정
+    - 역목록 응답을 검증하는 인수 테스트 수정
+    - 역목록 응답을 검증하는 단위 테스트 수정
+    - LineResponse에 역목록을 포함하도록 기능 추가
