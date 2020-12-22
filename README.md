@@ -185,7 +185,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## Step3. 지하철 노선에 구간 등록
 ### 인수 테스트 시나리오
 - 기능: 새로운 지하철 구간 등록하기
-  - [ ] 시나리오1: 종점 사이에 새로운 지하철 구간 등록
+  - [X] 시나리오1: 종점 사이에 새로운 지하철 구간 등록
     - given
       - 등록된 구간이 있음
       - and 새로 등록할 구간의 역들이 등록되어 있음
@@ -195,10 +195,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - 지하철 구간 등록 성공
   
 ### 시나리오 Todo-list
-  - [ ] 시나리오1
+  - [X] 시나리오1
     - [X] SectionRequest DTO 추가
-    - [ ] Sections 일급 컬렉션에 새로운 Section 추가 기능 구현
-      - [ ] 기존 구간 중 상행역과 연결되는 경우의 추가 기능 구현
-      - [ ] 기존 구간 중 하행역과 연결되는 경우의 추가 기능 구현
-      - [ ] 추가 요청에 따라 위 두가지 경우를 판단해서 추가하는 기능 구현
-      - [ ] Section 끼리 상행역, 하행역 중 어느 역과 일치하는지 확인가능
+    - [X] Sections 일급 컬렉션에 새로운 Section 추가 기능 구현
+      - [X] 기존 구간 중 상행역과 연결되는 경우의 추가 기능 구현
+      - [X] 기존 구간 중 하행역과 연결되는 경우의 추가 기능 구현
+      - [X] 추가 요청에 따라 위 두가지 경우를 판단해서 추가하는 기능 구현
+      - [X] Section 끼리 상행역, 하행역 중 어느 역과 일치하는지 확인가능
