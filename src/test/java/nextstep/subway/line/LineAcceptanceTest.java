@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineTestFixture.*;
+import static nextstep.subway.station.StationTestFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
@@ -17,19 +19,38 @@ import io.restassured.response.Response;
 import nextstep.subway.BaseTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends BaseTest {
+
+	@Autowired
+	private StationService stationService;
+
+	private StationResponse exampleStation1;
+	private StationResponse exampleStation2;
+	private StationResponse exampleStation3;
 
 	private LineResponse exampleLine1;
 
 	@BeforeEach
 	void setup() {
+
+		exampleStation1 = stationService.saveStation(StationRequest.of(EXAMPLE_STATION1_NAME));
+		exampleStation2 = stationService.saveStation(StationRequest.of(EXAMPLE_STATION2_NAME));
+		exampleStation3 = stationService.saveStation(StationRequest.of(EXAMPLE_STATION3_NAME));
+
 		exampleLine1 = requestCreateLine(
-			LineRequest.of(EXAMPLE_LINE1_NAME, EXAMPLE_LINE1_COLOR)
+			LineRequest.of(EXAMPLE_LINE1_NAME, EXAMPLE_LINE1_COLOR, exampleStation1.getId(), exampleStation2.getId(),
+				100)
 		).as(LineResponse.class);
 
-		requestCreateLine(LineRequest.of(EXAMPLE_LINE2_NAME, EXAMPLE_LINE2_COLOR));
+		requestCreateLine(
+			LineRequest.of(EXAMPLE_LINE2_NAME, EXAMPLE_LINE2_COLOR, exampleStation2.getId(), exampleStation3.getId(),
+				200)
+		).as(LineResponse.class);
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
@@ -37,7 +58,7 @@ public class LineAcceptanceTest extends BaseTest {
 	void createLine() {
 		String name = "3호선";
 		String color = "빨간색";
-		LineRequest lineRequest = LineRequest.of(name, color);
+		LineRequest lineRequest = LineRequest.of(name, color, exampleStation1.getId(), exampleStation3.getId(), 300);
 
 		// when
 		// 지하철_노선_생성_요청
@@ -62,7 +83,14 @@ public class LineAcceptanceTest extends BaseTest {
 		// when
 		// 지하철_노선_생성_요청
 		ExtractableResponse<Response> response = requestCreateLine(
-			LineRequest.of(EXAMPLE_LINE1_NAME, EXAMPLE_LINE1_COLOR));
+			LineRequest.of(
+				EXAMPLE_LINE1_NAME,
+				EXAMPLE_LINE1_COLOR,
+				exampleStation1.getId(),
+				exampleStation2.getId(),
+				200
+			)
+		);
 
 		// then
 		// 지하철_노선_생성_실패됨
@@ -122,8 +150,15 @@ public class LineAcceptanceTest extends BaseTest {
 		// 지하철_노선_수정_요청
 		String changeName = "3호선";
 		String changeColor = "핑크색";
-		ExtractableResponse<Response> response = requestUpdateLine(exampleLine1.getId(),
-			LineRequest.of(changeName, changeColor));
+		ExtractableResponse<Response> response = requestUpdateLine(
+			exampleLine1.getId(),
+			LineRequest.of(
+				changeName,
+				changeColor,
+				exampleLine1.findUpStationId(),
+				exampleLine1.findDownStationId(),
+				100)
+		);
 
 		// then
 		// 지하철_노선_수정됨

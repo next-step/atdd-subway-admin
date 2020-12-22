@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import static nextstep.subway.line.LineTestFixture.*;
+import static nextstep.subway.station.StationTestFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,19 +18,38 @@ import nextstep.subway.BaseTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("LineService 단위테스트")
 class LineServiceTest extends BaseTest {
 
 	@Autowired
 	private LineService lineService;
+
+	@Autowired
+	private StationService stationService;
+
 	private LineResponse exampleLine1;
 	private LineResponse exampleLine2;
+	private StationResponse exampleStation1;
+	private StationResponse exampleStation2;
+	private StationResponse exampleStation3;
 
 	@BeforeEach
 	void setup() {
-		exampleLine1 = lineService.saveLine(LineRequest.of(EXAMPLE_LINE1_NAME, EXAMPLE_LINE1_COLOR));
-		exampleLine2 = lineService.saveLine(LineRequest.of(EXAMPLE_LINE2_NAME, EXAMPLE_LINE2_COLOR));
+		exampleStation1 = stationService.saveStation(StationRequest.of(EXAMPLE_STATION1_NAME));
+		exampleStation2 = stationService.saveStation(StationRequest.of(EXAMPLE_STATION2_NAME));
+		exampleStation3 = stationService.saveStation(StationRequest.of(EXAMPLE_STATION3_NAME));
+		exampleLine1 = lineService.saveLine(
+			LineRequest.of(EXAMPLE_LINE1_NAME, EXAMPLE_LINE1_COLOR, exampleStation1.getId(), exampleStation2.getId(),
+				100)
+		);
+		exampleLine2 = lineService.saveLine(
+			LineRequest.of(EXAMPLE_LINE2_NAME, EXAMPLE_LINE2_COLOR, exampleStation2.getId(), exampleStation3.getId(),
+				200)
+		);
 	}
 
 	@DisplayName("saveLine 메서드는 Line을 생성할 수 있다.")
@@ -38,7 +58,9 @@ class LineServiceTest extends BaseTest {
 		String name = "3호선";
 		String color = "주황색";
 
-		LineResponse lineResponse = lineService.saveLine(LineRequest.of(name, color));
+		LineResponse lineResponse = lineService.saveLine(
+			LineRequest.of(name, color, exampleStation1.getId(), exampleStation3.getId(), 300)
+		);
 
 		assertAll(
 			() -> assertThat(lineResponse.getId()).isNotNull(),
@@ -52,7 +74,15 @@ class LineServiceTest extends BaseTest {
 	void saveLineDuplicateName() {
 		assertThatExceptionOfType(DataIntegrityViolationException.class)
 			.isThrownBy(() -> {
-				lineService.saveLine(LineRequest.of(EXAMPLE_LINE1_NAME, EXAMPLE_LINE2_COLOR));
+				lineService.saveLine(
+					LineRequest.of(
+						EXAMPLE_LINE1_NAME,
+						EXAMPLE_LINE2_COLOR,
+						exampleStation1.getId(),
+						exampleStation2.getId(),
+						100
+					)
+				);
 			});
 	}
 
@@ -96,7 +126,10 @@ class LineServiceTest extends BaseTest {
 		String changeName = "5호선";
 		String changeColor = "노란색";
 
-		LineResponse line = lineService.updateLine(exampleLine1.getId(), LineRequest.of(changeName, changeColor));
+		LineResponse line = lineService.updateLine(
+			exampleLine1.getId(),
+			LineRequest.of(changeName, changeColor, exampleStation1.getId(), exampleStation2.getId(), 150)
+		);
 
 		assertAll(
 			() -> assertThat(line.getId()).isNotNull(),
@@ -113,7 +146,10 @@ class LineServiceTest extends BaseTest {
 
 		assertThatExceptionOfType(LineNotFoundException.class)
 			.isThrownBy(() -> {
-				lineService.updateLine(NOT_FOUND_ID, LineRequest.of(changeName, changeColor));
+				lineService.updateLine(
+					NOT_FOUND_ID,
+					LineRequest.of(changeName, changeColor, exampleStation1.getId(), exampleStation2.getId(), 150)
+				);
 			});
 
 	}
