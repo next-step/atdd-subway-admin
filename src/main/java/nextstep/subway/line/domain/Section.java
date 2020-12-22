@@ -47,6 +47,10 @@ public class Section extends ValueObjectId {
         return this.upStationId.equals(thatSection.downStationId);
     }
 
+    boolean isSameDownWithThatUp(final Section thatSection) {
+        return this.downStationId.equals(thatSection.upStationId);
+    }
+
     void updateUpStation(final Section section) {
         this.upStationId = section.downStationId;
         this.distance = this.distance - section.distance;
@@ -59,6 +63,10 @@ public class Section extends ValueObjectId {
 
     boolean isUpStationBelongsTo(final List<Long> stationIds) {
         return stationIds.contains(this.upStationId);
+    }
+
+    boolean isDownStationBelongsTo(final List<Long> stationIds) {
+        return stationIds.contains(this.downStationId);
     }
 
     private void validate(final Long upStationId, final Long downStationId, final Long distance) {

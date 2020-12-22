@@ -84,6 +84,22 @@ class SectionsTest {
         assertThat(sections.contains(newEndUpSection)).isTrue();
     }
 
+    @DisplayName("하행종점역 구간을 추가할 수 있다.")
+    @Test
+    void addEndDownSectionTest() {
+        Section originalEndUpSection = new Section(1L, 2L, 10L);
+        Section originalEndDownSection = new Section(2L, 3L, 10L);
+        Section newEndDownSection = new Section(3L, 4L, 10L);
+
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(originalEndUpSection, originalEndDownSection)));
+
+        sections.addSection(newEndDownSection);
+
+        assertThat(sections.contains(originalEndUpSection)).isTrue();
+        assertThat(sections.contains(originalEndDownSection)).isTrue();
+        assertThat(sections.contains(newEndDownSection)).isTrue();
+    }
+
     @DisplayName("상행 종점역 구간을 찾아낼 수 있다.")
     @Test
     void findEndUpSectionTest() {
