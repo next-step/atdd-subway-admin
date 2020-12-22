@@ -9,6 +9,7 @@ import nextstep.subway.line.domain.stationAdapter.SafeStationAdapter;
 import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.dto.StationInLineResponse;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -217,5 +218,31 @@ class LineServiceTest {
         Line line = lineService.createLine(lineName, lineColor, upStationId, downStationId, distance);
 
         assertThat(line.getSectionsSize()).isEqualTo(expectedSize);
+    }
+
+    @DisplayName("존재하는 노선에 대해 새로운 구간을 추가할 수 있다.")
+    @Test
+    void addNewSectionTest() {
+        Long lineId = 1L;
+        String lineName = "2호선";
+        String lineColor = "녹색";
+        SectionRequest sectionRequest = new SectionRequest(3L, 2L, 3L);
+        Line mockLine = new Line(lineName, lineColor);
+        mockLine.initFirstSection(1L, 2L, 10L);
+        given(lineRepository.findById(lineId)).willReturn(Optional.of(mockLine));
+
+        boolean addSectionResult = lineService.addSection(lineId, sectionRequest);
+
+        assertThat(addSectionResult).isTrue();
+    }
+
+    @DisplayName("존재하지 않는 노선에 새로운 구간을 추가할 수 없다.")
+    @Test
+    void addNewSectionFailTest() {
+        Long notExistLineId = 44L;
+        SectionRequest sectionRequest = new SectionRequest(3L, 2L, 3L);
+
+        assertThatThrownBy(() -> lineService.addSection(notExistLineId, sectionRequest))
+                .isInstanceOf(LineNotFoundException.class);
     }
 }

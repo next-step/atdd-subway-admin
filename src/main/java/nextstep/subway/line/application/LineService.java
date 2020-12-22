@@ -3,10 +3,12 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.stationAdapter.SafeStationAdapter;
 import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +63,7 @@ public class LineService {
     }
 
     // TODO: 향후에는 Station까지 변경될 경우 변경 예정
+    @Transactional
     public Line updateLine(Long lineId, String changeName, String changeColor) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
@@ -70,10 +73,24 @@ public class LineService {
         return line;
     }
 
+    @Transactional
     public void deleteLine(Long lineId) {
         lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
         lineRepository.deleteById(lineId);
+    }
+
+    @Transactional
+    public boolean addSection(final Long lineId, final SectionRequest sectionRequest) {
+        Line foundLine = lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다"));
+
+        return foundLine.addSection(
+                new Section(
+                        sectionRequest.getUpStationId(),
+                        sectionRequest.getDownStationId(),
+                        sectionRequest.getDistance())
+        );
     }
 
     Line createLine(
@@ -81,7 +98,7 @@ public class LineService {
             final Long downStationId, final Long distance
     ) {
         Line line = new Line(lineName, lineColor);
-        line.addNewSection(upStationId, downStationId, distance);
+        line.initFirstSection(upStationId, downStationId, distance);
 
         return line;
     }

@@ -39,7 +39,9 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void addSection(final Section newSection) {
+    public boolean addSection(final Section newSection) {
+        int originalSize = this.sections.size();
+
         if (sections.size() == 0) {
             throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
         }
@@ -50,6 +52,8 @@ public class Sections {
         AddSectionPolicy addSectionPolicy = AddSectionPolicy.find(targetSection, newSection);
         addSectionPolicy.calculateOriginalSection(targetSection, newSection);
         this.sections.add(newSection);
+
+        return (this.sections.size() == originalSize + 1);
     }
 
     boolean contains(final Section section) {

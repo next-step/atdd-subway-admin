@@ -8,7 +8,7 @@ public class LineFixtures {
             final Long downStationId, final Long distance
     ) {
         Line line = new Line(id, name, color);
-        line.addNewSection(upStationId, downStationId, distance);
+        line.initFirstSection(upStationId, downStationId, distance);
 
         return line;
     }
