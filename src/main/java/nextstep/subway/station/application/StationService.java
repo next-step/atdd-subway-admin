@@ -11,6 +11,7 @@ import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.exception.StationNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +34,13 @@ public class StationService {
 			.collect(Collectors.toList());
 	}
 
+	@Transactional
 	public void deleteStationById(Long id) {
 		stationRepository.deleteById(id);
+	}
+
+	public Station getStationById(Long id) {
+		return stationRepository.findById(id)
+			.orElseThrow(() -> new StationNotFoundException("역 정보를 찾을 수 없습니다."));
 	}
 }
