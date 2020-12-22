@@ -44,7 +44,8 @@ public class Sections {
             throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
         }
 
-        Section targetSection = findTargetSection(newSection);
+        TargetSectionSelector targetSectionSelector = new TargetSectionSelector(this.sections);
+        Section targetSection = targetSectionSelector.findTargetSection(newSection);
 
         AddSectionPolicy addSectionPolicy = AddSectionPolicy.find(targetSection, newSection);
         addSectionPolicy.calculateOriginalSection(targetSection, newSection);
@@ -53,28 +54,5 @@ public class Sections {
 
     boolean contains(final Section section) {
         return this.sections.contains(section);
-    }
-
-    Section findTargetSection(final Section newSection) {
-        Section targetSection = findSameWithUpStation(newSection);
-        if (targetSection == null) {
-            targetSection = findSameWithDownStation(newSection);
-        }
-
-        return targetSection;
-    }
-
-    Section findSameWithUpStation(final Section section) {
-        return this.sections.stream()
-                .filter(it -> it.isSameUpStation(section) && !it.isSameDownStation(section))
-                .findFirst()
-                .orElse(null);
-    }
-
-    Section findSameWithDownStation(final Section section) {
-        return this.sections.stream()
-                .filter(it -> !it.isSameUpStation(section) && it.isSameDownStation(section))
-                .findFirst()
-                .orElse(null);
     }
 }
