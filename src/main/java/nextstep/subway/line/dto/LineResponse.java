@@ -46,4 +46,8 @@ public class LineResponse {
 	public Long findDownStationId() {
 		return this.stations.size() > 0 ? this.stations.get(this.stations.size() - 1).getId() : 0L;
 	}
+
+	public int countStations() {
+		return this.stations.size();
+	}
 }
