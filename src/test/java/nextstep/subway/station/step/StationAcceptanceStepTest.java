@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.utils.LocationUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -61,10 +62,7 @@ public class StationAcceptanceStepTest {
     }
 
     public static void 지하철역_생성된_리스트_응답됨(List<ExtractableResponse<Response>> createResponse, ExtractableResponse<Response> response) {
-        지하철역_생성_성공됨(response);
-        List<Long> expectedLineIds = createResponse.stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
+        List<Long> expectedLineIds = LocationUtil.getIdsToLocationHeaders(createResponse);
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());

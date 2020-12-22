@@ -47,6 +47,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_모든_리스트_요청();
 
         // then
+        지하철역_생성_성공됨(response);
         지하철역_생성된_리스트_응답됨(responses, response);
     }
 

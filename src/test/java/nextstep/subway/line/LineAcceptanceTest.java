@@ -1,8 +1,13 @@
 package nextstep.subway.line;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static nextstep.subway.line.step.LineAcceptanceStepTest.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -11,22 +16,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
+        ExtractableResponse<Response> extract = 지하철_노선_생성_요청("신분당선");
 
         // then
         // 지하철_노선_생성됨
+        지하철_노선_생성됨(extract);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void createLineExistLineName() {
         // given
         // 지하철_노선_등록되어_있음
+        String lineName = "신분당선";
+        지하철_노선_등록되어_있음(lineName);
 
         // when
         // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineName);
 
         // then
         // 지하철_노선_생성_실패됨
+        지하철_노선_생성_실패됨(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
