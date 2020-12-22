@@ -52,3 +52,15 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+## Step 1 
+
+1. 지하철 노선 생성 인수테스트 구현하기
+2. 지하철 노선 생성 단위테스트 구현 및 기능 구현하기
+3. 지하철 노선 조회 인수테스트 구현하기
+4. 지하철 노선 조회 단위테스트 구현 및 기능 구현하기
+5. 지하철 노선 수정 인수테스트 구현하기
+6. 지하철 노선 수정 단위테스트 구현 및 기능 구현하기
+7. 지하철 노선 삭제 인수테스트 구현하기
+8. 지하철 노선 삭제 단위테스트 구현 및 기능 구현하기
+9. 코드 리팩토링 
