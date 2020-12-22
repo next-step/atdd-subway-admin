@@ -65,7 +65,8 @@ class LineServiceTest extends BaseTest {
 		assertAll(
 			() -> assertThat(lineResponse.getId()).isNotNull(),
 			() -> assertThat(lineResponse.getName()).isEqualTo(name),
-			() -> assertThat(lineResponse.getColor()).isEqualTo(color)
+			() -> assertThat(lineResponse.getColor()).isEqualTo(color),
+			() -> assertThat(lineResponse.getStations()).hasSize(2)
 		);
 	}
 
@@ -93,10 +94,13 @@ class LineServiceTest extends BaseTest {
 		List<String> lineNames = lines.stream()
 			.map(LineResponse::getName)
 			.collect(Collectors.toList());
+		boolean isAllHasStation = lines.stream()
+			.allMatch(lineResponse -> lineResponse.countStations() > 0);
 
 		assertAll(
 			() -> assertThat(lines).hasSize(2),
-			() -> assertThat(lineNames).contains(EXAMPLE_LINE1_NAME, EXAMPLE_LINE2_NAME)
+			() -> assertThat(lineNames).contains(EXAMPLE_LINE1_NAME, EXAMPLE_LINE2_NAME),
+			() -> assertThat(isAllHasStation).isTrue()
 		);
 	}
 
@@ -107,7 +111,8 @@ class LineServiceTest extends BaseTest {
 
 		assertAll(
 			() -> assertThat(line.getId()).isNotNull(),
-			() -> assertThat(line.getColor()).contains(EXAMPLE_LINE1_COLOR)
+			() -> assertThat(line.getColor()).isEqualTo(EXAMPLE_LINE1_COLOR),
+			() -> assertThat(line.getStations()).hasSize(2)
 		);
 	}
 
@@ -131,10 +136,16 @@ class LineServiceTest extends BaseTest {
 			LineRequest.of(changeName, changeColor, exampleStation1.getId(), exampleStation2.getId(), 150)
 		);
 
+		List<String> stationNames = line.getStations()
+			.stream()
+			.map(StationResponse::getName)
+			.collect(Collectors.toList());
+
 		assertAll(
 			() -> assertThat(line.getId()).isNotNull(),
 			() -> assertThat(line.getName()).contains(changeName),
-			() -> assertThat(line.getColor()).contains(changeColor)
+			() -> assertThat(line.getColor()).contains(changeColor),
+			() -> assertThat(stationNames).contains(EXAMPLE_STATION1_NAME, EXAMPLE_STATION2_NAME)
 		);
 	}
 
