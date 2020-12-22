@@ -61,9 +61,9 @@ public class Sections {
     }
 
     public Section findEndUpSection() {
-        List<Long> singleStationIds = calculateSingStationIds();
+        List<Long> singleStationIds = calculateSingleStationIds();
 
-        return this.sections.stream().filter(it -> singleStationIds.contains(it.getUpStationId()))
+        return this.sections.stream().filter(it -> it.isUpStationBelongsTo(singleStationIds))
                 .findFirst()
                 .orElseThrow(() -> new EndUpStationNotFoundException("상행종점역 구간을 찾을 수 없습니다."));
     }
@@ -74,7 +74,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private List<Long> calculateSingStationIds() {
+    private List<Long> calculateSingleStationIds() {
         return this.getStationIds().stream()
                 .collect(Collectors.groupingBy(Function.identity(), counting()))
                 .entrySet().stream()
