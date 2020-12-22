@@ -33,6 +33,7 @@ public class LineService {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll()
                 .stream()
