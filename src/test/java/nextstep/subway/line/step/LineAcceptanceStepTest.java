@@ -24,8 +24,8 @@ public class LineAcceptanceStepTest {
                 .extract();
     }
 
-    public static void 지하철_노선_등록되어_있음(String lineName) {
-        지하철_노선_생성_요청(lineName);
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String lineName) {
+        return 지하철_노선_생성_요청(lineName);
     }
 
     public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
