@@ -1,11 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.line.domain.exceptions.NotExistSectionAddPolicy;
-import nextstep.subway.line.domain.stationAdapter.SectionCalculator;
 
 import java.util.Arrays;
 
-public enum AddSectionPolicy {
+public enum OriginalSectionCalculator {
     ADD_WITH_UP_STATION(
             true,
             false,
@@ -21,7 +20,7 @@ public enum AddSectionPolicy {
     private final boolean isSameDownStation;
     private final SectionCalculator sectionCalculator;
 
-    AddSectionPolicy(
+    OriginalSectionCalculator(
             final boolean isSameUpStation, final boolean isSameDownStation, final SectionCalculator sectionCalculator
     ) {
         this.isSameUpStation = isSameUpStation;
@@ -29,15 +28,15 @@ public enum AddSectionPolicy {
         this.sectionCalculator = sectionCalculator;
     }
 
-    public static AddSectionPolicy find(final Section originalSection, final Section newSection) {
-        return Arrays.stream(AddSectionPolicy.values())
+    public static OriginalSectionCalculator find(final Section originalSection, final Section newSection) {
+        return Arrays.stream(OriginalSectionCalculator.values())
                 .filter(it -> it.isSameUpStation == originalSection.isSameUpStation(newSection) &&
                         it.isSameDownStation == originalSection.isSameDownStation(newSection))
                 .findFirst()
                 .orElseThrow(() -> new NotExistSectionAddPolicy("신규 Section으로 추가할 수 없는 대상입니다."));
     }
 
-    public void calculateOriginalSection(Section originalSection, Section newSection) {
+    public void calculate(Section originalSection, Section newSection) {
         this.sectionCalculator.calculate(originalSection, newSection);
     }
 }

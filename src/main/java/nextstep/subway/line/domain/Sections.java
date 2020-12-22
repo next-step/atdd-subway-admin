@@ -62,8 +62,8 @@ public class Sections {
         TargetSectionSelector targetSectionSelector = new TargetSectionSelector(this.sections);
         Section targetSection = targetSectionSelector.findTargetSection(newSection);
 
-        AddSectionPolicy addSectionPolicy = AddSectionPolicy.find(targetSection, newSection);
-        addSectionPolicy.calculateOriginalSection(targetSection, newSection);
+        OriginalSectionCalculator originalSectionCalculator = OriginalSectionCalculator.find(targetSection, newSection);
+        originalSectionCalculator.calculate(targetSection, newSection);
         this.sections.add(newSection);
 
         return (this.sections.size() == originalSize + 1);
