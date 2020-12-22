@@ -52,16 +52,10 @@ public class Sections {
             throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
         }
 
-        // 상행역일 경우 추가하는 로직 진행
+        // 상행 종점역이나 하행 종점역을 추가하는 경우 로직 진행
         Section endUpSection = findEndUpSection();
-        if (endUpSection.isSameUpWithThatDown(newSection)) {
-            this.sections.add(newSection);
-            return (this.sections.size() == originalSize + 1);
-        }
-
-        // 하행역일 경우 추가하는 로직 진행
         Section endDownSection = findEndDownSection();
-        if (endDownSection.isSameDownWithThatUp(newSection)) {
+        if (endUpSection.isSameUpWithThatDown(newSection) || endDownSection.isSameDownWithThatUp(newSection)) {
             this.sections.add(newSection);
             return (this.sections.size() == originalSize + 1);
         }
