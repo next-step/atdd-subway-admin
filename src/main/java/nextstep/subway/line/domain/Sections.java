@@ -38,8 +38,7 @@ public class Sections {
     }
 
     public List<Long> getStationIdsWithoutDup() {
-        return sections.stream()
-                .flatMap(it -> it.getStationIds().stream())
+        return this.getStationIds().stream()
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -69,7 +68,7 @@ public class Sections {
                 .orElseThrow(() -> new EndUpStationNotFoundException("상행종점역 구간을 찾을 수 없습니다."));
     }
 
-    List<Long> getStationIds() {
+    private List<Long> getStationIds() {
         return sections.stream()
                 .flatMap(it -> it.getStationIds().stream())
                 .collect(Collectors.toList());
