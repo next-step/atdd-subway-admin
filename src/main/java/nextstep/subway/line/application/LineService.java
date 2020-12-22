@@ -24,6 +24,15 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public LineResponse editLine(Long id, LineRequest request) {
+        return lineRepository.findById(id)
+                .map(line -> {
+                    line.update(request.toLine());
+                    return LineResponse.of(lineRepository.save(line));
+                })
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll()
                 .stream()
@@ -35,5 +44,9 @@ public class LineService {
         return lineRepository.findById(id)
                 .map(LineResponse::of)
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
     }
 }

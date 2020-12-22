@@ -16,9 +16,10 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceStepTest {
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
+        params.put("color", color);
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -28,8 +29,8 @@ public class LineAcceptanceStepTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String lineName) {
-        return 지하철_노선_생성_요청(lineName);
+    public static Long 지하철_노선_등록되어_있음(String lineName, String color) {
+        return LocationUtil.getLocation(지하철_노선_생성_요청(lineName, color));
     }
 
     public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
@@ -50,8 +51,7 @@ public class LineAcceptanceStepTest {
                 extract();
     }
 
-    public static void 지하철_노선_목록_포함됨(List<ExtractableResponse<Response>> responses, ExtractableResponse<Response> response) {
-        List<Long> expectedLineIds = LocationUtil.getIdsToLocationHeaders(responses);
+    public static void 지하철_노선_목록_포함됨(List<Long> expectedLineIds, ExtractableResponse<Response> response) {
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
