@@ -32,14 +32,15 @@ public enum AddSectionPolicy {
         this.sectionCalculator = sectionCalculator;
     }
 
-    public static AddSectionPolicy find(final boolean isSameUpStation, final boolean isSameDownStation) {
+    public static AddSectionPolicy find(final Section originalSection, final Section newSection) {
         return Arrays.stream(AddSectionPolicy.values())
-                .filter(it -> it.isSameUpStation == isSameUpStation && it.isSameDownStation == isSameDownStation)
+                .filter(it -> it.isSameUpStation == originalSection.isSameUpStation(newSection) &&
+                        it.isSameDownStation == originalSection.isSameDownStation(newSection))
                 .findFirst()
                 .orElseThrow(() -> new NotExistSectionAddPolicy("신규 Section으로 추가할 수 없는 대상입니다."));
     }
 
-    public Section calculateOriginalSection(Section originalSection, Section newSection) {
-        return this.sectionCalculator.calculate(originalSection, newSection);
+    public void calculateOriginalSection(Section originalSection, Section newSection) {
+        this.sectionCalculator.calculate(originalSection, newSection);
     }
 }

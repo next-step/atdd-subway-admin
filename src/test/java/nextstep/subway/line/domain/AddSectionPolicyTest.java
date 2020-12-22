@@ -12,9 +12,8 @@ class AddSectionPolicyTest {
         Section originalSection = new Section(1L, 2L, 3L);
         Section addSection = new Section(1L, 3L, 2L);
 
-        Section changedOriginalSection = AddSectionPolicy.ADD_WITH_UP_STATION
-                .calculateOriginalSection(originalSection, addSection);
+        AddSectionPolicy.ADD_WITH_UP_STATION.calculateOriginalSection(originalSection, addSection);
 
-        assertThat(changedOriginalSection).isEqualTo(new Section(3L, 2L, 1L));
+        assertThat(originalSection).isEqualTo(new Section(3L, 2L, 1L));
     }
 }

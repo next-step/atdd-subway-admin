@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class Sections {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
-    private List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
     Sections() {
         this(new ArrayList<>());
@@ -39,29 +39,25 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void addSection(final Section section) {
+    public void addSection(final Section newSection) {
         if (sections.size() == 0) {
             throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
         }
-        List<Section> sameUpStationSections = sections.stream()
-                .filter(it -> it.isSameUpStation(section))
-                .collect(Collectors.toList());
-        if (sameUpStationSections.size() > 1) {
-            throw new InvalidSectionsActionException("수행할 수 없는 동작입니다.");
-        }
-        if (sameUpStationSections.size() == 1) {
-            this.sections.add(section);
-            sameUpStationSections.get(0).updateUpStation(section);
-        }
+
+        Section targetSection = findSameWithUpStation(newSection);
+        AddSectionPolicy addSectionPolicy = AddSectionPolicy.find(targetSection, newSection);
+        addSectionPolicy.calculateOriginalSection(targetSection, newSection);
+        this.sections.add(newSection);
     }
 
     boolean contains(final Section section) {
         return this.sections.contains(section);
     }
 
-    List<Section> findCandidateSections(final Section section) {
+    Section findSameWithUpStation(final Section section) {
         return this.sections.stream()
-                .filter(it -> it.isSameUpStation(section) || it.isSameDownStation(section))
-                .collect(Collectors.toList());
+                .filter(it -> it.isSameUpStation(section) && !it.isSameDownStation(section))
+                .findFirst()
+                .orElse(null);
     }
 }
