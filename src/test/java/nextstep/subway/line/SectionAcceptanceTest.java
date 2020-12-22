@@ -91,4 +91,42 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 지하철 구간 등록 성공
         assertThat(sectionCreatedResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
+
+    @DisplayName("시나리오3: 하행 종점역 교체")
+    @Test
+    void changeEndDownStation() {
+        String originalEndUpStationName = "잠실";
+        String originalEndDownStationName = "종합운동장";
+        String newEndDownStationName = "삼성";
+        String lineName = "2호선";
+        String lineColor = "초록색";
+        Long createdDistance = 20L;
+        Long requestDistance = 10L;
+        // given
+        // 등록된 구간이 있음
+        ExtractableResponse<Response> originalEndUpResponse = CREATED_STATION(new StationRequest(originalEndUpStationName));
+        Long originalEndUpId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndUpResponse);
+
+        ExtractableResponse<Response> originalEndDownResponse = CREATED_STATION(new StationRequest(originalEndDownStationName));
+        Long originalEndDownId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndDownResponse);
+
+        ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
+                new LineRequest(lineName, lineColor, originalEndUpId, originalEndDownId, createdDistance)
+        );
+        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
+
+        // and 새로 등록할 구간의 역이 등록되어 있음
+        ExtractableResponse<Response> newEndDownStationResponse = CREATED_STATION(new StationRequest(newEndDownStationName));
+        Long newEndDownStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(newEndDownStationResponse);
+
+        // when
+        // 사용자가 새로운 지하철 구간 등록 요청한다.
+        ExtractableResponse<Response> sectionCreatedResponse = REQUEST_SECTION_CREATE(
+                originalEndDownId, newEndDownStationId, requestDistance, lineId
+        );
+
+        // then
+        // 지하철 구간 등록 성공
+        assertThat(sectionCreatedResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
 }
