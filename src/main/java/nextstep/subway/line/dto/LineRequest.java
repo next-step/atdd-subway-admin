@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.line.domain.Line;
 
 @Getter
 @NoArgsConstructor
@@ -31,7 +30,4 @@ public class LineRequest {
 	@NotNull(message = "거리를 입력해주십시오.")
 	private Integer distance;
 
-	public Line toLine() {
-		return new Line(name, color);
-	}
 }
