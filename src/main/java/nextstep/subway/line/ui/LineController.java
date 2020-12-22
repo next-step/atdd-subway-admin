@@ -7,6 +7,7 @@ import nextstep.subway.line.domain.exceptions.InvalidSectionException;
 import nextstep.subway.line.domain.exceptions.StationNotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +23,20 @@ public class LineController {
 
     public LineController(final LineService lineService) {
         this.lineService = lineService;
+    }
+
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity addSection(
+            @PathVariable("lineId") Long lineId,
+            @RequestBody SectionRequest sectionRequest
+    ) {
+        boolean addSectionResult = lineService.addSection(lineId, sectionRequest);
+
+        if (addSectionResult) {
+            return ResponseEntity.created(URI.create("/lines/" + lineId)).build();
+        }
+
+        return ResponseEntity.badRequest().build();
     }
 
     @PostMapping

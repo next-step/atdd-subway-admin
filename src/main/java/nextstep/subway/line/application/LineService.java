@@ -87,9 +87,8 @@ public class LineService {
 
         return foundLine.addSection(
                 new Section(
-                        sectionRequest.getUpStationId(),
-                        sectionRequest.getDownStationId(),
-                        sectionRequest.getDistance())
+                        sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance()
+                )
         );
     }
 
