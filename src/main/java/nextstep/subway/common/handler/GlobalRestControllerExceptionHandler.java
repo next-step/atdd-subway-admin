@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import lombok.extern.slf4j.Slf4j;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.exception.StationNotFoundException;
 
 @Slf4j
 @RestControllerAdvice(annotations = RestController.class)
@@ -31,5 +32,11 @@ public class GlobalRestControllerExceptionHandler {
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public void handleNotFoundException(LineNotFoundException e) {
 		log.error("LineNotFoundException : ", e);
+	}
+
+	@ExceptionHandler(StationNotFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public void handleNotFoundException(StationNotFoundException e) {
+		log.error("StationNotFoundException : ", e);
 	}
 }

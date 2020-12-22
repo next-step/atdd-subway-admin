@@ -12,6 +12,10 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 
 @Service
 @RequiredArgsConstructor
@@ -19,10 +23,19 @@ import nextstep.subway.line.exception.LineNotFoundException;
 public class LineService {
 
 	private final LineRepository lineRepository;
+	private final StationService stationService;
+	private final SectionRepository sectionRepository;
 
 	@Transactional
 	public LineResponse saveLine(LineRequest request) {
-		Line persistLine = lineRepository.save(request.toLine());
+		Line persistLine = lineRepository.save(Line.create(request));
+		Station upStation = stationService.getStationById(request.getUpStationId());
+		Station downStation = stationService.getStationById(request.getDownStationId());
+		Section section = sectionRepository.save(
+			Section.create(persistLine, upStation, downStation, request.getDistance())
+		);
+		persistLine.addSection(section);
+
 		return LineResponse.of(persistLine);
 	}
 
