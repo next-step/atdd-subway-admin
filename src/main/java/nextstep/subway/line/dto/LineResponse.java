@@ -2,18 +2,22 @@ package nextstep.subway.line.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.exception.LineNotFoundException;
 
+@Getter
+@NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LineResponse {
 	private Long id;
 	private String name;
 	private String color;
 	private LocalDateTime createdDate;
 	private LocalDateTime modifiedDate;
-
-	public LineResponse() {
-	}
 
 	public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
 		this.id = id;
@@ -29,25 +33,5 @@ public class LineResponse {
 		}
 		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(),
 			line.getModifiedDate());
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getColor() {
-		return color;
-	}
-
-	public LocalDateTime getCreatedDate() {
-		return createdDate;
-	}
-
-	public LocalDateTime getModifiedDate() {
-		return modifiedDate;
 	}
 }
