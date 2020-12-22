@@ -19,29 +19,29 @@ import nextstep.subway.station.domain.Station;
 @Entity
 public class Section extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Line line;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Line line;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station upStation;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station downStation;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Station downStation;
 
-    private int distance;
+	private int distance;
 
-    private Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
+	private Section(Line line, Station upStation, Station downStation, int distance) {
+		this.line = line;
+		this.upStation = upStation;
+		this.downStation = downStation;
+		this.distance = distance;
+	}
 
-    public static Section create(Line line, Station upStation, Station downStation, int distance) {
-        return new Section(line, upStation, downStation, distance);
-    }
+	public static Section create(Line line, Station upStation, Station downStation, int distance) {
+		return new Section(line, upStation, downStation, distance);
+	}
 }
