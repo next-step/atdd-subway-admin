@@ -1,6 +1,5 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -13,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static nextstep.subway.station.step.StationAcceptanceStepTest.지하철_역_생성_요청;
+import static nextstep.subway.station.step.StationAcceptanceStepTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -21,10 +20,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // given
-
         // when
-        ExtractableResponse<Response> response = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -35,10 +32,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        지하철_역_생성_요청("강남역");
+        지하철역_생성_요청("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -48,15 +45,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = 지하철_역_생성_요청("강남역");
-        ExtractableResponse<Response> createResponse2 = 지하철_역_생성_요청("역삼역");
+        ExtractableResponse<Response> createResponse1 = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> createResponse2 = 지하철역_생성_요청("역삼역");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철역_모든_리스트_요청();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -73,17 +66,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_역_생성_요청("강남역");
+        ExtractableResponse<Response> createResponse = 지하철역_생성_요청("강남역");
 
         // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철역_삭제_요청(createResponse.header("Location"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
 }
