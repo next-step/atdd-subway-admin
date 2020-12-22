@@ -53,9 +53,7 @@ public class Sections {
         }
 
         // 상행 종점역이나 하행 종점역을 추가하는 경우 로직 진행
-        Section endUpSection = findEndUpSection();
-        Section endDownSection = findEndDownSection();
-        if (endUpSection.isSameUpWithThatDown(newSection) || endDownSection.isSameDownWithThatUp(newSection)) {
+        if (isEndSectionAddCase(newSection)) {
             this.sections.add(newSection);
             return (this.sections.size() == originalSize + 1);
         }
@@ -89,6 +87,13 @@ public class Sections {
         return this.sections.stream().filter(it -> it.isDownStationBelongsTo(singleStationIds))
                 .findFirst()
                 .orElseThrow(() -> new EndUpStationNotFoundException("하행종점역 구간을 찾을 수 없습니다."));
+    }
+
+    private boolean isEndSectionAddCase(final Section newSection) {
+        Section endUpSection = findEndUpSection();
+        Section endDownSection = findEndDownSection();
+
+        return endUpSection.isSameUpWithThatDown(newSection) || endDownSection.isSameDownWithThatUp(newSection);
     }
 
     private List<Long> getStationIds() {
