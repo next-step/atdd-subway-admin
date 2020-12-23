@@ -5,12 +5,16 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,6 +22,20 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @BeforeEach
+    void initStations() {
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "합정역");
+        Map<String, String> params3 = new HashMap<>();
+        params3.put("name", "교대역");
+
+        StationAcceptanceTest.지하철_역_생성_요청(params1);
+        StationAcceptanceTest.지하철_역_생성_요청(params2);
+        StationAcceptanceTest.지하철_역_생성_요청(params3);
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
