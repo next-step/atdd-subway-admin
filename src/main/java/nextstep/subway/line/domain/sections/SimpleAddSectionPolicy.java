@@ -10,12 +10,8 @@ public class SimpleAddSectionPolicy implements AddSectionPolicy {
     @Override
     public boolean addSection(final Section newSection) {
         int originalSize = this.sections.size();
+        this.sections.addSection(newSection);
 
-        if (sections.isEndSectionAddCase(newSection)) {
-            this.sections.addSection(newSection);
-            return (this.sections.size() == originalSize + 1);
-        }
-
-        return false;
+        return (this.sections.size() == originalSize + 1);
     }
 }

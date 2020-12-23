@@ -31,6 +31,14 @@ public class Section extends ValueObjectId {
         this(null, upStationId, downStationId, distance);
     }
 
+    public boolean isSameUpWithThatDown(final Section thatSection) {
+        return this.upStationId.equals(thatSection.downStationId);
+    }
+
+    public boolean isSameDownWithThatUp(final Section thatSection) {
+        return this.downStationId.equals(thatSection.upStationId);
+    }
+
     List<Long> getStationIds() {
         return Arrays.asList(upStationId, downStationId);
     }
@@ -41,14 +49,6 @@ public class Section extends ValueObjectId {
 
     boolean isSameDownStation(final Section thatSection) {
         return this.downStationId.equals(thatSection.downStationId);
-    }
-
-    boolean isSameUpWithThatDown(final Section thatSection) {
-        return this.upStationId.equals(thatSection.downStationId);
-    }
-
-    boolean isSameDownWithThatUp(final Section thatSection) {
-        return this.downStationId.equals(thatSection.upStationId);
     }
 
     void updateUpStation(final Section section) {

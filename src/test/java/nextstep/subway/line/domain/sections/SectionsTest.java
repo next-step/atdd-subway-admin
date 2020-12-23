@@ -27,6 +27,8 @@ class SectionsTest {
         assertThat(stationIds).hasSize(expectedSize);
     }
 
+    // TODO: 제시된 Section과 연결 가능한 구간이 있는지 확인하는 테스트 추가
+
     @DisplayName("상행 종점역 구간을 찾아낼 수 있다.")
     @Test
     void findEndUpSectionTest() {
@@ -40,4 +42,6 @@ class SectionsTest {
 
         assertThat(sections.findEndUpSection()).isEqualTo(endUpStation);
     }
+
+    // TODO: 하행 종점역 구간을 찾아낼 수 있다.
 }

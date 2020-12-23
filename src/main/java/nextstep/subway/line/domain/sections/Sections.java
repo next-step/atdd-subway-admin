@@ -64,13 +64,6 @@ public class Sections {
         return this.sections.contains(section);
     }
 
-    public boolean isEndSectionAddCase(final Section newSection) {
-        Section endUpSection = findEndUpSection();
-        Section endDownSection = findEndDownSection();
-
-        return endUpSection.isSameUpWithThatDown(newSection) || endDownSection.isSameDownWithThatUp(newSection);
-    }
-
     void addSection(final Section section) {
         if (sections.size() == 0) {
             throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
@@ -79,7 +72,7 @@ public class Sections {
         this.sections.add(section);
     }
 
-    Section findEndUpSection() {
+    public Section findEndUpSection() {
         List<Long> singleStationIds = calculateSingleStationIds();
 
         return this.sections.stream().filter(it -> it.isUpStationBelongsTo(singleStationIds))
@@ -87,7 +80,7 @@ public class Sections {
                 .orElseThrow(() -> new EndUpStationNotFoundException("상행종점역 구간을 찾을 수 없습니다."));
     }
 
-    Section findEndDownSection() {
+    public Section findEndDownSection() {
         List<Long> singleStationIds = calculateSingleStationIds();
 
         return this.sections.stream().filter(it -> it.isDownStationBelongsTo(singleStationIds))
