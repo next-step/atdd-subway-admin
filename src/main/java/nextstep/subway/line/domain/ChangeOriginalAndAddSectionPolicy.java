@@ -9,6 +9,14 @@ public class ChangeOriginalAndAddSectionPolicy implements AddSectionPolicy {
 
     @Override
     public boolean addSection(final Section newSection) {
-        return false;
+        int originalSize = this.sections.size();
+
+        Section targetSection = sections.findTargetSection(newSection);
+
+        OriginalSectionCalculator originalSectionCalculator = OriginalSectionCalculator.find(targetSection, newSection);
+        originalSectionCalculator.calculate(targetSection, newSection);
+        sections.addSectionRaw(newSection);
+
+        return (this.sections.size() == originalSize + 1);
     }
 }
