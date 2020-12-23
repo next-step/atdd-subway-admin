@@ -25,7 +25,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         String name = "신분당선";
         String color = "red";
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(name, color);
+        LineRequest lineRequest = LineRequest.builder()
+                .name(name)
+                .color(color)
+                .upStationId(1L)
+                .downStationId(2L)
+                .distance(10)
+                .build();
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
         // then
         지하철_노선_생성_응답됨(response);
@@ -36,10 +43,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        지하철_노선_생성_요청("신분당선", "red");
+        String name = "신분당선";
+        String color = "red";
+        LineRequest lineRequest = LineRequest.builder()
+                .name(name)
+                .color(color)
+                .upStationId(1L)
+                .downStationId(2L)
+                .distance(10)
+                .build();
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "red");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
         // then
         지하철_노선_생성_실패됨(response);
@@ -49,8 +64,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        ExtractableResponse<Response> createdResponse1 = 지하철_노선_생성_요청("신분당선", "red");
-        ExtractableResponse<Response> createdResponse2 = 지하철_노선_생성_요청("1호선", "blue");
+        LineRequest lineRequest1 = LineRequest.builder()
+                .name("신분당선")
+                .color("red")
+                .upStationId(1L)
+                .downStationId(2L)
+                .distance(10)
+                .build();
+        LineRequest lineRequest2 = LineRequest.builder()
+                .name("1호선")
+                .color("blue")
+                .upStationId(1L)
+                .downStationId(2L)
+                .distance(10)
+                .build();
+        ExtractableResponse<Response> createdResponse1 = 지하철_노선_생성_요청(lineRequest1);
+        ExtractableResponse<Response> createdResponse2 = 지하철_노선_생성_요청(lineRequest2);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -66,7 +95,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         String name = "신분당선";
         String color = "red";
-        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청(name, color);
+        LineRequest lineRequest = LineRequest.builder()
+                .name(name)
+                .color(color)
+                .upStationId(1L)
+                .downStationId(2L)
+                .distance(10)
+                .build();
+        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청(lineRequest);
 
         // when
         String uri = createdResponse.header("Location");
@@ -94,24 +130,43 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청("신분당선", "red");
-        String changeStation = "1호선";
-        String changeColor = "blue";
+        LineRequest createRequest = LineRequest.builder()
+                .name("신분당선")
+                .color("red")
+                .upStationId(1L)
+                .downStationId(2L)
+                .distance(10)
+                .build();
+        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청(createRequest);
+        LineRequest updateRequest = LineRequest.builder()
+                .name("1호선")
+                .color("blue")
+                .upStationId(2L)
+                .downStationId(3L)
+                .distance(5)
+                .build();
 
         // when
         String uri = createdResponse.header("Location");
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(uri, changeStation, changeColor);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(uri, updateRequest);
 
         // then
         지하철_노선_응답됨(response);
-        지하철_노선_값_검증됨(response, changeStation, changeColor);
+        지하철_노선_값_검증됨(response, updateRequest.getName(), updateRequest.getColor());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청("신분당선", "red");
+        LineRequest createRequest = LineRequest.builder()
+                .name("신분당선")
+                .color("red")
+                .upStationId(1L)
+                .downStationId(2L)
+                .distance(10)
+                .build();
+        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청(createRequest);
 
         // when
         String uri = createdResponse.header("Location");
@@ -121,13 +176,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(final String station, final String color) {
-        LineRequest lineRequest = LineRequest.builder()
-                .name(station)
-                .color(color)
-                .build();
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(final LineRequest request) {
         return given().log().all()
-                .body(lineRequest)
+                .body(request)
                 .accept(MediaType.ALL_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -157,13 +208,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(final String uri, final String station, final String color) {
-        LineRequest lineRequest = LineRequest.builder()
-                .name(station)
-                .color(color)
-                .build();
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(final String uri, final LineRequest request) {
         return given().log().all()
-                .body(lineRequest)
+                .body(request)
                 .accept(MediaType.ALL_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -211,7 +258,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(lineResponse.getName()).isEqualTo(name),
                 () -> assertThat(lineResponse.getColor()).isEqualTo(color),
                 () -> assertThat(lineResponse.getModifiedDate()).isNotNull(),
-                () -> assertThat(lineResponse.getCreatedDate()).isNotNull()
+                () -> assertThat(lineResponse.getCreatedDate()).isNotNull(),
+                () -> assertThat(lineResponse.getStations()).isNotNull(),
+                () -> assertThat(lineResponse.getStations().size()).isGreaterThanOrEqualTo(2)
         );
     }
 
