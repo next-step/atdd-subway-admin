@@ -38,6 +38,21 @@ class SectionsTest {
                 .isInstanceOf(InvalidSectionsActionException.class);
     }
 
+    @DisplayName("단순한 Section 추가를 수행할 수 있다.")
+    @Test
+    void addSimpleSection() {
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
+                new Section(1L, 2L, 10L),
+                new Section(2L, 3L, 10L)
+        )));
+        Section newSection = new Section(4L, 1L, 10L);
+
+        AddSectionPolicy simpleAddSectionPolicy = new SimpleAddSectionPolicy(sections);
+        boolean result = simpleAddSectionPolicy.addSection(newSection);
+
+        assertThat(result).isTrue();
+    }
+
     @DisplayName("기존역 중 상행역과 일치하는 Section을 추가할 수 있다.")
     @Test
     void addWhenSectionSameWithUpStationTest() {
