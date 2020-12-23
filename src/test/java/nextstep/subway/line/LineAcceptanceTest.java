@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.utils.LocationUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(extract.header("Location")).isNotBlank();
     }
 
+    @DisplayName("지하철 노선을 생성 시 종점역(상행,하행), 거리를 함께 추가한다")
+    @Test
+    void createLineIncludeUpAndDownStation() {
+
+        // given
+        // 지하철_역_생성_요청
+        Long 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+        Long 양재역 = StationAcceptanceTest.지하철역_등록되어_있음("양재역");
+
+        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> extract = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역, 양재역);
+        Long extractId = getLineResponse(extract).getId();
+
+        // then
+        // 지하철_노선_생성됨
+        assertThat(extract.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        ExtractableResponse<Response> thenResponse = 지하철_노선_조회_요청(extractId);
+
+        LineResponse thenLineResponse = getLineResponse(thenResponse);
+        assertThat(thenLineResponse.getStations()).hasSize(2);
+    }
+
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLineExistLineName() {
@@ -55,6 +78,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId.toString());
+        params.put("downStationId", downStationId.toString());
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -68,6 +68,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
     }
 
+    public static Long 지하철역_등록되어_있음(String name) {
+        return getStationResponseId(지하철역_생성_요청(name)).getId();
+    }
+
     private static ExtractableResponse<Response> 지하철역_모든_리스트_요청() {
         return RestAssured.given().log().all()
                 .when()
@@ -113,6 +117,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         return response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
+    }
+
+    private static StationResponse getStationResponseId(ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject(".", StationResponse.class);
     }
 
 }
