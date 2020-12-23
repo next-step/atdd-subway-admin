@@ -54,7 +54,12 @@ public class Line extends BaseEntity {
     }
 
     public boolean addSection(final Section newSection) {
-        return this.sections.addSection(newSection);
+        if (sections.isEndSectionAddCase(newSection)) {
+            AddSectionPolicy addSectionPolicy = new SimpleAddSectionPolicy(sections);
+            return addSectionPolicy.addSection(newSection);
+        }
+        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy(sections);
+        return addSectionPolicy.addSection(newSection);
     }
 
     public List<Long> getStationIds() {

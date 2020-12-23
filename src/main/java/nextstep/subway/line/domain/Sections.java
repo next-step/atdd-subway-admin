@@ -77,11 +77,6 @@ public class Sections {
         return (this.sections.size() == originalSize + 1);
     }
 
-    // TODO: 최종적으로 Section 추가시 사용하게 될 추가 메서드
-    public boolean addSectionByPolicy(final AddSectionPolicy addSectionPolicy, final Section newSection) {
-        return addSectionPolicy.addSection(newSection);
-    }
-
     public Section findTargetSection(final Section newSection) {
         Section targetSection = findSameWithUpStation(newSection);
         if (targetSection == null) {
