@@ -68,7 +68,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> extract = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역, 강남역);
-        Long extractId = getLineResponse(extract).getId();
 
         // then
         // 지하철_노선_생성 실패됨

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,10 +34,12 @@ public class LineService {
     }
 
     private Section ofSection(LineRequest request) {
-        return new Section(
+        return Optional.of(new Section(
                 this.findStationById(request.getUpStationId()),
                 this.findStationById(request.getDownStationId()),
-                request.getDistance());
+                request.getDistance()))
+                .filter(Section::isEqualsSectionStation)
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     private Station findStationById(Long stationId) {

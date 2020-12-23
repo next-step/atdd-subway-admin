@@ -55,6 +55,13 @@ public class Section {
         this.distance = section.distance;
     }
 
+    public boolean isEqualsSectionStation() {
+        if(this.upStation.equals(this.downStation)){
+            throw new IllegalArgumentException();
+        }
+        return true;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
