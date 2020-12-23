@@ -27,21 +27,6 @@ class SectionsTest {
         assertThat(stationIds).hasSize(expectedSize);
     }
 
-    @DisplayName("단순한 Section 추가를 수행할 수 있다.")
-    @Test
-    void addSimpleSection() {
-        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
-                new Section(1L, 2L, 10L),
-                new Section(2L, 3L, 10L)
-        )));
-        Section newSection = new Section(4L, 1L, 10L);
-
-        AddSectionPolicy simpleAddSectionPolicy = new SimpleAddSectionPolicy(sections);
-        boolean result = simpleAddSectionPolicy.addSection(newSection);
-
-        assertThat(result).isTrue();
-    }
-
     @DisplayName("상행 종점역 구간을 찾아낼 수 있다.")
     @Test
     void findEndUpSectionTest() {
