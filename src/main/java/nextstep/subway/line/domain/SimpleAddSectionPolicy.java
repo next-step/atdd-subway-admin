@@ -12,7 +12,7 @@ public class SimpleAddSectionPolicy implements AddSectionPolicy {
         int originalSize = this.sections.size();
 
         if (sections.isEndSectionAddCase(newSection)) {
-            this.sections.addSectionRaw(newSection);
+            this.sections.addSection(newSection);
             return (this.sections.size() == originalSize + 1);
         }
 

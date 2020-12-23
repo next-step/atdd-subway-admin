@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
     @DisplayName("중복 없이 역 ID 목록을 가져올 수 있다.")
@@ -29,15 +27,6 @@ class SectionsTest {
         assertThat(stationIds).hasSize(expectedSize);
     }
 
-    @DisplayName("Sections 일급 컬렉션 내 Section이 하나도 없는 상태에서 추가 작업을 진행할 수 없다.")
-    @Test
-    void addFailWhenSectionsEmptyTest() {
-        Sections sections = new Sections();
-
-        assertThatThrownBy(() -> sections.addSection(new Section(1L, 2L, 3L)))
-                .isInstanceOf(InvalidSectionsActionException.class);
-    }
-
     @DisplayName("단순한 Section 추가를 수행할 수 있다.")
     @Test
     void addSimpleSection() {
@@ -51,76 +40,6 @@ class SectionsTest {
         boolean result = simpleAddSectionPolicy.addSection(newSection);
 
         assertThat(result).isTrue();
-    }
-
-    @DisplayName("기존역 중 상행역과 일치하는 Section을 추가할 수 있다.")
-    @Test
-    void addWhenSectionSameWithUpStationTest() {
-        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
-                new Section(1L, 2L, 10L),
-                new Section(2L, 3L, 10L)
-        )));
-
-        sections.addSection(new Section(1L, 4L, 5L));
-
-        assertThat(sections.containsAll(Arrays.asList(
-                new Section(1L, 4L, 5L),
-                new Section(4L, 2L, 5L),
-                new Section(2L, 3L, 10L)
-        ))).isTrue();
-    }
-
-    @DisplayName("기존역 중 하행역과 일치하는 Section을 추가할 수 있다.")
-    @Test
-    void addWhenSectionSameWithDownStationTest() {
-        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
-                new Section(1L, 2L, 10L),
-                new Section(2L, 3L, 10L)
-        )));
-
-        sections.addSection(new Section(4L, 3L, 5L));
-
-        assertThat(sections.containsAll(Arrays.asList(
-                new Section(1L, 2L, 10L),
-                new Section(2L, 4L, 5L),
-                new Section(4L, 3L, 5L)
-        ))).isTrue();
-    }
-
-    @DisplayName("상행종점역 구간을 추가할 수 있다.")
-    @Test
-    void addEndUpSectionTest() {
-        Section originalEndUpSection = new Section(1L, 2L, 10L);
-        Section originalEndDownSection = new Section(2L, 3L, 10L);
-        Section newEndUpSection = new Section(4L, 1L, 10L);
-
-        Sections sections = new Sections(new ArrayList<>(Arrays.asList(originalEndUpSection, originalEndDownSection)));
-
-        sections.addSection(newEndUpSection);
-
-        assertThat(sections.containsAll(Arrays.asList(
-                originalEndUpSection,
-                originalEndDownSection,
-                newEndUpSection))
-        ).isTrue();
-    }
-
-    @DisplayName("하행종점역 구간을 추가할 수 있다.")
-    @Test
-    void addEndDownSectionTest() {
-        Section originalEndUpSection = new Section(1L, 2L, 10L);
-        Section originalEndDownSection = new Section(2L, 3L, 10L);
-        Section newEndDownSection = new Section(3L, 4L, 10L);
-
-        Sections sections = new Sections(new ArrayList<>(Arrays.asList(originalEndUpSection, originalEndDownSection)));
-
-        sections.addSection(newEndDownSection);
-
-        assertThat(sections.containsAll(Arrays.asList(
-                originalEndUpSection,
-                originalEndDownSection,
-                newEndDownSection
-        ))).isTrue();
     }
 
     @DisplayName("상행 종점역 구간을 찾아낼 수 있다.")

@@ -18,7 +18,7 @@ public class ChangeOriginalAndAddSectionPolicy implements AddSectionPolicy {
 
         OriginalSectionCalculator originalSectionCalculator = OriginalSectionCalculator.find(targetSection, newSection);
         originalSectionCalculator.calculate(targetSection, newSection);
-        sections.addSectionRaw(newSection);
+        sections.addSection(newSection);
 
         return (this.sections.size() == originalSize + 1);
     }
