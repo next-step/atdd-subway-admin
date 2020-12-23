@@ -77,7 +77,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] 컨트롤러 구현
   
 ## Step1 피드백 반영
-- [ ] update 기능에서도 도메인을 직접 노출하지 않도록 개선
+- [X] update 기능에서도 도메인을 직접 노출하지 않도록 개선
 - [ ] 반복되는 인수테스트 과정을 추출한 static 메서드명들을 한글로 바꾸기
   - 이상한 스네이크 케이스로 인한 혼돈 방지 + 불필요한 과거 시제 뉘앙스를 살리기 위한 반복 제거
 - [ ] PUT API 검증 때 좀 더 안전하게 검증하기 위해 값 변화까지 검증하기

@@ -47,8 +47,8 @@ public class LineController {
             @PathVariable("lineId") Long lineId,
             @RequestBody LineRequest lineRequest
     ) {
-        Line line = lineService.updateLine(lineId, lineRequest.getName(), lineRequest.getColor());
-        return ResponseEntity.ok(URI.create("/lines/" + line.getId()));
+        LineResponse lineResponse = lineService.updateLine(lineId, lineRequest.getName(), lineRequest.getColor());
+        return ResponseEntity.ok(URI.create("/lines/" + lineResponse.getId()));
     }
 
     @DeleteMapping("/{lineId}")

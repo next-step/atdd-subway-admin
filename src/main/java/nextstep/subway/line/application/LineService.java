@@ -42,13 +42,13 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    public Line updateLine(Long lineId, String changeName, String changeColor) {
+    public LineResponse updateLine(Long lineId, String changeName, String changeColor) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
         Line updateLine = new Line(changeName, changeColor);
         line.update(updateLine);
 
-        return line;
+        return LineResponse.of(updateLine);
     }
 
     public void deleteLine(Long lineId) {
