@@ -1,16 +1,13 @@
 package nextstep.subway.line.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,6 +15,7 @@ import lombok.NoArgsConstructor;
 import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,8 +30,8 @@ public class Line extends BaseEntity {
 	private String name;
 	private String color;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Section> sections = new ArrayList<>();
+	@Embedded
+	private Sections sections = new Sections();
 
 	private Line(String name, String color, Station upStation, Station downStation, int distance) {
 		this.name = name;
@@ -58,6 +56,9 @@ public class Line extends BaseEntity {
 	public void update(LineRequest line) {
 		this.name = line.getName();
 		this.color = line.getColor();
+	}
 
+	public List<Section> getAllSection() {
+		return this.sections.getSections();
 	}
 }

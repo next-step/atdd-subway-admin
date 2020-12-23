@@ -45,7 +45,7 @@ public class LineResponse {
 	}
 
 	private static List<StationResponse> convertLineToStationResponses(Line line) {
-		return CollectionUtils.emptyIfNull(line.getSections()).stream()
+		return CollectionUtils.emptyIfNull(line.getAllSection()).stream()
 			.map(section -> Arrays.asList(
 				section.getUpStation(),
 				section.getDownStation()
