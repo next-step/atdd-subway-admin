@@ -76,12 +76,12 @@ public class Sections {
 	private void setPostionUpMatch(Section section, List<Station> stations, int upMatchIndex) {
 		Station standardStation = stations.get(upMatchIndex);
 		Station targetStation = section.getDownStation();
-		standardStation.updateNextDistance(section.getDistance());
 		if (!standardStation.isFinalStation()) {
 			int standardDistance = standardStation.getNextDistance();
 			int targetDistance = standardDistance - section.getDistance();
 			targetStation.updateNextDistance(targetDistance);
 		}
+		standardStation.updateNextDistance(section.getDistance());
 		stations.add(upMatchIndex + 1, targetStation);
 	}
 
