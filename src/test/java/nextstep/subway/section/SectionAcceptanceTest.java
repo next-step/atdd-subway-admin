@@ -67,11 +67,17 @@ public class SectionAcceptanceTest extends BaseTest {
 		List<Long> stationIds = stationResponses.stream()
 			.map(StationResponse::getId)
 			.collect(Collectors.toList());
+		List<Integer> nextDistances = stationResponses.stream()
+			.map(StationResponse::getNextDistance)
+			.collect(Collectors.toList());
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(stationResponses).hasSize(3),
 			() -> assertThat(stationIds).isEqualTo(
-				Arrays.asList(exampleStation1.getId(), exampleStation3.getId(), exampleStation2.getId()))
+				Arrays.asList(exampleStation1.getId(), exampleStation3.getId(), exampleStation2.getId())),
+			() -> assertThat(nextDistances).isEqualTo(
+				Arrays.asList(10, 90, 0)
+			)
 		);
 	}
 
@@ -91,11 +97,17 @@ public class SectionAcceptanceTest extends BaseTest {
 		List<Long> stationIds = stationResponses.stream()
 			.map(StationResponse::getId)
 			.collect(Collectors.toList());
+		List<Integer> nextDistances = stationResponses.stream()
+			.map(StationResponse::getNextDistance)
+			.collect(Collectors.toList());
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(stationResponses).hasSize(3),
 			() -> assertThat(stationIds).isEqualTo(
-				Arrays.asList(exampleStation1.getId(), exampleStation3.getId(), exampleStation2.getId()))
+				Arrays.asList(exampleStation1.getId(), exampleStation3.getId(), exampleStation2.getId())),
+			() -> assertThat(nextDistances).isEqualTo(
+				Arrays.asList(90, 10, 0)
+			)
 		);
 	}
 
@@ -115,11 +127,17 @@ public class SectionAcceptanceTest extends BaseTest {
 		List<Long> stationIds = stationResponses.stream()
 			.map(StationResponse::getId)
 			.collect(Collectors.toList());
+		List<Integer> nextDistances = stationResponses.stream()
+			.map(StationResponse::getNextDistance)
+			.collect(Collectors.toList());
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(stationResponses).hasSize(3),
 			() -> assertThat(stationIds).isEqualTo(
-				Arrays.asList(exampleStation3.getId(), exampleStation1.getId(), exampleStation2.getId()))
+				Arrays.asList(exampleStation3.getId(), exampleStation1.getId(), exampleStation2.getId())),
+			() -> assertThat(nextDistances).isEqualTo(
+				Arrays.asList(10, 100, 0)
+			)
 		);
 	}
 
@@ -139,11 +157,17 @@ public class SectionAcceptanceTest extends BaseTest {
 		List<Long> stationIds = stationResponses.stream()
 			.map(StationResponse::getId)
 			.collect(Collectors.toList());
+		List<Integer> nextDistances = stationResponses.stream()
+			.map(StationResponse::getNextDistance)
+			.collect(Collectors.toList());
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(stationResponses).hasSize(3),
 			() -> assertThat(stationIds).isEqualTo(
-				Arrays.asList(exampleStation1.getId(), exampleStation2.getId(), exampleStation3.getId()))
+				Arrays.asList(exampleStation1.getId(), exampleStation2.getId(), exampleStation3.getId())),
+			() -> assertThat(nextDistances).isEqualTo(
+				Arrays.asList(100, 10, 0)
+			)
 		);
 	}
 }
