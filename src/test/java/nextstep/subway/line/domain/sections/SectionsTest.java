@@ -114,5 +114,17 @@ class SectionsTest {
         assertThat(sections.findEndUpSection()).isEqualTo(endUpStation);
     }
 
-    // TODO: 하행 종점역 구간을 찾아낼 수 있다.
+    @DisplayName("하행 종점역 구간을 찾아낼 수 있다.")
+    @Test
+    void findEndDownSectionTest() {
+        Section endDownStation = new Section(3L, 4L, 10L);
+
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
+                new Section(1L, 2L, 10L),
+                new Section(2L, 3L, 10L),
+                endDownStation
+        )));
+
+        assertThat(sections.findEndDownSection()).isEqualTo(endDownStation);
+    }
 }
