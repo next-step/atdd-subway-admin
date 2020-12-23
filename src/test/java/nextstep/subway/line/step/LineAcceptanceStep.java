@@ -95,4 +95,12 @@ public class LineAcceptanceStep {
     public static Long 응답_헤더에서_ID_추출(ExtractableResponse<Response> response) {
         return Long.parseLong(response.header("location").split("/")[2]);
     }
+
+    public static void 지하철_노선_변경됨(final Long lineId, final String changeName, final String changeColor) {
+        ExtractableResponse<Response> foundResponse = 특정_지하철_노선_조회_요청(lineId);
+
+        LineResponse foundLine = foundResponse.as(LineResponse.class);
+        assertThat(foundLine.getName()).isEqualTo(changeName);
+        assertThat(foundLine.getColor()).isEqualTo(changeColor);
+    }
 }

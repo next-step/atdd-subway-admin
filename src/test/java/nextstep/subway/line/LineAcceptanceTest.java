@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -107,6 +108,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         String lineName = "비 내리는 호남선";
         String lineColor = "남행열차색";
+        String changeName = "바뀜";
+        String changeColor = "변화의색";
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> response = 새로운_지하철_노선_생성_요청(lineName, lineColor);
@@ -114,12 +117,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_수정_요청
         Long lineId = 응답_헤더에서_ID_추출(response);
-        LineRequest lineRequest = new LineRequest(lineName, lineColor);
+        LineRequest lineRequest = new LineRequest(changeName, changeColor);
         ExtractableResponse<Response> resultResponse = 지하철_노선_변경_요청(lineId, lineRequest);
 
         // then
         // 지하철_노선_수정됨
         assertThat(resultResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        지하철_노선_변경됨(lineId, changeName, changeColor);
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
