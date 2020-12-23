@@ -40,12 +40,13 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
-    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/lines/{id}")
     public ResponseEntity<LineResponse> editLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        return ResponseEntity.ok().body(lineService.editLine(id, lineRequest));
+        lineService.editLine(id, lineRequest);
+        return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/lines/{id}")
     public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();

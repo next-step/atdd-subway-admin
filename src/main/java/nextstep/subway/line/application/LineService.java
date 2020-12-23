@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,12 +25,19 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public LineResponse editLine(Long id, LineRequest request) {
+    public void editLine(Long id, LineRequest request) {
+        Line lineById = this.findById(id);
+        lineById.update(request.toLine());
+        lineRepository.save(lineById);
+    }
+
+    public LineResponse findLineById(Long id) {
+        return LineResponse.of(this.findById(id));
+    }
+
+    @Transactional(readOnly = true)
+    public Line findById(Long id) {
         return lineRepository.findById(id)
-                .map(line -> {
-                    line.update(request.toLine());
-                    return LineResponse.of(lineRepository.save(line));
-                })
                 .orElseThrow(IllegalArgumentException::new);
     }
 
@@ -39,12 +47,6 @@ public class LineService {
                 .stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
-    }
-
-    public LineResponse findLineById(Long id) {
-        return lineRepository.findById(id)
-                .map(LineResponse::of)
-                .orElseThrow(IllegalArgumentException::new);
     }
 
     public void deleteLineById(Long id) {
