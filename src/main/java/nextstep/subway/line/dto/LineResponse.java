@@ -59,6 +59,6 @@ public class LineResponse {
         return this.stations.stream()
                 .map(Station::getId)
                 .collect(Collectors.toList())
-                .contains(ids);
+                .containsAll(ids);
     }
 }

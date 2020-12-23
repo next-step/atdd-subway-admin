@@ -65,4 +65,17 @@ public class Line extends BaseEntity {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
+    public void updateSection(Section section) {
+        if(isChangedStations(section)){
+            this.sections.stream()
+                    .findFirst()
+                    .ifPresent(s -> s.update(section));
+        }
+    }
+
+    private boolean isChangedStations(Section section) {
+        return !this.sections.stream()
+                .allMatch(s -> s.equals(section));
+    }
 }

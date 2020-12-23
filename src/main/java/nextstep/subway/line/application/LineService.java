@@ -44,7 +44,8 @@ public class LineService {
     public void editLine(Long id, LineRequest request) {
         Line lineById = this.findById(id);
         lineById.update(request.toLine());
-        lineRepository.save(lineById);
+        lineRepository.save(lineById)
+                .updateSection(ofSection(request));
     }
 
     public LineResponse findLineById(Long id) {

@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -48,4 +49,24 @@ public class Section {
         return Arrays.asList(upStation, downStation);
     }
 
+    public void update(Section section) {
+        this.upStation = section.upStation;
+        this.downStation = section.downStation;
+        this.distance = section.distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance &&
+                upStation.equals(section.upStation) &&
+                downStation.equals(section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, downStation, distance);
+    }
 }
