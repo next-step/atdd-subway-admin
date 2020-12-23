@@ -63,9 +63,11 @@ class SectionsTest {
 
         sections.addSection(new Section(1L, 4L, 5L));
 
-        assertThat(sections.contains(new Section(1L, 4L, 5L))).isTrue();
-        assertThat(sections.contains(new Section(4L, 2L, 5L))).isTrue();
-        assertThat(sections.contains(new Section(2L, 3L, 10L))).isTrue();
+        assertThat(sections.containsAll(Arrays.asList(
+                new Section(1L, 4L, 5L),
+                new Section(4L, 2L, 5L),
+                new Section(2L, 3L, 10L)
+        ))).isTrue();
     }
 
     @DisplayName("기존역 중 하행역과 일치하는 Section을 추가할 수 있다.")
@@ -78,9 +80,11 @@ class SectionsTest {
 
         sections.addSection(new Section(4L, 3L, 5L));
 
-        assertThat(sections.contains(new Section(1L, 2L, 10L))).isTrue();
-        assertThat(sections.contains(new Section(2L, 4L, 5L))).isTrue();
-        assertThat(sections.contains(new Section(4L, 3L, 5L))).isTrue();
+        assertThat(sections.containsAll(Arrays.asList(
+                new Section(1L, 2L, 10L),
+                new Section(2L, 4L, 5L),
+                new Section(4L, 3L, 5L)
+        ))).isTrue();
     }
 
     @DisplayName("상행종점역 구간을 추가할 수 있다.")
@@ -94,9 +98,11 @@ class SectionsTest {
 
         sections.addSection(newEndUpSection);
 
-        assertThat(sections.contains(originalEndUpSection)).isTrue();
-        assertThat(sections.contains(originalEndDownSection)).isTrue();
-        assertThat(sections.contains(newEndUpSection)).isTrue();
+        assertThat(sections.containsAll(Arrays.asList(
+                originalEndUpSection,
+                originalEndDownSection,
+                newEndUpSection))
+        ).isTrue();
     }
 
     @DisplayName("하행종점역 구간을 추가할 수 있다.")
@@ -110,9 +116,11 @@ class SectionsTest {
 
         sections.addSection(newEndDownSection);
 
-        assertThat(sections.contains(originalEndUpSection)).isTrue();
-        assertThat(sections.contains(originalEndDownSection)).isTrue();
-        assertThat(sections.contains(newEndDownSection)).isTrue();
+        assertThat(sections.containsAll(Arrays.asList(
+                originalEndUpSection,
+                originalEndDownSection,
+                newEndDownSection
+        ))).isTrue();
     }
 
     @DisplayName("상행 종점역 구간을 찾아낼 수 있다.")

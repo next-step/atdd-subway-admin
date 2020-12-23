@@ -91,7 +91,11 @@ public class Sections {
         return targetSection;
     }
 
-    boolean contains(final Section section) {
+    public boolean containsAll(final List<Section> targetSections) {
+        return targetSections.stream().allMatch(this::contains);
+    }
+
+    public boolean contains(final Section section) {
         return this.sections.contains(section);
     }
 
