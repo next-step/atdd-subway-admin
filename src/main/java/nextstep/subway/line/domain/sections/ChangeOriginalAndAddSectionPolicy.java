@@ -26,7 +26,14 @@ public class ChangeOriginalAndAddSectionPolicy implements AddSectionPolicy {
 
     private void validate(final Section newSection, final Section targetSection) {
         validateTarget(targetSection);
+        validateAlreadyIn(newSection);
         validateDistance(newSection, targetSection);
+    }
+
+    private void validateAlreadyIn(final Section newSection) {
+        if (sections.isAllStationsIn(newSection)) {
+            throw new TargetSectionNotFoundException("이미 모든 역이 노선에 존재합니다.");
+        }
     }
 
     private void validateTarget(final Section targetSection) {

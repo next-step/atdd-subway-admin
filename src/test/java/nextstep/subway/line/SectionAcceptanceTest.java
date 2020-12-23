@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.line.step.LineAcceptanceStep.EXTRACT_ID_FROM_RESPONSE_LOCATION;
 import static nextstep.subway.line.step.LineAcceptanceStep.LINE_ALREADY_CREATED;
+import static nextstep.subway.line.step.SectionAcceptanceStep.NEW_END_DOWN_SECTION_TO_LINE;
 import static nextstep.subway.line.step.SectionAcceptanceStep.REQUEST_SECTION_CREATE;
 import static nextstep.subway.station.step.StationAcceptanceStep.CREATED_STATION;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -169,5 +170,79 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 newUpStationId, originalEndDownId, requestDistance, lineId);
 
         assertThat(sectionCreatedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("시나리오5-1: 새로 추가하려는 구간의 역이 모두 이미 기존 노선에 존재하는 상태에서 새로운 구간 추가 시도(연속된 역)")
+    @Test
+    void addSectionFailWhenAlreadyAllStationsInTest() {
+        String station1Name = "잠실";
+        String station2Name = "종합운동장";
+        String station3Name = "삼성";
+        String lineName = "2호선";
+        String lineColor = "초록색";
+        Long section1Distance = 20L;
+        Long section2Distance = 20L;
+        // given
+        // 등록된 구간이 있음
+        ExtractableResponse<Response> station1Response = CREATED_STATION(new StationRequest(station1Name));
+        Long station1Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station1Response);
+
+        ExtractableResponse<Response> station2Response = CREATED_STATION(new StationRequest(station2Name));
+        Long station2Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station2Response);
+
+        ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
+                new LineRequest(lineName, lineColor, station1Id, station2Id, section1Distance));
+        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
+
+        // and 라인에 구간 추가됨
+        ExtractableResponse<Response> station3Response = CREATED_STATION(new StationRequest(station3Name));
+        Long station3Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station3Response);
+        NEW_END_DOWN_SECTION_TO_LINE(station2Id, station3Id, section2Distance, lineId);
+
+        // when
+        // 이미 노선에 존재하는 역들로만 구성된 Section 추가 요청
+        ExtractableResponse<Response> response = REQUEST_SECTION_CREATE(
+                station1Id, station2Id, 10L, lineId);
+
+        // then
+        // 새로운 지하철 노선 구간 등록 실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("시나리오5-2: 새로 추가하려는 구간의 역이 모두 이미 기존 노선에 존재하는 상태에서 새로운 구간 추가 시도(건너뛴 역)")
+    @Test
+    void addSectionFailWhenAlreadyAllStationsIn2Test() {
+        String station1Name = "잠실";
+        String station2Name = "종합운동장";
+        String station3Name = "삼성";
+        String lineName = "2호선";
+        String lineColor = "초록색";
+        Long section1Distance = 20L;
+        Long section2Distance = 20L;
+        // given
+        // 등록된 구간이 있음
+        ExtractableResponse<Response> station1Response = CREATED_STATION(new StationRequest(station1Name));
+        Long station1Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station1Response);
+
+        ExtractableResponse<Response> station2Response = CREATED_STATION(new StationRequest(station2Name));
+        Long station2Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station2Response);
+
+        ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
+                new LineRequest(lineName, lineColor, station1Id, station2Id, section1Distance));
+        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
+
+        // and 라인에 구간 추가됨
+        ExtractableResponse<Response> station3Response = CREATED_STATION(new StationRequest(station3Name));
+        Long station3Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station3Response);
+        NEW_END_DOWN_SECTION_TO_LINE(station2Id, station3Id, section2Distance, lineId);
+
+        // when
+        // 이미 노선에 존재하는 역들로만 구성된 Section 추가 요청
+        ExtractableResponse<Response> response = REQUEST_SECTION_CREATE(
+                station1Id, station3Id, 10L, lineId);
+
+        // then
+        // 새로운 지하철 노선 구간 등록 실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

@@ -86,4 +86,25 @@ class ChangeOriginalAndAddSectionPolicyTest {
         assertThatThrownBy(() -> addSectionPolicy.addSection(tooLongSection))
                 .isInstanceOf(TooLongSectionException.class);
     }
+
+    @DisplayName("이미 지하철 노선에 존재하는 역들로만 구성된 신규 Section 추가 시도 시 예외 발생")
+    @ParameterizedTest
+    @MethodSource("addSectionFailByAlreadyInLineStationsTestResource")
+    void addSectionFailByAlreadyInLineStationsTest(Section invalidSection) {
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
+                new Section(1L, 2L, 10L),
+                new Section(2L, 3L, 10L)
+        )));
+
+        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy(sections);
+
+        assertThatThrownBy(() -> addSectionPolicy.addSection(invalidSection))
+                .isInstanceOf(TargetSectionNotFoundException.class);
+    }
+    public static Stream<Arguments> addSectionFailByAlreadyInLineStationsTestResource() {
+        return Stream.of(
+                Arguments.of(new Section(1L, 2L, 5L)),
+                Arguments.of(new Section(1L, 3L, 5L))
+        );
+    }
 }

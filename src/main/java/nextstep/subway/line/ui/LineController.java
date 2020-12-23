@@ -5,6 +5,7 @@ import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.exceptions.InvalidSectionException;
 import nextstep.subway.line.domain.exceptions.StationNotFoundException;
+import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
 import nextstep.subway.line.domain.exceptions.TooLongSectionException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -99,6 +100,11 @@ public class LineController {
 
     @ExceptionHandler(TooLongSectionException.class)
     public ResponseEntity handleTooLongSectionException(TooLongSectionException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(TargetSectionNotFoundException.class)
+    public ResponseEntity handleTargetSectionNotFoundException(TargetSectionNotFoundException e) {
         return ResponseEntity.badRequest().build();
     }
 }

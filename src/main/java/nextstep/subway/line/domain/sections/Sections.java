@@ -93,6 +93,12 @@ public class Sections {
         this.sections.add(section);
     }
 
+    boolean isAllStationsIn(final Section newSection) {
+        List<Long> stationIds = newSection.getStationIds();
+
+        return this.getStationIdsWithoutDup().containsAll(stationIds);
+    }
+
     private List<Long> getStationIds() {
         return sections.stream()
                 .flatMap(it -> it.getStationIds().stream())
