@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,13 +72,14 @@ class ChangeOriginalAndAddSectionPolicyTest {
     }
 
     @DisplayName("추가할 구간의 거리보다 더 긴 거리로 새로운 Sectoin 추가 시도 시 예외 발생")
-    @Test
-    void addSectionFailByDistanceTest() {
+    @ParameterizedTest
+    @ValueSource(longs = { 10L, 11L })
+    void addSectionFailByDistanceTest(Long invalidDistance) {
         Sections sections = new Sections(new ArrayList<>(Arrays.asList(
                 new Section(1L, 2L, 10L),
                 new Section(2L, 3L, 10L)
         )));
-        Section tooLongSection = new Section(4L, 3L, 10L);
+        Section tooLongSection = new Section(4L, 3L, invalidDistance);
 
         AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy(sections);
 
