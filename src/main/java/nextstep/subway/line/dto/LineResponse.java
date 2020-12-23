@@ -14,8 +14,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.dto.StationResponse;
 
 @Getter
@@ -32,7 +32,7 @@ public class LineResponse {
 
 	public static LineResponse of(Line line) {
 		if (line == null) {
-			throw new LineNotFoundException("노선 정보를 찾을 수 없습니다.");
+			throw new NotFoundException("노선 정보를 찾을 수 없습니다.");
 		}
 
 		return new LineResponse(

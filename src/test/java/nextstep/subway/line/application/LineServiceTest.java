@@ -15,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import nextstep.subway.BaseTest;
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
@@ -119,7 +119,7 @@ class LineServiceTest extends BaseTest {
 	@DisplayName("getLineById 메서드는 없는 노선 이름 파라미터를 전달하면 LineNotFoundException이 발생한다.")
 	@Test
 	void getLineByIdThrow() {
-		assertThatExceptionOfType(LineNotFoundException.class)
+		assertThatExceptionOfType(NotFoundException.class)
 			.isThrownBy(() -> {
 				lineService.getLineById(NOT_FOUND_ID);
 			});
@@ -155,7 +155,7 @@ class LineServiceTest extends BaseTest {
 		String changeName = "5호선";
 		String changeColor = "노란색";
 
-		assertThatExceptionOfType(LineNotFoundException.class)
+		assertThatExceptionOfType(NotFoundException.class)
 			.isThrownBy(() -> {
 				lineService.updateLine(
 					NOT_FOUND_ID,
@@ -170,7 +170,7 @@ class LineServiceTest extends BaseTest {
 	void deleteLine() {
 		lineService.deleteLine(exampleLine2.getId());
 
-		assertThatExceptionOfType(LineNotFoundException.class)
+		assertThatExceptionOfType(NotFoundException.class)
 			.isThrownBy(() -> {
 				lineService.getLineById(exampleLine2.getId());
 			});
@@ -179,7 +179,7 @@ class LineServiceTest extends BaseTest {
 	@DisplayName("deleteLine 메서드는 없는 노선 ID를 전달하면 LineNotFoundException이 발생한다.")
 	@Test
 	void deleteLineThrow() {
-		assertThatExceptionOfType(LineNotFoundException.class)
+		assertThatExceptionOfType(NotFoundException.class)
 			.isThrownBy(() -> {
 				lineService.deleteLine(NOT_FOUND_ID);
 			});

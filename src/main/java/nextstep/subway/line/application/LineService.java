@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.application.StationService;
@@ -65,6 +65,6 @@ public class LineService {
 
 	private Line findById(Long id) {
 		return lineRepository.findById(id)
-			.orElseThrow(() -> new LineNotFoundException("노선 정보를 찾을 수 없습니다."));
+			.orElseThrow(() -> new NotFoundException("노선 정보를 찾을 수 없습니다."));
 	}
 }
