@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,14 +12,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 class ChangeOriginalAndAddSectionPolicyTest {
     @DisplayName("기존 구간과 상행역이나 하행역이 겹치는 경우 기존 구간을 변경하고 새로운 구간을 추가할 수 있다.")
     @ParameterizedTest
     @MethodSource("addSectionTestWhenSameUpStationTestResource")
     void addSectionTestWhenSameUpStationTest(Sections sections, Section newSection, List<Section> changedSections) {
-        ChangeOriginalAndAddSectionPolicy policy = new ChangeOriginalAndAddSectionPolicy(sections);
+        AddSectionPolicy policy = new ChangeOriginalAndAddSectionPolicy(sections);
         boolean result = policy.addSection(newSection);
 
         assertThat(result).isTrue();
@@ -51,5 +52,20 @@ class ChangeOriginalAndAddSectionPolicyTest {
                         )
                 )
         );
+    }
+
+    @DisplayName("기존역과 상행역, 하행역 모두 겹치지 않는 경우 예외 발생")
+    @Test
+    void addSectionFailTest() {
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
+                new Section(1L, 2L, 10L),
+                new Section(2L, 3L, 10L)
+        )));
+        Section notMatchAnySection = new Section(4L, 5L, 100L);
+
+        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy(sections);
+
+        assertThatThrownBy(() -> addSectionPolicy.addSection(notMatchAnySection))
+                .isInstanceOf(TargetSectionNotFoundException.class);
     }
 }
