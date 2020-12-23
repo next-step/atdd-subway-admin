@@ -16,6 +16,9 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.common.exception.AlreadyExistException;
+import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.section.exception.SectionDistanceException;
 import nextstep.subway.station.domain.Station;
 
 @Getter
@@ -35,7 +38,7 @@ public class Sections {
 		List<Station> stations = convertSectionToStation();
 		int upMatchIndex = findMatchIndex(stations, section.getUpStation());
 		int downMatchIndex = findMatchIndex(stations, section.getDownStation());
-
+		validateMatch(upMatchIndex, downMatchIndex);
 		if (upMatchIndex > -1 && downMatchIndex == -1) { // 상행역과 맞는경우
 			setPostionUpMatch(section, stations, upMatchIndex);
 		}
@@ -44,6 +47,15 @@ public class Sections {
 		}
 		// 다시 A B C D E ->  [A B] [B C] [C D] [D E] 섹션으로만든다.
 		convertStationToSection(section, stations);
+	}
+
+	private void validateMatch(int upMatchIndex, int downMatchIndex) {
+		if (upMatchIndex > -1 && downMatchIndex > -1) {
+			throw new AlreadyExistException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+		}
+		if (upMatchIndex == -1 && downMatchIndex == -1) {
+			throw new NotFoundException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
+		}
 	}
 
 	private void convertStationToSection(Section section, List<Station> stations) {
@@ -69,6 +81,7 @@ public class Sections {
 		if (downMatchIndex > 0) {
 			Station targetBeforeStation = stations.get(downMatchIndex - 1);
 			int targetBeforeDistance = targetBeforeStation.getNextDistance() - targetDistance;
+			validateDistance(targetBeforeDistance);
 			targetBeforeStation.updateNextDistance(targetBeforeDistance);
 		}
 	}
@@ -79,10 +92,17 @@ public class Sections {
 		if (!standardStation.isFinalStation()) {
 			int standardDistance = standardStation.getNextDistance();
 			int targetDistance = standardDistance - section.getDistance();
+			validateDistance(targetDistance);
 			targetStation.updateNextDistance(targetDistance);
 		}
 		standardStation.updateNextDistance(section.getDistance());
 		stations.add(upMatchIndex + 1, targetStation);
+	}
+
+	private void validateDistance(int targetDistance) {
+		if (targetDistance <= 0) {
+			throw new SectionDistanceException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
+		}
 	}
 
 	private int findMatchIndex(List<Station> stations, Station station) {
