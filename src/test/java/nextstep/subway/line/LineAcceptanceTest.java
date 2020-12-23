@@ -21,11 +21,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = REQUEST_CREATE_NEW_LINE(lineName, lineColor);
+        ExtractableResponse<Response> response = 새로운_지하철_노선_생성_요청(lineName, lineColor);
 
         // then
         // 지하철_노선_생성됨
-        NEW_LINE_CREATED(response, lineName, lineColor);
+        새로운_지하철_노선_생성됨(response, lineName, lineColor);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -36,11 +36,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // given
         // 지하철_노선_등록되어_있음
-        LINE_ALREADY_CREATED(lineName, lineColor);
+        새로운_지하철_노선_생성_요청(lineName, lineColor);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = REQUEST_CREATE_NEW_LINE(lineName, lineColor);
+        ExtractableResponse<Response> response = 새로운_지하철_노선_생성_요청(lineName, lineColor);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -57,20 +57,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> line1CreatedResponse
-                = LINE_ALREADY_CREATED(line1Name, line1Color);
+                = 새로운_지하철_노선_생성_요청(line1Name, line1Color);
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> line2CreatedResponse
-                = LINE_ALREADY_CREATED(line2Name, line2Color);
+                = 새로운_지하철_노선_생성_요청(line2Name, line2Color);
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = REQUEST_LINES();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         // 지하철_노선_목록_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
-        LINES_INCLUDED_IN_LIST(line1CreatedResponse, line2CreatedResponse, response);
+        응답에_지하철_노선들이_포함되어_있음(line1CreatedResponse, line2CreatedResponse, response);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -80,12 +80,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String lineColor = "금색";
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createdResponse = LINE_ALREADY_CREATED(lineName, lineColor);
-        Long createdLineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(createdResponse);
+        ExtractableResponse<Response> createdResponse = 새로운_지하철_노선_생성_요청(lineName, lineColor);
+        Long createdLineId = 응답_헤더에서_ID_추출(createdResponse);
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = REQUEST_ONE_SPECIFIC_LINE(createdLineId);
+        ExtractableResponse<Response> response = 특정_지하철_노선_조회_요청(createdLineId);
 
         // then
         // 지하철_노선_응답됨
@@ -97,7 +97,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLineWhenNotExist() {
         Long notExistId = 0L;
 
-        ExtractableResponse<Response> response = REQUEST_ONE_SPECIFIC_LINE(notExistId);
+        ExtractableResponse<Response> response = 특정_지하철_노선_조회_요청(notExistId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
@@ -109,13 +109,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String lineColor = "남행열차색";
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> response = LINE_ALREADY_CREATED(lineName, lineColor);
+        ExtractableResponse<Response> response = 새로운_지하철_노선_생성_요청(lineName, lineColor);
 
         // when
         // 지하철_노선_수정_요청
-        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(response);
+        Long lineId = 응답_헤더에서_ID_추출(response);
         LineRequest lineRequest = new LineRequest(lineName, lineColor);
-        ExtractableResponse<Response> resultResponse = REQUEST_LINE_UPDATE(lineId, lineRequest);
+        ExtractableResponse<Response> resultResponse = 지하철_노선_변경_요청(lineId, lineRequest);
 
         // then
         // 지하철_노선_수정됨
@@ -132,7 +132,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = REQUEST_LINE_UPDATE(notExistId, lineRequest);
+        ExtractableResponse<Response> response = 지하철_노선_변경_요청(notExistId, lineRequest);
 
         // then
         // 지하철_노선_찾을수_없음
@@ -146,12 +146,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String lineColor = "무지개색";
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createdResponse = LINE_ALREADY_CREATED(lineName, lineColor);
-        Long createdId = EXTRACT_ID_FROM_RESPONSE_LOCATION(createdResponse);
+        ExtractableResponse<Response> createdResponse = 새로운_지하철_노선_생성_요청(lineName, lineColor);
+        Long createdId = 응답_헤더에서_ID_추출(createdResponse);
 
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse<Response> response = REQUEST_LINE_DELETE(createdId);
+        ExtractableResponse<Response> response = 지하철_노선_삭제_요청(createdId);
 
         // then
         // 지하철_노선_삭제됨
@@ -167,7 +167,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse<Response> response = REQUEST_LINE_DELETE(notExistLineId);
+        ExtractableResponse<Response> response = 지하철_노선_삭제_요청(notExistLineId);
 
         // then
         // 지하철_노선_제거_실패
