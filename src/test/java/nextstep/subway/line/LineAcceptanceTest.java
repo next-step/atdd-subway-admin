@@ -4,7 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.station.dto.StationInfo;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -217,7 +217,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         RESPONSE_INCLUDED_STATIONS(
-                response, upStationCreated.as(StationInfo.class), downStationCreated.as(StationInfo.class)
+                response, upStationCreated.as(StationResponse.class), downStationCreated.as(StationResponse.class)
         );
     }
 

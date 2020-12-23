@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.StationInLineResponse;
-import nextstep.subway.station.dto.StationInfo;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -100,7 +100,7 @@ public class LineAcceptanceStep {
     }
 
     public static void RESPONSE_INCLUDED_STATIONS(
-            ExtractableResponse<Response> response, StationInfo upStation, StationInfo downStation
+            ExtractableResponse<Response> response, StationResponse upStation, StationResponse downStation
     ) {
         LineResponse lineResponse = response.as(LineResponse.class);
 

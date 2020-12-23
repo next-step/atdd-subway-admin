@@ -27,6 +27,8 @@ class SectionsTest {
         assertThat(stationIds).hasSize(expectedSize);
     }
 
+    // 초기화되지 않는 Sections에 대해 Section 추가 금지
+
     // TODO: 제시된 Section과 연결 가능한 구간이 있는지 확인하는 테스트 추가
 
     @DisplayName("상행 종점역 구간을 찾아낼 수 있다.")

@@ -64,14 +64,6 @@ public class Sections {
         return this.sections.contains(section);
     }
 
-    void addSection(final Section section) {
-        if (sections.size() == 0) {
-            throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
-        }
-
-        this.sections.add(section);
-    }
-
     public Section findEndUpSection() {
         List<Long> singleStationIds = calculateSingleStationIds();
 
@@ -86,6 +78,15 @@ public class Sections {
         return this.sections.stream().filter(it -> it.isDownStationBelongsTo(singleStationIds))
                 .findFirst()
                 .orElseThrow(() -> new EndUpStationNotFoundException("하행종점역 구간을 찾을 수 없습니다."));
+    }
+
+    // 패키지 외부로 노출되면 도메인을 심각하게 손상할 수 있는 메서드
+    void addSection(final Section section) {
+        if (sections.size() == 0) {
+            throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
+        }
+
+        this.sections.add(section);
     }
 
     private List<Long> getStationIds() {
