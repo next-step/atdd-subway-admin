@@ -169,10 +169,10 @@ class LineServiceTest {
 
         given(lineRepository.findById(lineId)).willReturn(Optional.of(mockLine));
 
-        Line updatedLine = lineService.updateLine(lineId, changeName, changeColor);
+        LineResponse lineResponse = lineService.updateLine(lineId, changeName, changeColor);
 
-        assertThat(updatedLine.getName()).isEqualTo(changeName);
-        assertThat(updatedLine.getColor()).isEqualTo(changeColor);
+        assertThat(lineResponse.getName()).isEqualTo(changeName);
+        assertThat(lineResponse.getColor()).isEqualTo(changeColor);
     }
 
     @DisplayName("존재하지 않는 특정 라인의 정보를 수정 시도할 경우 예외가 발생한다.")
