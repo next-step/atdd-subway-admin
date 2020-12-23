@@ -25,6 +25,22 @@ public class LineRequest {
         return color;
     }
 
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public void setUpStationId(Long upStationId) {
+        this.upStationId = upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public void setDownStationId(Long downStationId) {
+        this.downStationId = downStationId;
+    }
+
     public Line toLine() {
         return new Line(name, color);
     }
