@@ -43,6 +43,15 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    // TODO: 리팩토링 과정에서 임시로 사용할 메서드
+    void addSectionRaw(final Section section) {
+        if (sections.size() == 0) {
+            throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
+        }
+
+        this.sections.add(section);
+    }
+
     // TODO: 기능 구현 다 한 뒤에 나눠야 함. 너무 큼
     // TODO2: 실질적으로는 동작을 조각내고 서비스 레이어에서 조합하는 방향으로 가야될 수도 있을 것 같음 (서비스에서 너무 플로우가 안보임)
     public boolean addSection(final Section newSection) {
@@ -89,7 +98,7 @@ public class Sections {
                 .orElseThrow(() -> new EndUpStationNotFoundException("하행종점역 구간을 찾을 수 없습니다."));
     }
 
-    private boolean isEndSectionAddCase(final Section newSection) {
+    boolean isEndSectionAddCase(final Section newSection) {
         Section endUpSection = findEndUpSection();
         Section endDownSection = findEndDownSection();
 
