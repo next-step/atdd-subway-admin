@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.exception.NotExistsException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -29,5 +30,11 @@ public class LineService {
         return lines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findById(Long id) {
+        Line persistLine = lineRepository.findById(id)
+                .orElseThrow(() -> new NotExistsException("line_id " + id + " is not exists."));
+        return LineResponse.of(persistLine);
     }
 }
