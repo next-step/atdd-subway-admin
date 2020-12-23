@@ -245,4 +245,42 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 새로운 지하철 노선 구간 등록 실패
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("시나리오6: 상행역과 하행역 둘 중 하나도 포함되지 않는 지하철 노선 구간 등록")
+    @Test
+    void addSectionWithAllNotIncludedStation() {
+        String station1Name = "잠실";
+        String station2Name = "종합운동장";
+        String station3Name = "삼성";
+        String station4Name = "신도림";
+        String lineName = "2호선";
+        String lineColor = "초록색";
+        Long distance = 10L;
+        // given
+        // 등록된 구간이 있음
+        ExtractableResponse<Response> station1Response = CREATED_STATION(new StationRequest(station1Name));
+        Long station1Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station1Response);
+
+        ExtractableResponse<Response> station2Response = CREATED_STATION(new StationRequest(station2Name));
+        Long station2Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station2Response);
+
+        ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
+                new LineRequest(lineName, lineColor, station1Id, station2Id, distance));
+        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
+
+        // and 등록할 구간 역들 등록되어 있음
+        ExtractableResponse<Response> station3Response = CREATED_STATION(new StationRequest(station3Name));
+        Long station3Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station3Response);
+        ExtractableResponse<Response> station4Response = CREATED_STATION(new StationRequest(station4Name));
+        Long station4Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station4Response);
+
+        // when
+        // 신규 구간 등록 요청
+        ExtractableResponse<Response> response = REQUEST_SECTION_CREATE(
+                station3Id, station4Id, distance - 5, lineId);
+
+        // then
+        // 구간 등록 실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

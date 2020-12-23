@@ -226,6 +226,14 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - 사용자가 이미 노선에 존재하는 역들로만 구성된 신규 구간으로 새로운 구간 추가를 요청함
     - then
       - 지하철 구간 등록 실패
+  - [X] 시나리오6: 상행역과 하행역 둘 중 하나도 포함되지 않는 지하철 노선 구간 등록
+    - given
+      - 등록된 구간 있음
+      - and 새로 등록할 구간의 역들이 등록되어 있음
+    - when
+      - 상행역과 하행역 둘 중 하나도 포함되지 않는 지하철 노선 구간 등록 요청
+    - then
+      - 지하철 구간 등록 실패
   
 ### 시나리오 Todo-list
   - [X] 시나리오1
