@@ -47,12 +47,13 @@ public class LineResponse {
 	private static List<StationResponse> convertLineToStationResponses(Line line) {
 		return CollectionUtils.emptyIfNull(line.getSections()).stream()
 			.map(section -> Arrays.asList(
-				StationResponse.of(section.getUpStation()),
-				StationResponse.of(section.getDownStation())
+				section.getUpStation(),
+				section.getDownStation()
 				)
 			)
 			.flatMap(Collection::stream)
 			.distinct()
+			.map(StationResponse::of)
 			.collect(Collectors.toList());
 	}
 
