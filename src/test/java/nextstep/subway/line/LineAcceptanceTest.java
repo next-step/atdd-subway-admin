@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,15 +158,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
+
+        Long 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+        Long 양재역 = StationAcceptanceTest.지하철역_등록되어_있음("양재역");
+        Long 판교역 = StationAcceptanceTest.지하철역_등록되어_있음("판교역");
         // given
         // 지하철_노선_등록되어_있음
-        long lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600");
+        long lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역, 양재역);
 
         // when
         // 지하철_노선_수정_요청
         String editName = "3호선";
         String editColor = "bg-orange";
-        지하철_노선_수정_요청(lineId, editName, editColor);
+        지하철_노선_수정_요청(lineId, editName, editColor, 강남역, 판교역);
 
         // then
         // 지하철_노선_수정됨
@@ -174,12 +179,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = getLineResponse(response);
         assertThat(lineResponse.getName()).isEqualTo(editName);
         assertThat(lineResponse.getColor()).isEqualTo(editColor);
+        assertThat(lineResponse.isContainsStationIds(Arrays.asList(강남역, 판교역))).isTrue();
+
     }
 
     private static ExtractableResponse<Response> 지하철_노선_수정_요청(long lineId, String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        return RestAssured.given().log().all().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                put("/lines/{id}", lineId).
+                then().
+                log().all().
+                extract();
+    }
+
+    private static ExtractableResponse<Response> 지하철_노선_수정_요청(long lineId, String name, String color, Long upStationId, Long downStationId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId.toString());
+        params.put("downStationId", downStationId.toString());
         return RestAssured.given().log().all().
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
@@ -222,6 +245,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private static Long 지하철_노선_등록되어_있음(String lineName, String color) {
         return LocationUtil.getLocation(지하철_노선_생성_요청(lineName, color));
+    }
+
+    private static Long 지하철_노선_등록되어_있음(String lineName, String color, Long upStationId, Long downStationId) {
+        return LocationUtil.getLocation(지하철_노선_생성_요청(lineName, color, upStationId, downStationId));
     }
 
     private static ExtractableResponse<Response> 지하철_노선_조회_요청(long lineId) {

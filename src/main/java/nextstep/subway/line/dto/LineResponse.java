@@ -5,6 +5,7 @@ import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -52,5 +53,12 @@ public class LineResponse {
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    public boolean isContainsStationIds(List<Long> ids) {
+        return this.stations.stream()
+                .map(Station::getId)
+                .collect(Collectors.toList())
+                .contains(ids);
     }
 }
