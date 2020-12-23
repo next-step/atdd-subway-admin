@@ -2,8 +2,10 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +25,20 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line line = request.toLine();
-        line.addStation(stationRepository.findById(request.getUpStationId()).get());
-        line.addStation(stationRepository.findById(request.getDownStationId()).get());
-
-        Line persistLine = lineRepository.save(line);
+        Line persistLine = lineRepository.save(request.toLine());
+        persistLine.addSection(ofSection(request));
         return LineResponse.of(persistLine);
+    }
+
+    private Section ofSection(LineRequest request) {
+        return new Section(
+                this.findStationById(request.getUpStationId()),
+                this.findStationById(request.getDownStationId()),
+                request.getDistance());
+    }
+
+    private Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(IllegalArgumentException::new);
     }
 
     public void editLine(Long id, LineRequest request) {

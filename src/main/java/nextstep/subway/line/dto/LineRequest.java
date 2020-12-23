@@ -21,24 +21,16 @@ public class LineRequest {
         return name;
     }
 
-    public String getColor() {
-        return color;
-    }
-
     public Long getUpStationId() {
         return upStationId;
-    }
-
-    public void setUpStationId(Long upStationId) {
-        this.upStationId = upStationId;
     }
 
     public Long getDownStationId() {
         return downStationId;
     }
 
-    public void setDownStationId(Long downStationId) {
-        this.downStationId = downStationId;
+    public int getDistance() {
+        return distance;
     }
 
     public Line toLine() {
