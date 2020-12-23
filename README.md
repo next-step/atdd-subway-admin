@@ -217,6 +217,15 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - 사용자가 추가하려는 지하철 구간보다 긴 거리로 새로운 구간을 추가 요청
     - then
       - 지하철 구간 등록 실패
+  - [ ] 시나리오5: 등록하려는 새로운 지하철 구간의 역이 모두 이미 노선에 존재할 때 해당 지하철 구간을 추가할 수 없다. (건너뛴 역 포함)
+    - given
+      - 등록된 구간 있음
+      - and 새로 등록할 구간의 역들이 등록되어 있음
+      - and 새로 등록할 구간의 역들이 이미 노선에 등록되어 있음
+    - when
+      - 사용자가 이미 노선에 존재하는 역들로만 구성된 신규 구간으로 새로운 구간 추가를 요청함
+    - then
+      - 지하철 구간 등록 실패
   
 ### 시나리오 Todo-list
   - [X] 시나리오1
@@ -244,3 +253,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] 시나리오4
     - [X] 종점역이 아닌 Section 추가하는 로직에서 거리를 검증한다.
       - 종점역을 추가할 때는 해당 사항에 대한 관심사가 전혀 없기 때문.
+  - [ ] 시나리오5
+    - [ ] 새로운 Section 추가 전 기존 Line의 역들 중 일치하는 역이 몇개인지 검증하는 정합성 확인 추가
