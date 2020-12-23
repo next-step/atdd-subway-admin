@@ -30,7 +30,7 @@ public class LineController {
     @PostMapping("/{lineId}/sections")
     public ResponseEntity addSection(
             @PathVariable("lineId") Long lineId,
-            @RequestBody SectionRequest sectionRequest
+            @Validated @RequestBody SectionRequest sectionRequest
     ) {
         boolean addSectionResult = lineService.addSection(lineId, sectionRequest);
 
