@@ -144,7 +144,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .accept(MediaType.ALL_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .patch(uri)
+                .put(uri)
                 .then()
                 .log().all()
                 .extract();
