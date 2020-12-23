@@ -66,10 +66,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long requestDistance = 10L;
         // given
         // 등록된 구간이 있음
-        ExtractableResponse<Response> originalEndUpResponse = CREATED_STATION(new StationRequest(originalEndUpStationName));
+        ExtractableResponse<Response> originalEndUpResponse = CREATED_STATION(
+                new StationRequest(originalEndUpStationName));
         Long originalEndUpId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndUpResponse);
 
-        ExtractableResponse<Response> originalEndDownResponse = CREATED_STATION(new StationRequest(originalEndDownStationName));
+        ExtractableResponse<Response> originalEndDownResponse = CREATED_STATION(
+                new StationRequest(originalEndDownStationName));
         Long originalEndDownId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndDownResponse);
 
         ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
@@ -78,7 +80,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
 
         // and 새로 등록할 구간의 역이 등록되어 있음
-        ExtractableResponse<Response> newEndUpStationResponse = CREATED_STATION(new StationRequest(newEndUpStationName));
+        ExtractableResponse<Response> newEndUpStationResponse = CREATED_STATION(
+                new StationRequest(newEndUpStationName));
         Long newEndUpStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(newEndUpStationResponse);
 
         // when
@@ -104,10 +107,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long requestDistance = 10L;
         // given
         // 등록된 구간이 있음
-        ExtractableResponse<Response> originalEndUpResponse = CREATED_STATION(new StationRequest(originalEndUpStationName));
+        ExtractableResponse<Response> originalEndUpResponse = CREATED_STATION(
+                new StationRequest(originalEndUpStationName));
         Long originalEndUpId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndUpResponse);
 
-        ExtractableResponse<Response> originalEndDownResponse = CREATED_STATION(new StationRequest(originalEndDownStationName));
+        ExtractableResponse<Response> originalEndDownResponse = CREATED_STATION(
+                new StationRequest(originalEndDownStationName));
         Long originalEndDownId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndDownResponse);
 
         ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
@@ -122,11 +127,47 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         // 사용자가 새로운 지하철 구간 등록 요청한다.
         ExtractableResponse<Response> sectionCreatedResponse = REQUEST_SECTION_CREATE(
-                originalEndDownId, newEndDownStationId, requestDistance, lineId
-        );
+                originalEndDownId, newEndDownStationId, requestDistance, lineId);
 
         // then
         // 지하철 구간 등록 성공
         assertThat(sectionCreatedResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("시나리오4: 지나치게 긴 거리의 새로운 지하철 구간을 추가 시도")
+    @Test
+    void tooLongDistanceNewSectionTest() {
+        String originalEndUpStationName = "잠실";
+        String originalEndDownStationName = "종합운동장";
+        String newUpStationName = "삼성";
+        String lineName = "2호선";
+        String lineColor = "초록색";
+        Long createdDistance = 20L;
+        Long requestDistance = createdDistance + 10;
+        // given
+        // 등록된 구간이 있음
+        ExtractableResponse<Response> originalEndUpResponse = CREATED_STATION(
+                new StationRequest(originalEndUpStationName));
+        Long originalEndUpId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndUpResponse);
+
+        ExtractableResponse<Response> originalEndDownResponse = CREATED_STATION(
+                new StationRequest(originalEndDownStationName));
+        Long originalEndDownId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndDownResponse);
+
+        ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
+                new LineRequest(lineName, lineColor, originalEndUpId, originalEndDownId, createdDistance)
+        );
+        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
+
+        // and 새로 등록할 구간의 역이 등록되어 있음
+        ExtractableResponse<Response> newUpStationResponse = CREATED_STATION(new StationRequest(newUpStationName));
+        Long newUpStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(newUpStationResponse);
+
+        // when
+        // 사용자가 지나치게 긴 거리의 구간 추가를 요청한다.
+        ExtractableResponse<Response> sectionCreatedResponse = REQUEST_SECTION_CREATE(
+                newUpStationId, originalEndDownId, requestDistance, lineId);
+
+        assertThat(sectionCreatedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

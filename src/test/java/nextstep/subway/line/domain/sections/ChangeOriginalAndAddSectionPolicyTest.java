@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain.sections;
 
 import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
+import nextstep.subway.line.domain.exceptions.TooLongSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -67,5 +68,20 @@ class ChangeOriginalAndAddSectionPolicyTest {
 
         assertThatThrownBy(() -> addSectionPolicy.addSection(notMatchAnySection))
                 .isInstanceOf(TargetSectionNotFoundException.class);
+    }
+
+    @DisplayName("추가할 구간의 거리보다 더 긴 거리로 새로운 Sectoin 추가 시도 시 예외 발생")
+    @Test
+    void addSectionFailByDistanceTest() {
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
+                new Section(1L, 2L, 10L),
+                new Section(2L, 3L, 10L)
+        )));
+        Section tooLongSection = new Section(4L, 3L, 10L);
+
+        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy(sections);
+
+        assertThatThrownBy(() -> addSectionPolicy.addSection(tooLongSection))
+                .isInstanceOf(TooLongSectionException.class);
     }
 }

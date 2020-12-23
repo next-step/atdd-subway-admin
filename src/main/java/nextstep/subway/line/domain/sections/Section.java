@@ -94,6 +94,10 @@ public class Section extends ValueObjectId {
         return Objects.equals(upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId) && Objects.equals(distance, section.distance);
     }
 
+    public boolean isHasBiggerDistance(final Section thatSection) {
+        return this.distance >= thatSection.distance;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(upStationId, downStationId, distance);
