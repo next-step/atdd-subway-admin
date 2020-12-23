@@ -17,11 +17,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceStep {
-    public static ExtractableResponse<Response> LINE_ALREADY_CREATED(final LineRequest lineRequest) {
-        return REQUEST_CREATE_NEW_LINE(lineRequest);
-    }
-
-    public static ExtractableResponse<Response> REQUEST_CREATE_NEW_LINE(final LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 새로운_지하철_노선_생성_요청(final LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -32,7 +28,7 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> REQUEST_LINES() {
+    public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return RestAssured.given().log().all()
                 .when()
                 .get("/lines")
@@ -41,7 +37,7 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> REQUEST_ONE_SPECIFIC_LINE(Long lineId) {
+    public static ExtractableResponse<Response> 특정_지하철_노선_조회_요청(Long lineId) {
         return RestAssured.given().log().all()
                 .when()
                 .get("/lines/" + lineId)
@@ -50,7 +46,7 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
-    public static void LINE_CREATE_SUCCESS(
+    public static void 새로운_지하철_노선_생성_성공(
             ExtractableResponse<Response> response, String lineName, Long upStationId, Long downStationId
     ) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -62,12 +58,12 @@ public class LineAcceptanceStep {
         assertThat(responseStationIds).contains(upStationId, downStationId);
     }
 
-    public static void LINES_INCLUDED_IN_LIST(
+    public static void 응답에_지하철_노선들이_포함되어_있음(
             ExtractableResponse<Response> line1CreatedResponse, ExtractableResponse<Response> line2CreatedResponse,
             ExtractableResponse<Response> listResponse
     ) {
         List<Long> expectedLineIds = Arrays.asList(line1CreatedResponse, line2CreatedResponse).stream()
-                .map(LineAcceptanceStep::EXTRACT_ID_FROM_RESPONSE_LOCATION)
+                .map(LineAcceptanceStep::응답_헤더에서_ID_추출)
                 .collect(Collectors.toList());
         List<Long> resultLineIds = listResponse.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
@@ -75,7 +71,7 @@ public class LineAcceptanceStep {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    public static ExtractableResponse<Response> REQUEST_LINE_UPDATE(Long lineId, LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_변경_요청(Long lineId, LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -86,7 +82,7 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> REQUEST_LINE_DELETE(Long lineId) {
+    public static ExtractableResponse<Response> 지하철_노선_삭제_요청(Long lineId) {
         return RestAssured.given().log().all()
                 .when()
                 .delete("/lines/" + lineId)
@@ -95,11 +91,11 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
-    public static Long EXTRACT_ID_FROM_RESPONSE_LOCATION(ExtractableResponse<Response> response) {
+    public static Long 응답_헤더에서_ID_추출(ExtractableResponse<Response> response) {
         return Long.parseLong(response.header("location").split("/")[2]);
     }
 
-    public static void RESPONSE_INCLUDED_STATIONS(
+    public static void 응답에_역들_포함되어_있음(
             ExtractableResponse<Response> response, StationResponse upStation, StationResponse downStation
     ) {
         LineResponse lineResponse = response.as(LineResponse.class);

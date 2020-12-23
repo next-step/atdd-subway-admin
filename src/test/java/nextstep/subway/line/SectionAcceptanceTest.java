@@ -9,11 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import static nextstep.subway.line.step.LineAcceptanceStep.EXTRACT_ID_FROM_RESPONSE_LOCATION;
-import static nextstep.subway.line.step.LineAcceptanceStep.LINE_ALREADY_CREATED;
-import static nextstep.subway.line.step.SectionAcceptanceStep.NEW_END_DOWN_SECTION_TO_LINE;
-import static nextstep.subway.line.step.SectionAcceptanceStep.REQUEST_SECTION_CREATE;
-import static nextstep.subway.station.step.StationAcceptanceStep.CREATED_STATION;
+import static nextstep.subway.line.step.LineAcceptanceStep.새로운_지하철_노선_생성_요청;
+import static nextstep.subway.line.step.LineAcceptanceStep.응답_헤더에서_ID_추출;
+import static nextstep.subway.line.step.SectionAcceptanceStep.새로운_지하철_하행종점역_구간_추가_요청;
+import static nextstep.subway.line.step.SectionAcceptanceStep.새로운_지하철_구간_추가_요청;
+import static nextstep.subway.station.step.StationAcceptanceStep.지하철역_생성됨;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -29,24 +29,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long requestDistance = 10L;
         // given
         // 등록된 구간이 있음
-        ExtractableResponse<Response> station1Response = CREATED_STATION(new StationRequest(station1Name));
-        Long station1Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station1Response);
+        ExtractableResponse<Response> station1Response = 지하철역_생성됨(new StationRequest(station1Name));
+        Long station1Id = 응답_헤더에서_ID_추출(station1Response);
 
-        ExtractableResponse<Response> station2Response = CREATED_STATION(new StationRequest(station2Name));
-        Long station2Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station2Response);
+        ExtractableResponse<Response> station2Response = 지하철역_생성됨(new StationRequest(station2Name));
+        Long station2Id = 응답_헤더에서_ID_추출(station2Response);
 
-        ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
+        ExtractableResponse<Response> lineResponse = 새로운_지하철_노선_생성_요청(
                 new LineRequest(lineName, lineColor, station1Id, station2Id, createdDistance)
         );
-        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
+        Long lineId = 응답_헤더에서_ID_추출(lineResponse);
 
         // and 새로 등록할 구간의 역이 등록되어 있음
-        ExtractableResponse<Response> station3Response = CREATED_STATION(new StationRequest(station3Name));
-        Long station3Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station3Response);
+        ExtractableResponse<Response> station3Response = 지하철역_생성됨(new StationRequest(station3Name));
+        Long station3Id = 응답_헤더에서_ID_추출(station3Response);
 
         // when
         // 사용자가 새로운 지하철 구간 등록 요청한다.
-        ExtractableResponse<Response> sectionCreatedResponse = REQUEST_SECTION_CREATE(
+        ExtractableResponse<Response> sectionCreatedResponse = 새로운_지하철_구간_추가_요청(
                 station1Id, station3Id, requestDistance, lineId
         );
 
@@ -67,27 +67,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long requestDistance = 10L;
         // given
         // 등록된 구간이 있음
-        ExtractableResponse<Response> originalEndUpResponse = CREATED_STATION(
+        ExtractableResponse<Response> originalEndUpResponse = 지하철역_생성됨(
                 new StationRequest(originalEndUpStationName));
-        Long originalEndUpId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndUpResponse);
+        Long originalEndUpId = 응답_헤더에서_ID_추출(originalEndUpResponse);
 
-        ExtractableResponse<Response> originalEndDownResponse = CREATED_STATION(
+        ExtractableResponse<Response> originalEndDownResponse = 지하철역_생성됨(
                 new StationRequest(originalEndDownStationName));
-        Long originalEndDownId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndDownResponse);
+        Long originalEndDownId = 응답_헤더에서_ID_추출(originalEndDownResponse);
 
-        ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
+        ExtractableResponse<Response> lineResponse = 새로운_지하철_노선_생성_요청(
                 new LineRequest(lineName, lineColor, originalEndUpId, originalEndDownId, createdDistance)
         );
-        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
+        Long lineId = 응답_헤더에서_ID_추출(lineResponse);
 
         // and 새로 등록할 구간의 역이 등록되어 있음
-        ExtractableResponse<Response> newEndUpStationResponse = CREATED_STATION(
+        ExtractableResponse<Response> newEndUpStationResponse = 지하철역_생성됨(
                 new StationRequest(newEndUpStationName));
-        Long newEndUpStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(newEndUpStationResponse);
+        Long newEndUpStationId = 응답_헤더에서_ID_추출(newEndUpStationResponse);
 
         // when
         // 사용자가 새로운 지하철 구간 등록 요청한다.
-        ExtractableResponse<Response> sectionCreatedResponse = REQUEST_SECTION_CREATE(
+        ExtractableResponse<Response> sectionCreatedResponse = 새로운_지하철_구간_추가_요청(
                 newEndUpStationId, originalEndUpId, requestDistance, lineId
         );
 
@@ -108,26 +108,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long requestDistance = 10L;
         // given
         // 등록된 구간이 있음
-        ExtractableResponse<Response> originalEndUpResponse = CREATED_STATION(
+        ExtractableResponse<Response> originalEndUpResponse = 지하철역_생성됨(
                 new StationRequest(originalEndUpStationName));
-        Long originalEndUpId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndUpResponse);
+        Long originalEndUpId = 응답_헤더에서_ID_추출(originalEndUpResponse);
 
-        ExtractableResponse<Response> originalEndDownResponse = CREATED_STATION(
+        ExtractableResponse<Response> originalEndDownResponse = 지하철역_생성됨(
                 new StationRequest(originalEndDownStationName));
-        Long originalEndDownId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndDownResponse);
+        Long originalEndDownId = 응답_헤더에서_ID_추출(originalEndDownResponse);
 
-        ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
+        ExtractableResponse<Response> lineResponse = 새로운_지하철_노선_생성_요청(
                 new LineRequest(lineName, lineColor, originalEndUpId, originalEndDownId, createdDistance)
         );
-        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
+        Long lineId = 응답_헤더에서_ID_추출(lineResponse);
 
         // and 새로 등록할 구간의 역이 등록되어 있음
-        ExtractableResponse<Response> newEndDownStationResponse = CREATED_STATION(new StationRequest(newEndDownStationName));
-        Long newEndDownStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(newEndDownStationResponse);
+        ExtractableResponse<Response> newEndDownStationResponse = 지하철역_생성됨(new StationRequest(newEndDownStationName));
+        Long newEndDownStationId = 응답_헤더에서_ID_추출(newEndDownStationResponse);
 
         // when
         // 사용자가 새로운 지하철 구간 등록 요청한다.
-        ExtractableResponse<Response> sectionCreatedResponse = REQUEST_SECTION_CREATE(
+        ExtractableResponse<Response> sectionCreatedResponse = 새로운_지하철_구간_추가_요청(
                 originalEndDownId, newEndDownStationId, requestDistance, lineId);
 
         // then
@@ -147,26 +147,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long requestDistance = createdDistance + 10;
         // given
         // 등록된 구간이 있음
-        ExtractableResponse<Response> originalEndUpResponse = CREATED_STATION(
+        ExtractableResponse<Response> originalEndUpResponse = 지하철역_생성됨(
                 new StationRequest(originalEndUpStationName));
-        Long originalEndUpId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndUpResponse);
+        Long originalEndUpId = 응답_헤더에서_ID_추출(originalEndUpResponse);
 
-        ExtractableResponse<Response> originalEndDownResponse = CREATED_STATION(
+        ExtractableResponse<Response> originalEndDownResponse = 지하철역_생성됨(
                 new StationRequest(originalEndDownStationName));
-        Long originalEndDownId = EXTRACT_ID_FROM_RESPONSE_LOCATION(originalEndDownResponse);
+        Long originalEndDownId = 응답_헤더에서_ID_추출(originalEndDownResponse);
 
-        ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
+        ExtractableResponse<Response> lineResponse = 새로운_지하철_노선_생성_요청(
                 new LineRequest(lineName, lineColor, originalEndUpId, originalEndDownId, createdDistance)
         );
-        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
+        Long lineId = 응답_헤더에서_ID_추출(lineResponse);
 
         // and 새로 등록할 구간의 역이 등록되어 있음
-        ExtractableResponse<Response> newUpStationResponse = CREATED_STATION(new StationRequest(newUpStationName));
-        Long newUpStationId = EXTRACT_ID_FROM_RESPONSE_LOCATION(newUpStationResponse);
+        ExtractableResponse<Response> newUpStationResponse = 지하철역_생성됨(new StationRequest(newUpStationName));
+        Long newUpStationId = 응답_헤더에서_ID_추출(newUpStationResponse);
 
         // when
         // 사용자가 지나치게 긴 거리의 구간 추가를 요청한다.
-        ExtractableResponse<Response> sectionCreatedResponse = REQUEST_SECTION_CREATE(
+        ExtractableResponse<Response> sectionCreatedResponse = 새로운_지하철_구간_추가_요청(
                 newUpStationId, originalEndDownId, requestDistance, lineId);
 
         assertThat(sectionCreatedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -184,24 +184,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long section2Distance = 20L;
         // given
         // 등록된 구간이 있음
-        ExtractableResponse<Response> station1Response = CREATED_STATION(new StationRequest(station1Name));
-        Long station1Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station1Response);
+        ExtractableResponse<Response> station1Response = 지하철역_생성됨(new StationRequest(station1Name));
+        Long station1Id = 응답_헤더에서_ID_추출(station1Response);
 
-        ExtractableResponse<Response> station2Response = CREATED_STATION(new StationRequest(station2Name));
-        Long station2Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station2Response);
+        ExtractableResponse<Response> station2Response = 지하철역_생성됨(new StationRequest(station2Name));
+        Long station2Id = 응답_헤더에서_ID_추출(station2Response);
 
-        ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
+        ExtractableResponse<Response> lineResponse = 새로운_지하철_노선_생성_요청(
                 new LineRequest(lineName, lineColor, station1Id, station2Id, section1Distance));
-        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
+        Long lineId = 응답_헤더에서_ID_추출(lineResponse);
 
         // and 라인에 구간 추가됨
-        ExtractableResponse<Response> station3Response = CREATED_STATION(new StationRequest(station3Name));
-        Long station3Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station3Response);
-        NEW_END_DOWN_SECTION_TO_LINE(station2Id, station3Id, section2Distance, lineId);
+        ExtractableResponse<Response> station3Response = 지하철역_생성됨(new StationRequest(station3Name));
+        Long station3Id = 응답_헤더에서_ID_추출(station3Response);
+        새로운_지하철_하행종점역_구간_추가_요청(station2Id, station3Id, section2Distance, lineId);
 
         // when
         // 이미 노선에 존재하는 역들로만 구성된 Section 추가 요청
-        ExtractableResponse<Response> response = REQUEST_SECTION_CREATE(
+        ExtractableResponse<Response> response = 새로운_지하철_구간_추가_요청(
                 station1Id, station2Id, 10L, lineId);
 
         // then
@@ -221,24 +221,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long section2Distance = 20L;
         // given
         // 등록된 구간이 있음
-        ExtractableResponse<Response> station1Response = CREATED_STATION(new StationRequest(station1Name));
-        Long station1Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station1Response);
+        ExtractableResponse<Response> station1Response = 지하철역_생성됨(new StationRequest(station1Name));
+        Long station1Id = 응답_헤더에서_ID_추출(station1Response);
 
-        ExtractableResponse<Response> station2Response = CREATED_STATION(new StationRequest(station2Name));
-        Long station2Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station2Response);
+        ExtractableResponse<Response> station2Response = 지하철역_생성됨(new StationRequest(station2Name));
+        Long station2Id = 응답_헤더에서_ID_추출(station2Response);
 
-        ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
+        ExtractableResponse<Response> lineResponse = 새로운_지하철_노선_생성_요청(
                 new LineRequest(lineName, lineColor, station1Id, station2Id, section1Distance));
-        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
+        Long lineId = 응답_헤더에서_ID_추출(lineResponse);
 
         // and 라인에 구간 추가됨
-        ExtractableResponse<Response> station3Response = CREATED_STATION(new StationRequest(station3Name));
-        Long station3Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station3Response);
-        NEW_END_DOWN_SECTION_TO_LINE(station2Id, station3Id, section2Distance, lineId);
+        ExtractableResponse<Response> station3Response = 지하철역_생성됨(new StationRequest(station3Name));
+        Long station3Id = 응답_헤더에서_ID_추출(station3Response);
+        새로운_지하철_하행종점역_구간_추가_요청(station2Id, station3Id, section2Distance, lineId);
 
         // when
         // 이미 노선에 존재하는 역들로만 구성된 Section 추가 요청
-        ExtractableResponse<Response> response = REQUEST_SECTION_CREATE(
+        ExtractableResponse<Response> response = 새로운_지하철_구간_추가_요청(
                 station1Id, station3Id, 10L, lineId);
 
         // then
@@ -258,25 +258,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long distance = 10L;
         // given
         // 등록된 구간이 있음
-        ExtractableResponse<Response> station1Response = CREATED_STATION(new StationRequest(station1Name));
-        Long station1Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station1Response);
+        ExtractableResponse<Response> station1Response = 지하철역_생성됨(new StationRequest(station1Name));
+        Long station1Id = 응답_헤더에서_ID_추출(station1Response);
 
-        ExtractableResponse<Response> station2Response = CREATED_STATION(new StationRequest(station2Name));
-        Long station2Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station2Response);
+        ExtractableResponse<Response> station2Response = 지하철역_생성됨(new StationRequest(station2Name));
+        Long station2Id = 응답_헤더에서_ID_추출(station2Response);
 
-        ExtractableResponse<Response> lineResponse = LINE_ALREADY_CREATED(
+        ExtractableResponse<Response> lineResponse = 새로운_지하철_노선_생성_요청(
                 new LineRequest(lineName, lineColor, station1Id, station2Id, distance));
-        Long lineId = EXTRACT_ID_FROM_RESPONSE_LOCATION(lineResponse);
+        Long lineId = 응답_헤더에서_ID_추출(lineResponse);
 
         // and 등록할 구간 역들 등록되어 있음
-        ExtractableResponse<Response> station3Response = CREATED_STATION(new StationRequest(station3Name));
-        Long station3Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station3Response);
-        ExtractableResponse<Response> station4Response = CREATED_STATION(new StationRequest(station4Name));
-        Long station4Id = EXTRACT_ID_FROM_RESPONSE_LOCATION(station4Response);
+        ExtractableResponse<Response> station3Response = 지하철역_생성됨(new StationRequest(station3Name));
+        Long station3Id = 응답_헤더에서_ID_추출(station3Response);
+        ExtractableResponse<Response> station4Response = 지하철역_생성됨(new StationRequest(station4Name));
+        Long station4Id = 응답_헤더에서_ID_추출(station4Response);
 
         // when
         // 신규 구간 등록 요청
-        ExtractableResponse<Response> response = REQUEST_SECTION_CREATE(
+        ExtractableResponse<Response> response = 새로운_지하철_구간_추가_요청(
                 station3Id, station4Id, distance - 5, lineId);
 
         // then

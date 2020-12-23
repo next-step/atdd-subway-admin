@@ -4,14 +4,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.station.dto.StationRequest;
 import org.springframework.http.MediaType;
 
-import static nextstep.subway.line.step.LineAcceptanceStep.EXTRACT_ID_FROM_RESPONSE_LOCATION;
-import static nextstep.subway.station.step.StationAcceptanceStep.CREATED_STATION;
-
 public class SectionAcceptanceStep {
-    public static ExtractableResponse<Response> REQUEST_SECTION_CREATE(
+    public static ExtractableResponse<Response> 새로운_지하철_구간_추가_요청(
             final Long upStationId, final Long downStationId, final Long distance, final Long lineId
     ) {
         return RestAssured.given().log().all()
@@ -24,9 +20,9 @@ public class SectionAcceptanceStep {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> NEW_END_DOWN_SECTION_TO_LINE(
+    public static ExtractableResponse<Response> 새로운_지하철_하행종점역_구간_추가_요청(
             final Long originalEndDownStationId, final Long newEndDownStationId, final Long distance, final Long lineID
     ) {
-        return REQUEST_SECTION_CREATE(originalEndDownStationId, newEndDownStationId, distance, lineID);
+        return 새로운_지하철_구간_추가_요청(originalEndDownStationId, newEndDownStationId, distance, lineID);
     }
 }

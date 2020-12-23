@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.station.step.StationAcceptanceStep.REQUEST_CREATE_NEW_STATION;
+import static nextstep.subway.station.step.StationAcceptanceStep.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -29,7 +29,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest stationRequest = new StationRequest("강남역");
 
         // when
-        ExtractableResponse<Response> response = REQUEST_CREATE_NEW_STATION(stationRequest);
+        ExtractableResponse<Response> response = 지하철역_생성_요청(stationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());

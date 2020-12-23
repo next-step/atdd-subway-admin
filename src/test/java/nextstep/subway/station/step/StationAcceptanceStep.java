@@ -7,11 +7,11 @@ import nextstep.subway.station.dto.StationRequest;
 import org.springframework.http.MediaType;
 
 public class StationAcceptanceStep {
-    public static ExtractableResponse<Response> CREATED_STATION(StationRequest stationRequest) {
-        return REQUEST_CREATE_NEW_STATION(stationRequest);
+    public static ExtractableResponse<Response> 지하철역_생성됨(StationRequest stationRequest) {
+        return 지하철역_생성_요청(stationRequest);
     }
 
-    public static ExtractableResponse<Response> REQUEST_CREATE_NEW_STATION(StationRequest stationRequest) {
+    public static ExtractableResponse<Response> 지하철역_생성_요청(StationRequest stationRequest) {
         return RestAssured.given().log().all().
                 body(stationRequest).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
