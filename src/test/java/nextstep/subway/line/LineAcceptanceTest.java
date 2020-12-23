@@ -77,6 +77,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_값_검증됨(response, name, color);
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
+    @Test
+    void getLineFail() {
+        // give
+        String uri = "lines/0";
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(uri);
+
+        // then
+        지하철_노선_조회_실패_응답됨(response);
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
@@ -169,9 +182,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
     }
 
-    private void 지하철_노선_조회_응답됨(final ExtractableResponse<Response> createdResponse,
-                               final ExtractableResponse<Response> response) {
-        assertThat(createdResponse.as(LineResponse.class)).isEqualTo(response.as(LineResponse.class));
+    private void 지하철_노선_조회_실패_응답됨(final ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private void 지하철_노선_목록_포함됨(final ExtractableResponse<Response> response,
@@ -202,6 +214,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_생성_실패됨(final ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

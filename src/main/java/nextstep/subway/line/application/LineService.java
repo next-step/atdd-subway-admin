@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -52,6 +53,6 @@ public class LineService {
 
     private Line getPersistLine(final Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("해당 노선이 없습니다. (입력 값:%d)", id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("노선이 존재하지 않습니다. (입력 id 값: %d)", id)));
     }
 }
