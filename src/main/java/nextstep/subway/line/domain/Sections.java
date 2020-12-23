@@ -68,8 +68,7 @@ public class Sections {
         }
 
         // 상행역도 하행역도 아닌 경우 구간을 추가하는 로직 진행
-        TargetSectionSelector targetSectionSelector = new TargetSectionSelector(this.sections);
-        Section targetSection = targetSectionSelector.findTargetSection(newSection);
+        Section targetSection = this.findTargetSection(newSection);
 
         OriginalSectionCalculator originalSectionCalculator = OriginalSectionCalculator.find(targetSection, newSection);
         originalSectionCalculator.calculate(targetSection, newSection);
@@ -81,6 +80,15 @@ public class Sections {
     // TODO: 최종적으로 Section 추가시 사용하게 될 추가 메서드
     public boolean addSectionByPolicy(final AddSectionPolicy addSectionPolicy, final Section newSection) {
         return addSectionPolicy.addSection(newSection);
+    }
+
+    public Section findTargetSection(final Section newSection) {
+        Section targetSection = findSameWithUpStation(newSection);
+        if (targetSection == null) {
+            targetSection = findSameWithDownStation(newSection);
+        }
+
+        return targetSection;
     }
 
     boolean contains(final Section section) {
@@ -123,5 +131,19 @@ public class Sections {
                 .filter(it -> it.getValue() == 1L)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+    }
+
+    private Section findSameWithUpStation(final Section section) {
+        return this.sections.stream()
+                .filter(it -> it.isSameUpStation(section) && !it.isSameDownStation(section))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Section findSameWithDownStation(final Section section) {
+        return this.sections.stream()
+                .filter(it -> !it.isSameUpStation(section) && it.isSameDownStation(section))
+                .findFirst()
+                .orElse(null);
     }
 }
