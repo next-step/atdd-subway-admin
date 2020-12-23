@@ -1,32 +1,47 @@
 package nextstep.subway.line.dto;
 
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Getter
+@NoArgsConstructor
+@EqualsAndHashCode
 public class LineResponse {
+
     private Long id;
     private String name;
     private String color;
+    private List<StationResponse> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
-    public LineResponse() {
-    }
-
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    @Builder
+    public LineResponse(final Long id, final String name,
+                        final String color, final List<StationResponse> stations,
+                        final LocalDateTime createdDate, final LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.stations = stations;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+        return LineResponse.builder()
+                .id(line.getId())
+                .name(line.getName())
+                .color(line.getColor())
+                .createdDate(line.getCreatedDate())
+                .modifiedDate(line.getModifiedDate())
+                .build();
     }
 
     public static List<LineResponse> ofList(final List<Line> lines) {
@@ -35,40 +50,21 @@ public class LineResponse {
                 .collect(Collectors.toList());
     }
 
-    public Long getId() {
-        return id;
-    }
+    @Getter
+    public static class StationResponse {
 
-    public String getName() {
-        return name;
-    }
+        private final Long id;
+        private final String name;
+        private final LocalDateTime createdDate;
+        private final LocalDateTime modifiedDate;
 
-    public String getColor() {
-        return color;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof LineResponse)) return false;
-        final LineResponse that = (LineResponse) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(color, that.color) &&
-                Objects.equals(createdDate, that.createdDate) &&
-                Objects.equals(modifiedDate, that.modifiedDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, color, createdDate, modifiedDate);
+        @Builder
+        private StationResponse(final Long id, final String name,
+                                final LocalDateTime createdDate, final LocalDateTime modifiedDate) {
+            this.id = id;
+            this.name = name;
+            this.createdDate = createdDate;
+            this.modifiedDate = modifiedDate;
+        }
     }
 }

@@ -122,7 +122,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(final String station, final String color) {
-        LineRequest lineRequest = new LineRequest(station, color);
+        LineRequest lineRequest = LineRequest.builder()
+                .name(station)
+                .color(color)
+                .build();
         return given().log().all()
                 .body(lineRequest)
                 .accept(MediaType.ALL_VALUE)
@@ -155,7 +158,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(final String uri, final String station, final String color) {
-        LineRequest lineRequest = new LineRequest(station, color);
+        LineRequest lineRequest = LineRequest.builder()
+                .name(station)
+                .color(color)
+                .build();
         return given().log().all()
                 .body(lineRequest)
                 .accept(MediaType.ALL_VALUE)
