@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -56,5 +57,14 @@ public class LineController {
 	public ResponseEntity<Void> deleteLine(@PathVariable("id") Long id) {
 		lineService.deleteLine(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{id}/sections")
+	public ResponseEntity<LineResponse> createSection(
+		@PathVariable("id") Long id,
+		@RequestBody @Valid SectionRequest sectionRequest
+	) {
+		LineResponse line = lineService.addSection(id, sectionRequest);
+		return ResponseEntity.ok().body(line);
 	}
 }

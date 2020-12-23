@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 @Getter
@@ -46,11 +47,15 @@ public class LineResponse {
 
 	private static List<StationResponse> convertLineToStationResponses(Line line) {
 		return CollectionUtils.emptyIfNull(line.getAllSection()).stream()
-			.map(section -> Arrays.asList(
-				section.getUpStation(),
-				section.getDownStation()
-				)
-			)
+			.map(section -> {
+				Station upStation = section.getUpStation();
+				Station downStation = section.getDownStation();
+				upStation.updateNextDistance(section.getDistance());
+				return Arrays.asList(
+					upStation,
+					downStation
+				);
+			})
 			.flatMap(Collection::stream)
 			.distinct()
 			.map(StationResponse::of)

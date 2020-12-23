@@ -17,6 +17,7 @@ import nextstep.subway.station.domain.Station;
 public class StationResponse {
 	private Long id;
 	private String name;
+	private int nextDistance;
 	private LocalDateTime createdDate;
 	private LocalDateTime modifiedDate;
 
@@ -24,7 +25,11 @@ public class StationResponse {
 		if (station == null) {
 			throw new NotFoundException("역 정보를 찾을 수 없습니다.");
 		}
-		return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(),
+		return new StationResponse(
+			station.getId(),
+			station.getName(),
+			station.getNextDistance(),
+			station.getCreatedDate(),
 			station.getModifiedDate());
 	}
 

@@ -39,7 +39,7 @@ public class StationService {
 		stationRepository.deleteById(id);
 	}
 
-	public Station getStationById(Long id) {
+	public Station findById(Long id) {
 		return stationRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException("역 정보를 찾을 수 없습니다."));
 	}

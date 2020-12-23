@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,7 +22,22 @@ public class Station extends BaseEntity {
 	@Column(unique = true)
 	private String name;
 
+	@Transient
+	private int nextDistance;
+
 	public Station(String name) {
 		this.name = name;
+	}
+
+	public int getNextDistance() {
+		return nextDistance;
+	}
+
+	public void updateNextDistance(int distance) {
+		this.nextDistance = distance;
+	}
+
+	public boolean isFinalStation() {
+		return this.nextDistance == 0;
 	}
 }
