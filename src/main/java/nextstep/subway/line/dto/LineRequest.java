@@ -44,4 +44,8 @@ public class LineRequest {
     public Line toLine() {
         return new Line(name, color);
     }
+
+    public boolean isContainsSection() {
+        return upStationId != null && downStationId != null;
+    }
 }

@@ -58,6 +58,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(thenLineResponse.getStations()).hasSize(2);
     }
 
+    @DisplayName("지하철 노선을 생성 시 종점역(상행,하행)가 같으면 에러를 반환한다")
+    @Test
+    void createLineInputSameSectionException() {
+        // given
+        // 지하철_역_생성_요청
+        Long 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
+
+        // when
+        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> extract = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역, 강남역);
+        Long extractId = getLineResponse(extract).getId();
+
+        // then
+        // 지하철_노선_생성 실패됨
+        assertThat(extract.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLineExistLineName() {
@@ -155,9 +172,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
+    @DisplayName("지하철 노선 이름을 수정한다.")
     @Test
     void updateLine() {
+        // given
+        // 지하철_노선_등록되어_있음
+        long lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600");
+
+        // when
+        // 지하철_노선_수정_요청
+        String editName = "3호선";
+        String editColor = "bg-orange";
+        지하철_노선_수정_요청(lineId, editName, editColor);
+
+        // then
+        // 지하철_노선_수정됨
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
+
+        LineResponse lineResponse = getLineResponse(response);
+        assertThat(lineResponse.getName()).isEqualTo(editName);
+        assertThat(lineResponse.getColor()).isEqualTo(editColor);
+    }
+
+    @DisplayName("지하철 노선을 구간 정보를 수정한다.")
+    @Test
+    void updateLine2() {
 
         Long 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
         Long 양재역 = StationAcceptanceTest.지하철역_등록되어_있음("양재역");

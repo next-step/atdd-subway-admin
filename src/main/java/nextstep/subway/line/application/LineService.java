@@ -26,7 +26,9 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        persistLine.addSection(ofSection(request));
+        if (request.isContainsSection()) {
+            persistLine.addSection(ofSection(request));
+        }
         return LineResponse.of(persistLine);
     }
 
@@ -44,8 +46,11 @@ public class LineService {
     public void editLine(Long id, LineRequest request) {
         Line lineById = this.findById(id);
         lineById.update(request.toLine());
-        lineRepository.save(lineById)
-                .updateSection(ofSection(request));
+        Line savedLine = lineRepository.save(lineById);
+
+        if (request.isContainsSection()) {
+            savedLine.updateSection(ofSection(request));
+        }
     }
 
     public LineResponse findLineById(Long id) {
