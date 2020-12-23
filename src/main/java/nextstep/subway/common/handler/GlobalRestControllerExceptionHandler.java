@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import lombok.extern.slf4j.Slf4j;
+import nextstep.subway.common.exception.AlreadyExistException;
 import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.section.exception.SectionDistanceException;
 
 @Slf4j
 @RestControllerAdvice(annotations = RestController.class)
@@ -31,5 +33,17 @@ public class GlobalRestControllerExceptionHandler {
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public void handleNotFoundException(NotFoundException e) {
 		log.error("NotFoundException : ", e);
+	}
+
+	@ExceptionHandler(AlreadyExistException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public void handleAlreadyExistException(AlreadyExistException e) {
+		log.error("NotFoundException : ", e);
+	}
+
+	@ExceptionHandler(SectionDistanceException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public void handleSectionDistanceException(SectionDistanceException e) {
+		log.error("SectionDistanceException : ", e);
 	}
 }
