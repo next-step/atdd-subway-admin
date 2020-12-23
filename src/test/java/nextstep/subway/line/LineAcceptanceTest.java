@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ResponseBodyExtractionOptions;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
@@ -162,12 +163,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> createParam = new HashMap<>();
+        createParam.put("name", "신분당선");
+        createParam.put("color", "bg-red-600");
+        RestAssured.given().log().all()
+                .body(createParam)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+        // 지하철_노선_등록되어_있음
+        Map<String, String> updateParam = new HashMap<>();
+        updateParam.put("name", "구분당선");
+        updateParam.put("color", "bg-blue-600");
 
         // when
         // 지하철_노선_수정_요청
+        Long id = 1L;
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(updateParam)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + id)
+                .then().log().all()
+                .extract();
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().as(LineResponse.class).getName()).isEqualTo(updateParam.get("name"));
+        assertThat(response.body().as(LineResponse.class).getColor()).isEqualTo(updateParam.get("color"));
     }
 
     @DisplayName("지하철 노선을 제거한다.")
