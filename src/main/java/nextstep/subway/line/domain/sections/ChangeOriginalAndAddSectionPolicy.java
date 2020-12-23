@@ -15,14 +15,18 @@ public class ChangeOriginalAndAddSectionPolicy implements AddSectionPolicy {
         int originalSize = this.sections.size();
 
         Section targetSection = sections.findTargetSection(newSection);
-        validateTarget(targetSection);
-        validateDistance(newSection, targetSection);
+        validate(newSection, targetSection);
 
         OriginalSectionCalculator originalSectionCalculator = OriginalSectionCalculator.find(targetSection, newSection);
         originalSectionCalculator.calculate(targetSection, newSection);
         sections.addSection(newSection);
 
         return (this.sections.size() == originalSize + 1);
+    }
+
+    private void validate(final Section newSection, final Section targetSection) {
+        validateTarget(targetSection);
+        validateDistance(newSection, targetSection);
     }
 
     private void validateTarget(final Section targetSection) {
