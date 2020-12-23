@@ -33,26 +33,12 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    private Section ofSection(LineRequest request) {
-        return Optional.of(new Section(
-                this.findStationById(request.getUpStationId()),
-                this.findStationById(request.getDownStationId()),
-                request.getDistance()))
-                .filter(Section::isEqualsSectionStation)
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
-    private Station findStationById(Long stationId) {
-        return stationRepository.findById(stationId).orElseThrow(IllegalArgumentException::new);
-    }
-
     public void editLine(Long id, LineRequest request) {
         Line lineById = this.findById(id);
         lineById.update(request.toLine());
-        Line savedLine = lineRepository.save(lineById);
-
+        lineRepository.save(lineById);
         if (request.isContainsSection()) {
-            savedLine.updateSection(ofSection(request));
+            lineById.updateSection(ofSection(request));
         }
     }
 
@@ -76,5 +62,18 @@ public class LineService {
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Section ofSection(LineRequest request) {
+        return Optional.of(new Section(
+                this.findStationById(request.getUpStationId()),
+                this.findStationById(request.getDownStationId()),
+                request.getDistance()))
+                .filter(Section::isEqualsSectionStation)
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(IllegalArgumentException::new);
     }
 }

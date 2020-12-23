@@ -195,7 +195,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 구간 정보를 수정한다.")
     @Test
-    void updateLine2() {
+    void updateLineAndSection() {
 
         Long 강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
         Long 양재역 = StationAcceptanceTest.지하철역_등록되어_있음("양재역");
