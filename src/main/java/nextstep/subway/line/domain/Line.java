@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -34,15 +35,19 @@ public class Line extends BaseEntity {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
-	private Line(String name, String color) {
+	private Line(String name, String color, Station upStation, Station downStation, int distance) {
 		this.name = name;
 		this.color = color;
+		this.addSection(Section.create(this, upStation, downStation, distance));
 	}
 
-	public static Line create(LineRequest request) {
+	public static Line create(String name, String color, Station upStation, Station downStation, int distance) {
 		return new Line(
-			request.getName(),
-			request.getColor()
+			name,
+			color,
+			upStation,
+			downStation,
+			distance
 		);
 	}
 
