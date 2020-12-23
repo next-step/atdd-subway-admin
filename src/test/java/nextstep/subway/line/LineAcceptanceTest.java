@@ -19,13 +19,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        LineRequest requestBody = new LineRequest("2호선", "초록");
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(requestBody)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = request("/lines", new LineRequest("2호선", "초록"));
 
         // then
         // 지하철_노선_생성됨
@@ -38,22 +32,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest requestBody = new LineRequest("2호선", "초록");
-        RestAssured
-                .given().log().all()
-                .body(requestBody)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        request("/lines", requestBody);
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(requestBody)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = request("/lines", requestBody);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -112,5 +94,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+
+    private ExtractableResponse<Response> request(String url, Object body) {
+        return RestAssured
+                .given().log().all()
+                .body(body)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(url)
+                .then().log().all()
+                .extract();
     }
 }
