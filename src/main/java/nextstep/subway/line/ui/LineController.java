@@ -29,19 +29,20 @@ public class LineController {
         return lineService.findByAll();
     }
 
-    @GetMapping(path ="/{id}")
+    @GetMapping(path = "/{id}")
     public LineResponse findLine(@PathVariable Long id) {
         return lineService.findById(id);
     }
 
-    /*
-    @PutMapping
-    public ResponseEntity modifyLine(@RequestBody LineRequest lineRequest, Long id) {
-        LineResponse line = lineService.updateLine(lineRequest, id);
+    @PutMapping(path = "/{id}")
+    public LineResponse modifyLine(@RequestBody LineRequest lineRequest, @PathVariable Long id) {
+        return lineService.updateLine(lineRequest, id);
     }
 
-    @DeleteMapping
-    public ResponseEntity deleteLine(@RequestBody Long id) {
-        LineResponse line = lineService.deleteLine(id);
-    }*/
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.deleteLine(id);
+        return ResponseEntity.ok(URI.create("/lines/" + id));
+    }
 }

@@ -33,4 +33,16 @@ public class LineService {
         Line line = lineRepository.findById(id).get();
         return LineResponse.of(line);
     }
+
+    public LineResponse updateLine(LineRequest lineRequest, Long id) {
+        Line line = lineRepository.findById(id).get();
+        line.update(lineRequest.toLine());
+        lineRepository.flush();
+        return LineResponse.of(line);
+    }
+
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+        lineRepository.flush();
+    }
 }
