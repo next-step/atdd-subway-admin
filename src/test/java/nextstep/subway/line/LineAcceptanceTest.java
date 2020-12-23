@@ -114,8 +114,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
+
         ExtractableResponse<Response> response = RestAssured.given().log().all().
-                body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                 get("/lines").
@@ -136,12 +136,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "분당선");
+        params.put("color", "yellow");
+
+        // then
+        RestAssured.given().log().all().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                post("/lines").
+                then().
+                log().all().
+                extract();
 
         // when
         // 지하철_노선_조회_요청
+        Long id = 1L;
+        ExtractableResponse<Response> response = RestAssured.given().log().all().
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                get("/lines/" + id).
+                then().
+                log().all().
+                extract();
 
         // then
         // 지하철_노선_응답됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")

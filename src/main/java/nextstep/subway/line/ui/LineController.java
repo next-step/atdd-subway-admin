@@ -29,11 +29,12 @@ public class LineController {
         return lineService.findByAll();
     }
 
-    /*@GetMapping
-    public ResponseEntity<LineResponse> findLine(@RequestBody Long id) {
-        LineResponse line = lineService.findById(id);
+    @GetMapping(path ="/{id}")
+    public LineResponse findLine(@PathVariable Long id) {
+        return lineService.findById(id);
     }
 
+    /*
     @PutMapping
     public ResponseEntity modifyLine(@RequestBody LineRequest lineRequest, Long id) {
         LineResponse line = lineService.updateLine(lineRequest, id);
