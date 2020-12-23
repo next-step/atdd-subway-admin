@@ -98,4 +98,13 @@ public class Section extends ValueObjectId {
     public int hashCode() {
         return Objects.hash(upStationId, downStationId, distance);
     }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
+    }
 }

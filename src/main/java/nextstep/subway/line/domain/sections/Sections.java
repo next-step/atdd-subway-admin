@@ -2,6 +2,7 @@ package nextstep.subway.line.domain.sections;
 
 import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
 import nextstep.subway.line.domain.exceptions.EndUpStationNotFoundException;
+import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -51,6 +52,9 @@ public class Sections {
         Section targetSection = findSameWithUpStation(newSection);
         if (targetSection == null) {
             targetSection = findSameWithDownStation(newSection);
+        }
+        if (targetSection == null) {
+            throw new TargetSectionNotFoundException("새로운 구간을 추가할 수 있는 구간이 없습니다.");
         }
 
         return targetSection;
