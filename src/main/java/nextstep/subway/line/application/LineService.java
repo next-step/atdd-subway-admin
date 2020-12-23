@@ -23,4 +23,12 @@ public class LineService {
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
+
+    public List<LineResponse> findAllLines() {
+        List<Line> lines = lineRepository.findAll();
+
+        return lines.stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
+    }
 }
