@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.line.domain.sections;
 
 import nextstep.subway.common.ValueObjectId;
 import nextstep.subway.line.domain.exceptions.InvalidSectionException;

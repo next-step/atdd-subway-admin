@@ -3,7 +3,7 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.sections.Section;
 import nextstep.subway.line.domain.stationAdapter.SafeStationAdapter;
 import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;

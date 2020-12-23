@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.line.domain.sections;
 
 import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
 import nextstep.subway.line.domain.exceptions.EndUpStationNotFoundException;
@@ -20,6 +20,10 @@ public class Sections {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
+
+    public static Sections of() {
+        return new Sections();
+    }
 
     Sections() {
         this(new ArrayList<>());
@@ -43,14 +47,6 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    void addSection(final Section section) {
-        if (sections.size() == 0) {
-            throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
-        }
-
-        this.sections.add(section);
-    }
-
     public Section findTargetSection(final Section newSection) {
         Section targetSection = findSameWithUpStation(newSection);
         if (targetSection == null) {
@@ -68,11 +64,19 @@ public class Sections {
         return this.sections.contains(section);
     }
 
-    boolean isEndSectionAddCase(final Section newSection) {
+    public boolean isEndSectionAddCase(final Section newSection) {
         Section endUpSection = findEndUpSection();
         Section endDownSection = findEndDownSection();
 
         return endUpSection.isSameUpWithThatDown(newSection) || endDownSection.isSameDownWithThatUp(newSection);
+    }
+
+    void addSection(final Section section) {
+        if (sections.size() == 0) {
+            throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
+        }
+
+        this.sections.add(section);
     }
 
     Section findEndUpSection() {

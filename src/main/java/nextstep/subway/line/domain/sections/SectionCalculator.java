@@ -1,6 +1,4 @@
-package nextstep.subway.line.domain;
-
-import nextstep.subway.line.domain.Section;
+package nextstep.subway.line.domain.sections;
 
 public interface SectionCalculator {
     void calculate(Section originalSection, Section addSection);

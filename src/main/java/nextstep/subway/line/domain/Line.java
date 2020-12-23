@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.domain.sections.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -13,7 +14,7 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-    private Sections sections = new Sections();
+    private Sections sections = Sections.of();
 
     public Line() {
     }

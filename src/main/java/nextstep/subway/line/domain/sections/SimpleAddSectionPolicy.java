@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.line.domain.sections;
 
 public class SimpleAddSectionPolicy implements AddSectionPolicy {
     private final Sections sections;
