@@ -21,16 +21,16 @@ public class Sections {
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
 
-    public static Sections of() {
-        return new Sections();
-    }
-
     Sections() {
         this(new ArrayList<>());
     }
 
     Sections(final List<Section> sections) {
         this.sections = sections;
+    }
+
+    public static Sections of() {
+        return new Sections();
     }
 
     public int size() {
