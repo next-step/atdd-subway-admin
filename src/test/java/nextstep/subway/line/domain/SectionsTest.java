@@ -55,4 +55,18 @@ class SectionsTest {
         assertThat(sections.findNextSection(section2)).isEqualTo(section3);
         assertThat(sections.findNextSection(section3)).isNull();
     }
+
+    @DisplayName("구간 순서대로 정렬된 역 목록을 구할 수 있다.")
+    @Test
+    void getStationIdsOrderBySectionTest() {
+        Section section1 = new Section(1L, 4L, 10L);
+        Section section2 = new Section(4L, 3L, 10L);
+        Section section3 = new Section (3L, 2L, 10L);
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(section1, section2, section3)));
+
+        List<Long> stationIds = sections.getStationIdsOrderBySection();
+
+        assertThat(stationIds.get(0)).isEqualTo(1L);
+        assertThat(stationIds.get(stationIds.size() - 1)).isEqualTo(2L);
+    }
 }

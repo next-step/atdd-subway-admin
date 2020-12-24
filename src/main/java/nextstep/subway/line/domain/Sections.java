@@ -43,6 +43,21 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    public List<Long> getStationIdsOrderBySection() {
+        List<Long> stationIds = new ArrayList<>();
+        Section endUpSection = findEndUpSection();
+        stationIds.add(endUpSection.getUpStationId());
+        stationIds.add(endUpSection.getDownStationId());
+
+        Section nextSection = this.findNextSection(endUpSection);
+        while (nextSection != null) {
+            stationIds.add(nextSection.getDownStationId());
+            nextSection = this.findNextSection(nextSection);
+        }
+
+        return stationIds;
+    }
+
     public Section findEndUpSection() {
         List<Long> singleStationIds = calculateSingleStationIds();
 

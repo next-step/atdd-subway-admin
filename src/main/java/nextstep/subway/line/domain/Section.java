@@ -39,6 +39,14 @@ public class Section extends ValueObjectId {
         return Arrays.asList(upStationId, downStationId);
     }
 
+    Long getUpStationId() {
+        return this.upStationId;
+    }
+
+    Long getDownStationId() {
+        return this.downStationId;
+    }
+
     boolean isUpStationBelongsTo(final List<Long> stationIds) {
         return stationIds.contains(this.upStationId);
     }
