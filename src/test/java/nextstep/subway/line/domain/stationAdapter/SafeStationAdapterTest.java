@@ -1,6 +1,6 @@
 package nextstep.subway.line.domain.stationAdapter;
 
-import nextstep.subway.line.domain.exceptions.StationNotFoundException;
+import nextstep.subway.line.domain.exceptions.NotFoundException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationFixtures;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -54,7 +53,8 @@ class SafeStationAdapterTest {
                 .willThrow(new StationNotExistException("Station Aggregate Error"));
 
         assertThatThrownBy(() -> safeStationAdapter.getStationSafely(notExistStationId))
-                .isInstanceOf(StationNotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("해당 역을 찾지 못했습니다.");
     }
 
     @DisplayName("Station ID 목록으로 Station 정보를 ID 오름차순으로 정렬해서 안전하게 받아올 수 있다.")

@@ -1,9 +1,8 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.exceptions.InvalidSectionException;
-import nextstep.subway.line.domain.exceptions.StationNotFoundException;
+import nextstep.subway.line.domain.exceptions.NotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.hibernate.exception.ConstraintViolationException;
@@ -65,18 +64,13 @@ public class LineController {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(LineNotFoundException.class)
-    public ResponseEntity handleLineNotFoundException(LineNotFoundException e) {
-        return ResponseEntity.notFound().build();
-    }
-
     @ExceptionHandler(InvalidSectionException.class)
     public ResponseEntity handleInvalidSectionException(InvalidSectionException e) {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(StationNotFoundException.class)
-    public ResponseEntity handleStationNotFoundException(StationNotFoundException e) {
-        return ResponseEntity.badRequest().build();
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity handleNotFoundException(NotFoundException e) {
+        return ResponseEntity.notFound().build();
     }
 }

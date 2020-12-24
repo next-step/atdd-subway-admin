@@ -1,6 +1,6 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.domain.exceptions.EndUpStationNotFoundException;
+import nextstep.subway.line.domain.exceptions.NotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -9,7 +9,6 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -64,7 +63,7 @@ public class Sections {
 
         return this.sections.stream().filter(it -> it.isUpStationBelongsTo(singleStationIds))
                 .findFirst()
-                .orElseThrow(() -> new EndUpStationNotFoundException("상행종점역 구간을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("상행종점역 구간을 찾을 수 없습니다."));
     }
 
     Section findNextSection(final Section section) {

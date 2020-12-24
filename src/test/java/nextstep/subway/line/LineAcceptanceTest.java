@@ -61,7 +61,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철 노선 등록 실패
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")

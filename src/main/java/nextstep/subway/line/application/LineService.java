@@ -1,8 +1,8 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.exceptions.NotFoundException;
 import nextstep.subway.line.domain.stationAdapter.SafeStationAdapter;
 import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
@@ -52,7 +52,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse getLine(Long lineId) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 라인이 존재하지 않습니다."));
 
         List<Long> stationIds = line.getStationIds();
         List<SafeStationInfo> safeStationInfos = safeStationAdapter.getStationsSafely(stationIds);
@@ -60,10 +60,9 @@ public class LineService {
         return LineResponse.of(line, safeStationInfos);
     }
 
-    // TODO: 향후에는 Station까지 변경될 경우 변경 예정
     public LineResponse updateLine(Long lineId, String changeName, String changeColor) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 라인이 존재하지 않습니다."));
         Line updateLine = new Line(changeName, changeColor);
         line.update(updateLine);
 
@@ -72,7 +71,7 @@ public class LineService {
 
     public void deleteLine(Long lineId) {
         lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 라인이 존재하지 않습니다."));
         lineRepository.deleteById(lineId);
     }
 
