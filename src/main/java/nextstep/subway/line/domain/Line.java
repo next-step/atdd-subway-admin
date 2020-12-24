@@ -69,7 +69,7 @@ public class Line extends BaseEntity {
         return addSectionPolicy.addSection(newSection);
     }
 
-    public void deleteStationOfSection(final Long targetStationId) {
+    public boolean deleteStationOfSection(final Long targetStationId) {
         int minCanDeleteSectionSize = 2;
 
         if (this.sections.size() < minCanDeleteSectionSize) {
@@ -78,6 +78,8 @@ public class Line extends BaseEntity {
         if (this.sections.isThisEndStation(targetStationId)) {
             throw new InvalidStationDeleteTryException("현재는 종점 구간을 삭제할 수 없습니다.");
         }
+
+        return this.sections.mergeSectionsByStation(targetStationId);
     }
 
     public List<Long> getStationIds() {

@@ -138,7 +138,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    boolean mergeSectionsByStation(final Long stationId) {
+    public boolean mergeSectionsByStation(final Long stationId) {
         int validTargetSize = 2;
         int originalSize = this.sections.size();
 

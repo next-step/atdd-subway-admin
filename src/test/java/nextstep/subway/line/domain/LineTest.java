@@ -77,4 +77,22 @@ class LineTest {
         assertThatThrownBy(() -> line.deleteStationOfSection(deleteTarget))
                 .isInstanceOf(InvalidStationDeleteTryException.class);
     }
+
+    @DisplayName("구간의 역을 삭제할 수 있다.")
+    @Test
+    void deleteStationOfSectionTest() {
+        Long initUpStationId = 1L;
+        Long initDownStationId = 2L;
+        Long initDistance = 10L;
+        Long secondSectionUp = 2L;
+        Long secondSectionDown = 3L;
+        Long deleteTarget = 2L;
+        Line line = new Line(LINE_NAME, LINE_COLOR);
+        line.initFirstSection(initUpStationId, initDownStationId, initDistance);
+        line.addSection(new Section(secondSectionUp, secondSectionDown, 10L));
+
+        boolean result = line.deleteStationOfSection(deleteTarget);
+
+        assertThat(result).isTrue();
+    }
 }
