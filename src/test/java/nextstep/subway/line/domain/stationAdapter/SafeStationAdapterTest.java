@@ -36,15 +36,14 @@ class SafeStationAdapterTest {
     @Test
     void getSafeStationInfoTest() {
         Long stationId = 1L;
-        String stationName = "test";
-        LocalDateTime now = LocalDateTime.now();
-        given(stationService.getStation(stationId))
-                .willReturn(StationFixtures.createStationFixture(stationId, stationName, now));
+        String stationName = "갱남역";
+        given(stationService.getStation(stationId)).willReturn(StationFixtures.ID1_STATION);
 
         SafeStationInfo safeStationInfo = safeStationAdapter.getStationSafely(stationId);
 
         assertThat(safeStationInfo).isNotNull();
-        assertThat(safeStationInfo).isEqualTo(new SafeStationInfo(1L, stationName, now, null));
+        assertThat(safeStationInfo.getId()).isEqualTo(stationId);
+        assertThat(safeStationInfo.getName()).isEqualTo(stationName);
     }
 
     @DisplayName("존재하지 않는 Station 정보 요청 시 Line 도메인의 예외 발생")
@@ -66,11 +65,10 @@ class SafeStationAdapterTest {
         Long station2Id = 2L;
         Long station3Id = 3L;
         int expectedSize = 3;
-        LocalDateTime now = LocalDateTime.now();
         List<Station> mockStations = Arrays.asList(
-                StationFixtures.createStationFixture(station3Id, "test3", now),
-                StationFixtures.createStationFixture(station1Id, "test2", now),
-                StationFixtures.createStationFixture(station2Id, "test2", now)
+                StationFixtures.ID3_STATION,
+                StationFixtures.ID1_STATION,
+                StationFixtures.ID2_STATION
         );
         List<Long> stationIds = Arrays.asList(station3Id, station2Id, station1Id);
 

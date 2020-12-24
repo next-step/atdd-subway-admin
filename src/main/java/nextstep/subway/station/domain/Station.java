@@ -32,8 +32,4 @@ public class Station extends BaseEntity {
     public String getName() {
         return name;
     }
-
-    void updateCreatedDate(final LocalDateTime localDateTime) {
-        super.setCreatedDate(localDateTime);
-    }
 }

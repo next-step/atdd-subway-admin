@@ -195,8 +195,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## Step2 피드백 반영
 - [X] 불필요한 gradle 모듈 제거
 - [X] 불필요한 http 테스트 제거
-- [ ] JPA Auditing의 setter 제거
+- [X] JPA Auditing의 setter 제거
 - [X] JPA ID 구현을 Abstract 클래스로 전환
 - [ ] 중복되는 Exception 통합
-- [ ] Station Fixture에서 ID를 인자로 생성가능한 정적 팩토리 메서드 제거
+- [X] Station Fixture에서 ID를 인자로 생성가능한 정적 팩토리 메서드 제거
   - 필요한 때 필요한만큼만 생성된 걸 사용하는 걸로
