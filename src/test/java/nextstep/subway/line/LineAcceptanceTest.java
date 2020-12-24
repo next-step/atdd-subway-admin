@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -16,23 +17,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    final Map<String, String> params = new HashMap<>();
+
+    @BeforeEach
+    void 노선_생성_요청_파라미터_설정() {
+        노선_생성_요청시_이름_색상_설정("2호선", "초록색");
+    }
+
+    void 노선_생성_요청시_이름_색상_설정(final String name, final String color) {
+        params.put("name", name);
+        params.put("color", color);
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청();
 
         // then
         // 지하철_노선_생성됨
@@ -45,32 +49,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "초록색");
-
-        RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        지하철_노선_생성_요청();
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청();
 
         // then
         // 지하철_노선_생성_실패됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         assertThat(response.header("Location")).isBlank();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청() {
+        return RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
