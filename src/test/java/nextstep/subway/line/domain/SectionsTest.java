@@ -3,6 +3,8 @@ package nextstep.subway.line.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,5 +25,19 @@ class SectionsTest {
         List<Long> stationIds = sections.getStationIds();
 
         assertThat(stationIds).hasSize(expectedSize);
+    }
+
+    @DisplayName("상행 종점역 구간을 찾아낼 수 있다.")
+    @Test
+    void findEndUpSectionTest() {
+        Section endUpStation = new Section(1L, 2L, 10L);
+
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
+                endUpStation,
+                new Section(2L, 3L, 10L),
+                new Section (3L, 4L, 10L)
+        )));
+
+        assertThat(sections.findEndUpSection()).isEqualTo(endUpStation);
     }
 }

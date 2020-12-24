@@ -188,4 +188,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 사용자가 정상적으로 정보를 조회할 수 있도록 DTO에 getter 추가
 - [X] SafeStationInfo 도메인이 외부로 직접 노출되지 않도록 DTO 변환 작업 추가
 - [ ] Line에서 Station 조회 시 Section 순서대로 조회
-  - [ ] Sections에서 순차적으로 탐색하며 Station ID 목록을 조회할 수 있도록 기능 추가
+  - [ ] Sections에서 상행종점역을 찾는 기능 추가
+  - [ ] Sections에서 생항종점역을 기준으로 다음역을 탐색하며 결과를 합치는 기능 추가

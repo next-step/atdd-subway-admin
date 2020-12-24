@@ -35,6 +35,10 @@ public class Section extends ValueObjectId {
         return Arrays.asList(upStationId, downStationId);
     }
 
+    boolean isUpStationBelongsTo(final List<Long> stationIds) {
+        return stationIds.contains(this.upStationId);
+    }
+
     private void validate(final Long upStationId, final Long downStationId, final Long distance) {
         validateStations(upStationId, downStationId);
         validateDistance(distance);
