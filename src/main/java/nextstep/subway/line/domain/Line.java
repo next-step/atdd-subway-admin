@@ -1,8 +1,19 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -12,6 +23,9 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
+
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    private List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
@@ -36,5 +50,32 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public void addSection(Section section) {
+        section.setLine(this);
+        this.sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        return this.sections
+                .stream()
+                .map(Section::upAndDownStations)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public void updateSection(Section section) {
+        if(isChangedStations(section)){
+            this.sections.stream()
+                    .findFirst()
+                    .ifPresent(s -> s.update(section));
+        }
+    }
+
+    private boolean isChangedStations(Section section) {
+        return !this.sections.stream()
+                .allMatch(s -> s.equals(section));
     }
 }
