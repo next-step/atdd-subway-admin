@@ -69,6 +69,10 @@ public class Section extends ValueObjectId {
         this.distance = this.distance - section.distance;
     }
 
+    boolean isHasThisStation(final Long stationId) {
+        return (this.upStationId.equals(stationId) || this.downStationId.equals(stationId));
+    }
+
     boolean isUpStationBelongsTo(final List<Long> stationIds) {
         return stationIds.contains(this.upStationId);
     }

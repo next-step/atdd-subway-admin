@@ -285,4 +285,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [ ] 삭제 대상이 종점이 아닌지 확인
   - [ ] 삭제 가능한 상태이고 삭제 대상이 종점이 아닌 경우 Sections에게 삭제 요청
 - [ ] Sections 삭제 기능 메서드 추가
+  - [X] Station ID를 인자로 받아서 연관된 Section을 모두 찾아주는 기능 구현
   - [ ] 종점이 아닌 경우의 삭제 기능(구간 병합) 구현

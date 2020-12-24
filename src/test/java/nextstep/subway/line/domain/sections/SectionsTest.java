@@ -156,4 +156,68 @@ class SectionsTest {
 
         assertThat(sections.findEndDownSection()).isEqualTo(endDownStation);
     }
+
+    @DisplayName("특정 역과 연관된 Section 목록을 찾을 수 있다.")
+    @ParameterizedTest
+    @MethodSource("findRelatedSectionsTestResource")
+    void findRelatedSectionsTest(Long targetStationId, List<Section> sectionsValue, List<Section> expectedSections) {
+        Sections sections = new Sections(new ArrayList<>(sectionsValue));
+
+        List<Section> foundSections = sections.findRelatedSections(targetStationId);
+
+        assertThat(foundSections).containsAll(expectedSections);
+    }
+    public static Stream<Arguments> findRelatedSectionsTestResource() {
+        return Stream.of(
+                // 종점이 아닌 경우
+                Arguments.of(
+                        2L,
+                        Arrays.asList(
+                                new Section(1L, 2L, 10L),
+                                new Section(2L, 3L, 10L),
+                                new Section (3L, 4L, 10L)
+                        ),
+                        Arrays.asList(
+                                new Section(1L, 2L, 10L),
+                                new Section(2L, 3L, 10L)
+                        )
+                ),
+                Arguments.of(
+                        3L,
+                        Arrays.asList(
+                                new Section(1L, 2L, 10L),
+                                new Section(2L, 3L, 10L),
+                                new Section (3L, 4L, 10L)
+                        ),
+                        Arrays.asList(
+                                new Section(2L, 3L, 10L),
+                                new Section (3L, 4L, 10L)
+                        )
+                ),
+                // 종점인 경우
+                Arguments.of(
+                        1L,
+                        Arrays.asList(
+                                new Section(1L, 2L, 10L),
+                                new Section(2L, 3L, 10L),
+                                new Section (3L, 4L, 10L)
+                        ),
+                        Arrays.asList(
+                                new Section(1L, 2L, 10L)
+                        )
+                ),
+                Arguments.of(
+                        4L,
+                        Arrays.asList(
+                                new Section(1L, 2L, 10L),
+                                new Section(2L, 3L, 10L),
+                                new Section (3L, 4L, 10L)
+
+                        ),
+                        Arrays.asList(
+                                new Section (3L, 4L, 10L)
+                        )
+                )
+        );
+    }
 }

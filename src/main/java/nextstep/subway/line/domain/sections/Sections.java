@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -122,6 +123,12 @@ public class Sections {
         }
 
         this.sections.add(section);
+    }
+
+    List<Section> findRelatedSections(final Long targetStationId) {
+        return sections.stream()
+                .filter(it -> it.isHasThisStation(targetStationId))
+                .collect(Collectors.toList());
     }
 
     boolean isAllStationsIn(final Section newSection) {
