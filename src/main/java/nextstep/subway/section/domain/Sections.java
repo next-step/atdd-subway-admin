@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 import nextstep.subway.common.exception.AlreadyExistException;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.exception.MinimumSectionException;
 import nextstep.subway.section.exception.SectionDistanceException;
 import nextstep.subway.station.domain.Station;
 
@@ -121,6 +122,7 @@ public class Sections {
 	public void removeSectionByStation(Line line, Station targetStation) {
 		List<Station> stations = convertSectionToStation();
 		int targetIndex = stations.indexOf(targetStation);
+		validateBeforeRemove(targetIndex);
 		if (targetIndex == 0) {
 			stations.remove(0);
 		}
@@ -132,6 +134,15 @@ public class Sections {
 		updateLastStationDistanceZero(stations);
 		removeLastSection();
 		convertStationToSection(line, stations);
+	}
+
+	private void validateBeforeRemove(int targetIndex) {
+		if (targetIndex == -1) {
+			throw new NotFoundException("삭제할 대상 역을 찾을 수 없습니다.");
+		}
+		if (sections.size() <= 1) {
+			throw new MinimumSectionException("최소 1개 이상의 구간이 필요합니다.");
+		}
 	}
 
 	private void updateLastStationDistanceZero(List<Station> stations) {
