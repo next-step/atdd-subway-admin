@@ -35,19 +35,27 @@ public class LineStations {
         lineStations.add(lineStation);
     }
 
-    public List<Station> getStations(final Station baseStation) {
-        List<Station> order = new ArrayList<>();
-        order.add(baseStation);
+    public List<Station> getStationsOrderByUp(final Station baseStation) {
+        List<Station> orderedStations = new ArrayList<>();
+        orderedStations.add(baseStation);
 
-        List<LineStation> targets = new ArrayList<>(this.lineStations);
+        List<LineStation> targets = new ArrayList<>(lineStations);
         Station next = baseStation;
-        for (LineStation target : targets) {
-            if (target.getUpStation().equals(next)) {
-                Station downStation = target.getDownStation();
-                order.add(downStation);
-                next = downStation;
-            }
+        while (targets.size() > 0) {
+            LineStation lineStation = nextTarget(targets, next);
+            Station downStation = lineStation.getDownStation();
+            orderedStations.add(downStation);
+            next = downStation;
         }
-        return order;
+        return orderedStations;
+    }
+
+    private LineStation nextTarget(final List<LineStation> targets, final Station next) {
+        LineStation lineStation = targets.stream()
+                .filter(target -> target.isUpStation(next))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+        targets.remove(lineStation);
+        return lineStation;
     }
 }

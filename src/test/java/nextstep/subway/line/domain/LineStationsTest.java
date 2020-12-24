@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간에 대한 테스트")
-class SectionsTest {
+class LineStationsTest {
 
     private Line line;
 
@@ -37,13 +37,12 @@ class SectionsTest {
         // given
         LineStation lineStation = LineStation.of(line, new Station("청량리역"), new Station("신창역"), 100);
         LineStations lineStations = LineStations.init(lineStation);
-        LineStation newStation = LineStation.of(line, new Station("당정역"), new Station("금정역"), 10);
+        LineStation newStation = LineStation.of(line, new Station("청량리역"), new Station("신도림역"), 10);
 
         // when
         lineStations.add(newStation);
 
         // then
-        assertThat(lineStations.getLineStations()).contains(newStation);
+        assertThat(lineStations.getLineStations()).containsExactly(lineStation, newStation);
     }
-
 }

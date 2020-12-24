@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간에 대한 테스트")
-class SectionTest {
+class LineStationTest {
 
     private Line line;
 

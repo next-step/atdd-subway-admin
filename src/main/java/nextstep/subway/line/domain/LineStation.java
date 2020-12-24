@@ -45,4 +45,12 @@ public class LineStation {
     public static LineStation of(final Line line, final Station upStation, final Station downStation, final int distance) {
         return new LineStation(line, upStation, downStation, distance);
     }
+
+    public boolean isUpStation(final Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
+    public boolean isDownStation(final Station downStation) {
+        return this.downStation.equals(downStation);
+    }
 }

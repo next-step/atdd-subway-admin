@@ -64,4 +64,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 요구사항
 - [X] 노선 생성 시 종점역(상행, 하행), 구간을 함께 추가하기
-- [ ] 노선 조회 응답 결과에 등록된 구간을 참고하여 역 목록 응답 추가하기
+- [X] 노선 조회 응답 결과에 등록된 구간을 참고하여 역 목록 응답 추가하기
