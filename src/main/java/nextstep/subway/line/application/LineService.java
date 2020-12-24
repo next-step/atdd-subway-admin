@@ -74,4 +74,12 @@ public class LineService {
 		line.addSection(Section.create(line, upStation, downStation, sectionRequest.getDistance()));
 		return LineResponse.of(line);
 	}
+
+	@Transactional
+	public LineResponse removeSectionByStation(Long lineId, Long stationId) {
+		Line line = findById(lineId);
+		Station targetStation = stationService.findById(stationId);
+		line.removeSectionByStation(targetStation);
+		return LineResponse.of(line);
+	}
 }

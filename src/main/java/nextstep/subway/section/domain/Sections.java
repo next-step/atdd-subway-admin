@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.exception.AlreadyExistException;
 import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.exception.SectionDistanceException;
 import nextstep.subway.station.domain.Station;
 
@@ -45,7 +46,7 @@ public class Sections {
 			setPositionDownMatch(section, stations, downMatchIndex);
 		}
 		// 다시 A B C D E ->  [A B] [B C] [C D] [D E] 섹션으로만든다.
-		convertStationToSection(section, stations);
+		convertStationToSection(section.getLine(), stations);
 	}
 
 	private void validateMatch(int upMatchIndex, int downMatchIndex) {
@@ -57,7 +58,7 @@ public class Sections {
 		}
 	}
 
-	private void convertStationToSection(Section section, List<Station> stations) {
+	private void convertStationToSection(Line line, List<Station> stations) {
 		for (int i = 0; i < stations.size() - 1; i++) {
 			Station upstation = stations.get(i);
 			Station downStation = stations.get(i + 1);
@@ -67,7 +68,7 @@ public class Sections {
 				targetSection.update(upstation, downStation, distance);
 				continue;
 			}
-			sections.add(Section.create(section.getLine(), upstation, downStation, distance));
+			sections.add(Section.create(line, upstation, downStation, distance));
 		}
 	}
 
@@ -115,5 +116,30 @@ public class Sections {
 			.flatMap(Collection::stream)
 			.distinct()
 			.collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	public void removeSectionByStation(Line line, Station targetStation) {
+		List<Station> stations = convertSectionToStation();
+		int targetIndex = stations.indexOf(targetStation);
+		if (targetIndex == 0) {
+			stations.remove(0);
+		}
+		if (targetIndex > 0) {
+			Station preStation = stations.get(targetIndex - 1);
+			preStation.sumNextDistance(targetStation);
+			stations.remove(targetIndex);
+		}
+		updateLastStationDistanceZero(stations);
+		removeLastSection();
+		convertStationToSection(line, stations);
+	}
+
+	private void updateLastStationDistanceZero(List<Station> stations) {
+		Station lastStation = stations.get(stations.size() - 1);
+		lastStation.updateNextDistance(0);
+	}
+
+	private void removeLastSection() {
+		this.sections.remove(this.sections.size() - 1);
 	}
 }
