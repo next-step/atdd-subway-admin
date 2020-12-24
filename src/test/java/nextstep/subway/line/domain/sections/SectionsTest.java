@@ -217,7 +217,33 @@ class SectionsTest {
                         Arrays.asList(
                                 new Section (3L, 4L, 10L)
                         )
+                ),
+                // 아예 무관한 경우
+                Arguments.of(
+                        5L,
+                        Arrays.asList(
+                                new Section(1L, 2L, 10L),
+                                new Section(2L, 3L, 10L),
+                                new Section (3L, 4L, 10L)
+
+                        ),
+                        new ArrayList<>()
                 )
         );
+    }
+
+    @DisplayName("접점이 있는 구간끼리 병합할 수 있다.")
+    @Test
+    void mergeTest() {
+        Long targetStation = 4L;
+        Section section1 = new Section(1L, 4L, 10L);
+        Section section2 = new Section(4L, 3L, 10L);
+        Section section3 = new Section (3L, 2L, 10L);
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(section1, section2, section3)));
+
+        sections.mergeSectionsByStation(targetStation);
+
+        assertThat(sections.containsAll(Arrays.asList(
+                new Section(1L, 3L, 20L), section3))).isTrue();
     }
 }

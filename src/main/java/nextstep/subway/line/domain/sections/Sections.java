@@ -131,6 +131,33 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    boolean mergeSectionsByStation(final Long stationId) {
+        List<Section> relatedSections = findRelatedSections(stationId);
+        if (relatedSections.size() != 2) {
+            // TODO: 에러 제대로 정의하기
+            throw new IllegalArgumentException();
+        }
+        relatedSections.forEach(this::removeSection);
+
+        // Section으로 책임 이관 예정
+        Section firstSection = relatedSections.get(0);
+        Section secondSection = relatedSections.get(1);
+        if (firstSection.getUpStationId().equals(secondSection.getDownStationId())) {
+            Section mergedSection = new Section(secondSection.getUpStationId(), firstSection.getDownStationId(),
+                    firstSection.getDistance() + secondSection.getDistance());
+            this.sections.add(mergedSection);
+            return true;
+        }
+        Section mergedSection = new Section(firstSection.getUpStationId(), secondSection.getDownStationId(),
+                firstSection.getDistance() + secondSection.getDistance());
+        this.sections.add(mergedSection);
+        return true;
+    }
+
+    void removeSection(final Section section) {
+        this.sections.remove(section);
+    }
+
     boolean isAllStationsIn(final Section newSection) {
         List<Long> stationIds = newSection.getStationIds();
 

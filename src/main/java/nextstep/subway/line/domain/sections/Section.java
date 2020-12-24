@@ -123,4 +123,8 @@ public class Section extends ValueObjectId {
                 ", distance=" + distance +
                 '}';
     }
+
+    Long getDistance() {
+        return this.distance;
+    }
 }
