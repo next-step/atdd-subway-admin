@@ -281,10 +281,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - and 삭제된 역과 연관되어 있던 구간들끼리 병합됨
 ### Todo-list
 - [ ] Line에 삭제 기능 메서드 추가
-  - [ ] 해당 Line의 구간이 삭제 가능한 상태인지 확인 (구간 길이 2 이상)
+  - [X] 해당 Line의 구간이 삭제 가능한 상태인지 확인 (구간 길이 2 이상)
   - [ ] 삭제 대상이 종점이 아닌지 확인
   - [ ] 삭제 가능한 상태이고 삭제 대상이 종점이 아닌 경우 Sections에게 삭제 요청
-- [ ] Sections 삭제 기능 메서드 추가
+- [X] Sections 삭제 기능 메서드 추가
   - [X] Station ID를 인자로 받아서 연관된 Section을 모두 찾아주는 기능 구현
   - [X] 구간 병합 기능 구현
     - 병합인지 단순삭제인지는 Line에서 판단하고 관린한다.

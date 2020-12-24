@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain.sections;
 
 import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
+import nextstep.subway.line.domain.exceptions.MergeSectionFailException;
 import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -233,17 +234,80 @@ class SectionsTest {
     }
 
     @DisplayName("접점이 있는 구간끼리 병합할 수 있다.")
-    @Test
-    void mergeTest() {
-        Long targetStation = 4L;
-        Section section1 = new Section(1L, 4L, 10L);
-        Section section2 = new Section(4L, 3L, 10L);
-        Section section3 = new Section (3L, 2L, 10L);
-        Sections sections = new Sections(new ArrayList<>(Arrays.asList(section1, section2, section3)));
+    @ParameterizedTest
+    @MethodSource("mergeTestResource")
+    void mergeTest(Long targetStation, List<Section> sectionsValue, List<Section> expectedSections) {
+        Sections sections = new Sections(new ArrayList<>(sectionsValue));
 
-        sections.mergeSectionsByStation(targetStation);
+        boolean result = sections.mergeSectionsByStation(targetStation);
 
-        assertThat(sections.containsAll(Arrays.asList(
-                new Section(1L, 3L, 20L), section3))).isTrue();
+        assertThat(result).isTrue();
+        assertThat(sections.containsAll(expectedSections)).isTrue();
+    }
+    public static Stream<Arguments> mergeTestResource() {
+        return Stream.of(
+                Arguments.of(
+                        4L,
+                        Arrays.asList(
+                                new Section(1L, 4L, 10L),
+                                new Section(4L, 3L, 10L),
+                                new Section (3L, 2L, 10L)
+                        ),
+                        Arrays.asList(
+                                new Section(1L, 3L, 20L),
+                                new Section (3L, 2L, 10L)
+                        )
+                ),
+                Arguments.of(
+                        3L,
+                        Arrays.asList(
+                                new Section(1L, 4L, 10L),
+                                new Section(4L, 3L, 10L),
+                                new Section (3L, 2L, 10L)
+                        ),
+                        Arrays.asList(
+                                new Section(1L, 4L, 10L),
+                                new Section (4L, 2L, 20L)
+                        )
+                )
+        );
+    }
+
+    @DisplayName("목표 역과 연관된 구간이 2개가 아닐 경우 예외가 발생한다.")
+    @ParameterizedTest
+    @MethodSource("mergeFailTestResource")
+    void mergeFailTest(Long targetStation, List<Section> sectionsValue) {
+        Sections sections = new Sections(new ArrayList<>(sectionsValue));
+
+        assertThatThrownBy(() -> sections.mergeSectionsByStation(targetStation))
+                .isInstanceOf(MergeSectionFailException.class);
+    }
+    public static Stream<Arguments> mergeFailTestResource() {
+        return Stream.of(
+                Arguments.of(
+                        1L,
+                        Arrays.asList(
+                                new Section(1L, 4L, 10L),
+                                new Section(4L, 3L, 10L),
+                                new Section (3L, 2L, 10L)
+                        )
+                ),
+                Arguments.of(
+                        2L,
+                        Arrays.asList(
+                                new Section(1L, 4L, 10L),
+                                new Section(4L, 3L, 10L),
+                                new Section (3L, 2L, 10L)
+                        )
+                ),
+                Arguments.of(
+                        5L,
+                        Arrays.asList(
+                                new Section(1L, 4L, 10L),
+                                new Section(4L, 3L, 10L),
+                                new Section (3L, 2L, 10L)
+                        )
+                )
+        );
     }
 }

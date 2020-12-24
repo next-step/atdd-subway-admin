@@ -2,7 +2,9 @@ package nextstep.subway.line.domain.sections;
 
 import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
 import nextstep.subway.line.domain.exceptions.EndUpStationNotFoundException;
+import nextstep.subway.line.domain.exceptions.MergeSectionFailException;
 import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -116,6 +118,11 @@ public class Sections {
                 .orElseThrow(() -> new EndUpStationNotFoundException("하행종점역 구간을 찾을 수 없습니다."));
     }
 
+    public boolean isThisEndStation(Long stationId) {
+        return this.findEndUpSection().getUpStationId().equals(stationId) ||
+                this.findEndDownSection().getDownStationId().equals(stationId);
+    }
+
     // 패키지 외부로 노출되면 도메인을 심각하게 손상할 수 있는 메서드
     void addSection(final Section section) {
         if (sections.size() == 0) {
@@ -132,26 +139,18 @@ public class Sections {
     }
 
     boolean mergeSectionsByStation(final Long stationId) {
+        int validTargetSize = 2;
+        int originalSize = this.sections.size();
+
         List<Section> relatedSections = findRelatedSections(stationId);
-        if (relatedSections.size() != 2) {
-            // TODO: 에러 제대로 정의하기
-            throw new IllegalArgumentException();
+        if (relatedSections.size() != validTargetSize) {
+            throw new MergeSectionFailException("병합할 수 없는 중간역입니다.");
         }
         relatedSections.forEach(this::removeSection);
 
-        // Section으로 책임 이관 예정
-        Section firstSection = relatedSections.get(0);
-        Section secondSection = relatedSections.get(1);
-        if (firstSection.getUpStationId().equals(secondSection.getDownStationId())) {
-            Section mergedSection = new Section(secondSection.getUpStationId(), firstSection.getDownStationId(),
-                    firstSection.getDistance() + secondSection.getDistance());
-            this.sections.add(mergedSection);
-            return true;
-        }
-        Section mergedSection = new Section(firstSection.getUpStationId(), secondSection.getDownStationId(),
-                firstSection.getDistance() + secondSection.getDistance());
+        Section mergedSection = relatedSections.get(0).merge(relatedSections.get(1));
         this.sections.add(mergedSection);
-        return true;
+        return (this.sections.size() == originalSize - 1);
     }
 
     void removeSection(final Section section) {

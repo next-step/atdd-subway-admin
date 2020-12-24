@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.domain.exceptions.InvalidStationDeleteTryException;
 import nextstep.subway.line.domain.sections.*;
 
 import javax.persistence.*;
@@ -66,6 +67,17 @@ public class Line extends BaseEntity {
         AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy(sections);
 
         return addSectionPolicy.addSection(newSection);
+    }
+
+    public void deleteStationOfSection(final Long targetStationId) {
+        int minCanDeleteSectionSize = 2;
+
+        if (this.sections.size() < minCanDeleteSectionSize) {
+            throw new InvalidStationDeleteTryException("남은 구간의 길이가 너무 짧아서 삭제할 수 없습니다.");
+        }
+        if (this.sections.isThisEndStation(targetStationId)) {
+            throw new InvalidStationDeleteTryException("현재는 종점 구간을 삭제할 수 없습니다.");
+        }
     }
 
     public List<Long> getStationIds() {
