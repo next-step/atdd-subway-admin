@@ -91,11 +91,7 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
-    public static Long 응답_헤더에서_ID_추출(ExtractableResponse<Response> response) {
-        return Long.parseLong(response.header("location").split("/")[2]);
-    }
-
-    public static void 응답에_역들_포함되어_있음(
+    public static void 응답에_역들이_순서대로_정렬되어_있음(
             ExtractableResponse<Response> response, StationResponse upStation, StationResponse downStation
     ) {
         LineResponse lineResponse = response.as(LineResponse.class);
@@ -108,7 +104,20 @@ public class LineAcceptanceStep {
                 .map(StationInLineResponse::getName)
                 .collect(Collectors.toList());
 
-        assertThat(stationIds).contains(upStation.getId(), downStation.getId());
+        assertThat(stationIds.get(0)).isEqualTo(upStation.getId());
+        assertThat(stationIds.get(1)).isEqualTo(downStation.getId());
         assertThat(stationNames).contains(upStation.getName(), downStation.getName());
+    }
+
+    public static Long 응답_헤더에서_ID_추출(ExtractableResponse<Response> response) {
+        return Long.parseLong(response.header("location").split("/")[2]);
+    }
+
+    public static void 지하철_노선_변경됨(final Long lineId, final String changeName, final String changeColor) {
+        ExtractableResponse<Response> foundResponse = 특정_지하철_노선_조회_요청(lineId);
+
+        LineResponse foundLine = foundResponse.as(LineResponse.class);
+        assertThat(foundLine.getName()).isEqualTo(changeName);
+        assertThat(foundLine.getColor()).isEqualTo(changeColor);
     }
 }

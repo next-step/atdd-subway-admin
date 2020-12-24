@@ -48,6 +48,21 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    public List<Long> getStationIdsOrderBySection() {
+        List<Long> stationIds = new ArrayList<>();
+        Section endUpSection = findEndUpSection();
+        stationIds.add(endUpSection.getUpStationId());
+        stationIds.add(endUpSection.getDownStationId());
+
+        Section nextSection = this.findNextSection(endUpSection);
+        while (nextSection != null) {
+            stationIds.add(nextSection.getDownStationId());
+            nextSection = this.findNextSection(nextSection);
+        }
+
+        return stationIds;
+    }
+
     public Section findTargetSection(final Section newSection) {
         Section targetSection = findSameWithUpStation(newSection);
         if (targetSection == null) {
@@ -60,20 +75,36 @@ public class Sections {
         return targetSection;
     }
 
-    public boolean containsAll(final List<Section> targetSections) {
-        return targetSections.stream().allMatch(this::contains);
-    }
-
-    public boolean contains(final Section section) {
-        return this.sections.contains(section);
-    }
-
     public Section findEndUpSection() {
         List<Long> singleStationIds = calculateSingleStationIds();
 
         return this.sections.stream().filter(it -> it.isUpStationBelongsTo(singleStationIds))
                 .findFirst()
                 .orElseThrow(() -> new EndUpStationNotFoundException("상행종점역 구간을 찾을 수 없습니다."));
+    }
+
+    Section findNextSection(final Section section) {
+        return this.sections.stream()
+                .filter(it -> it.isSameUpWithThatDown(section))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private List<Long> calculateSingleStationIds() {
+        return this.getStationIds().stream()
+                .collect(Collectors.groupingBy(Function.identity(), counting()))
+                .entrySet().stream()
+                .filter(it -> it.getValue() == 1L)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    public boolean containsAll(final List<Section> targetSections) {
+        return targetSections.stream().allMatch(this::contains);
+    }
+
+    public boolean contains(final Section section) {
+        return this.sections.contains(section);
     }
 
     public Section findEndDownSection() {
@@ -102,15 +133,6 @@ public class Sections {
     private List<Long> getStationIds() {
         return sections.stream()
                 .flatMap(it -> it.getStationIds().stream())
-                .collect(Collectors.toList());
-    }
-
-    private List<Long> calculateSingleStationIds() {
-        return this.getStationIds().stream()
-                .collect(Collectors.groupingBy(Function.identity(), counting()))
-                .entrySet().stream()
-                .filter(it -> it.getValue() == 1L)
-                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
 

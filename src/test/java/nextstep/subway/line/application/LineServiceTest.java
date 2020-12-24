@@ -138,11 +138,16 @@ class LineServiceTest {
     void getLineTest() {
         Long lineId = 1L;
         int expectedSize = 2;
+        Long upStationId = 1L;
+        Long downStationId = 2L;
         LocalDateTime now = LocalDateTime.now();
-        given(lineRepository.findById(lineId)).willReturn(Optional.of(LineFixtures.ID1_LINE));
+        Line lineFixture = LineFixtures.createLineFixture(
+                lineId, "2호선", "금색", upStationId, downStationId, 3L);
+
+        given(lineRepository.findById(lineId)).willReturn(Optional.of(lineFixture));
         given(safeStationAdapter.getStationsSafely(any())).willReturn(Arrays.asList(
-                new SafeStationInfo(1L, "test1", now, now),
-                new SafeStationInfo(2L, "test2", now, now)
+                new SafeStationInfo(upStationId, "test1", now, now),
+                new SafeStationInfo(downStationId, "test2", now, now)
         ));
 
         LineResponse response = lineService.getLine(lineId);

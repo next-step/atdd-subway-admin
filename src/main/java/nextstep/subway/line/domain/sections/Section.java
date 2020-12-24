@@ -43,6 +43,14 @@ public class Section extends ValueObjectId {
         return Arrays.asList(upStationId, downStationId);
     }
 
+    Long getUpStationId() {
+        return this.upStationId;
+    }
+
+    Long getDownStationId() {
+        return this.downStationId;
+    }
+
     boolean isSameUpStation(final Section thatSection) {
         return this.upStationId.equals(thatSection.upStationId);
     }

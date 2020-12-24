@@ -69,7 +69,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Long> getStationIds() {
-        return this.sections.getStationIdsWithoutDup();
+        return this.sections.getStationIdsOrderBySection();
     }
 
     private boolean isEndSectionAddCase(

@@ -216,7 +216,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        응답에_역들_포함되어_있음(
+        응답에_역들이_순서대로_정렬되어_있음(
                 response, upStationCreated.as(StationResponse.class), downStationCreated.as(StationResponse.class)
         );
     }
@@ -236,6 +236,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         String lineName = "비 내리는 호남선";
         String lineColor = "남행열차색";
+        String changeName = "변경선";
+        String changeColor = "변화의색";
         // given
         // 상행종점역 등록되어 있음
         ExtractableResponse<Response> upStationCreated = 지하철역_생성됨(new StationRequest("갱남역"));
@@ -251,12 +253,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_수정_요청
         Long lineId = 응답_헤더에서_ID_추출(response);
-        LineRequest lineRequest = new LineRequest(lineName, lineColor, upStationId, downStationId, 12L);
+        LineRequest lineRequest = new LineRequest(changeName, changeColor, 1L, 2L, 3L);
         ExtractableResponse<Response> resultResponse = 지하철_노선_변경_요청(lineId, lineRequest);
 
         // then
         // 지하철_노선_수정됨
         assertThat(resultResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        지하철_노선_변경됨(lineId, changeName, changeColor);
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
