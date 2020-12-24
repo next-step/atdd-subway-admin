@@ -46,6 +46,10 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
+
     private NotExistsException createNotExistsException(Long id) {
         return new NotExistsException("line_id " + id + " is not exists.");
     }
