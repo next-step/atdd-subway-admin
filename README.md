@@ -63,5 +63,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## Step2 지하철 노선 구간 조회
 
 ### 요구사항
-- [ ] 노선 생성 시 종점역(상행, 하행)을 함께 추가하기
+- [X] 노선 생성 시 종점역(상행, 하행), 구간을 함께 추가하기
 - [ ] 노선 조회 응답 결과에 등록된 구간을 참고하여 역 목록 응답 추가하기
