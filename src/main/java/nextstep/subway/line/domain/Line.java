@@ -58,7 +58,6 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
         this.distance = line.distance;
         this.lastStation = line.lastStation;
-        this.lineStations = line.lineStations;
     }
 
     public void addLineStation(final Station upStation, final Station downStation, final int distance) {

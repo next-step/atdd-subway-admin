@@ -160,8 +160,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest updateRequest = LineRequest.builder()
                 .name("1호선")
                 .color("blue")
-                .upStationId(2L)
-                .downStationId(1L)
+                .upStationId(1L)
+                .downStationId(3L)
                 .distance(5)
                 .build();
 
@@ -279,7 +279,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(lineResponse.getModifiedDate()).isNotNull(),
                 () -> assertThat(lineResponse.getCreatedDate()).isNotNull(),
                 () -> assertThat(lineResponse.getStations()).isNotNull(),
-                () -> assertThat(lineResponse.getStations().size()).isGreaterThanOrEqualTo(2)
+                () -> assertThat(lineResponse.getStations().size()).isGreaterThanOrEqualTo(1)
         );
     }
 

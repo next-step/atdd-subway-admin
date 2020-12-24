@@ -51,8 +51,7 @@ class LineTest {
                 () -> assertThat(line1.getName()).isEqualTo(line2.getName()),
                 () -> assertThat(line1.getColor()).isEqualTo(line2.getColor()),
                 () -> assertThat(line1.getDistance()).isEqualTo(line2.getDistance()),
-                () -> assertThat(line1.getLastStation()).isEqualTo(line2.getLastStation()),
-                () -> assertThat(line1.getLineStations()).isEqualTo(line2.getLineStations())
+                () -> assertThat(line1.getLastStation()).isEqualTo(line2.getLastStation())
         );
     }
 
