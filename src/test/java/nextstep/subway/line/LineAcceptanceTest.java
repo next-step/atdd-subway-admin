@@ -1,17 +1,15 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.utils.RequestTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -28,7 +26,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = doPost("/lines", new LineRequest("2호선", "초록"));
+        ExtractableResponse<Response> response = RequestTest.doPost("/lines", new LineRequest("2호선", "초록"));
 
         // then
         // 지하철_노선_생성됨
@@ -41,10 +39,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest requestBody = new LineRequest("2호선", "초록");
-        doPost("/lines", requestBody);
+        RequestTest.doPost("/lines", requestBody);
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = doPost("/lines", requestBody);
+        ExtractableResponse<Response> response = RequestTest.doPost("/lines", requestBody);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -56,13 +54,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = doPost("/lines", new LineRequest("2호선", "초록"));
+        ExtractableResponse<Response> createResponse = RequestTest.doPost("/lines", new LineRequest("2호선", "초록"));
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse2 = doPost("/lines", new LineRequest("1호선", "파랑"));
+        ExtractableResponse<Response> createResponse2 = RequestTest.doPost("/lines", new LineRequest("1호선", "파랑"));
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = doGet("/lines");
+        ExtractableResponse<Response> response = RequestTest.doGet("/lines");
 
         // then
         // 지하철_노선_목록_응답됨
@@ -87,13 +85,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = doPost("/lines", new LineRequest("2호선", "초록"));
+        ExtractableResponse<Response> createResponse = RequestTest.doPost("/lines", new LineRequest("2호선", "초록"));
         String location = createResponse.header(HttpHeaders.LOCATION);
         Long lineId = pathVariableToLong(location);
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = doGet("/lines/" + lineId);
+        ExtractableResponse<Response> response = RequestTest.doGet("/lines/" + lineId);
 
         // then
         // 지하철_노선_응답됨
@@ -124,35 +122,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-    }
-
-    private ExtractableResponse<Response> doPost(String url, Object body) {
-        return RestAssured
-                .given().log().all()
-                .body(body)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(url)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> doGet(String url) {
-        return doGetWithParameter(url, null);
-    }
-
-
-    private ExtractableResponse<Response> doGetWithParameter(String url, Object body) {
-        RequestSpecification specification = RestAssured.given().log().all();
-        if (body != null) {
-            specification = specification.body(body)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE);
-        }
-        return specification
-                .when()
-                .get(url)
-                .then().log().all()
-                .extract();
     }
 
     private Long pathVariableToLong(String location) {
