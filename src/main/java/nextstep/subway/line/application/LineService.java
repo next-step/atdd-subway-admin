@@ -34,7 +34,19 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         Line persistLine = lineRepository.findById(id)
-                .orElseThrow(() -> new NotExistsException("line_id " + id + " is not exists."));
+                .orElseThrow(() -> createNotExistsException(id));
         return LineResponse.of(persistLine);
+    }
+
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line persistLine = lineRepository.findById(id)
+                .orElseThrow(() -> createNotExistsException(id));
+        persistLine.update(lineRequest.toLine());
+        lineRepository.flush();
+        return LineResponse.of(persistLine);
+    }
+
+    private NotExistsException createNotExistsException(Long id) {
+        return new NotExistsException("line_id " + id + " is not exists.");
     }
 }

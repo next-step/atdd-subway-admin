@@ -103,12 +103,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = RequestTest.doPost("/lines", new LineRequest("2호선", "초록"));
+        LineResponse lineResponse = createResponse.body().as(LineResponse.class);
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = RequestTest.doPut("/lines/" + lineResponse.getId(), new LineRequest("2호선", "빨강"));
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
