@@ -70,6 +70,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .downStationId(2L)
                 .distance(10)
                 .build();
+        지하철_노선_생성_요청(lineRequest);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
@@ -160,7 +161,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .name("1호선")
                 .color("blue")
                 .upStationId(2L)
-                .downStationId(3L)
+                .downStationId(1L)
                 .distance(5)
                 .build();
 

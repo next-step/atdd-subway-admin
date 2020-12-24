@@ -21,29 +21,29 @@ class SectionsTest {
     @Test
     void init() {
         // given
-        Section section = Section.of(line, new Station("청량리역"), new Station("신창역"), 100);
+        LineStation lineStation = LineStation.of(line, new Station("청량리역"), new Station("신창역"), 100);
 
         // when
-        Sections init = Sections.init(section);
+        LineStations init = LineStations.init(lineStation);
 
         // then
         assertThat(init).isNotNull();
-        assertThat(init.getSections()).containsExactly(section);
+        assertThat(init.getLineStations()).containsExactly(lineStation);
     }
 
     @DisplayName("지하철 구간을 추가합니다.")
     @Test
     void add() {
         // given
-        Section section = Section.of(line, new Station("청량리역"), new Station("신창역"), 100);
-        Sections sections = Sections.init(section);
-        Section newStation = Section.of(line, new Station("당정역"), new Station("금정역"), 10);
+        LineStation lineStation = LineStation.of(line, new Station("청량리역"), new Station("신창역"), 100);
+        LineStations lineStations = LineStations.init(lineStation);
+        LineStation newStation = LineStation.of(line, new Station("당정역"), new Station("금정역"), 10);
 
         // when
-        sections.add(newStation);
+        lineStations.add(newStation);
 
         // then
-        assertThat(sections.getSections()).contains(newStation);
+        assertThat(lineStations.getLineStations()).contains(newStation);
     }
 
 }

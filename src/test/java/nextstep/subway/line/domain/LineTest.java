@@ -31,7 +31,7 @@ class LineTest {
                 () -> assertThat(line.getColor()).isEqualTo(color),
                 () -> assertThat(line.getDistance()).isEqualTo(distance),
                 () -> assertThat(line.getLastStation()).isEqualTo(lastStation),
-                () -> assertThat(line.getSections().getSections()).contains(Section.of(line, upStation, downStation, distance))
+                () -> assertThat(line.getLineStations().getLineStations()).contains(LineStation.of(line, upStation, downStation, distance))
         );
     }
 
@@ -52,7 +52,7 @@ class LineTest {
                 () -> assertThat(line1.getColor()).isEqualTo(line2.getColor()),
                 () -> assertThat(line1.getDistance()).isEqualTo(line2.getDistance()),
                 () -> assertThat(line1.getLastStation()).isEqualTo(line2.getLastStation()),
-                () -> assertThat(line1.getSections()).isEqualTo(line2.getSections())
+                () -> assertThat(line1.getLineStations()).isEqualTo(line2.getLineStations())
         );
     }
 
@@ -66,11 +66,11 @@ class LineTest {
         int distance = 200;
 
         // when
-        line.addSection(upStation, downStation, distance);
+        line.addLineStation(upStation, downStation, distance);
 
 
         // then
-        assertThat(line.getSections().getSections()).contains(Section.of(line, upStation, downStation, distance));
+        assertThat(line.getLineStations().getLineStations()).contains(LineStation.of(line, upStation, downStation, distance));
     }
 
     public static Line 지하철_1호선_생성됨() {

@@ -26,10 +26,10 @@ class SectionTest {
         int distance = 100;
 
         // when
-        Section section = Section.of(line, station1, station2, distance);
+        LineStation lineStation = LineStation.of(line, station1, station2, distance);
 
         // then
-        assertThat(section).isNotNull();
+        assertThat(lineStation).isNotNull();
     }
 
     @DisplayName("지하철 구간에 같은 노선과 같은 역이라면 동등성을 보장합니다.")
@@ -38,11 +38,11 @@ class SectionTest {
         // given
         Station station1 = new Station("금정역");
         Station station2 = new Station("당정역");
-        Section section1 = Section.of(line, station1, station2, 100);
-        Section section2 = Section.of(line, station1, station2, 200);
+        LineStation lineStation1 = LineStation.of(line, station1, station2, 100);
+        LineStation lineStation2 = LineStation.of(line, station1, station2, 200);
 
         // when
-        boolean equals = section1.equals(section2);
+        boolean equals = lineStation1.equals(lineStation2);
 
         // then
         assertThat(equals).isTrue();
@@ -55,11 +55,11 @@ class SectionTest {
         Station station1 = new Station("금정역");
         Station station2 = new Station("당정역");
         Station station3 = new Station("관악역");
-        Section section1 = Section.of(line, station1, station2, 100);
-        Section section2 = Section.of(line, station1, station3, 100);
+        LineStation lineStation1 = LineStation.of(line, station1, station2, 100);
+        LineStation lineStation2 = LineStation.of(line, station1, station3, 100);
 
         // when
-        boolean equals = section1.equals(section2);
+        boolean equals = lineStation1.equals(lineStation2);
 
         // then
         assertThat(equals).isFalse();
