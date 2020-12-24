@@ -143,8 +143,8 @@ class LineServiceTest {
         Long upStationId = 1L;
         Long downStationId = 2L;
         LocalDateTime now = LocalDateTime.now();
-        Line lineFixture = LineFixtures.createLineFixture(
-                lineId, "2호선", "금색", upStationId, downStationId, 3L);
+        Line lineFixture = LineFixtures.ID1_LINE;
+        lineFixture.addNewSection(upStationId, downStationId, 3L);
 
         given(lineRepository.findById(lineId)).willReturn(Optional.of(lineFixture));
         given(safeStationAdapter.getStationsSafely(any())).willReturn(Arrays.asList(

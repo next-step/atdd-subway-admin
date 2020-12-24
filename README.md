@@ -200,3 +200,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [ ] 중복되는 Exception 통합
 - [X] Station Fixture에서 ID를 인자로 생성가능한 정적 팩토리 메서드 제거
   - 필요한 때 필요한만큼만 생성된 걸 사용하는 걸로
+- [ ] Line Fixture의 정적 팩토리 메서드도 마찬가지로 제거
