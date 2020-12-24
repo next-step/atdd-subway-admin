@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,8 +21,14 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        Line persistLine = new Line();
+        try {
+            persistLine = lineRepository.save(request.toLine());
+        } catch (Exception e) {
+            System.out.println(e.getMessage()); //log.error
+        } finally {
+            return LineResponse.of(persistLine);
+        }
     }
 
     public List<LineResponse> findByAll() {
@@ -30,19 +37,23 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id).get();
-        return LineResponse.of(line);
+        Line line = new Line();
+        try {
+            line = lineRepository.findById(id).get();
+        } catch (Exception e) {
+            System.out.println(e.getMessage()); //log.error
+        } finally {
+            return LineResponse.of(line);
+        }
     }
 
     public LineResponse updateLine(LineRequest lineRequest, Long id) {
         Line line = lineRepository.findById(id).get();
         line.update(lineRequest.toLine());
-        lineRepository.flush();
         return LineResponse.of(line);
     }
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
-        lineRepository.flush();
     }
 }

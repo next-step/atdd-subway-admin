@@ -93,6 +93,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_생성됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
+        LineResponse lineResponse = response.response().getBody().as(LineResponse.class);
+        Assertions.assertThat(lineResponse.getName()).isEqualTo("분당선");
+        Assertions.assertThat(lineResponse.getColor()).isEqualTo("yellow");
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -146,6 +149,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_응답됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse lineResponse = response.response().getBody().as(LineResponse.class);
+        Assertions.assertThat(lineResponse.getName()).isEqualTo("분당선");
+        Assertions.assertThat(lineResponse.getColor()).isEqualTo("yellow");
+    }
+
+    @DisplayName("지하철 노선을 조회실패한다.")
+    @Test
+    void getLine2() {
+        // given
+        // 지하철_노선_등록되어_있음
+        createSubwayLine(createParams("분당선", "yellow"));
+
+        // when
+        // 지하철_노선_조회_요청
+        Long id = 4L;
+        ExtractableResponse<Response> response = searchSubwayLineOne(id);
+
+        // then
+        // 지하철_노선_응답 실패됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -163,6 +186,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_수정됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse lineResponse = response.response().getBody().as(LineResponse.class);
+        Assertions.assertThat(lineResponse.getName()).isEqualTo("2호선");
+        Assertions.assertThat(lineResponse.getColor()).isEqualTo("green");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -179,6 +205,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
