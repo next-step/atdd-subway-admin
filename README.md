@@ -280,13 +280,15 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - 지하철 구간 소넌 제거 성공
       - and 삭제된 역과 연관되어 있던 구간들끼리 병합됨
 ### Todo-list
-- [ ] Line에 삭제 기능 메서드 추가
+- [ ] 인수테스트 시나리오1 구현 및 테스트
+- [X] Line에 삭제 기능 메서드 추가
   - [X] 해당 Line의 구간이 삭제 가능한 상태인지 확인 (구간 길이 2 이상)
   - [X] 삭제 대상이 종점이 아닌지 확인 (현재는 종점인 경우 삭제 못하도록 기능 제한)
-  - [ ] 삭제 가능한 상태이고 삭제 대상이 종점이 아닌 경우 Sections에게 삭제 요청
+  - [X] 삭제 가능한 상태이고 삭제 대상이 종점이 아닌 경우 Sections에게 삭제 요청
 - [X] Sections 삭제 기능 메서드 추가
   - [X] Station ID를 인자로 받아서 연관된 Section을 모두 찾아주는 기능 구현
   - [X] 구간 병합 기능 구현
     - 병합인지 단순삭제인지는 Line에서 판단하고 관린한다.
 - [X] Section 간 병합 기능 추가
   - [X] 인자로 받은 Section과 일치하는 구간 여부에 따라 알아서 머지 된 Section을 반환한다.
+- [ ] 위의 도메인 기능을 service, controller 레이어에 연결
