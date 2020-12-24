@@ -279,6 +279,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - then
       - 지하철 구간 소넌 제거 성공
       - and 삭제된 역과 연관되어 있던 구간들끼리 병합됨
+  
 ### Todo-list
 - [ ] 인수테스트 시나리오1 구현 및 테스트
 - [X] Line에 삭제 기능 메서드 추가
