@@ -191,3 +191,12 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] Sections에서 상행종점역을 찾는 기능 추가
   - [X] Sections에서 생항종점역을 기준으로 다음역을 탐색하며 결과를 합치는 기능 추가
 - [ ] 구간 역 목록 조회 기능의 인수 조건을 순서 정렬이 제대로 됐는지 확인하도록 변경
+
+## Step2 피드백 반영
+- [ ] 불필요한 gradle 모듈 제거
+- [ ] 불필요한 http 테스트 제거
+- [ ] JPA Auditing의 setter 제거
+- [ ] JPA ID 구현을 Abstract 클래스로 전환
+- [ ] 중복되는 Exception 통합
+- [ ] Station Fixture에서 ID를 인자로 생성가능한 정적 팩토리 메서드 제거
+  - 필요한 때 필요한만큼만 생성된 걸 사용하는 걸로
