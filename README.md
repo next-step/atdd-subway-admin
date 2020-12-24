@@ -193,7 +193,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [ ] 구간 역 목록 조회 기능의 인수 조건을 순서 정렬이 제대로 됐는지 확인하도록 변경
 
 ## Step2 피드백 반영
-- [ ] 불필요한 gradle 모듈 제거
+- [X] 불필요한 gradle 모듈 제거
 - [ ] 불필요한 http 테스트 제거
 - [ ] JPA Auditing의 setter 제거
 - [ ] JPA ID 구현을 Abstract 클래스로 전환
