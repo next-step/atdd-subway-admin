@@ -31,6 +31,10 @@ public class Section extends ValueObjectId {
         this(null, upStationId, downStationId, distance);
     }
 
+    public boolean isSameUpWithThatDown(final Section thatSection) {
+        return this.upStationId.equals(thatSection.downStationId);
+    }
+
     List<Long> getStationIds() {
         return Arrays.asList(upStationId, downStationId);
     }

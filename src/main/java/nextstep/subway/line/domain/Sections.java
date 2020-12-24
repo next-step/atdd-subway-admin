@@ -51,6 +51,13 @@ public class Sections {
                 .orElseThrow(() -> new EndUpStationNotFoundException("상행종점역 구간을 찾을 수 없습니다."));
     }
 
+    Section findNextSection(final Section section) {
+        return this.sections.stream()
+                .filter(it -> it.isSameUpWithThatDown(section))
+                .findFirst()
+                .orElse(null);
+    }
+
     private List<Long> calculateSingleStationIds() {
         return this.getStationIds().stream()
                 .collect(Collectors.groupingBy(Function.identity(), counting()))
