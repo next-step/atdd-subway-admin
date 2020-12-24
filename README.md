@@ -135,14 +135,14 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - 사용자가 새로운 지하철 노선의 이름, 색상, 상행종점역, 하행종점역, 종점역 간 거리 중 하나라도 빠진 채로 지하철 노선 등록을 요청한다.
     - then
       - 지하철 노선 등록 실패
-  - [ ] 시나리오7: 특정 지하철 노선 조회 시 등록된 지하철 역 목록이 보인다.
+  - [ ] 시나리오7: 특정 지하철 노선 조회 시 `구간 순서대로` 역 목록이 보인다.
     - given
       - 지하철 노선 등록되어 있음
       - and 지하철 노선의 역들 모두 등록되어 있음
     - when
       - 사용자가 특정 지하철 노선 정보를 보기 위해 조회 요청
     - then
-      - 특정 지하철 노선의 지하철 역 정보가 포함된 정보가 보인다.
+      - 특정 지하철 노선의 지하철 역 정보가 `구간 순서대로` 보인다.
 
 ### Todo-list
 - Section
@@ -187,3 +187,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] Sections에서 중복 없이 등록된 역 목록을 받을 수 있도록 기능 구현
 - [X] 사용자가 정상적으로 정보를 조회할 수 있도록 DTO에 getter 추가
 - [X] SafeStationInfo 도메인이 외부로 직접 노출되지 않도록 DTO 변환 작업 추가
+- [ ] Line에서 Station 조회 시 Section 순서대로 조회
+  - [ ] Sections에서 순차적으로 탐색하며 Station ID 목록을 조회할 수 있도록 기능 추가
