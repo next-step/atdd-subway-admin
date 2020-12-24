@@ -2,6 +2,7 @@ package nextstep.subway.line.domain.sections;
 
 import nextstep.subway.common.ValueObjectId;
 import nextstep.subway.line.domain.exceptions.InvalidSectionException;
+import nextstep.subway.line.domain.exceptions.MergeSectionFailException;
 
 import javax.persistence.Entity;
 import java.util.Arrays;
@@ -37,6 +38,26 @@ public class Section extends ValueObjectId {
 
     public boolean isSameDownWithThatUp(final Section thatSection) {
         return this.downStationId.equals(thatSection.upStationId);
+    }
+
+    public boolean isHasBiggerDistance(final Section thatSection) {
+        return this.distance >= thatSection.distance;
+    }
+
+    Section merge(final Section thatSection) {
+        List<Long> thisStationIds = this.getStationIds();
+
+        if (!thisStationIds.contains(thatSection.upStationId) && !thisStationIds.contains(thatSection.downStationId)) {
+            throw new MergeSectionFailException(" 접점이 없는 Section을 병합할 수 없습니다.");
+        }
+        if (thisStationIds.containsAll(thatSection.getStationIds())) {
+            throw new MergeSectionFailException(" 접점이 두개인 Section을 병합할 수 없습니다.");
+        }
+        if (this.isSameDownWithThatUp(thatSection)) {
+            return new Section(upStationId, thatSection.downStationId, distance + thatSection.distance);
+        }
+
+        return new Section(thatSection.upStationId, downStationId, distance + thatSection.distance);
     }
 
     List<Long> getStationIds() {
@@ -106,10 +127,6 @@ public class Section extends ValueObjectId {
         return Objects.equals(upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId) && Objects.equals(distance, section.distance);
     }
 
-    public boolean isHasBiggerDistance(final Section thatSection) {
-        return this.distance >= thatSection.distance;
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(upStationId, downStationId, distance);
@@ -124,6 +141,7 @@ public class Section extends ValueObjectId {
                 '}';
     }
 
+    // TODO: 머지 기능 완료 후 삭제
     Long getDistance() {
         return this.distance;
     }
