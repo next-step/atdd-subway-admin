@@ -338,4 +338,38 @@ public class SectionAcceptanceTest extends BaseTest {
 		);
 	}
 
+	@DisplayName("노선에 등록되지 않은 역 제거")
+	@Test
+	void deleteSectionThrow1() {
+		// given
+		createSectionCase1();
+		StationResponse newStation = stationService.saveStation(StationRequest.of(EXAMPLE_STATION4_NAME));
+
+		// when
+		// 지하철_구간_삭제_요청
+		ExtractableResponse<Response> response = requestDeleteSection(exampleLine1.getId(), newStation.getId());
+
+		// then
+		// 지하철_구간_삭제시 오류
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value())
+		);
+	}
+
+	@DisplayName("구간이 하나인 경우에 역 제거")
+	@Test
+	void deleteSectionThrow2() {
+		// given
+
+		// when
+		// 지하철_구간_삭제_요청
+		ExtractableResponse<Response> response = requestDeleteSection(exampleLine1.getId(), exampleStation1.getId());
+
+		// then
+		// 지하철_구간_삭제시 오류
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+		);
+	}
+
 }
