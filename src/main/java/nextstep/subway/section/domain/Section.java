@@ -26,10 +26,10 @@ public class Section extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Line line;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Station upStation;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Station downStation;
 
 	private int distance;
@@ -43,5 +43,11 @@ public class Section extends BaseEntity {
 
 	public static Section create(Line line, Station upStation, Station downStation, int distance) {
 		return new Section(line, upStation, downStation, distance);
+	}
+
+	public void update(Station upstation, Station downStation, int distance) {
+		this.upStation = upstation;
+		this.downStation = downStation;
+		this.distance = distance;
 	}
 }

@@ -7,13 +7,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -28,13 +29,10 @@ public class LineService {
 
 	@Transactional
 	public LineResponse saveLine(LineRequest request) {
-		Line persistLine = lineRepository.save(Line.create(request));
-		Station upStation = stationService.getStationById(request.getUpStationId());
-		Station downStation = stationService.getStationById(request.getDownStationId());
-		Section section = sectionRepository.save(
-			Section.create(persistLine, upStation, downStation, request.getDistance())
-		);
-		persistLine.addSection(section);
+		Station upStation = stationService.findById(request.getUpStationId());
+		Station downStation = stationService.findById(request.getDownStationId());
+		Line persistLine = lineRepository.save(
+			Line.create(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
 
 		return LineResponse.of(persistLine);
 	}
@@ -65,6 +63,15 @@ public class LineService {
 
 	private Line findById(Long id) {
 		return lineRepository.findById(id)
-			.orElseThrow(() -> new LineNotFoundException("노선 정보를 찾을 수 없습니다."));
+			.orElseThrow(() -> new NotFoundException("노선 정보를 찾을 수 없습니다."));
+	}
+
+	@Transactional
+	public LineResponse addSection(long lineId, SectionRequest sectionRequest) {
+		Line line = findById(lineId);
+		Station upStation = stationService.findById(sectionRequest.getUpStationId());
+		Station downStation = stationService.findById(sectionRequest.getDownStationId());
+		line.addSection(Section.create(line, upStation, downStation, sectionRequest.getDistance()));
+		return LineResponse.of(line);
 	}
 }

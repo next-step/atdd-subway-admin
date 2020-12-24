@@ -11,39 +11,49 @@
     <template slot="text">
       <v-form ref="sectionForm" v-model="valid" @submit.prevent>
         <v-select
-          v-model="sectionForm.lineId"
-          :items="lineNameViews"
-          @change="onChangeLine"
-          label="노선 선택"
-          width="400"
-          item-color="amber darken-3"
-          color="grey darken-1"
-          outlined
-          dense
+            v-model="sectionForm.lineId"
+            :items="lineNameViews"
+            @change="onChangeLine"
+            label="노선 선택"
+            width="400"
+            item-color="amber darken-3"
+            color="grey darken-1"
+            outlined
+            dense
         ></v-select>
         <div class="d-flex">
           <v-select
-            v-model="sectionForm.upStationId"
-            class="pr-5"
-            :items="allStationsView"
-            label="상행역"
-            width="400"
-            color="grey darken-1"
-            item-color="amber darken-3"
-            outlined
-            dense
+              v-model="sectionForm.upStationId"
+              class="pr-5"
+              :items="allStationsView"
+              label="상행역"
+              width="400"
+              color="grey darken-1"
+              item-color="amber darken-3"
+              outlined
+              dense
           ></v-select>
           <v-select
-            v-model="sectionForm.downStationId"
-            class="pl-5"
-            :items="allStationsView"
-            label="하행역"
-            width="400"
-            color="grey darken-1"
-            item-color="amber darken-3"
-            outlined
-            dense
+              v-model="sectionForm.downStationId"
+              class="pl-5"
+              :items="allStationsView"
+              label="하행역"
+              width="400"
+              color="grey darken-1"
+              item-color="amber darken-3"
+              outlined
+              dense
           ></v-select>
+        </div>
+        <div class="d-flex">
+          <v-text-field
+              v-model="sectionForm.distance"
+              :rules="rules.section.distance"
+              color="grey darken-1"
+              label="거리"
+              placeholder="거리"
+              outlined
+          ></v-text-field>
         </div>
       </v-form>
     </template>
@@ -55,17 +65,25 @@
 
 <script>
 import Dialog from '@/components/dialogs/Dialog'
-import { SNACKBAR_MESSAGES } from '@/utils/constants'
+import {SNACKBAR_MESSAGES} from '@/utils/constants'
 import dialog from '@/mixins/dialog'
 import validator from '@/utils/validator'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
-import { CREATE_SECTION, CREATE_LINE, DELETE_LINE, EDIT_LINE, FETCH_LINE, FETCH_LINES, FETCH_STATIONS } from '@/store/shared/actionTypes'
+import {mapActions, mapGetters, mapMutations} from 'vuex'
+import {SHOW_SNACKBAR} from '@/store/shared/mutationTypes'
+import {
+  CREATE_LINE,
+  CREATE_SECTION,
+  DELETE_LINE,
+  EDIT_LINE,
+  FETCH_LINE,
+  FETCH_LINES,
+  FETCH_STATIONS
+} from '@/store/shared/actionTypes'
 
 export default {
   name: 'SectionCreateButton',
   mixins: [dialog],
-  components: { Dialog },
+  components: {Dialog},
   computed: {
     ...mapGetters(['lines', 'stations'])
   },
@@ -151,7 +169,7 @@ export default {
   },
   data() {
     return {
-      rules: { ...validator },
+      rules: {...validator},
       sectionForm: {
         lineId: '',
         upStationId: '',

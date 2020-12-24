@@ -14,8 +14,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 @Getter
@@ -32,7 +33,7 @@ public class LineResponse {
 
 	public static LineResponse of(Line line) {
 		if (line == null) {
-			throw new LineNotFoundException("노선 정보를 찾을 수 없습니다.");
+			throw new NotFoundException("노선 정보를 찾을 수 없습니다.");
 		}
 
 		return new LineResponse(
@@ -45,14 +46,19 @@ public class LineResponse {
 	}
 
 	private static List<StationResponse> convertLineToStationResponses(Line line) {
-		return CollectionUtils.emptyIfNull(line.getSections()).stream()
-			.map(section -> Arrays.asList(
-				StationResponse.of(section.getUpStation()),
-				StationResponse.of(section.getDownStation())
-				)
-			)
+		return CollectionUtils.emptyIfNull(line.getAllSection()).stream()
+			.map(section -> {
+				Station upStation = section.getUpStation();
+				Station downStation = section.getDownStation();
+				upStation.updateNextDistance(section.getDistance());
+				return Arrays.asList(
+					upStation,
+					downStation
+				);
+			})
 			.flatMap(Collection::stream)
 			.distinct()
+			.map(StationResponse::of)
 			.collect(Collectors.toList());
 	}
 
