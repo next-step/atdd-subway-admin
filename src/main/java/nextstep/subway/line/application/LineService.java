@@ -62,7 +62,6 @@ public class LineService {
         return LineResponse.of(line, safeStationInfos);
     }
 
-    // TODO: 향후에는 Station까지 변경될 경우 변경 예정
     @Transactional
     public LineResponse updateLine(Long lineId, String changeName, String changeColor) {
         Line line = lineRepository.findById(lineId)
