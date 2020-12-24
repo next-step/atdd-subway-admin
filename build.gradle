@@ -29,6 +29,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	runtimeOnly 'com.h2database:h2'
+
+	// jaxb osgi absolute path 문제로 인해 추가
+	compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '3.0.0'
 }
 
 test {
