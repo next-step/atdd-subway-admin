@@ -216,7 +216,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        응답에_역들_포함되어_있음(
+        응답에_역들이_순서대로_정렬되어_있음(
                 response, upStationCreated.as(StationInfo.class), downStationCreated.as(StationInfo.class)
         );
     }

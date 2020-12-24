@@ -103,7 +103,7 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
-    public static void 응답에_역들_포함되어_있음(
+    public static void 응답에_역들이_순서대로_정렬되어_있음(
             ExtractableResponse<Response> response, StationInfo upStation, StationInfo downStation
     ) {
         LineResponse lineResponse = response.as(LineResponse.class);
@@ -116,7 +116,8 @@ public class LineAcceptanceStep {
                 .map(StationInLineResponse::getName)
                 .collect(Collectors.toList());
 
-        assertThat(stationIds).contains(upStation.getId(), downStation.getId());
+        assertThat(stationIds.get(0)).isEqualTo(upStation.getId());
+        assertThat(stationIds.get(1)).isEqualTo(downStation.getId());
         assertThat(stationNames).contains(upStation.getName(), downStation.getName());
     }
 
