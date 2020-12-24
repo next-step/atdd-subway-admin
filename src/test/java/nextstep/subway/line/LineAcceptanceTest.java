@@ -8,12 +8,9 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.utils.RequestTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,8 +64,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
         List<Long> expected = Stream.of(createResponse, createResponse2)
-                .map(it -> it.header(HttpHeaders.LOCATION))
-                .map(this::pathVariableToLong)
+                .map(it -> it.body().as(LineResponse.class))
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
         List<Long> result = response.jsonPath()
@@ -86,12 +83,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse = RequestTest.doPost("/lines", new LineRequest("2호선", "초록"));
-        String location = createResponse.header(HttpHeaders.LOCATION);
-        Long lineId = pathVariableToLong(location);
+        LineResponse lineResponse = createResponse.body().as(LineResponse.class);
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = RequestTest.doGet("/lines/" + lineId);
+        ExtractableResponse<Response> response = RequestTest.doGet("/lines/" + lineResponse.getId());
 
         // then
         // 지하철_노선_응답됨
@@ -126,14 +122,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-    }
-
-    private Long pathVariableToLong(String location) {
-        String regex = "/lines/(\\d)$";
-        Matcher m = Pattern.compile(regex).matcher(location);
-        if (m.find()) {
-            return Long.parseLong(m.group(1));
-        }
-        throw new RuntimeException("Not matched expression : " + regex);
     }
 }
