@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,6 +40,7 @@ public class LineResponse {
                 .id(line.getId())
                 .name(line.getName())
                 .color(line.getColor())
+                .stations(StationResponse.ofList(line.getStations()))
                 .createdDate(line.getCreatedDate())
                 .modifiedDate(line.getModifiedDate())
                 .build();
@@ -51,20 +53,35 @@ public class LineResponse {
     }
 
     @Getter
+    @NoArgsConstructor
+    @EqualsAndHashCode
     public static class StationResponse {
 
-        private final Long id;
-        private final String name;
-        private final LocalDateTime createdDate;
-        private final LocalDateTime modifiedDate;
+        private Long id;
+        private String name;
+        private LocalDateTime createdDate;
+        private LocalDateTime modifiedDate;
 
-        @Builder
         private StationResponse(final Long id, final String name,
                                 final LocalDateTime createdDate, final LocalDateTime modifiedDate) {
             this.id = id;
             this.name = name;
             this.createdDate = createdDate;
             this.modifiedDate = modifiedDate;
+        }
+
+        public static List<StationResponse> ofList(final List<Station> stations) {
+            return stations.stream()
+                    .map(StationResponse::of)
+                    .collect(Collectors.toList());
+        }
+
+        public static StationResponse of(final Station station) {
+            return new StationResponse(station.getId(),
+                    station.getName(),
+                    station.getCreatedDate(),
+                    station.getModifiedDate()
+            );
         }
     }
 }
