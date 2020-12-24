@@ -3,7 +3,6 @@ package nextstep.subway.line.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.line.domain.Line;
 
 @Getter
 @NoArgsConstructor
@@ -24,9 +23,5 @@ public class LineRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public Line toLine() {
-        return new Line(name, color);
     }
 }
