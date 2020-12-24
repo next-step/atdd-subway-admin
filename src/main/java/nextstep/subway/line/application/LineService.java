@@ -1,10 +1,12 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.LineNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,63 +21,31 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
-        // TODO : Line 전체 목록 구현 필요
-        /*
-        [
-            {
-                "id": 1,
-                    "name": "신분당선",
-                    "color": "bg-red-600",
-                    "stations": [
-
-                   ],
-                "createdDate": "2020-11-13T09:11:52.084",
-                "modifiedDate": "2020-11-13T09:11:52.084"
-            },
-            {
-                "id": 2,
-                    "name": "2호선",
-                    "color": "bg-green-600",
-                    "stations": [
-
-                    ],
-                "createdDate": "2020-11-13T09:11:52.098",
-                "modifiedDate": "2020-11-13T09:11:52.098"
-            }
-        ]
-        */
-        return null;
+        List<Line> lines = lineRepository.findAll();
+        return lines.stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long lineId) {
-        // TODO : Line 전체 목록 구현 필요
-        /*
-        {
-            "id": 1,
-                "name": "신분당선",
-                "color": "bg-red-600",
-                "stations": [
-
-                   ],
-            "createdDate": "2020-11-13T09:11:52.084",
-            "modifiedDate": "2020-11-13T09:11:52.084"
-        }
-        */
-        return null;
+    public LineResponse findById(Long id) {
+        Line savedLine = lineRepository.findById(id)
+                .orElseThrow(LineNotFoundException::new);
+        return LineResponse.of(savedLine);
     }
 
     public LineResponse saveLine(LineRequest request) {
-        // TODO : Line 중복된 값 검사 BadRequest
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        // TODO : Line Update
+        Line savedLine = lineRepository.findById(id)
+                .orElseThrow(LineNotFoundException::new);
+        savedLine.update(lineRequest.toLine());
         return null;
     }
 
     public void deleteLineById(Long id) {
-        // TODO : Line 삭제 구현 필요
+        lineRepository.deleteById(id);
     }
 }
