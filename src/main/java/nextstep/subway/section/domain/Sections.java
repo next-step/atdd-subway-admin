@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -36,8 +35,8 @@ public class Sections {
 	public void add(Section section) {
 		//[A B] [B C] [C D] [D E]  -> A B C D E
 		List<Station> stations = convertSectionToStation();
-		int upMatchIndex = findMatchIndex(stations, section.getUpStation());
-		int downMatchIndex = findMatchIndex(stations, section.getDownStation());
+		int upMatchIndex = stations.indexOf(section.getUpStation());
+		int downMatchIndex = stations.indexOf(section.getDownStation());
 		validateMatch(upMatchIndex, downMatchIndex);
 		if (upMatchIndex > -1 && downMatchIndex == -1) { // 상행역과 맞는경우
 			setPostionUpMatch(section, stations, upMatchIndex);
@@ -103,13 +102,6 @@ public class Sections {
 		if (targetDistance <= 0) {
 			throw new SectionDistanceException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
 		}
-	}
-
-	private int findMatchIndex(List<Station> stations, Station station) {
-		return IntStream.range(0, stations.size())
-			.filter(i -> station.equals(stations.get(i)))
-			.findFirst()
-			.orElse(-1);
 	}
 
 	public List<Station> convertSectionToStation() {
