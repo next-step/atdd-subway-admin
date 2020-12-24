@@ -263,3 +263,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - 종점역을 추가할 때는 해당 사항에 대한 관심사가 전혀 없기 때문.
   - [X] 시나리오5
     - [X] 새로운 Section 추가 전 기존 Line의 역들 중 일치하는 역이 몇개인지 검증하는 정합성 확인 추가
+  
+### 추가 요구사항
+- [ ] 지하철 노선 구간 조회 시 `구간의 순서에 맞춰` 역 목록을 반환하기
