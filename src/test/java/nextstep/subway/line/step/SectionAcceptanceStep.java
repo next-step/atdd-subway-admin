@@ -45,4 +45,13 @@ public class SectionAcceptanceStep {
         assertThat(stationIds).doesNotContain(deleteStationId);
         assertThat(stationIds).hasSize(expectedRemainedStationsSize);
     }
+
+    public static ExtractableResponse<Response> 지하철_구간의_역_삭제_요청(final Long lineId, final Long stationId) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .then()
+                .log().all()
+                .extract();
+    }
 }

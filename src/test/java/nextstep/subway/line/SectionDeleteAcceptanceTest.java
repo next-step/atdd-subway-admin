@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.line.step.LineAcceptanceStep.*;
-import static nextstep.subway.line.step.SectionAcceptanceStep.새로운_지하철_구간_추가_요청;
-import static nextstep.subway.line.step.SectionAcceptanceStep.지하철_구간내_역_삭제됨;
+import static nextstep.subway.line.step.SectionAcceptanceStep.*;
 import static nextstep.subway.station.step.StationAcceptanceStep.지하철역_생성됨;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,12 +40,7 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
 
         // when
         // 사용자가 종점이 아닌 구간의 지하철역 삭제 요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/" + lineId + "/sections?stationId=" + station2Id)
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철_구간의_역_삭제_요청(lineId, station2Id);
 
         // 지하철 역 삭제 성공
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -77,12 +71,7 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
 
         // when
         // 사용자가 종점이 아닌 구간의 지하철역 삭제 요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/" + lineId + "/sections?stationId=" + station1Id)
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철_구간의_역_삭제_요청(lineId, station1Id);
 
         // 지하철 역 삭제 성공
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -114,12 +103,7 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
 
         // when
         // 사용자가 구간에 등록되지 않은 지하철역을 삭제 요청함
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete("/lines/" + lineId + "/sections?stationId=" + notInSectionStationId)
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철_구간의_역_삭제_요청(lineId, notInSectionStationId);
 
         // 지하철 역 삭제 실패”
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
