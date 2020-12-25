@@ -1,9 +1,6 @@
 package nextstep.subway.line.domain.sections;
 
-import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
-import nextstep.subway.line.domain.exceptions.EndUpStationNotFoundException;
-import nextstep.subway.line.domain.exceptions.MergeSectionFailException;
-import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
+import nextstep.subway.line.domain.exceptions.*;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -150,17 +147,31 @@ public class Sections {
 
         Section mergedSection = relatedSections.get(0).merge(relatedSections.get(1));
         this.sections.add(mergedSection);
+
         return (this.sections.size() == originalSize - 1);
     }
 
-    void removeSection(final Section section) {
-        this.sections.remove(section);
+    public boolean deleteEndStation(final Long stationId) {
+        int validTargetSize = 1;
+        int originalSize = this.sections.size();
+
+        List<Section> relatedSections = findRelatedSections(stationId);
+        if(relatedSections.size() != validTargetSize) {
+            throw new InvalidStationDeleteTryException("종점이 아닌 역을 종점 삭제 기능으로 제거할 수 없습니다.");
+        }
+        this.sections.remove(relatedSections.get(0));
+
+        return (this.sections.size() == originalSize - 1);
     }
 
     boolean isAllStationsIn(final Section newSection) {
         List<Long> stationIds = newSection.getStationIds();
 
         return this.getStationIdsWithoutDup().containsAll(stationIds);
+    }
+
+    private void removeSection(final Section section) {
+        this.sections.remove(section);
     }
 
     private List<Long> getStationIds() {

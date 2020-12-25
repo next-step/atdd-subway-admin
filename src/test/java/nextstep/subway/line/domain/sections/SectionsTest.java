@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain.sections;
 
 import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
+import nextstep.subway.line.domain.exceptions.InvalidStationDeleteTryException;
 import nextstep.subway.line.domain.exceptions.MergeSectionFailException;
 import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -309,5 +311,53 @@ class SectionsTest {
                         )
                 )
         );
+    }
+
+    @DisplayName("종점역을 제거할 수 있다.")
+    @ParameterizedTest
+    @MethodSource("deleteEndStationTestResource")
+    void deleteEndStationTest(Long deleteTargetId, List<Section> expectedRemainedSections) {
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
+                new Section(1L, 2L, 10L),
+                new Section(2L, 3L, 10L),
+                new Section (3L, 4L, 10L)
+        )));
+
+        boolean result = sections.deleteEndStation(deleteTargetId);
+
+        assertThat(result).isTrue();
+        assertThat(sections.containsAll(expectedRemainedSections)).isTrue();
+    }
+    public static Stream<Arguments> deleteEndStationTestResource() {
+        return Stream.of(
+                Arguments.of(
+                        1L,
+                        Arrays.asList(
+                                new Section(2L, 3L, 10L),
+                                new Section (3L, 4L, 10L)
+                        )
+                ),
+                Arguments.of(
+                        4L,
+                        Arrays.asList(
+                                new Section(1L, 2L, 10L),
+                                new Section(2L, 3L, 10L)
+                        )
+                )
+        );
+    }
+
+    @DisplayName("종점이 아닌 역을 종점 제거로 삭제 시도 시 예외 발생")
+    @ParameterizedTest
+    @ValueSource(longs = { 2L, 3L })
+    void deleteEndStationFailTest(Long notEndStationId) {
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
+                new Section(1L, 2L, 10L),
+                new Section(2L, 3L, 10L),
+                new Section (3L, 4L, 10L)
+        )));
+
+        assertThatThrownBy(() -> sections.deleteEndStation(notEndStationId))
+                .isInstanceOf(InvalidStationDeleteTryException.class);
     }
 }

@@ -60,8 +60,7 @@ class LineTest {
                 .isInstanceOf(InvalidStationDeleteTryException.class);
     }
 
-    // TODO: 이후 기능에서 종점도 삭제 가능해질 예정
-    @DisplayName("삭제 대상이 종점인 경우 삭제 할 수 없다.")
+    @DisplayName("삭제 대상이 종점인 경우 삭제 할 수 있다.")
     @ParameterizedTest
     @ValueSource(longs = { 1L, 3L })
     void deleteStationOfSectionFailWhenToEndStationTest(Long deleteTarget) {
@@ -74,8 +73,10 @@ class LineTest {
         line.initFirstSection(initUpStationId, initDownStationId, initDistance);
         line.addSection(new Section(secondSectionUp, secondSectionDown, 10L));
 
-        assertThatThrownBy(() -> line.deleteStationOfSection(deleteTarget))
-                .isInstanceOf(InvalidStationDeleteTryException.class);
+        boolean result = line.deleteStationOfSection(deleteTarget);
+
+        assertThat(result).isTrue();
+        assertThat(line.getSectionsSize()).isEqualTo(1);
     }
 
     @DisplayName("구간의 역을 삭제할 수 있다.")
