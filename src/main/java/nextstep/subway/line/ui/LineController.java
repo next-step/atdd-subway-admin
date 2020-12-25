@@ -23,9 +23,6 @@ public class LineController {
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
-/*        if(Objects.isNull(line)) {
-            return new ResponseEntity<>("입력값이 잘못 되었습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-        }*/
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
