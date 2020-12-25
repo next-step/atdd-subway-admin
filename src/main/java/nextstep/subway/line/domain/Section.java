@@ -19,6 +19,8 @@ public class Section extends BaseEntity {
     private Station downStation;
     private Integer distance;
 
+    public Section(){}
+
     public Section(Line line, Station upStation, Station downStation, Integer distance) {
         setLine(line);
         this.upStation = upStation;

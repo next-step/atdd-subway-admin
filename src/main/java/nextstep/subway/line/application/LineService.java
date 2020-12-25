@@ -60,9 +60,10 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public void deleteLine(Long id) {
-        
-        lineRepository.deleteById(id);
+    public void deleteLine(Long lineId) {
+        List<Section> sections = sectionRepository.findByLineId(lineId);
+        sectionRepository.deleteAll(sections);
+        lineRepository.deleteById(lineId);
     }
 
     private NotExistsException createLineNotExistsException(Long id) {
