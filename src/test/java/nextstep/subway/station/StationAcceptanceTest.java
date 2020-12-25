@@ -73,17 +73,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> createRequest(StationRequest stationRequest) {
+    public static ExtractableResponse<Response> createRequest(StationRequest stationRequest) {
         final String url = "/stations";
         return RequestTest.doPost(url, stationRequest);
     }
 
-    private ExtractableResponse<Response> selectAllRequest() {
+    public static ExtractableResponse<Response> selectAllRequest() {
         final String url ="/stations";
         return RequestTest.doGet(url);
     }
 
-    private ExtractableResponse<Response> deleteRequest(Long stationId) {
+    public static ExtractableResponse<Response> deleteRequest(Long stationId) {
         final String url = "/stations/" + stationId;
         return RequestTest.doDelete(url);
     }
