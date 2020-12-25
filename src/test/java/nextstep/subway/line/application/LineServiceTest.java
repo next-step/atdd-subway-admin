@@ -4,7 +4,9 @@ import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineFixtures;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.exceptions.NotFoundException;
 import nextstep.subway.line.domain.exceptions.StationNotFoundException;
+import nextstep.subway.line.domain.sections.Section;
 import nextstep.subway.line.domain.stationAdapter.SafeStationAdapter;
 import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
@@ -249,5 +251,44 @@ class LineServiceTest {
 
         assertThatThrownBy(() -> lineService.addSection(notExistLineId, sectionRequest))
                 .isInstanceOf(LineNotFoundException.class);
+    }
+
+    @DisplayName("존재하는 지하철 노선 내의 특정 구간의 역을 제거할 수 있다.")
+    @Test
+    void deleteStationInSectionTest() {
+        // given
+        LineFixtures.clearLineFixtures();
+        Long targetLine = 1L;
+        Long prevTargetId = 1L;
+        Long targetStationId = 2L;
+        Long afterTargetId = 3L;
+        Long distance = 5L;
+        int expectedSize = 1;
+
+        Line mockLine = LineFixtures.ID1_LINE;
+        mockLine.initFirstSection(prevTargetId, targetStationId, distance);
+        mockLine.addSection(new Section(targetStationId, afterTargetId, distance));
+
+        given(lineRepository.findById(targetLine)).willReturn(Optional.of(mockLine));
+
+        // when
+        boolean result = lineService.deleteStationInSection(targetLine, targetStationId);
+
+        // then
+        assertThat(result).isTrue();
+        assertThat(mockLine.getSectionsSize()).isEqualTo(expectedSize);
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선의 특정 구간의 역 삭제 시도 시 예외 발생")
+    @Test
+    void deleteStationInSectionFailWithNotFoundLine() {
+        Long targetLine = 1L;
+        Long targetStationId = 2L;
+        String errorMessage = "존재하지 않는 지하철 노선입니다.";
+        given(lineRepository.findById(targetLine)).willThrow(new NotFoundException(errorMessage));
+
+        assertThatThrownBy(() -> lineService.deleteStationInSection(targetLine, targetStationId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(errorMessage);
     }
 }

@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.exceptions.NotFoundException;
 import nextstep.subway.line.domain.sections.Section;
 import nextstep.subway.line.domain.stationAdapter.SafeStationAdapter;
 import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
@@ -99,5 +100,12 @@ public class LineService {
         line.initFirstSection(upStationId, downStationId, distance);
 
         return line;
+    }
+
+    public boolean deleteStationInSection(final Long targetLineId, final Long targetStationId) {
+        Line foundLine = lineRepository.findById(targetLineId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 지하철 노선입니다."));
+
+        return foundLine.deleteStationOfSection(targetStationId);
     }
 }
