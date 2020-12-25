@@ -49,5 +49,4 @@ public class LineController {
         return ResponseEntity.ok(id);
     }
 
-
 }
