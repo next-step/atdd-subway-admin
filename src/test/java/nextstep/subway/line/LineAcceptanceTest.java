@@ -22,17 +22,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // when
-        // 지하철_노선_생성_요청
+        // given
+        // 지하철_역_등록_되어있음
         StationResponse upStation = StationAcceptanceTest.createRequest(new StationRequest("신도림"))
                 .as(StationResponse.class);
         StationResponse downStation = StationAcceptanceTest.createRequest(new StationRequest("까치산"))
                 .as(StationResponse.class);
+
+        // when
+        // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = createRequest(new LineRequest("2호선", "초록", upStation.getId(), downStation.getId(), 10));
 
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("등록되지 않은 역으로 지하철 노선을 생성한다.")
+    @Test
+    void createLine3() {
+        // when
+        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = createRequest(new LineRequest("2호선", "초록", 1L, 2L, 10));
+
+        // then
+        // 지하철_노선_생성됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
