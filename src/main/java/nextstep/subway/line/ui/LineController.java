@@ -129,4 +129,9 @@ public class LineController {
     public ResponseEntity handleDeleteFailException(DeleteFailException e) {
         return ResponseEntity.notFound().build();
     }
+
+    @ExceptionHandler(MergeSectionFailException.class)
+    public ResponseEntity handleMergeSectionFailException(MergeSectionFailException e) {
+        return ResponseEntity.notFound().build();
+    }
 }

@@ -288,6 +288,23 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - then
       - 지하철 구간 내 역 제거 성공
       - and 종점 역이 바뀜
+  - [X] 시나리오3: 지하철 노선에 등록되지 않은 지하철 역을 삭제 요청 
+    - given
+      - 지하철 역이 등록되어 있음
+      - and 지하철 노선에 구간이 등록되어 있음
+      - and 삭제 요청할 지하철 역은 구간에 등록되어 있지 않음
+    - when
+      - 사용자가 지하철 구간에 등록되지 않은 지하철 역을 삭제 요청
+    - then
+      - 지하철 구간 내 역 삭제 요청 실패
+  - [ ] 시나리오4: 구간이 하나 남은 지하철 노선에 지하철 역 삭제 요청
+    - given
+    - when
+    - then
+  - [ ] 시나리오5: 존재하지 않는 노선에 지하철 역 삭제 요청
+    - given
+    - when
+    - then
   
 ### Todo-list
 - [X] 시나리오1
