@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.LocationUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -217,8 +217,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = getLineResponse(response);
         assertThat(lineResponse.getName()).isEqualTo(editName);
         assertThat(lineResponse.getColor()).isEqualTo(editColor);
-        assertThat(lineResponse.isContainsStationIds(Arrays.asList(강남역, 판교역))).isTrue();
-
+        List<Long> stationResponse = lineResponse.getStations()
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(stationResponse.contains(판교역)).isTrue();
     }
 
     private static ExtractableResponse<Response> 지하철_노선_수정_요청(long lineId, String name, String color) {

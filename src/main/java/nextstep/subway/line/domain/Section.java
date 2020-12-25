@@ -1,8 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,16 +21,16 @@ public class Section {
     private Long id;
 
     @JoinColumn(name = "lineId")
-    @ManyToOne
-    Line line;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Line line;
 
     @JoinColumn(name = "upStationId")
-    @ManyToOne
-    Station upStation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Station upStation;
 
     @JoinColumn(name = "downStationId")
-    @ManyToOne
-    Station downStation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Station downStation;
 
     private int distance;
 
@@ -46,7 +48,7 @@ public class Section {
     }
 
     public List<Station> upAndDownStations() {
-        return Arrays.asList(upStation, downStation);
+        return Arrays.asList(upStation,downStation);
     }
 
     public void update(Section section) {
@@ -55,11 +57,8 @@ public class Section {
         this.distance = section.distance;
     }
 
-    public boolean isEqualsSectionStation() {
-        if(this.upStation.equals(this.downStation)){
-            throw new IllegalArgumentException();
-        }
-        return true;
+    public boolean isNotEqualsStation() {
+        return !this.upStation.equals(this.downStation);
     }
 
     @Override

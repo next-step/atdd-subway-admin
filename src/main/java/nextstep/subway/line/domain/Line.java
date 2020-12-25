@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,9 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -57,13 +54,8 @@ public class Line extends BaseEntity {
         this.sections.add(section);
     }
 
-    public List<Station> getStations() {
-        return this.sections
-                .stream()
-                .map(Section::upAndDownStations)
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toList());
+    public List<Section> getSections() {
+        return sections;
     }
 
     public void updateSection(Section section) {
