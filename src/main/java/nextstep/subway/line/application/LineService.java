@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.exception.BadRequestException;
 import nextstep.subway.common.exception.NotExistsException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -29,15 +30,13 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
+        validate(request);
         Line persistLine = lineRepository.save(request.toLine());
         Station persistUpStation = stationRepository.findById(request.getUpStationId())
                 .orElseThrow(() -> createStationNotExistsException(request.getUpStationId()));
         Station persistDownStation = stationRepository.findById(request.getDownStationId())
                 .orElseThrow(() -> createStationNotExistsException(request.getUpStationId()));
-        Section persistSection = sectionRepository.save(new Section(persistLine, persistUpStation, persistDownStation, request.getDistance()));
-
-        System.out.println(persistSection);
-
+        sectionRepository.save(new Section(persistLine, persistUpStation, persistDownStation, request.getDistance()));
         return LineResponse.of(persistLine);
     }
 
@@ -62,6 +61,7 @@ public class LineService {
     }
 
     public void deleteLine(Long id) {
+        
         lineRepository.deleteById(id);
     }
 
@@ -72,4 +72,11 @@ public class LineService {
     private NotExistsException createStationNotExistsException(Long id) {
         return new NotExistsException("station_id " + id + " is not exists.");
     }
+
+    private void validate(LineRequest request) {
+        if (request.getUpStationId().equals(request.getDownStationId())) {
+            throw new BadRequestException("UpStation and DownStation should not be same");
+        }
+    }
+
 }

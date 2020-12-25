@@ -6,7 +6,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"line_id", "up_station_id", "down_station_id"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"up_station_id", "down_station_id"})})
 public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
