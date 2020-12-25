@@ -81,7 +81,7 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("시나리오3: 지하철 노선에 등록되지 않은 지하철 역을 삭제 요청")
     @Test
-    void deleteEndStationFailWhenNotExistStationTest() {
+    void deleteStationFailWhenNotExistStationTest() {
         String station1 = "강남";
         String station2 = "역삼";
         String station3 = "선릉";
@@ -113,7 +113,7 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("시나리오4: 지하철 노선에 구간이 1개만 있을 때 역 삭제 요청")
     @Test
-    void deleteEndStationFailWhenLineHasJustOneSection() {
+    void deleteStationFailWhenLineHasJustOneSection() {
         String station1 = "강남";
         String station2 = "역삼";
         String lineName = "2호선";
@@ -136,5 +136,22 @@ public class SectionDeleteAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철 역 삭제 실패
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("시나리오5: 존재하지 않는 지하철 노선에 삭제 요청")
+    @Test
+    void deleteStationFailToNotExistLine() {
+        Long notExistLineId = 1L;
+        Long stationId = 2L;
+        // given
+        // 지하철 구간이 존재하지 않는다.
+
+        // when
+        // 사용자가 구간에 등록되지 않은 지하철역을 삭제 요청함
+        ExtractableResponse<Response> response = 지하철_구간의_역_삭제_요청(notExistLineId, stationId);
+
+        // then
+        // 지하철 역 삭제 실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

@@ -305,10 +305,13 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - 사용자가 지하철 구간의 역 삭제 요청
     - then
       - 지하철 구간 내 역 삭제 요청 실패
-  - [ ] 시나리오5: 존재하지 않는 노선에 지하철 역 삭제 요청
+  - [X] 시나리오5: 존재하지 않는 노선에 지하철 역 삭제 요청
     - given
+      - 지하철 노선이 없음
     - when
+      - 사용자가 지하철 구간의 역 삭제 요청
     - then
+      - 지하철 구간 내 역 삭제 요청 실패
   
 ### Todo-list
 - [X] 시나리오1
