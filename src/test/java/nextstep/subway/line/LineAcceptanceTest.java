@@ -5,6 +5,9 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.RequestTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +24,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = createRequest(new LineRequest("2호선", "초록"));
+        StationResponse upStation = StationAcceptanceTest.createRequest(new StationRequest("신도림"))
+                .as(StationResponse.class);
+        StationResponse downStation = StationAcceptanceTest.createRequest(new StationRequest("까치산"))
+                .as(StationResponse.class);
+        ExtractableResponse<Response> response = createRequest(new LineRequest("2호선", "초록", upStation.getId(), downStation.getId(), 10));
 
         // then
         // 지하철_노선_생성됨
