@@ -21,7 +21,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = createLineRequest(new LineRequest("2호선", "초록"));
+        ExtractableResponse<Response> response = createRequest(new LineRequest("2호선", "초록"));
 
         // then
         // 지하철_노선_생성됨
@@ -34,10 +34,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest lineRequest = new LineRequest("2호선", "초록");
-        createLineRequest(lineRequest);
+        createRequest(lineRequest);
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = createLineRequest(lineRequest);
+        ExtractableResponse<Response> response = createRequest(lineRequest);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -49,15 +49,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        LineResponse createResponse = createLineRequest(new LineRequest("2호선", "초록"))
+        LineResponse createResponse = createRequest(new LineRequest("2호선", "초록"))
                 .as(LineResponse.class);
         // 지하철_노선_등록되어_있음
-        LineResponse createResponse2 = createLineRequest(new LineRequest("1호선", "파랑"))
+        LineResponse createResponse2 = createRequest(new LineRequest("1호선", "파랑"))
                 .as(LineResponse.class);
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = selectLines();
+        ExtractableResponse<Response> response = selectAllRequest();
 
         // then
         // 지하철_노선_목록_응답됨
@@ -73,12 +73,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineResponse createdLineResponse = createLineRequest(new LineRequest("2호선", "초록"))
+        LineResponse createdLineResponse = createRequest(new LineRequest("2호선", "초록"))
                 .as(LineResponse.class);
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = selectLineWithId(createdLineResponse.getId());
+        ExtractableResponse<Response> response = selectRequestWithId(createdLineResponse.getId());
 
         // then
         // 지하철_노선_응답됨
@@ -93,12 +93,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineResponse lineResponse = createLineRequest(new LineRequest("2호선", "초록"))
+        LineResponse lineResponse = createRequest(new LineRequest("2호선", "초록"))
                 .as(LineResponse.class);
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = updateLineRequest(lineResponse.getId(), new LineRequest("2호선", "빨강"));
+        ExtractableResponse<Response> response = updateRequest(lineResponse.getId(), new LineRequest("2호선", "빨강"));
 
         // then
         // 지하철_노선_수정됨
@@ -113,39 +113,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineResponse lineResponse = createLineRequest(new LineRequest("2호선", "초록"))
+        LineResponse lineResponse = createRequest(new LineRequest("2호선", "초록"))
                 .as(LineResponse.class);
 
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse<Response> response = deleteLineRequest(lineResponse.getId());
+        ExtractableResponse<Response> response = deleteRequest(lineResponse.getId());
 
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> createLineRequest(LineRequest lineRequest) {
+    private ExtractableResponse<Response> createRequest(LineRequest lineRequest) {
         final String url = "/lines";
         return RequestTest.doPost(url, lineRequest);
     }
 
-    private ExtractableResponse<Response> selectLines() {
+    private ExtractableResponse<Response> selectAllRequest() {
         final String url = "/lines";
         return RequestTest.doGet(url);
     }
 
-    private ExtractableResponse<Response> selectLineWithId(Long lineId) {
+    private ExtractableResponse<Response> selectRequestWithId(Long lineId) {
         final String url = "/lines/" + lineId;
         return RequestTest.doGet(url);
     }
 
-    private ExtractableResponse<Response> updateLineRequest(Long lineId, LineRequest lineRequest) {
+    private ExtractableResponse<Response> updateRequest(Long lineId, LineRequest lineRequest) {
         final String url = "/lines/" + lineId;
         return RequestTest.doPut(url, lineRequest);
     }
 
-    private ExtractableResponse<Response> deleteLineRequest(Long lineId) {
+    private ExtractableResponse<Response> deleteRequest(Long lineId) {
         final String url = "/lines/" + lineId;
         return RequestTest.doDelete(url);
     }
