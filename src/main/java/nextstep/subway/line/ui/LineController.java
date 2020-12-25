@@ -28,4 +28,10 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> getLines() {
         return ResponseEntity.ok(lineService.getLines());
     }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<LineResponse> getLines(@PathVariable Long id) {
+        return ResponseEntity.ok(lineService.getOne(id));
+    }
+
 }

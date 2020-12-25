@@ -32,6 +32,9 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public LineResponse getOne(Long id) {
+        return LineResponse.of(lineRepository.getOne(id));
+    }
 
 
 }
