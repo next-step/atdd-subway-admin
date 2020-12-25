@@ -46,7 +46,7 @@ public class SectionService {
     public Section getByStartStation(Line line, Station station) {
         return sectionRepository.getByStation(line, station);
     }
-
+ 
     public List<Section> getOrderedSections(Line line) {
         List<Section> sections = new ArrayList<>();
         Section section = getStart(line);
