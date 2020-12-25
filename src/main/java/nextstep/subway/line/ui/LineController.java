@@ -2,18 +2,17 @@ package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.application.exceptions.LineNotFoundException;
-import nextstep.subway.line.domain.exceptions.InvalidSectionException;
-import nextstep.subway.line.domain.exceptions.StationNotFoundException;
-import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
-import nextstep.subway.line.domain.exceptions.TooLongSectionException;
+import nextstep.subway.line.domain.exceptions.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.ui.exceptions.DeleteFailException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.net.URI;
 import java.util.List;
 
@@ -77,6 +76,20 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity deleteStationInSection(
+            @PathVariable("lineId") Long lineId,
+            @PathParam("stationId") Long stationId
+    ) {
+        boolean result = lineService.deleteStationInSection(lineId, stationId);
+
+        if (!result) {
+            throw new DeleteFailException("구간 내 역 삭제에 실패했습니다.");
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity handleConstraintViolationException(ConstraintViolationException e) {
         return ResponseEntity.badRequest().build();
@@ -105,5 +118,15 @@ public class LineController {
     @ExceptionHandler(TargetSectionNotFoundException.class)
     public ResponseEntity handleTargetSectionNotFoundException(TargetSectionNotFoundException e) {
         return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity handleNotFoundException(NotFoundException e) {
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(DeleteFailException.class)
+    public ResponseEntity handleDeleteFailException(DeleteFailException e) {
+        return ResponseEntity.notFound().build();
     }
 }
