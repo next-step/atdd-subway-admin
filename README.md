@@ -279,7 +279,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - then
       - 지하철 구간 내 역 제거 성공
       - and 삭제된 역과 연관되어 있던 구간들끼리 병합됨
-  - [ ] 시나리오2: 지하철 구간이 2개 이상일 때 종점역(상행 또는 하행)을 제거
+  - [X] 시나리오2: 지하철 구간이 2개 이상일 때 종점역(상행 또는 하행)을 제거
     - given
       - 지하철 역이 등록되어 있음
       - and 지하철 노선에 구간이 등록되어 있음
