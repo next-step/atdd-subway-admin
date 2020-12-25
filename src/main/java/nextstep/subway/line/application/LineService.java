@@ -32,6 +32,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+<<<<<<< HEAD
     public LineResponse getOne(Long id) {
         return LineResponse.of(lineRepository.getOne(id));
     }
@@ -46,4 +47,8 @@ public class LineService {
     public void delete(Long id) {
         lineRepository.delete(lineRepository.getOne(id));
     }
+=======
+
+
+>>>>>>> feat: 조회 요청 추가
 }
