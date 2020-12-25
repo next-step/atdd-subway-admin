@@ -34,4 +34,13 @@ public class LineController {
         return ResponseEntity.ok(lineService.getOne(id));
     }
 
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<LineResponse> modifyLine(
+            @PathVariable Long id,
+            @RequestBody LineRequest lineRequest) {
+        return ResponseEntity.ok(lineService.modify(id, lineRequest));
+    }
+
+
+
 }
