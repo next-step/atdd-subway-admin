@@ -64,7 +64,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
         List<Long> expected = Stream.of(createResponse, createResponse2)
-                .map(it -> it.body().as(LineResponse.class))
+                .map(it -> it.as(LineResponse.class))
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
@@ -83,7 +83,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse = RequestTest.doPost("/lines", new LineRequest("2호선", "초록"));
-        LineResponse lineResponse = createResponse.body().as(LineResponse.class);
+        LineResponse lineResponse = createResponse.as(LineResponse.class);
 
         // when
         // 지하철_노선_조회_요청
@@ -100,7 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse = RequestTest.doPost("/lines", new LineRequest("2호선", "초록"));
-        LineResponse lineResponse = createResponse.body().as(LineResponse.class);
+        LineResponse lineResponse = createResponse.as(LineResponse.class);
 
         // when
         // 지하철_노선_수정_요청
@@ -117,7 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse = RequestTest.doPost("/lines", new LineRequest("2호선", "초록"));
-        LineResponse lineResponse = createResponse.body().as(LineResponse.class);
+        LineResponse lineResponse = createResponse.as(LineResponse.class);
 
         // when
         // 지하철_노선_제거_요청
