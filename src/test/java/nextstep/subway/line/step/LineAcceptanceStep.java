@@ -58,6 +58,17 @@ public class LineAcceptanceStep {
         assertThat(responseStationIds).contains(upStationId, downStationId);
     }
 
+    public static void 새로운_지하철_노선_생성됨(
+            final ExtractableResponse<Response> response, final String lineName, final String lineColor
+    ) {
+        LineResponse lineResponse = response.as(LineResponse.class);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotEmpty();
+        assertThat(lineResponse.getColor()).isEqualTo(lineColor);
+        assertThat(lineResponse.getName()).isEqualTo(lineName);
+    }
+
     public static void 응답에_지하철_노선들이_포함되어_있음(
             ExtractableResponse<Response> line1CreatedResponse, ExtractableResponse<Response> line2CreatedResponse,
             ExtractableResponse<Response> listResponse

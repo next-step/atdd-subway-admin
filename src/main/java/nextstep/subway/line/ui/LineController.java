@@ -9,6 +9,7 @@ import nextstep.subway.line.domain.exceptions.TooLongSectionException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.domain.exceptions.EntityNotFoundException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -105,5 +106,10 @@ public class LineController {
     @ExceptionHandler(TargetSectionNotFoundException.class)
     public ResponseEntity handleTargetSectionNotFoundException(TargetSectionNotFoundException e) {
         return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity handleNotFoundException(EntityNotFoundException e) {
+        return ResponseEntity.notFound().build();
     }
 }

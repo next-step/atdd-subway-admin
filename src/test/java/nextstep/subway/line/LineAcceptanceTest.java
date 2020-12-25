@@ -61,7 +61,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철 노선 등록 실패
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -168,8 +168,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> downStation1Created = 지하철역_생성됨(new StationRequest("서초역"));
         Long downStation1Id = 응답_헤더에서_ID_추출(downStation1Created);
         // and 지하철_노선1_등록되어_있음
-        ExtractableResponse<Response> line1CreatedResponse
-                = 새로운_지하철_노선_생성_요청(new LineRequest(line1Name, line1Color, upStation1Id, downStation1Id, 5L));
+
+        ExtractableResponse<Response> line1CreatedResponse = 새로운_지하철_노선_생성_요청(
+                new LineRequest(line1Name, line1Color, upStation1Id, downStation1Id, 5L));
         // 상행종점2 생성되어 있음
         ExtractableResponse<Response> upStation2Created = 지하철역_생성됨(new StationRequest("잠실역"));
         Long upStation2Id = 응답_헤더에서_ID_추출(upStation2Created);
@@ -177,8 +178,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> downStation2Created = 지하철역_생성됨(new StationRequest("몽촌토성역"));
         Long downStation2Id = 응답_헤더에서_ID_추출(downStation2Created);
         // and 지하철_노선2_등록되어_있음
-        ExtractableResponse<Response> line2CreatedResponse
-                = 새로운_지하철_노선_생성_요청(new LineRequest(line2Name, line2Color, upStation2Id, downStation2Id, 10L));
+        ExtractableResponse<Response> line2CreatedResponse = 새로운_지하철_노선_생성_요청(
+                new LineRequest(line2Name, line2Color, upStation2Id, downStation2Id, 10L));
 
         // when
         // 지하철_노선_목록_조회_요청

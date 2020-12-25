@@ -1,6 +1,6 @@
 package nextstep.subway.line.domain.stationAdapter;
 
-import nextstep.subway.line.domain.exceptions.StationNotFoundException;
+import nextstep.subway.line.domain.exceptions.EntityNotFoundException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationFixtures;
@@ -36,15 +36,14 @@ class SafeStationAdapterTest {
     @Test
     void getSafeStationInfoTest() {
         Long stationId = 1L;
-        String stationName = "test";
-        LocalDateTime now = LocalDateTime.now();
-        given(stationService.getStation(stationId))
-                .willReturn(StationFixtures.createStationFixture(stationId, stationName, now));
+        String stationName = "갱남역";
+        given(stationService.getStation(stationId)).willReturn(StationFixtures.ID1_STATION);
 
         SafeStationInfo safeStationInfo = safeStationAdapter.getStationSafely(stationId);
 
         assertThat(safeStationInfo).isNotNull();
-        assertThat(safeStationInfo).isEqualTo(new SafeStationInfo(1L, stationName, now, null));
+        assertThat(safeStationInfo.getId()).isEqualTo(stationId);
+        assertThat(safeStationInfo.getName()).isEqualTo(stationName);
     }
 
     @DisplayName("존재하지 않는 Station 정보 요청 시 Line 도메인의 예외 발생")
@@ -55,7 +54,8 @@ class SafeStationAdapterTest {
                 .willThrow(new StationNotExistException("Station Aggregate Error"));
 
         assertThatThrownBy(() -> safeStationAdapter.getStationSafely(notExistStationId))
-                .isInstanceOf(StationNotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("해당 역을 찾지 못했습니다.");
     }
 
     @DisplayName("Station ID 목록으로 Station 정보를 ID 오름차순으로 정렬해서 안전하게 받아올 수 있다.")
@@ -68,9 +68,9 @@ class SafeStationAdapterTest {
         int expectedSize = 3;
         LocalDateTime now = LocalDateTime.now();
         List<Station> mockStations = Arrays.asList(
-                StationFixtures.createStationFixture(station3Id, "test3", now),
-                StationFixtures.createStationFixture(station1Id, "test2", now),
-                StationFixtures.createStationFixture(station2Id, "test2", now)
+                StationFixtures.ID3_STATION,
+                StationFixtures.ID1_STATION,
+                StationFixtures.ID2_STATION
         );
         List<Long> stationIds = Arrays.asList(station3Id, station2Id, station1Id);
 

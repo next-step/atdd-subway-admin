@@ -1,16 +1,16 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineFixtures;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.exceptions.StationNotFoundException;
+import nextstep.subway.line.domain.exceptions.EntityNotFoundException;
 import nextstep.subway.line.domain.stationAdapter.SafeStationAdapter;
 import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.dto.StationInLineResponse;
+
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -83,11 +83,13 @@ class LineServiceTest {
         Long upStationId = 4L;
         Long downStationId = 44L;
         Long distance = 3L;
-        given(safeStationAdapter.getStationSafely(upStationId)).willThrow(StationNotFoundException.class);
+        String errorMessage = "해당 역을 못 찾았다.";
+        given(safeStationAdapter.getStationSafely(upStationId)).willThrow(new EntityNotFoundException(errorMessage));
 
         assertThatThrownBy(() -> lineService.saveLine(
-                new LineRequest(lineName, lineColor, upStationId, downStationId, distance))
-        ).isInstanceOf(StationNotFoundException.class);
+                new LineRequest(lineName, lineColor, upStationId, downStationId, distance)))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage(errorMessage);
     }
 
     @DisplayName("이미 존재하는 라인을 또 생성 시 예외가 발생한다.")
@@ -141,8 +143,8 @@ class LineServiceTest {
         Long upStationId = 1L;
         Long downStationId = 2L;
         LocalDateTime now = LocalDateTime.now();
-        Line lineFixture = LineFixtures.createLineFixture(
-                lineId, "2호선", "금색", upStationId, downStationId, 3L);
+        Line lineFixture = LineFixtures.ID1_LINE;
+        lineFixture.initFirstSection(upStationId, downStationId, 3L);
 
         given(lineRepository.findById(lineId)).willReturn(Optional.of(lineFixture));
         given(safeStationAdapter.getStationsSafely(any())).willReturn(Arrays.asList(
@@ -161,7 +163,9 @@ class LineServiceTest {
     void getLineFailTest() {
         Long lineId = 1L;
 
-        assertThatThrownBy(() -> lineService.getLine(lineId)).isInstanceOf(LineNotFoundException.class);
+        assertThatThrownBy(() -> lineService.getLine(lineId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("해당 라인이 존재하지 않습니다.");
     }
 
     @DisplayName("특정 라인의 정보를 수정할 수 있다.")
@@ -188,7 +192,8 @@ class LineServiceTest {
         String color = "notExist";
 
         assertThatThrownBy(() -> lineService.updateLine(notExistLineId, name, color))
-                .isInstanceOf(LineNotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("해당 라인이 존재하지 않습니다.");
     }
 
     @DisplayName("특정 라인을 삭제할 수 있다.")
@@ -207,7 +212,9 @@ class LineServiceTest {
     void deleteWithNotExistLine() {
         Long notExistId = 4L;
 
-        assertThatThrownBy(() -> lineService.deleteLine(notExistId)).isInstanceOf(LineNotFoundException.class);
+        assertThatThrownBy(() -> lineService.deleteLine(notExistId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("해당 라인이 존재하지 않습니다.");
     }
 
     @DisplayName("신규 노선을 안전하게 생성할 수 있다.")
@@ -248,6 +255,6 @@ class LineServiceTest {
         SectionRequest sectionRequest = new SectionRequest(3L, 2L, 3L);
 
         assertThatThrownBy(() -> lineService.addSection(notExistLineId, sectionRequest))
-                .isInstanceOf(LineNotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
     }
 }
