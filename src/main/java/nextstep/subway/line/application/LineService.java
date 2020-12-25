@@ -42,7 +42,6 @@ public class LineService {
         Line persistLine = lineRepository.findById(id)
                 .orElseThrow(() -> createNotExistsException(id));
         persistLine.update(lineRequest.toLine());
-        lineRepository.flush();
         return LineResponse.of(persistLine);
     }
 
