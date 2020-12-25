@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -32,5 +33,11 @@ public class LineService {
         return lines.stream()
             .map(LineResponse::of)
             .collect(toList());
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse findLine(final long id) {
+        return LineResponse.of(lineRepository.findById(id)
+            .orElseThrow(NotFoundException::new));
     }
 }
