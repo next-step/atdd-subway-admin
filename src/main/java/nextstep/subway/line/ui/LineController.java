@@ -37,11 +37,7 @@ public class LineController {
     @GetMapping(path = "/{id}")
     public ResponseEntity findLine(@PathVariable Long id) {
         LineResponse line = lineService.findById(id);
-        if(Objects.isNull(line.getId())) {
-            return new ResponseEntity<>("입력값이 잘못 되었습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
         return ResponseEntity.ok().body(line);
-
     }
 
     @PutMapping(path = "/{id}")

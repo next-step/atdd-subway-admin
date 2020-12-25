@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,14 +22,8 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = new Line();
-        try {
-            persistLine = lineRepository.save(request.toLine());
-        } catch (Exception e) {
-            System.out.println(e.getMessage()); //log.error
-        } finally {
-            return LineResponse.of(persistLine);
-        }
+        Line persistLine = lineRepository.save(request.toLine());
+        return LineResponse.of(persistLine);
     }
 
     public List<LineResponse> findByAll() {
@@ -37,14 +32,8 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line line = new Line();
-        try {
-            line = lineRepository.findById(id).get();
-        } catch (Exception e) {
-            System.out.println(e.getMessage()); //log.error
-        } finally {
-            return LineResponse.of(line);
-        }
+        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        return LineResponse.of(line);
     }
 
     public LineResponse updateLine(LineRequest lineRequest, Long id) {

@@ -18,70 +18,6 @@ import java.util.Map;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    public Map<String, String> createParams(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        return params;
-    }
-
-    @DisplayName("지하철 노선 생성 요청")
-    public ExtractableResponse<Response> createSubwayLine(Map<String, String> params) {
-        return RestAssured.given().log().all().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/lines").
-                then().
-                log().all().
-                extract();
-    }
-
-    @DisplayName("지하철 노선 조회")
-    public ExtractableResponse<Response> searchSubwayLineOne(Long id) {
-        return RestAssured.given().log().all().
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                get("/lines/" + id).
-                then().
-                log().all().
-                extract();
-    }
-
-    @DisplayName("지하철 노선 목록 조회")
-    public ExtractableResponse<Response> searchSubwayLineAll() {
-        return RestAssured.given().log().all().
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                get("/lines").
-                then().
-                log().all().
-                extract();
-    }
-
-    @DisplayName("지하철 노선 수정")
-    public ExtractableResponse<Response> modifySubwayLine(Long id, Map<String, String> params) {
-        return RestAssured.given().log().all().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                put("/lines/" + id).
-                then().
-                log().all().
-                extract();
-    }
-
-    @DisplayName("지하철 노선 삭제")
-    public ExtractableResponse<Response> deleteSubwayLine(Long id) {
-        return RestAssured.given().log().all().
-                when().
-                delete("/lines/" + id).
-                then().
-                log().all().
-                extract();
-    }
-
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -206,5 +142,68 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public Map<String, String> createParams(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        return params;
+    }
+
+    @DisplayName("지하철 노선 생성 요청")
+    public ExtractableResponse<Response> createSubwayLine(Map<String, String> params) {
+        return RestAssured.given().log().all().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                post("/lines").
+                then().
+                log().all().
+                extract();
+    }
+
+    @DisplayName("지하철 노선 조회")
+    public ExtractableResponse<Response> searchSubwayLineOne(Long id) {
+        return RestAssured.given().log().all().
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                get("/lines/" + id).
+                then().
+                log().all().
+                extract();
+    }
+
+    @DisplayName("지하철 노선 목록 조회")
+    public ExtractableResponse<Response> searchSubwayLineAll() {
+        return RestAssured.given().log().all().
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                get("/lines").
+                then().
+                log().all().
+                extract();
+    }
+
+    @DisplayName("지하철 노선 수정")
+    public ExtractableResponse<Response> modifySubwayLine(Long id, Map<String, String> params) {
+        return RestAssured.given().log().all().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                put("/lines/" + id).
+                then().
+                log().all().
+                extract();
+    }
+
+    @DisplayName("지하철 노선 삭제")
+    public ExtractableResponse<Response> deleteSubwayLine(Long id) {
+        return RestAssured.given().log().all().
+                when().
+                delete("/lines/" + id).
+                then().
+                log().all().
+                extract();
     }
 }
