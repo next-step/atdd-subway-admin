@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -18,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.exception.AlreadyExistException;
 import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.exception.MinimumSectionException;
 import nextstep.subway.section.exception.SectionDistanceException;
 import nextstep.subway.station.domain.Station;
 
@@ -36,8 +37,8 @@ public class Sections {
 	public void add(Section section) {
 		//[A B] [B C] [C D] [D E]  -> A B C D E
 		List<Station> stations = convertSectionToStation();
-		int upMatchIndex = findMatchIndex(stations, section.getUpStation());
-		int downMatchIndex = findMatchIndex(stations, section.getDownStation());
+		int upMatchIndex = stations.indexOf(section.getUpStation());
+		int downMatchIndex = stations.indexOf(section.getDownStation());
 		validateMatch(upMatchIndex, downMatchIndex);
 		if (upMatchIndex > -1 && downMatchIndex == -1) { // 상행역과 맞는경우
 			setPostionUpMatch(section, stations, upMatchIndex);
@@ -46,7 +47,7 @@ public class Sections {
 			setPositionDownMatch(section, stations, downMatchIndex);
 		}
 		// 다시 A B C D E ->  [A B] [B C] [C D] [D E] 섹션으로만든다.
-		convertStationToSection(section, stations);
+		convertStationToSection(section.getLine(), stations);
 	}
 
 	private void validateMatch(int upMatchIndex, int downMatchIndex) {
@@ -58,7 +59,7 @@ public class Sections {
 		}
 	}
 
-	private void convertStationToSection(Section section, List<Station> stations) {
+	private void convertStationToSection(Line line, List<Station> stations) {
 		for (int i = 0; i < stations.size() - 1; i++) {
 			Station upstation = stations.get(i);
 			Station downStation = stations.get(i + 1);
@@ -68,7 +69,7 @@ public class Sections {
 				targetSection.update(upstation, downStation, distance);
 				continue;
 			}
-			sections.add(Section.create(section.getLine(), upstation, downStation, distance));
+			sections.add(Section.create(line, upstation, downStation, distance));
 		}
 	}
 
@@ -105,13 +106,6 @@ public class Sections {
 		}
 	}
 
-	private int findMatchIndex(List<Station> stations, Station station) {
-		return IntStream.range(0, stations.size())
-			.filter(i -> station.equals(stations.get(i)))
-			.findFirst()
-			.orElse(-1);
-	}
-
 	public List<Station> convertSectionToStation() {
 		return CollectionUtils.emptyIfNull(this.sections).stream()
 			.map(section -> {
@@ -123,5 +117,40 @@ public class Sections {
 			.flatMap(Collection::stream)
 			.distinct()
 			.collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	public void removeSectionByStation(Line line, Station targetStation) {
+		List<Station> stations = convertSectionToStation();
+		int targetIndex = stations.indexOf(targetStation);
+		validateBeforeRemove(targetIndex);
+		if (targetIndex == 0) {
+			stations.remove(0);
+		}
+		if (targetIndex > 0) {
+			Station preStation = stations.get(targetIndex - 1);
+			preStation.sumNextDistance(targetStation);
+			stations.remove(targetIndex);
+		}
+		updateLastStationDistanceZero(stations);
+		removeLastSection();
+		convertStationToSection(line, stations);
+	}
+
+	private void validateBeforeRemove(int targetIndex) {
+		if (targetIndex == -1) {
+			throw new NotFoundException("삭제할 대상 역을 찾을 수 없습니다.");
+		}
+		if (sections.size() <= 1) {
+			throw new MinimumSectionException("최소 1개 이상의 구간이 필요합니다.");
+		}
+	}
+
+	private void updateLastStationDistanceZero(List<Station> stations) {
+		Station lastStation = stations.get(stations.size() - 1);
+		lastStation.updateNextDistance(0);
+	}
+
+	private void removeLastSection() {
+		this.sections.remove(this.sections.size() - 1);
 	}
 }

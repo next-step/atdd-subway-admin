@@ -40,4 +40,8 @@ public class Station extends BaseEntity {
 	public boolean isFinalStation() {
 		return this.nextDistance == 0;
 	}
+
+	public void sumNextDistance(Station targetStation) {
+		this.nextDistance = this.nextDistance + targetStation.getNextDistance();
+	}
 }

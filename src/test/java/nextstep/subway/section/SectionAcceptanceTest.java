@@ -242,4 +242,134 @@ public class SectionAcceptanceTest extends BaseTest {
 		);
 	}
 
+	@DisplayName("역과 역사이의 역을 삭제")
+	@Test
+	void deleteSectionCase1() {
+
+		// given
+		createSectionCase1();
+
+		// when
+		// 지하철_구간_삭제_요청
+		ExtractableResponse<Response> response = requestDeleteSection(exampleLine1.getId(), exampleStation3.getId());
+
+		// then
+		// 지하철_구간_삭제됨
+		LineResponse lineResponse = response.as(LineResponse.class);
+		List<StationResponse> stationResponses = lineResponse.getStations();
+		List<Long> stationIds = stationResponses.stream()
+			.map(StationResponse::getId)
+			.collect(Collectors.toList());
+		List<Integer> nextDistances = stationResponses.stream()
+			.map(StationResponse::getNextDistance)
+			.collect(Collectors.toList());
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(stationResponses).hasSize(2),
+			() -> assertThat(stationIds).isEqualTo(
+				Arrays.asList(exampleStation1.getId(), exampleStation2.getId())),
+			() -> assertThat(nextDistances).isEqualTo(
+				Arrays.asList(100, 0)
+			)
+		);
+	}
+
+	@DisplayName("구간이 여러개인 노선에서 상행 종점 제거")
+	@Test
+	void deleteSectionCase2() {
+
+		// given
+		createSectionCase1();
+
+		// when
+		// 지하철_구간_삭제_요청
+		ExtractableResponse<Response> response = requestDeleteSection(exampleLine1.getId(), exampleStation1.getId());
+
+		// then
+		// 지하철_구간_삭제됨
+		LineResponse lineResponse = response.as(LineResponse.class);
+		List<StationResponse> stationResponses = lineResponse.getStations();
+		List<Long> stationIds = stationResponses.stream()
+			.map(StationResponse::getId)
+			.collect(Collectors.toList());
+		List<Integer> nextDistances = stationResponses.stream()
+			.map(StationResponse::getNextDistance)
+			.collect(Collectors.toList());
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(stationResponses).hasSize(2),
+			() -> assertThat(stationIds).isEqualTo(
+				Arrays.asList(exampleStation3.getId(), exampleStation2.getId())),
+			() -> assertThat(nextDistances).isEqualTo(
+				Arrays.asList(90, 0)
+			)
+		);
+	}
+
+	@DisplayName("구간이 여러개인 노선에서 하행 종점 제거")
+	@Test
+	void deleteSectionCase3() {
+
+		// given
+		createSectionCase1();
+
+		// when
+		// 지하철_구간_삭제_요청
+		ExtractableResponse<Response> response = requestDeleteSection(exampleLine1.getId(), exampleStation2.getId());
+
+		// then
+		// 지하철_구간_삭제됨
+		LineResponse lineResponse = response.as(LineResponse.class);
+		List<StationResponse> stationResponses = lineResponse.getStations();
+		List<Long> stationIds = stationResponses.stream()
+			.map(StationResponse::getId)
+			.collect(Collectors.toList());
+		List<Integer> nextDistances = stationResponses.stream()
+			.map(StationResponse::getNextDistance)
+			.collect(Collectors.toList());
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(stationResponses).hasSize(2),
+			() -> assertThat(stationIds).isEqualTo(
+				Arrays.asList(exampleStation1.getId(), exampleStation3.getId())),
+			() -> assertThat(nextDistances).isEqualTo(
+				Arrays.asList(10, 0)
+			)
+		);
+	}
+
+	@DisplayName("노선에 등록되지 않은 역 제거")
+	@Test
+	void deleteSectionThrow1() {
+		// given
+		createSectionCase1();
+		StationResponse newStation = stationService.saveStation(StationRequest.of(EXAMPLE_STATION4_NAME));
+
+		// when
+		// 지하철_구간_삭제_요청
+		ExtractableResponse<Response> response = requestDeleteSection(exampleLine1.getId(), newStation.getId());
+
+		// then
+		// 지하철_구간_삭제시 오류
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value())
+		);
+	}
+
+	@DisplayName("구간이 하나인 경우에 역 제거")
+	@Test
+	void deleteSectionThrow2() {
+		// given
+
+		// when
+		// 지하철_구간_삭제_요청
+		ExtractableResponse<Response> response = requestDeleteSection(exampleLine1.getId(), exampleStation1.getId());
+
+		// then
+		// 지하철_구간_삭제시 오류
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+		);
+	}
+
 }

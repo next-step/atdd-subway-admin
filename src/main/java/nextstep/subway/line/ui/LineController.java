@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -65,6 +66,14 @@ public class LineController {
 		@RequestBody @Valid SectionRequest sectionRequest
 	) {
 		LineResponse line = lineService.addSection(id, sectionRequest);
+		return ResponseEntity.ok().body(line);
+	}
+
+	@DeleteMapping("/{id}/sections")
+	public ResponseEntity<LineResponse> removeLineStation(
+		@PathVariable("id") Long lineId,
+		@RequestParam Long stationId) {
+		LineResponse line = lineService.removeSectionByStation(lineId, stationId);
 		return ResponseEntity.ok().body(line);
 	}
 }
