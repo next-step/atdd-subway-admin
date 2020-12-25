@@ -28,13 +28,12 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> getLines() {
         return ResponseEntity.ok(lineService.getLines());
     }
-<<<<<<< HEAD
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> getLines(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.getOne(id));
     }
-
+    
     @PatchMapping(value = "/{id}")
     public ResponseEntity<LineResponse> modifyLine(
             @PathVariable Long id,
@@ -48,8 +47,4 @@ public class LineController {
         return ResponseEntity.ok(id);
     }
 
-
-
-=======
->>>>>>> feat: 조회 요청 추가
 }
