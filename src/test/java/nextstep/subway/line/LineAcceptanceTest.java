@@ -4,7 +4,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+<<<<<<< HEAD
 import nextstep.subway.line.dto.LineResponse;
+=======
+>>>>>>> feat: 생성 요청 테스트 완료
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
