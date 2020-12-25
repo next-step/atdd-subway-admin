@@ -6,10 +6,10 @@ import nextstep.subway.line.domain.LineFactory;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.LineNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -53,6 +53,6 @@ public class LineService {
 
     private Line getPersistLine(final Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("노선이 존재하지 않습니다. (입력 id 값: %d)", id)));
+                .orElseThrow(() -> new LineNotFoundException(String.format("노선이 존재하지 않습니다. (입력 id 값: %d)", id)));
     }
 }

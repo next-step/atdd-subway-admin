@@ -1,4 +1,4 @@
-package nextstep.subway.common;
+package nextstep.subway.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -6,14 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.persistence.EntityNotFoundException;
-
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class ServiceExceptionHandler {
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handle(EntityNotFoundException e) {
-        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<ErrorResponse> handle(ServiceException e) {
+        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), e.getStatus());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
