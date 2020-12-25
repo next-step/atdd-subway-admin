@@ -5,6 +5,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.StationInLineResponse;
+import nextstep.subway.station.dto.StationInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -15,11 +17,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceStep {
-    public static ExtractableResponse<Response> 새로운_지하철_노선_생성_요청(
-            final String lineName, final String lineColor
-    ) {
-        LineRequest lineRequest = new LineRequest(lineName, lineColor);
-
+    public static ExtractableResponse<Response> 새로운_지하철_노선_생성_요청(final LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -48,6 +46,18 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
+    public static void 새로운_지하철_노선_생성_성공(
+            ExtractableResponse<Response> response, String lineName, Long upStationId, Long downStationId
+    ) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineResponse lineResponse = response.as(LineResponse.class);
+        assertThat(lineResponse.getName()).isEqualTo(lineName);
+        List<Long> responseStationIds = lineResponse.getStations().stream()
+                .map(StationInLineResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(responseStationIds).contains(upStationId, downStationId);
+    }
+
     public static void 새로운_지하철_노선_생성됨(
             final ExtractableResponse<Response> response, final String lineName, final String lineColor
     ) {
@@ -72,6 +82,7 @@ public class LineAcceptanceStep {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+
     public static ExtractableResponse<Response> 지하철_노선_변경_요청(Long lineId, LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
@@ -90,6 +101,24 @@ public class LineAcceptanceStep {
                 .then()
                 .log().all()
                 .extract();
+    }
+
+    public static void 응답에_역들이_순서대로_정렬되어_있음(
+            ExtractableResponse<Response> response, StationInfo upStation, StationInfo downStation
+    ) {
+        LineResponse lineResponse = response.as(LineResponse.class);
+
+        List<Long> stationIds = lineResponse.getStations().stream()
+                .map(StationInLineResponse::getId)
+                .collect(Collectors.toList());
+
+        List<String> stationNames = lineResponse.getStations().stream()
+                .map(StationInLineResponse::getName)
+                .collect(Collectors.toList());
+
+        assertThat(stationIds.get(0)).isEqualTo(upStation.getId());
+        assertThat(stationIds.get(1)).isEqualTo(downStation.getId());
+        assertThat(stationNames).contains(upStation.getName(), downStation.getName());
     }
 
     public static Long 응답_헤더에서_ID_추출(ExtractableResponse<Response> response) {

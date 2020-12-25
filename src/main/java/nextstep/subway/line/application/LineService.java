@@ -1,28 +1,43 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.exceptions.NotFoundException;
+import nextstep.subway.line.domain.stationAdapter.SafeStationAdapter;
+import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
+    private final SafeStationAdapter safeStationAdapter;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(
+            LineRepository lineRepository, SafeStationAdapter safeStationAdapter
+    ) {
         this.lineRepository = lineRepository;
+        this.safeStationAdapter = safeStationAdapter;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        SafeStationInfo upStation = this.safeStationAdapter.getStationSafely(request.getUpStationId());
+        SafeStationInfo downStation = this.safeStationAdapter.getStationSafely(request.getDownStationId());
+
+        Line line = this.createLine(request.getName(), request.getColor(), request.getUpStationId(),
+                request.getDownStationId(), request.getDistance());
+
+        Line savedLine = lineRepository.save(line);
+
+        return LineResponse.of(savedLine, Arrays.asList(upStation, downStation));
     }
 
     @Transactional(readOnly = true)
@@ -30,29 +45,43 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(it -> LineResponse.of(it))
+                .map(it -> LineResponse.of(it, null))
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse getLine(Long lineId) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 라인이 존재하지 않습니다."));
 
-        return LineResponse.of(line);
+        List<Long> stationIds = line.getStationIds();
+        List<SafeStationInfo> safeStationInfos = safeStationAdapter.getStationsSafely(stationIds);
+
+        return LineResponse.of(line, safeStationInfos);
     }
 
     public LineResponse updateLine(Long lineId, String changeName, String changeColor) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException("해당 라인이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 라인이 존재하지 않습니다."));
         Line updateLine = new Line(changeName, changeColor);
         line.update(updateLine);
 
-        return LineResponse.of(updateLine);
+        return LineResponse.of(updateLine, null);
     }
 
     public void deleteLine(Long lineId) {
-        this.getLine(lineId);
+        lineRepository.findById(lineId)
+                .orElseThrow(() -> new NotFoundException("해당 라인이 존재하지 않습니다."));
         lineRepository.deleteById(lineId);
+    }
+
+    Line createLine(
+            final String lineName, final String lineColor, final Long upStationId,
+            final Long downStationId, final Long distance
+    ) {
+        Line line = new Line(lineName, lineColor);
+        line.addNewSection(upStationId, downStationId, distance);
+
+        return line;
     }
 }

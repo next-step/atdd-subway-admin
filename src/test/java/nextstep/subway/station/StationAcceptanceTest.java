@@ -4,7 +4,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.dto.StationInfo;
+import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.station.step.StationAcceptanceStep.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -24,17 +26,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        StationRequest stationRequest = new StationRequest("강남역");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철역_생성_요청(stationRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -105,7 +100,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
+        List<Long> resultLineIds = response.jsonPath().getList(".", StationInfo.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);

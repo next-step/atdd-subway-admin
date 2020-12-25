@@ -3,6 +3,7 @@ package nextstep.subway.station.domain;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 public class Station extends BaseEntity {
@@ -15,8 +16,13 @@ public class Station extends BaseEntity {
     public Station() {
     }
 
-    public Station(String name) {
+    Station(Long id, String name) {
+        this.id = id;
         this.name = name;
+    }
+
+    public Station(String name) {
+        this(null, name);
     }
 
     public Long getId() {
