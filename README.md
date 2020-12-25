@@ -303,6 +303,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] Section 간 병합 기능 추가
     - [X] 인자로 받은 Section과 일치하는 구간 여부에 따라 알아서 머지 된 Section을 반환한다.
   - [X] 위의 도메인 기능을 service, controller 레이어에 연결
-- [ ] 시나리오2
-  - [ ] Line에서 종점역을 삭제하려는 경우에 대한 테스트 추가
-  - [ ] Line에서 종점역을 삭제할 수 있도록 기능 변경
+- [X] 시나리오2
+  - [X] Line에서 종점역을 삭제하려는 경우에 대한 테스트 추가
+  - [X] Line에서 종점역을 삭제할 수 있도록 기능 변경
+  - [X] Sections에서 종점역을 삭제하는 기능 별도로 구현

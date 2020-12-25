@@ -76,7 +76,7 @@ public class Line extends BaseEntity {
             throw new InvalidStationDeleteTryException("남은 구간의 길이가 너무 짧아서 삭제할 수 없습니다.");
         }
         if (this.sections.isThisEndStation(targetStationId)) {
-            throw new InvalidStationDeleteTryException("현재는 종점 구간을 삭제할 수 없습니다.");
+            return this.sections.deleteEndStation(targetStationId);
         }
 
         return this.sections.mergeSectionsByStation(targetStationId);
