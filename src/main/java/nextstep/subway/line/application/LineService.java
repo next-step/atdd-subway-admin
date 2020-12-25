@@ -7,7 +7,6 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -22,7 +21,7 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Line persistLine = lineRepository.save(request.toLineWithStation());
         return LineResponse.of(persistLine);
     }
 
@@ -37,7 +36,7 @@ public class LineService {
     }
 
     public LineResponse updateLine(LineRequest lineRequest, Long id) {
-        Line line = lineRepository.findById(id).get();
+        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
