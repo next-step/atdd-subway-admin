@@ -139,6 +139,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("존재 하지 않는 지하철 노선을 조회한다.")
+    @Test
+    void getNotExistLine() {
+        // when
+        // 지하철_노선_조회_요청
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines/" + 1)
+            .then().log().all()
+            .extract();
+
+        // then
+        // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
