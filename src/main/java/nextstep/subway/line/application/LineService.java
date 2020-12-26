@@ -43,4 +43,8 @@ public class LineService {
 		Line persistLine = lineRepository.findById(id).orElseThrow(() -> new IllegalStateException("등록된 노선이 아닙니다."));
 		persistLine.update(lineRequest.toLine());
 	}
+
+	public void deleteLine(Long id) {
+		lineRepository.deleteById(id);
+	}
 }
