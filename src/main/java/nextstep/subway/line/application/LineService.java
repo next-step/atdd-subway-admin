@@ -1,8 +1,10 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,5 +32,10 @@ public class LineService {
 		return persistLine.stream()
 			.map(line -> LineResponse.of(line))
 			.collect(Collectors.toList());
+	}
+
+	public LineResponse findLine(Long id) {
+		Line persistLine = lineRepository.findById(id).orElseThrow(() -> new IllegalStateException("등록된 노선이 아닙니다."));
+		return LineResponse.of(persistLine);
 	}
 }
