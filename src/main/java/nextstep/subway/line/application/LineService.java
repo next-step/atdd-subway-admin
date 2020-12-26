@@ -84,11 +84,8 @@ public class LineService {
         Line foundLine = lineRepository.findById(lineId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 라인이 존재하지 않습니다"));
 
-        return foundLine.addSection(
-                new Section(
-                        sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance()
-                )
-        );
+        return foundLine.addSection(new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+                sectionRequest.getDistance()));
     }
 
     Line createLine(
