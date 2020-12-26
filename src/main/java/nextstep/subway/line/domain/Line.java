@@ -58,12 +58,7 @@ public class Line extends BaseEntity {
         Section endUpSection = sections.findEndUpSection();
         Section endDownSection = sections.findEndDownSection();
 
-        if (isEndSectionAddCase(endUpSection, endDownSection, newSection)) {
-            AddSectionPolicy addSectionPolicy = new SimpleAddSectionPolicy();
-            return addSectionPolicy.addSection(newSection, sections);
-        }
-
-        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy();
+        AddSectionPolicy addSectionPolicy = selectAddSectionPolicy(endUpSection, endDownSection, newSection);
 
         return addSectionPolicy.addSection(newSection, sections);
     }
@@ -76,5 +71,15 @@ public class Line extends BaseEntity {
             final Section endUpSection, final Section endDownSection, final Section newSection
     ) {
         return endUpSection.isSameUpWithThatDown(newSection) || endDownSection.isSameDownWithThatUp(newSection);
+    }
+
+    private AddSectionPolicy selectAddSectionPolicy(
+            final Section endUpSection, final Section endDownSection, final Section newSection
+    ) {
+        if (isEndSectionAddCase(endUpSection, endDownSection, newSection)) {
+            return new SimpleAddSectionPolicy();
+        }
+
+        return new ChangeOriginalAndAddSectionPolicy();
     }
 }
