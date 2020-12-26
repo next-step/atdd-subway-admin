@@ -59,13 +59,13 @@ public class Line extends BaseEntity {
         Section endDownSection = sections.findEndDownSection();
 
         if (isEndSectionAddCase(endUpSection, endDownSection, newSection)) {
-            AddSectionPolicy addSectionPolicy = new SimpleAddSectionPolicy(sections);
-            return addSectionPolicy.addSection(newSection);
+            AddSectionPolicy addSectionPolicy = new SimpleAddSectionPolicy();
+            return addSectionPolicy.addSection(newSection, sections);
         }
 
-        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy(sections);
+        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy();
 
-        return addSectionPolicy.addSection(newSection);
+        return addSectionPolicy.addSection(newSection, sections);
     }
 
     public List<Long> getStationIds() {

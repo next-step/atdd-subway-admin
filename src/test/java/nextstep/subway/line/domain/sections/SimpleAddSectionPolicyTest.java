@@ -17,10 +17,9 @@ class SimpleAddSectionPolicyTest {
                 new Section(2L, 3L, 10L)
         )));
 
-        SimpleAddSectionPolicy simpleAddSectionPolicy = new SimpleAddSectionPolicy(sections);
-        boolean savedResult = simpleAddSectionPolicy.addSection(
-                new Section(4L, 1L, 10L)
-        );
+        SimpleAddSectionPolicy simpleAddSectionPolicy = new SimpleAddSectionPolicy();
+        boolean savedResult = simpleAddSectionPolicy.addSection(new Section(4L, 1L, 10L),
+                sections);
 
         assertThat(savedResult).isTrue();
     }

@@ -21,8 +21,8 @@ class ChangeOriginalAndAddSectionPolicyTest {
     @ParameterizedTest
     @MethodSource("addSectionTestWhenSameUpStationTestResource")
     void addSectionTestWhenSameUpStationTest(Sections sections, Section newSection, List<Section> changedSections) {
-        AddSectionPolicy policy = new ChangeOriginalAndAddSectionPolicy(sections);
-        boolean result = policy.addSection(newSection);
+        AddSectionPolicy policy = new ChangeOriginalAndAddSectionPolicy();
+        boolean result = policy.addSection(newSection, sections);
 
         assertThat(result).isTrue();
         assertThat(sections.containsAll(changedSections)).isTrue();
@@ -65,9 +65,9 @@ class ChangeOriginalAndAddSectionPolicyTest {
         )));
         Section notMatchAnySection = new Section(4L, 5L, 100L);
 
-        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy(sections);
+        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy();
 
-        assertThatThrownBy(() -> addSectionPolicy.addSection(notMatchAnySection))
+        assertThatThrownBy(() -> addSectionPolicy.addSection(notMatchAnySection, sections))
                 .isInstanceOf(TargetSectionNotFoundException.class);
     }
 
@@ -81,9 +81,9 @@ class ChangeOriginalAndAddSectionPolicyTest {
         )));
         Section tooLongSection = new Section(4L, 3L, invalidDistance);
 
-        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy(sections);
+        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy();
 
-        assertThatThrownBy(() -> addSectionPolicy.addSection(tooLongSection))
+        assertThatThrownBy(() -> addSectionPolicy.addSection(tooLongSection, sections))
                 .isInstanceOf(TooLongSectionException.class);
     }
 
@@ -96,9 +96,9 @@ class ChangeOriginalAndAddSectionPolicyTest {
                 new Section(2L, 3L, 10L)
         )));
 
-        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy(sections);
+        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy();
 
-        assertThatThrownBy(() -> addSectionPolicy.addSection(invalidSection))
+        assertThatThrownBy(() -> addSectionPolicy.addSection(invalidSection, sections))
                 .isInstanceOf(TargetSectionNotFoundException.class);
     }
     public static Stream<Arguments> addSectionFailByAlreadyInLineStationsTestResource() {
