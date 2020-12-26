@@ -43,12 +43,6 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public List<Long> getStationIdsWithoutDup() {
-        return this.getStationIds().stream()
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
     public List<Long> getStationIdsOrderBySection() {
         List<Long> stationIds = new ArrayList<>();
         Section endUpSection = findEndUpSection();
@@ -175,7 +169,10 @@ public class Sections {
     private boolean isAllStationsIn(final Section newSection) {
         List<Long> stationIds = newSection.getStationIds();
 
-        return this.getStationIdsWithoutDup().containsAll(stationIds);
+        return this.getStationIds().stream()
+                .distinct()
+                .collect(Collectors.toList())
+                .containsAll(stationIds);
     }
 
     private List<Long> getStationIds() {
