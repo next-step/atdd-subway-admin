@@ -32,9 +32,22 @@ public class LineController {
     }
 
     @GetMapping(value = "/lines/{id}")
-    public ResponseEntity getLine(@PathVariable("id") Long id) {
+    public ResponseEntity<LineResponse> getLine(@PathVariable("id") Long id) {
         LineResponse line = lineService.findLineById(id);
         return ResponseEntity.ok(line);
+    }
+
+    @PutMapping(value = "/lines/{id}")
+    public ResponseEntity updateLine(@PathVariable Long id,
+                                     @RequestBody LineRequest request) {
+        lineService.updateLine(id, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/lines/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.deleteLineById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

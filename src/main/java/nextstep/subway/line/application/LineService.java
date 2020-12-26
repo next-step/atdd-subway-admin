@@ -42,4 +42,17 @@ public class LineService {
         }
         return LineResponse.of(line.get());
     }
+
+    public void updateLine(Long id, LineRequest request) {
+        Optional<Line> lineOptional = lineRepository.findById(id);
+        if(!lineOptional.isPresent()) {
+            throw new NoLineExceptaion("노선이 존재하지 않습니다.");
+        }
+
+        lineOptional.get().update(request.toLine());
+    }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
