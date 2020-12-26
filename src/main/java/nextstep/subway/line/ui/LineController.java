@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import java.util.Arrays;
 
 @RestController
 @RequestMapping("/lines")
@@ -37,7 +36,7 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity showLines() {
-        return ResponseEntity.ok().body(Arrays.asList(new LineResponse(1L), new LineResponse(2L)));
+        return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
     @GetMapping(value = "/{id}")
