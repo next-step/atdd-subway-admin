@@ -5,7 +5,7 @@ import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
 
-@EqualsAndHashCode(of = "name")
+@EqualsAndHashCode(of = "name", callSuper = false)
 @Entity
 public class Station extends BaseEntity {
     @Id

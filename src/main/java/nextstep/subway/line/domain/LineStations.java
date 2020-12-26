@@ -34,16 +34,48 @@ public class LineStations {
         lineStations.add(lineStation);
     }
 
-    // todo: 임시 구현
     public List<Station> getStationsOrderByUp() {
         List<Station> orderedStations = new ArrayList<>();
-        lineStations.forEach(lineStation -> addStation(orderedStations, lineStation));
+        // 상행역 찾기
+        Station upStation = getUpStation();
+        orderedStations.add(upStation);
+
+        // 정렬
+        addStationsOrderByUp(orderedStations, upStation);
         return orderedStations;
     }
 
-    private void addStation(final List<Station> orderedStations, final LineStation lineStation) {
-        orderedStations.add(lineStation.getUpStation());
-        orderedStations.add(lineStation.getDownStation());
+    private void addStationsOrderByUp(final List<Station> orderedStations, final Station baseStation) {
+        List<LineStation> targets = new ArrayList<>(lineStations);
+        Station next = baseStation;
+        while (targets.size() > 0) {
+            LineStation lineStation = nextTarget(targets, next);
+            Station downStation = lineStation.getDownStation();
+            orderedStations.add(downStation);
+            next = downStation;
+        }
+    }
+
+    private Station getUpStation() {
+        return lineStations.stream()
+                .map(LineStation::getUpStation)
+                .filter(this::isUpStation)
+                .findFirst()
+                .orElseThrow(IllegalStateException::new);
+    }
+
+    private boolean isUpStation(final Station station) {
+        return lineStations.stream()
+                .noneMatch(lineStation -> lineStation.isDownStation(station));
+    }
+
+    private LineStation nextTarget(final List<LineStation> targets, final Station next) {
+        LineStation lineStation = targets.stream()
+                .filter(target -> target.isUpStation(next))
+                .findFirst()
+                .orElseThrow(IllegalStateException::new);
+        targets.remove(lineStation);
+        return lineStation;
     }
 
     public boolean contains(final LineStation lineStation) {

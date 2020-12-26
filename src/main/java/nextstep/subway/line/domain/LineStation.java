@@ -40,4 +40,12 @@ public class LineStation {
     public Station getDownStation() {
         return section.getDownStation();
     }
+
+    public boolean isUpStation(final Station station) {
+        return section.isUpStation(station);
+    }
+
+    public boolean isDownStation(final Station station) {
+        return section.isDownStation(station);
+    }
 }

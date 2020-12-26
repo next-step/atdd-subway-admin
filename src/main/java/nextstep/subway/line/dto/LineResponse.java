@@ -40,7 +40,7 @@ public class LineResponse {
                 .id(line.getId())
                 .name(line.getName())
                 .color(line.getColor())
-                .stations(StationResponse.ofList(line.getUpStations()))
+                .stations(StationResponse.ofList(line.getStationsOrderByUp()))
                 .createdDate(line.getCreatedDate())
                 .modifiedDate(line.getModifiedDate())
                 .build();

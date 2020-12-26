@@ -43,4 +43,12 @@ public class Section {
         }
         return new Section(upStation, downStation, distance);
     }
+
+    public boolean isUpStation(final Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isDownStation(final Station station) {
+        return this.downStation.equals(station);
+    }
 }

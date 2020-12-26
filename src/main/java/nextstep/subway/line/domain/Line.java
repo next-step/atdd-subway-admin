@@ -51,7 +51,7 @@ public class Line extends BaseEntity {
         lineStations.add(new LineStation(this, section));
     }
 
-    public List<Station> getUpStations() {
+    public List<Station> getStationsOrderByUp() {
         return lineStations.getStationsOrderByUp();
     }
 }
