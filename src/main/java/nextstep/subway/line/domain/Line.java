@@ -63,6 +63,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Long> getStationIds() {
-        return this.sections.getStationIdsOrderBySection();
+        return StationsInLine.getStationIdsOrderBySection(this.sections);
     }
 }
