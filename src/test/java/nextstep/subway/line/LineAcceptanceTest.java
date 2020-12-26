@@ -2,6 +2,10 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +17,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -44,14 +49,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLines() {
 		// given
 		// 지하철_노선_등록되어_있음
+		ExtractableResponse<Response> createdLine1 = 지하철_노선_생성_요청("신분당선", "bg-red-600");
 		// 지하철_노선_등록되어_있음
-
+		ExtractableResponse<Response> createdLine2 = 지하철_노선_생성_요청("2호선", "bg-green-600");
 		// when
-		// 지하철_노선_목록_조회_요청
-
+		ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 		// then
-		// 지하철_노선_목록_응답됨
-		// 지하철_노선_목록_포함됨
+		지하철_노선_목록_응답됨(response);
+		지하철_노선_목록_포함됨(response, createdLine1, createdLine2);
 	}
 
 	@DisplayName("지하철 노선을 조회한다.")
@@ -93,7 +98,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// 지하철_노선_삭제됨
 	}
 
-	private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+	private void 지하철_노선_생성됨(final ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(response.header("Location")).isNotBlank();
 	}
@@ -108,8 +113,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.extract();
 	}
 
-
 	private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+	}
+
+	private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, ExtractableResponse<Response>... createdLine) {
+
+		List<Long> savedLineIds = Arrays.stream(createdLine).
+			map(line -> getLineId(line))
+			.collect(Collectors.toList());
+
+		List<Long> actualLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+			.map(LineResponse::getId)
+			.collect(Collectors.toList());
+		assertThat(actualLineIds).containsAll(savedLineIds);
+	}
+
+	private Long getLineId(ExtractableResponse<Response> line) {
+		return Long.parseLong(line.header("Location").split("/")[2]);
+	}
+
+	private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+		// when
+		return RestAssured.given().log().all()
+			.when().get("/lines")
+			.then().log().all().extract();
 	}
 }
