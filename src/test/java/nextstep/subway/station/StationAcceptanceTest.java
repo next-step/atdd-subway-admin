@@ -104,9 +104,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void 지하철역_목록_조회_성공(List<ExtractableResponse<Response>> createResponses, ExtractableResponse<Response> response) {
+    private void 지하철역_목록_조회_성공(List<ExtractableResponse<Response>> responses, ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = createResponses.stream()
+        List<Long> expectedLineIds = responses.stream()
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
