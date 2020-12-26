@@ -285,4 +285,13 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] Line에서 Station 조회 시 Section 순서대로 조회
   - [X] Sections에서 상행종점역을 찾는 기능 추가
   - [X] Sections에서 생항종점역을 기준으로 다음역을 탐색하며 결과를 합치는 기능 추가
-- [ ] 구간 역 목록 조회 기능의 인수 조건을 순서 정렬이 제대로 됐는지 확인하도록 변경
+- [X] 구간 역 목록 조회 기능의 인수 조건을 순서 정렬이 제대로 됐는지 확인하도록 변경
+
+## Step3 피드백 반영
+- [ ] 되살아난 auditing setter 전부 제거
+- [ ] 과하게 긴 줄이 아니면 한 줄로만 줄 바꾸기
+- [ ] Sections add policy에 굳이 sections 인스턴스 변수가 필요할지 고민하기
+- [ ] Sections 일급 컬렉션의 addSection 메서드를 어떻게 안전하게 처리할지 고민하기
+- [ ] SectionCalculator에서 원자적으로 연산을 처리하도록 변경
+- [ ] addSection을 아예 두개의 메서드로 분리하는 방법 고민
+- [ ] AddSectionPolicy 계산을 처리를 별도의 책임으로 분리
