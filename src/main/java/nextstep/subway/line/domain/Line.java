@@ -59,7 +59,7 @@ public class Line extends BaseEntity {
     }
 
     public void updateSection(Section section) {
-        if(isChangedStations(section)){
+        if (isChangedStations(section)) {
             this.sections.stream()
                     .findFirst()
                     .ifPresent(s -> s.update(section));
@@ -70,4 +70,13 @@ public class Line extends BaseEntity {
         return !this.sections.stream()
                 .allMatch(s -> s.equals(section));
     }
+
+    public void registrySection(Section targetSection) {
+        this.sections.stream()
+                .filter(base -> base.isSameUpStation(targetSection.getUpStation()))
+                .findFirst()
+                .ifPresent(base -> targetSection.changeUpStation(base.getDownStation()));
+        addSection(targetSection);
+    }
+
 }

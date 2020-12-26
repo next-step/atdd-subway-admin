@@ -4,10 +4,13 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -25,6 +28,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private long 양재역;
     private long 판교역;
 
+    @Autowired
+    private LineService lineService;
 
     @Override
     @BeforeEach
@@ -47,7 +52,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선에_지하철역_등록_요청
         Map<String, String> params = new HashMap<>();
-        params.put("upStationId", 강남역 + "");
+        params.put("upStationId", 양재역 + "");
         params.put("downStationId", 판교역 + "");
         params.put("distance", 10 + "");
         ExtractableResponse<Response> response = RestAssured.given().log().all().
@@ -63,9 +68,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철_노선_조회_요청(신분당선);
-
-        assertThat(LineAcceptanceTest.isContainsStationToLineResponse(getLineResponse(lineResponse), 판교역)).isTrue();
+        ExtractableResponse<Response> extractLineResponse = LineAcceptanceTest.지하철_노선_조회_요청(신분당선);
+        LineResponse lineResponse = getLineResponse(extractLineResponse);
+        assertThat(lineResponse.getStations().get(0).getId()).isEqualTo(판교역);
     }
 
 }

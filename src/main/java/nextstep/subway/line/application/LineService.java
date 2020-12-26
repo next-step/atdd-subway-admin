@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         if (request.isContainsSection()) {
-            persistLine.addSection(ofSection(request));
+            persistLine.addSection(ofSection(request.toSectionRequest()));
         }
         return LineResponse.of(persistLine);
     }
@@ -37,7 +38,7 @@ public class LineService {
         Line lineById = this.findById(id);
         lineById.update(request.toLine());
         if (request.isContainsSection()) {
-            lineById.updateSection(ofSection(request));
+            lineById.updateSection(ofSection(request.toSectionRequest()));
         }
     }
 
@@ -64,7 +65,12 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private Section ofSection(LineRequest request) {
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Line byId = this.findById(lineId);
+        byId.registrySection(ofSection(sectionRequest));
+    }
+
+    private Section ofSection(SectionRequest request) {
         return Optional.of(new Section(
                 this.findStationById(request.getUpStationId()),
                 this.findStationById(request.getDownStationId()),

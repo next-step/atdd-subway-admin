@@ -41,6 +41,10 @@ public class LineRequest {
         return new Line(name, color);
     }
 
+    public SectionRequest toSectionRequest() {
+        return new SectionRequest(upStationId, downStationId, distance);
+    }
+
     public boolean isContainsSection() {
         return upStationId != null && downStationId != null;
     }

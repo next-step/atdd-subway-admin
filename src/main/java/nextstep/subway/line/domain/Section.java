@@ -47,8 +47,20 @@ public class Section {
         this.line = line;
     }
 
+    public void changeUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
     public List<Station> upAndDownStations() {
         return Arrays.asList(upStation,downStation);
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public void update(Section section) {
@@ -59,6 +71,10 @@ public class Section {
 
     public boolean isNotEqualsStation() {
         return !this.upStation.equals(this.downStation);
+    }
+
+    public boolean isSameUpStation(Station target) {
+        return this.upStation.getId().equals(target.getId());
     }
 
     @Override
