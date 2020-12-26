@@ -41,7 +41,7 @@ public class LineController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity showLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(new LineResponse(1L));
+        return ResponseEntity.ok().body(lineService.findById(id));
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

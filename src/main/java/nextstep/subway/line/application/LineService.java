@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
@@ -28,5 +29,11 @@ public class LineService {
         return lineRepository.findAll().stream()
             .map(line -> LineResponse.of(line))
             .collect(Collectors.toList());
+    }
+
+    public LineResponse findById(long id) {
+        return lineRepository.findById(id)
+            .map(line -> LineResponse.of(line))
+            .orElseThrow(NoSuchElementException::new);
     }
 }
