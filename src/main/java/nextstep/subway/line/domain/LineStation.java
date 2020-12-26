@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -30,5 +31,13 @@ public class LineStation {
     public LineStation(final Line line, final Section section) {
         this.line = Objects.requireNonNull(line);
         this.section = Objects.requireNonNull(section);
+    }
+
+    public Station getUpStation() {
+        return section.getUpStation();
+    }
+
+    public Station getDownStation() {
+        return section.getDownStation();
     }
 }
