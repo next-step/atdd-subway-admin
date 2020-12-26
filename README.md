@@ -295,3 +295,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] SectionCalculator에서 원자적으로 연산을 처리하도록 변경
 - [ ] addSection을 아예 두개의 메서드로 분리하는 방법 고민
 - [ ] AddSectionPolicy 계산을 처리를 별도의 책임으로 분리
+- [X] 컨트롤러 예외 처리 책임을 다른 클래스로 위임
