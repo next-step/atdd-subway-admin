@@ -288,7 +288,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 구간 역 목록 조회 기능의 인수 조건을 순서 정렬이 제대로 됐는지 확인하도록 변경
 
 ## Step3 피드백 반영
-- [ ] 되살아난 auditing setter 전부 제거
+- [X] 되살아난 auditing setter 전부 제거
 - [ ] 과하게 긴 줄이 아니면 한 줄로만 줄 바꾸기
 - [ ] Sections add policy에 굳이 sections 인스턴스 변수가 필요할지 고민하기
 - [ ] Sections 일급 컬렉션의 addSection 메서드를 어떻게 안전하게 처리할지 고민하기
