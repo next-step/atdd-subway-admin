@@ -43,18 +43,6 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public Section findTargetSection(final Section newSection) {
-        Section targetSection = findSameWithUpStation(newSection);
-        if (targetSection == null) {
-            targetSection = findSameWithDownStation(newSection);
-        }
-        if (targetSection == null) {
-            throw new TargetSectionNotFoundException("새로운 구간을 추가할 수 있는 구간이 없습니다.");
-        }
-
-        return targetSection;
-    }
-
     public boolean containsAll(final List<Section> targetSections) {
         return targetSections.stream().allMatch(this::contains);
     }
@@ -114,6 +102,18 @@ public class Sections {
                 .filter(it -> it.isSameUpWithThatDown(section))
                 .findFirst()
                 .orElse(null);
+    }
+
+    Section findTargetSection(final Section newSection) {
+        Section targetSection = findSameWithUpStation(newSection);
+        if (targetSection == null) {
+            targetSection = findSameWithDownStation(newSection);
+        }
+        if (targetSection == null) {
+            throw new TargetSectionNotFoundException("새로운 구간을 추가할 수 있는 구간이 없습니다.");
+        }
+
+        return targetSection;
     }
 
     private List<Long> calculateSingleStationIds() {
