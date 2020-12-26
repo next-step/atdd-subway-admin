@@ -210,8 +210,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_제거_요청
+        final ExtractableResponse<Response> response = 지하철_노선_삭제_요청("/" + createdLine.getId());
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_삭제_요청(final String urlParam) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete(DEFAULT_LINES_URI + urlParam)
+            .then().log().all()
+            .extract();
     }
 }

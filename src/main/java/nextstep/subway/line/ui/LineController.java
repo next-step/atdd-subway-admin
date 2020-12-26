@@ -42,4 +42,10 @@ public class LineController {
         final LineResponse line = lineService.updateLine(id, lineRequest.toLine());
         return ResponseEntity.ok().body(line);
     }
+
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> deleteLine(@PathVariable final long id) {
+        lineService.deleteLine(id);
+        return ResponseEntity.noContent().build();
+    }
 }
