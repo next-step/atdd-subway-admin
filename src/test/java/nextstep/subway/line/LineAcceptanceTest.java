@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    private static final String DEFAULT_LINES_URI = "/lines";
+    private static final String DEFAULT_URI_GET_PARAMETER = "";
     final Map<String, String> params = new HashMap<>();
 
     @BeforeEach
@@ -71,7 +73,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .post("/lines")
+            .post(DEFAULT_LINES_URI)
             .then().log().all()
             .extract();
     }
@@ -88,12 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
+        final ExtractableResponse<Response> response = getRequest(DEFAULT_URI_GET_PARAMETER);
 
         // then
         // 지하철_노선_목록_응답됨
@@ -120,12 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/lines/" + createdLine.getId())
-            .then().log().all()
-            .extract();
+        final ExtractableResponse<Response> response = getRequest("/" + createdLine.getId());
 
         final LineResponse getLine = response.as(LineResponse.class);
 
@@ -144,16 +136,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getNotExistLine() {
         // when
         // 지하철_노선_조회_요청
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/lines/" + 1)
-            .then().log().all()
-            .extract();
+        final ExtractableResponse<Response> response = getRequest("/1");
 
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private ExtractableResponse<Response> getRequest(final String url) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get(DEFAULT_LINES_URI + url)
+            .then().log().all()
+            .extract();
     }
 
     @DisplayName("지하철 노선을 수정한다.")
