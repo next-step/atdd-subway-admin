@@ -52,8 +52,6 @@ class DefaultLineFactoryTest {
         assertThat(line).isNotNull();
         assertThat(line.getName()).isEqualTo(name);
         assertThat(line.getColor()).isEqualTo(color);
-        assertThat(line.getLastStation().getUpStation()).isEqualTo(upStation);
-        assertThat(line.getLastStation().getDownStation()).isEqualTo(downStation);
-        assertThat(line.getStations()).containsExactly(upStation, downStation);
+        assertThat(line.getUpStations()).containsExactly(upStation, downStation);
     }
 }

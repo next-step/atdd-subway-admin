@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,10 +13,7 @@ class LineFactoryTest {
     @Test
     void create() {
         // given
-        LineFactory lineFactory = lineRequest -> {
-            LastStation lastStation = new LastStation(new Station("청량리역"), new Station("신창역"));
-            return Line.of("1호선", "blue", 100, lastStation);
-        };
+        LineFactory lineFactory = lineRequest -> Line.of("1호선", "blue");
 
         LineRequest lineRequest = new LineRequest();
 

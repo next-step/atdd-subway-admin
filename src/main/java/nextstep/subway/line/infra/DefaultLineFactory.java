@@ -1,9 +1,9 @@
 package nextstep.subway.line.infra;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.line.domain.LastStation;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineFactory;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -21,12 +21,10 @@ public class DefaultLineFactory implements LineFactory {
     public Line create(final LineRequest lineRequest) {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
-        return Line.of(
-                lineRequest.getName(),
-                lineRequest.getColor(),
-                lineRequest.getDistance(),
-                new LastStation(upStation, downStation)
-        );
+        Section section = Section.of(upStation, downStation, lineRequest.getDistance());
+        Line line = Line.of(lineRequest.getName(), lineRequest.getColor());
+        line.add(section);
+        return line;
     }
 
     private Station getStation(final Long upStationId) {

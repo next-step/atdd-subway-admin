@@ -16,22 +16,16 @@ class LineTest {
         // given
         String name = "1호선";
         String color = "blue";
-        int distance = 100;
-        Station upStation = new Station("청량리역");
-        Station downStation = new Station("신창역");
-        LastStation lastStation = new LastStation(upStation, downStation);
 
         // when
-        Line line = Line.of(name, color, distance, lastStation);
+        Line line = Line.of(name, color);
 
         // then
         assertAll(
                 () -> assertThat(line).isNotNull(),
                 () -> assertThat(line.getName()).isEqualTo(name),
                 () -> assertThat(line.getColor()).isEqualTo(color),
-                () -> assertThat(line.getDistance()).isEqualTo(distance),
-                () -> assertThat(line.getLastStation()).isEqualTo(lastStation),
-                () -> assertThat(line.getLineStations().getLineStations()).contains(LineStation.of(line, upStation, downStation, distance))
+                () -> assertThat(line.getLineStations()).isNotNull()
         );
     }
 
@@ -49,9 +43,7 @@ class LineTest {
         assertAll(
                 () -> assertThat(line1).isNotNull(),
                 () -> assertThat(line1.getName()).isEqualTo(line2.getName()),
-                () -> assertThat(line1.getColor()).isEqualTo(line2.getColor()),
-                () -> assertThat(line1.getDistance()).isEqualTo(line2.getDistance()),
-                () -> assertThat(line1.getLastStation()).isEqualTo(line2.getLastStation())
+                () -> assertThat(line1.getColor()).isEqualTo(line2.getColor())
         );
     }
 
@@ -59,36 +51,48 @@ class LineTest {
     @Test
     void addSection() {
         // given
-        Line line = 지하철_1호선_생성됨();
         Station upStation = new Station("신도림역");
         Station downStation = new Station("문래역");
         int distance = 200;
+        Section section = Section.of(upStation, downStation, distance);
+        Line line = 지하철_1호선_생성됨();
 
         // when
-        line.addLineStation(upStation, downStation, distance);
+        line.add(section);
 
 
         // then
-        assertThat(line.getLineStations().getLineStations()).contains(LineStation.of(line, upStation, downStation, distance));
+        LineStations lineStations = line.getLineStations();
+        LineStation lineStation = new LineStation(line, section);
+        boolean actual = lineStations.contains(lineStation);
+        assertThat(actual).isTrue();
     }
 
     public static Line 지하철_1호선_생성됨() {
         String name = "1호선";
         String color = "blue";
+        Line line = Line.of(name, color);
+
         int distance = 100;
         Station upStation = new Station("청량리역");
         Station downStation = new Station("신창역");
-        LastStation lastStation = new LastStation(upStation, downStation);
-        return Line.of(name, color, distance, lastStation);
+        Section section = Section.of(upStation, downStation, distance);
+
+        line.add(section);
+        return line;
     }
 
     public static Line 지하철_2호선_생성됨() {
         String name = "2호선";
         String color = "green";
+        Line line = Line.of(name, color);
+
         int distance = 200;
         Station upStation = new Station("강남역");
         Station downStation = new Station("홍대역");
-        LastStation lastStation = new LastStation(upStation, downStation);
-        return Line.of(name, color, distance, lastStation);
+        Section section = Section.of(upStation, downStation, distance);
+
+        line.add(section);
+        return line;
     }
 }
