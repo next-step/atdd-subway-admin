@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -146,6 +147,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_정보_확인
         LineResponse selectedLineResponse = response.as(LineResponse.class);
         assertThat(selectedLineResponse).isEqualTo(createdLineResponse);
+
+        List<String> stationNames = selectedLineResponse.getStations().stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        assertThat(stationNames).containsExactly(upStation.getName(), downStation.getName());
     }
 
     @DisplayName("지하철 노선을 수정한다.")

@@ -13,10 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class SectionService {
+    private static final Integer INIT_SECTION_NUMBER = 0;
+    private static final Integer SECTION_NUMBER_OFFSET = 1;
+
     private LineRepository lineRepository;
     private SectionRepository sectionRepository;
     private StationRepository stationRepository;
@@ -34,11 +38,21 @@ public class SectionService {
                 .orElseThrow(() -> new NotExistsStationIdException(request.getUpStationId()));
         Station downStation = stationRepository.findById(request.getDownStationId())
                 .orElseThrow(() -> new NotExistsStationIdException(request.getDownStationId()));
-        sectionRepository.save(new Section(line, upStation, downStation, request.getDistance()));
+
+        Integer sectionNumber = getSectionNumber(line.getId());
+
+        sectionRepository.save(new Section(line, upStation, downStation, request.getDistance(), sectionNumber));
     }
 
     public void deleteAllByLineId(Long lineId) {
         List<Section> sections = sectionRepository.findByLineId(lineId);
         sectionRepository.deleteAll(sections);
+    }
+
+    private Integer getSectionNumber(Long lineId) {
+        Optional<Section> section = sectionRepository.findTop1ByLineIdOrderBySectionNumberDesc(lineId);
+
+        return section.map(Section::getSectionNumber)
+                .orElse(INIT_SECTION_NUMBER) + SECTION_NUMBER_OFFSET;
     }
 }

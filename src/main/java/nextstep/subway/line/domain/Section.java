@@ -18,14 +18,16 @@ public class Section extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
     private Integer distance;
+    private Integer sectionNumber;
 
-    public Section(){}
+    private Section(){}
 
-    public Section(Line line, Station upStation, Station downStation, Integer distance) {
+    public Section(Line line, Station upStation, Station downStation, Integer distance, Integer sectionNumber) {
         setLine(line);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        this.sectionNumber = sectionNumber;
     }
 
     public void setLine(Line line) {
@@ -40,7 +42,7 @@ public class Section extends BaseEntity {
         return upStation;
     }
 
-    public void setUpStation(Station upStation) {
+    public void updateUpStation(Station upStation) {
         this.upStation = upStation;
     }
 
@@ -48,7 +50,7 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public void setDownStation(Station downStation) {
+    public void updateDownStation(Station downStation) {
         this.downStation = downStation;
     }
 
@@ -56,8 +58,12 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public void setDistance(Integer distance) {
-        this.distance = distance;
+    public Integer getSectionNumber() {
+        return sectionNumber;
+    }
+
+    public void updateSectionNumber(Integer sectionNumber) {
+        this.sectionNumber = sectionNumber;
     }
 
     @Override
