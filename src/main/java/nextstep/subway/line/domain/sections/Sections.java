@@ -115,6 +115,7 @@ public class Sections {
                 .orElseThrow(() -> new EndUpStationNotFoundException("하행종점역 구간을 찾을 수 없습니다."));
     }
 
+    // TODO: remove
     // 패키지 외부로 노출되면 도메인을 심각하게 손상할 수 있는 메서드
     void addSection(final Section section) {
         if (sections.size() == 0) {
@@ -122,6 +123,13 @@ public class Sections {
         }
 
         this.sections.add(section);
+    }
+
+    // TODO: 여기서 도메인 로직 움직이도록 변경되야 함
+    void addNotEndSection(final Section targetSection, final Section updatedOriginalSection, final Section newSection) {
+        this.sections.remove(targetSection);
+        this.sections.add(updatedOriginalSection);
+        this.sections.add(newSection);
     }
 
     boolean isAllStationsIn(final Section newSection) {

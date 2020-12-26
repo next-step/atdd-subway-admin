@@ -292,6 +292,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 과하게 긴 줄이 아니면 한 줄로만 줄 바꾸기
 - [X] Sections add policy에 굳이 sections 인스턴스 변수가 필요할지 고민하기
 - [ ] Sections 일급 컬렉션의 addSection 메서드를 어떻게 안전하게 처리할지 고민하기
-- [ ] SectionCalculator에서 원자적으로 연산을 처리하도록 변경
+- [X] SectionCalculator에서 원자적으로 연산을 처리하도록 변경
 - [ ] addSection을 아예 두개의 메서드로 분리하는 방법 고민
 - [ ] AddSectionPolicy 계산을 처리를 별도의 책임으로 분리

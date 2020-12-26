@@ -59,14 +59,12 @@ public class Section extends ValueObjectId {
         return this.downStationId.equals(thatSection.downStationId);
     }
 
-    void updateUpStation(final Section section) {
-        this.upStationId = section.downStationId;
-        this.distance = this.distance - section.distance;
+    Section createUpdatedUpStation(final Section section) {
+        return new Section(section.downStationId, this.downStationId,this.distance - section.distance);
     }
 
-    void updateDownStation(final Section section) {
-        this.downStationId = section.upStationId;
-        this.distance = this.distance - section.distance;
+    Section createUpdatedDownStation(final Section section) {
+        return new Section(this.upStationId, section.upStationId, this.distance - section.distance);
     }
 
     boolean isUpStationBelongsTo(final List<Long> stationIds) {

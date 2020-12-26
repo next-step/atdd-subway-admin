@@ -8,12 +8,12 @@ public enum OriginalSectionCalculator {
     ADD_WITH_UP_STATION(
             true,
             false,
-            Section::updateUpStation
+            Section::createUpdatedUpStation
     ),
     ADD_WITH_DOWN_STATION(
             false,
             true,
-            Section::updateDownStation
+            Section::createUpdatedDownStation
     );
 
     private final boolean isSameUpStation;
@@ -36,7 +36,7 @@ public enum OriginalSectionCalculator {
                 .orElseThrow(() -> new NotExistSectionAddPolicy("신규 Section으로 추가할 수 없는 대상입니다."));
     }
 
-    public void calculate(Section originalSection, Section newSection) {
-        this.sectionCalculator.calculate(originalSection, newSection);
+    public Section calculate(Section originalSection, Section newSection) {
+        return this.sectionCalculator.calculate(originalSection, newSection);
     }
 }
