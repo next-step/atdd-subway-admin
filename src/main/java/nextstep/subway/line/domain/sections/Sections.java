@@ -3,6 +3,7 @@ package nextstep.subway.line.domain.sections;
 import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
 import nextstep.subway.line.domain.exceptions.EndUpStationNotFoundException;
 import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
+import nextstep.subway.line.domain.exceptions.TooLongSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -75,12 +76,58 @@ public class Sections {
         return targetSection;
     }
 
-    public Section findEndUpSection() {
+    public boolean containsAll(final List<Section> targetSections) {
+        return targetSections.stream().allMatch(this::contains);
+    }
+
+    public boolean contains(final Section section) {
+        return this.sections.contains(section);
+    }
+
+    public boolean addEndSection(final Section newSection) {
+        int originalSize = sections.size();
+
+        validateWhenAddEndSection(newSection);
+        this.sections.add(newSection);
+
+        return (sections.size() == originalSize + 1);
+    }
+
+    public boolean addNotEndSection(final Section newSection) {
+        int originalSize = sections.size();
+        Section targetSection = this.findTargetSection(newSection);
+        validateWhenAddNotEndSection(newSection, targetSection);
+
+        OriginalSectionCalculator originalSectionCalculator = OriginalSectionCalculator.find(targetSection, newSection);
+        Section updatedOriginalSection = originalSectionCalculator.calculate(targetSection, newSection);
+
+        this.sections.remove(targetSection);
+        this.sections.add(updatedOriginalSection);
+        this.sections.add(newSection);
+
+        return (sections.size() == originalSize + 1);
+    }
+
+    public boolean isInEndSection(final Section section) {
+        Section endUpSection = this.findEndUpSection();
+        Section endDownSection = this.findEndDownSection();
+        return endUpSection.isSameUpWithThatDown(section) || endDownSection.isSameDownWithThatUp(section);
+    }
+
+    Section findEndUpSection() {
         List<Long> singleStationIds = calculateSingleStationIds();
 
         return this.sections.stream().filter(it -> it.isUpStationBelongsTo(singleStationIds))
                 .findFirst()
                 .orElseThrow(() -> new EndUpStationNotFoundException("상행종점역 구간을 찾을 수 없습니다."));
+    }
+
+    Section findEndDownSection() {
+        List<Long> singleStationIds = calculateSingleStationIds();
+
+        return this.sections.stream().filter(it -> it.isDownStationBelongsTo(singleStationIds))
+                .findFirst()
+                .orElseThrow(() -> new EndUpStationNotFoundException("하행종점역 구간을 찾을 수 없습니다."));
     }
 
     Section findNextSection(final Section section) {
@@ -99,40 +146,33 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public boolean containsAll(final List<Section> targetSections) {
-        return targetSections.stream().allMatch(this::contains);
+    private void validateWhenAddEndSection(final Section newSection) {
+        validateIsInit();
+        if (!isInEndSection(newSection)) {
+            throw new InvalidSectionsActionException("종점이 아닌 구간으로 종점 구간 추가를 수행할 수 없습니다.");
+        }
     }
 
-    public boolean contains(final Section section) {
-        return this.sections.contains(section);
+    private void validateWhenAddNotEndSection(final Section newSection, final Section targetSection) {
+        validateIsInit();
+        if (targetSection == null) {
+            throw new TargetSectionNotFoundException("기존 구간 중 연결할 수 있는 구간이 없습니다.");
+        }
+        if (this.isAllStationsIn(newSection)) {
+            throw new TargetSectionNotFoundException("이미 모든 역이 노선에 존재합니다.");
+        }
+        if (newSection.isHasBiggerDistance(targetSection)) {
+            throw new TooLongSectionException("추가할 구간의 길이가 너무 깁니다.");
+        }
     }
 
-    public Section findEndDownSection() {
-        List<Long> singleStationIds = calculateSingleStationIds();
-
-        return this.sections.stream().filter(it -> it.isDownStationBelongsTo(singleStationIds))
-                .findFirst()
-                .orElseThrow(() -> new EndUpStationNotFoundException("하행종점역 구간을 찾을 수 없습니다."));
-    }
-
-    // TODO: remove
-    // 패키지 외부로 노출되면 도메인을 심각하게 손상할 수 있는 메서드
-    void addSection(final Section section) {
+    private void validateIsInit() {
         if (sections.size() == 0) {
             throw new InvalidSectionsActionException("초기화되지 않은 Sections에 Section을 추가할 수 없습니다.");
         }
-
-        this.sections.add(section);
     }
 
-    // TODO: 여기서 도메인 로직 움직이도록 변경되야 함
-    void addNotEndSection(final Section targetSection, final Section updatedOriginalSection, final Section newSection) {
-        this.sections.remove(targetSection);
-        this.sections.add(updatedOriginalSection);
-        this.sections.add(newSection);
-    }
-
-    boolean isAllStationsIn(final Section newSection) {
+    private boolean isAllStationsIn(final Section newSection) {
         List<Long> stationIds = newSection.getStationIds();
 
         return this.getStationIdsWithoutDup().containsAll(stationIds);

@@ -55,31 +55,14 @@ public class Line extends BaseEntity {
     }
 
     public boolean addSection(final Section newSection) {
-        Section endUpSection = sections.findEndUpSection();
-        Section endDownSection = sections.findEndDownSection();
+        if (sections.isInEndSection(newSection)) {
+            return this.sections.addEndSection(newSection);
+        }
 
-        AddSectionPolicy addSectionPolicy = selectAddSectionPolicy(endUpSection, endDownSection, newSection);
-
-        return addSectionPolicy.addSection(newSection, sections);
+        return this.sections.addNotEndSection(newSection);
     }
 
     public List<Long> getStationIds() {
         return this.sections.getStationIdsOrderBySection();
-    }
-
-    private boolean isEndSectionAddCase(
-            final Section endUpSection, final Section endDownSection, final Section newSection
-    ) {
-        return endUpSection.isSameUpWithThatDown(newSection) || endDownSection.isSameDownWithThatUp(newSection);
-    }
-
-    private AddSectionPolicy selectAddSectionPolicy(
-            final Section endUpSection, final Section endDownSection, final Section newSection
-    ) {
-        if (isEndSectionAddCase(endUpSection, endDownSection, newSection)) {
-            return new SimpleAddSectionPolicy();
-        }
-
-        return new ChangeOriginalAndAddSectionPolicy();
     }
 }
