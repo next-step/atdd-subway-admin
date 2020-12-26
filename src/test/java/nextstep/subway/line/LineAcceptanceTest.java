@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -157,12 +158,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        final LineResponse createdLine = 지하철_노선_생성_요청().as(LineResponse.class);
+
+        // 기존 노선 정보 확인
+        final ExtractableResponse<Response> responseBeforeUpdate = getRequest("/" + createdLine.getId());
+        final LineResponse beforeLine = responseBeforeUpdate.as(LineResponse.class);
+
+        final String originLineName = "2호선";
+        final String originLineColor = "초록색";
+        assertAll(
+            () -> assertThat(responseBeforeUpdate.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(beforeLine.getId()).isEqualTo(createdLine.getId()),
+            () -> assertThat(beforeLine.getName()).isEqualTo(originLineName),
+            () -> assertThat(beforeLine.getColor()).isEqualTo(originLineColor)
+        );
 
         // when
         // 지하철_노선_수정_요청
+        final ExtractableResponse<Response> responseAfterUpdate = RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(new LineRequest("5호선", "보라색"))
+            .when()
+            .put(DEFAULT_LINES_URI + "/" + createdLine.getId())
+            .then().log().all()
+            .extract();
+        final LineResponse afterLine = responseAfterUpdate.as(LineResponse.class);
 
         // then
         // 지하철_노선_수정됨
+        final String newLineName = "5호선";
+        final String newLineColor = "보라색";
+        assertAll(
+            () -> assertThat(responseBeforeUpdate.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(afterLine.getId()).isEqualTo(createdLine.getId()),
+            () -> assertThat(afterLine.getName()).isEqualTo(newLineName),
+            () -> assertThat(afterLine.getColor()).isEqualTo(newLineColor)
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")

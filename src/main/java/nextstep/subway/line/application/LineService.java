@@ -40,4 +40,13 @@ public class LineService {
         return LineResponse.of(lineRepository.findById(id)
             .orElseThrow(NotFoundException::new));
     }
+
+    @Transactional
+    public LineResponse updateLine(final long id, final Line line) {
+        final Line foundLine = lineRepository.findById(id)
+            .orElseThrow(NotFoundException::new);
+
+        foundLine.update(line);
+        return LineResponse.of(foundLine);
+    }
 }

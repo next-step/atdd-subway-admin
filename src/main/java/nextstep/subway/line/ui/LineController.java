@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -33,6 +34,12 @@ public class LineController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> getLine(@PathVariable final long id) {
         LineResponse line = lineService.findLine(id);
+        return ResponseEntity.ok().body(line);
+    }
+
+    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> updateLine(@PathVariable final long id, @RequestBody @Valid LineRequest lineRequest) {
+        final LineResponse line = lineService.updateLine(id, lineRequest.toLine());
         return ResponseEntity.ok().body(line);
     }
 }

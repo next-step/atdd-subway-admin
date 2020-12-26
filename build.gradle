@@ -32,6 +32,9 @@ dependencies {
 
 	// jaxb osgi absolute path 문제로 인해 추가
 	compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '3.0.0'
+
+	// 요청 파라미터 validation 추가
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 }
 
 test {
