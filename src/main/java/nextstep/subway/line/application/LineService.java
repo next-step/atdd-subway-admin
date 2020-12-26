@@ -1,37 +1,35 @@
 package nextstep.subway.line.application;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineFactory;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.LineNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class LineService {
 
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
-        this.lineRepository = lineRepository;
-    }
+    private final LineFactory lineFactory;
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Line persistLine = lineRepository.save(lineFactory.create(request));
         return LineResponse.of(persistLine);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> getLines() {
         List<Line> persistLines = lineRepository.findAll();
-        return persistLines.stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
+        return LineResponse.ofList(persistLines);
     }
 
     @Transactional(readOnly = true)
@@ -43,7 +41,7 @@ public class LineService {
     @Transactional
     public LineResponse updateLine(final Long id, final LineRequest request) {
         Line persistLine = getPersistLine(id);
-        persistLine.update(request.toLine());
+        persistLine.update(lineFactory.create(request));
         return LineResponse.of(persistLine);
     }
 
@@ -55,6 +53,6 @@ public class LineService {
 
     private Line getPersistLine(final Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("해당 노선이 없습니다. (입력 값:%d)", id)));
+                .orElseThrow(() -> new LineNotFoundException(String.format("노선이 존재하지 않습니다. (입력 id 값: %d)", id)));
     }
 }
