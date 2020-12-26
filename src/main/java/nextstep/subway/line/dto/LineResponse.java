@@ -14,6 +14,10 @@ public class LineResponse {
     public LineResponse() {
     }
 
+    public LineResponse(Long id) {
+        this.id = id;
+    }
+
     public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
