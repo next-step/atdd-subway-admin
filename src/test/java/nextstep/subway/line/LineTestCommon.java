@@ -13,8 +13,8 @@ public class LineTestCommon {
      * @param color
      * @return LineRequest params
      */
-    public static LineRequest createLineParams(String name, String color) {
-        return new LineRequest(name, color);
+    public static LineRequest createLineParams(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 
     /**
