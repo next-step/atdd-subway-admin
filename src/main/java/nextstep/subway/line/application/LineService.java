@@ -36,4 +36,11 @@ public class LineService {
             .map(line -> LineResponse.of(line))
             .orElseThrow(NoSuchElementException::new);
     }
+
+    public void modifyLine(long id, LineRequest lineRequest) {
+        Line modifiedLine = lineRepository.findById(id)
+            .orElseThrow(NoSuchElementException::new);
+        modifiedLine.update(lineRequest.toLine());
+        lineRepository.save(modifiedLine);
+    }
 }

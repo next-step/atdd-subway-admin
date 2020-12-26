@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
@@ -45,7 +46,8 @@ public class LineController {
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity modifyLine(@PathVariable Long id) {
+    public ResponseEntity modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.modifyLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
