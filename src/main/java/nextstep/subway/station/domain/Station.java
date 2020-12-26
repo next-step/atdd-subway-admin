@@ -1,9 +1,11 @@
 package nextstep.subway.station.domain;
 
+import lombok.EqualsAndHashCode;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
 
+@EqualsAndHashCode(of = "name")
 @Entity
 public class Station extends BaseEntity {
     @Id
