@@ -104,7 +104,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -217,11 +217,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = getLineResponse(response);
         assertThat(lineResponse.getName()).isEqualTo(editName);
         assertThat(lineResponse.getColor()).isEqualTo(editColor);
+        assertThat(isContainsStationToLineResponse(lineResponse,판교역)).isTrue();
+    }
+
+    public static boolean isContainsStationToLineResponse(LineResponse lineResponse, Long stationId) {
         List<Long> stationResponse = lineResponse.getStations()
                 .stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
-        assertThat(stationResponse.contains(판교역)).isTrue();
+        return stationResponse.contains(stationId);
     }
 
     private static ExtractableResponse<Response> 지하철_노선_수정_요청(long lineId, String name, String color) {
@@ -254,7 +258,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 extract();
     }
 
-    private LineResponse getLineResponse(ExtractableResponse<Response> response) {
+    public static LineResponse getLineResponse(ExtractableResponse<Response> response) {
         return response.jsonPath()
                 .getObject(".", LineResponse.class);
     }
@@ -288,11 +292,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return LocationUtil.getLocation(지하철_노선_생성_요청(lineName, color));
     }
 
-    private static Long 지하철_노선_등록되어_있음(String lineName, String color, Long upStationId, Long downStationId) {
+    public static Long 지하철_노선_등록되어_있음(String lineName, String color, Long upStationId, Long downStationId) {
         return LocationUtil.getLocation(지하철_노선_생성_요청(lineName, color, upStationId, downStationId));
     }
 
-    private static ExtractableResponse<Response> 지하철_노선_조회_요청(long lineId) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(long lineId) {
         return RestAssured.given().log().all().
                 when().
                 get("/lines/{id}", lineId).
