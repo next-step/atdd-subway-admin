@@ -24,18 +24,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-
-        // when
-        // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선");
 
         // then
         // 지하철_노선_생성됨
@@ -48,25 +37,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateName() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("lines")
-                .then().log().all()
-                .extract();
+        지하철_노선_생성_요청("2호선");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -78,32 +53,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "1호선");
-        ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("lines")
-                .then().log().all()
-                .extract();
-        // 지하철_노선_등록되어_있음
-        params.put("name", "2호선");
-        ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_생성_요청("1호선");
+        ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청("2호선");
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         // 지하철_노선_목록_응답됨
@@ -123,24 +78,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "1호선");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("1호선");
 
         // when
         // 지하철_노선_조회_요청
         Long id = Long.valueOf(createResponse.header("Location").split("/")[2]);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/lines/" + id)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(id);
 
         // then
         // 지하철_노선_응답됨
@@ -154,29 +97,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "1호선");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("1호선");
 
         // when
         // 지하철_노선_수정_요청
-        Map<String, String> updateParam = new HashMap<>();
-        updateParam.put("name", "2호선");
-        updateParam.put("color", "green");
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .body(updateParam)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .put(uri)
-                .then().log().all()
-                .extract();
+        Long id = Long.valueOf(createResponse.header("Location").split("/")[2]);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(id, "2호선", "green");
 
         // then
         // 지하철_노선_수정됨
@@ -188,27 +114,65 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("1호선");
+
+        // when
+        // 지하철_노선_제거_요청
+        Long id = Long.valueOf(createResponse.header("Location").split("/")[2]);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(id);
+
+        // then
+        // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(String name) {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "1호선");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+        params.put("name", name);
+
+        return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("lines")
                 .then().log().all()
                 .extract();
+    }
 
-        // when
-        // 지하철_노선_제거_요청
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return RestAssured.given().log().all()
                 .when()
-                .delete(uri)
+                .get("lines")
                 .then().log().all()
                 .extract();
+    }
 
-        // then
-        // 지하철_노선_삭제됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+        return RestAssured.given().log().all()
+                .when()
+                .get("lines/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, String name, String color) {
+        Map<String, String> updateParam = new HashMap<>();
+        updateParam.put("name", name);
+        updateParam.put("color", color);
+        return RestAssured.given().log().all()
+                .when()
+                .body(updateParam)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .put("lines/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete("lines/" + id)
+                .then().log().all()
+                .extract();
     }
 }

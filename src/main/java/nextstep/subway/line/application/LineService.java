@@ -35,21 +35,17 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
-        Optional<Line> line = lineRepository.findById(id);
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoLineExceptaion("노선이 존재하지 않습니다."));
 
-        if (!line.isPresent()) {
-            throw new NoLineExceptaion("노선이 존재하지 않습니다.");
-        }
-        return LineResponse.of(line.get());
+       return LineResponse.of(line);
     }
 
     public void updateLine(Long id, LineRequest request) {
-        Optional<Line> lineOptional = lineRepository.findById(id);
-        if(!lineOptional.isPresent()) {
-            throw new NoLineExceptaion("노선이 존재하지 않습니다.");
-        }
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoLineExceptaion("노선이 존재하지 않습니다."));
 
-        lineOptional.get().update(request.toLine());
+        line.update(request.toLine());
     }
 
     public void deleteLineById(Long id) {
