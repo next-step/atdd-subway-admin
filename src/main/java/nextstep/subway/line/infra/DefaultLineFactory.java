@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityNotFoundException;
 
-@Component
 @RequiredArgsConstructor
+@Component
 public class DefaultLineFactory implements LineFactory {
 
     private final StationRepository stationRepository;

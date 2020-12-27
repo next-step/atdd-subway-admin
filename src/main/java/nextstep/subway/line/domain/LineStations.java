@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Embeddable
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Embeddable
 public class LineStations {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)

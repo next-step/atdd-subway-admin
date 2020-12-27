@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@NoArgsConstructor
 @EqualsAndHashCode
+@NoArgsConstructor
 public class LineResponse {
 
     private Long id;
