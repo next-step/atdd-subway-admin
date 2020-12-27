@@ -2,11 +2,13 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.exceptions.NotFoundException;
+import nextstep.subway.line.domain.sections.Section;
+import nextstep.subway.line.domain.exceptions.EntityNotFoundException;
 import nextstep.subway.line.domain.stationAdapter.SafeStationAdapter;
 import nextstep.subway.line.domain.stationAdapter.SafeStationInfo;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +54,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse getLine(Long lineId) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NotFoundException("해당 라인이 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("해당 라인이 존재하지 않습니다."));
 
         List<Long> stationIds = line.getStationIds();
         List<SafeStationInfo> safeStationInfos = safeStationAdapter.getStationsSafely(stationIds);
@@ -60,19 +62,30 @@ public class LineService {
         return LineResponse.of(line, safeStationInfos);
     }
 
+    @Transactional
     public LineResponse updateLine(Long lineId, String changeName, String changeColor) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NotFoundException("해당 라인이 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("해당 라인이 존재하지 않습니다."));
         Line updateLine = new Line(changeName, changeColor);
         line.update(updateLine);
 
         return LineResponse.of(updateLine, null);
     }
 
+    @Transactional
     public void deleteLine(Long lineId) {
         lineRepository.findById(lineId)
-                .orElseThrow(() -> new NotFoundException("해당 라인이 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("해당 라인이 존재하지 않습니다."));
         lineRepository.deleteById(lineId);
+    }
+
+    @Transactional
+    public boolean addSection(final Long lineId, final SectionRequest sectionRequest) {
+        Line foundLine = lineRepository.findById(lineId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 라인이 존재하지 않습니다"));
+
+        return foundLine.addSection(new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+                sectionRequest.getDistance()));
     }
 
     Line createLine(
@@ -80,7 +93,7 @@ public class LineService {
             final Long downStationId, final Long distance
     ) {
         Line line = new Line(lineName, lineColor);
-        line.addNewSection(upStationId, downStationId, distance);
+        line.initFirstSection(upStationId, downStationId, distance);
 
         return line;
     }

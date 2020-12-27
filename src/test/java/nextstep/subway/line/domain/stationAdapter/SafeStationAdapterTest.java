@@ -1,6 +1,6 @@
 package nextstep.subway.line.domain.stationAdapter;
 
-import nextstep.subway.line.domain.exceptions.NotFoundException;
+import nextstep.subway.line.domain.exceptions.EntityNotFoundException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationFixtures;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,7 +54,7 @@ class SafeStationAdapterTest {
                 .willThrow(new StationNotExistException("Station Aggregate Error"));
 
         assertThatThrownBy(() -> safeStationAdapter.getStationSafely(notExistStationId))
-                .isInstanceOf(NotFoundException.class)
+                .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("해당 역을 찾지 못했습니다.");
     }
 
@@ -65,6 +66,7 @@ class SafeStationAdapterTest {
         Long station2Id = 2L;
         Long station3Id = 3L;
         int expectedSize = 3;
+        LocalDateTime now = LocalDateTime.now();
         List<Station> mockStations = Arrays.asList(
                 StationFixtures.ID3_STATION,
                 StationFixtures.ID1_STATION,

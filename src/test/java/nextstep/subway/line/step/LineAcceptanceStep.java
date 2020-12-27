@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.StationInLineResponse;
-import nextstep.subway.station.dto.StationInfo;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -82,7 +82,6 @@ public class LineAcceptanceStep {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-
     public static ExtractableResponse<Response> 지하철_노선_변경_요청(Long lineId, LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
@@ -104,7 +103,7 @@ public class LineAcceptanceStep {
     }
 
     public static void 응답에_역들이_순서대로_정렬되어_있음(
-            ExtractableResponse<Response> response, StationInfo upStation, StationInfo downStation
+            ExtractableResponse<Response> response, StationResponse upStation, StationResponse downStation
     ) {
         LineResponse lineResponse = response.as(LineResponse.class);
 

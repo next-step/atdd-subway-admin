@@ -3,7 +3,7 @@ package nextstep.subway.station.application;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.domain.exceptions.StationNotExistException;
-import nextstep.subway.station.dto.StationInfo;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.dto.StationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,17 +20,17 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public StationInfo saveStation(StationRequest stationRequest) {
+    public StationResponse saveStation(StationRequest stationRequest) {
         Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationInfo.of(persistStation);
+        return StationResponse.of(persistStation);
     }
 
     @Transactional(readOnly = true)
-    public List<StationInfo> findAllStations() {
+    public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationInfo.of(station))
+                .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
     }
 

@@ -1,10 +1,15 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.exceptions.InvalidSectionException;
-import nextstep.subway.line.domain.exceptions.NotFoundException;
+import nextstep.subway.line.domain.exceptions.StationNotFoundException;
+import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
+import nextstep.subway.line.domain.exceptions.TooLongSectionException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.domain.exceptions.EntityNotFoundException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +25,20 @@ public class LineController {
 
     public LineController(final LineService lineService) {
         this.lineService = lineService;
+    }
+
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity addSection(
+            @PathVariable("lineId") Long lineId,
+            @Validated @RequestBody SectionRequest sectionRequest
+    ) {
+        boolean addSectionResult = lineService.addSection(lineId, sectionRequest);
+
+        if (addSectionResult) {
+            return ResponseEntity.created(URI.create("/lines/" + lineId)).build();
+        }
+
+        return ResponseEntity.badRequest().build();
     }
 
     @PostMapping
@@ -45,7 +64,7 @@ public class LineController {
     @PutMapping("/{lineId}")
     public ResponseEntity updateLine(
             @PathVariable("lineId") Long lineId,
-            @RequestBody LineRequest lineRequest
+            @Validated @RequestBody LineRequest lineRequest
     ) {
         LineResponse lineResponse = lineService.updateLine(lineId, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok(URI.create("/lines/" + lineResponse.getId()));
@@ -57,20 +76,5 @@ public class LineController {
     ) {
         lineService.deleteLine(lineId);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity handleConstraintViolationException(ConstraintViolationException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(InvalidSectionException.class)
-    public ResponseEntity handleInvalidSectionException(InvalidSectionException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity handleNotFoundException(NotFoundException e) {
-        return ResponseEntity.notFound().build();
     }
 }

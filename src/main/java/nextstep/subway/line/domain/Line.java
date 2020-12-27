@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.domain.sections.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -13,7 +14,7 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-    private Sections sections = new Sections();
+    private Sections sections = Sections.of();
 
     public Line() {
     }
@@ -49,11 +50,19 @@ public class Line extends BaseEntity {
         return sections.size();
     }
 
-    public void addNewSection(final Long upStationId, final Long downStationId, final Long distance) {
-        this.sections.add(new Section(upStationId, downStationId, distance));
+    public void initFirstSection(final Long upStationId, final Long downStationId, final Long distance) {
+        this.sections.initFirstSection(new Section(upStationId, downStationId, distance));
+    }
+
+    public boolean addSection(final Section newSection) {
+        if (sections.isInEndSection(newSection)) {
+            return this.sections.addEndSection(newSection);
+        }
+
+        return this.sections.addNotEndSection(newSection);
     }
 
     public List<Long> getStationIds() {
-        return this.sections.getStationIdsOrderBySection();
+        return StationsInLine.getStationIdsOrderBySection(this.sections);
     }
 }

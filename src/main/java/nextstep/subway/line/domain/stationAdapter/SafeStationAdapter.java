@@ -1,6 +1,6 @@
 package nextstep.subway.line.domain.stationAdapter;
 
-import nextstep.subway.line.domain.exceptions.NotFoundException;
+import nextstep.subway.line.domain.exceptions.EntityNotFoundException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class SafeStationAdapter implements SafeStation {
 
             return SafeStationInfo.of(station);
         } catch (Exception e) {
-            throw new NotFoundException("해당 역을 찾지 못했습니다.");
+            throw new EntityNotFoundException("해당 역을 찾지 못했습니다.");
         }
     }
 

@@ -45,6 +45,14 @@
             dense
           ></v-select>
         </div>
+        <v-text-field
+            v-model="sectionForm.distance"
+            :rules="rules.section.name"
+            color="grey darken-1"
+            label="구간 거리"
+            placeholder="구간 거리"
+            outlined
+        ></v-text-field>
       </v-form>
     </template>
     <template slot="action">

@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.line.domain.sections;
 
 import nextstep.subway.common.ValueObjectId;
 import nextstep.subway.line.domain.exceptions.InvalidSectionException;
@@ -35,6 +35,10 @@ public class Section extends ValueObjectId {
         return this.upStationId.equals(thatSection.downStationId);
     }
 
+    public boolean isSameDownWithThatUp(final Section thatSection) {
+        return this.downStationId.equals(thatSection.upStationId);
+    }
+
     List<Long> getStationIds() {
         return Arrays.asList(upStationId, downStationId);
     }
@@ -47,8 +51,28 @@ public class Section extends ValueObjectId {
         return this.downStationId;
     }
 
+    boolean isSameUpStation(final Section thatSection) {
+        return this.upStationId.equals(thatSection.upStationId);
+    }
+
+    boolean isSameDownStation(final Section thatSection) {
+        return this.downStationId.equals(thatSection.downStationId);
+    }
+
+    Section createUpdatedUpStation(final Section section) {
+        return new Section(section.downStationId, this.downStationId,this.distance - section.distance);
+    }
+
+    Section createUpdatedDownStation(final Section section) {
+        return new Section(this.upStationId, section.upStationId, this.distance - section.distance);
+    }
+
     boolean isUpStationBelongsTo(final List<Long> stationIds) {
         return stationIds.contains(this.upStationId);
+    }
+
+    boolean isDownStationBelongsTo(final List<Long> stationIds) {
+        return stationIds.contains(this.downStationId);
     }
 
     private void validate(final Long upStationId, final Long downStationId, final Long distance) {
@@ -76,8 +100,21 @@ public class Section extends ValueObjectId {
         return Objects.equals(upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId) && Objects.equals(distance, section.distance);
     }
 
+    public boolean isHasBiggerDistance(final Section thatSection) {
+        return this.distance >= thatSection.distance;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(upStationId, downStationId, distance);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
     }
 }

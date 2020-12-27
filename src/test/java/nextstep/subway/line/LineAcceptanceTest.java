@@ -4,7 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.station.dto.StationInfo;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -87,7 +87,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 새로운_지하철_노선_생성_요청(lineRequest);
 
         // then
-        // 지하철_노선_생성_실패
+        // 지하철_노선_생성_실패됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -168,6 +168,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> downStation1Created = 지하철역_생성됨(new StationRequest("서초역"));
         Long downStation1Id = 응답_헤더에서_ID_추출(downStation1Created);
         // and 지하철_노선1_등록되어_있음
+
         ExtractableResponse<Response> line1CreatedResponse = 새로운_지하철_노선_생성_요청(
                 new LineRequest(line1Name, line1Color, upStation1Id, downStation1Id, 5L));
         // 상행종점2 생성되어 있음
@@ -217,7 +218,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         응답에_역들이_순서대로_정렬되어_있음(
-                response, upStationCreated.as(StationInfo.class), downStationCreated.as(StationInfo.class)
+                response, upStationCreated.as(StationResponse.class), downStationCreated.as(StationResponse.class)
         );
     }
 
