@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class Sections {
             node = sectionElement.get(node);
             stations.add(node);
         }
-        return stations;
+        return Collections.unmodifiableList(stations);
     }
 
     public void create(Section section) {
