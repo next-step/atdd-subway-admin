@@ -4,9 +4,12 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -15,11 +18,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    @Autowired
+    LineRepository lineRepository;
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -37,7 +44,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateName() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_생성_요청("2호선");
+        지하철_노선_기본_데이터_세팅(new Line("2호선", "green"));
 
         // when
         // 지하철_노선_생성_요청
@@ -53,8 +60,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse1 = 지하철_노선_생성_요청("1호선");
-        ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청("2호선");
+        Line line1 = new Line("1호선", "blue");
+        Line line2 = new Line("2호선", "green");
+        지하철_노선_기본_데이터_세팅(line1, line2);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -64,8 +72,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+        List<Long> expectedLineIds = Stream.of(line1, line2)
+                .map(Line::getId)
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
@@ -78,12 +86,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("1호선");
+        List<Long> ids = 지하철_노선_기본_데이터_세팅(new Line("1호선", "blue"));
 
         // when
         // 지하철_노선_조회_요청
-        Long id = Long.valueOf(createResponse.header("Location").split("/")[2]);
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(id);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(ids.get(0));
 
         // then
         // 지하철_노선_응답됨
@@ -97,11 +104,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("1호선");
+        List<Long> ids = 지하철_노선_기본_데이터_세팅(new Line("1호선", "blue"));
 
         // when
         // 지하철_노선_수정_요청
-        Long id = Long.valueOf(createResponse.header("Location").split("/")[2]);
+        Long id = ids.get(0);
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(id, "2호선", "green");
 
         // then
@@ -114,11 +121,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("1호선");
+        List<Long> ids = 지하철_노선_기본_데이터_세팅(new Line("1호선", "blue"));
 
         // when
         // 지하철_노선_제거_요청
-        Long id = Long.valueOf(createResponse.header("Location").split("/")[2]);
+        Long id = ids.get(0);
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(id);
 
         // then
@@ -174,5 +181,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .delete("lines/" + id)
                 .then().log().all()
                 .extract();
+    }
+
+    private List<Long> 지하철_노선_기본_데이터_세팅(Line ...line) {
+        List<Line> lines = lineRepository.saveAll(Arrays.asList(line));
+        return lines.stream()
+                .map(Line::getId)
+                .collect(Collectors.toList());
     }
 }
