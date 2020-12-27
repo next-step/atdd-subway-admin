@@ -7,10 +7,7 @@ import lombok.NoArgsConstructor;
 import nextstep.subway.line.exception.SectionDuplicatedException;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Getter
@@ -19,11 +16,11 @@ import java.util.Objects;
 @Embeddable
 public class Section {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
