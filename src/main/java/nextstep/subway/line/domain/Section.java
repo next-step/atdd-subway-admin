@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -17,24 +16,28 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int distance;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
+
+    private int distance;
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public void addLine(Line line) {
+        this.line = line;
     }
 }

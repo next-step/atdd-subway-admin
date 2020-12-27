@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
 
 import javax.persistence.*;
 
@@ -18,15 +17,7 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "line_id")
-    private Line line;
-
     public Station(String name) {
         this.name = name;
-    }
-    public void addLine(Line line) {
-        this.line = line;
-        line.getStations().add(this);
     }
 }

@@ -8,7 +8,9 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,9 +24,6 @@ public class Line extends BaseEntity {
     private String color;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Station> stations = new ArrayList<>();
-
-    @OneToMany(mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
 
     public Line(String name, String color) {
@@ -35,21 +34,30 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        addStations(upStation, downStation);
-        sections.add(new Section(this, upStation, downStation, distance));
+        addSection(new Section(this, upStation, downStation, distance));
     }
 
-    private void addStations(Station upStation, Station downStation) {
-        if (!this.equals(upStation.getLine())) {
-            upStation.addLine(this);
-        }
-        if (!this.equals(downStation.getLine())) {
-            downStation.addLine(this);
-        }
+    private void addSection(Section section) {
+        this.sections.add(section);
+        section.addLine(this);
     }
 
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        for (Section section : this.sections) {
+            if (!stations.contains(section.getUpStation())) {
+                stations.add(section.getUpStation());
+            }
+            if (!stations.contains(section.getDownStation())) {
+                stations.add(section.getDownStation());
+            }
+        }
+        stations.sort((s1, s2) -> (int) (s1.getId() - s2.getId()));
+        return stations;
     }
 }
