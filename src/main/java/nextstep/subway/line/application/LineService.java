@@ -18,13 +18,18 @@ public class LineService {
     private static final String LINE_NOT_FOUND_MSG = "지하철 노선을 찾을 수 없습니다.";
 
     private final LineRepository lineRepository;
+    private final SectionService sectionService;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, SectionService sectionService) {
         this.lineRepository = lineRepository;
+        this.sectionService = sectionService;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
+        if (request.hasUpAndDownStation()) {
+            persistLine.addSection(sectionService.selectSection(persistLine, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+        }
         return LineResponse.of(persistLine);
     }
 

@@ -116,7 +116,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createdLine = 지하철_노선_생성_요청(params);
 
         // when
-        // 지하철_노선_조회_요청
         Long lineId = getCreatedLineId(createdLine);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -130,8 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.getName()).isEqualTo(name);
         assertThat(lineResponse.getColor()).isEqualTo(color);
-        assertThat(lineResponse.getStations().get(0).getName).isEqualTo(param1.get("name"));
-        assertThat(lineResponse.getStations().get(1).getName).isEqualTo(param2.get("name"));
+        assertThat(lineResponse.getStations().size()).isEqualTo(2);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -180,7 +178,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", color);
         params.put("upStationId", String.valueOf(upStationId));
         params.put("downStationId", String.valueOf(downStationId));
-        params.put("downStationId", "10");
+        params.put("distance", "10");
         return params;
     }
 

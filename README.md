@@ -58,3 +58,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ** 지하철 노선 관련 기능의 인수 테스트를 작성하기
 ** 지하철 노선 관련 기능 구현하기
 ** 인수 테스트 리팩터링
+
+## 기능목록 step2
+** 노선 생성 시 종점역(상행, 하행)을 함께 추가하기
+** 노선 조회 응답 결과에 등록된 구간을 참고하여 역 목록 응답 추가하기
