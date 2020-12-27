@@ -59,7 +59,7 @@ public class Line extends BaseEntity {
     }
 
     public boolean addSection(final Section newSection) {
-        if (sectionExplorer.isInEndSection(this.sections, newSection)) {
+        if (sections.isInEndSection(newSection)) {
             return this.sections.addEndSection(newSection);
         }
 
@@ -80,6 +80,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Long> getStationIds() {
-        return sectionExplorer.getStationIdsOrderBySection(this.sections);
+        return this.sections.getStationIdsOrderBySection();
     }
 }
