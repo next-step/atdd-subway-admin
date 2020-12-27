@@ -64,7 +64,7 @@ public class Line extends BaseEntity {
     }
 
     private void checkValidation(Section targetSection) {
-        if (this.sections.contains(targetSection)) {
+        if (this.sections.contains(targetSection) || targetSection.isZeroDistance()) {
             throw new IllegalArgumentException();
         }
     }

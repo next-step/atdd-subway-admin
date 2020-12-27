@@ -93,12 +93,7 @@ public class LineServiceTest extends AcceptanceTest {
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
     void addExistSectionExpectedException() {
-        assertThatThrownBy(() -> {
-            lineService.addSection(신분당선, new SectionRequest(강남역, 판교역, 6));
-            //등록할 수 없음
-            lineService.addSection(신분당선, new SectionRequest(판교역, 양재역, 6));
-            lineService.addSection(신분당선, new SectionRequest(강남역, 양재역, 6));
-        }).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> lineService.addSection(신분당선, new SectionRequest(양재역, 강남역, 6))).isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")

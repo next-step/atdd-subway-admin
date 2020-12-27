@@ -77,30 +77,16 @@ public class Section {
         return !this.upStation.equals(this.downStation);
     }
 
-    public boolean isNotZeroDistance() {
-        return distance > 0;
+    public boolean isZeroDistance() {
+        return distance <= 0;
     }
 
     public boolean isSameUpStation(Station target) {
-        return this.upStation.getId().equals(target.getId());
+        return this.upStation.equals(target);
     }
 
     public boolean isSameDownStation(Station target) {
-        return this.downStation.getId().equals(target.getId());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Section section = (Section) o;
-        return upStation.equals(section.upStation) &&
-                downStation.equals(section.downStation);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(upStation, downStation);
+        return this.downStation.equals(target);
     }
 
     public void changeDistance(int targetDistance) {
@@ -108,5 +94,21 @@ public class Section {
             throw new IllegalArgumentException();
         }
         this.distance -= targetDistance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return (upStation.equals(section.upStation) &&
+                downStation.equals(section.downStation)) ||
+                (upStation.equals(section.downStation) &&
+                downStation.equals(section.upStation));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, downStation);
     }
 }
