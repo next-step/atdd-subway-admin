@@ -9,9 +9,6 @@ import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
-    @Transient
-    private static final SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer();
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

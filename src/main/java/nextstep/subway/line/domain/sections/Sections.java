@@ -12,9 +12,6 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @Transient
-    private static final SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer();
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
@@ -58,7 +55,8 @@ public class Sections {
 
     public boolean addNotEndSection(final Section newSection) {
         int originalSize = sections.size();
-        Section targetSection = sectionExplorer.findTargetSection(this.sections, newSection);
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
+        Section targetSection = sectionExplorer.findTargetSection(newSection);
         validateWhenAddNotEndSection(newSection, targetSection);
 
         OriginalSectionCalculator originalSectionCalculator = OriginalSectionCalculator.find(targetSection, newSection);
@@ -72,23 +70,27 @@ public class Sections {
     }
 
     public boolean isInEndSection(final Section targetSection) {
-        return sectionExplorer.isInEndSection(sections, targetSection);
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
+        return sectionExplorer.isInEndSection(targetSection);
     }
 
     public List<Long> getStationIdsOrderBySection() {
-        return sectionExplorer.getStationIdsOrderBySection(sections);
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
+        return sectionExplorer.getStationIdsOrderBySection();
     }
 
     public boolean isThisEndStation(Long stationId) {
-        return sectionExplorer.findEndUpSection(this.sections).getUpStationId().equals(stationId) ||
-                sectionExplorer.findEndDownSection(this.sections).getDownStationId().equals(stationId);
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
+        return sectionExplorer.findEndUpSection().getUpStationId().equals(stationId) ||
+                sectionExplorer.findEndDownSection().getDownStationId().equals(stationId);
     }
 
     public boolean mergeSectionsByStation(final Long stationId) {
         int validTargetSize = 2;
         int originalSize = this.sections.size();
 
-        List<Section> relatedSections = sectionExplorer.findRelatedSections(this.sections, stationId);
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
+        List<Section> relatedSections = sectionExplorer.findRelatedSections(stationId);
         if (relatedSections.size() != validTargetSize) {
             throw new MergeSectionFailException("병합할 수 없는 중간역입니다.");
         }
@@ -104,7 +106,8 @@ public class Sections {
         int validTargetSize = 1;
         int originalSize = this.sections.size();
 
-        List<Section> relatedSections = sectionExplorer.findRelatedSections(this.sections, stationId);
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
+        List<Section> relatedSections = sectionExplorer.findRelatedSections(stationId);
         if(relatedSections.size() != validTargetSize) {
             throw new InvalidStationDeleteTryException("종점이 아닌 역을 종점 삭제 기능으로 제거할 수 없습니다.");
         }
@@ -118,8 +121,9 @@ public class Sections {
     }
 
     private void validateWhenAddEndSection(final Section newSection) {
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
         validateIsInit();
-        if (!sectionExplorer.isInEndSection(sections, newSection)) {
+        if (!sectionExplorer.isInEndSection(newSection)) {
             throw new InvalidSectionsActionException("종점이 아닌 구간으로 종점 구간 추가를 수행할 수 없습니다.");
         }
     }
@@ -144,9 +148,10 @@ public class Sections {
     }
 
     private boolean isAllStationsIn(final Section newSection) {
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
         List<Long> stationIds = newSection.getStationIds();
 
-        return sectionExplorer.getStationIds(this.sections).stream()
+        return sectionExplorer.getStationIds().stream()
                 .distinct()
                 .collect(Collectors.toList())
                 .containsAll(stationIds);

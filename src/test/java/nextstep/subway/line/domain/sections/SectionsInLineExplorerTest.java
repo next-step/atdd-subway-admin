@@ -16,8 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsInLineExplorerTest {
-    private static final SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer();
-
     @DisplayName("구간 순서대로 정렬된 역 목록을 구할 수 있다.")
     @Test
     void getStationIdsOrderBySectionTest() {
@@ -26,8 +24,9 @@ class SectionsInLineExplorerTest {
         Section section3 = new Section (3L, 2L, 10L);
 
         List<Section> sections = Arrays.asList(section1, section2, section3);
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(sections);
 
-        List<Long> stationIds = sectionExplorer.getStationIdsOrderBySection(sections);
+        List<Long> stationIds = sectionExplorer.getStationIdsOrderBySection();
 
         assertThat(stationIds.get(0)).isEqualTo(1L);
         assertThat(stationIds.get(stationIds.size() - 1)).isEqualTo(2L);
@@ -41,12 +40,13 @@ class SectionsInLineExplorerTest {
         Section section3 = new Section (3L, 4L, 10L);
 
         List<Section> sections = Arrays.asList(section1, section2, section3);
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(sections);
 
-        Section endUpSection = sectionExplorer.findEndUpSection(sections);
+        Section endUpSection = sectionExplorer.findEndUpSection();
 
-        assertThat(sectionExplorer.findNextSection(sections, endUpSection)).isEqualTo(section2);
-        assertThat(sectionExplorer.findNextSection(sections, section2)).isEqualTo(section3);
-        assertThat(sectionExplorer.findNextSection(sections, section3)).isNull();
+        assertThat(sectionExplorer.findNextSection(endUpSection)).isEqualTo(section2);
+        assertThat(sectionExplorer.findNextSection(section2)).isEqualTo(section3);
+        assertThat(sectionExplorer.findNextSection(section3)).isNull();
     }
 
     @DisplayName("하행 종점역 구간을 찾아낼 수 있다.")
@@ -59,8 +59,9 @@ class SectionsInLineExplorerTest {
                 new Section(2L, 3L, 10L),
                 endDownStation
         );
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(sections);
 
-        assertThat(sectionExplorer.findEndDownSection(sections)).isEqualTo(endDownStation);
+        assertThat(sectionExplorer.findEndDownSection()).isEqualTo(endDownStation);
     }
 
     @DisplayName("상행 종점역 구간을 찾아낼 수 있다.")
@@ -73,8 +74,9 @@ class SectionsInLineExplorerTest {
                 new Section(2L, 3L, 10L),
                 new Section (3L, 4L, 10L)
         );
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(sections);
 
-        assertThat(sectionExplorer.findEndUpSection(sections)).isEqualTo(endUpStation);
+        assertThat(sectionExplorer.findEndUpSection()).isEqualTo(endUpStation);
     }
 
     @DisplayName("제시된 Section과 연결할 구간을 찾을 수 있다. (단, 종점 추가는 고려하지 않는다.")
@@ -85,8 +87,9 @@ class SectionsInLineExplorerTest {
                 new Section(1L, 2L, 10L),
                 new Section(2L, 3L, 10L)
         );
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(sections);
 
-        assertThat(sectionExplorer.findTargetSection(sections, newSection)).isEqualTo(foundSection);
+        assertThat(sectionExplorer.findTargetSection(newSection)).isEqualTo(foundSection);
     }
     public static Stream<Arguments> findTargetSectionTestResource() {
         return Stream.of(
@@ -117,8 +120,9 @@ class SectionsInLineExplorerTest {
                 new Section(1L, 2L, 10L),
                 new Section(2L, 3L, 10L)
         );
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(sections);
 
-        assertThatThrownBy(() -> sectionExplorer.findTargetSection(sections, newSection))
+        assertThatThrownBy(() -> sectionExplorer.findTargetSection(newSection))
                 .isInstanceOf(TargetSectionNotFoundException.class);
     }
     public static Stream<Arguments> findTargetSectionFailTestResource() {
@@ -138,7 +142,8 @@ class SectionsInLineExplorerTest {
     @ParameterizedTest
     @MethodSource("findRelatedSectionsTestResource")
     void findRelatedSectionsTest(Long targetStationId, List<Section> sections, List<Section> expectedSections) {
-        List<Section> foundSections = sectionExplorer.findRelatedSections(sections, targetStationId);
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(sections);
+        List<Section> foundSections = sectionExplorer.findRelatedSections(targetStationId);
 
         assertThat(foundSections).containsAll(expectedSections);
     }
