@@ -1,12 +1,10 @@
 package nextstep.subway.station.ui;
 
 import javax.validation.Valid;
-import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.exception.StationNotFoundException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
