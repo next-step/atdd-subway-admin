@@ -124,12 +124,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("bg-blue-600", "신분당선");
 
         // when
         // 지하철_노선_수정_요청
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-blue-600");
+        params.put("name", "구분당선");
+        List<Long> createLineIds = expectedIdList(createResponse);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청("/lines/" + createLineIds.get(0), params);
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
+    @Test
+    void updateLine2() {
+        // when
+        // 지하철_노선_수정_요청
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-blue-600");
+        params.put("name", "구분당선");
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청("/lines/0", params);
+
+        // then
+        // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -149,6 +171,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return 지하철_노선_생성_요청(color, name);
     }
 
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(String path) {
+        return RestAssured.given().log().all()
+              .contentType(MediaType.APPLICATION_JSON_VALUE)
+              .when().get(path)
+              .then().log().all()
+              .extract();
+    }
+
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String color, String name) {
         Map<String, String> params = new HashMap<>();
         params.put("color", color);
@@ -162,10 +192,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
               .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(String path) {
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(String path, Map<String, String> params) {
         return RestAssured.given().log().all()
               .contentType(MediaType.APPLICATION_JSON_VALUE)
-              .when().get(path)
+              .body(params)
+              .when().put(path)
               .then().log().all()
               .extract();
     }

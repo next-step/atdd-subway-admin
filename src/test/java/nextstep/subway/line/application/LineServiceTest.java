@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,6 +57,31 @@ class LineServiceTest {
 
         //then
         assertThat(lines).isEmpty();
+    }
+
+    @DisplayName("노선 정보 수정")
+    @Test
+    void update() {
+        //given
+        LineResponse lineResponse = 지하철_노선_등록();
+
+        //when
+        LineRequest lineRequest = new LineRequest("bg-blue-600", "구분당선");
+        lineService.updateLine(lineResponse.getId(), lineRequest);
+
+        //then
+        Optional<Line> actual = lineRepository.findById(lineResponse.getId());
+        assertThat(actual.get().getName()).isEqualTo(lineRequest.getName());
+        assertThat(actual.get().getColor()).isEqualTo(lineRequest.getColor());
+    }
+
+    @DisplayName("존재하지 않는 노선 정보 수정")
+    @Test
+    void update2() {
+        //when, then
+        assertThatIllegalArgumentException()
+              .isThrownBy(() -> lineService.updateLine(0L, new LineRequest()))
+              .withMessage("[id=0] 노선정보가 존재하지 않습니다.");
     }
 
     private LineResponse 지하철_노선_등록() {

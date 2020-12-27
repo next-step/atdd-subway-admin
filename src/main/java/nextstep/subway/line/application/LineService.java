@@ -26,8 +26,8 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Optional<Line> line = lineRepository.findById(id);
-        return line.map(LineResponse::of).orElseGet(LineResponse::new);
+        Optional<Line> line = findById(id);
+        return line.map(LineResponse::of).orElseGet(LineResponse::fail);
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -39,9 +39,22 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Optional<Line> maybeLine = findById(id);
+        if (!maybeLine.isPresent()) {
+            throw new IllegalArgumentException("[id="+ id + "] 노선정보가 존재하지 않습니다.");
+        }
+
+        maybeLine.get().update(lineRequest.toLine());
+    }
+
     private boolean isExistLine(LineRequest request) {
         Optional<Line> maybeLine = findByName(request.toLine());
         return maybeLine.isPresent();
+    }
+
+    private Optional<Line> findById(Long id) {
+        return lineRepository.findById(id);
     }
 
     private Optional<Line> findByName(Line line) {
