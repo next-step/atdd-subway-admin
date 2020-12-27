@@ -57,7 +57,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(res -> Long.parseLong(res.header("Location").split("/")[2]))
+                .map(res -> Long.parseLong(응답_데이터에서_지하철_노선_id_추출(res)))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(LineResponse::getId)
@@ -72,7 +72,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = 지하철_노선_생성("신분당선", "bg-red-600");
 
         // when
-        String id = createResponse.jsonPath().get("id").toString();
+        String id = 응답_데이터에서_지하철_노선_id_추출(createResponse);
         ExtractableResponse<Response> response = 지하철_노선_조회(id);
 
         // then
@@ -96,13 +96,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성("신분당선", "bg-red-600");
 
         // when
-        // 지하철_노선_제거_요청
+        String id = 응답_데이터에서_지하철_노선_id_추출(createResponse);
+        ExtractableResponse<Response> response = 지하철_노선_제거(id);
 
         // then
-        // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성(String name, String color) {
@@ -130,5 +131,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .get(uri)
                 .then().log().all()
                 .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거(String id) {
+        String uri = "/lines/" + id;
+        return RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+    }
+
+    private String 응답_데이터에서_지하철_노선_id_추출(ExtractableResponse<Response> response) {
+        return response.header("Location").split("/")[2];
     }
 }
