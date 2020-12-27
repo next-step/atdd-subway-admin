@@ -40,13 +40,12 @@ class LineServiceTest {
     @Test
     void saveLine2() {
         //given
-        지하철_노선_등록();
+        LineResponse lineResponse = 지하철_노선_등록();
 
         //when
-        LineResponse actual = 지하철_노선_등록();
-
-        //then
-        assertThat(actual.isFail()).isTrue();
+        assertThatIllegalArgumentException()
+              .isThrownBy(() -> 지하철_노선_등록())
+              .withMessage("[name="+ lineResponse.getName() + "] 이미 등록된 노선입니다.");
     }
 
     @DisplayName("지하철 노선 목록 조회 - 등록된 목록이 없는 경우")

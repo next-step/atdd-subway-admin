@@ -31,8 +31,9 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        if (isExistLine(request)) {
-            return LineResponse.fail();
+        Optional<Line> maybeLine = findByName(request.toLine());
+        if (maybeLine.isPresent()) {
+            throw new IllegalArgumentException("[name="+ request.getName() + "] 이미 등록된 노선입니다.");
         }
 
         Line persistLine = lineRepository.save(request.toLine());
@@ -46,11 +47,6 @@ public class LineService {
         }
 
         maybeLine.get().update(lineRequest.toLine());
-    }
-
-    private boolean isExistLine(LineRequest request) {
-        Optional<Line> maybeLine = findByName(request.toLine());
-        return maybeLine.isPresent();
     }
 
     private Optional<Line> findById(Long id) {
