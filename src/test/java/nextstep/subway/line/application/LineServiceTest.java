@@ -83,6 +83,29 @@ class LineServiceTest {
               .withMessage("[id=0] 노선정보가 존재하지 않습니다.");
     }
 
+    @DisplayName("노선 정보 삭제")
+    @Test
+    void delete() {
+        //given
+        LineResponse lineResponse = 지하철_노선_등록();
+
+        //when
+        lineService.deleteLine(lineResponse.getId());
+
+        //then
+        Optional<Line> actual = lineRepository.findById(lineResponse.getId());
+        assertThat(actual.isPresent()).isFalse();
+    }
+
+    @DisplayName("존재하지 않는 노선 정보 삭제")
+    @Test
+    void delete2() {
+        //when, then
+        assertThatIllegalArgumentException()
+              .isThrownBy(() -> lineService.deleteLine(0L))
+              .withMessage("[id=0] 노선정보가 존재하지 않습니다.");
+    }
+
     private LineResponse 지하철_노선_등록() {
         return lineService.saveLine(new LineRequest("2호선", "green"));
     }

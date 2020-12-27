@@ -80,7 +80,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         When: 지하철 노선 수정을 요청한다.
         Then: 지하철 노선정보가 수정된다.
         
-    *[ ] Scenario: 지하철 노선정보를 삭제한다.
+    *[x] Scenario: 지하철 노선정보를 삭제한다.
         Given: 지하철 노선이 등록되어 있다.
         When: 지하철 노선 삭제를 요청한다.
         Then: 지하철 노선정보가 삭제된다.

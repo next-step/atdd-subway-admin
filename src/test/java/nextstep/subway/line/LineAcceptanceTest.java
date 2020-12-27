@@ -29,7 +29,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        응답_상태코드_확인(response, HttpStatus.CREATED);
         assertThat(response.header("Location")).isNotBlank();
         assertThat(response.body()).isNotNull();
     }
@@ -47,7 +47,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성_실패됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        응답_상태코드_확인(response, HttpStatus.BAD_REQUEST);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -65,7 +65,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_목록_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답_상태코드_확인(response, HttpStatus.OK);
         // 지하철_노선_목록_포함됨
         List<Long> expectedIdList = expectedIdList(createResponse1, createResponse2);
         List<Long> responseIdList = response.jsonPath().getList(".", LineResponse.class).stream()
@@ -83,7 +83,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_목록_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답_상태코드_확인(response, HttpStatus.OK);
         // 지하철_노선_목록_포함됨
         assertThat(response.jsonPath().getList(".", LineResponse.class)).isEmpty();
     }
@@ -102,7 +102,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답_상태코드_확인(response, HttpStatus.OK);
         assertThat(response.body().as(LineResponse.class).getId()).isEqualTo(lineIds.get(0));
     }
 
@@ -115,8 +115,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().as(LineResponse.class).getId()).isNull();
+        응답_상태코드_확인(response, HttpStatus.BAD_REQUEST);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -136,7 +135,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답_상태코드_확인(response, HttpStatus.OK);
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
@@ -151,7 +150,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        응답_상태코드_확인(response, HttpStatus.BAD_REQUEST);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -159,12 +158,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("bg-red-600", "신분당선");
 
         // when
         // 지하철_노선_제거_요청
+        List<Long> lineIds = expectedIdList(createResponse);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청("/lines/" + lineIds.get(0));
 
         // then
         // 지하철_노선_삭제됨
+        응답_상태코드_확인(response, HttpStatus.OK);
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 제거한다.")
+    @Test
+    void deleteLine2() {
+        // when
+        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청("/lines/0");
+
+        // then
+        // 지하철_노선_삭제됨
+        응답_상태코드_확인(response, HttpStatus.BAD_REQUEST);
     }
 
     private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String color, String name) {
@@ -199,6 +214,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
               .when().put(path)
               .then().log().all()
               .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(String path) {
+        return RestAssured.given().log().all()
+              .contentType(MediaType.APPLICATION_JSON_VALUE)
+              .when().delete(path)
+              .then().log().all()
+              .extract();
+    }
+
+    private void 응답_상태코드_확인(ExtractableResponse<Response> response, HttpStatus httpStatus) {
+        assertThat(response.statusCode()).isEqualTo(httpStatus.value());
     }
 
     private List<Long> expectedIdList(ExtractableResponse<Response>... createResponses) {

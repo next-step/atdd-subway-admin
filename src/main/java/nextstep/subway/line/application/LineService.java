@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class LineService {
+
     private LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -26,14 +27,14 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Optional<Line> line = findById(id);
-        return line.map(LineResponse::of).orElseGet(LineResponse::fail);
+        Line line = getLine(id);
+        return LineResponse.of(line);
     }
 
     public LineResponse saveLine(LineRequest request) {
         Optional<Line> maybeLine = findByName(request.toLine());
         if (maybeLine.isPresent()) {
-            throw new IllegalArgumentException("[name="+ request.getName() + "] 이미 등록된 노선입니다.");
+            throw new IllegalArgumentException("[name=" + request.getName() + "] 이미 등록된 노선입니다.");
         }
 
         Line persistLine = lineRepository.save(request.toLine());
@@ -41,12 +42,22 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = getLine(id);
+        line.update(lineRequest.toLine());
+    }
+
+    public void deleteLine(Long id) {
+        getLine(id);
+        lineRepository.deleteById(id);
+    }
+
+    private Line getLine(Long id) {
         Optional<Line> maybeLine = findById(id);
         if (!maybeLine.isPresent()) {
-            throw new IllegalArgumentException("[id="+ id + "] 노선정보가 존재하지 않습니다.");
+            throw new IllegalArgumentException("[id=" + id + "] 노선정보가 존재하지 않습니다.");
         }
 
-        maybeLine.get().update(lineRequest.toLine());
+        return maybeLine.get();
     }
 
     private Optional<Line> findById(Long id) {

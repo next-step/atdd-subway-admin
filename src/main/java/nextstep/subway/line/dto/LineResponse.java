@@ -14,7 +14,6 @@ public class LineResponse {
     private List<StationResponse> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private boolean fail;
 
     public LineResponse() {
     }
@@ -28,20 +27,8 @@ public class LineResponse {
         this.modifiedDate = modifiedDate;
     }
 
-    public LineResponse(boolean fail) {
-        this.fail = fail;
-    }
-
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
-    }
-
-    public static LineResponse fail() {
-        return new LineResponse(true);
-    }
-
-    public boolean isFail() {
-        return this.fail;
     }
 
     public Long getId() {
