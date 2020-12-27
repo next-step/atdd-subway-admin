@@ -27,14 +27,14 @@ public class LineResponse {
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        stations.stream().forEach(station -> this.stations.add(StationResponse.of(station)));
+        stations.forEach(station -> this.stations.add(StationResponse.of(station)));
     }
 
-    public static LineResponse of(Line line) {
+    public static LineResponse of(Line line, List<Station> stations) {
         return new LineResponse(
                 line.getId(), line.getName(), line.getColor(),
                 line.getCreatedDate(), line.getModifiedDate(),
-                line.getStations());
+                stations);
     }
 
     public Long getId() {

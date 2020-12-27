@@ -1,34 +1,41 @@
 package nextstep.subway.section.domain;
 
+import com.sun.istack.Nullable;
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private int distance;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "up_station_id")
+    @Nullable
     private Station upStation;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "station_id")
+    private Station station;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "line_id")
     private Line line;
 
-    public Section(int distance, Station upStation, Station downStation) {
+    public Section() {
+    }
+
+    public Section(int distance, Station upStation, Station station, Line line) {
         this.distance = distance;
         this.upStation = upStation;
-        this.downStation = downStation;
+        this.station = station;
+        this.line = line;
     }
 
     public Long getId() {
@@ -43,7 +50,11 @@ public class Section {
         return upStation;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public Station getStation() {
+        return station;
+    }
+
+    public Line getLine() {
+        return line;
     }
 }

@@ -1,10 +1,11 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Station extends BaseEntity {
@@ -14,9 +15,8 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "line_id")
-    private Line line;
+    @OneToMany(mappedBy = "station", fetch = FetchType.LAZY)
+    private List<Section> sections = new ArrayList<>();
 
     public Station() {
     }
@@ -33,15 +33,4 @@ public class Station extends BaseEntity {
         return name;
     }
 
-    public Line getLine() {
-        return line;
-    }
-
-    public void addLine(Line line) {
-        if(Objects.nonNull(this.line)) {
-            this.line.getStations().remove(this);
-        }
-        this.line = line;
-        line.getStations().add(this);
-    }
 }

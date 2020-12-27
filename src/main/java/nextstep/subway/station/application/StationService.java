@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class StationService {
-    private static StationRepository stationRepository;
+    private StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -31,10 +31,6 @@ public class StationService {
         return stations.stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
-    }
-
-    public static Station findById(Long stationId) {
-        return stationRepository.findById(stationId).orElseThrow(NoSuchFieldError::new);
     }
 
     public void deleteStationById(Long id) {
