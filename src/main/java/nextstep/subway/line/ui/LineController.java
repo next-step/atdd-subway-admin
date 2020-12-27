@@ -1,7 +1,6 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import java.util.Arrays;
 
 @RestController
 @RequestMapping("/lines")
@@ -43,9 +41,7 @@ public class LineController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity showLine(@PathVariable Long id) {
-        LineResponse response = lineService.findById(id);
-        response.initStations(Arrays.asList(1L, 2L));
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(lineService.findById(id));
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
