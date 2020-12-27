@@ -9,8 +9,8 @@ import nextstep.subway.line.dto.LineRequest;
 
 public class LineAcceptanceTestRequest {
 
-	public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-		LineRequest request = createLineRequest(name, color);
+	public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
+		LineRequest request = createLineRequest(name, color, upStationId, downStationId, distance);
 
 		ExtractableResponse<Response> response = RestAssured
 			.given().log().all()
@@ -21,8 +21,8 @@ public class LineAcceptanceTestRequest {
 		return response;
 	}
 
-	public static String 지하철_노선_등록되어_있음(String name, String color) {
-		ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(name, color);
+	public static String 지하철_노선_등록되어_있음(String name, String color, Long upStationId, Long downStationId, int distance) {
+		ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(name, color, upStationId, downStationId, distance);
 		return createResponse.header("Location");
 	}
 
@@ -64,5 +64,9 @@ public class LineAcceptanceTestRequest {
 
 	private static LineRequest createLineRequest (String name, String color) {
 		return new LineRequest(name, color);
+	}
+
+	private static LineRequest createLineRequest (String name, String color, Long upStationId, Long downStationId, int distance) {
+		return new LineRequest(name, color, upStationId, downStationId, distance);
 	}
 }

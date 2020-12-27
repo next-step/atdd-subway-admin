@@ -18,7 +18,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = LineAcceptanceTestRequest.지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> response = LineAcceptanceTestRequest.지하철_노선_생성_요청("2호선", "green", 1L, 2L, 10);
 
         // then
         // 지하철_노선_생성됨
@@ -32,11 +32,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         String lineName = "2호선";
         String lineColor = "green";
-        LineAcceptanceTestRequest.지하철_노선_등록되어_있음(lineName, lineColor);
+        LineAcceptanceTestRequest.지하철_노선_등록되어_있음(lineName, lineColor, 1L, 2L, 10);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = LineAcceptanceTestRequest.지하철_노선_생성_요청(lineName, lineColor);
+        ExtractableResponse<Response> response = LineAcceptanceTestRequest.지하철_노선_생성_요청(lineName, lineColor, 1L, 2L, 10);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -49,8 +49,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green");
-        String createdLocationUri2 = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("3호선", "orange");
+        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", 1L, 2L, 10);
+        String createdLocationUri2 = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("3호선", "orange", 3L, 4L, 10);
 
         List<String> lineLocations = Arrays.asList(createdLocationUri, createdLocationUri2);
 
@@ -70,7 +70,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green");
+        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", 1L, 2L, 10);
 
         // when
         // 지하철_노선_조회_요청
@@ -86,7 +86,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green");
+        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", 1L, 2L, 10);
 
         // when
         // 지하철_노선_수정_요청
@@ -102,7 +102,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green");
+        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", 1L, 2L, 10);
 
         // when
         // 지하철_노선_제거_요청
