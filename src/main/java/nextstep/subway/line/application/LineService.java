@@ -14,17 +14,26 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
+    private static final String LINE_NOT_FOUND_MSG = "지하철 노선을 찾을 수 없습니다.";
+
+    private final LineRepository lineRepository;
+    private final SectionService sectionService;
+
+    public LineService(LineRepository lineRepository, SectionService sectionService) {
         this.lineRepository = lineRepository;
+        this.sectionService = sectionService;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
+        if (request.hasUpAndDownStation()) {
+            persistLine.addSection(sectionService.selectSection(persistLine, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+        }
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> selectLines() {
         List<Line> persistLines = lineRepository.findAll();
         return persistLines.stream()
@@ -32,19 +41,21 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse selectLine(Long id) {
-        Line persistLine = lineRepository.findById(id)
-            .orElseThrow(LineNotFoundException::new);
-        return LineResponse.of(persistLine);
+        return LineResponse.of(findById(id));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line persistLine = lineRepository.findById(id)
-            .orElseThrow(LineNotFoundException::new);
-        persistLine.update(lineRequest.toLine());
+        findById(id).update(lineRequest.toLine());
     }
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new LineNotFoundException(LINE_NOT_FOUND_MSG));
     }
 }

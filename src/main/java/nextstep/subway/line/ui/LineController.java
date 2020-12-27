@@ -26,7 +26,6 @@ public class LineController {
 
     @GetMapping()
     public ResponseEntity<List<LineResponse>> showLines() {
-        // TODO 최초 mock 으로 api 를 만들 때, body에는 어떻게 넣는게 좋을까?
         return ResponseEntity.ok(lineService.selectLines());
     }
 
