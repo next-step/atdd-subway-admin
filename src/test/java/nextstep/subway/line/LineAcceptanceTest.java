@@ -31,7 +31,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
-        지하철_노선_생성됨(response);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -45,7 +45,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
-        지하철_노선_생성_실패됨(response);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -62,9 +62,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        지하철_노선_OK_응답됨(response);
-        // 지하철_노선_목록_포함됨
-        지하철_노선_목록_포함됨(createdLine1, createdLine2, response);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<Long> expectedLineIds = Arrays.asList(createdLine1, createdLine2).stream()
+            .map(line -> getCreatedLineId(line))
+            .collect(Collectors.toList());
+        List<Long> actualLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -89,8 +94,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = response.body().as(LineResponse.class);
 
         // then
-        지하철_노선_OK_응답됨(response);
-        지하철_노선_상세_포함됨(lineResponse, name, color);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getName()).isEqualTo(name);
+        assertThat(lineResponse.getColor()).isEqualTo(color);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -108,7 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(params2, lineId);
 
         // then
-        지하철_노선_OK_응답됨(response);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -119,12 +125,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createdLine = 지하철_노선_생성_요청(params);
 
         // when
-        // 지하철_노선_제거_요청
         Long lineId = getCreatedLineId(createdLine);
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(lineId);
 
         // then
-        지하철_노선_삭제됨(response);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private Map<String, String> 지하철_노선_생성_파라미터(String name, String color) {
@@ -168,37 +173,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .delete("/lines/" + lineId)
             .then().log().all()
             .extract();
-    }
-
-    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> createdLine1, ExtractableResponse<Response> createdLine2, ExtractableResponse<Response> response) {
-        List<Long> expectedLineIds = Arrays.asList(createdLine1, createdLine2).stream()
-            .map(line -> getCreatedLineId(line))
-            .collect(Collectors.toList());
-        List<Long> actualLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getId)
-            .collect(Collectors.toList());
-        assertThat(actualLineIds).containsAll(expectedLineIds);
-    }
-
-    private void 지하철_노선_상세_포함됨(LineResponse lineResponse, String name, String color) {
-        assertThat(lineResponse.getName()).isEqualTo(name);
-        assertThat(lineResponse.getColor()).isEqualTo(color);
-    }
-
-    private void 지하철_노선_OK_응답됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-    }
-
-    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private long getCreatedLineId(ExtractableResponse<Response> createdLine) {
