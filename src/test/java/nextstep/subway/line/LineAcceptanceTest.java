@@ -6,6 +6,8 @@ import java.util.List;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.StationAcceptanceTestRequest;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -69,8 +71,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
+        // 지하철역_등록되어_있음
+        // 지하철역_등록되어_있음
         // 지하철_노선_등록되어_있음
-        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", 1L, 2L, 10);
+        Long createId = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("문래역");
+        Long createId2 = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("잠실역");
+        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", createId, createId2, 10);
 
         // when
         // 지하철_노선_조회_요청
@@ -78,7 +84,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_응답됨
+        // 지하철_노선_지하철역_목록_포함됨
         LineAcceptanceTestResponse.지하철_노선_응답됨(response, createdLocationUri);
+        LineAcceptanceTestResponse.지하철_노선_지하철역_목록_포함됨(response, Arrays.asList(createId, createId2));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
