@@ -56,7 +56,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ---
 ## 지하철 노선 생성 인수 조건
 * Feature: 지하철 노선 관련 기능
-    *[ ] Scenario: 지하철 노선을 생성한다.
+    *[x] Scenario: 지하철 노선을 생성한다.
         When: 지하철 노선을 생성 요청한다.
         Then: 지하철 노선이 생성된다.
         
