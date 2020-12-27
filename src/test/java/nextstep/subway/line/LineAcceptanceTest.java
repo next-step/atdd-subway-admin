@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,11 +56,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(res -> Long.parseLong(res.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(res -> res.getId())
+                .map(LineResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -69,13 +69,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성("신분당선", "bg-red-600");
 
         // when
-        // 지하철_노선_조회_요청
+        String id = createResponse.jsonPath().get("id").toString();
+        ExtractableResponse<Response> response = 지하철_노선_조회(id);
 
         // then
-        // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -119,9 +120,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회() {
+        return 지하철_노선_조회("");
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회(String id) {
+        String uri = "/lines/" + id;
         return RestAssured.given().log().all()
                 .when()
-                .get("/lines")
+                .get(uri)
                 .then().log().all()
                 .extract();
     }

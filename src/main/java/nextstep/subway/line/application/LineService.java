@@ -29,7 +29,15 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse findLine(Long id) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("해당 지하철 노선을 찾을 수가 없습니다."));
+
+        return LineResponse.of(line);
     }
 }
