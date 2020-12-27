@@ -86,7 +86,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         final ExtractableResponse<Response> firstCreateResponse = 지하철_노선_생성_요청();
         // 지하철_노선_등록되어_있음
-        노선_생성_요청시_이름_색상_설정("까치산역", "보라색");
+        노선_생성_요청시_이름_색상_설정("5호선", "보라색");
         final ExtractableResponse<Response> secondCreateResponse = 지하철_노선_생성_요청();
 
         // when
