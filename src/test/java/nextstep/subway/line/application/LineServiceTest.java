@@ -4,7 +4,7 @@ import nextstep.subway.line.application.exceptions.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineFixtures;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.exceptions.NotFoundException;
+import nextstep.subway.line.domain.exceptions.EntityNotFoundException;
 import nextstep.subway.line.domain.exceptions.StationNotFoundException;
 import nextstep.subway.line.domain.sections.Section;
 import nextstep.subway.line.domain.stationAdapter.SafeStationAdapter;
@@ -285,10 +285,10 @@ class LineServiceTest {
         Long targetLine = 1L;
         Long targetStationId = 2L;
         String errorMessage = "존재하지 않는 지하철 노선입니다.";
-        given(lineRepository.findById(targetLine)).willThrow(new NotFoundException(errorMessage));
+        given(lineRepository.findById(targetLine)).willThrow(new EntityNotFoundException(errorMessage));
 
         assertThatThrownBy(() -> lineService.deleteStationInSection(targetLine, targetStationId))
-                .isInstanceOf(NotFoundException.class)
+                .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage(errorMessage);
     }
 }

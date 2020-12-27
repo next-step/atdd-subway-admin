@@ -120,8 +120,8 @@ public class LineController {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity handleNotFoundException(NotFoundException e) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity handleNotFoundException(EntityNotFoundException e) {
         return ResponseEntity.notFound().build();
     }
 
