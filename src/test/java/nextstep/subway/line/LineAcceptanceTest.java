@@ -30,7 +30,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse 강남역 = stationService.saveStation(new StationRequest("강남역"));
         StationResponse 역삼역 = stationService.saveStation(new StationRequest("역삼역"));
-        LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10L);
 
         // when
         // 지하철_노선_생성_요청
@@ -48,7 +48,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse 강남역 = stationService.saveStation(new StationRequest("강남역"));
         StationResponse 역삼역 = stationService.saveStation(new StationRequest("역삼역"));
-        LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10L);
 
         // when
         // 지하철_노선_생성_요청
@@ -70,7 +70,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         StationResponse 강남역 = stationService.saveStation(new StationRequest("강남역"));
         StationResponse 역삼역 = stationService.saveStation(new StationRequest("역삼역"));
-        LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10L);
         LineTestCommon.createResponse(params, "/lines");
 
         // when
@@ -89,12 +89,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         StationResponse 강남역 = stationService.saveStation(new StationRequest("강남역"));
         StationResponse 역삼역 = stationService.saveStation(new StationRequest("역삼역"));
-        LineRequest param1 = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        LineRequest param1 = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10L);
         ExtractableResponse<Response> createResponse1 = LineTestCommon.createResponse(param1, "/lines");
         // 지하철_노선_등록되어_있음
         StationResponse 홍대입구역 = stationService.saveStation(new StationRequest("홍대입구역"));
         StationResponse 신촌역 = stationService.saveStation(new StationRequest("신촌역"));
-        LineRequest param2 = LineTestCommon.createLineParams("2호선", "bg-green-600", 홍대입구역.getId(), 신촌역.getId(), 10);
+        LineRequest param2 = LineTestCommon.createLineParams("2호선", "bg-green-600", 홍대입구역.getId(), 신촌역.getId(), 10L);
         ExtractableResponse<Response> createResponse2 = LineTestCommon.createResponse(param2, "/lines");
 
         // when
@@ -121,7 +121,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         StationResponse 강남역 = stationService.saveStation(new StationRequest("강남역"));
         StationResponse 역삼역 = stationService.saveStation(new StationRequest("역삼역"));
-        LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10L);
         LineTestCommon.createResponse(params, "/lines");
 
         // when
@@ -141,7 +141,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         StationResponse 강남역 = stationService.saveStation(new StationRequest("강남역"));
         StationResponse 역삼역 = stationService.saveStation(new StationRequest("역삼역"));
-        LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10L);
         LineTestCommon.createResponse(params, "/lines");
 
         // when
@@ -164,12 +164,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         StationResponse 강남역 = stationService.saveStation(new StationRequest("강남역"));
         StationResponse 역삼역 = stationService.saveStation(new StationRequest("역삼역"));
-        LineRequest createParam = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        LineRequest createParam = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10L);
         LineTestCommon.createResponse(createParam, "/lines");
         // 지하철_노선_등록되어_있음
         StationResponse 홍대입구역 = stationService.saveStation(new StationRequest("홍대입구역"));
         StationResponse 신촌역 = stationService.saveStation(new StationRequest("신촌역"));
-        LineRequest updateParam = LineTestCommon.createLineParams("신분당선", "bg-red-600", 홍대입구역.getId(), 신촌역.getId(), 10);
+        LineRequest updateParam = LineTestCommon.createLineParams("신분당선", "bg-red-600", 홍대입구역.getId(), 신촌역.getId(), 10L);
 
         // when
         // 지하철_노선_수정_요청
@@ -193,7 +193,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         StationResponse 강남역 = stationService.saveStation(new StationRequest("강남역"));
         StationResponse 역삼역 = stationService.saveStation(new StationRequest("역삼역"));
-        LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10L);
         ExtractableResponse<Response> createResponse = LineTestCommon.createResponse(params, "/lines");
 
         // when

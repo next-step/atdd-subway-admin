@@ -7,10 +7,7 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,16 +19,15 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(String name, String color, Station upStation, Station downStation, Long distance) {
         this.name = name;
         this.color = color;
         addSection(new Section(this, upStation, downStation, distance));
@@ -48,16 +44,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        for (Section section : this.sections) {
-            if (!stations.contains(section.getUpStation())) {
-                stations.add(section.getUpStation());
-            }
-            if (!stations.contains(section.getDownStation())) {
-                stations.add(section.getDownStation());
-            }
-        }
-        stations.sort((s1, s2) -> (int) (s1.getId() - s2.getId()));
-        return stations;
+        return sections.getStations();
     }
 }

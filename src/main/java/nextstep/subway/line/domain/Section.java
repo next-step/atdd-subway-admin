@@ -28,13 +28,14 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Convert(converter = DistanceToLongConverter.class)
+    private Distance distance;
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, Long distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public void addLine(Line line) {
