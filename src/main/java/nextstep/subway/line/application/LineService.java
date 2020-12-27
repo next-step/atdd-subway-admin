@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
@@ -39,6 +39,13 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundException("해당 지하철 노선을 찾을 수가 없습니다."));
 
         return LineResponse.of(line);
+    }
+
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("해당 지하철 노선을 찾을 수가 없습니다."));
+
+        line.update(lineRequest.toLine());
     }
 
     public void deleteLineById(Long id) {

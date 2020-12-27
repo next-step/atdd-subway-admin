@@ -83,13 +83,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성("신분당선", "bg-red-600");
 
         // when
-        // 지하철_노선_수정_요청
+        String id = 응답_데이터에서_지하철_노선_id_추출(createResponse);
+        ExtractableResponse<Response> response = 지하철_노선_수정(id, "구분당선", "bg-blue-600");
 
         // then
-        // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -125,19 +126,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회(String id) {
-        String uri = "/lines/" + id;
         return RestAssured.given().log().all()
                 .when()
-                .get(uri)
+                .get("/lines/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정(String id, String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + id)
                 .then().log().all()
                 .extract();
     }
 
     private ExtractableResponse<Response> 지하철_노선_제거(String id) {
-        String uri = "/lines/" + id;
         return RestAssured.given().log().all()
                 .when()
-                .delete(uri)
+                .delete("/lines/" + id)
                 .then().log().all()
                 .extract();
     }
