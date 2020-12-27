@@ -89,7 +89,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	                           ExtractableResponse<Response>... createResponse) {
 		assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		List<Long> expectedStationIds = Arrays.stream(createResponse)
-				.map(response -> getResponse.header("Location").split("/")[2])
+				.map(response -> response.header("Location").split("/")[2])
 				.map(Long::parseLong)
 				.collect(Collectors.toList());
 		List<Long> actualStationIds = getResponse.jsonPath().getList(".", LineResponse.class).stream()
@@ -115,7 +115,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     	String uri = createResponse.header("Location");
 		return RestAssured
 				.given().log().all()
-				.when().delete(uri)
+				.when().get(uri)
 				.then().log().all().extract();
 	}
 
@@ -154,7 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private void 지하철노선_수정_검사(ExtractableResponse<Response> updateResponse) {
-		assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	@DisplayName("지하철 노선을 제거한다.")
