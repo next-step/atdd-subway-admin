@@ -77,6 +77,10 @@ public class Section {
         return this.upStation.getId().equals(target.getId());
     }
 
+    public boolean isSameDownStation(Station target) {
+        return this.downStation.getId().equals(target.getId());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

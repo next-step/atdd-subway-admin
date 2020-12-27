@@ -28,9 +28,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private long 양재역;
     private long 판교역;
 
-    @Autowired
-    private LineService lineService;
-
     @Override
     @BeforeEach
     public void setUp() {
@@ -52,8 +49,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선에_지하철역_등록_요청
         Map<String, String> params = new HashMap<>();
-        params.put("upStationId", 양재역 + "");
-        params.put("downStationId", 판교역 + "");
+        params.put("upStationId", 판교역 + "");
+        params.put("downStationId", 강남역 + "");
         params.put("distance", 10 + "");
         ExtractableResponse<Response> response = RestAssured.given().log().all().
                 body(params).

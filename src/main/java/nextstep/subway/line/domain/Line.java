@@ -9,7 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
+import javax.persistence.OrderColumn;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -22,7 +23,8 @@ public class Line extends BaseEntity {
     private String color;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    @OrderColumn
+    private List<Section> sections = new LinkedList<>();
 
     public Line() {
     }
@@ -54,6 +56,11 @@ public class Line extends BaseEntity {
         this.sections.add(section);
     }
 
+    public void addSection(int index, Section section) {
+        section.setLine(this);
+        this.sections.add(index, section);
+    }
+
     public List<Section> getSections() {
         return sections;
     }
@@ -72,11 +79,33 @@ public class Line extends BaseEntity {
     }
 
     public void registrySection(Section targetSection) {
+        changeUpStation(targetSection);
+
+        addSection(endPointIndex(targetSection), targetSection);
+    }
+
+    private void changeUpStation(Section targetSection) {
         this.sections.stream()
                 .filter(base -> base.isSameUpStation(targetSection.getUpStation()))
                 .findFirst()
-                .ifPresent(base -> targetSection.changeUpStation(base.getDownStation()));
-        addSection(targetSection);
+                .ifPresent(base -> base.changeUpStation(targetSection.getDownStation()));
+    }
+
+    private Integer endPointIndex(Section targetSection) {
+        return this.sections.stream()
+                .filter(base -> base.isSameUpStation(targetSection.getDownStation()))
+                .findFirst()
+                .map(base -> this.sections.indexOf(base))
+                .orElseGet(() -> descendEndPointIndex(targetSection));
+
+    }
+
+    private Integer descendEndPointIndex(Section targetSection) {
+        return this.sections.stream()
+                .filter(base -> base.isSameDownStation(targetSection.getUpStation()))
+                .findFirst()
+                .map(base -> this.sections.indexOf(base) + 1)
+                .orElse(this.sections.size());
     }
 
 }
