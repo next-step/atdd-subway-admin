@@ -9,6 +9,9 @@ import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
+    @Transient
+    private static final SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -56,7 +59,7 @@ public class Line extends BaseEntity {
     }
 
     public boolean addSection(final Section newSection) {
-        if (sections.isInEndSection(newSection)) {
+        if (sectionExplorer.isInEndSection(this.sections, newSection)) {
             return this.sections.addEndSection(newSection);
         }
 
@@ -77,6 +80,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Long> getStationIds() {
-        return StationsInLine.getStationIdsOrderBySection(this.sections);
+        return sectionExplorer.getStationIdsOrderBySection(this.sections);
     }
 }

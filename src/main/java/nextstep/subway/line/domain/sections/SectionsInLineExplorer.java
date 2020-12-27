@@ -3,8 +3,8 @@ package nextstep.subway.line.domain.sections;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StationsInLine {
-    public static List<Long> getStationIdsOrderBySection(final Sections sections) {
+public class SectionsInLineExplorer {
+    public List<Long> getStationIdsOrderBySection(final Sections sections) {
         List<Long> stationIds = new ArrayList<>();
 
         Section endUpSection = sections.findEndUpSection();
@@ -18,5 +18,11 @@ public class StationsInLine {
         }
 
         return stationIds;
+    }
+
+    public boolean isInEndSection(final Sections sections, final Section section) {
+        Section endUpSection = sections.findEndUpSection();
+        Section endDownSection = sections.findEndDownSection();
+        return endUpSection.isSameUpWithThatDown(section) || endDownSection.isSameDownWithThatUp(section);
     }
 }

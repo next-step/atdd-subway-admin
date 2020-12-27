@@ -6,10 +6,7 @@ import nextstep.subway.line.domain.exceptions.EndUpStationNotFoundException;
 import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
 import nextstep.subway.line.domain.exceptions.TooLongSectionException;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +17,9 @@ import static java.util.stream.Collectors.counting;
 
 @Embeddable
 public class Sections {
+    @Transient
+    private static final SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer();
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
@@ -74,12 +74,6 @@ public class Sections {
         this.sections.add(newSection);
 
         return (sections.size() == originalSize + 1);
-    }
-
-    public boolean isInEndSection(final Section section) {
-        Section endUpSection = this.findEndUpSection();
-        Section endDownSection = this.findEndDownSection();
-        return endUpSection.isSameUpWithThatDown(section) || endDownSection.isSameDownWithThatUp(section);
     }
 
     Section findEndUpSection() {
@@ -172,7 +166,7 @@ public class Sections {
 
     private void validateWhenAddEndSection(final Section newSection) {
         validateIsInit();
-        if (!isInEndSection(newSection)) {
+        if (!sectionExplorer.isInEndSection(this, newSection)) {
             throw new InvalidSectionsActionException("종점이 아닌 구간으로 종점 구간 추가를 수행할 수 없습니다.");
         }
     }
