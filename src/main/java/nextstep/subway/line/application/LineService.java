@@ -14,7 +14,10 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+
+    private static final String LINE_NOT_FOUND_MSG = "지하철 노선을 찾을 수 없습니다.";
+
+    private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
@@ -48,6 +51,6 @@ public class LineService {
 
     private Line findById(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(LineNotFoundException::new);
+            .orElseThrow(() -> new LineNotFoundException(LINE_NOT_FOUND_MSG));
     }
 }
