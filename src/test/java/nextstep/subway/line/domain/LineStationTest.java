@@ -23,7 +23,7 @@ class LineStationTest {
         // given
         Station station1 = new Station("금정역");
         Station station2 = new Station("당정역");
-        int distance = 100;
+        Distance distance = Distance.valueOf(100);
         Section section = Section.of(station1, station2, distance);
 
         // when
@@ -40,8 +40,8 @@ class LineStationTest {
         Station station1 = new Station("금정역");
         Station station2 = new Station("당정역");
 
-        Section section1 = Section.of(station1, station2, 100);
-        Section section2 = Section.of(station1, station2, 200);
+        Section section1 = Section.of(station1, station2, Distance.valueOf(100));
+        Section section2 = Section.of(station1, station2, Distance.valueOf(200));
 
         LineStation lineStation1 = new LineStation(line, section1);
         LineStation lineStation2 = new LineStation(line, section2);
@@ -61,8 +61,8 @@ class LineStationTest {
         Station station2 = new Station("당정역");
         Station station3 = new Station("관악역");
 
-        Section section1 = Section.of(station1, station2, 100);
-        Section section2 = Section.of(station1, station3, 200);
+        Section section1 = Section.of(station1, station2, Distance.valueOf(100));
+        Section section2 = Section.of(station1, station3, Distance.valueOf(200));
 
         LineStation lineStation1 = new LineStation(line, section1);
         LineStation lineStation2 = new LineStation(line, section2);

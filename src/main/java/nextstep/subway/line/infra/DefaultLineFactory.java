@@ -1,6 +1,7 @@
 package nextstep.subway.line.infra;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineFactory;
 import nextstep.subway.line.domain.Section;
@@ -21,7 +22,8 @@ public class DefaultLineFactory implements LineFactory {
     public Line create(final LineRequest lineRequest) {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
-        Section section = Section.of(upStation, downStation, lineRequest.getDistance());
+        Distance distance = Distance.valueOf(lineRequest.getDistance());
+        Section section = Section.of(upStation, downStation, distance);
         Line line = Line.of(lineRequest.getName(), lineRequest.getColor());
         line.add(section);
         return line;

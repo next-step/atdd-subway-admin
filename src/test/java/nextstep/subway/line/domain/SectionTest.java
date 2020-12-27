@@ -17,7 +17,7 @@ class SectionTest {
         // given
         Station upStation = new Station("청량리역");
         Station downStation = new Station("신창역");
-        int distance = 100;
+        Distance distance = Distance.valueOf(100);
 
         // when
         Section section = Section.of(upStation, downStation, distance);
@@ -32,7 +32,7 @@ class SectionTest {
         // given
         Station upStation = new Station("청량리역");
         Station downStation = new Station("청량리역");
-        int distance = 100;
+        Distance distance = Distance.valueOf(100);
 
         // when / then
         assertThrows(RuntimeException.class, () -> Section.of(upStation, downStation, distance));
@@ -44,7 +44,7 @@ class SectionTest {
         // given
         Station upStation = new Station("청량리역");
         Station downStation = new Station("신창역");
-        int distance = 100;
+        Distance distance = Distance.valueOf(100);
         Section section = Section.of(upStation, downStation, distance);
 
         // when
@@ -64,7 +64,7 @@ class SectionTest {
         // given
         Station upStation = new Station("청량리역");
         Station downStation = new Station("신창역");
-        int distance = 100;
+        Distance distance = Distance.valueOf(100);
         Section section = Section.of(upStation, downStation, distance);
 
         // when
@@ -86,8 +86,8 @@ class SectionTest {
         Station downStation = new Station("신창역");
 
         // when
-        Section section1 = Section.of(upStation, downStation, 100);
-        Section section2 = Section.of(upStation, downStation, 200);
+        Section section1 = Section.of(upStation, downStation, Distance.valueOf(100));
+        Section section2 = Section.of(upStation, downStation, Distance.valueOf(100));
         // then
         assertThat(section1).isEqualTo(section2);
     }

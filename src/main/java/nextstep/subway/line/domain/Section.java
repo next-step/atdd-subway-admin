@@ -25,15 +25,15 @@ public class Section {
     private Station downStation;
 
     @Column(name = "distance")
-    private int distance;
+    private Distance distance;
 
-    private Section(final Station upStation, final Station downStation, final int distance) {
+    private Section(final Station upStation, final Station downStation, final Distance distance) {
         this.upStation = Objects.requireNonNull(upStation);
         this.downStation = Objects.requireNonNull(downStation);
-        this.distance = distance;
+        this.distance = Objects.requireNonNull(distance);
     }
 
-    public static Section of(final Station upStation, final Station downStation, final int distance) {
+    public static Section of(final Station upStation, final Station downStation, final Distance distance) {
         if (upStation.equals(downStation)) {
             String message = String.format("구간의 상행과 하행은 같은 역일 수 없습니다. (입력 역:%s)", upStation.getName());
             throw new SectionDuplicatedException(message);

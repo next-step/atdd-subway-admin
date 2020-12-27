@@ -53,7 +53,7 @@ class LineTest {
         // given
         Station upStation = new Station("신도림역");
         Station downStation = new Station("문래역");
-        int distance = 200;
+        Distance distance = Distance.valueOf(200);
         Section section = Section.of(upStation, downStation, distance);
         Line line = 지하철_1호선_생성됨();
 
@@ -73,7 +73,7 @@ class LineTest {
         String color = "blue";
         Line line = Line.of(name, color);
 
-        int distance = 100;
+        Distance distance = Distance.valueOf(100);
         Station upStation = new Station("청량리역");
         Station downStation = new Station("신창역");
         Section section = Section.of(upStation, downStation, distance);
@@ -87,7 +87,7 @@ class LineTest {
         String color = "green";
         Line line = Line.of(name, color);
 
-        int distance = 200;
+        Distance distance = Distance.valueOf(200);
         Station upStation = new Station("강남역");
         Station downStation = new Station("홍대역");
         Section section = Section.of(upStation, downStation, distance);
