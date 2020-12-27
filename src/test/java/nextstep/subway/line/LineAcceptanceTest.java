@@ -126,6 +126,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(actualId).isEqualTo(expectedId);
 	}
 
+	@DisplayName("존재하지 않는 지하철 노선을 조회한다.")
+	@Test
+	void getLine_notFound() {
+    	// when
+		ExtractableResponse<Response> response = 지하철노선_조회("lines/1");
+
+		// then
+		지하철노선_조회_없음(response);
+	}
+
+	private ExtractableResponse<Response> 지하철노선_조회(String uri) {
+		return RestAssured
+				.given().log().all()
+				.when().get(uri)
+				.then().log().all().extract();
+	}
+
+	private void 지하철노선_조회_없음(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
 	@DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
