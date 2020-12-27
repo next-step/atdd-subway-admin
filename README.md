@@ -284,7 +284,19 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ### 추가 요구사항
 - [X] 지하철 노선 구간 조회 시 `구간의 순서에 맞춰` 역 목록을 반환하기
 
-## Step3. 지하철 노선에 구간 등록
+## Step3 피드백 반영
+- [X] 되살아난 auditing setter 전부 제거
+- [X] 과하게 긴 줄이 아니면 한 줄로만 줄 바꾸기
+- [X] Sections add policy에 굳이 sections 인스턴스 변수가 필요할지 고민하기
+- [X] SectionCalculator에서 원자적으로 연산을 처리하도록 변경
+- [X] AddSectionPolicy 계산을 처리를 별도의 책임으로 분리
+- [X] 컨트롤러 예외 처리 책임을 다른 클래스로 위임
+
+- [X] Sections 일급 컬렉션의 addSection 메서드를 어떻게 안전하게 처리할지 고민하기
+- [X] addSection을 아예 두개의 메서드로 분리하는 방법 고민
+  - Sections의 책임 중 과도하게 파편화 된 책임들을 다시 Sections에 위임
+
+## Step4. 지하철 노선에 구간 제거
 ### 인수 테스트 시나리오
 - 기능: 지하철 노선의 구간 제거
   - [X] 시나리오1: 지하철 구간이 2개 이상일 때 종점이 아닌 역을 제거
@@ -352,15 +364,3 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] Sections에서 상행종점역을 찾는 기능 추가
   - [X] Sections에서 생항종점역을 기준으로 다음역을 탐색하며 결과를 합치는 기능 추가
 - [X] 구간 역 목록 조회 기능의 인수 조건을 순서 정렬이 제대로 됐는지 확인하도록 변경
-
-## Step3 피드백 반영
-- [X] 되살아난 auditing setter 전부 제거
-- [X] 과하게 긴 줄이 아니면 한 줄로만 줄 바꾸기
-- [X] Sections add policy에 굳이 sections 인스턴스 변수가 필요할지 고민하기
-- [X] SectionCalculator에서 원자적으로 연산을 처리하도록 변경
-- [X] AddSectionPolicy 계산을 처리를 별도의 책임으로 분리
-- [X] 컨트롤러 예외 처리 책임을 다른 클래스로 위임
-  
-- [X] Sections 일급 컬렉션의 addSection 메서드를 어떻게 안전하게 처리할지 고민하기
-- [X] addSection을 아예 두개의 메서드로 분리하는 방법 고민
-  - Sections의 책임 중 과도하게 파편화 된 책임들을 다시 Sections에 위임
