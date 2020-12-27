@@ -4,7 +4,10 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +20,12 @@ import static nextstep.subway.line.LineFixture.*;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private LineResponse line2;
+
+    private StationResponse upStation;
+
+    private StationResponse downStation;
+
     @BeforeEach
     void initStations() {
         super.setUp();
@@ -28,9 +37,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params3 = new HashMap<>();
         params3.put("name", "교대역");
 
-        StationAcceptanceTest.지하철_역_생성_요청(params1);
-        StationAcceptanceTest.지하철_역_생성_요청(params2);
-        StationAcceptanceTest.지하철_역_생성_요청(params3);
+        upStation = StationAcceptanceTest.지하철_역_생성_요청(params1)
+                .as(StationResponse.class);
+        downStation = StationAcceptanceTest.지하철_역_생성_요청(params2)
+                .as(StationResponse.class);
+
+        LineRequest request = new LineRequest("2호선", "green", upStation.getId(), downStation.getId(), 100);
+        line2 = 지하철_노선_생성_요청(request).as(LineResponse.class);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -156,8 +169,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest updateRequest = LineRequest.builder()
                 .name("1호선")
                 .color("blue")
-                .upStationId(1L)
-                .downStationId(3L)
+                .upStationId(2L)
+                .downStationId(1L)
                 .distance(5)
                 .build();
 
@@ -189,5 +202,56 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_삭제됨(response);
+    }
+
+    @DisplayName("지하철 노선의 역 사이에 새로운 역을 등록한다.")
+    @Test
+    void createStationBetween() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "교대역");
+        StationResponse newStation = StationAcceptanceTest.지하철_역_생성_요청(params).as(StationResponse.class);
+
+        // when
+        SectionRequest request = new SectionRequest(upStation.getId(), newStation.getId(), 10);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2.getId(), request);
+
+        // then
+        지하철_노선_응답됨(response);
+        지하철_노선에_지하철역_포함됨(response, newStation.getId());
+    }
+
+    @DisplayName("지하철 노선에 새로운 역을 상행 종점으로 등록한다.")
+    @Test
+    void createStationUp() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "역삼역");
+        StationResponse newStation = StationAcceptanceTest.지하철_역_생성_요청(params).as(StationResponse.class);
+
+        // when
+        SectionRequest request = new SectionRequest(newStation.getId(), upStation.getId(), 20);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2.getId(), request);
+
+        // then
+        지하철_노선_응답됨(response);
+        지하철_노선에_지하철역_포함됨(response, newStation.getId());
+    }
+
+    @DisplayName("지하철 노선에 새로운 역을 하행 종점으로 등록한다.")
+    @Test
+    void createStationDown() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "홍대입구역");
+        StationResponse newStation = StationAcceptanceTest.지하철_역_생성_요청(params).as(StationResponse.class);
+
+        // when
+        SectionRequest request = new SectionRequest(downStation.getId(), newStation.getId(), 15);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2.getId(), request);
+
+        // then
+        지하철_노선_응답됨(response);
+        지하철_노선에_지하철역_포함됨(response, newStation.getId());
     }
 }
