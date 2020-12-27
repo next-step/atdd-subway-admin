@@ -5,11 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationRestHelper;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // given, when
-        ExtractableResponse<Response> 신분당선_응답 = LineRestHelper.지하철_라인_생성("bg-red-600", "신분당선");
+        // given
+        Station 강남역 = StationRestHelper.지하철역_생성("강남역").as(Station.class);
+        Station 판교역 = StationRestHelper.지하철역_생성("판교역").as(Station.class);
+
+        // when
+        ExtractableResponse<Response> 신분당선_응답 = LineRestHelper.지하철_라인_생성("bg-red-600", "신분당선", 강남역, 판교역, 10);
 
         // then
         // 지하철_노선_생성됨
@@ -36,11 +41,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         String color = "bg-red-600";
         String lineName = "신분당선";
-        LineRestHelper.지하철_라인_생성(color, lineName);
+        Station 강남역 = StationRestHelper.지하철역_생성("강남역").as(Station.class);
+        Station 판교역 = StationRestHelper.지하철역_생성("판교역").as(Station.class);
+
+        LineRestHelper.지하철_라인_생성(color, lineName, 강남역, 판교역, 10);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> 라인_생성_응답 = LineRestHelper.지하철_라인_생성(color, lineName);
+        ExtractableResponse<Response> 라인_생성_응답 = LineRestHelper.지하철_라인_생성(color, lineName, 강남역, 판교역, 10);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -53,10 +61,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> 신분당선_응답 = LineRestHelper.지하철_라인_생성("bg-red-600", "신분당선");
+        Station 강남역 = StationRestHelper.지하철역_생성("강남역").as(Station.class);
+        Station 판교역 = StationRestHelper.지하철역_생성("판교역").as(Station.class);
+
+        ExtractableResponse<Response> 신분당선_응답 = LineRestHelper.지하철_라인_생성("bg-red-600", "신분당선", 강남역, 판교역, 10);
 
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> 이호선_응답 = LineRestHelper.지하철_라인_생성("bg-green-600", "2호선");
+        Station 낙성대역 = StationRestHelper.지하철역_생성("낙성대역").as(Station.class);
+        Station 사당역 = StationRestHelper.지하철역_생성("사당역").as(Station.class);
+        ExtractableResponse<Response> 이호선_응답 = LineRestHelper.지하철_라인_생성("bg-green-600", "2호선", 낙성대역, 사당역, 10);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -78,8 +91,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
         assertThat(라인_전체_조회_응답_객체.get(0).getName()).isEqualTo("신분당선");
         assertThat(라인_전체_조회_응답_객체.get(0).getColor()).isEqualTo("bg-red-600");
+        assertThat(라인_전체_조회_응답_객체.get(0).getStations().get(0).getName()).isEqualTo("강남역");
+        assertThat(라인_전체_조회_응답_객체.get(0).getStations().get(1).getName()).isEqualTo("판교역");
         assertThat(라인_전체_조회_응답_객체.get(1).getName()).isEqualTo("2호선");
         assertThat(라인_전체_조회_응답_객체.get(1).getColor()).isEqualTo("bg-green-600");
+        assertThat(라인_전체_조회_응답_객체.get(1).getStations().get(0).getName()).isEqualTo("낙성대역");
+        assertThat(라인_전체_조회_응답_객체.get(1).getStations().get(1).getName()).isEqualTo("사당역");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -87,7 +104,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> 신분당선_응답 = LineRestHelper.지하철_라인_생성("bg-red-600", "신분당선");
+        Station 강남역 = StationRestHelper.지하철역_생성("강남역").as(Station.class);
+        Station 판교역 = StationRestHelper.지하철역_생성("판교역").as(Station.class);
+
+        ExtractableResponse<Response> 신분당선_응답 = LineRestHelper.지하철_라인_생성("bg-red-600", "신분당선", 강남역, 판교역, 10);
 
         // when
         // 지하철_노선_조회_요청
@@ -101,6 +121,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(지하철_라인_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(지하철_라인_조회_응답_객체.getName()).isEqualTo("신분당선");
         assertThat(지하철_라인_조회_응답_객체.getColor()).isEqualTo("bg-red-600");
+        assertThat(지하철_라인_조회_응답_객체.getStations().get(0).getName()).isEqualTo("강남역");
+        assertThat(지하철_라인_조회_응답_객체.getStations().get(1).getName()).isEqualTo("판교역");
+
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -108,14 +131,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> 신분당선_응답 = LineRestHelper.지하철_라인_생성("bg-red-600", "신분당선");
+        Station 강남역 = StationRestHelper.지하철역_생성("강남역").as(Station.class);
+        Station 판교역 = StationRestHelper.지하철역_생성("판교역").as(Station.class);
+
+        ExtractableResponse<Response> 신분당선_응답 = LineRestHelper.지하철_라인_생성("bg-red-600", "신분당선", 강남역, 판교역, 10);
 
         // when
         // 지하철_노선_수정_요청
         Long lineId = extractLocationByResponse(신분당선_응답);
-        Map<String, String> 수정될_신분당선 = LineRestHelper.lineParamsGenerator("bg-green-600", "2호선");
-
-        ExtractableResponse<Response> 지하철_라인_수정_응답 = LineRestHelper.지하철_라인_수정(lineId, 수정될_신분당선);
+        ExtractableResponse<Response> 지하철_라인_수정_응답 = LineRestHelper.지하철_라인_수정(lineId, "bg-green-600", "2호선");
 
         // then
         // 지하철_노선_수정됨
@@ -127,7 +151,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> 신분당선_응답 = LineRestHelper.지하철_라인_생성("bg-red-600", "신분당선");
+        Station 강남역 = StationRestHelper.지하철역_생성("강남역").as(Station.class);
+        Station 판교역 = StationRestHelper.지하철역_생성("판교역").as(Station.class);
+
+        ExtractableResponse<Response> 신분당선_응답 = LineRestHelper.지하철_라인_생성("bg-red-600", "신분당선", 강남역, 판교역, 10);
 
         // when
         // 지하철_노선_제거_요청
