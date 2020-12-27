@@ -42,15 +42,12 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
+    public List<Station> getStations() {
+        return this.sections
+            .stream()
+            .map(Section::getStations)
+            .flatMap(Collection::stream)
+            .distinct()
+            .collect(Collectors.toList());
     }
 }
