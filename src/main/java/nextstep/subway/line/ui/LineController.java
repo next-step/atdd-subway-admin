@@ -57,8 +57,6 @@ public class LineController {
     public ResponseEntity addSection(
             @PathVariable Long lineId,
             @RequestBody SectionRequest sectionRequest) {
-        // TODO: 구간 등록 기능 구현
-        // ...
         lineService.addSection(lineId,sectionRequest);
         return ResponseEntity.ok().build();
     }

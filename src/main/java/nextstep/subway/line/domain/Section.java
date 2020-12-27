@@ -52,7 +52,7 @@ public class Section {
     }
 
     public List<Station> upAndDownStations() {
-        return Arrays.asList(upStation,downStation);
+        return Arrays.asList(upStation, downStation);
     }
 
     public Station getUpStation() {
@@ -63,6 +63,10 @@ public class Section {
         return downStation;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     public void update(Section section) {
         this.upStation = section.upStation;
         this.downStation = section.downStation;
@@ -71,6 +75,10 @@ public class Section {
 
     public boolean isNotEqualsStation() {
         return !this.upStation.equals(this.downStation);
+    }
+
+    public boolean isNotZeroDistance() {
+        return distance > 0;
     }
 
     public boolean isSameUpStation(Station target) {
@@ -86,13 +94,19 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return distance == section.distance &&
-                upStation.equals(section.upStation) &&
+        return upStation.equals(section.upStation) &&
                 downStation.equals(section.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(upStation, downStation, distance);
+        return Objects.hash(upStation, downStation);
+    }
+
+    public void changeDistance(int targetDistance) {
+        if (targetDistance >= this.distance) {
+            throw new IllegalArgumentException();
+        }
+        this.distance -= targetDistance;
     }
 }

@@ -52,13 +52,21 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
+        checkValidation(section);
         section.setLine(this);
         this.sections.add(section);
     }
 
-    public void addSection(int index, Section section) {
+    private void addSection(int index, Section section) {
+        checkValidation(section);
         section.setLine(this);
         this.sections.add(index, section);
+    }
+
+    private void checkValidation(Section targetSection) {
+        if (this.sections.contains(targetSection)) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public List<Section> getSections() {
@@ -80,7 +88,6 @@ public class Line extends BaseEntity {
 
     public void registrySection(Section targetSection) {
         changeUpStation(targetSection);
-
         addSection(endPointIndex(targetSection), targetSection);
     }
 
@@ -88,7 +95,10 @@ public class Line extends BaseEntity {
         this.sections.stream()
                 .filter(base -> base.isSameUpStation(targetSection.getUpStation()))
                 .findFirst()
-                .ifPresent(base -> base.changeUpStation(targetSection.getDownStation()));
+                .ifPresent(base -> {
+                    base.changeUpStation(targetSection.getDownStation());
+                    base.changeDistance(targetSection.getDistance());
+                });
     }
 
     private Integer endPointIndex(Section targetSection) {
@@ -97,7 +107,6 @@ public class Line extends BaseEntity {
                 .findFirst()
                 .map(base -> this.sections.indexOf(base))
                 .orElseGet(() -> descendEndPointIndex(targetSection));
-
     }
 
     private Integer descendEndPointIndex(Section targetSection) {
@@ -105,7 +114,7 @@ public class Line extends BaseEntity {
                 .filter(base -> base.isSameDownStation(targetSection.getUpStation()))
                 .findFirst()
                 .map(base -> this.sections.indexOf(base) + 1)
-                .orElse(this.sections.size());
+                .orElseThrow(IllegalArgumentException::new);
     }
 
 }

@@ -76,6 +76,7 @@ public class LineService {
                 this.findStationById(request.getDownStationId()),
                 request.getDistance()))
                 .filter(Section::isNotEqualsStation)
+                .filter(Section::isNotZeroDistance)
                 .orElseThrow(IllegalArgumentException::new);
     }
 
