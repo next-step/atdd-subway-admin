@@ -1,9 +1,6 @@
 package nextstep.subway.line.domain;
 
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nextstep.subway.line.exception.SectionDuplicatedException;
 import nextstep.subway.station.domain.Station;
 
@@ -27,18 +24,16 @@ public class Section {
     @Column(name = "distance")
     private Distance distance;
 
+    @Builder
     private Section(final Station upStation, final Station downStation, final Distance distance) {
-        this.upStation = Objects.requireNonNull(upStation);
-        this.downStation = Objects.requireNonNull(downStation);
-        this.distance = Objects.requireNonNull(distance);
-    }
-
-    public static Section of(final Station upStation, final Station downStation, final Distance distance) {
         if (upStation.equals(downStation)) {
             String message = String.format("구간의 상행과 하행은 같은 역일 수 없습니다. (입력 역:%s)", upStation.getName());
             throw new SectionDuplicatedException(message);
         }
-        return new Section(upStation, downStation, distance);
+
+        this.upStation = Objects.requireNonNull(upStation);
+        this.downStation = Objects.requireNonNull(downStation);
+        this.distance = Objects.requireNonNull(distance);
     }
 
     public boolean isUpStation(final Station station) {

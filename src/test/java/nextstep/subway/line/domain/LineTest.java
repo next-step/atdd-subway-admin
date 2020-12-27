@@ -54,7 +54,11 @@ class LineTest {
         Station upStation = new Station("신도림역");
         Station downStation = new Station("문래역");
         Distance distance = Distance.valueOf(200);
-        Section section = Section.of(upStation, downStation, distance);
+        Section section = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
         Line line = 지하철_1호선_생성됨();
 
         // when
@@ -76,7 +80,11 @@ class LineTest {
         Distance distance = Distance.valueOf(100);
         Station upStation = new Station("청량리역");
         Station downStation = new Station("신창역");
-        Section section = Section.of(upStation, downStation, distance);
+        Section section = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
 
         line.add(section);
         return line;
@@ -90,7 +98,11 @@ class LineTest {
         Distance distance = Distance.valueOf(200);
         Station upStation = new Station("강남역");
         Station downStation = new Station("홍대역");
-        Section section = Section.of(upStation, downStation, distance);
+        Section section = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
 
         line.add(section);
         return line;

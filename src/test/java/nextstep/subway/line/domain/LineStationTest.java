@@ -24,7 +24,11 @@ class LineStationTest {
         Station station1 = new Station("금정역");
         Station station2 = new Station("당정역");
         Distance distance = Distance.valueOf(100);
-        Section section = Section.of(station1, station2, distance);
+        Section section = Section.builder()
+                .upStation(station1)
+                .downStation(station2)
+                .distance(distance)
+                .build();
 
         // when
         LineStation lineStation = new LineStation(line, section);
@@ -40,8 +44,16 @@ class LineStationTest {
         Station station1 = new Station("금정역");
         Station station2 = new Station("당정역");
 
-        Section section1 = Section.of(station1, station2, Distance.valueOf(100));
-        Section section2 = Section.of(station1, station2, Distance.valueOf(200));
+        Section section1 = Section.builder()
+                .upStation(station1)
+                .downStation(station2)
+                .distance(Distance.valueOf(100))
+                .build();
+        Section section2 = Section.builder()
+                .upStation(station1)
+                .downStation(station2)
+                .distance(Distance.valueOf(200))
+                .build();
 
         LineStation lineStation1 = new LineStation(line, section1);
         LineStation lineStation2 = new LineStation(line, section2);
@@ -61,8 +73,16 @@ class LineStationTest {
         Station station2 = new Station("당정역");
         Station station3 = new Station("관악역");
 
-        Section section1 = Section.of(station1, station2, Distance.valueOf(100));
-        Section section2 = Section.of(station1, station3, Distance.valueOf(200));
+        Section section1 = Section.builder()
+                .upStation(station1)
+                .downStation(station2)
+                .distance(Distance.valueOf(100))
+                .build();
+        Section section2 = Section.builder()
+                .upStation(station1)
+                .downStation(station3)
+                .distance(Distance.valueOf(200))
+                .build();
 
         LineStation lineStation1 = new LineStation(line, section1);
         LineStation lineStation2 = new LineStation(line, section2);

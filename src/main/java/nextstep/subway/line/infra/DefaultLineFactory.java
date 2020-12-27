@@ -22,7 +22,11 @@ public class DefaultLineFactory implements LineFactory {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
         Distance distance = Distance.valueOf(lineRequest.getDistance());
-        Section section = Section.of(upStation, downStation, distance);
+        Section section = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
         Line line = Line.of(lineRequest.getName(), lineRequest.getColor());
         line.add(section);
         return line;

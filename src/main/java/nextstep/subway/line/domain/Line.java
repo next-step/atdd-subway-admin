@@ -30,7 +30,7 @@ public class Line extends BaseEntity {
     @Embedded
     private LineStations lineStations;
 
-    public Line(final String name, final String color, final LineStations lineStations) {
+    private Line(final String name, final String color, final LineStations lineStations) {
         this.name = Objects.requireNonNull(name);
         this.color = Objects.requireNonNull(color);
         this.lineStations = Objects.requireNonNull(lineStations);

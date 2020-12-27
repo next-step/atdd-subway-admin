@@ -20,7 +20,11 @@ class SectionTest {
         Distance distance = Distance.valueOf(100);
 
         // when
-        Section section = Section.of(upStation, downStation, distance);
+        Section section = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
 
         // then
         assertThat(section).isNotNull();
@@ -35,7 +39,12 @@ class SectionTest {
         Distance distance = Distance.valueOf(100);
 
         // when / then
-        assertThrows(RuntimeException.class, () -> Section.of(upStation, downStation, distance));
+
+        assertThrows(RuntimeException.class, () -> Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build());
     }
 
     @DisplayName("구간의 상행을 확인할 수 있다.")
@@ -45,7 +54,11 @@ class SectionTest {
         Station upStation = new Station("청량리역");
         Station downStation = new Station("신창역");
         Distance distance = Distance.valueOf(100);
-        Section section = Section.of(upStation, downStation, distance);
+        Section section = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
 
         // when
         boolean result1 = section.isUpStation(upStation);
@@ -65,7 +78,11 @@ class SectionTest {
         Station upStation = new Station("청량리역");
         Station downStation = new Station("신창역");
         Distance distance = Distance.valueOf(100);
-        Section section = Section.of(upStation, downStation, distance);
+        Section section = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
 
         // when
         boolean result1 = section.isDownStation(upStation);
@@ -86,8 +103,16 @@ class SectionTest {
         Station downStation = new Station("신창역");
 
         // when
-        Section section1 = Section.of(upStation, downStation, Distance.valueOf(100));
-        Section section2 = Section.of(upStation, downStation, Distance.valueOf(100));
+        Section section1 = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(Distance.valueOf(100))
+                .build();
+        Section section2 = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(Distance.valueOf(200))
+                .build();
         // then
         assertThat(section1).isEqualTo(section2);
     }

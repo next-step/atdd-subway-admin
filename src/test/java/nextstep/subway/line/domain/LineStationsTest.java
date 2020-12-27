@@ -27,7 +27,7 @@ class LineStationsTest {
     void add() {
         // given
         LineStations lineStations = new LineStations();
-        Section section = Section.of(new Station("청량리역"), new Station("신창역"), Distance.valueOf(100));
+        Section section = createSection(new Station("청량리역"), new Station("신창역"), Distance.valueOf(100));
         LineStation lineStation = new LineStation(line, section);
 
         // when
@@ -42,7 +42,7 @@ class LineStationsTest {
     void addFail() {
         // given
         LineStations lineStations = new LineStations();
-        Section section = Section.of(new Station("청량리역"), new Station("신창역"), Distance.valueOf(100));
+        Section section = createSection(new Station("청량리역"), new Station("신창역"), Distance.valueOf(100));
         LineStation lineStation = new LineStation(line, section);
         lineStations.add(lineStation);
 
@@ -55,7 +55,7 @@ class LineStationsTest {
     void contain() {
         // given
         LineStations lineStations = new LineStations();
-        Section section = Section.of(new Station("청량리역"), new Station("신창역"), Distance.valueOf(100));
+        Section section = createSection(new Station("청량리역"), new Station("신창역"), Distance.valueOf(100));
         LineStation lineStation = new LineStation(line, section);
         lineStations.add(lineStation);
 
@@ -78,9 +78,9 @@ class LineStationsTest {
         Station 관악역 = new Station("관악역");
         Station 금정역 = new Station("금정역");
 
-        Section section1 = Section.of(청량리역, 신도림역, Distance.valueOf(100));
-        Section section2 = Section.of(신도림역, 관악역, Distance.valueOf(100));
-        Section section3 = Section.of(관악역, 금정역, Distance.valueOf(100));
+        Section section1 = createSection(청량리역, 신도림역, Distance.valueOf(100));
+        Section section2 = createSection(신도림역, 관악역, Distance.valueOf(100));
+        Section section3 = createSection(관악역, 금정역, Distance.valueOf(100));
 
         lineStations.add(new LineStation(line, section1));
         lineStations.add(new LineStation(line, section2));
@@ -91,5 +91,13 @@ class LineStationsTest {
 
         // then
         assertThat(stationsOrderByUp).containsExactly(청량리역, 신도림역, 관악역, 금정역);
+    }
+
+    private Section createSection(final Station upStation, final Station downStation, final Distance distance) {
+        return Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
     }
 }
