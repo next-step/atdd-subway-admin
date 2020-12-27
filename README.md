@@ -75,7 +75,13 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] 지하철 삭제 인수 테스트 작성
   - [X] 서비스 레이어 구현(w. 유닛 테스트)
   - [X] 컨트롤러 구현
-  
+
+## Step1 피드백 반영
+- [X] update 기능에서도 도메인을 직접 노출하지 않도록 개선
+- [X] 반복되는 인수테스트 과정을 추출한 static 메서드명들을 한글로 바꾸기
+  - 이상한 스네이크 케이스로 인한 혼돈 방지 + 불필요한 과거 시제 뉘앙스를 살리기 위한 반복 제거
+- [X] PUT API 검증 때 좀 더 안전하게 검증하기 위해 값 변화까지 검증하기
+
 ## Step2. 지하철 노선 구간 조회
 ### 인수 테스트 시나리오
 - 이 부분에 시나리오 다시 정리해보고 빠진 부분 없는지 확인하기
@@ -129,7 +135,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - 사용자가 새로운 지하철 노선의 이름, 색상, 상행종점역, 하행종점역, 종점역 간 거리 중 하나라도 빠진 채로 지하철 노선 등록을 요청한다.
     - then
       - 지하철 노선 등록 실패
-  - [ ] 시나리오7: 특정 지하철 노선 조회 시 등록된 지하철 역 목록이 보인다.
+  - [ ] 시나리오7: 특정 지하철 노선 조회 시 `구간 순서대로` 역 목록이 보인다.
     - given
       - 지하철 노선 등록되어 있음
       - and 지하철 노선의 역들 모두 등록되어 있음
@@ -137,6 +143,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       - 사용자가 특정 지하철 노선 정보를 보기 위해 조회 요청
     - then
       - 특정 지하철 노선의 지하철 역 정보가 포함된 정보가 보인다.
+      - 특정 지하철 노선의 지하철 역 정보가 `구간 순서대로` 보인다.
 
 ### Todo-list
 - Section
@@ -181,6 +188,16 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] Sections에서 중복 없이 등록된 역 목록을 받을 수 있도록 기능 구현
 - [X] 사용자가 정상적으로 정보를 조회할 수 있도록 DTO에 getter 추가
 - [X] SafeStationInfo 도메인이 외부로 직접 노출되지 않도록 DTO 변환 작업 추가
+
+## Step2 피드백 반영
+- [X] 불필요한 gradle 모듈 제거
+- [X] 불필요한 http 테스트 제거
+- [X] JPA Auditing의 setter 제거
+- [X] JPA ID 구현을 Abstract 클래스로 전환
+- [X] 중복되는 Exception 통합
+- [X] Station Fixture에서 ID를 인자로 생성가능한 정적 팩토리 메서드 제거
+  - 필요한 때 필요한만큼만 생성된 걸 사용하는 걸로
+- [X] Line Fixture의 정적 팩토리 메서드도 마찬가지로 제거
 
 ## Step3. 지하철 노선에 구간 등록
 ### 인수 테스트 시나리오
@@ -331,3 +348,19 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] Line에서 종점역을 삭제하려는 경우에 대한 테스트 추가
   - [X] Line에서 종점역을 삭제할 수 있도록 기능 변경
   - [X] Sections에서 종점역을 삭제하는 기능 별도로 구현
+- [X] Line에서 Station 조회 시 Section 순서대로 조회
+  - [X] Sections에서 상행종점역을 찾는 기능 추가
+  - [X] Sections에서 생항종점역을 기준으로 다음역을 탐색하며 결과를 합치는 기능 추가
+- [X] 구간 역 목록 조회 기능의 인수 조건을 순서 정렬이 제대로 됐는지 확인하도록 변경
+
+## Step3 피드백 반영
+- [X] 되살아난 auditing setter 전부 제거
+- [X] 과하게 긴 줄이 아니면 한 줄로만 줄 바꾸기
+- [X] Sections add policy에 굳이 sections 인스턴스 변수가 필요할지 고민하기
+- [X] SectionCalculator에서 원자적으로 연산을 처리하도록 변경
+- [X] AddSectionPolicy 계산을 처리를 별도의 책임으로 분리
+- [X] 컨트롤러 예외 처리 책임을 다른 클래스로 위임
+  
+- [X] Sections 일급 컬렉션의 addSection 메서드를 어떻게 안전하게 처리할지 고민하기
+- [X] addSection을 아예 두개의 메서드로 분리하는 방법 고민
+  - Sections의 책임 중 과도하게 파편화 된 책임들을 다시 Sections에 위임

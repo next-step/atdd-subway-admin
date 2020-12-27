@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain.sections;
 
 import nextstep.subway.line.domain.exceptions.MergeSectionFailException;
-import nextstep.subway.line.domain.sections.Section;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

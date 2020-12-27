@@ -56,17 +56,11 @@ public class Line extends BaseEntity {
     }
 
     public boolean addSection(final Section newSection) {
-        Section endUpSection = sections.findEndUpSection();
-        Section endDownSection = sections.findEndDownSection();
-
-        if (isEndSectionAddCase(endUpSection, endDownSection, newSection)) {
-            AddSectionPolicy addSectionPolicy = new SimpleAddSectionPolicy(sections);
-            return addSectionPolicy.addSection(newSection);
+        if (sections.isInEndSection(newSection)) {
+            return this.sections.addEndSection(newSection);
         }
 
-        AddSectionPolicy addSectionPolicy = new ChangeOriginalAndAddSectionPolicy(sections);
-
-        return addSectionPolicy.addSection(newSection);
+        return this.sections.addNotEndSection(newSection);
     }
 
     public boolean deleteStationOfSection(final Long targetStationId) {
@@ -83,12 +77,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Long> getStationIds() {
-        return this.sections.getStationIdsOrderBySection();
-    }
-
-    private boolean isEndSectionAddCase(
-            final Section endUpSection, final Section endDownSection, final Section newSection
-    ) {
-        return endUpSection.isSameUpWithThatDown(newSection) || endDownSection.isSameDownWithThatUp(newSection);
+        return StationsInLine.getStationIdsOrderBySection(this.sections);
     }
 }

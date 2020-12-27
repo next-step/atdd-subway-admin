@@ -80,18 +80,16 @@ public class Section extends ValueObjectId {
         return this.downStationId.equals(thatSection.downStationId);
     }
 
-    void updateUpStation(final Section section) {
-        this.upStationId = section.downStationId;
-        this.distance = this.distance - section.distance;
-    }
-
-    void updateDownStation(final Section section) {
-        this.downStationId = section.upStationId;
-        this.distance = this.distance - section.distance;
-    }
-
     boolean isHasThisStation(final Long stationId) {
         return (this.upStationId.equals(stationId) || this.downStationId.equals(stationId));
+    }
+
+    Section createUpdatedUpStation(final Section section) {
+        return new Section(section.downStationId, this.downStationId,this.distance - section.distance);
+    }
+
+    Section createUpdatedDownStation(final Section section) {
+        return new Section(this.upStationId, section.upStationId, this.distance - section.distance);
     }
 
     boolean isUpStationBelongsTo(final List<Long> stationIds) {
@@ -139,10 +137,5 @@ public class Section extends ValueObjectId {
                 ", downStationId=" + downStationId +
                 ", distance=" + distance +
                 '}';
-    }
-
-    // TODO: 머지 기능 완료 후 삭제
-    Long getDistance() {
-        return this.distance;
     }
 }
