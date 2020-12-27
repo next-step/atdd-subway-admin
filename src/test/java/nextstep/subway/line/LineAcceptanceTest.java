@@ -29,10 +29,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void 노선_생성_요청_파라미터_설정() {
-        노선_생성_요청시_이름_색상_설정("2호선", "초록색");
+        노선_생성_요청시_노선_정보_설정("2호선", "초록색");
     }
 
-    void 노선_생성_요청시_이름_색상_설정(final String name, final String color) {
+    void 노선_생성_요청시_노선_정보_설정(final String name, final String color) {
         params.put("name", name);
         params.put("color", color);
     }
@@ -86,7 +86,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         final ExtractableResponse<Response> firstCreateResponse = 지하철_노선_생성_요청();
         // 지하철_노선_등록되어_있음
-        노선_생성_요청시_이름_색상_설정("5호선", "보라색");
+        노선_생성_요청시_노선_정보_설정("5호선", "보라색");
         final ExtractableResponse<Response> secondCreateResponse = 지하철_노선_생성_요청();
 
         // when
