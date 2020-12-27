@@ -8,9 +8,8 @@ import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.stereotype.Component;
-
-import javax.persistence.EntityNotFoundException;
 
 @RequiredArgsConstructor
 @Component
@@ -29,8 +28,8 @@ public class DefaultLineFactory implements LineFactory {
         return line;
     }
 
-    private Station getStation(final Long upStationId) {
-        return stationRepository.findById(upStationId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("역이 존재하지 않습니다. (입력 id값: %d", upStationId)));
+    private Station getStation(final Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new StationNotFoundException(String.format("역이 존재하지 않습니다. (입력 id값: %d)", stationId)));
     }
 }
