@@ -1,11 +1,16 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Section extends BaseEntity {
     @Id
@@ -25,8 +30,6 @@ public class Section extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
-
-    protected Section() {}
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;

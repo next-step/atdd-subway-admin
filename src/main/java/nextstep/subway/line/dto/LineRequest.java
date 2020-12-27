@@ -1,8 +1,13 @@
 package nextstep.subway.line.dto;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LineRequest {
     private String name;
     private String color;
@@ -10,34 +15,12 @@ public class LineRequest {
     private Long downStationId;
     private int distance;
 
-    protected LineRequest() {}
-
     public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     public Line toLine() {

@@ -1,13 +1,17 @@
 package nextstep.subway.line.domain;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Line extends BaseEntity {
     @Id
@@ -22,8 +26,6 @@ public class Line extends BaseEntity {
 
     @OneToMany(mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
-
-    protected Line() {}
 
     public Line(String name, String color) {
         this.name = name;
@@ -49,25 +51,5 @@ public class Line extends BaseEntity {
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public List<Station> getStations() {
-        return stations;
-    }
-
-    public List<Section> getSections() {
-        return sections;
     }
 }
