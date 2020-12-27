@@ -25,6 +25,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> selectLines() {
         List<Line> persistLines = lineRepository.findAll();
         return persistLines.stream()
@@ -32,6 +33,7 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse selectLine(Long id) {
         Line persistLine = lineRepository.findById(id)
             .orElseThrow(LineNotFoundException::new);
