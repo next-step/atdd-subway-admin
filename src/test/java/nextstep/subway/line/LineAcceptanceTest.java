@@ -61,11 +61,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-              .contentType(MediaType.APPLICATION_JSON_VALUE)
-              .when().get("/lines")
-              .then().log().all()
-              .extract();
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청("/lines");
 
         // then
         // 지하철_노선_목록_응답됨
@@ -73,9 +69,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_포함됨
         List<Long> expectedIdList = expectedIdList(createResponse1, createResponse2);
         List<Long> responseIdList = response.jsonPath().getList(".", LineResponse.class).stream()
-              .map(it -> it.getId())
+              .map(LineResponse::getId)
               .collect(Collectors.toList());
         assertThat(responseIdList).containsAll(expectedIdList);
+    }
+
+    @DisplayName("비어있는 지하철 노선 목록을 조회한다.")
+    @Test
+    void showLines2() {
+        // when
+        // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청("/lines");
+
+        // then
+        // 지하철_노선_목록_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // 지하철_노선_목록_포함됨
+        assertThat(response.jsonPath().getList(".", LineResponse.class)).isEmpty();
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -83,12 +93,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("bg-red-600", "신분당선");
 
         // when
         // 지하철_노선_조회_요청
+        List<Long> lineIds = expectedIdList(createResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청("/lines/" + lineIds.get(0));
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().as(LineResponse.class).getId()).isEqualTo(lineIds.get(0));
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
+    @Test
+    void getLine2() {
+        // when
+        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청("/lines/0");
+
+        // then
+        // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().as(LineResponse.class).getId()).isNull();
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -134,8 +162,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
               .extract();
     }
 
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(String path) {
+        return RestAssured.given().log().all()
+              .contentType(MediaType.APPLICATION_JSON_VALUE)
+              .when().get(path)
+              .then().log().all()
+              .extract();
+    }
+
     private List<Long> expectedIdList(ExtractableResponse<Response>... createResponses) {
-        return Arrays.asList(createResponses).stream()
+        return Arrays.stream(createResponses)
               .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
               .collect(Collectors.toList());
     }

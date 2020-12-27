@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -45,6 +46,16 @@ class LineServiceTest {
 
         //then
         assertThat(actual.isFail()).isTrue();
+    }
+
+    @DisplayName("지하철 노선 목록 조회 - 등록된 목록이 없는 경우")
+    @Test
+    void findAll() {
+        //when
+        List<LineResponse> lines = lineService.findAllLines();
+
+        //then
+        assertThat(lines).isEmpty();
     }
 
     private LineResponse 지하철_노선_등록() {
