@@ -1,12 +1,10 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,18 +29,14 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), ofStationResponse(line.getSections()), line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), ofStationResponse(line.getStation()), line.getCreatedDate(), line.getModifiedDate());
     }
 
-
-    public static List<StationResponse> ofStationResponse(List<Section> sections) {
+    public static List<StationResponse> ofStationResponse(List<Station> sections) {
         return sections
                 .stream()
-                .map(Section::upAndDownStations)
-                .flatMap(Collection::stream)
-                .distinct()
                 .map(StationResponse::of)
-                .collect(Collectors.toCollection(LinkedList::new));
+                .collect(Collectors.toList());
     }
 
     public Long getId() {

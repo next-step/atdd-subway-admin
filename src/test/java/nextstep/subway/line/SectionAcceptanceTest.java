@@ -23,6 +23,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private long 강남역;
     private long 양재역;
     private long 판교역;
+    private long 양재시민의숲;
 
     @Override
     @BeforeEach
@@ -34,9 +35,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
         양재역 = StationAcceptanceTest.지하철역_등록되어_있음("양재역");
         판교역 = StationAcceptanceTest.지하철역_등록되어_있음("판교역");
+        양재시민의숲 = StationAcceptanceTest.지하철역_등록되어_있음("양재시민의숲");
 
         // 지하철_노선_생성_요청
-        신분당선 = LineAcceptanceTest.지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역, 양재역, 10);
+        신분당선 = LineAcceptanceTest.지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역, 양재역, 7);
     }
 
     @DisplayName("노선에 구간을 등록한다.")
@@ -44,26 +46,62 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection() {
         // when
         // 지하철_노선에_구간_등록_요청
-        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 판교역, 7);
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 판교역, 5);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("노선에 구간 등록 실패한다.")
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @Test
-    void addSectionFail() {
+    void addBetweenSectionExpectedException() {
         // when
         // 지하철_노선에_구간_등록_요청
-        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 판교역, 11);
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 판교역, 7);
 
         // then
         // 지하철_노선에_지하철역_등록_실패됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addExistSectionExpectedException() {
+        // when
+        // 지하철_노선에_구간_등록_요청
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 양재역, 강남역, 6);
+
+        // then
+        // 지하철_노선에_지하철역_등록_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void addNotIncludeSectionExpectedException() {
+        // when
+        // 지하철_노선에_구간_등록_요청
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 판교역, 양재시민의숲, 10);
+
+        // then
+        // 지하철_노선에_지하철역_등록_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("거리가 0이면 추가할 수 없음")
+    @Test
+    void distanceZeroExpectedException() {
+        // when
+        // 지하철_노선에_구간_등록_요청
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 판교역, 0);
+
+        // then
+        // 지하철_노선에_지하철역_등록_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");

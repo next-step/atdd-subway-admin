@@ -8,6 +8,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -16,13 +17,16 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private final List<Section> sections = new LinkedList<>();
 
-    public List<Section> getSections() {
-        List<Section> orderBySections = new ArrayList<>();
-        this.sections.stream()
-                .filter(section -> isRootStation(section.getUpStation()))
-                .findFirst()
-                .ifPresent(section -> orderSection(section, orderBySections));
-        return orderBySections;
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        Map<Station, Station> sectionElement = sectionElements();
+        Station node = getFirstNode(sectionElement);
+        stations.add(node);
+        while (sectionElement.containsKey(node)) {
+            node = sectionElement.get(node);
+            stations.add(node);
+        }
+        return stations;
     }
 
     public void create(Section section) {
@@ -58,12 +62,6 @@ public class Sections {
                 });
     }
 
-    private void orderSection(Section targetSection, List<Section> addedSections) {
-        addedSections.add(targetSection);
-        findSameUpStation(targetSection.getDownStation())
-                .ifPresent(value -> orderSection(value, addedSections));
-    }
-
     private Optional<Section> findSameUpStation(Station targetStation) {
         return this.sections.stream()
                 .filter(section -> section.isSameUpStation(targetStation))
@@ -74,12 +72,6 @@ public class Sections {
         return this.sections.stream()
                 .filter(base -> base.isSameDownStation(targetStation))
                 .findFirst();
-    }
-
-    private boolean isRootStation(Station station) {
-        return !sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList()).contains(station);
     }
 
     private boolean isChanged(Section section) {
@@ -96,6 +88,22 @@ public class Sections {
     private Integer findDescendIndex(Section targetSection) {
         return findSameDownStation(targetSection.getUpStation())
                 .map(base -> this.sections.indexOf(base) + 1)
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Map<Station, Station> sectionElements() {
+        return this.sections.stream()
+                .collect(Collectors.toMap(
+                        Section::getUpStation,
+                        Section::getDownStation
+                ));
+    }
+
+    private Station getFirstNode(Map<Station, Station> stationStationMap) {
+        return stationStationMap.keySet()
+                .stream()
+                .filter(value -> !stationStationMap.containsValue(value))
+                .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
 }

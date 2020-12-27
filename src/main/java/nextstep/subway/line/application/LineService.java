@@ -35,10 +35,10 @@ public class LineService {
     }
 
     public void editLine(Long id, LineRequest request) {
-        Line lineById = this.findById(id);
-        lineById.update(request.toLine());
+        Line line = this.findById(id);
+        line.update(request.toLine());
         if (request.isContainsSection()) {
-            lineById.updateSection(ofSection(request.toSectionRequest()));
+            line.updateSection(ofSection(request.toSectionRequest()));
         }
     }
 
@@ -66,8 +66,8 @@ public class LineService {
     }
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Line byId = this.findById(lineId);
-        byId.addSection(ofSection(sectionRequest));
+        Line line = this.findById(lineId);
+        line.addSection(ofSection(sectionRequest));
     }
 
     private Section ofSection(SectionRequest request) {
