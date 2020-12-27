@@ -24,7 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = createStation(createParams("강남역"));
+        ExtractableResponse<Response> response = createStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -35,10 +35,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        createStation(createParams("강남역"));
+        createStation("강남역");
 
         // when
-        ExtractableResponse<Response> response = createStation(createParams("강남역"));
+        ExtractableResponse<Response> response = createStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -48,8 +48,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = createStation(createParams("강남역"));
-        ExtractableResponse<Response> createResponse2 = createStation(createParams("역삼역"));
+        ExtractableResponse<Response> createResponse1 = createStation("강남역");
+        ExtractableResponse<Response> createResponse2 = createStation("역삼역");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -73,7 +73,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = createStation(createParams("강남역"));
+        ExtractableResponse<Response> createResponse = createStation("강남역");
 
         // when
         String uri = createResponse.header("Location");
@@ -94,7 +94,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철 노선 생성 요청")
-    public static ExtractableResponse<Response> createStation(Map<String, String> params) {
+    public static ExtractableResponse<Response> createStation(String name) {
+        Map<String, String> params = createParams(name);
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

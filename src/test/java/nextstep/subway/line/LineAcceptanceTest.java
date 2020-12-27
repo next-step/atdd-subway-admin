@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,12 +24,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // given
         // 지하철_역_생성되어_있음
-        지하철_역_생성되어_있음("강남역", "신도림역");
+        createStation("강남역");
+        createStation("신도림역");
 
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = createSubwayLine(
-                createParams("분당선", "yellow", "1", "2","8")
+                "분당선", "yellow", "1", "2","8"
         );
 
         // then
@@ -38,8 +40,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = response.response().getBody().as(LineResponse.class);
         Assertions.assertThat(lineResponse.getName()).isEqualTo("분당선");
         Assertions.assertThat(lineResponse.getColor()).isEqualTo("yellow");
-        Assertions.assertThat(lineResponse.getStations().get(0).getName()).isEqualTo("강남역");
-        Assertions.assertThat(lineResponse.getStations().get(1).getName()).isEqualTo("신도림역");
+        Assertions.assertThat(lineResponse.getStations())
+                .extracting(StationResponse::getName)
+                .containsExactly("강남역", "신도림역");
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -47,17 +50,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_역_생성되어_있음
-        지하철_역_생성되어_있음("강남역", "신도림역");
-        StationAcceptanceTest.createStation(StationAcceptanceTest.createParams("잠실역"));
+        createStation("강남역");
+        createStation("신도림역");
+        createStation("잠실역");
         // 지하철_노선_등록되어_있음
         createSubwayLine(
-                createParams("분당선", "yellow", "1", "2","8")
+                "분당선", "yellow", "1", "2","8"
         );
 
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = createSubwayLine(
-                createParams("분당선", "yellow", "1", "3","6")
+                "분당선", "yellow", "1", "3","6"
         );
 
         // then
@@ -70,14 +74,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_역_생성되어_있음
-        지하철_역_생성되어_있음("강남역", "신도림역");
-        지하철_역_생성되어_있음("방화역", "오금역");
+        createStation("강남역");
+        createStation("신도림역");
+        createStation("방화역");
+        createStation("오금역");
         // 지하철_노선_등록되어_있음
         createSubwayLine(
-                createParams("분당선", "yellow", "1", "2","8")
+                "분당선", "yellow", "1", "2","8"
         );
         createSubwayLine(
-                createParams("5호선", "purple", "3", "4","4")
+                "5호선", "purple", "1", "4","4"
         );
 
         // when
@@ -97,16 +103,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_역_생성되어_있음
-        지하철_역_생성되어_있음("강남역", "신도림역");
+        createStation("강남역");
+        createStation("신도림역");
+        createStation("방화역");
+        createStation("오금역");
         // 지하철_노선_등록되어_있음
         createSubwayLine(
-                createParams("분당선", "yellow", "1", "2", "8")
+                "분당선", "yellow", "1", "2","8"
+        );
+        createSubwayLine(
+                "5호선", "purple", "1", "4","4"
         );
 
         // when
         // 지하철_노선_조회_요청
         Long id = 1L;
         ExtractableResponse<Response> response = searchSubwayLineOne(id);
+        ExtractableResponse<Response> response2 = searchSubwayLineOne(2L);
 
         // then
         // 지하철_노선_응답됨
@@ -116,6 +129,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(lineResponse.getName()).isEqualTo("분당선");
         Assertions.assertThat(lineResponse.getColor()).isEqualTo("yellow");
         Assertions.assertThat(lineResponse.getStations().get(0).getName()).isEqualTo("강남역");
+        LineResponse lineResponse2 = response2.response().getBody().as(LineResponse.class);
+        Assertions.assertThat(lineResponse2.getStations().get(0).getName()).isEqualTo("강남역");
     }
 
     @DisplayName("지하철 노선을 조회실패한다.")
@@ -123,10 +138,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine2() {
         // given
         // 지하철_역_생성되어_있음
-        지하철_역_생성되어_있음("강남역", "신도림역");
+        createStation("강남역");
+        createStation("신도림역");
         // 지하철_노선_등록되어_있음
         createSubwayLine(
-                createParams("분당선", "yellow", "1", "2","8")
+                "분당선", "yellow", "1", "2","8"
         );
 
         // when
@@ -144,10 +160,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_역_생성되어_있음
-        지하철_역_생성되어_있음("강남역", "신도림역");
+        createStation("강남역");
+        createStation("신도림역");
         // 지하철_노선_등록되어_있음
         createSubwayLine(
-                createParams("분당선", "yellow", "1", "2","8")
+                "분당선", "yellow", "1", "2","8"
         );
 
         // when
@@ -172,10 +189,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_역_생성되어_있음
-        지하철_역_생성되어_있음("강남역", "신도림역");
+        createStation("강남역");
+        createStation("신도림역");
         // 지하철_노선_등록되어_있음
         createSubwayLine(
-                createParams("분당선", "yellow", "1", "2","8")
+                "분당선", "yellow", "1", "2","8"
         );
 
         // when
@@ -188,9 +206,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private void 지하철_역_생성되어_있음(String upStation, String downStation) {
-        StationAcceptanceTest.createStation(StationAcceptanceTest.createParams(upStation));
-        StationAcceptanceTest.createStation(StationAcceptanceTest.createParams(downStation));
+    private void createStation(String station) {
+        StationAcceptanceTest.createStation(station);
     }
 
     public Map<String, String> createParams(String name, String color,
@@ -212,7 +229,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철 노선 생성 요청")
-    public ExtractableResponse<Response> createSubwayLine(Map<String, String> params) {
+    public ExtractableResponse<Response> createSubwayLine(String name, String color,
+                                                          String upStationId, String downStationId,
+                                                          String distance) {
+        Map<String, String> params = createParams(name, color, upStationId, downStationId, distance);
         return RestAssured.given().log().all().
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
