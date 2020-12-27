@@ -2,15 +2,12 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
-import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -22,9 +19,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    @OrderColumn
-    private List<Section> sections = new LinkedList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -51,70 +47,21 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void addSection(Section section) {
-        checkValidation(section);
-        section.setLine(this);
-        this.sections.add(section);
+    public void updateSection(Section section) {
+        this.sections.update(section);
     }
 
-    private void addSection(int index, Section section) {
-        checkValidation(section);
-        section.setLine(this);
-        this.sections.add(index, section);
+    public void addSection(Section targetSection) {
+        targetSection.setLine(this);
+        this.sections.add(targetSection);
     }
 
-    private void checkValidation(Section targetSection) {
-        if (this.sections.contains(targetSection) || targetSection.isZeroDistance()) {
-            throw new IllegalArgumentException();
-        }
+    public void createSection(Section targetSection) {
+        targetSection.setLine(this);
+        this.sections.create(targetSection);
     }
 
     public List<Section> getSections() {
-        return sections;
+        return this.sections.getSections();
     }
-
-    public void updateSection(Section section) {
-        if (isChangedStations(section)) {
-            this.sections.stream()
-                    .findFirst()
-                    .ifPresent(s -> s.update(section));
-        }
-    }
-
-    private boolean isChangedStations(Section section) {
-        return !this.sections.stream()
-                .allMatch(s -> s.equals(section));
-    }
-
-    public void registrySection(Section targetSection) {
-        changeUpStation(targetSection);
-        addSection(findEndPointIndex(targetSection), targetSection);
-    }
-
-    private void changeUpStation(Section targetSection) {
-        this.sections.stream()
-                .filter(base -> base.isSameUpStation(targetSection.getUpStation()))
-                .findFirst()
-                .ifPresent(base -> {
-                    base.changeUpStation(targetSection.getDownStation());
-                    base.changeDistance(targetSection.getDistance());
-                });
-    }
-
-    private Integer findEndPointIndex(Section targetSection) {
-        return this.sections.stream()
-                .filter(base -> base.isSameUpStation(targetSection.getDownStation()))
-                .findFirst()
-                .map(base -> this.sections.indexOf(base))
-                .orElseGet(() -> descendEndPointIndex(targetSection));
-    }
-
-    private Integer descendEndPointIndex(Section targetSection) {
-        return this.sections.stream()
-                .filter(base -> base.isSameDownStation(targetSection.getUpStation()))
-                .findFirst()
-                .map(base -> this.sections.indexOf(base) + 1)
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
 }

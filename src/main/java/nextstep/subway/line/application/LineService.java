@@ -29,7 +29,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         if (request.isContainsSection()) {
-            persistLine.addSection(ofSection(request.toSectionRequest()));
+            persistLine.createSection(ofSection(request.toSectionRequest()));
         }
         return LineResponse.of(persistLine);
     }
@@ -67,7 +67,7 @@ public class LineService {
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line byId = this.findById(lineId);
-        byId.registrySection(ofSection(sectionRequest));
+        byId.addSection(ofSection(sectionRequest));
     }
 
     private Section ofSection(SectionRequest request) {
