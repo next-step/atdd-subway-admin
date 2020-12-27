@@ -60,12 +60,12 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         When: 지하철 노선을 생성 요청한다.
         Then: 지하철 노선이 생성된다.
         
-    *[ ] Scenario: 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.
+    *[x] Scenario: 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.
         Given: 지하철 노선이 등록되어 있다
         When: 지하철 노선을 생성 요청한다.
         Then 지하철 노선 생성이 실패된다.
         
-    *[ ] Scenario: 지하철 노선 목록을 조회한다.
+    *[x] Scenario: 지하철 노선 목록을 조회한다.
         Given: 지하철 노선이 등록되어 있다.
         When: 지하철 노선 목록을 요청한다.
         Then: 지하철 노선 목록을 반환한다.
