@@ -53,11 +53,10 @@ public class LineService {
         return persistLine(request);
     }
 
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+    public void updateLine(Long id, LineUpdateRequest request) {
         Line savedLine = lineRepository.findById(id)
                 .orElseThrow(LineNotFoundException::new);
-        savedLine.update(lineRequest.toLine());
-        return null;
+        savedLine.update(request.getName(), request.getColor());
     }
 
     public void deleteLineById(Long id) {
