@@ -88,7 +88,7 @@ public class Line extends BaseEntity {
 
     public void registrySection(Section targetSection) {
         changeUpStation(targetSection);
-        addSection(endPointIndex(targetSection), targetSection);
+        addSection(findEndPointIndex(targetSection), targetSection);
     }
 
     private void changeUpStation(Section targetSection) {
@@ -101,7 +101,7 @@ public class Line extends BaseEntity {
                 });
     }
 
-    private Integer endPointIndex(Section targetSection) {
+    private Integer findEndPointIndex(Section targetSection) {
         return this.sections.stream()
                 .filter(base -> base.isSameUpStation(targetSection.getDownStation()))
                 .findFirst()
