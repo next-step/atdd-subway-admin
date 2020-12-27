@@ -20,10 +20,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철역_등록되어_있음
         // 지하철_노선_생성_요청
-        Long createId = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("문래역");
-        Long createId2 = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("잠실역");
         ExtractableResponse<Response> response = LineAcceptanceTestRequest
-            .지하철_노선_생성_요청("2호선", "green", createId, createId2, 10);
+            .지하철_노선_생성_요청("2호선", "green", "문래역", "잠실역", 10);
 
         // then
         // 지하철_노선_생성됨
@@ -38,13 +36,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         String lineName = "2호선";
         String lineColor = "green";
-        Long createId = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("문래역");
-        Long createId2 = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("잠실역");
-        LineAcceptanceTestRequest.지하철_노선_등록되어_있음(lineName, lineColor, createId, createId2, 10);
+        LineAcceptanceTestRequest.지하철_노선_등록되어_있음(lineName, lineColor, "문래역", "잠실역", 10);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = LineAcceptanceTestRequest.지하철_노선_생성_요청(lineName, lineColor, createId, createId2, 10);
+        ExtractableResponse<Response> response = LineAcceptanceTestRequest.지하철_노선_생성_요청(lineName, lineColor, "신도림역", "잠실새내역", 10);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -57,12 +53,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철역_등록되어_있음
         // 지하철_노선_등록되어_있음
-        Long createId = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("문래역");
-        Long createId2 = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("잠실역");
-        Long createId3 = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("신사역");
-        Long createId4 = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("대화역");
-        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", createId, createId2, 10);
-        String createdLocationUri2 = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("3호선", "orange", createId3, createId4, 10);
+        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", "문래역", "잠실역", 10);
+        String createdLocationUri2 = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("3호선", "orange", "대화역", "신사역", 10);
 
         List<String> lineLocations = Arrays.asList(createdLocationUri, createdLocationUri2);
 
@@ -83,9 +75,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철역_등록되어_있음
         // 지하철_노선_등록되어_있음
-        Long createId = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("문래역");
-        Long createId2 = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("잠실역");
-        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", createId, createId2, 10);
+        Long upStationId = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("문래역");
+        Long downStationId = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("잠실역");
+        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", upStationId, downStationId, 10);
 
         // when
         // 지하철_노선_조회_요청
@@ -95,7 +87,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_응답됨
         // 지하철_노선_지하철역_목록_포함됨
         LineAcceptanceTestResponse.지하철_노선_응답됨(response, createdLocationUri);
-        LineAcceptanceTestResponse.지하철_노선_지하철역_목록_포함됨(response, Arrays.asList(createId, createId2));
+        LineAcceptanceTestResponse.지하철_노선_지하철역_목록_포함됨(response, Arrays.asList(upStationId, downStationId));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -104,9 +96,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철역_등록되어_있음
         // 지하철_노선_등록되어_있음
-        Long createId = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("문래역");
-        Long createId2 = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("잠실역");
-        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", createId, createId2, 10);
+        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", "문래역", "잠실역", 10);
 
         // when
         // 지하철_노선_수정_요청
@@ -123,9 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철역_등록되어_있음
         // 지하철_노선_등록되어_있음
-        Long createId = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("문래역");
-        Long createId2 = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("잠실역");
-        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", createId, createId2, 10);
+        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", "문래역", "잠실역", 10);
 
         // when
         // 지하철_노선_제거_요청
