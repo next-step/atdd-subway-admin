@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.BadSectionException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +29,7 @@ class LineStationsTest {
     @Test
     void add() {
         // given
-        Section section = createSection(new Station("청량리역"), new Station("신도림역"), Distance.valueOf(100));
+        Section section = createSection(new Station("청량리역"), new Station("신도림역"), Distance.valueOf(10));
 
         // when
         lineStations.add(line, section);
@@ -41,10 +42,10 @@ class LineStationsTest {
     @Test
     void addFail() {
         // given
-        Section section = createSection(new Station("청량리역"), new Station("신창역"), Distance.valueOf(100));
+        Section section = createSection(new Station("청량리역"), new Station("신창역"), Distance.valueOf(10));
 
         // when / then
-        assertThrows(IllegalArgumentException.class, () -> lineStations.add(line, section));
+        assertThrows(BadSectionException.class, () -> lineStations.add(line, section));
     }
 
     @DisplayName("상행 순으로 지하철 역을 정렬하여 가져옵니다.")

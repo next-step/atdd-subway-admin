@@ -32,7 +32,7 @@ class DistanceTest {
 
     @DisplayName("거리 값이 같으면 동등성을 보장한다.")
     @ParameterizedTest
-    @ValueSource(ints = {0, 10})
+    @ValueSource(ints = {10, 1000})
     void equals(int value) {
         // when
         Distance distance1 = Distance.valueOf(value);
