@@ -36,8 +36,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params1.put("name", "강남역");
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "합정역");
-        Map<String, String> params3 = new HashMap<>();
-        params3.put("name", "교대역");
 
         upStation = StationAcceptanceTest.지하철_역_생성_요청(params1)
                 .as(StationResponse.class);

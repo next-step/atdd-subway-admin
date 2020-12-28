@@ -77,6 +77,7 @@ public class LineFixture {
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long lineId, final SectionRequest request) {
         return RestAssured.given().log().all()
                 .body(request)
+                .accept(MediaType.ALL_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/" + lineId + "/sections")

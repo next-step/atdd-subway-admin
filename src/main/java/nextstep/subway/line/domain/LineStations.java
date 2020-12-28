@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.line.exception.BadSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -73,15 +74,35 @@ public class LineStations {
     }
 
     public void add(final Line line, final Section section) {
+        boolean containsUpStation = contains(section.getUpStation());
+        boolean containsDownStation = contains(section.getDownStation());
+
+        validate(containsUpStation, containsDownStation);
+
         LineStation target = lineStations.stream()
                 .filter(lineStation -> lineStation.canAdd(section))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new BadSectionException(""));
 
         if (target.canReflect(section)) {
             target.reflect(section);
         }
 
         lineStations.add(new LineStation(line, section));
+    }
+
+    private void validate(final boolean containsUpStation, final boolean containsDownStation) {
+        if (containsUpStation && containsDownStation) {
+            throw new BadSectionException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+        }
+
+        if (!containsUpStation && !containsDownStation) {
+            throw new BadSectionException("상행역과 하행역 둘 중 하나도 포함되어있지 않습니다.");
+        }
+    }
+
+    private boolean contains(final Station station) {
+        return lineStations.stream()
+                .anyMatch(lineStation -> lineStation.contains(station));
     }
 }

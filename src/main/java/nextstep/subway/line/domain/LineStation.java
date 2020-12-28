@@ -49,6 +49,10 @@ public class LineStation {
         return section.isDownStation(station);
     }
 
+    public boolean contains(final Station station) {
+        return isUpStation(station) || isDownStation(station);
+    }
+
     public boolean canAdd(final Section other) {
         return section.canAddEndSection(other) || section.canAddBetweenSection(other);
     }
