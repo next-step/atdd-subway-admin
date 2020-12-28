@@ -9,9 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("NonAsciiCharacters")
@@ -69,11 +67,9 @@ class LineAcceptanceTestSupport {
 	                                          String name, String color) {
 		String uri = createResponse.header("Location");
 
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("name", name);
-		params.put("color", color);
+		LineRequest lineRequest = new LineRequest(name, color);
 		return RestAssured.given().log().all()
-				.body(params)
+				.body(lineRequest)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when().put(uri)
 				.then().log().all().extract();
@@ -95,13 +91,11 @@ class LineAcceptanceTestSupport {
 	}
 
 	ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color) {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("name", name);
-		params.put("color", color);
+		LineRequest lineRequest = new LineRequest(name, color);
 
 		return RestAssured
 				.given().log().all()
-				.body(params)
+				.body(lineRequest)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when().post("/lines")
 				.then().log().all().extract();
