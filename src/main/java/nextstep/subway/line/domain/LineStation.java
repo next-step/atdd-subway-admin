@@ -48,4 +48,16 @@ public class LineStation {
     public boolean isDownStation(final Station station) {
         return section.isDownStation(station);
     }
+
+    public boolean canAdd(final Section other) {
+        return section.canAddEndSection(other) || section.canAddBetweenSection(other);
+    }
+
+    public boolean canReflect(final Section other) {
+        return section.canAddBetweenSection(other);
+    }
+
+    public void reflect(final Section other) {
+        section.update(other);
+    }
 }
