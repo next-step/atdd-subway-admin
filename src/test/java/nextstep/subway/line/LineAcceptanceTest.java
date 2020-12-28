@@ -111,12 +111,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        String createdUrl = 지하철_노선_등록되어_있음("1호선", "BLUE");
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(createdUrl);
 
         // then
         // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response);
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
@@ -188,6 +191,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
         요청_완료(response);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(String createdUrl) {
+        return RestAssured
+                .given().log().all()
+                .when().delete(createdUrl)
+                .then().log().all().extract();
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        컨텐츠_없음(response);
+    }
+
+    private void 컨텐츠_없음(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private void 요청_완료(ExtractableResponse<Response> response) {
