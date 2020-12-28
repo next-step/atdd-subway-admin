@@ -79,12 +79,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("8호선", "pink");
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = LineAcceptanceTestRequest.지하철_노선_제거_요청(createdLocationUri);
 
         // then
-        // 지하철_노선_삭제됨
+        LineAcceptanceTestResponse.지하철_노선_삭제됨(response);
     }
 }
