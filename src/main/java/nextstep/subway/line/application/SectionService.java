@@ -19,7 +19,7 @@ public class SectionService {
     this.stationRepository = stationRepository;
   }
 
-  public Section selectSection(Line line, Long upStationId, Long downStationId, int distance) {
+  public Section createSection(Line line, Long upStationId, Long downStationId, int distance) {
     return new Section(
         line,
         stationRepository.findById(upStationId).orElseThrow(() -> new StationNotFoundException(LINE_NOT_FOUND_MSG)),

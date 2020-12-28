@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.exception.LineNotFoundException;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,5 +34,11 @@ public class LineRequest {
 
     public boolean hasUpAndDownStation() {
         return this.upStationId != null && this.downStationId != null;
+    }
+
+    private void isEmpty(Long id) {
+        if (id == null) {
+            throw new LineNotFoundException("역 아이디를 찾을 수 없습니다.");
+        }
     }
 }

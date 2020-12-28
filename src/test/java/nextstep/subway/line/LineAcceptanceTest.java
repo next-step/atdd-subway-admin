@@ -114,18 +114,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = 지하철_노선_생성_파라미터_WITH_상행_하행(name, color,
             강남역.body().as(StationResponse.class).getId(), 양재역.body().as(StationResponse.class).getId());
         ExtractableResponse<Response> createdLine = 지하철_노선_생성_요청(params);
+        Long lineId = getCreatedLineId(createdLine);
 
         // when
-        Long lineId = getCreatedLineId(createdLine);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get("/lines/" + lineId)
             .then().log().all()
             .extract();
-        LineResponse lineResponse = response.body().as(LineResponse.class);
 
         // then
+        LineResponse lineResponse = response.body().as(LineResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.getName()).isEqualTo(name);
         assertThat(lineResponse.getColor()).isEqualTo(color);
