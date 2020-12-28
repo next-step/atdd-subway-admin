@@ -27,6 +27,15 @@ public class Sections {
                     this.sections.remove(it);
                 });
 
+        // 기존 section의 downtation이 신규 downStation과 같은 경우
+        this.sections.stream()
+                .filter(it -> it.getDownStation() == section.getDownStation())
+                .findFirst()
+                .ifPresent(it -> {
+                    this.sections.add(new Section(it.getLine(), it.getUpStation(), section.getUpStation(), it.getDistance() - section.getDistance()));
+                    this.sections.remove(it);
+                });
+
         this.sections.add(section);
     }
 
