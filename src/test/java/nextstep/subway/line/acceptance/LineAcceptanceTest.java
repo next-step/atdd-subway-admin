@@ -6,6 +6,8 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    private StationResponse 강남역;
+    private StationResponse 광교역;
     private LineRequest lineRequest;
     private LineRequest lineRequest2;
     private LineRequest updatedRequest;
@@ -28,9 +32,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        lineRequest = new LineRequest("신분당선", "bg-red-600");
-        lineRequest2 = new LineRequest("구분당선", "bg-red-600");
-        updatedRequest = new LineRequest("전분당선", "bg-red-600");
+        강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
+        광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+
+        lineRequest = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10);
+        lineRequest2 = new LineRequest("구분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10);
+        updatedRequest = new LineRequest("전분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10);
     }
 
     @DisplayName("지하철 노선 생성/목록/조회/수정/삭제를 한다.")
@@ -41,6 +48,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음(lineRequest2);
         // then
         지하철_노선_생성됨(createResponse);
+        지하철_노선_역_목록_조회됨(createResponse);
 
         // when
         ExtractableResponse<Response> failedCreateResponse = 지하철_노선_생성_요청(lineRequest);
@@ -128,6 +136,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public static void 지하철_노선_생성됨(ExtractableResponse response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+    }
+
+    private void 지하철_노선_역_목록_조회됨(ExtractableResponse<Response> createResponse) {
+        assertThat(createResponse.as(LineResponse.class).getStations()).hasSize(2);
     }
 
     public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
