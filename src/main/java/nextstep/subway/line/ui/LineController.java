@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/lines")
@@ -23,9 +22,6 @@ public class LineController {
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
-/*        if(Objects.isNull(line)) {
-            return new ResponseEntity<>("입력값이 잘못 되었습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-        }*/
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
@@ -37,11 +33,7 @@ public class LineController {
     @GetMapping(path = "/{id}")
     public ResponseEntity findLine(@PathVariable Long id) {
         LineResponse line = lineService.findById(id);
-        if(Objects.isNull(line.getId())) {
-            return new ResponseEntity<>("입력값이 잘못 되었습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
         return ResponseEntity.ok().body(line);
-
     }
 
     @PutMapping(path = "/{id}")

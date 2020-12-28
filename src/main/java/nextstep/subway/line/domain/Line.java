@@ -1,8 +1,11 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -12,6 +15,9 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
+
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
