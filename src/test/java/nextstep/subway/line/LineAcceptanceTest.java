@@ -127,7 +127,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private void 지하철노선_조회_없음(ExtractableResponse<Response> response) {
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@DisplayName("지하철 노선을 수정한다.")
