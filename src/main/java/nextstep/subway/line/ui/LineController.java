@@ -55,19 +55,19 @@ public class LineController {
         return ResponseEntity.ok(line.getName() + "으로 수정 완료");
     }
 
-    @DeleteMapping(value = "/{id}", produces = TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> removeLine(@PathVariable("id") Long id) {
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> removeLine(@PathVariable("id") Long id) {
         lineService.removeLine(id);
-        return ResponseEntity.ok("노선 삭제 완료");
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(NoResultException.class)
-    public ResponseEntity handleNoResultException(NoResultException e) {
+    public ResponseEntity<Void> handleNoResultException(NoResultException e) {
         return ResponseEntity.notFound().build();
     }
 }

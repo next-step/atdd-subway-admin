@@ -107,7 +107,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_제거_요청("/lines/" + id);
 
         // then
-        정상_OK_응답됨(response);
+        정상_NO_CONTENT_응답됨(response);
     }
 
     public static Map<String, String> 지하철_노선(String name, String color) {
@@ -169,6 +169,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     public static void 정상_OK_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 정상_NO_CONTENT_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     public static void 생성된_지하철_노선_목록_응답된_지하철_노선_목록_검증(ExtractableResponse<Response> response,
