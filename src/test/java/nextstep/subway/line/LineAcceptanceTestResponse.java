@@ -45,4 +45,8 @@ public class LineAcceptanceTestResponse {
         String expectedId = uri.split("/")[2];
         assertThat(response.jsonPath().get("id").toString()).isEqualTo(expectedId);
     }
+
+    public static void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }

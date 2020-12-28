@@ -43,4 +43,16 @@ public class LineAcceptanceTestRequest {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(String uri, String name, String color) {
+        LineRequest lineRequest = new LineRequest(name, color);
+
+        return RestAssured
+                .given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(uri)
+                .then().log().all()
+                .extract();
+    }
 }
