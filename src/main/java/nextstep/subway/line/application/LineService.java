@@ -26,10 +26,11 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Line line = request.toLine();
         if (request.hasUpAndDownStation()) {
-            persistLine.addSection(sectionService.selectSection(persistLine, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+            line.addSection(sectionService.createSection(line, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
         }
+        Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
 
