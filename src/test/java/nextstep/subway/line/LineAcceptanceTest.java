@@ -123,4 +123,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_삭제됨
         LineAcceptanceTestResponse.지하철_노선_삭제됨(response);
     }
+
+    @DisplayName("지하철 노선에 구간을 등록한다.")
+    @Test
+    void addSectionToLine() {
+        // given
+        // 지하철역_등록되어_있음
+        // 지하철_노선_등록되어_있음
+        String createdLocationUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", "문래역", "잠실역", 10);
+
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        ExtractableResponse<Response> response = LineAcceptanceTestRequest.지하철_노선_제거_요청(createdLocationUri);
+
+        // then
+        // 지하철_노선_삭제됨
+        LineAcceptanceTestResponse.지하철_노선_삭제됨(response);
+    }
 }
