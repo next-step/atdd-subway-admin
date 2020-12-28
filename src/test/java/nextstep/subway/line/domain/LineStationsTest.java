@@ -93,6 +93,39 @@ class LineStationsTest {
         assertThat(stationsOrderByUp).containsExactly(청량리역, 신도림역, 관악역, 금정역);
     }
 
+    @DisplayName("새로운 지하철 구간을 지하철 노선 구간으로 등록한다.")
+    @Test
+    void addSection() {
+        // given
+        LineStations lineStations = new LineStations();
+        Station 청량리역 = new Station("청량리역");
+        Station 신창역 = new Station("신창역");
+        Section section = createSection(청량리역, 신창역, Distance.valueOf(100));
+        LineStation lineStation = new LineStation(line, section);
+        lineStations.add(lineStation);
+
+        // when
+        Station 회기역 = new Station("회기역");
+        Section newSection1 = createSection(회기역, 청량리역, Distance.valueOf(10));
+        lineStations.add(line, newSection1);
+
+        Station 신도림역 = new Station("신도림역");
+        Section newSection2 = createSection(청량리역, 신도림역, Distance.valueOf(10));
+        lineStations.add(line, newSection2);
+
+        Station 당정역 = new Station("당정역");
+        Section newSection3 = createSection(당정역, 신창역, Distance.valueOf(10));
+        lineStations.add(line, newSection3);
+
+        Station 창신역 = new Station("창신역");
+        Section newSection4 = createSection(신창역, 창신역, Distance.valueOf(10));
+        lineStations.add(line, newSection4);
+
+
+        // then
+        assertThat(lineStations.getStationsOrderByUp()).containsExactly(회기역, 청량리역, 신도림역, 당정역, 신창역, 창신역);
+    }
+
     private Section createSection(final Station upStation, final Station downStation, final Distance distance) {
         return Section.builder()
                 .upStation(upStation)

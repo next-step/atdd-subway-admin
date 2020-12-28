@@ -76,7 +76,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     
 - 지하철 구간 등록 기능 구현
     - `지하철 노선 구간들(LineStations)`
-        - [ ] 해당 지하철 노선 구간을 제거하고 새로운 지하철 노선 구간과 변경된 지하철 노선 구간을 등록한다.
+        - [X] 새로운 지하철 구간을 지하철 노선 구간으로 등록한다. 
     - `지하철 노선 구간(LineStation)`
         - [X] 새로운 지하철 구이 기존 구간에 추가 될 수 있는 지 확인한다.
         - [X] 새로운 지하철 구간을 반영할 수 있는지 확인한다.

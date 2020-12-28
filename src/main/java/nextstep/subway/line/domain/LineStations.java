@@ -81,4 +81,17 @@ public class LineStations {
     public boolean contains(final LineStation lineStation) {
         return lineStations.contains(lineStation);
     }
+
+    public void add(final Line line, final Section section) {
+        LineStation target = lineStations.stream()
+                .filter(lineStation -> lineStation.canAdd(section))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+
+        if (target.canReflect(section)) {
+            target.reflect(section);
+        }
+
+        lineStations.add(new LineStation(line, section));
+    }
 }
