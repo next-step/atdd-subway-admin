@@ -36,4 +36,10 @@ public class LineService {
         return lineRepository.findById(id).map(LineResponse::of)
                 .orElseThrow(NoSuchElementException::new);
     }
+
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line persistLine = lineRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new);
+        persistLine.update(lineRequest.toLine());
+    }
 }
