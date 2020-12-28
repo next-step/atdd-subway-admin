@@ -69,13 +69,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청() {
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post(DEFAULT_LINES_URI)
-            .then().log().all()
-            .extract();
+        return POST_요청_보내기(params, DEFAULT_LINES_URI);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
