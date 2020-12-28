@@ -42,7 +42,7 @@ npm run dev
 * 지하철 노선 관련 기능
     * 인수 테스트를 작성하기
     * 지하철 노선 관련 기능 구현하기
-        - [ ] 노선 생성 POST : /lines
+        - [X] 노선 생성 POST : /lines
         - [ ] 노선 목록 조회 GET : /lines
         - [ ] 노선 조회 GET : /lines/{id}
         - [ ] 노선 수정 PUT : /lines/{id}
