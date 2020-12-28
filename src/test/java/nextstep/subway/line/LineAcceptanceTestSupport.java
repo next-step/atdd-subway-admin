@@ -3,14 +3,16 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.assertj.core.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("NonAsciiCharacters")
 class LineAcceptanceTestSupport {
@@ -26,7 +28,7 @@ class LineAcceptanceTestSupport {
 
 	void 지하철노선목록_조회_검사(ExtractableResponse<Response> getResponse,
 	                   ExtractableResponse<Response>... createResponse) {
-		Assertions.assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		List<Long> expectedStationIds = Arrays.stream(createResponse)
 				.map(response -> response.header("Location").split("/")[2])
 				.map(Long::parseLong)
@@ -34,7 +36,7 @@ class LineAcceptanceTestSupport {
 		List<Long> actualStationIds = getResponse.jsonPath().getList(".", LineResponse.class).stream()
 				.map(LineResponse::getId)
 				.collect(Collectors.toList());
-		Assertions.assertThat(expectedStationIds).containsAll(actualStationIds);
+		assertThat(expectedStationIds).containsAll(actualStationIds);
 	}
 
 	ExtractableResponse<Response> 지하철노선_조회(ExtractableResponse<Response> createResponse) {
@@ -46,10 +48,10 @@ class LineAcceptanceTestSupport {
 	}
 
 	void 지하철노선_조회_검사(ExtractableResponse<Response> createResponse, ExtractableResponse<Response> getResponse) {
-		Assertions.assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		Long expectedId = createResponse.body().as(LineResponse.class).getId();
 		Long actualId = getResponse.body().as(LineResponse.class).getId();
-		Assertions.assertThat(actualId).isEqualTo(expectedId);
+		assertThat(actualId).isEqualTo(expectedId);
 	}
 
 	ExtractableResponse<Response> 지하철노선_조회(String uri) {
@@ -57,10 +59,6 @@ class LineAcceptanceTestSupport {
 				.given().log().all()
 				.when().get(uri)
 				.then().log().all().extract();
-	}
-
-	void 지하철노선_조회_없음(ExtractableResponse<Response> response) {
-		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	ExtractableResponse<Response> 지하철노선_수정_요청(ExtractableResponse<Response> createResponse,
@@ -75,19 +73,11 @@ class LineAcceptanceTestSupport {
 				.then().log().all().extract();
 	}
 
-	void 지하철노선_수정_검사(ExtractableResponse<Response> updateResponse) {
-		Assertions.assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-	}
-
 	ExtractableResponse<Response> 지하철노선_삭제_요청(ExtractableResponse<Response> createResponse) {
 		String uri = createResponse.header("Location");
 		return RestAssured.given().log().all()
 				.when().delete(uri)
 				.then().log().all().extract();
-	}
-
-	void 지하철노선_삭제_검사(ExtractableResponse<Response> deleteResponse) {
-		Assertions.assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
 	ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color) {
@@ -99,5 +89,9 @@ class LineAcceptanceTestSupport {
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when().post("/lines")
 				.then().log().all().extract();
+	}
+
+	void assertStatusCode(ExtractableResponse<Response> response, HttpStatus httpStatus) {
+		assertThat(response.statusCode()).isEqualTo(httpStatus.value());
 	}
 }
