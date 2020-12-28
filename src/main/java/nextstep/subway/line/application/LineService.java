@@ -25,12 +25,14 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+	@Transactional(readOnly = true)
     public List<LineResponse> findAllLine() {
     	return lineRepository.findAll().stream()
 			    .map(LineResponse::of)
 			    .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
 	public LineResponse findLineById(Long id) {
     	return LineResponse.of(findLine(id));
 	}
