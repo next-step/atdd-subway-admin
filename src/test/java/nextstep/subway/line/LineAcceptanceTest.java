@@ -168,7 +168,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> downStation1Created = 지하철역_생성됨(new StationRequest("서초역"));
         Long downStation1Id = 응답_헤더에서_ID_추출(downStation1Created);
         // and 지하철_노선1_등록되어_있음
-
         ExtractableResponse<Response> line1CreatedResponse = 새로운_지하철_노선_생성_요청(
                 new LineRequest(line1Name, line1Color, upStation1Id, downStation1Id, 5L));
         // 상행종점2 생성되어 있음

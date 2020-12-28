@@ -1,21 +1,14 @@
 package nextstep.subway.line.domain.sections;
 
+import nextstep.subway.line.domain.exceptions.*;
 import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
-import nextstep.subway.line.domain.exceptions.EndUpStationNotFoundException;
 import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
 import nextstep.subway.line.domain.exceptions.TooLongSectionException;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.counting;
 
 @Embeddable
 public class Sections {
@@ -62,7 +55,8 @@ public class Sections {
 
     public boolean addNotEndSection(final Section newSection) {
         int originalSize = sections.size();
-        Section targetSection = this.findTargetSection(newSection);
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
+        Section targetSection = sectionExplorer.findTargetSection(newSection);
         validateWhenAddNotEndSection(newSection, targetSection);
 
         OriginalSectionCalculator originalSectionCalculator = OriginalSectionCalculator.find(targetSection, newSection);
@@ -75,59 +69,61 @@ public class Sections {
         return (sections.size() == originalSize + 1);
     }
 
-    public boolean isInEndSection(final Section section) {
-        Section endUpSection = this.findEndUpSection();
-        Section endDownSection = this.findEndDownSection();
-        return endUpSection.isSameUpWithThatDown(section) || endDownSection.isSameDownWithThatUp(section);
+    public boolean isInEndSection(final Section targetSection) {
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
+        return sectionExplorer.isInEndSection(targetSection);
     }
 
-    Section findEndUpSection() {
-        List<Long> singleStationIds = calculateSingleStationIds();
-
-        return this.sections.stream().filter(it -> it.isUpStationBelongsTo(singleStationIds))
-                .findFirst()
-                .orElseThrow(() -> new EndUpStationNotFoundException("상행종점역 구간을 찾을 수 없습니다."));
+    public List<Long> getStationIdsOrderBySection() {
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
+        return sectionExplorer.getStationIdsOrderBySection();
     }
 
-    Section findEndDownSection() {
-        List<Long> singleStationIds = calculateSingleStationIds();
-
-        return this.sections.stream().filter(it -> it.isDownStationBelongsTo(singleStationIds))
-                .findFirst()
-                .orElseThrow(() -> new EndUpStationNotFoundException("하행종점역 구간을 찾을 수 없습니다."));
+    public boolean isThisEndStation(Long stationId) {
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
+        return sectionExplorer.findEndUpSection().getUpStationId().equals(stationId) ||
+                sectionExplorer.findEndDownSection().getDownStationId().equals(stationId);
     }
 
-    Section findNextSection(final Section section) {
-        return this.sections.stream()
-                .filter(it -> it.isSameUpWithThatDown(section))
-                .findFirst()
-                .orElse(null);
-    }
+    public boolean mergeSectionsByStation(final Long stationId) {
+        int validTargetSize = 2;
+        int originalSize = this.sections.size();
 
-    Section findTargetSection(final Section newSection) {
-        Section targetSection = findSameWithUpStation(newSection);
-        if (targetSection == null) {
-            targetSection = findSameWithDownStation(newSection);
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
+        List<Section> relatedSections = sectionExplorer.findRelatedSections(stationId);
+        if (relatedSections.size() != validTargetSize) {
+            throw new MergeSectionFailException("병합할 수 없는 중간역입니다.");
         }
-        if (targetSection == null) {
-            throw new TargetSectionNotFoundException("새로운 구간을 추가할 수 있는 구간이 없습니다.");
-        }
+        relatedSections.forEach(this::removeSection);
 
-        return targetSection;
+        Section mergedSection = relatedSections.get(0).merge(relatedSections.get(1));
+        this.sections.add(mergedSection);
+
+        return (this.sections.size() == originalSize - 1);
     }
 
-    private List<Long> calculateSingleStationIds() {
-        return this.getStationIds().stream()
-                .collect(Collectors.groupingBy(Function.identity(), counting()))
-                .entrySet().stream()
-                .filter(it -> it.getValue() == 1L)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+    public boolean deleteEndStation(final Long stationId) {
+        int validTargetSize = 1;
+        int originalSize = this.sections.size();
+
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
+        List<Section> relatedSections = sectionExplorer.findRelatedSections(stationId);
+        if(relatedSections.size() != validTargetSize) {
+            throw new InvalidStationDeleteTryException("종점이 아닌 역을 종점 삭제 기능으로 제거할 수 없습니다.");
+        }
+        this.sections.remove(relatedSections.get(0));
+
+        return (this.sections.size() == originalSize - 1);
+    }
+
+    private void removeSection(final Section section) {
+        this.sections.remove(section);
     }
 
     private void validateWhenAddEndSection(final Section newSection) {
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
         validateIsInit();
-        if (!isInEndSection(newSection)) {
+        if (!sectionExplorer.isInEndSection(newSection)) {
             throw new InvalidSectionsActionException("종점이 아닌 구간으로 종점 구간 추가를 수행할 수 없습니다.");
         }
     }
@@ -152,31 +148,12 @@ public class Sections {
     }
 
     private boolean isAllStationsIn(final Section newSection) {
+        SectionsInLineExplorer sectionExplorer = new SectionsInLineExplorer(this.sections);
         List<Long> stationIds = newSection.getStationIds();
 
-        return this.getStationIds().stream()
+        return sectionExplorer.getStationIds().stream()
                 .distinct()
                 .collect(Collectors.toList())
                 .containsAll(stationIds);
-    }
-
-    private List<Long> getStationIds() {
-        return sections.stream()
-                .flatMap(it -> it.getStationIds().stream())
-                .collect(Collectors.toList());
-    }
-
-    private Section findSameWithUpStation(final Section section) {
-        return this.sections.stream()
-                .filter(it -> it.isSameUpStation(section) && !it.isSameDownStation(section))
-                .findFirst()
-                .orElse(null);
-    }
-
-    private Section findSameWithDownStation(final Section section) {
-        return this.sections.stream()
-                .filter(it -> !it.isSameUpStation(section) && it.isSameDownStation(section))
-                .findFirst()
-                .orElse(null);
     }
 }

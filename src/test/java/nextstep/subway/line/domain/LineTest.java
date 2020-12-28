@@ -1,14 +1,18 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.domain.exceptions.InvalidStationDeleteTryException;
 import nextstep.subway.line.domain.sections.Section;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
     private static final String LINE_NAME = "2호선";
@@ -40,5 +44,56 @@ class LineTest {
                 // 기존 구간 중 하행역이 일치하는 경우 추가
                 Arguments.of(new Section(3L, 2L,5L))
         );
+    }
+
+    @DisplayName("남은 구간의 길이가 2 미만일 경우 구간의 역 삭제를 진행할 수 없다.")
+    @Test
+    void deleteStationOfSectionFailByTooShortSectionTest() {
+        Long initUpStationId = 1L;
+        Long initDownStationId = 2L;
+        Long initDistance = 10L;
+        Long deleteTarget = 2L;
+        Line line = new Line(LINE_NAME, LINE_COLOR);
+        line.initFirstSection(initUpStationId, initDownStationId, initDistance);
+
+        assertThatThrownBy(() -> line.deleteStationOfSection(deleteTarget))
+                .isInstanceOf(InvalidStationDeleteTryException.class);
+    }
+
+    @DisplayName("삭제 대상이 종점인 경우 삭제 할 수 있다.")
+    @ParameterizedTest
+    @ValueSource(longs = { 1L, 3L })
+    void deleteStationOfSectionFailWhenToEndStationTest(Long deleteTarget) {
+        Long initUpStationId = 1L;
+        Long initDownStationId = 2L;
+        Long initDistance = 10L;
+        Long secondSectionUp = 2L;
+        Long secondSectionDown = 3L;
+        Line line = new Line(LINE_NAME, LINE_COLOR);
+        line.initFirstSection(initUpStationId, initDownStationId, initDistance);
+        line.addSection(new Section(secondSectionUp, secondSectionDown, 10L));
+
+        boolean result = line.deleteStationOfSection(deleteTarget);
+
+        assertThat(result).isTrue();
+        assertThat(line.getSectionsSize()).isEqualTo(1);
+    }
+
+    @DisplayName("구간의 역을 삭제할 수 있다.")
+    @Test
+    void deleteStationOfSectionTest() {
+        Long initUpStationId = 1L;
+        Long initDownStationId = 2L;
+        Long initDistance = 10L;
+        Long secondSectionUp = 2L;
+        Long secondSectionDown = 3L;
+        Long deleteTarget = 2L;
+        Line line = new Line(LINE_NAME, LINE_COLOR);
+        line.initFirstSection(initUpStationId, initDownStationId, initDistance);
+        line.addSection(new Section(secondSectionUp, secondSectionDown, 10L));
+
+        boolean result = line.deleteStationOfSection(deleteTarget);
+
+        assertThat(result).isTrue();
     }
 }

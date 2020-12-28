@@ -23,6 +23,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+
 	// handlebars
 	implementation 'pl.allegro.tech.boot:handlebars-spring-boot-starter:0.3.0'
 

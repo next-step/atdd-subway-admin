@@ -2,6 +2,7 @@ package nextstep.subway.line.domain.sections;
 
 import nextstep.subway.common.ValueObjectId;
 import nextstep.subway.line.domain.exceptions.InvalidSectionException;
+import nextstep.subway.line.domain.exceptions.MergeSectionFailException;
 
 import javax.persistence.Entity;
 import java.util.Arrays;
@@ -39,6 +40,26 @@ public class Section extends ValueObjectId {
         return this.downStationId.equals(thatSection.upStationId);
     }
 
+    public boolean isHasBiggerDistance(final Section thatSection) {
+        return this.distance >= thatSection.distance;
+    }
+
+    Section merge(final Section thatSection) {
+        List<Long> thisStationIds = this.getStationIds();
+
+        if (!thisStationIds.contains(thatSection.upStationId) && !thisStationIds.contains(thatSection.downStationId)) {
+            throw new MergeSectionFailException(" 접점이 없는 Section을 병합할 수 없습니다.");
+        }
+        if (thisStationIds.containsAll(thatSection.getStationIds())) {
+            throw new MergeSectionFailException(" 접점이 두개인 Section을 병합할 수 없습니다.");
+        }
+        if (this.isSameDownWithThatUp(thatSection)) {
+            return new Section(upStationId, thatSection.downStationId, distance + thatSection.distance);
+        }
+
+        return new Section(thatSection.upStationId, downStationId, distance + thatSection.distance);
+    }
+
     List<Long> getStationIds() {
         return Arrays.asList(upStationId, downStationId);
     }
@@ -57,6 +78,10 @@ public class Section extends ValueObjectId {
 
     boolean isSameDownStation(final Section thatSection) {
         return this.downStationId.equals(thatSection.downStationId);
+    }
+
+    boolean isHasThisStation(final Long stationId) {
+        return (this.upStationId.equals(stationId) || this.downStationId.equals(stationId));
     }
 
     Section createUpdatedUpStation(final Section section) {
@@ -98,10 +123,6 @@ public class Section extends ValueObjectId {
         if (o == null || getClass() != o.getClass()) return false;
         final Section section = (Section) o;
         return Objects.equals(upStationId, section.upStationId) && Objects.equals(downStationId, section.downStationId) && Objects.equals(distance, section.distance);
-    }
-
-    public boolean isHasBiggerDistance(final Section thatSection) {
-        return this.distance >= thatSection.distance;
     }
 
     @Override

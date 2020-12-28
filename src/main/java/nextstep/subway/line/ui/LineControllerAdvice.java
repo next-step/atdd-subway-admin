@@ -43,4 +43,14 @@ public class LineControllerAdvice {
     public ResponseEntity handleNotFoundException(EntityNotFoundException e) {
         return ResponseEntity.notFound().build();
     }
+
+    @ExceptionHandler(MergeSectionFailException.class)
+    public ResponseEntity handleMergeSectionFailException(MergeSectionFailException e) {
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(InvalidStationDeleteTryException.class)
+    public ResponseEntity handleInvalidStationDeleteTryException(InvalidStationDeleteTryException e) {
+        return ResponseEntity.badRequest().build();
+    }
 }

@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain.sections;
 
 import nextstep.subway.line.domain.exceptions.InvalidSectionsActionException;
+import nextstep.subway.line.domain.exceptions.InvalidStationDeleteTryException;
+import nextstep.subway.line.domain.exceptions.MergeSectionFailException;
 import nextstep.subway.line.domain.exceptions.TargetSectionNotFoundException;
 import nextstep.subway.line.domain.exceptions.TooLongSectionException;
 import org.junit.jupiter.api.DisplayName;
@@ -26,106 +28,6 @@ class SectionsTest {
 
         assertThatThrownBy(() -> sections.addEndSection(new Section(1L, 2L, 3L)))
                 .isInstanceOf(InvalidSectionsActionException.class);
-    }
-
-    @DisplayName("제시된 Section과 연결할 구간을 찾을 수 있다. (단, 종점 추가는 고려하지 않는다.")
-    @ParameterizedTest
-    @MethodSource("findTargetSectionTestResource")
-    void findTargetSectionTest(Section newSection, Section foundSection) {
-        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
-                new Section(1L, 2L, 10L),
-                new Section(2L, 3L, 10L)
-        )));
-
-        assertThat(sections.findTargetSection(newSection)).isEqualTo(foundSection);
-    }
-    public static Stream<Arguments> findTargetSectionTestResource() {
-        return Stream.of(
-                Arguments.of(
-                        new Section(4L, 2L, 5L),
-                        new Section(1L, 2L, 10L)
-                ),
-                Arguments.of(
-                        new Section(1L, 4L, 5L),
-                        new Section(1L, 2L, 10L)
-                ),
-                Arguments.of(
-                        new Section(2L, 4L, 5L),
-                        new Section(2L, 3L, 10L)
-                ),
-                Arguments.of(
-                        new Section(4L, 3L, 5L),
-                        new Section(2L, 3L, 10L)
-                )
-        );
-    }
-
-    @DisplayName("기존 구간과 연결할 구간을 찾지 못한 경우 예외 발생")
-    @ParameterizedTest
-    @MethodSource("findTargetSectionFailTestResource")
-    void findTargetSectionFailTest(Section newSection) {
-        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
-                new Section(1L, 2L, 10L),
-                new Section(2L, 3L, 10L)
-        )));
-
-        assertThatThrownBy(() -> sections.findTargetSection(newSection))
-                .isInstanceOf(TargetSectionNotFoundException.class);
-    }
-    public static Stream<Arguments> findTargetSectionFailTestResource() {
-        return Stream.of(
-                // 상행종점역 추가
-                Arguments.of(new Section(4L, 1L, 10L)),
-                // 하행종점역 추가
-                Arguments.of(new Section(3L, 4L, 10L)),
-                // 아예 연관이 없는 역
-                Arguments.of(new Section(4L, 5L, 10L)),
-                // 둘 다 일치하는 역
-                Arguments.of(new Section(2L, 3L, 10L))
-        );
-    }
-
-    @DisplayName("상행 종점역 구간을 찾아낼 수 있다.")
-    @Test
-    void findEndUpSectionTest() {
-        Section endUpStation = new Section(1L, 2L, 10L);
-
-        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
-                endUpStation,
-                new Section(2L, 3L, 10L),
-                new Section (3L, 4L, 10L)
-        )));
-
-        assertThat(sections.findEndUpSection()).isEqualTo(endUpStation);
-    }
-
-    @DisplayName("한 구간을 기준으로 다음 구간을 찾아낼 수 있다.")
-    @Test
-    void findNextSectionTest() {
-        Section section1 = new Section(1L, 2L, 10L);
-        Section section2 = new Section(2L, 3L, 10L);
-        Section section3 = new Section (3L, 4L, 10L);
-
-        Sections sections = new Sections(new ArrayList<>(Arrays.asList(section1, section2, section3)));
-        Section endUpSection = sections.findEndUpSection();
-
-        assertThat(sections.findNextSection(endUpSection)).isEqualTo(section2);
-        assertThat(sections.findNextSection(section2)).isEqualTo(section3);
-        assertThat(sections.findNextSection(section3)).isNull();
-    }
-
-    @DisplayName("하행 종점역 구간을 찾아낼 수 있다.")
-    @Test
-    void findEndDownSectionTest() {
-        Section endDownStation = new Section(3L, 4L, 10L);
-
-        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
-                new Section(1L, 2L, 10L),
-                new Section(2L, 3L, 10L),
-                endDownStation
-        )));
-
-        assertThat(sections.findEndDownSection()).isEqualTo(endDownStation);
     }
 
     @DisplayName("기존 구간과 상행역이나 하행역이 겹치는 경우 기존 구간을 변경하고 새로운 구간을 추가할 수 있다.")
@@ -164,6 +66,132 @@ class SectionsTest {
                         )
                 )
         );
+    }
+
+    @DisplayName("접점이 있는 구간끼리 병합할 수 있다.")
+    @ParameterizedTest
+    @MethodSource("mergeTestResource")
+    void mergeTest(Long targetStation, List<Section> sectionsValue, List<Section> expectedSections) {
+        Sections sections = new Sections(new ArrayList<>(sectionsValue));
+
+        boolean result = sections.mergeSectionsByStation(targetStation);
+
+        assertThat(result).isTrue();
+        assertThat(sections.containsAll(expectedSections)).isTrue();
+    }
+    public static Stream<Arguments> mergeTestResource() {
+        return Stream.of(
+                Arguments.of(
+                        4L,
+                        Arrays.asList(
+                                new Section(1L, 4L, 10L),
+                                new Section(4L, 3L, 10L),
+                                new Section (3L, 2L, 10L)
+                        ),
+                        Arrays.asList(
+                                new Section(1L, 3L, 20L),
+                                new Section (3L, 2L, 10L)
+                        )
+                ),
+                Arguments.of(
+                        3L,
+                        Arrays.asList(
+                                new Section(1L, 4L, 10L),
+                                new Section(4L, 3L, 10L),
+                                new Section (3L, 2L, 10L)
+                        ),
+                        Arrays.asList(
+                                new Section(1L, 4L, 10L),
+                                new Section (4L, 2L, 20L)
+                        )
+                )
+        );
+    }
+
+    @DisplayName("목표 역과 연관된 구간이 2개가 아닐 경우 예외가 발생한다.")
+    @ParameterizedTest
+    @MethodSource("mergeFailTestResource")
+    void mergeFailTest(Long targetStation, List<Section> sectionsValue) {
+        Sections sections = new Sections(new ArrayList<>(sectionsValue));
+
+        assertThatThrownBy(() -> sections.mergeSectionsByStation(targetStation))
+                .isInstanceOf(MergeSectionFailException.class);
+    }
+    public static Stream<Arguments> mergeFailTestResource() {
+        return Stream.of(
+                Arguments.of(
+                        1L,
+                        Arrays.asList(
+                                new Section(1L, 4L, 10L),
+                                new Section(4L, 3L, 10L),
+                                new Section (3L, 2L, 10L)
+                        )
+                ),
+                Arguments.of(
+                        2L,
+                        Arrays.asList(
+                                new Section(1L, 4L, 10L),
+                                new Section(4L, 3L, 10L),
+                                new Section (3L, 2L, 10L)
+                        )
+                ),
+                Arguments.of(
+                        5L,
+                        Arrays.asList(
+                                new Section(1L, 4L, 10L),
+                                new Section(4L, 3L, 10L),
+                                new Section (3L, 2L, 10L)
+                        )
+                )
+        );
+    }
+
+    @DisplayName("종점역을 제거할 수 있다.")
+    @ParameterizedTest
+    @MethodSource("deleteEndStationTestResource")
+    void deleteEndStationTest(Long deleteTargetId, List<Section> expectedRemainedSections) {
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
+                new Section(1L, 2L, 10L),
+                new Section(2L, 3L, 10L),
+                new Section (3L, 4L, 10L)
+        )));
+
+        boolean result = sections.deleteEndStation(deleteTargetId);
+
+        assertThat(result).isTrue();
+        assertThat(sections.containsAll(expectedRemainedSections)).isTrue();
+    }
+    public static Stream<Arguments> deleteEndStationTestResource() {
+        return Stream.of(
+                Arguments.of(
+                        1L,
+                        Arrays.asList(
+                                new Section(2L, 3L, 10L),
+                                new Section (3L, 4L, 10L)
+                        )
+                ),
+                Arguments.of(
+                        4L,
+                        Arrays.asList(
+                                new Section(1L, 2L, 10L),
+                                new Section(2L, 3L, 10L)
+                        )
+                )
+        );
+    }
+
+    @DisplayName("종점이 아닌 역을 종점 제거로 삭제 시도 시 예외 발생")
+    @ParameterizedTest
+    @ValueSource(longs = { 2L, 3L })
+    void deleteEndStationFailTest(Long notEndStationId) {
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(
+                new Section(1L, 2L, 10L),
+                new Section(2L, 3L, 10L),
+                new Section(3L, 4L, 10L)
+        )));
+
+        assertThatThrownBy(() -> sections.deleteEndStation(notEndStationId))
+                .isInstanceOf(InvalidStationDeleteTryException.class);
     }
 
     @DisplayName("기존역과 상행역, 하행역 모두 겹치지 않는 경우 예외 발생")
