@@ -77,12 +77,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        String createdUrl = 지하철_노선_등록되어_있음("2호선", "GREEN");
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdUrl);
 
         // then
         // 지하철_노선_응답됨
+        지하철_노선_응답됨(createdUrl, response);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -158,5 +161,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_응답_완료(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(String uri) {
+        return RestAssured
+                .given().log().all()
+                .when().get(uri)
+                .then().log().all().extract();
+    }
+
+    private void 지하철_노선_응답됨(String uri, ExtractableResponse<Response> response) {
+        지하철_노선_응답_완료(response);
+        String expected = uri.split("/")[2];
+        assertThat(String.valueOf((int) response.jsonPath().get("id"))).isEqualTo(expected);
     }
 }

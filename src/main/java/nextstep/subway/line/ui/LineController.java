@@ -28,4 +28,9 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> getAllLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> getLine(@PathVariable("id") long id) {
+        return ResponseEntity.ok().body(lineService.findById(id));
+    }
 }

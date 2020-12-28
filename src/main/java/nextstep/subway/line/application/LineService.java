@@ -30,4 +30,10 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public LineResponse findById(long id) {
+        return lineRepository.findById(id)
+                .map(LineResponse::of)
+                .orElseThrow(EntityNotFoundException::new);
+    }
 }
