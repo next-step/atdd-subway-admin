@@ -1,7 +1,7 @@
 package nextstep.subway.line.ui;
 
+import lombok.extern.slf4j.Slf4j;
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
@@ -26,6 +26,7 @@ import static org.springframework.http.MediaType.*;
 
 @RestController
 @RequestMapping("/lines")
+@Slf4j
 public class LineController {
     private final LineService lineService;
 
@@ -50,9 +51,9 @@ public class LineController {
     }
 
     @PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> updateLine(@RequestBody Line line) {
-        lineService.updateLine(line);
-        return ResponseEntity.ok(line.getName() + "으로 수정 완료");
+    public ResponseEntity<String> updateLine(@RequestBody LineRequest lineRequest) {
+        lineService.updateLine(lineRequest);
+        return ResponseEntity.ok(lineRequest.getName() + "으로 수정 완료");
     }
 
     @DeleteMapping(value = "/{id}")
@@ -63,11 +64,13 @@ public class LineController {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
+        log.info("log >>> " + e.getMessage());
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(NoResultException.class)
     public ResponseEntity<Void> handleNoResultException(NoResultException e) {
+        log.info("log >>> " + e.getMessage());
         return ResponseEntity.notFound().build();
     }
 }
