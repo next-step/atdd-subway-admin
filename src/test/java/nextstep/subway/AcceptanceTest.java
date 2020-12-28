@@ -44,4 +44,14 @@ public class AcceptanceTest {
             .then().log().all()
             .extract();
     }
+
+    protected ExtractableResponse<Response> PUT_요청_보내기(final String uri, final Map<String, String> params) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(params)
+            .when()
+            .put(uri)
+            .then().log().all()
+            .extract();
+    }
 }

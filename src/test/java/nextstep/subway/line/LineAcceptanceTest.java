@@ -169,8 +169,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_수정_요청
         final String newLineName = "5호선";
         final String newLineColor = "보라색";
-        final ExtractableResponse<Response> responseAfterUpdate =
-            지하철_노선_정보_변경_요청("/" + createdLine.getId(), new LineRequest(newLineName, newLineColor));
+
+        final Map<String, String> updateParams = new HashMap<>();
+        updateParams.put("name", newLineName);
+        updateParams.put("color", newLineColor);
+
+        final ExtractableResponse<Response> responseAfterUpdate = 지하철_노선_정보_변경_요청(createdLine.getId(), updateParams);
         final LineResponse afterLine = responseAfterUpdate.as(LineResponse.class);
 
         // then
@@ -183,14 +187,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private ExtractableResponse<Response> 지하철_노선_정보_변경_요청(final String urlParam, final LineRequest lineRequest) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(lineRequest)
-            .when()
-            .put(DEFAULT_LINES_URI + urlParam)
-            .then().log().all()
-            .extract();
+    private ExtractableResponse<Response> 지하철_노선_정보_변경_요청(final long lineId, final Map<String, String> params) {
+        final String uri = DEFAULT_LINES_URI + "/" + lineId;
+
+        return PUT_요청_보내기(uri, params);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
