@@ -2,7 +2,6 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.DistanceOutOfRangeException;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -12,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DistanceTest {
 
-    @DisplayName("거리는 0이상의 숫자이다.")
+    @DisplayName("거리는 0과 음수가 아닌 숫자이다.")
     @ParameterizedTest
-    @ValueSource(ints = {0, 10})
+    @ValueSource(ints = {10, 100})
     void crate(int value) {
         // when
         Distance distance = Distance.valueOf(value);
@@ -23,14 +22,12 @@ class DistanceTest {
         assertThat(distance).isNotNull();
     }
 
-    @DisplayName("길이는 음수 값일 수 없다.")
-    @Test
-    void createUnderRange() {
-        // given
-        int negative = -1;
-
+    @DisplayName("길이는 0이거나 음수 값일 수 없다.")
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void createUnderRange(int value) {
         // when / then
-        assertThrows(DistanceOutOfRangeException.class, () -> Distance.valueOf(negative));
+        assertThrows(DistanceOutOfRangeException.class, () -> Distance.valueOf(value));
     }
 
     @DisplayName("거리 값이 같으면 동등성을 보장한다.")

@@ -19,8 +19,8 @@ public class Distance {
     private int value;
 
     private Distance(final int value) {
-        if (value < MIN_VALUE) {
-            throw new DistanceOutOfRangeException(String.format("거리 값은 음수가 될 수 없습니다. (입력 값: %d)", value));
+        if (value <= MIN_VALUE) {
+            throw new DistanceOutOfRangeException(String.format("거리 값은 0이거나 음수가 일 수 없습니다. (입력 값: %d)", value));
         }
         this.value = value;
     }
