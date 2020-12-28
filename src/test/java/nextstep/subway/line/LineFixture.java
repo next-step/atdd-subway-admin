@@ -136,4 +136,8 @@ public class LineFixture {
 
         assertThat(ids).contains(stationIds);
     }
+
+    public static void 지하철_노선_지하철역_등록_실패됨(final ExtractableResponse<Response> response){
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

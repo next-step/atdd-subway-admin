@@ -11,6 +11,8 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -253,5 +255,69 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_응답됨(response);
         지하철_노선에_지하철역_포함됨(response, newStation.getId());
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
+    @ParameterizedTest
+    @ValueSource(ints = {0, 100, 150})
+    void createStationFail1(int distance) {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "홍대입구역");
+        StationResponse newStation = StationAcceptanceTest.지하철_역_생성_요청(params).as(StationResponse.class);
+
+        // when
+        SectionRequest request = new SectionRequest(upStation.getId(), newStation.getId(), distance);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2.getId(), request);
+
+        // then
+        지하철_노선_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
+    @Test
+    void createStationFail2() {
+        // when
+        SectionRequest request = new SectionRequest(upStation.getId(), downStation.getId(), 10);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2.getId(), request);
+
+        // then
+        지하철_노선_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다. (사이 구간)")
+    @Test
+    void createStationFail3() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "교대역");
+        StationResponse newStation = StationAcceptanceTest.지하철_역_생성_요청(params).as(StationResponse.class);
+        지하철_노선에_지하철역_등록_요청(line2.getId(), new SectionRequest(upStation.getId(), newStation.getId(), 10));
+
+        // when
+        SectionRequest request = new SectionRequest(newStation.getId(), downStation.getId(), 10);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2.getId(), request);
+
+        // then
+        지하철_노선_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.")
+    @Test
+    void createStationFail4() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "교대역");
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "홍대입구역");
+        StationResponse newStation1 = StationAcceptanceTest.지하철_역_생성_요청(params1).as(StationResponse.class);
+        StationResponse newStation2 = StationAcceptanceTest.지하철_역_생성_요청(params2).as(StationResponse.class);
+
+        // when
+        SectionRequest request = new SectionRequest(newStation1.getId(), newStation2.getId(), 20);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2.getId(), request);
+
+        // then
+        지하철_노선_지하철역_등록_실패됨(response);
     }
 }
