@@ -17,6 +17,10 @@ public class StationResponse {
     public StationResponse() {
     }
 
+    public StationResponse(Long id) {
+        this.id = id;
+    }
+
     public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
