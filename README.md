@@ -47,7 +47,7 @@ npm run dev
         - [X] 노선 목록 조회 GET : /lines
         - [X] 노선 조회 GET : /lines/{id}
         - [X] 노선 수정 PUT : /lines/{id}
-        - [ ] 노선 제거 DELETE : /lines/{id}
+        - [X] 노선 제거 DELETE : /lines/{id}
     * 인수 테스트 리팩터링
     
 ## ✏️ Code Review Process
