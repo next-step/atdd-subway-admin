@@ -39,7 +39,7 @@ public class LineService {
 
     public LineResponse modify(Long id, LineRequest lineRequest) {
         Line modifyingItem = lineRepository.getOne(id);
-        modifyingItem.update(lineRequest);
+        modifyingItem.update(lineRequest.getName(), lineRequest.getColor());
         return LineResponse.of(modifyingItem);
     }
 
