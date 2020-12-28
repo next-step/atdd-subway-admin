@@ -47,7 +47,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성_실패됨
-        응답_상태코드_확인(response, HttpStatus.BAD_REQUEST);
+        실패응답_상태_확인(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -123,7 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("bg-blue-600", "신분당선");
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("bg-red-600", "신분당선");
 
         // when
         // 지하철_노선_수정_요청
@@ -136,6 +136,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_수정됨
         응답_상태코드_확인(response, HttpStatus.OK);
+        LineResponse responseBody = response.body().as(LineResponse.class);
+        assertThat(responseBody.getName()).isEqualTo(params.get("name"));
+        assertThat(responseBody.getColor()).isEqualTo(params.get("color"));
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
@@ -150,7 +153,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
-        응답_상태코드_확인(response, HttpStatus.BAD_REQUEST);
+        실패응답_상태_확인(response);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -167,7 +170,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-        응답_상태코드_확인(response, HttpStatus.OK);
+        응답_상태코드_확인(response, HttpStatus.NO_CONTENT);
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 제거한다.")
@@ -179,7 +182,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-        응답_상태코드_확인(response, HttpStatus.BAD_REQUEST);
+        실패응답_상태_확인(response);
     }
 
     private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String color, String name) {
@@ -222,6 +225,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
               .when().delete(path)
               .then().log().all()
               .extract();
+    }
+
+    private void 실패응답_상태_확인(ExtractableResponse<Response> response) {
+        assertThat(response.body()).isNotNull();
+        응답_상태코드_확인(response, HttpStatus.BAD_REQUEST);
     }
 
     private void 응답_상태코드_확인(ExtractableResponse<Response> response, HttpStatus httpStatus) {

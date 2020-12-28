@@ -3,10 +3,12 @@ package nextstep.subway.line.application;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.persistence.EntityNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,16 +36,18 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Optional<Line> maybeLine = findByName(request.toLine());
         if (maybeLine.isPresent()) {
-            throw new IllegalArgumentException("[name=" + request.getName() + "] 이미 등록된 노선입니다.");
+            throw new DataIntegrityViolationException("[name=" + request.getName() + "] 이미 등록된 노선입니다.");
         }
 
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
 
-    public void updateLine(Long id, LineRequest lineRequest) {
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line line = getLine(id);
         line.update(lineRequest.toLine());
+
+        return LineResponse.of(line);
     }
 
     public void deleteLine(Long id) {
@@ -53,11 +57,8 @@ public class LineService {
 
     private Line getLine(Long id) {
         Optional<Line> maybeLine = findById(id);
-        if (!maybeLine.isPresent()) {
-            throw new IllegalArgumentException("[id=" + id + "] 노선정보가 존재하지 않습니다.");
-        }
-
-        return maybeLine.get();
+        return maybeLine.orElseThrow(()
+              -> new EntityNotFoundException("[id=" + id + "] 노선정보가 존재하지 않습니다."));
     }
 
     private Optional<Line> findById(Long id) {
