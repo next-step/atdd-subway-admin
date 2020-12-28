@@ -37,29 +37,33 @@ public class LineSections {
     }
 
     public void addSection(Section newSection) {
-        Optional<Section> originSectionOptional = this.sections.stream()
-            .filter(origin -> origin.isPreStationInSection(newSection.getPreStation()))
-            .findFirst();
+        boolean includeUpStationInSection = findByStation(newSection.getPreStation());
+        boolean includeDownStationInSection = findByStation(newSection.getStation());
 
-        if (originSectionOptional.isPresent()) {
-            addSectionIntoFront(newSection, originSectionOptional.get());
-            return;
+        checkValidStation(includeUpStationInSection, includeDownStationInSection);
+
+        if (includeUpStationInSection) {
+            updatePreStationTpNewDownStation(newSection);
         }
 
-        addSectionIntoBack(newSection);
-    }
-
-    public void addSectionIntoFront(Section newSection, Section origin) {
-        origin.updatePreStationTo(newSection.getStation(), newSection.getDistance());
+        if (includeDownStationInSection) {
+            updateStationToNewUpStation(newSection);
+        }
         this.sections.add(newSection);
     }
 
-    public void addSectionIntoBack(Section newSection) {
+    public void updatePreStationTpNewDownStation(Section newSection) {
         this.sections.stream()
-            .filter(origin -> origin.isStationInSection(newSection.getStation()))
+            .filter(section -> section.isPreStationInSection(newSection.getPreStation()))
             .findFirst()
-            .ifPresent(origin -> origin.updateStationTo(newSection.getPreStation(), newSection.getDistance()));
-        this.sections.add(newSection);
+            .ifPresent(section -> section.updatePreStationTo(newSection.getStation(), newSection.getDistance()));
+    }
+
+    public void updateStationToNewUpStation(Section newSection) {
+        this.sections.stream()
+            .filter(section -> section.isStationInSection(newSection.getStation()))
+            .findFirst()
+            .ifPresent(section -> section.updateStationTo(newSection.getPreStation(), newSection.getDistance()));
     }
 
     public List<Section> getOrderedSections() {
@@ -76,5 +80,20 @@ public class LineSections {
                 .findFirst();
         }
         return result;
+    }
+
+    private boolean findByStation(Station station) {
+        return this.sections.stream()
+            .anyMatch(section -> section.isStationInSection(station));
+    }
+
+    private void checkValidStation(boolean includeUpStationInSection, boolean includeDownStationInSection) {
+        if (includeUpStationInSection && includeDownStationInSection) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+        }
+
+        if (!includeUpStationInSection && !includeDownStationInSection) {
+            throw new IllegalArgumentException("상행역과 하행역 중 노선에 등록된 역이 없습니다.");
+        }
     }
 }

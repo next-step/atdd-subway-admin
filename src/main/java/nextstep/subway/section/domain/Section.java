@@ -37,6 +37,9 @@ public class Section {
 	}
 
 	public Section(Line line, Station station, int distance, Station preStation) {
+		if (preStation != null && distance == 0) {
+			throw new IllegalArgumentException("상행 종점외에는 거리가 0일 수 없습니다");
+		}
 		this.line = line;
 		this.station = station;
 		this.distance = new Distance(distance);

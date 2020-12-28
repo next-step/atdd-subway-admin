@@ -112,7 +112,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선에_지하철역_등록_요청
         ExtractableResponse<Response> response = SectionAcceptanceTestRequest
-            .지하철_노선에_지하철역_등록_요청(lineUri, lineDownStationId, lineNewStationId, INIT_LINE_DISTANCE + 1);
+            .지하철_노선에_지하철역_등록_요청(lineUri, lineNewStationId, lineDownStationId, INIT_LINE_DISTANCE + 1);
 
         // then
         // 지하철_노선에_지하철역_등록됨
@@ -137,8 +137,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addNoExistStations() {
         // when
         // 지하철_노선에_지하철역_등록_요청
+        Long notInLineStationId = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("신사역");
+        Long notInLineStationId2 = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("용산역");
         ExtractableResponse<Response> response = SectionAcceptanceTestRequest
-            .지하철_노선에_지하철역_등록_요청(lineUri, 99L, 100L, 4);
+            .지하철_노선에_지하철역_등록_요청(lineUri, notInLineStationId, notInLineStationId2, 4);
 
         // then
         // 지하철_노선에_지하철역_등록됨
