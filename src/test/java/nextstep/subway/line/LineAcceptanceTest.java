@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     private static final String DEFAULT_LINES_URI = "/lines";
-    private static final String DEFAULT_URI_GET_PARAMETER = "";
     final Map<String, String> params = new HashMap<>();
 
     @BeforeEach
@@ -91,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        final ExtractableResponse<Response> response = 지하철_노선_조회_요청(DEFAULT_URI_GET_PARAMETER);
+        final ExtractableResponse<Response> response = 지하철_모든_노선_조회_요청();
 
         // then
         // 지하철_노선_목록_응답됨
@@ -109,6 +108,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    private ExtractableResponse<Response> 지하철_모든_노선_조회_요청() {
+        return GET_요청_보내기(DEFAULT_LINES_URI);
+    }
+
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
@@ -118,7 +121,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청
-        final ExtractableResponse<Response> response = 지하철_노선_조회_요청("/" + createdLine.getId());
+        final ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdLine.getId());
 
         final LineResponse getLine = response.as(LineResponse.class);
 
@@ -137,20 +140,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getNotExistLine() {
         // when
         // 지하철_노선_조회_요청
-        final ExtractableResponse<Response> response = 지하철_노선_조회_요청("/1");
+        final ExtractableResponse<Response> response = 지하철_노선_조회_요청(1L);
 
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(final String urlParam) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get(DEFAULT_LINES_URI + urlParam)
-            .then().log().all()
-            .extract();
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(final long lineId) {
+        return GET_요청_보내기(DEFAULT_LINES_URI + "/" + lineId);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -161,7 +159,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final LineResponse createdLine = 지하철_노선_생성_요청().as(LineResponse.class);
 
         // 기존 노선 정보 확인
-        final ExtractableResponse<Response> responseBeforeUpdate = 지하철_노선_조회_요청("/" + createdLine.getId());
+        final ExtractableResponse<Response> responseBeforeUpdate = 지하철_노선_조회_요청(createdLine.getId());
         final LineResponse beforeLine = responseBeforeUpdate.as(LineResponse.class);
 
         final String originLineName = "2호선";
@@ -177,8 +175,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_수정_요청
         final String newLineName = "5호선";
         final String newLineColor = "보라색";
-        final ExtractableResponse<Response> responseAfterUpdate = 지하철_노선_정보_변경_요청("/" + createdLine.getId(),
-            new LineRequest(newLineName, newLineColor));
+        final ExtractableResponse<Response> responseAfterUpdate =
+            지하철_노선_정보_변경_요청("/" + createdLine.getId(), new LineRequest(newLineName, newLineColor));
         final LineResponse afterLine = responseAfterUpdate.as(LineResponse.class);
 
         // then
