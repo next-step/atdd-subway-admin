@@ -3,6 +3,7 @@ package nextstep.subway.line.dto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.exception.LineNotFoundException;
 
@@ -11,7 +12,9 @@ import nextstep.subway.line.exception.LineNotFoundException;
 public class LineRequest {
     private String name;
     private String color;
+    @NonNull
     private Long upStationId;
+    @NonNull
     private Long downStationId;
     private int distance;
 
