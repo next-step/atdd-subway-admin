@@ -119,8 +119,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        StationResponse 강남역 = stationService.saveStation(new StationRequest("강남역"));
         StationResponse 역삼역 = stationService.saveStation(new StationRequest("역삼역"));
+        StationResponse 강남역 = stationService.saveStation(new StationRequest("강남역"));
         LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10L);
         LineTestCommon.createResponse(params, "/lines");
 
