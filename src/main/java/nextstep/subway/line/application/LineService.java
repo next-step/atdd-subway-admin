@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -26,10 +27,11 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId())
-            .orElseThrow(NoSuchElementException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId())
-            .orElseThrow(NoSuchElementException::new);
+        List<Station> stations = stationRepository.findByIdIn(Arrays.asList(request.getUpStationId(), request.getDownStationId()));
+
+        Station upStation = findOneStationById(stations, request.getUpStationId());
+        Station downStation = findOneStationById(stations, request.getDownStationId());
+
         Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
@@ -55,5 +57,12 @@ public class LineService {
 
     public void deleteById(long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Station findOneStationById (List<Station> stations, Long id) {
+        return stations.stream()
+            .filter(station -> station.getId().equals(id))
+            .findFirst()
+            .orElseThrow(NoSuchElementException::new);
     }
 }
