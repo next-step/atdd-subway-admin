@@ -70,11 +70,18 @@ public class LineService {
     }
 
     private Section toSection(Line line, SectionRequest sectionRequest) {
-        List<Station> stations = stationRepository.findByIdIn(Arrays.asList(sectionRequest.getUpStationId(), sectionRequest.getDownStationId()));
-        Station preStation = findOneStationById(stations, sectionRequest.getUpStationId());
-        Station station = findOneStationById(stations, sectionRequest.getDownStationId());
+        Station preStation = findNullableStationById(sectionRequest.getUpStationId());
+        Station station = findNullableStationById(sectionRequest.getDownStationId());
 
         return new Section(line, station, sectionRequest.getDistance(), preStation);
+    }
+
+    private Station findNullableStationById (Long id) {
+        if (id == null) {
+            return null;
+        }
+        return stationRepository.findById(id)
+            .orElseThrow(NoSuchElementException::new);
     }
 
     private Station findOneStationById (List<Station> stations, Long id) {

@@ -60,14 +60,27 @@ public class Section {
 	}
 
 	public boolean isPreStationInSection(Station preStation) {
-		if (this.preStation == null || preStation == null) {
-			return this.preStation == preStation;
-		}
-		return this.preStation.getId().equals(preStation.getId());
+		return isEqualStation(this.preStation, preStation);
+	}
+
+	public boolean isStationInSection(Station station) {
+		return isEqualStation(this.station, station);
 	}
 
 	public void updatePreStationTo(Station preStation, int distance) {
 		this.preStation = preStation;
 		this.distance.subtract(distance);
+	}
+
+	public void updateStationTo(Station station, int distance) {
+		this.station = station;
+		this.distance.subtract(distance);
+	}
+
+	private boolean isEqualStation(Station origin, Station target) {
+		if (origin == null || target == null) {
+			return origin == target;
+		}
+		return origin.getId().equals(target.getId());
 	}
 }

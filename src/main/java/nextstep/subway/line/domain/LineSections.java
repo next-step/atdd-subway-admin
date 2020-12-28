@@ -37,11 +37,28 @@ public class LineSections {
     }
 
     public void addSection(Section newSection) {
-        this.sections.stream()
+        Optional<Section> originSectionOptional = this.sections.stream()
             .filter(origin -> origin.isPreStationInSection(newSection.getPreStation()))
-            .findFirst()
-            .ifPresent(origin -> origin.updatePreStationTo(newSection.getStation(), newSection.getDistance()));
+            .findFirst();
 
+        if (originSectionOptional.isPresent()) {
+            addSectionIntoFront(newSection, originSectionOptional.get());
+            return;
+        }
+
+        addSectionIntoBack(newSection);
+    }
+
+    public void addSectionIntoFront(Section newSection, Section origin) {
+        origin.updatePreStationTo(newSection.getStation(), newSection.getDistance());
+        this.sections.add(newSection);
+    }
+
+    public void addSectionIntoBack(Section newSection) {
+        this.sections.stream()
+            .filter(origin -> origin.isStationInSection(newSection.getStation()))
+            .findFirst()
+            .ifPresent(origin -> origin.updateStationTo(newSection.getPreStation(), newSection.getDistance()));
         this.sections.add(newSection);
     }
 

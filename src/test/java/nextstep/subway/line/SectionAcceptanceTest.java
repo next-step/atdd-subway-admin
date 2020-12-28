@@ -1,5 +1,8 @@
 package nextstep.subway.line;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,9 +32,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         lineUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", lineUpStationId, lineDownStationId, 10);
     }
 
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("노선에 구간을 등록한다. (CASE1) A-NEW-B : A-B 중간에 A-NEW등록")
     @Test
-    void addSection() {
+    void addSectionInMiddleBasedPreStation() {
         // when
         // 지하철_노선에_지하철역_등록_요청
         ExtractableResponse<Response> response = SectionAcceptanceTestRequest
@@ -39,6 +42,53 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선에_지하철역_등록됨
+        List<Long> expectedStations = Arrays.asList(lineUpStationId, lineNewStationId, lineDownStationId);
         SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨(response);
+        SectionAcceptanceTestResponse.지하철_노선에_등록한_구간_포함됨(response, expectedStations);
+    }
+
+    @DisplayName("노선에 구간을 등록한다. (CASE2) A-NEW-B : A-B 중간에 NEW-B등록")
+    @Test
+    void addSectionInMiddle() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        ExtractableResponse<Response> response = SectionAcceptanceTestRequest
+            .지하철_노선에_지하철역_등록_요청(lineUri, lineNewStationId, lineDownStationId, 4);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        List<Long> expectedStations = Arrays.asList(lineUpStationId, lineNewStationId, lineDownStationId);
+        SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨(response);
+        SectionAcceptanceTestResponse.지하철_노선에_등록한_구간_포함됨(response, expectedStations);
+    }
+
+    @DisplayName("노선에 구간을 등록한다. (CASE3) NEW-A-B : A-B 앞에 NEW-A등록")
+    @Test
+    void addSectionAtFirst() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        ExtractableResponse<Response> response = SectionAcceptanceTestRequest
+            .지하철_노선에_지하철역_등록_요청(lineUri, lineNewStationId, lineUpStationId, 4);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        List<Long> expectedStations = Arrays.asList(lineNewStationId, lineUpStationId, lineDownStationId);
+        SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨(response);
+        SectionAcceptanceTestResponse.지하철_노선에_등록한_구간_포함됨(response, expectedStations);
+    }
+
+    @DisplayName("노선에 구간을 등록한다. (CASE4) A-B-NEW: A-B 뒤에 B-C등록")
+    @Test
+    void addSectionAtLastBasedPreStation() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        ExtractableResponse<Response> response = SectionAcceptanceTestRequest
+            .지하철_노선에_지하철역_등록_요청(lineUri, lineDownStationId, lineNewStationId, 4);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        List<Long> expectedStations = Arrays.asList(lineUpStationId, lineDownStationId, lineNewStationId);
+        SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨(response);
+        SectionAcceptanceTestResponse.지하철_노선에_등록한_구간_포함됨(response, expectedStations);
     }
 }
