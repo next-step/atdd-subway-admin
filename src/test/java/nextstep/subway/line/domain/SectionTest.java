@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +11,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("구간에 대한 테스트")
 class SectionTest {
+
+    private Section section1;
+
+    @BeforeEach
+    void setUp() {
+        Station upStation = new Station("청량리역");
+        Station downStation = new Station("신창역");
+        Distance distance = Distance.valueOf(100);
+
+        section1 = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
+    }
 
     @DisplayName("구간을 생성한다.")
     @Test
@@ -39,7 +55,6 @@ class SectionTest {
         Distance distance = Distance.valueOf(100);
 
         // when / then
-
         assertThrows(RuntimeException.class, () -> Section.builder()
                 .upStation(upStation)
                 .downStation(downStation)
@@ -53,16 +68,10 @@ class SectionTest {
         // given
         Station upStation = new Station("청량리역");
         Station downStation = new Station("신창역");
-        Distance distance = Distance.valueOf(100);
-        Section section = Section.builder()
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(distance)
-                .build();
 
         // when
-        boolean result1 = section.isUpStation(upStation);
-        boolean result2 = section.isUpStation(downStation);
+        boolean result1 = section1.isUpStation(upStation);
+        boolean result2 = section1.isUpStation(downStation);
 
         // then
         assertAll(
@@ -77,16 +86,10 @@ class SectionTest {
         // given
         Station upStation = new Station("청량리역");
         Station downStation = new Station("신창역");
-        Distance distance = Distance.valueOf(100);
-        Section section = Section.builder()
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(distance)
-                .build();
 
         // when
-        boolean result1 = section.isDownStation(upStation);
-        boolean result2 = section.isDownStation(downStation);
+        boolean result1 = section1.isDownStation(upStation);
+        boolean result2 = section1.isDownStation(downStation);
 
         // then
         assertAll(
@@ -113,7 +116,168 @@ class SectionTest {
                 .downStation(downStation)
                 .distance(Distance.valueOf(200))
                 .build();
+
         // then
         assertThat(section1).isEqualTo(section2);
+    }
+
+    @DisplayName("구간 사이에 상행역과 연결된 새로운 역을 반영하여 기존 구간을 업데이트한다.")
+    @Test
+    void updateConnectUp() {
+        // when
+        Station newStation = new Station("신도림역");
+        Distance newDistance = Distance.valueOf(10);
+        Section newSection = Section.builder()
+                .upStation(section1.getUpStation())
+                .downStation(newStation)
+                .distance(newDistance)
+                .build();
+
+        boolean result = section1.canAddBetweenSection(newSection);
+        section1.update(newSection);
+
+        // then
+        assertThat(result).isTrue();
+        assertThat(section1.getUpStation()).isEqualTo(newStation);
+        assertThat(section1.getDownStation()).isEqualTo(section1.getDownStation());
+        assertThat(section1.getDistance()).isEqualTo(Distance.valueOf(90));
+    }
+
+    @DisplayName("구간 사이에 하행역과 연결된 새로운 역을 반영하여 기존 구간을 업데이트한다.")
+    @Test
+    void updateConnectDown() {
+        // when
+        Station newStation = new Station("신도림역");
+        Distance newDistance = Distance.valueOf(20);
+        Section newSection = Section.builder()
+                .upStation(newStation)
+                .downStation(section1.getDownStation())
+                .distance(newDistance)
+                .build();
+
+        boolean result = section1.canAddBetweenSection(newSection);
+        section1.update(newSection);
+
+        // then
+        assertThat(result).isTrue();
+        assertThat(section1.getUpStation()).isEqualTo(section1.getUpStation());
+        assertThat(section1.getDownStation()).isEqualTo(newStation);
+        assertThat(section1.getDistance()).isEqualTo(Distance.valueOf(80));
+    }
+
+    @DisplayName("구간 사이에 상행역과 연결된 새로운 역을 등록할 수 있는지 확인한다.")
+    @Test
+    void canAddBetweenSectionUp() {
+        // given
+        Station station1 = new Station("회기역");
+        Station station2 = new Station("신도림역");
+        Distance distance = Distance.valueOf(20);
+
+        Section betweenSection = Section.builder()
+                .upStation(section1.getUpStation())
+                .downStation(station2)
+                .distance(distance)
+                .build();
+
+        Section endSection = Section.builder()
+                .upStation(station1)
+                .downStation(section1.getUpStation())
+                .distance(distance)
+                .build();
+
+        // when
+        boolean between = section1.canAddBetweenSection(betweenSection);
+        boolean end = section1.canAddBetweenSection(endSection);
+
+        // then
+        assertThat(between).isTrue();
+        assertThat(end).isFalse();
+    }
+
+    @DisplayName("구간 사이에 하행역과 연결된 새로운 역을 등록할 수 있는지 확인한다.")
+    @Test
+    void canAddBetweenSectionDown() {
+        // given
+        Station station1 = new Station("창신역");
+        Station station2 = new Station("신도림역");
+        Distance distance = Distance.valueOf(20);
+
+        Section betweenSection = Section.builder()
+                .upStation(station2)
+                .downStation(section1.getDownStation())
+                .distance(distance)
+                .build();
+
+        Section endSection = Section.builder()
+                .upStation(section1.getDownStation())
+                .downStation(station1)
+                .distance(distance)
+                .build();
+
+        // when
+        boolean between = section1.canAddBetweenSection(betweenSection);
+        boolean end = section1.canAddBetweenSection(endSection);
+
+        // then
+        assertThat(between).isTrue();
+        assertThat(end).isFalse();
+    }
+
+    @DisplayName("구간 끝에 새로운 상행역을 등록할 수 있는지 확인한다.")
+    @Test
+    void canAddEndSectionUp() {
+        // given
+        Station station1 = new Station("회기역");
+        Station station2 = new Station("신도림역");
+        Distance distance = Distance.valueOf(20);
+
+        Section endSection = Section.builder()
+                .upStation(station1)
+                .downStation(section1.getUpStation())
+                .distance(distance)
+                .build();
+
+        Section betweenSection = Section.builder()
+                .upStation(section1.getUpStation())
+                .downStation(station2)
+                .distance(distance)
+                .build();
+
+        // when
+        boolean end = section1.canAddEndSection(endSection);
+        boolean between = section1.canAddEndSection(betweenSection);
+
+        // then
+        assertThat(end).isTrue();
+        assertThat(between).isFalse();
+    }
+
+    @DisplayName("구간 끝에 새로운 하역을 등록할 수 있는지 확인한다.")
+    @Test
+    void canAddEndSectionDown() {
+        // given
+        Station station1 = new Station("창신역");
+        Station station2 = new Station("신도림역");
+        Distance distance = Distance.valueOf(10);
+
+        Section endSection = Section.builder()
+                .upStation(this.section1.getDownStation())
+                .downStation(station1)
+                .distance(distance)
+                .build();
+
+        Section betweenSection = Section.builder()
+                .upStation(station2)
+                .downStation(this.section1.getDownStation())
+                .distance(distance)
+                .build();
+
+        // when
+        boolean end = this.section1.canAddEndSection(endSection);
+        boolean between = this.section1.canAddEndSection(betweenSection);
+
+        // then
+        assertThat(end).isTrue();
+        assertThat(between).isFalse();
     }
 }

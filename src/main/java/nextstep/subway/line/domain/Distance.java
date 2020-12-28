@@ -2,11 +2,13 @@ package nextstep.subway.line.domain;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.exception.DistanceOutOfRangeException;
 
 import javax.persistence.Embeddable;
 
+@Getter
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
@@ -25,5 +27,9 @@ public class Distance {
 
     public static Distance valueOf(final int value) {
         return new Distance(value);
+    }
+
+    public Distance subtract(final Distance other) {
+        return new Distance(this.value - other.value);
     }
 }

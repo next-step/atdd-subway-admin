@@ -43,4 +43,32 @@ public class Section {
     public boolean isDownStation(final Station station) {
         return this.downStation.equals(station);
     }
+
+    public void update(final Section other) {
+        if (isConnectUpStation(other)) {
+            this.upStation = other.downStation;
+            this.distance = distance.subtract(other.distance);
+        }
+
+        if (isConnectDownStation(other)) {
+            this.downStation = other.upStation;
+            this.distance = distance.subtract(other.getDistance());
+        }
+    }
+
+    private boolean isConnectUpStation(final Section other) {
+        return other.isUpStation(upStation);
+    }
+
+    private boolean isConnectDownStation(final Section other) {
+        return other.isDownStation(downStation);
+    }
+
+    public boolean canAddEndSection(final Section other) {
+        return other.isUpStation(downStation) ^ other.isDownStation(this.upStation);
+    }
+
+    public boolean canAddBetweenSection(final Section other) {
+        return isConnectUpStation(other) ^ isConnectDownStation(other);
+    }
 }

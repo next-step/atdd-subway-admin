@@ -4,6 +4,7 @@ import nextstep.subway.line.exception.DistanceOutOfRangeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,5 +43,21 @@ class DistanceTest {
 
         // then
         assertThat(distance1).isEqualTo(distance2);
+    }
+
+    @DisplayName("다른 거리 값을 뺄수 있다.")
+    @ParameterizedTest
+    @CsvSource(value = {"10,5,5", "1000,330,670"})
+    void subtract(int value1, int value2, int expected) {
+        // given
+        Distance distance1 = Distance.valueOf(value1);
+        Distance distance2 = Distance.valueOf(value2);
+        Distance result = Distance.valueOf(expected);
+
+        // when
+        Distance actual = distance1.subtract(distance2);
+
+        // then
+        assertThat(actual).isEqualTo(result);
     }
 }
