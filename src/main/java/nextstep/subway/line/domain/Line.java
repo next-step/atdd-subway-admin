@@ -1,9 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -13,6 +14,9 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
+    @OneToMany(mappedBy = "line")
+    @OrderBy("sequence")
+    private List<Section> sections;
 
     public Line() {
     }
@@ -22,7 +26,7 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void update(String name, String color ) {
+    public void update(String name, String color) {
         this.name = name;
         this.color = color;
     }
@@ -38,4 +42,9 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
+
+    public List<Section> getSections() {
+        return this.sections;
+    }
+
 }

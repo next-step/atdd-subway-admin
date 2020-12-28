@@ -1,8 +1,10 @@
 package nextstep.subway;
 
 import io.restassured.RestAssured;
+import io.restassured.parsing.Parser;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -16,12 +18,13 @@ public class AcceptanceTest {
     private DatabaseCleanup databaseCleanup;
 
     @BeforeEach
+    @Order(0)
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
             databaseCleanup.afterPropertiesSet();
         }
-
+        RestAssured.defaultParser = Parser.JSON;
         databaseCleanup.execute();
     }
 }
