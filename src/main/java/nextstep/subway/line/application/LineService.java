@@ -36,4 +36,11 @@ public class LineService {
                 .map(LineResponse::of)
                 .orElseThrow(EntityNotFoundException::new);
     }
+
+    public void updateLine(long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
+        line.update(lineRequest.toLine());
+        lineRepository.save(line);
+    }
 }

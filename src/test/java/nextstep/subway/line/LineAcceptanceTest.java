@@ -1,9 +1,11 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -93,12 +95,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        String createdUrl = 지하철_노선_등록되어_있음("2호선", "GREEN");
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdUrl, "1호선", "BLUE");
 
         // then
         // 지하철_노선_수정됨
+        지하철_노선_수정됨(response);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -142,7 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
-        지하철_노선_응답_완료(response);
+        요청_완료(response);
     }
 
     private void 지하철_노선_목록_포함됨(List<String> requestedUrls, ExtractableResponse<Response> response) {
@@ -159,10 +164,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return 지하철_노선_생성_요청(name, color).header("Location");
     }
 
-    private void 지하철_노선_응답_완료(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
     private ExtractableResponse<Response> 지하철_노선_조회_요청(String uri) {
         return RestAssured
                 .given().log().all()
@@ -171,8 +172,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_응답됨(String uri, ExtractableResponse<Response> response) {
-        지하철_노선_응답_완료(response);
+        요청_완료(response);
         String expected = uri.split("/")[2];
         assertThat(String.valueOf((int) response.jsonPath().get("id"))).isEqualTo(expected);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(String createdUrl, String name, String color) {
+        return RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new LineRequest(name, color))
+                .when().put(createdUrl)
+                .then().log().all().extract();
+    }
+
+    private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
+        요청_완료(response);
+    }
+
+    private void 요청_완료(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
