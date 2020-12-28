@@ -9,6 +9,6 @@ import io.restassured.response.Response;
 
 public class SectionAcceptanceTestResponse {
 	public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 }

@@ -11,7 +11,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.line.dto.SectionResponse;
 
 public class LineAcceptanceTestResponse {
 
@@ -52,8 +52,8 @@ public class LineAcceptanceTestResponse {
 	}
 
 	public static void 지하철_노선_지하철역_목록_포함됨(ExtractableResponse<Response> response, List<Long> expectedStationIds) {
-		List<Long> resultLineIds = response.jsonPath().getList("stations", StationResponse.class).stream()
-			.map(StationResponse::getId)
+		List<Long> resultLineIds = response.jsonPath().getList("stations", SectionResponse.class).stream()
+			.map(SectionResponse::getId)
 			.collect(Collectors.toList());
 		assertThat(resultLineIds).containsAll(expectedStationIds);
 	}

@@ -9,6 +9,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -28,7 +30,6 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         List<Station> stations = stationRepository.findByIdIn(Arrays.asList(request.getUpStationId(), request.getDownStationId()));
-
         Station upStation = findOneStationById(stations, request.getUpStationId());
         Station downStation = findOneStationById(stations, request.getDownStationId());
 
@@ -57,6 +58,23 @@ public class LineService {
 
     public void deleteById(long id) {
         lineRepository.deleteById(id);
+    }
+
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(NoSuchElementException::new);
+
+        Section newSection = toSection(line, sectionRequest);
+        line.addLineSection(newSection);
+        return LineResponse.of(lineRepository.save(line));
+    }
+
+    private Section toSection(Line line, SectionRequest sectionRequest) {
+        List<Station> stations = stationRepository.findByIdIn(Arrays.asList(sectionRequest.getUpStationId(), sectionRequest.getDownStationId()));
+        Station preStation = findOneStationById(stations, sectionRequest.getUpStationId());
+        Station station = findOneStationById(stations, sectionRequest.getDownStationId());
+
+        return new Section(line, station, sectionRequest.getDistance(), preStation);
     }
 
     private Station findOneStationById (List<Station> stations, Long id) {

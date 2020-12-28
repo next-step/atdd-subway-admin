@@ -19,8 +19,8 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private LineSections lineSections;
 
     public Line() {
     }
@@ -30,7 +30,7 @@ public class Line extends BaseEntity {
         this.color = color;
         Section upStationSection = new Section(this, upStation, 0, null);
         Section downStationSection = new Section(this, downStation, distance, upStation);
-        this.sections.addAll(Arrays.asList(upStationSection, downStationSection));
+        this.lineSections = new LineSections(upStationSection, downStationSection);
     }
 
     public Line(String name, String color) {
@@ -55,13 +55,15 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public List<Section> getLineSections() {
+        return lineSections.getOrderedSections();
     }
 
     public List<Station> getStations() {
-        return this.sections.stream()
-            .map(Section::getStation)
-            .collect(Collectors.toList());
+        return this.lineSections.getStations();
+    }
+
+    public void addLineSection(Section newSection) {
+        this.lineSections.addSection(newSection);
     }
 }

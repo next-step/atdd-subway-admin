@@ -52,10 +52,22 @@ public class Section {
 	}
 
 	public int getDistance() {
-		return distance.getDistance();
+		return distance.get();
 	}
 
 	public Station getPreStation() {
 		return preStation;
+	}
+
+	public boolean isPreStationInSection(Station preStation) {
+		if (this.preStation == null || preStation == null) {
+			return this.preStation == preStation;
+		}
+		return this.preStation.getId().equals(preStation.getId());
+	}
+
+	public void updatePreStationTo(Station preStation, int distance) {
+		this.preStation = preStation;
+		this.distance.subtract(distance);
 	}
 }

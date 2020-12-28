@@ -13,7 +13,11 @@ public class Distance {
 		this.distance = distance;
 	}
 
-	public int getDistance() {
+	public int get() {
 		return distance;
+	}
+
+	public void subtract(int distance) {
+		this.distance -= distance;
 	}
 }
