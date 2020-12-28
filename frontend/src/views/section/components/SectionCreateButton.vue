@@ -55,6 +55,16 @@
               outlined
           ></v-text-field>
         </div>
+        <div class="d-flex">
+            <v-text-field
+                      v-model="sectionForm.distance"
+                      :rules="rules.section.distance"
+                      color="grey darken-1"
+                      label="거리"
+                      placeholder="거리"
+                      outlined
+            ></v-text-field>
+        </div>
       </v-form>
     </template>
     <template slot="action">
