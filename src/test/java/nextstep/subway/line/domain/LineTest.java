@@ -51,9 +51,9 @@ class LineTest {
     @Test
     void addSection() {
         // given
-        Station upStation = new Station("신도림역");
-        Station downStation = new Station("문래역");
-        Distance distance = Distance.valueOf(200);
+        Station upStation = new Station("청량리역");
+        Station downStation = new Station("신도림역");
+        Distance distance = Distance.valueOf(10);
         Section section = Section.builder()
                 .upStation(upStation)
                 .downStation(downStation)
@@ -68,8 +68,7 @@ class LineTest {
         // then
         LineStations lineStations = line.getLineStations();
         LineStation lineStation = new LineStation(line, section);
-        boolean actual = lineStations.contains(lineStation);
-        assertThat(actual).isTrue();
+        assertThat(lineStations.getLineStations()).contains(lineStation);
     }
 
     public static Line 지하철_1호선_생성됨() {
@@ -86,7 +85,7 @@ class LineTest {
                 .distance(distance)
                 .build();
 
-        line.add(section);
+        line.init(section);
         return line;
     }
 
@@ -104,7 +103,7 @@ class LineTest {
                 .distance(distance)
                 .build();
 
-        line.add(section);
+        line.init(section);
         return line;
     }
 }
