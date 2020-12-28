@@ -1,7 +1,10 @@
 package nextstep.subway.line.application;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.line.domain.*;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionFactory;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -17,13 +20,11 @@ public class LineService {
 
     private final LineRepository lineRepository;
 
-    private final LineFactory lineFactory;
-
     private final SectionFactory sectionFactory;
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(lineFactory.create(request));
+        Line persistLine = lineRepository.save(request.toLine(sectionFactory));
         return LineResponse.of(persistLine);
     }
 
@@ -42,7 +43,7 @@ public class LineService {
     @Transactional
     public LineResponse updateLine(final Long id, final LineRequest request) {
         Line persistLine = getPersistLine(id);
-        persistLine.update(lineFactory.create(request));
+        persistLine.update(request.toLine(sectionFactory));
         return LineResponse.of(persistLine);
     }
 

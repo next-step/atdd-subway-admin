@@ -8,7 +8,6 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,24 +29,20 @@ public class Line extends BaseEntity {
     @Embedded
     private LineStations lineStations;
 
-    private Line(final String name, final String color, final LineStations lineStations) {
-        this.name = Objects.requireNonNull(name);
-        this.color = Objects.requireNonNull(color);
-        this.lineStations = Objects.requireNonNull(lineStations);
+    private Line(final String name, final String color, final Section section) {
+        this.name = name;
+        this.color = color;
+        LineStation lineStation = new LineStation(this, section);
+        this.lineStations = new LineStations(lineStation);
     }
 
-    public static Line of(final String name, final String color) {
-        LineStations lineStations = new LineStations();
-        return new Line(name, color, lineStations);
+    public static Line of(final String name, final String color, final Section section) {
+        return new Line(name, color, section);
     }
 
     public void update(Line other) {
         this.name = other.getName();
         this.color = other.getColor();
-    }
-
-    public void init(final Section section) {
-        lineStations.init(this, section);
     }
 
     public void add(final Section section) {

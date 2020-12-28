@@ -22,6 +22,10 @@ public class LineStations {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<LineStation> lineStations = new ArrayList<>();
 
+    public LineStations(final LineStation lineStation) {
+        lineStations.add(lineStation);
+    }
+
     public List<Station> getStationsOrderByUp() {
         List<Station> orderedStations = new ArrayList<>();
         // 상행역 찾기

@@ -16,9 +16,14 @@ class LineTest {
         // given
         String name = "1호선";
         String color = "blue";
+        Section section = Section.builder()
+                .upStation(new Station("청량리역"))
+                .downStation(new Station("신창역"))
+                .distance(Distance.valueOf(100))
+                .build();
 
         // when
-        Line line = Line.of(name, color);
+        Line line = Line.of(name, color, section);
 
         // then
         assertAll(
@@ -74,36 +79,24 @@ class LineTest {
     public static Line 지하철_1호선_생성됨() {
         String name = "1호선";
         String color = "blue";
-        Line line = Line.of(name, color);
-
-        Distance distance = Distance.valueOf(100);
-        Station upStation = new Station("청량리역");
-        Station downStation = new Station("신창역");
         Section section = Section.builder()
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(distance)
+                .upStation(new Station("청량리역"))
+                .downStation(new Station("신창역"))
+                .distance(Distance.valueOf(100))
                 .build();
 
-        line.init(section);
-        return line;
+        return Line.of(name, color, section);
     }
 
     public static Line 지하철_2호선_생성됨() {
         String name = "2호선";
         String color = "green";
-        Line line = Line.of(name, color);
-
-        Distance distance = Distance.valueOf(200);
-        Station upStation = new Station("강남역");
-        Station downStation = new Station("홍대역");
         Section section = Section.builder()
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(distance)
+                .upStation(new Station("강남역"))
+                .downStation(new Station("홍대역"))
+                .distance(Distance.valueOf(200))
                 .build();
 
-        line.init(section);
-        return line;
+        return Line.of(name, color, section);
     }
 }
