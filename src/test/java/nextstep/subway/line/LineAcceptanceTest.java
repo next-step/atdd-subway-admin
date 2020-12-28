@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.LocationUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +46,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long 양재역 = StationAcceptanceTest.지하철역_등록되어_있음("양재역");
 
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> extract = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역, 양재역);
+        ExtractableResponse<Response> extract = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역, 양재역, 10);
         Long extractId = getLineResponse(extract).getId();
 
         // then
@@ -67,7 +67,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> extract = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역, 강남역);
+        ExtractableResponse<Response> extract = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역, 강남역, 10);
 
         // then
         // 지하철_노선_생성 실패됨
@@ -104,12 +104,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
         params.put("upStationId", upStationId.toString());
         params.put("downStationId", downStationId.toString());
+        params.put("distance", distance + "");
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -202,7 +203,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long 판교역 = StationAcceptanceTest.지하철역_등록되어_있음("판교역");
         // given
         // 지하철_노선_등록되어_있음
-        long lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역, 양재역);
+        long lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역, 양재역, 10);
 
         // when
         // 지하철_노선_수정_요청
@@ -217,8 +218,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = getLineResponse(response);
         assertThat(lineResponse.getName()).isEqualTo(editName);
         assertThat(lineResponse.getColor()).isEqualTo(editColor);
-        assertThat(lineResponse.isContainsStationIds(Arrays.asList(강남역, 판교역))).isTrue();
+        assertThat(isContainsStationToLineResponse(lineResponse, 판교역)).isTrue();
+    }
 
+    public static boolean isContainsStationToLineResponse(LineResponse lineResponse, Long stationId) {
+        List<Long> stationResponse = lineResponse.getStations()
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        return stationResponse.contains(stationId);
     }
 
     private static ExtractableResponse<Response> 지하철_노선_수정_요청(long lineId, String name, String color) {
@@ -251,7 +259,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 extract();
     }
 
-    private LineResponse getLineResponse(ExtractableResponse<Response> response) {
+    public static LineResponse getLineResponse(ExtractableResponse<Response> response) {
         return response.jsonPath()
                 .getObject(".", LineResponse.class);
     }
@@ -285,11 +293,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return LocationUtil.getLocation(지하철_노선_생성_요청(lineName, color));
     }
 
-    private static Long 지하철_노선_등록되어_있음(String lineName, String color, Long upStationId, Long downStationId) {
-        return LocationUtil.getLocation(지하철_노선_생성_요청(lineName, color, upStationId, downStationId));
+    public static Long 지하철_노선_등록되어_있음(String lineName, String color, Long upStationId, Long downStationId, int distance) {
+        return LocationUtil.getLocation(지하철_노선_생성_요청(lineName, color, upStationId, downStationId, distance));
     }
 
-    private static ExtractableResponse<Response> 지하철_노선_조회_요청(long lineId) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(long lineId) {
         return RestAssured.given().log().all().
                 when().
                 get("/lines/{id}", lineId).

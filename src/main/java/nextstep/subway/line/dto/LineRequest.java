@@ -17,12 +17,8 @@ public class LineRequest {
         this.color = color;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
+    public String getColor() {
+        return color;
     }
 
     public String getName() {
@@ -43,6 +39,10 @@ public class LineRequest {
 
     public Line toLine() {
         return new Line(name, color);
+    }
+
+    public SectionRequest toSectionRequest() {
+        return new SectionRequest(upStationId, downStationId, distance);
     }
 
     public boolean isContainsSection() {

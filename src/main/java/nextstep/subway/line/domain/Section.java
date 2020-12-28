@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,16 +20,16 @@ public class Section {
     private Long id;
 
     @JoinColumn(name = "lineId")
-    @ManyToOne
-    Line line;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Line line;
 
     @JoinColumn(name = "upStationId")
-    @ManyToOne
-    Station upStation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Station upStation;
 
     @JoinColumn(name = "downStationId")
-    @ManyToOne
-    Station downStation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Station downStation;
 
     private int distance;
 
@@ -45,8 +46,24 @@ public class Section {
         this.line = line;
     }
 
+    public void changeUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
     public List<Station> upAndDownStations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     public void update(Section section) {
@@ -55,11 +72,27 @@ public class Section {
         this.distance = section.distance;
     }
 
-    public boolean isEqualsSectionStation() {
-        if(this.upStation.equals(this.downStation)){
+    public boolean isNotEqualsStation() {
+        return !this.upStation.equals(this.downStation);
+    }
+
+    public boolean isZeroDistance() {
+        return distance <= 0;
+    }
+
+    public boolean isSameUpStation(Station target) {
+        return this.upStation.equals(target);
+    }
+
+    public boolean isSameDownStation(Station target) {
+        return this.downStation.equals(target);
+    }
+
+    public void changeDistance(int targetDistance) {
+        if (targetDistance >= this.distance) {
             throw new IllegalArgumentException();
         }
-        return true;
+        this.distance -= targetDistance;
     }
 
     @Override
@@ -67,13 +100,14 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return distance == section.distance &&
-                upStation.equals(section.upStation) &&
-                downStation.equals(section.downStation);
+        return (upStation.equals(section.upStation) &&
+                downStation.equals(section.downStation)) ||
+                (upStation.equals(section.downStation) &&
+                downStation.equals(section.upStation));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(upStation, downStation, distance);
+        return Objects.hash(upStation, downStation);
     }
 }
