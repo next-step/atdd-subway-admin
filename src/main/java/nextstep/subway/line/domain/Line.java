@@ -41,14 +41,17 @@ public class Line extends BaseEntity {
         return new Line(name, color, lineStations);
     }
 
-    // todo: 종점역(상행, 하행)에 대한 수정
     public void update(Line other) {
         this.name = other.getName();
         this.color = other.getColor();
     }
 
+    public void init(final Section section) {
+        lineStations.init(this, section);
+    }
+
     public void add(final Section section) {
-        lineStations.add(new LineStation(this, section));
+        lineStations.add(this, section);
     }
 
     public List<Station> getStationsOrderByUp() {

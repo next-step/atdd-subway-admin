@@ -2,10 +2,8 @@ package nextstep.subway.line.infra;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.domain.Distance;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineFactory;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.domain.SectionFactory;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.exception.StationNotFoundException;
@@ -13,23 +11,19 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class DefaultLineFactory implements LineFactory {
+public class DefaultSectionFactory implements SectionFactory {
 
     private final StationRepository stationRepository;
 
     @Override
-    public Line create(final LineRequest lineRequest) {
-        Station upStation = getStation(lineRequest.getUpStationId());
-        Station downStation = getStation(lineRequest.getDownStationId());
-        Distance distance = Distance.valueOf(lineRequest.getDistance());
-        Section section = Section.builder()
+    public Section create(final Long upStationId, final Long downStationId, final int distance) {
+        Station upStation = getStation(upStationId);
+        Station downStation = getStation(downStationId);
+        return Section.builder()
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(distance)
+                .distance(Distance.valueOf(distance))
                 .build();
-        Line line = Line.of(lineRequest.getName(), lineRequest.getColor());
-        line.init(section);
-        return line;
     }
 
     private Station getStation(final Long stationId) {

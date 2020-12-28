@@ -1,11 +1,10 @@
 package nextstep.subway.line.application;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineFactory;
-import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.exception.LineNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +18,8 @@ public class LineService {
     private final LineRepository lineRepository;
 
     private final LineFactory lineFactory;
+
+    private final SectionFactory sectionFactory;
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
@@ -49,6 +50,18 @@ public class LineService {
     public void deleteLine(final Long id) {
         Line persistLine = getPersistLine(id);
         lineRepository.delete(persistLine);
+    }
+
+    @Transactional
+    public LineResponse addSection(final Long id, final SectionRequest request) {
+        Section section = sectionFactory.create(
+                request.getUpStationId(),
+                request.getDownStationId(),
+                request.getDistance()
+        );
+        Line persistLine = getPersistLine(id);
+        persistLine.add(section);
+        return LineResponse.of(persistLine);
     }
 
     private Line getPersistLine(final Long id) {

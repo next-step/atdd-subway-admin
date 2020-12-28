@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.line.exception.LineStationDuplicatedException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -21,18 +20,6 @@ public class LineStations {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<LineStation> lineStations = new ArrayList<>();
-
-    public void add(final LineStation lineStation) {
-        if (contains(lineStation)) {
-            String message = String.format("이미 등록된 지하철 노선 구간입니다. %s, %s-%s",
-                    lineStation.getLine().getName(),
-                    lineStation.getUpStation().getName(),
-                    lineStation.getDownStation().getName()
-            );
-            throw new LineStationDuplicatedException(message);
-        }
-        lineStations.add(lineStation);
-    }
 
     public List<Station> getStationsOrderByUp() {
         List<Station> orderedStations = new ArrayList<>();
@@ -78,8 +65,11 @@ public class LineStations {
         return lineStation;
     }
 
-    public boolean contains(final LineStation lineStation) {
-        return lineStations.contains(lineStation);
+    public void init(final Line line, final Section section) {
+        if (lineStations.size() != 0) {
+            throw new IllegalStateException();
+        }
+        lineStations.add(new LineStation(line, section));
     }
 
     public void add(final Line line, final Section section) {
