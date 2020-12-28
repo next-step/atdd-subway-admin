@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,5 +30,10 @@ public class LineService {
         return lineRepository.findAll().stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findById(Long id) {
+        return lineRepository.findById(id).map(LineResponse::of)
+                .orElseThrow(NoSuchElementException::new);
     }
 }
