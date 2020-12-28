@@ -18,6 +18,15 @@ public class Sections {
     }
 
     public void add(Section section) {
+        // 기존 section의 upStation이 신규 upStation과 같은 경우
+        this.sections.stream()
+                .filter(it -> it.getUpStation() == section.getUpStation())
+                .findFirst()
+                .ifPresent(it -> {
+                    this.sections.add(new Section(it.getLine(), section.getDownStation(), it.getDownStation(), it.getDistance() - section.getDistance()));
+                    this.sections.remove(it);
+                });
+
         this.sections.add(section);
     }
 
