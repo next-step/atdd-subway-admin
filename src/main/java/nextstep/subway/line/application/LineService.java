@@ -13,34 +13,34 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+	private LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
-        this.lineRepository = lineRepository;
-    }
+	public LineService(LineRepository lineRepository) {
+		this.lineRepository = lineRepository;
+	}
 
-    @Transactional
-    public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
-    }
+	@Transactional
+	public LineResponse saveLine(LineRequest request) {
+		Line persistLine = lineRepository.save(request.toLine());
+		return LineResponse.of(persistLine);
+	}
 
 	@Transactional(readOnly = true)
-    public List<LineResponse> findAllLine() {
-    	return lineRepository.findAll().stream()
-			    .map(LineResponse::of)
-			    .collect(Collectors.toList());
-    }
+	public List<LineResponse> findAllLine() {
+		return lineRepository.findAll().stream()
+				.map(LineResponse::of)
+				.collect(Collectors.toList());
+	}
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public LineResponse findLineById(Long id) {
-    	return LineResponse.of(findLine(id));
+		return LineResponse.of(findLine(id));
 	}
 
 	@Transactional
 	public void updateLineById(Long id, LineRequest lineRequest) {
-    	Line line = findLine(id);
-    	line.update(lineRequest.toLine());
+		Line line = findLine(id);
+		line.update(lineRequest.toLine());
 	}
 
 	@Transactional
@@ -50,7 +50,7 @@ public class LineService {
 	}
 
 	private Line findLine(Long id) {
-    	return lineRepository.findById(id)
-			    .orElseThrow(() -> new LineNotFoundException("cannot find line"));
+		return lineRepository.findById(id)
+				.orElseThrow(() -> new LineNotFoundException("cannot find line"));
 	}
 }
