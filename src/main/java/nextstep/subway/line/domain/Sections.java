@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,14 @@ public class Sections {
     }
 
     public void add(Section section) {
+        if (this.sections.isEmpty()) {
+            this.sections.add(section);
+            return;
+        }
+
+        checkAlreadyExisted(section);
+        checkExistedAny(section);
+
         // 기존 section의 upStation이 신규 upStation과 같은 경우
         addSectionUpToUp(section);
         // 기존 section의 downtation이 신규 downStation과 같은 경우
@@ -26,24 +35,49 @@ public class Sections {
         this.sections.add(section);
     }
 
+    private void checkAlreadyExisted(Section section) {
+        List<Station> stations = getStations();
+        if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
+            throw new RuntimeException();
+        }
+    }
+
+    private void checkExistedAny(Section section) {
+        List<Station> stations = getStations();
+        List<Station> stationsOfNewSection = Arrays.asList(section.getUpStation(), section.getDownStation());
+        if (stations.containsAll(stationsOfNewSection)) {
+            throw new RuntimeException();
+        }
+    }
+
     private void addSectionUpToUp(Section section) {
         this.sections.stream()
                 .filter(it -> it.getUpStation() == section.getUpStation())
                 .findFirst()
-                .ifPresent(it -> {
-                    this.sections.add(new Section(it.getLine(), section.getDownStation(), it.getDownStation(), it.getDistance() - section.getDistance()));
-                    this.sections.remove(it);
-                });
+                .ifPresent(it -> replaceSectionWithDownStation(section, it));
     }
 
     private void addSectionDownToDown(Section section) {
         this.sections.stream()
                 .filter(it -> it.getDownStation() == section.getDownStation())
                 .findFirst()
-                .ifPresent(it -> {
-                    this.sections.add(new Section(it.getLine(), it.getUpStation(), section.getUpStation(), it.getDistance() - section.getDistance()));
-                    this.sections.remove(it);
-                });
+                .ifPresent(it -> replaceSectionWithUpStation(section, it));
+    }
+
+    private void replaceSectionWithUpStation(Section newSection, Section existSection) {
+        if (existSection.getDistance() <= newSection.getDistance()) {
+            throw new RuntimeException();
+        }
+        this.sections.add(new Section(existSection.getLine(), existSection.getUpStation(), newSection.getUpStation(), existSection.getDistance() - newSection.getDistance()));
+        this.sections.remove(existSection);
+    }
+
+    private void replaceSectionWithDownStation(Section newSection, Section existSection) {
+        if (existSection.getDistance() <= newSection.getDistance()) {
+            throw new RuntimeException();
+        }
+        this.sections.add(new Section(existSection.getLine(), newSection.getDownStation(), existSection.getDownStation(), existSection.getDistance() - newSection.getDistance()));
+        this.sections.remove(existSection);
     }
 
     public List<Station> getStations() {
