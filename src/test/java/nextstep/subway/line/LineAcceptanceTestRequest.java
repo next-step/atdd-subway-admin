@@ -27,4 +27,12 @@ public class LineAcceptanceTestRequest {
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(name, color);
         return createResponse.header("Location");
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
 }
