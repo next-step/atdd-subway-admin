@@ -1,16 +1,13 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -202,19 +199,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_제거_요청
-        final ExtractableResponse<Response> response = 지하철_노선_삭제_요청("/" + createdLine.getId());
+        final ExtractableResponse<Response> response = 지하철_노선_삭제_요청(createdLine.getId());
 
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선_삭제_요청(final String urlParam) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .delete(DEFAULT_LINES_URI + urlParam)
-            .then().log().all()
-            .extract();
+    private ExtractableResponse<Response> 지하철_노선_삭제_요청(final long lineId) {
+        final String uri = DEFAULT_LINES_URI + "/" + lineId;
+
+        return DELETE_요청_보내기(uri);
     }
 }

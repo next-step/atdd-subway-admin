@@ -54,4 +54,13 @@ public class AcceptanceTest {
             .then().log().all()
             .extract();
     }
+
+    protected ExtractableResponse<Response> DELETE_요청_보내기(final String uri) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete(uri)
+            .then().log().all()
+            .extract();
+    }
 }
