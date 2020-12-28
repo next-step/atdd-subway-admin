@@ -6,14 +6,18 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationDataHelper;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,6 +164,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @DisplayName("노선 조회 응답 결과에 역 목록 응답 추가하기")
+    @Test
+    void getLineWithStations() {
+        //given
+        Long upStationId = stationDataHelper.역추가("신창역");
+        Long downStationId = stationDataHelper.역추가("인천역");
+        Section section = new Section(upStationId, downStationId, 10);
+        List<Long> savedLine = lineDataHelper.지하철_노선_추가(new Line("1호선", "blue", section));
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(savedLine.get(0));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse lineResponse = response.body().as(LineResponse.class);
+        lineResponse.getStations().containsAll(Arrays.asList(new Station("신창역"), new Station("인천역")));
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {

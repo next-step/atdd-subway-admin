@@ -3,6 +3,9 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -12,9 +15,9 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
+
+    @Embedded
+    private Section section;
 
     public Line() {
     }
@@ -24,12 +27,10 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+        this.section = section;
     }
 
     public void update(Line line) {
@@ -47,5 +48,12 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Long> getSectionIds() {
+        if(section == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(section.getUpStationId(), section.getDownStationId());
     }
 }

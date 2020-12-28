@@ -4,9 +4,12 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,9 +17,12 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository,
+                       StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -28,7 +34,7 @@ public class LineService {
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(LineResponse::of)
+                .map(it -> LineResponse.of(it, getStations(it)))
                 .collect(Collectors.toList());
     }
 
@@ -36,8 +42,7 @@ public class LineService {
     public LineResponse findLineById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(this::throwNoLineException);
-
-       return LineResponse.of(line);
+        return LineResponse.of(line, getStations(line));
     }
 
     public void updateLine(Long id, LineRequest request) {
@@ -49,6 +54,14 @@ public class LineService {
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private List<Station> getStations(Line it) {
+        List<Long> sectionIds = it.getSectionIds();
+        if (sectionIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return stationRepository.findAllById(sectionIds);
     }
 
     private NoLineException throwNoLineException() {
