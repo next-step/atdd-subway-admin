@@ -22,4 +22,9 @@ public class LineAcceptanceTestRequest {
                 .then().log().all().extract();
         return response;
     }
+
+    public static String 지하철_노선_등록되어_있음(String name, String color) {
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(name, color);
+        return createResponse.header("Location");
+    }
 }

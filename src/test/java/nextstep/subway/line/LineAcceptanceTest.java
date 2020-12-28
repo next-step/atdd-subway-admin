@@ -23,13 +23,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineAcceptanceTestRequest.지하철_노선_등록되어_있음("8호선", "pink");
 
         // when
-        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = LineAcceptanceTestRequest.지하철_노선_생성_요청("8호선", "pink");
 
         // then
-        // 지하철_노선_생성_실패됨
+        LineAcceptanceTestResponse.지하철_노선_생성_실패됨(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
