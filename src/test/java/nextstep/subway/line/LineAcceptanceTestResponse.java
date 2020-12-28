@@ -39,4 +39,10 @@ public class LineAcceptanceTestResponse {
 
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
+
+    public static void 지하철_노선_응답됨(ExtractableResponse<Response> response, String uri) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        String expectedId = uri.split("/")[2];
+        assertThat(response.jsonPath().get("id").toString()).isEqualTo(expectedId);
+    }
 }

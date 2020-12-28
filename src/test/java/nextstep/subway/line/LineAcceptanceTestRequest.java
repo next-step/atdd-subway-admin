@@ -35,4 +35,12 @@ public class LineAcceptanceTestRequest {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(String uri) {
+        return RestAssured
+                .given().log().all()
+                .when().get(uri)
+                .then().log().all()
+                .extract();
+    }
 }
