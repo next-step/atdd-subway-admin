@@ -110,4 +110,9 @@ public class Section {
     public int hashCode() {
         return Objects.hash(upStation, downStation);
     }
+
+    public void merge(Section target) {
+        this.downStation = target.downStation;
+        this.distance += target.distance;
+    }
 }

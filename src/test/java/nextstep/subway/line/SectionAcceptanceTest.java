@@ -181,6 +181,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 때")
+    @Test
+    void deleteSectionExpectedException() {
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        // 지하철_노선_구간_제거_요청됨
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 지하철_노선_구간_제거_요청(long lineId, long stationId) {
         return RestAssured.given().queryParam("stationId", stationId).log().all().
                 when().

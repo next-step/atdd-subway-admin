@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 public class LineServiceTest {
@@ -53,11 +54,11 @@ public class LineServiceTest {
         Station 양재역 = stationRepository.save(new Station("양재역"));
         Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
 
-        addSection(line, 판교역, 양재역, 6);
+        addSection(line, 강남역, 양재역, 6);
 
         assertThat(getStationResponses(line))
                 .extracting("name")
-                .containsExactly("강남역", "판교역", "양재역");
+                .containsExactly("강남역", "양재역", "판교역");
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
@@ -110,6 +111,49 @@ public class LineServiceTest {
         assertThat(getStationResponses(line))
                 .extracting("name")
                 .containsExactly("강남역", "판교역");
+    }
+
+    @DisplayName("노선 구간에 중간역을 제거한다.")
+    @Test
+    void deleteBetweenSection() {
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 판교역 = stationRepository.save(new Station("판교역"));
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+
+        Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
+
+        addSection(line, 강남역, 양재역, 6);
+
+        lineService.removeSectionByStationId(line.getId(), 양재역.getId());
+
+        assertThat(getStationResponses(line))
+                .extracting("name")
+                .containsExactly("강남역", "판교역");
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거한다.")
+    @Test
+    void deleteSectionExpectedException() {
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 판교역 = stationRepository.save(new Station("판교역"));
+
+        Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
+
+        assertThatThrownBy(() -> lineService.removeSectionByStationId(line.getId(), 강남역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선 구간에 포함 되지 않은 역 삭제")
+    @Test
+    void deleteNotConnectedSectionExpectedException() {
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 판교역 = stationRepository.save(new Station("판교역"));
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+
+        Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
+
+        assertThatThrownBy(() -> lineService.removeSectionByStationId(line.getId(), 양재역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     private Line saveLine(String lineName, String lineColor, Station upStation, Station downStation, int distance) {
