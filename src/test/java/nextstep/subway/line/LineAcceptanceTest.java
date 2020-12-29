@@ -140,12 +140,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "4호선");
+        params.put("color", "blue");
+        ExtractableResponse<Response> request = 지하철_노선_생성_요청(params);
 
         // when
         // 지하철_노선_제거_요청
+        LineResponse lineResponse = request.jsonPath().getObject(".", LineResponse.class);
+        ExtractableResponse<Response> response = 지하철_노선_삭제_요청(lineResponse.getId());
 
         // then
         // 지하철_노선_삭제됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
 
@@ -179,5 +186,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/"+lineId)
                 .then().log().all().extract();
+    }
+    private ExtractableResponse<Response> 지하철_노선_삭제_요청(Long lineId) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete("/lines/"+lineId)
+                .then().log().all()
+                .extract();
     }
 }

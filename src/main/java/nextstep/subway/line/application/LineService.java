@@ -25,6 +25,11 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public void deleteLine(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(()->new LineNotFoundException());
+        lineRepository.delete(line);
+    }
+
     public LineResponse modifyLine(Long id, LineRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(()->new LineNotFoundException());
         line.setName(request.getName());
