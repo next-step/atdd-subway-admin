@@ -1,16 +1,16 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,18 +23,36 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final String DEFAULT_LINES_URI = "/lines";
-    private static final String DEFAULT_URI_GET_PARAMETER = "";
-    final Map<String, String> params = new HashMap<>();
+    public static final String DEFAULT_LINES_URI = "/lines";
+
+    @Autowired
+    private StationRepository stationRepository;
+
+    private final Map<String, String> params = new HashMap<>();
+    private Station sindorimStation;
+    private Station kkachisanStation;
 
     @BeforeEach
-    void 노선_생성_요청_파라미터_설정() {
-        노선_생성_요청시_이름_색상_설정("2호선", "초록색");
+    void 노선_생성_요청시_필요한_파라미터_설정() {
+        지하철역_생성();
+
+        생성_요청할_노선_정보_설정("2호선", "초록색");
     }
 
-    void 노선_생성_요청시_이름_색상_설정(final String name, final String color) {
+    void 지하철역_생성() {
+        sindorimStation = new Station("신도림역");
+        kkachisanStation = new Station("까치산역");
+
+        stationRepository.save(sindorimStation);
+        stationRepository.save(kkachisanStation);
+    }
+
+    void 생성_요청할_노선_정보_설정(final String name, final String color) {
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", Long.toString(sindorimStation.getId()));
+        params.put("downStationId", Long.toString(kkachisanStation.getId()));
+        params.put("distance", "123456");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -70,13 +88,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청() {
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post(DEFAULT_LINES_URI)
-            .then().log().all()
-            .extract();
+        return POST_요청_보내기(params, DEFAULT_LINES_URI);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -86,12 +98,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         final ExtractableResponse<Response> firstCreateResponse = 지하철_노선_생성_요청();
         // 지하철_노선_등록되어_있음
-        노선_생성_요청시_이름_색상_설정("까치산역", "보라색");
+        생성_요청할_노선_정보_설정("5호선", "보라색");
         final ExtractableResponse<Response> secondCreateResponse = 지하철_노선_생성_요청();
 
         // when
         // 지하철_노선_목록_조회_요청
-        final ExtractableResponse<Response> response = 지하철_노선_조회_요청(DEFAULT_URI_GET_PARAMETER);
+        final ExtractableResponse<Response> response = 지하철_모든_노선_조회_요청();
 
         // then
         // 지하철_노선_목록_응답됨
@@ -109,6 +121,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    private ExtractableResponse<Response> 지하철_모든_노선_조회_요청() {
+        return GET_요청_보내기(DEFAULT_LINES_URI);
+    }
+
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
@@ -118,7 +134,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청
-        final ExtractableResponse<Response> response = 지하철_노선_조회_요청("/" + createdLine.getId());
+        final ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdLine.getId());
 
         final LineResponse getLine = response.as(LineResponse.class);
 
@@ -137,20 +153,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getNotExistLine() {
         // when
         // 지하철_노선_조회_요청
-        final ExtractableResponse<Response> response = 지하철_노선_조회_요청("/1");
+        final ExtractableResponse<Response> response = 지하철_노선_조회_요청(1L);
 
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(final String urlParam) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get(DEFAULT_LINES_URI + urlParam)
-            .then().log().all()
-            .extract();
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(final long lineId) {
+        return GET_요청_보내기(DEFAULT_LINES_URI + "/" + lineId);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -161,7 +172,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final LineResponse createdLine = 지하철_노선_생성_요청().as(LineResponse.class);
 
         // 기존 노선 정보 확인
-        final ExtractableResponse<Response> responseBeforeUpdate = 지하철_노선_조회_요청("/" + createdLine.getId());
+        final ExtractableResponse<Response> responseBeforeUpdate = 지하철_노선_조회_요청(createdLine.getId());
         final LineResponse beforeLine = responseBeforeUpdate.as(LineResponse.class);
 
         final String originLineName = "2호선";
@@ -177,8 +188,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_수정_요청
         final String newLineName = "5호선";
         final String newLineColor = "보라색";
-        final ExtractableResponse<Response> responseAfterUpdate = 지하철_노선_정보_변경_요청("/" + createdLine.getId(),
-            new LineRequest(newLineName, newLineColor));
+
+        final Map<String, String> updateParams = new HashMap<>();
+        updateParams.put("name", newLineName);
+        updateParams.put("color", newLineColor);
+
+        final ExtractableResponse<Response> responseAfterUpdate = 지하철_노선_정보_변경_요청(createdLine.getId(), updateParams);
         final LineResponse afterLine = responseAfterUpdate.as(LineResponse.class);
 
         // then
@@ -191,14 +206,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private ExtractableResponse<Response> 지하철_노선_정보_변경_요청(final String urlParam, final LineRequest lineRequest) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(lineRequest)
-            .when()
-            .put(DEFAULT_LINES_URI + urlParam)
-            .then().log().all()
-            .extract();
+    private ExtractableResponse<Response> 지하철_노선_정보_변경_요청(final long lineId, final Map<String, String> params) {
+        final String uri = DEFAULT_LINES_URI + "/" + lineId;
+
+        return PUT_요청_보내기(params, uri);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -210,19 +221,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_제거_요청
-        final ExtractableResponse<Response> response = 지하철_노선_삭제_요청("/" + createdLine.getId());
+        final ExtractableResponse<Response> response = 지하철_노선_삭제_요청(createdLine.getId());
 
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선_삭제_요청(final String urlParam) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .delete(DEFAULT_LINES_URI + urlParam)
-            .then().log().all()
-            .extract();
+    private ExtractableResponse<Response> 지하철_노선_삭제_요청(final long lineId) {
+        final String uri = DEFAULT_LINES_URI + "/" + lineId;
+
+        return DELETE_요청_보내기(uri);
     }
 }
