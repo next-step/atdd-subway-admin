@@ -3,7 +3,8 @@ package nextstep.subway.line.ui;
 import nextstep.subway.common.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.NewLineRequest;
+import nextstep.subway.line.dto.NewLineResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,19 +22,19 @@ public class LineController {
 	}
 
 	@PostMapping
-	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-		LineResponse line = lineService.saveLine(lineRequest);
+	public ResponseEntity createLine(@RequestBody NewLineRequest lineRequest) {
+		NewLineResponse line = lineService.saveLine_new(lineRequest);
 		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
 	}
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity showLine() {
-		return ResponseEntity.ok().body(lineService.findAllLine());
+		return ResponseEntity.ok().body(lineService.findAllLine_new());
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-		return ResponseEntity.ok(lineService.findLineById(id));
+	public ResponseEntity<NewLineResponse> showLine(@PathVariable Long id) {
+		return ResponseEntity.ok(lineService.findLineById_new(id));
 	}
 
 	@PutMapping("/{id}")
