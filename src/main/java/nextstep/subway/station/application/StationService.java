@@ -37,6 +37,7 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public Station findById(long id) {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new StationNotFoundException("cannot find station"));
