@@ -31,20 +31,37 @@ public class Sections {
     }
 
     public void create(Section section) {
-        checkValidation(section);
+        if (section.isZeroDistance()) {
+            throw new IllegalArgumentException();
+        }
         this.sections.add(section);
     }
 
     public void add(Section targetSection) {
-        checkValidation(targetSection);
-        changeUpStation(targetSection);
-        this.sections.add(findAscendIndex(targetSection), targetSection);
-    }
-
-    public void checkValidation(Section targetSection) {
-        if (this.sections.contains(targetSection) || targetSection.isZeroDistance()) {
+        if (targetSection.isZeroDistance()) {
             throw new IllegalArgumentException();
         }
+
+        addSection(targetSection);
+    }
+
+    public void addSection(Section targetSection) {
+        changeBetweenSection(targetSection);
+        //둘다 포함되어있는지 확인
+        if (this.sections.contains(targetSection)) {
+            throw new IllegalArgumentException();
+        }
+
+        // 연결 가능한 노드가 있는지 확인
+        if (checkConnectableSection(targetSection)) {
+            throw new IllegalArgumentException();
+        }
+
+        this.sections.add(targetSection);
+    }
+
+    private boolean checkConnectableSection(Section targetSection) {
+        return !findSameUpStation(targetSection.getDownStation()).isPresent() && !findSameDownStation(targetSection.getUpStation()).isPresent();
     }
 
     public void update(Section section) {
@@ -55,7 +72,7 @@ public class Sections {
         }
     }
 
-    public void changeUpStation(Section targetSection) {
+    public void changeBetweenSection(Section targetSection) {
         findSameUpStation(targetSection.getUpStation())
                 .ifPresent(base -> {
                     base.changeUpStation(targetSection.getDownStation());
@@ -78,18 +95,6 @@ public class Sections {
     private boolean isChanged(Section section) {
         return !this.sections.stream()
                 .allMatch(s -> s.equals(section));
-    }
-
-    private Integer findAscendIndex(Section targetSection) {
-        return findSameUpStation(targetSection.getDownStation())
-                .map(this.sections::indexOf)
-                .orElseGet(() -> findDescendIndex(targetSection));
-    }
-
-    private Integer findDescendIndex(Section targetSection) {
-        return findSameDownStation(targetSection.getUpStation())
-                .map(base -> this.sections.indexOf(base) + 1)
-                .orElseThrow(IllegalArgumentException::new);
     }
 
     private Map<Station, Station> sectionElements() {
