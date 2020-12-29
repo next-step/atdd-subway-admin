@@ -28,8 +28,8 @@
               </v-toolbar>
               <v-card-text class="overflow-y-auto py-0">
                 <v-list dense class="max-height-300px">
-                  <template v-if="activeLine.stations.length > 0">
-                    <v-list-item v-for="(station, index) in activeLine.stations" :key="index">
+                  <template v-if="activeLine.stationResponses.length > 0">
+                    <v-list-item v-for="(station, index) in activeLine.stationResponses" :key="index">
                       <v-list-item-content>
                         <v-list-item-title v-text="station.name"></v-list-item-title>
                       </v-list-item-content>
