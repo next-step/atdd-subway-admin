@@ -1,12 +1,12 @@
-package nextstep.subway.line.application;
+package nextstep.subway.section.application;
 
 import nextstep.subway.common.exception.NotExistsLineIdException;
 import nextstep.subway.common.exception.NotExistsStationIdException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.domain.SectionRepository;
-import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;

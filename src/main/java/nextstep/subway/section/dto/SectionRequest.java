@@ -1,6 +1,7 @@
-package nextstep.subway.line.dto;
+package nextstep.subway.section.dto;
 
 import nextstep.subway.common.exception.BadRequestException;
+import nextstep.subway.line.dto.LineRequest;
 
 public class SectionRequest {
     private Long lineId;
