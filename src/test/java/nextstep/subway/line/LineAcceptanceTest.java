@@ -215,6 +215,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	private void 지하철_노선_존재하지_않음(ExtractableResponse<Response> response) {
 		String errorCode = response.jsonPath().getObject(".", ErrorResponse.class).getErrorCode();
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 		assertThat(errorCode).isEqualTo(NotFoundException.ERROR_CODE);
 	}
 

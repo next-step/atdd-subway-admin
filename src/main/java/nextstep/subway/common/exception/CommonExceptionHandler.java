@@ -15,6 +15,6 @@ import nextstep.subway.common.dto.ErrorResponse;
 public class CommonExceptionHandler {
 	@ExceptionHandler(NotFoundException.class)
 	protected ResponseEntity notFoundException(NotFoundException exception){
-		return ResponseEntity.ok(new ErrorResponse(exception));
+		return ResponseEntity.badRequest().body(new ErrorResponse(exception));
 	}
 }
