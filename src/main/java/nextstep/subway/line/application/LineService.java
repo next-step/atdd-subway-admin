@@ -38,4 +38,8 @@ public class LineService {
         lineRepository.save(line);
     }
 
+    public LineResponse findById(Long lineId) {
+        return LineResponse.of(lineRepository.getOne(lineId));
+    }
+    
 }
