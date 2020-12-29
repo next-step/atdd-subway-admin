@@ -35,6 +35,9 @@ dependencies {
 
 	// 요청 파라미터 validation 추가
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 }
 
 test {
