@@ -42,11 +42,19 @@ class LineTest {
 
 		// then
 		Line actual = em.find(Line.class, line.getId());
-		assertThat(actual.getSections()).hasSize(1).allSatisfy(section -> {
-			assertThat(section.getFront()).isEqualTo(station1);
-			assertThat(section.getBack()).isEqualTo(station2);
-			assertThat(section.getDistance()).isEqualTo(new Distance(50));
-			assertThat(section.getLine()).isEqualTo(line);
+		assertThat(actual.getSections()).hasSize(3).anySatisfy(section -> {
+			assertSection(section, line, null, station1, 0);
+		}).anySatisfy(section -> {
+			assertSection(section, line, station1, station2, 50);
+		}).anySatisfy(section -> {
+			assertSection(section, line, station2, null, 0);
 		});
+	}
+
+	private void assertSection(Section section, Line line, Station front, Station back, int distance) {
+		assertThat(section.getFront()).isEqualTo(front);
+		assertThat(section.getBack()).isEqualTo(back);
+		assertThat(section.getDistance()).isEqualTo(new Distance(distance));
+		assertThat(section.getLine()).isEqualTo(line);
 	}
 }

@@ -25,8 +25,13 @@ public class Line extends BaseEntity {
 
     public Line(String name, String color, Station front, Station back, int distance) {
         this(name, color);
+        Section nullFront = new Section(this, null, front, 0);
         Section section = new Section(this, front, back, distance);
+        Section nullBack = new Section(this, back, null, 0);
+
+        this.sections.add(nullFront);
         this.sections.add(section);
+        this.sections.add(nullBack);
     }
 
     public Line(String name, String color) {
