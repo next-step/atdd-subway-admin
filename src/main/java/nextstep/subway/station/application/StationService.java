@@ -36,4 +36,9 @@ public class StationService {
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
+
+    @Transactional(readOnly = true)
+    public Station getOne(Long id) {
+        return stationRepository.getOne(id);
+    }
 }
