@@ -84,12 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         Long lineId = getCreatedLineId(createdLine);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/lines/" + lineId)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
         LineResponse lineResponse = response.body().as(LineResponse.class);
 
         // then
@@ -102,12 +97,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineWithUpDownStation() {
         // given
-        Map<String, String> param1 = new HashMap<>();
-        param1.put("name", "강남역");
-        ExtractableResponse<Response> 강남역 = StationAcceptanceTest.지하철_등록_요청(param1);
-        Map<String, String> param2 = new HashMap<>();
-        param2.put("name", "양재역");
-        ExtractableResponse<Response> 양재역 = StationAcceptanceTest.지하철_등록_요청(param2);
+        ExtractableResponse<Response> 강남역 = StationAcceptanceTest.지하철_등록_요청("강남역");
+        ExtractableResponse<Response> 양재역 = StationAcceptanceTest.지하철_등록_요청("양재역");
 
         String name = "신분당선";
         String color = "red";
@@ -117,12 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long lineId = getCreatedLineId(createdLine);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/lines/" + lineId)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
 
         // then
         LineResponse lineResponse = response.body().as(LineResponse.class);
@@ -182,12 +168,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return params;
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
         return RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines/" + lineId)
             .then().log().all()
             .extract();
     }
