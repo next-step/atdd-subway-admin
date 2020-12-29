@@ -1,5 +1,6 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.common.exception.EntityNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -35,5 +36,10 @@ public class StationService {
 
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findByStationId(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 지하철 역을 찾을 수가 없습니다."));
     }
 }
