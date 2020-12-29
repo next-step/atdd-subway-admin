@@ -45,7 +45,7 @@ public class LineService {
 	}
 
 	public LineResponse saveLine(LineRequest lineRequest, Station upStation, Station downStation) {
-		List<Station> stations = Stream.of(upStation, downStation).collect(Collectors.toList());
+		List<Station> stations = Arrays.asList(upStation, downStation);
 		Line line = new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance(), stations);
 		lineRepository.save(line);
 		return LineResponse.of(line);
