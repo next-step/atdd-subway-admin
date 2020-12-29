@@ -1,11 +1,15 @@
 package nextstep.subway.line.dto;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
+@NoArgsConstructor
 public class LineResponse {
     private Long id;
     private String name;
@@ -13,9 +17,6 @@ public class LineResponse {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private List<Station> stations;
-
-    public LineResponse() {
-    }
 
     public LineResponse(Long id, String name, String color,
                         LocalDateTime createdDate, LocalDateTime modifiedDate,
@@ -47,29 +48,5 @@ public class LineResponse {
                 line.getModifiedDate(),
                 stations
         );
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
-
-    public List<Station> getStations() {
-        return stations;
     }
 }

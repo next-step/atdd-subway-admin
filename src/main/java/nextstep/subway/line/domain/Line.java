@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
@@ -7,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@Getter
+@NoArgsConstructor
 @Entity
 public class Line extends BaseEntity {
     @Id
@@ -18,9 +22,6 @@ public class Line extends BaseEntity {
 
     @Embedded
     private Section section;
-
-    public Line() {
-    }
 
     public Line(String name, String color) {
         this.name = name;
@@ -36,18 +37,6 @@ public class Line extends BaseEntity {
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public List<Long> getSectionIds() {
