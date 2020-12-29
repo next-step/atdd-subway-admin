@@ -53,8 +53,4 @@ public class LineService {
         sectionService.deleteAllByLineId(lineId);
         lineRepository.deleteById(lineId);
     }
-
-    private void findStationById(Long stationId) {
-
-    }
 }
