@@ -81,9 +81,6 @@ public class Section {
 	}
 
 	private boolean isEqualStation(Station origin, Station target) {
-		if (origin == null || target == null) {
-			return origin == target;
-		}
-		return origin.getId().equals(target.getId());
+		return target.equals(origin);
 	}
 }

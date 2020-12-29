@@ -5,7 +5,7 @@ public class SectionRequest {
 	private Long downStationId;       // 하행역 아이디
 	private int distance;             // 거리
 
-	public SectionRequest() {
+	protected SectionRequest() {
 	}
 
 	public SectionRequest(Long upStationId, Long downStationId, int distance) {
