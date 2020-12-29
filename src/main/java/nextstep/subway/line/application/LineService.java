@@ -42,7 +42,6 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new CustomException("`Line`의 엔티티가 존재하지 않습니다."));
         line.update(lineRequest.toLine());
-        lineRepository.save(line);
     }
 
     public void deleteById(long id) {
