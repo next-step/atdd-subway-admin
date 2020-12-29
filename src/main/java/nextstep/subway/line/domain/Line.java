@@ -36,17 +36,15 @@ public class Line extends BaseEntity {
         this.sections.add(nullBack);
     }
 
-    public Line(String name, String color) {
-        // TODO : private access
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
         this.sections = new ArrayList<>();
     }
 
-    public void update(Line line) {
-        // TODO : parameter split
-        this.name = line.getName();
-        this.color = line.getColor();
+    public void update(String name, String color) {
+    	this.name = name;
+    	this.color = color;
     }
 
     public List<Station> getSortedStations() {
