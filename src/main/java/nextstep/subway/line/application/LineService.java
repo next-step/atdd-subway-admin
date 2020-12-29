@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -33,16 +34,21 @@ public class LineService {
 	}
 
 	public LineResponse findLine(Long id) {
-		Line persistLine = lineRepository.findById(id).orElseThrow(() -> new IllegalStateException("등록된 노선이 아닙니다."));
+		Line persistLine = getLineById(id);
 		return LineResponse.of(persistLine);
 	}
 
 	public void updateLine(Long id, LineRequest lineRequest) {
-		Line persistLine = lineRepository.findById(id).orElseThrow(() -> new IllegalStateException("등록된 노선이 아닙니다."));
+		Line persistLine = getLineById(id);
 		persistLine.update(lineRequest.toLine());
+	}
+
+	private Line getLineById(Long id) {
+		return lineRepository.findById(id).orElseThrow(() -> new NotFoundException("노선이 존재하지 않습니다."));
 	}
 
 	public void deleteLine(Long id) {
 		lineRepository.deleteById(id);
 	}
+
 }

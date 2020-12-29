@@ -18,6 +18,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.common.dto.ErrorResponse;
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
@@ -71,6 +73,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdLine);
 		// then
 		지하철_노선_응답됨(createdLine, response);
+	}
+
+	@DisplayName("존재하지 않는 노선을 조회할 경우 에러가 발생한다.")
+	@Test
+	void getNotFoundLine() {
+		// when
+		ExtractableResponse<Response> response = 존재하지_않는_지하철_노선_조회_요청();
+		// then
+		지하철_노선_존재하지_않음(response);
+	}
+
+	private void 지하철_노선_존재하지_않음(ExtractableResponse<Response> response) {
+		String errorCode = response.jsonPath().getObject(".", ErrorResponse.class).getErrorCode();
+		assertThat(errorCode).isEqualTo(NotFoundException.ERROR_CODE);
+	}
+
+	private ExtractableResponse<Response> 존재하지_않는_지하철_노선_조회_요청() {
+		Long lineId = 10L;
+		return RestAssured.given().log().all()
+			.when().get("/lines/{id}", lineId)
+			.then().log().all().extract();
 	}
 
 	@DisplayName("지하철 노선을 수정한다.")
@@ -191,4 +214,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all()
 			.extract();
 	}
+
 }
