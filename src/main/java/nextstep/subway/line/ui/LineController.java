@@ -6,6 +6,7 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.line.exception.AlreadySavedLineException;
 import nextstep.subway.line.exception.LineNotFoundException;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity<?> showLines() {
-        List<LineResponse> lines = lineService.findAll();
+        List<LinesResponse> lines = lineService.findAll();
         return ResponseEntity.ok(lines);
     }
 

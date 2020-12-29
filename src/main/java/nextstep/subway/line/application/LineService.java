@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -9,6 +10,7 @@ import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.line.exception.AlreadySavedLineException;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.domain.Station;
@@ -31,10 +33,10 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<LineResponse> findAll() {
+    public List<LinesResponse> findAll() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(line -> new LineResponse(line.getId(), line.getName(), line.getColor()))
+                .map(line -> LinesResponse.of(line))
                 .collect(Collectors.toList());
     }
 

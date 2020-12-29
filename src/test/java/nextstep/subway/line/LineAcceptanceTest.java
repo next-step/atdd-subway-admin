@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.station.StationRestHelper;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
@@ -79,9 +80,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(this::extractLocationByResponse)
                 .collect(Collectors.toList());
 
-        List<LineResponse> 라인_전체_조회_응답_객체 = 라인_전체_조회_응답.jsonPath().getList(".", LineResponse.class);
+        List<LinesResponse> 라인_전체_조회_응답_객체 = 라인_전체_조회_응답.jsonPath().getList(".", LinesResponse.class);
         List<Long> resultLineIds = 라인_전체_조회_응답_객체.stream()
-                .map(LineResponse::getId)
+                .map(LinesResponse::getId)
                 .collect(Collectors.toList());
 
         // then
@@ -91,12 +92,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
         assertThat(라인_전체_조회_응답_객체.get(0).getName()).isEqualTo("신분당선");
         assertThat(라인_전체_조회_응답_객체.get(0).getColor()).isEqualTo("bg-red-600");
-        assertThat(라인_전체_조회_응답_객체.get(0).getStations().get(0).getName()).isEqualTo("강남역");
-        assertThat(라인_전체_조회_응답_객체.get(0).getStations().get(1).getName()).isEqualTo("판교역");
         assertThat(라인_전체_조회_응답_객체.get(1).getName()).isEqualTo("2호선");
         assertThat(라인_전체_조회_응답_객체.get(1).getColor()).isEqualTo("bg-green-600");
-        assertThat(라인_전체_조회_응답_객체.get(1).getStations().get(0).getName()).isEqualTo("낙성대역");
-        assertThat(라인_전체_조회_응답_객체.get(1).getStations().get(1).getName()).isEqualTo("사당역");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
