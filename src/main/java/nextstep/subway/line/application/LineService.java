@@ -1,28 +1,35 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.line.application.exceptions.CLineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Station upStation = stationRepository.findById(request.getUpStationId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다."));
+        Station downStation = stationRepository.findById(request.getDownStationId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다."));
+        Line persistLine = lineRepository.save(request.toLineWithStation(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
@@ -36,12 +43,12 @@ public class LineService {
 
     public LineResponse findLineById(Long id) {
         return LineResponse.of(lineRepository.findById(id)
-                .orElseThrow(() -> new CLineNotFoundException("존재하지 않는 라인입니다.")));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 라인입니다.")));
     }
 
     public LineResponse updateLine(LineRequest lineRequest, Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new CLineNotFoundException("존재하지 않는 라인입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 라인입니다."));
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
