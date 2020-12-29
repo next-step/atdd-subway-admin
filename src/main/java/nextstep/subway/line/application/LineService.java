@@ -25,11 +25,15 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId())
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다."));
-        Station downStation = stationRepository.findById(request.getDownStationId())
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다."));
-        Line persistLine = lineRepository.save(request.toLineWithStation(upStation, downStation));
+        if (request.isContainsStation()) {
+            Station upStation = stationRepository.findById(request.getUpStationId())
+                    .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다."));
+            Station downStation = stationRepository.findById(request.getDownStationId())
+                    .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다."));
+            Line persistLine = lineRepository.save(request.toLineWithStation(upStation, downStation));
+            return LineResponse.of(persistLine);
+        }
+        Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
 

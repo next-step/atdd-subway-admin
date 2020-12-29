@@ -30,4 +30,8 @@ public class LineRequest {
     public Line toLineWithStation(Station upStation, Station downStation) {
         return new Line(getName(), getColor(), upStation, downStation, getDistance());
     }
+
+    public boolean isContainsStation() {
+        return upStationId != null && downStationId != null;
+    }
 }

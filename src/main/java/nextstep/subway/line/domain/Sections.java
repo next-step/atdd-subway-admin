@@ -34,7 +34,7 @@ public class Sections {
     }
 
     private Section getStartSection() {
-        Section ret = null;
+        Section ret = new Section();
         for (Section section : this.sections) {
             ret = findNotContainDownStations(section.getUpStation());
         }
