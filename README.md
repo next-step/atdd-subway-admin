@@ -38,6 +38,18 @@ npm run dev
 ```
 <br>
 
+## [STEP1] 지하철 노선 관리
+* 지하철 노선 관련 기능
+    * 인수 테스트를 작성하기
+    * 지하철 노선 관련 기능 구현하기
+        - [X] 노선 생성 POST : /lines
+        - [X] 기존에 존재하는 지하철 노선 이름으로 생성
+        - [X] 노선 목록 조회 GET : /lines
+        - [X] 노선 조회 GET : /lines/{id}
+        - [X] 노선 수정 PUT : /lines/{id}
+        - [X] 노선 제거 DELETE : /lines/{id}
+    * 인수 테스트 리팩터링
+    
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
