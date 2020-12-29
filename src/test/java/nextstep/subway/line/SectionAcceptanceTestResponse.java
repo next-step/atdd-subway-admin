@@ -23,6 +23,13 @@ public class SectionAcceptanceTestResponse {
 		assertThat(resultStationIds).containsAll(expectedStationIds);
 	}
 
+	public static void 지하철_노선_구간_거리_계산됨(ExtractableResponse<Response> response, List<Integer> expectedDistances) {
+		List<Integer> resultStationIds = response.jsonPath().getList("stations", SectionResponse.class).stream()
+			.map(SectionResponse::getDistance)
+			.collect(Collectors.toList());
+		assertThat(resultStationIds).containsAll(expectedDistances);
+	}
+
 	public static void 지하철_노선에_지하철역이_등록되지않음(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}

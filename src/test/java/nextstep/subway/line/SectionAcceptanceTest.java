@@ -33,64 +33,80 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         lineUri = LineAcceptanceTestRequest.지하철_노선_등록되어_있음("2호선", "green", lineUpStationId, lineDownStationId, 10);
     }
 
-    @DisplayName("노선에 구간을 등록한다. (CASE1) A-NEW-B : A-B 중간에 A-NEW등록")
+    @DisplayName("노선에 구간을 등록한다. (CASE1) A-NEW-B : A-B 중간에 A-NEW 등록")
     @Test
     void addSectionInMiddleBasedPreStation() {
         // when
         // 지하철_노선에_지하철역_등록_요청
+        int newSectionDistance = INIT_LINE_DISTANCE - 1;
         ExtractableResponse<Response> response = SectionAcceptanceTestRequest
-            .지하철_노선에_지하철역_등록_요청(lineUri, lineUpStationId, lineNewStationId, INIT_LINE_DISTANCE - 1);
+            .지하철_노선에_지하철역_등록_요청(lineUri, lineUpStationId, lineNewStationId, newSectionDistance);
 
         // then
         // 지하철_노선에_지하철역_등록됨
+        // 지하철_노선_구간_거리_계산됨
         List<Long> expectedStations = Arrays.asList(lineUpStationId, lineNewStationId, lineDownStationId);
+        List<Integer> expectedDistances = Arrays.asList(0, newSectionDistance, INIT_LINE_DISTANCE - newSectionDistance);
         SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨(response);
         SectionAcceptanceTestResponse.지하철_노선에_등록한_구간_포함됨(response, expectedStations);
+        SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
 
-    @DisplayName("노선에 구간을 등록한다. (CASE2) A-NEW-B : A-B 중간에 NEW-B등록")
+    @DisplayName("노선에 구간을 등록한다. (CASE2) A-NEW-B : A-B 중간에 NEW-B 등록")
     @Test
     void addSectionInMiddle() {
         // when
         // 지하철_노선에_지하철역_등록_요청
+        int newSectionDistance = 4;
         ExtractableResponse<Response> response = SectionAcceptanceTestRequest
-            .지하철_노선에_지하철역_등록_요청(lineUri, lineNewStationId, lineDownStationId, 4);
+            .지하철_노선에_지하철역_등록_요청(lineUri, lineNewStationId, lineDownStationId, newSectionDistance);
 
         // then
         // 지하철_노선에_지하철역_등록됨
+        // 지하철_노선_구간_거리_계산됨
         List<Long> expectedStations = Arrays.asList(lineUpStationId, lineNewStationId, lineDownStationId);
+        List<Integer> expectedDistances = Arrays.asList(0, INIT_LINE_DISTANCE - newSectionDistance, newSectionDistance);
         SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨(response);
         SectionAcceptanceTestResponse.지하철_노선에_등록한_구간_포함됨(response, expectedStations);
+        SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
 
-    @DisplayName("노선에 구간을 등록한다. (CASE3) NEW-A-B : A-B 앞에 NEW-A등록")
+    @DisplayName("노선에 구간을 등록한다. (CASE3) NEW-A-B : A-B 앞에 NEW-A 등록")
     @Test
     void addSectionAtFirst() {
         // when
         // 지하철_노선에_지하철역_등록_요청
+        int newSectionDistance = 4;
         ExtractableResponse<Response> response = SectionAcceptanceTestRequest
-            .지하철_노선에_지하철역_등록_요청(lineUri, lineNewStationId, lineUpStationId, 4);
+            .지하철_노선에_지하철역_등록_요청(lineUri, lineNewStationId, lineUpStationId, newSectionDistance);
 
         // then
         // 지하철_노선에_지하철역_등록됨
+        // 지하철_노선_구간_거리_계산됨
         List<Long> expectedStations = Arrays.asList(lineNewStationId, lineUpStationId, lineDownStationId);
+        List<Integer> expectedDistances = Arrays.asList(0, newSectionDistance, INIT_LINE_DISTANCE);
         SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨(response);
         SectionAcceptanceTestResponse.지하철_노선에_등록한_구간_포함됨(response, expectedStations);
+        SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
 
-    @DisplayName("노선에 구간을 등록한다. (CASE4) A-B-NEW: A-B 뒤에 B-C등록")
+    @DisplayName("노선에 구간을 등록한다. (CASE4) A-B-NEW: A-B 뒤에 B-NEW 등록")
     @Test
     void addSectionAtLastBasedPreStation() {
         // when
         // 지하철_노선에_지하철역_등록_요청
+        int newSectionDistance = 4;
         ExtractableResponse<Response> response = SectionAcceptanceTestRequest
-            .지하철_노선에_지하철역_등록_요청(lineUri, lineDownStationId, lineNewStationId, 4);
+            .지하철_노선에_지하철역_등록_요청(lineUri, lineDownStationId, lineNewStationId, newSectionDistance);
 
         // then
         // 지하철_노선에_지하철역_등록됨
+        // 지하철_노선_구간_거리_계산됨
         List<Long> expectedStations = Arrays.asList(lineUpStationId, lineDownStationId, lineNewStationId);
+        List<Integer> expectedDistances = Arrays.asList(0, INIT_LINE_DISTANCE, newSectionDistance);
         SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨(response);
         SectionAcceptanceTestResponse.지하철_노선에_등록한_구간_포함됨(response, expectedStations);
+        SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
 
     @DisplayName("노선에 구간의 길이와 같이 등록하면 등록할 수 없다")
