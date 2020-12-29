@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationTestApi;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -92,11 +94,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // 지하철_역_등록되어_있음
-        // 지하철_노선_등록되어_있음
-        // 지하철_구간정보_등록되어_있음
+        // 지하철_역_등록되어_있음 * 3
+        ExtractableResponse<Response> createdStations1 = StationTestApi.지하철_역_등록_요청("강남역");
+        ExtractableResponse<Response> createdStations2 = StationTestApi.지하철_역_등록_요청("역삼역");
+        ExtractableResponse<Response> createdStations3 = StationTestApi.지하철_역_등록_요청("선릉역");
+
+        // 지하철_노선_등록되어_있음 * 1
         ExtractableResponse<Response> createResponse = LineTestApi
-              .지하철_노선_등록되어_있음("bg-red-600", "신분당선");
+              .지하철_노선_등록되어_있음("bg-green-600", "2호선");
+
+        // 지하철_구간정보_등록되어_있음 * 2
+
 
         // when
         // 지하철_노선_조회_요청
@@ -105,8 +113,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_응답됨
+        List<StationResponse> stations = response.jsonPath()
+              .getList("stations", StationResponse.class);
+
         응답_상태코드_확인(response, HttpStatus.OK);
         assertThat(response.body().as(LineResponse.class).getId()).isEqualTo(lineIds.get(0));
+        assertThat(stations).containsAll(Arrays.asList(
+              createdStations1.body().as(StationResponse.class),
+              createdStations2.body().as(StationResponse.class),
+              createdStations3.body().as(StationResponse.class)
+        ));
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
