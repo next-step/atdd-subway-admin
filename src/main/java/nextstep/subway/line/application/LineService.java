@@ -38,10 +38,11 @@ public class LineService {
                 .orElseThrow(() -> new CustomException("`Line`의 엔티티가 존재하지 않습니다."));
     }
 
-    public void updateLine(long id, LineRequest lineRequest) {
+    public LineResponse updateLine(long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new CustomException("`Line`의 엔티티가 존재하지 않습니다."));
         line.update(lineRequest.toLine());
+        return LineResponse.of(line);
     }
 
     public void deleteById(long id) {

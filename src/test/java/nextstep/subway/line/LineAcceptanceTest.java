@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.HttpTestStatusCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -99,11 +101,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdUrl, "1호선", "BLUE");
+        String expectedName = "1호선";
+        String expectedColor = "BLUE";
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdUrl, expectedName, expectedColor);
 
         // then
         // 지하철_노선_수정됨
-        지하철_노선_수정됨(response);
+        지하철_노선_수정됨(expectedName, expectedColor, response);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -189,8 +193,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
+    private void 지하철_노선_수정됨(String expectedName, String expectedColor, ExtractableResponse<Response> response) {
         요청_완료(response);
+        assertAll(
+                () -> assertEquals(response.jsonPath().getString("name"), expectedName),
+                () -> assertEquals(response.jsonPath().getString("color"), expectedColor)
+        );
     }
 
     private ExtractableResponse<Response> 지하철_노선_제거_요청(String createdUrl) {
