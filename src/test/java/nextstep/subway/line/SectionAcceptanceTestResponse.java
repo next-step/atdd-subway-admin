@@ -20,14 +20,14 @@ public class SectionAcceptanceTestResponse {
 		List<Long> resultStationIds = response.jsonPath().getList("stations", SectionResponse.class).stream()
 			.map(SectionResponse::getId)
 			.collect(Collectors.toList());
-		assertThat(resultStationIds).containsAll(expectedStationIds);
+		assertThat(resultStationIds).isEqualTo(expectedStationIds);
 	}
 
 	public static void 지하철_노선_구간_거리_계산됨(ExtractableResponse<Response> response, List<Integer> expectedDistances) {
 		List<Integer> resultStationIds = response.jsonPath().getList("stations", SectionResponse.class).stream()
 			.map(SectionResponse::getDistance)
 			.collect(Collectors.toList());
-		assertThat(resultStationIds).containsAll(expectedDistances);
+		assertThat(resultStationIds).isEqualTo(expectedDistances);
 	}
 
 	public static void 지하철_노선에_지하철역이_등록되지않음(ExtractableResponse<Response> response) {
