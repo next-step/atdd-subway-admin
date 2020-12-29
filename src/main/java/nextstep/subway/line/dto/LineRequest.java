@@ -1,9 +1,7 @@
 package nextstep.subway.line.dto;
 
 import lombok.Getter;
-import nextstep.subway.distance.Distance;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Station;
 
 @Getter
 public class LineRequest {

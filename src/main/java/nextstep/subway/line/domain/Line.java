@@ -10,6 +10,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Entity
 public class Line extends BaseEntity {
     @Id
@@ -58,5 +60,9 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Station> getStations() {
+        return sections.stream().map(Section::getArrival).collect(toList());
     }
 }
