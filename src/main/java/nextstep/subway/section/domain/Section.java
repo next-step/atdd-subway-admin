@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -38,6 +39,12 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
+    public Section(int distance, Station upStation, Station station) {
+        this.distance = distance;
+        this.upStation = upStation;
+        this.station = station;
+    }
+
     public Long getId() {
         return id;
     }
@@ -56,5 +63,19 @@ public class Section extends BaseEntity {
 
     public Line getLine() {
         return line;
+    }
+
+    public void addLine(Line line) {
+        if(Objects.nonNull(this.getLine())) {
+            this.line.getSections().remove(this);
+        }
+        this.line = line;
+        line.getSections().add(this);
+    }
+
+    public void updateSection(Station upStation, Station station, int distance) {
+        this.upStation = upStation;
+        this.station = station;
+        this.distance =distance;
     }
 }
