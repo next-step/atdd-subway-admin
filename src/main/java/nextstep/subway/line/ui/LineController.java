@@ -1,6 +1,6 @@
 package nextstep.subway.line.ui;
 
-import nextstep.subway.line.application.LineNotFoundException;
+import nextstep.subway.common.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -54,8 +54,8 @@ public class LineController {
 		return ResponseEntity.badRequest().build();
 	}
 
-	@ExceptionHandler(LineNotFoundException.class)
-	public ResponseEntity handleLineNotFoundException(LineNotFoundException e) {
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity handleLineNotFoundException(NotFoundException e) {
 		return ResponseEntity.notFound().build();
 	}
 }
