@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -34,12 +35,12 @@ public class LineService {
     public LineResponse findById(long id) {
         return lineRepository.findById(id)
                 .map(LineResponse::of)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new CustomException("`Line`의 엔티티가 존재하지 않습니다."));
     }
 
     public void updateLine(long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new CustomException("`Line`의 엔티티가 존재하지 않습니다."));
         line.update(lineRequest.toLine());
         lineRepository.save(line);
     }
