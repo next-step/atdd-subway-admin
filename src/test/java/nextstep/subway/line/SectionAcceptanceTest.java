@@ -157,7 +157,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("노선에 연결된 구간을 제거한다.")
+    @DisplayName("노선에 종점 구간을 제거한다.")
     @Test
     void deleteEndSection() {
         // when

@@ -53,7 +53,7 @@ public class LineServiceTest {
         Station 양재역 = stationRepository.save(new Station("양재역"));
         Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
 
-        addSection(line, 양재역, 판교역,6);
+        addSection(line, 판교역, 양재역, 6);
 
         assertThat(getStationResponses(line))
                 .extracting("name")
@@ -72,7 +72,7 @@ public class LineServiceTest {
 
         assertThat(getStationResponses(line))
                 .extracting("name")
-                .containsExactly("판교역", "강남역", "양재역");
+                .containsExactly("강남역", "판교역", "양재역");
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
@@ -85,13 +85,31 @@ public class LineServiceTest {
 
         Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
 
-        addSection(line, 양재역, 판교역, 6);
+        addSection(line, 판교역, 양재역, 6);
 
-        addSection(line, 양재시민의숲, 양재역, 6);
+        addSection(line, 양재역, 양재시민의숲, 6);
 
         assertThat(getStationResponses(line))
                 .extracting("name")
                 .containsExactly("강남역", "판교역", "양재역", "양재시민의숲");
+    }
+
+    @DisplayName("노선에 종점 구간을 제거한다.")
+    @Test
+    void deleteEndSection() {
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 판교역 = stationRepository.save(new Station("판교역"));
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+
+        Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
+
+        addSection(line, 판교역, 양재역, 6);
+
+        lineService.removeSectionByStationId(line.getId(), 양재역.getId());
+
+        assertThat(getStationResponses(line))
+                .extracting("name")
+                .containsExactly("강남역", "판교역");
     }
 
     private Line saveLine(String lineName, String lineColor, Station upStation, Station downStation, int distance) {
@@ -108,8 +126,8 @@ public class LineServiceTest {
 
     private void addSection(Line line, Station upStation, Station downStation, int distance) {
         lineService.addSection(line.getId(), new SectionBuilder()
-                .withUpStation(downStation)
-                .withDownStation(upStation)
+                .withUpStation(upStation)
+                .withDownStation(downStation)
                 .withDistance(distance).toSectionRequest());
     }
 
