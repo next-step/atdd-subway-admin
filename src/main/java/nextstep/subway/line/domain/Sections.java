@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new LinkedList<>();
 
     public List<Station> getStations() {
@@ -80,13 +80,13 @@ public class Sections {
                 });
     }
 
-    private Optional<Section> findSameUpStation(Station targetStation) {
+    public Optional<Section> findSameUpStation(Station targetStation) {
         return this.sections.stream()
                 .filter(section -> section.isSameUpStation(targetStation))
                 .findFirst();
     }
 
-    private Optional<Section> findSameDownStation(Station targetStation) {
+    public Optional<Section> findSameDownStation(Station targetStation) {
         return this.sections.stream()
                 .filter(base -> base.isSameDownStation(targetStation))
                 .findFirst();
@@ -111,5 +111,22 @@ public class Sections {
                 .filter(value -> !stationStationMap.containsValue(value))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public void remove(Station station) {
+        containsSection(station)
+                .stream()
+                .findFirst()
+                .ifPresent(this.sections::remove);
+    }
+
+    private List<Section> containsSection(Station station) {
+        List<Section> containsSections = new ArrayList<>();
+        findSameUpStation(station)
+                .ifPresent(containsSections::add);
+        findSameDownStation(station)
+                .ifPresent(containsSections::add);
+
+        return containsSections;
     }
 }
