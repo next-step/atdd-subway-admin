@@ -57,6 +57,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.stream().map(Section::getArrival).collect(toList());
+        return sections.stream().map(Section::getDownStation).collect(toList());
     }
 }

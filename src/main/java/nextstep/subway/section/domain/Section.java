@@ -21,24 +21,24 @@ public class Section extends BaseEntity {
     private Line line;
 
     @ManyToOne
-    @JoinColumn(name = "departure_id")
-    private Station departure;
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
 
     @ManyToOne
-    @JoinColumn(name = "arrival_id")
-    private Station arrival;
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
 
     @Embedded
     private Distance distance;
 
-    public Section(final Line line, final Station departure, final Station arrival, final Distance distance) {
+    public Section(final Line line, final Station upStation, final Station downStation, final Distance distance) {
         this.line = line;
-        this.departure = departure;
-        this.arrival = arrival;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Station getArrival() {
-        return arrival;
+    public Station getDownStation() {
+        return downStation;
     }
 }
