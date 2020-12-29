@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final String DEFAULT_LINES_URI = "/lines";
-    final Map<String, String> params = new HashMap<>();
+    public static final String DEFAULT_LINES_URI = "/lines";
+    private final Map<String, String> params = new HashMap<>();
 
     @BeforeEach
     void 노선_생성_요청_파라미터_설정() {
