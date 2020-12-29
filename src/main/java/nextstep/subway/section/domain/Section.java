@@ -1,16 +1,18 @@
 package nextstep.subway.section.domain;
 
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity implements Comparable<Section> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +40,29 @@ public class Section {
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
+
+		line.addBySection(this);
+	}
+
+	public boolean isDownSectionOf(Section section) {
+		return this.upStation.equals(section.downStation);
+	}
+
+	public boolean isUpSectionOf(Section section) {
+		return this.downStation.equals(section.upStation);
+	}
+
+	@Override
+	public int compareTo(Section o) {
+		if (isDownSectionOf(o)) {
+			return 1;
+		}
+
+		if (isUpSectionOf(o)) {
+			return -1;
+		}
+
+		return 0;
 	}
 
 	public Long getId() {
@@ -58,5 +83,22 @@ public class Section {
 
 	public Integer getDistance() {
 		return distance;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Section section = (Section) o;
+		return Objects.equals(id, section.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 }

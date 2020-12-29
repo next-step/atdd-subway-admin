@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
+import nextstep.subway.line.dto.LineRequest;
 import org.springframework.http.MediaType;
 
 public class LineTestApi {
@@ -29,6 +30,15 @@ public class LineTestApi {
 		return RestAssured.given().log().all()
 			  .contentType(MediaType.APPLICATION_JSON_VALUE)
 			  .body(params)
+			  .when().post("/lines")
+			  .then().log().all()
+			  .extract();
+	}
+
+	public static ExtractableResponse<Response> 지하철_노선_생성_요청2(LineRequest lineRequest) {
+		return RestAssured.given().log().all()
+			  .contentType(MediaType.APPLICATION_JSON_VALUE)
+			  .body(lineRequest)
 			  .when().post("/lines")
 			  .then().log().all()
 			  .extract();
