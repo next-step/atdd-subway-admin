@@ -62,7 +62,7 @@ public class Line extends BaseEntity {
 		return sections.stream()
 				.filter(section -> Objects.equals(section.getFront(), station))
 				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("cannot find station by predicate"));
+				.orElseThrow(() -> new IllegalArgumentException("cannot find station"));
 	}
 
 	public String getName() {

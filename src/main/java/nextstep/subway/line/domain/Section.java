@@ -33,7 +33,7 @@ public class Section extends BaseEntity {
 
 	public Section(Line line, Station front, Station back, int distance) {
 		if (front == null && back == null) {
-			throw new IllegalArgumentException("front and back");
+			throw new IllegalArgumentException("both station cannot be null");
 		}
 		this.line = line;
 		this.front = front;
