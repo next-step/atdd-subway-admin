@@ -187,7 +187,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 지하철_노선_정보_변경_요청(final long lineId, final Map<String, String> params) {
         final String uri = DEFAULT_LINES_URI + "/" + lineId;
 
-        return PUT_요청_보내기(uri, params);
+        return PUT_요청_보내기(params, uri);
     }
 
     @DisplayName("지하철 노선을 제거한다.")

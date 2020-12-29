@@ -45,7 +45,7 @@ public class AcceptanceTest {
             .extract();
     }
 
-    protected ExtractableResponse<Response> PUT_요청_보내기(final String uri, final Map<String, String> params) {
+    protected ExtractableResponse<Response> PUT_요청_보내기(final Map<String, String> params, final String uri) {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(params)
