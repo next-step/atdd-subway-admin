@@ -59,7 +59,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void failAddSection1() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station2.getId() + "", station3.getId() + "", 12 + "");
+        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station1.getId() + "", station3.getId() + "", 12 + "");
 
         // then
         // 지하철_노선에_지하철역_등록 실패됨
@@ -71,7 +71,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void failAddSection2() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station2.getId() + "", station3.getId() + "", 10 + "");
+        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station1.getId() + "", station3.getId() + "", 10 + "");
 
         // then
         // 지하철_노선에_지하철역_등록 실패됨
@@ -94,7 +94,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void failAddSection4() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        StationResponse station3 = StationAcceptanceTest.createStation("판교역").as(StationResponse.class);
         StationResponse station4 = StationAcceptanceTest.createStation("정자역").as(StationResponse.class);
         ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station3.getId() + "", station4.getId() + "", 6 + "");
 

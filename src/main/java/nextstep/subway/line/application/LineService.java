@@ -81,19 +81,45 @@ public class LineService {
     }
 
     public LineResponse addStation(Long id, SectionRequest sectionRequest) {
-        Station upStation = findStationById(sectionRequest.getUpStationId());
-        Station downStation = findStationById(sectionRequest.getDownStationId());
+
         Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
         List<Section> sections = line.getSections();
+        Section newSection = validationCheck(sectionRequest, sections);
         sections.forEach(section -> {
-            if(section.getUpStation() == upStation) {
-                section.updateSection(downStation, section.getStation(), section.getDistance() - sectionRequest.getDistance());
+            if (section.getUpStation() == newSection.getUpStation()) {
+                newSection.setDistance(newSection.getDistance() - section.getDistance());
+                section.updateSection(newSection.getStation(), section.getStation(), section.getDistance());
             }
-            if(section.getStation() == downStation) {
-                section.updateSection(section.getUpStation(), upStation,section.getDistance() - sectionRequest.getDistance());
+            if (section.getStation() == newSection.getStation()) {
+                newSection.setDistance(newSection.getDistance() - section.getDistance());
+                section.updateSection(section.getUpStation(), newSection.getUpStation(), section.getDistance());
             }
         });
-        line.setSections(new Section(sectionRequest.getDistance(), upStation, downStation)); // section 저장
+        line.setSections(newSection);
         return LineResponse.of(line, getStations(sections));
+    }
+
+    private Section validationCheck(SectionRequest sectionRequest, List<Section> sections) {
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+        Section newSection = new Section(sectionRequest.getDistance(), upStation, downStation);
+
+        if (sections.stream().anyMatch(section -> section.equals(newSection))) {
+            throw new RuntimeException("동일한 구간 추가 요청");
+        }
+        if (sections.stream().noneMatch(section -> section.hasStation(newSection))) {
+            throw new RuntimeException("등록되어 있지 않은 구간 추가 요청");
+        }
+        if (sections.stream()
+                .filter(section -> section.getUpStation() == newSection.getUpStation())
+                .anyMatch(section -> section.getDistance() <= newSection.getDistance())) {
+            throw new RuntimeException("구간 길이 오류");
+        }
+        if (sections.stream()
+                .filter(section -> section.getStation() == newSection.getStation())
+                .anyMatch(section -> section.getDistance() <= newSection.getDistance())) {
+            throw new RuntimeException("구간 길이 오류");
+        }
+        return newSection;
     }
 }

@@ -78,4 +78,30 @@ public class Section extends BaseEntity {
         this.station = station;
         this.distance =distance;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Section)) return false;
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation) &&
+                Objects.equals(station, section.station);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, station);
+    }
+
+    public boolean hasStation(Section newSection) {
+        if (this.getStation().equals(newSection.getUpStation())
+                || this.getStation().equals(newSection.getStation())) {
+            return true;
+        }
+        return false;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
 }
