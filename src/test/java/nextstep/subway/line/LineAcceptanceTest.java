@@ -91,6 +91,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return POST_요청_보내기(params, DEFAULT_LINES_URI);
     }
 
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(final String name, final String color) {
+        생성_요청할_노선_정보_설정(name, color);
+        return 지하철_노선_생성_요청();
+    }
+
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
@@ -98,8 +103,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         final ExtractableResponse<Response> firstCreateResponse = 지하철_노선_생성_요청();
         // 지하철_노선_등록되어_있음
-        생성_요청할_노선_정보_설정("5호선", "보라색");
-        final ExtractableResponse<Response> secondCreateResponse = 지하철_노선_생성_요청();
+        final ExtractableResponse<Response> secondCreateResponse = 지하철_노선_생성_요청("5호선", "보라색");
 
         // when
         // 지하철_노선_목록_조회_요청
