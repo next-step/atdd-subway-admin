@@ -31,6 +31,6 @@ public class SectionAcceptanceTestResponse {
 	}
 
 	public static void 지하철_노선에_지하철역이_등록되지않음(ExtractableResponse<Response> response) {
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 }
