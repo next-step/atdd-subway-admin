@@ -50,9 +50,9 @@ public class LineController {
         return ResponseEntity.ok(lineService.findLineByName(name));
     }
 
-    @PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> updateLine(@RequestBody LineRequest lineRequest) {
-        lineService.updateLine(lineRequest);
+    @PutMapping(value = "/{id}", produces = TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> updateLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
+        lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok(lineRequest.getName() + "으로 수정 완료");
     }
 

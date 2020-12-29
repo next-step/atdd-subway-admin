@@ -38,9 +38,9 @@ public class LineService {
                 .orElseThrow(() -> new NoResultException(name + "은(는) 존재하지 않습니다"));
     }
 
-    public void updateLine(LineRequest lineRequest) {
-        Line findLine = lineRepository.findById(lineRequest.getId())
-                .orElseThrow(() -> new NoResultException(lineRequest.getId() + "엔티티가 존재하지 않습니다"));
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line findLine = lineRepository.findById(id)
+                .orElseThrow(() -> new NoResultException(id + "엔티티가 존재하지 않습니다"));
         findLine.update(lineRequest.toLine());
     }
 

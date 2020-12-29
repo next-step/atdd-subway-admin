@@ -25,7 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(지하철_노선("수인분당선", "YELLOW"));
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(new LineRequest("수인분당선", "YELLOW"));
 
         // then
         지하철_노선_생성됨(response);
@@ -35,10 +35,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        지하철_노선_생성_요청(지하철_노선("수인분당선", "YELLOW"));
+        지하철_노선_생성_요청(new LineRequest("수인분당선", "YELLOW"));
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(지하철_노선("수인분당선", "YELLOW"));
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(new LineRequest("수인분당선", "YELLOW"));
 
         // then
         지하철_노선_생성_실패됨(response);
@@ -48,10 +48,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        ExtractableResponse<Response> created1 = 지하철_노선_생성_요청(지하철_노선("수인분당선", "YELLOW"));
-        ExtractableResponse<Response> created2 = 지하철_노선_생성_요청(지하철_노선("신분당선", "RED"));
-        ExtractableResponse<Response> created3 = 지하철_노선_생성_요청(지하철_노선("2호선", "GREEN"));
-        ExtractableResponse<Response> created4 = 지하철_노선_생성_요청(지하철_노선("3호선", "ORANGE"));
+        ExtractableResponse<Response> created1 = 지하철_노선_생성_요청(new LineRequest("수인분당선", "YELLOW"));
+        ExtractableResponse<Response> created2 = 지하철_노선_생성_요청(new LineRequest("신분당선", "RED"));
+        ExtractableResponse<Response> created3 = 지하철_노선_생성_요청(new LineRequest("2호선", "GREEN"));
+        ExtractableResponse<Response> created4 = 지하철_노선_생성_요청(new LineRequest("3호선", "ORANGE"));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회();
@@ -65,8 +65,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> created1 = 지하철_노선_생성_요청(지하철_노선("2호선", "GREEN"));
-        ExtractableResponse<Response> created2 = 지하철_노선_생성_요청(지하철_노선("3호선", "ORANGE"));
+        ExtractableResponse<Response> created1 = 지하철_노선_생성_요청(new LineRequest("2호선", "GREEN"));
+        ExtractableResponse<Response> created2 = 지하철_노선_생성_요청(new LineRequest("3호선", "ORANGE"));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회("2호선");
@@ -80,11 +80,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> created = 지하철_노선_생성_요청(지하철_노선("2호선", "GREEN"));
+        ExtractableResponse<Response> created = 지하철_노선_생성_요청(new LineRequest("2호선", "GREEN"));
         Long id = 생성된_지하철_노선_목록(asList(created)).get(0);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(지하철_노선(id, "3호선", "ORANGE"));
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(id, new LineRequest("3호선", "ORANGE"));
 
         // then
         정상_OK_응답됨(response);
@@ -94,7 +94,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> created = 지하철_노선_생성_요청(지하철_노선("3호선", "ORANGE"));
+        ExtractableResponse<Response> created = 지하철_노선_생성_요청(new LineRequest("3호선", "ORANGE"));
         String id = String.valueOf(생성된_지하철_노선_목록(asList(created)).get(0));
 
         // when
@@ -102,14 +102,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         정상_NO_CONTENT_응답됨(response);
-    }
-
-    public static LineRequest 지하철_노선(String name, String color) {
-        return new LineRequest(name, color);
-    }
-
-    public static LineRequest 지하철_노선(Long id, String name, String color) {
-        return new LineRequest(id, name, color);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
@@ -140,12 +132,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_수정_요청(LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/" + lineRequest.getId())
+                .put("/lines/" + id)
                 .then().log().all()
                 .extract();
     }
