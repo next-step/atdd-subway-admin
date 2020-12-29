@@ -84,4 +84,8 @@ public class LineService {
                 .findById(stationId)
                 .orElseThrow(IllegalArgumentException::new);
     }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+
+    }
 }

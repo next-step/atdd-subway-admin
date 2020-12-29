@@ -133,6 +133,63 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("노선에 연결된 구간을 제거한다.")
+    @Test
+    void deleteBetweenSection() {
+        // when
+        // 지하철_노선에_구간_등록_요청
+        지하철_노선에_구간_등록_요청(신분당선, 강남역, 판교역, 5);
+
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선_구간_제거_요청(신분당선, 판교역);
+
+        // then
+        // 지하철_노선_구간_제거_요청됨
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = LineAcceptanceTest.지하철_노선_조회_요청(신분당선);
+        LineResponse lineResponse = getLineResponse(response);
+
+        assertThat(lineResponse.getStations())
+                .extracting("name")
+                .containsExactly("강남역", "양재역");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("노선에 연결된 구간을 제거한다.")
+    @Test
+    void deleteEndSection() {
+        // when
+        // 지하철_노선에_구간_등록_요청
+        지하철_노선에_구간_등록_요청(신분당선, 강남역, 판교역, 5);
+
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        // 지하철_노선_구간_제거_요청됨
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = LineAcceptanceTest.지하철_노선_조회_요청(신분당선);
+        LineResponse lineResponse = getLineResponse(response);
+
+        assertThat(lineResponse.getStations())
+                .extracting("name")
+                .containsExactly("판교역", "양재역");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_구간_제거_요청(long lineId, long stationId) {
+        return RestAssured.given().queryParam("stationId", stationId).log().all().
+                when().
+                delete("/lines/{lineId}/sections", lineId).
+                then().
+                log().all().
+                extract();
+    }
+
     private ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
