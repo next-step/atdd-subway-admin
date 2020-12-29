@@ -3,8 +3,8 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineUpdateRequest;
-import nextstep.subway.line.dto.NewLineRequest;
-import nextstep.subway.line.dto.NewLineResponse;
+import nextstep.subway.line.dto.LineCreateRequest;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
@@ -25,28 +25,28 @@ public class LineService {
 	}
 
 	@Transactional
-	public NewLineResponse saveLine(NewLineRequest newLineRequest) {
-		Station front = stationService.findById(newLineRequest.getUpStationId());
-		Station back = stationService.findById(newLineRequest.getDownStationId());
-		Line line = new Line(newLineRequest.getName(),
-				newLineRequest.getColor(),
+	public LineResponse saveLine(LineCreateRequest lineCreateRequest) {
+		Station front = stationService.findById(lineCreateRequest.getUpStationId());
+		Station back = stationService.findById(lineCreateRequest.getDownStationId());
+		Line line = new Line(lineCreateRequest.getName(),
+				lineCreateRequest.getColor(),
 				front,
 				back,
-				newLineRequest.getStationDistance());
+				lineCreateRequest.getStationDistance());
 		line = lineRepository.save(line);
-		return NewLineResponse.of(line);
+		return LineResponse.of(line);
 	}
 
 	@Transactional(readOnly = true)
-	public List<NewLineResponse> findAllLine() {
+	public List<LineResponse> findAllLine() {
 		return lineRepository.findAll().stream()
-				.map(NewLineResponse::of)
+				.map(LineResponse::of)
 				.collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
-	public NewLineResponse findLineById(Long id) {
-		return NewLineResponse.of(findLine(id));
+	public LineResponse findLineById(Long id) {
+		return LineResponse.of(findLine(id));
 	}
 
 	@Transactional

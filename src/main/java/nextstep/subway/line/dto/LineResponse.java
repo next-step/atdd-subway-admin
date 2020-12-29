@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class NewLineResponse {
+public class LineResponse {
     private Long id;
     private String name;
     private String color;
@@ -15,10 +15,10 @@ public class NewLineResponse {
     private LocalDateTime modifiedDate;
     private List<StationResponse> stations;
 
-    public NewLineResponse() {
+    public LineResponse() {
     }
 
-    public NewLineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -26,7 +26,7 @@ public class NewLineResponse {
         this.modifiedDate = modifiedDate;
     }
 
-    public NewLineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -35,12 +35,12 @@ public class NewLineResponse {
         this.stations = stations;
     }
 
-    public static NewLineResponse of(Line line) {
+    public static LineResponse of(Line line) {
         List<StationResponse> stationResponses = line.getSortedStations().stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
 
-        return new NewLineResponse(line.getId(), line.getName(), line.getColor(),
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
                 line.getCreatedDate(), line.getModifiedDate(), stationResponses);
     }
 

@@ -4,8 +4,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineUpdateRequest;
-import nextstep.subway.line.dto.NewLineRequest;
-import nextstep.subway.line.dto.NewLineResponse;
+import nextstep.subway.line.dto.LineCreateRequest;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,7 +24,7 @@ class NewLineAcceptanceTestSupport {
 	static void 지하철노선_프로퍼티_검사(ExtractableResponse<Response> createResponse,
 	                          String name, String color,
 	                          List<Long> orderedIds) {
-		final NewLineResponse createdObject = createResponse.body().as(NewLineResponse.class);
+		final LineResponse createdObject = createResponse.body().as(LineResponse.class);
 		assertThat(createdObject.getName()).isEqualTo(name);
 		assertThat(createdObject.getColor()).isEqualTo(color);
 		assertThat(createdObject.getStations()).hasSize(orderedIds.size());
@@ -48,8 +48,8 @@ class NewLineAcceptanceTestSupport {
 				.map(response -> response.header("Location").split("/")[2])
 				.map(Long::parseLong)
 				.collect(Collectors.toList());
-		List<Long> actualStationIds = getResponse.jsonPath().getList(".", NewLineResponse.class).stream()
-				.map(NewLineResponse::getId)
+		List<Long> actualStationIds = getResponse.jsonPath().getList(".", LineResponse.class).stream()
+				.map(LineResponse::getId)
 				.collect(Collectors.toList());
 		assertThat(expectedStationIds).containsAll(actualStationIds);
 	}
@@ -64,8 +64,8 @@ class NewLineAcceptanceTestSupport {
 
 	static void 지하철노선_조회_검사(ExtractableResponse<Response> createResponse, ExtractableResponse<Response> getResponse) {
 		// given
-		final NewLineResponse createdObject = createResponse.body().as(NewLineResponse.class);
-		final NewLineResponse getObject = getResponse.body().as(NewLineResponse.class);
+		final LineResponse createdObject = createResponse.body().as(LineResponse.class);
+		final LineResponse getObject = getResponse.body().as(LineResponse.class);
 
 		// when & then
 		assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -101,7 +101,7 @@ class NewLineAcceptanceTestSupport {
 
 	static ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color,
 	                                                 Long firstStationId, Long secondStationId, int stationDistance) {
-		NewLineRequest lineRequest = new NewLineRequest(name, color, firstStationId, secondStationId, stationDistance);
+		LineCreateRequest lineRequest = new LineCreateRequest(name, color, firstStationId, secondStationId, stationDistance);
 
 		return RestAssured
 				.given().log().all()
