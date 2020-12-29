@@ -67,7 +67,7 @@ class LineTest {
         Line line = 지하철_1호선_생성됨();
 
         // when
-        line.add(section);
+        line.add(new LineStation(line, section));
 
 
         // then

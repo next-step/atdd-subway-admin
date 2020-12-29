@@ -53,10 +53,6 @@ public class LineStation {
         return isUpStation(station) || isDownStation(station);
     }
 
-    public boolean canAdd(final Section other) {
-        return section.canAddEndSection(other) || section.canAddBetweenSection(other);
-    }
-
     public boolean canReflect(final Section other) {
         return section.canAddBetweenSection(other);
     }

@@ -45,11 +45,11 @@ public class Line extends BaseEntity {
         this.color = other.getColor();
     }
 
-    public void add(final Section section) {
-        lineStations.add(this, section);
+    public void add(final LineStation lineStation){
+        lineStations.add(lineStation);
     }
 
-    public List<Station> getStationsOrderByUp() {
-        return lineStations.getStationsOrderByUp();
+    public List<Station> getOrderedStations() {
+        return lineStations.getOrderedStations();
     }
 }

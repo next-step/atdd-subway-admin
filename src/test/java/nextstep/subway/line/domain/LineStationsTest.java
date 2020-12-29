@@ -32,7 +32,7 @@ class LineStationsTest {
         Section section = createSection(new Station("청량리역"), new Station("신도림역"), Distance.valueOf(10));
 
         // when
-        lineStations.add(line, section);
+        lineStations.add(new LineStation(line, section));
 
         // then
         assertThat(lineStations.getLineStations()).contains(new LineStation(line, section));
@@ -45,7 +45,7 @@ class LineStationsTest {
         Section section = createSection(new Station("청량리역"), new Station("신창역"), Distance.valueOf(10));
 
         // when / then
-        assertThrows(BadSectionException.class, () -> lineStations.add(line, section));
+        assertThrows(BadSectionException.class, () -> lineStations.add(new LineStation(line, section)));
     }
 
     @DisplayName("상행 순으로 지하철 역을 정렬하여 가져옵니다.")
@@ -62,12 +62,12 @@ class LineStationsTest {
         Section section2 = createSection(신도림역, 관악역, Distance.valueOf(10));
         Section section3 = createSection(관악역, 금정역, Distance.valueOf(10));
 
-        lineStations.add(line, section1);
-        lineStations.add(line, section2);
-        lineStations.add(line, section3);
+        lineStations.add(new LineStation(line, section1));
+        lineStations.add(new LineStation(line, section2));
+        lineStations.add(new LineStation(line, section3));
 
         // when
-        List<Station> stationsOrderByUp = lineStations.getStationsOrderByUp();
+        List<Station> stationsOrderByUp = lineStations.getOrderedStations();
 
         // then
         assertThat(stationsOrderByUp).containsExactly(청량리역, 신도림역, 관악역, 금정역, 신창역);
@@ -83,23 +83,23 @@ class LineStationsTest {
         // when
         Station 회기역 = new Station("회기역");
         Section newSection1 = createSection(회기역, 청량리역, Distance.valueOf(10));
-        lineStations.add(line, newSection1);
+        lineStations.add(new LineStation(line, newSection1));
 
         Station 신도림역 = new Station("신도림역");
         Section newSection2 = createSection(청량리역, 신도림역, Distance.valueOf(10));
-        lineStations.add(line, newSection2);
+        lineStations.add(new LineStation(line, newSection2));
 
         Station 당정역 = new Station("당정역");
         Section newSection3 = createSection(당정역, 신창역, Distance.valueOf(10));
-        lineStations.add(line, newSection3);
+        lineStations.add(new LineStation(line, newSection3));
 
         Station 창신역 = new Station("창신역");
         Section newSection4 = createSection(신창역, 창신역, Distance.valueOf(10));
-        lineStations.add(line, newSection4);
+        lineStations.add(new LineStation(line, newSection4));
 
 
         // then
-        assertThat(lineStations.getStationsOrderByUp()).containsExactly(회기역, 청량리역, 신도림역, 당정역, 신창역, 창신역);
+        assertThat(lineStations.getOrderedStations()).containsExactly(회기역, 청량리역, 신도림역, 당정역, 신창역, 창신역);
     }
 
     private Section createSection(final Station upStation, final Station downStation, final Distance distance) {

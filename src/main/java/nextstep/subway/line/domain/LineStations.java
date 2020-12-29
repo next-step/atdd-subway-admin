@@ -26,26 +26,12 @@ public class LineStations {
         lineStations.add(lineStation);
     }
 
-    public List<Station> getStationsOrderByUp() {
+    public List<Station> getOrderedStations() {
         List<Station> orderedStations = new ArrayList<>();
-        // 상행역 찾기
         Station upStation = getUpStation();
         orderedStations.add(upStation);
-
-        // 정렬
-        addStationsOrderByUp(orderedStations, upStation);
+        addOrderedStations(orderedStations, upStation);
         return orderedStations;
-    }
-
-    private void addStationsOrderByUp(final List<Station> orderedStations, final Station baseStation) {
-        List<LineStation> targets = new ArrayList<>(lineStations);
-        Station next = baseStation;
-        while (targets.size() > 0) {
-            LineStation lineStation = nextTarget(targets, next);
-            Station downStation = lineStation.getDownStation();
-            orderedStations.add(downStation);
-            next = downStation;
-        }
     }
 
     private Station getUpStation() {
@@ -61,6 +47,17 @@ public class LineStations {
                 .noneMatch(lineStation -> lineStation.isDownStation(station));
     }
 
+    private void addOrderedStations(final List<Station> orderedStations, final Station baseStation) {
+        List<LineStation> targets = new ArrayList<>(lineStations);
+        Station next = baseStation;
+        while (targets.size() > 0) {
+            LineStation lineStation = nextTarget(targets, next);
+            Station downStation = lineStation.getDownStation();
+            orderedStations.add(downStation);
+            next = downStation;
+        }
+    }
+
     private LineStation nextTarget(final List<LineStation> targets, final Station next) {
         LineStation lineStation = targets.stream()
                 .filter(target -> target.isUpStation(next))
@@ -70,29 +67,23 @@ public class LineStations {
         return lineStation;
     }
 
-    public void init(final Line line, final Section section) {
-        if (lineStations.size() != 0) {
-            throw new IllegalStateException();
-        }
-        lineStations.add(new LineStation(line, section));
-    }
-
-    public void add(final Line line, final Section section) {
-        boolean containsUpStation = contains(section.getUpStation());
-        boolean containsDownStation = contains(section.getDownStation());
+    public void add(final LineStation newLineStation) {
+        boolean containsUpStation = contains(newLineStation.getUpStation());
+        boolean containsDownStation = contains(newLineStation.getDownStation());
 
         validate(containsUpStation, containsDownStation);
 
-        LineStation target = lineStations.stream()
-                .filter(lineStation -> lineStation.canAdd(section))
+        Section newSection = newLineStation.getSection();
+        lineStations.stream()
+                .filter(lineStation -> lineStation.canReflect(newSection))
                 .findFirst()
-                .orElseThrow(() -> new BadSectionException(""));
+                .ifPresent(lineStation -> lineStation.reflect(newSection));
+        lineStations.add(newLineStation);
+    }
 
-        if (target.canReflect(section)) {
-            target.reflect(section);
-        }
-
-        lineStations.add(new LineStation(line, section));
+    private boolean contains(final Station station) {
+        return lineStations.stream()
+                .anyMatch(lineStation -> lineStation.contains(station));
     }
 
     private void validate(final boolean containsUpStation, final boolean containsDownStation) {
@@ -103,10 +94,5 @@ public class LineStations {
         if (!containsUpStation && !containsDownStation) {
             throw new BadSectionException("상행역과 하행역 둘 중 하나도 포함되어있지 않습니다.");
         }
-    }
-
-    private boolean contains(final Station station) {
-        return lineStations.stream()
-                .anyMatch(lineStation -> lineStation.contains(station));
     }
 }

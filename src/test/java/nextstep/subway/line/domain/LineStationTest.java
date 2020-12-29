@@ -97,37 +97,6 @@ class LineStationTest {
         assertThat(equals).isFalse();
     }
 
-    @DisplayName("새로운 지하철 구간이 기존 구간에 연결 될 수 있는 지 확인한다.")
-    @Test
-    void canAdd() {
-        // given
-        Station station1 = new Station("청량리역");
-        Station station2 = new Station("신도림역");
-        Distance distance1 = Distance.valueOf(10);
-        Section section1 = Section.builder()
-                .upStation(station1)
-                .downStation(station2)
-                .distance(distance1)
-                .build();
-
-        Station station3 = new Station("신도림역");
-        Station station4 = new Station("신창역");
-        Distance distance2 = Distance.valueOf(10);
-        Section section2 = Section.builder()
-                .upStation(station3)
-                .downStation(station4)
-                .distance(distance2)
-                .build();
-
-        // when
-        boolean result1 = line1Station.canAdd(section1);
-        boolean result2 = line1Station.canAdd(section2);
-
-        // then
-        assertThat(result1).isTrue();
-        assertThat(result2).isTrue();
-    }
-
     @DisplayName("새로운 지하철 구간을 반영할 수 있는지 확인한다.")
     @Test
     void canReflect() {

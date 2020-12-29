@@ -1,10 +1,7 @@
 package nextstep.subway.line.application;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.domain.SectionFactory;
+import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -55,13 +52,13 @@ public class LineService {
 
     @Transactional
     public LineResponse addSection(final Long id, final SectionRequest request) {
+        Line persistLine = getPersistLine(id);
         Section section = sectionFactory.create(
                 request.getUpStationId(),
                 request.getDownStationId(),
                 request.getDistance()
         );
-        Line persistLine = getPersistLine(id);
-        persistLine.add(section);
+        persistLine.add(new LineStation(persistLine,section));
         return LineResponse.of(persistLine);
     }
 
