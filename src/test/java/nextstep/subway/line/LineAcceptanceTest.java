@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,8 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
-	private final String LINE_URL = "/lines";
 
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
@@ -65,14 +64,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		// when
 		// 지하철_노선_목록_조회_요청
-		ExtractableResponse<Response> lineListResponse = RestAssured
+		ExtractableResponse<Response> linesResponse = RestAssured
 				.given().log().all()
 				.when().get(LINE_URL)
 				.then().log().all().extract();
 		// then
 		// 지하철_노선_목록_응답됨
-		assertThat(lineListResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-		List<Long> resultLineIds = lineListResponse.jsonPath().getList(".", LineResponse.class).stream()
+		assertThat(linesResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		List<Long> resultLineIds = linesResponse.jsonPath().getList(".", LineResponse.class).stream()
 				.map(it -> it.getId())
 				.collect(Collectors.toList());
 		assertThat(resultLineIds.size()).isNotEqualTo(0);
@@ -88,11 +87,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		// when
 		// 지하철_노선_조회_요청
-		ExtractableResponse<Response> lineListResponse = ID로_노선을_조회한다(1L);
+		ExtractableResponse<Response> linesResponse = ID로_노선을_조회한다(1L);
 		// then
 		// 지하철_노선_응답됨
-		assertThat(lineListResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-		LineResponse lineResponse = lineListResponse.jsonPath().getObject(".", LineResponse.class);
+		assertThat(linesResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		LineResponse lineResponse = linesResponse.jsonPath().getObject(".", LineResponse.class);
 		assertThat(lineResponse.getId()).isNotNull();
 	}
 
@@ -110,9 +109,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		지하철_노선_수정_PUT_요청_OK_응답_확인("1", name);
 		// then
 		// 지하철_노선_수정됨
-		ExtractableResponse<Response> lineListResponse = ID로_노선을_조회한다(1L);
-		assertThat(lineListResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-		LineResponse lineResponse = lineListResponse.jsonPath().getObject(".", LineResponse.class);
+		ExtractableResponse<Response> linesResponse = ID로_노선을_조회한다(1L);
+		assertThat(linesResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		LineResponse lineResponse = linesResponse.jsonPath().getObject(".", LineResponse.class);
 		assertThat(lineResponse.getName().equalsIgnoreCase(name)).isTrue();
 	}
 
@@ -129,8 +128,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		노선_제거_요청_후_204_응답_확인(1L);
 		// then
 		// 지하철_노선_삭제됨
-		ExtractableResponse<Response> lineListResponse = ID로_노선을_조회한다(1L);
-		assertThat(lineListResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		ExtractableResponse<Response> linesResponse = ID로_노선을_조회한다(1L);
+		assertThat(linesResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
 	private void 지하철_노선_수정_PUT_요청_OK_응답_확인(String id, String name) {
@@ -173,14 +172,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 				log().all().
 				extract();
 		return response;
-	}
-
-	private ExtractableResponse<Response> ID로_노선을_조회한다(Long id) {
-		ExtractableResponse<Response> lineListResponse = RestAssured
-				.given().log().all()
-				.when().get(LINE_URL + "/" + String.valueOf(id))
-				.then().log().all().extract();
-		return lineListResponse;
 	}
 
 }

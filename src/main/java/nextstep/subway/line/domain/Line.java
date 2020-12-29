@@ -2,7 +2,6 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @ManyToMany
-    private List<Station> stationList;
+    private List<Station> stations;
 
     private int distance;
 
@@ -35,7 +34,7 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
         this.distance = distance;
-        this.stationList = new ArrayList<>(stationsList);
+        this.stations = new ArrayList<>(stationsList);
     }
 
     public void update(Line line) {
@@ -55,8 +54,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStationList() {
-        return stationList;
+    public List<Station> getStations() {
+        return stations;
     }
 
     public int getDistance() {

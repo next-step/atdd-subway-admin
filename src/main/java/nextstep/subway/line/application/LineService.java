@@ -8,10 +8,9 @@ import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -24,8 +23,8 @@ public class LineService {
 	}
 
 	public List<LineResponse> listLine() {
-		List<Line> findLineList = lineRepository.findAll();
-		return findLineList.stream().map(r -> LineResponse.of(r)).collect(Collectors.toList());
+		List<Line> findLines = lineRepository.findAll();
+		return findLines.stream().map(LineResponse::of).collect(Collectors.toList());
 	}
 
 	public LineResponse findLineById(Long id) {
