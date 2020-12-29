@@ -28,7 +28,7 @@ public class LineService {
 	public List<LineResponse> findAllLines() {
 		List<Line> persistLine = lineRepository.findAll();
 		return persistLine.stream()
-			.map(line -> LineResponse.of(line))
+			.map(LineResponse::of)
 			.collect(Collectors.toList());
 	}
 
