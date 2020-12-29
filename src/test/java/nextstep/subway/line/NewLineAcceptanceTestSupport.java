@@ -5,6 +5,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.NewLineRequest;
+import nextstep.subway.line.dto.NewLineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -14,10 +17,23 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Deprecated
 @SuppressWarnings("NonAsciiCharacters")
-class LineAcceptanceTestSupport {
-	LineAcceptanceTestSupport() {
+class NewLineAcceptanceTestSupport {
+	NewLineAcceptanceTestSupport() {
+	}
+
+	static void 지하철노선_프로퍼티_검사(ExtractableResponse<Response> createResponse,
+	                          String name, String color,
+	                          List<Long> orderedIds) {
+		final NewLineResponse createdObject = createResponse.body().as(NewLineResponse.class);
+		assertStatusCode(createResponse, HttpStatus.CREATED);
+		assertThat(createdObject.getName()).isEqualTo(name);
+		assertThat(createdObject.getColor()).isEqualTo(color);
+		assertThat(createdObject.getStations()).hasSize(orderedIds.size());
+		assertThat(createdObject.getStations())
+				.extracting(StationResponse::getId)
+				.containsExactlyElementsOf(orderedIds)
+				.containsSequence(orderedIds);
 	}
 
 	static ExtractableResponse<Response> 지하철노선_얻기() {
@@ -49,17 +65,14 @@ class LineAcceptanceTestSupport {
 	}
 
 	static void 지하철노선_조회_검사(ExtractableResponse<Response> createResponse, ExtractableResponse<Response> getResponse) {
-		assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-		Long expectedId = createResponse.body().as(LineResponse.class).getId();
-		Long actualId = getResponse.body().as(LineResponse.class).getId();
-		assertThat(actualId).isEqualTo(expectedId);
-	}
+		// given
+		final NewLineResponse createdObject = createResponse.body().as(NewLineResponse.class);
+		final NewLineResponse getObject = getResponse.body().as(NewLineResponse.class);
 
-	static ExtractableResponse<Response> 지하철노선_조회(String uri) {
-		return RestAssured
-				.given().log().all()
-				.when().get(uri)
-				.then().log().all().extract();
+		// when & then
+		assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(getObject.getId()).isEqualTo(createdObject.getId());
+		assertThat(getObject.getStations()).containsAll(createdObject.getStations());
 	}
 
 	static ExtractableResponse<Response> 지하철노선_수정_요청(ExtractableResponse<Response> createResponse,
@@ -81,8 +94,9 @@ class LineAcceptanceTestSupport {
 				.then().log().all().extract();
 	}
 
-	static ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color) {
-		LineRequest lineRequest = new LineRequest(name, color);
+	static ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color,
+	                                                 Long firstStationId, Long secondStationId, int stationDistance) {
+		NewLineRequest lineRequest = new NewLineRequest(name, color, firstStationId, secondStationId, stationDistance);
 
 		return RestAssured
 				.given().log().all()
