@@ -48,8 +48,8 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line line = lineRepository.findByNameWithLineStation(request.getName()).orElse(null);
-        if (line != null) {
+        Optional<Line> line = lineRepository.findByNameWithLineStation(request.getName());
+        if (line.isPresent()) {
             throw new AlreadySavedLineException();
         }
         return persistLine(request);
