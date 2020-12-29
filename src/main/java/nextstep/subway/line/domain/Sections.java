@@ -36,12 +36,12 @@ public class Sections {
     private Section getStartSection() {
         Section ret = null;
         for (Section section : this.sections) {
-            ret = isNotContainDownStations(section.getUpStation());
+            ret = findNotContainDownStations(section.getUpStation());
         }
         return ret;
     }
 
-    private Section isNotContainDownStations(Station upStation) {
+    private Section findNotContainDownStations(Station upStation) {
         return this.sections
                 .stream()
                 .filter(section -> isNotEqualsDownStation(section, upStation))
