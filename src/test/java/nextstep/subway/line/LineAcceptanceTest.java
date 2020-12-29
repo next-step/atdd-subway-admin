@@ -84,17 +84,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		지하철_노선_존재하지_않음(response);
 	}
 
-	private void 지하철_노선_존재하지_않음(ExtractableResponse<Response> response) {
-		String errorCode = response.jsonPath().getObject(".", ErrorResponse.class).getErrorCode();
-		assertThat(errorCode).isEqualTo(NotFoundException.ERROR_CODE);
-	}
-
-	private ExtractableResponse<Response> 존재하지_않는_지하철_노선_조회_요청() {
-		Long lineId = 10L;
-		return RestAssured.given().log().all()
-			.when().get("/lines/{id}", lineId)
-			.then().log().all().extract();
-	}
 
 	@DisplayName("지하철 노선을 수정한다.")
 	@Test
@@ -106,6 +95,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선_수정_요청(beforeLine, "2호선", "bg-green-600");
 		// then
 		지하철_노선_수정됨(beforeLine, response);
+	}
+
+	@DisplayName("존재하지 않는 노선을 수정할 경우 에러가 발생한다.")
+	@Test
+	void updateLineFailWhenLineNotExist() {
+		// when
+		ExtractableResponse<Response> response = 존재하지_않는_지하철_수정_요청("신분당선", "bg-red-600");
+		// then
+		지하철_노선_존재하지_않음(response);
 	}
 
 	@DisplayName("지하철 노선을 제거한다.")
@@ -211,6 +209,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
 			.delete("/lines/{id}", lineId)
+			.then().log().all()
+			.extract();
+	}
+
+	private void 지하철_노선_존재하지_않음(ExtractableResponse<Response> response) {
+		String errorCode = response.jsonPath().getObject(".", ErrorResponse.class).getErrorCode();
+		assertThat(errorCode).isEqualTo(NotFoundException.ERROR_CODE);
+	}
+
+	private ExtractableResponse<Response> 존재하지_않는_지하철_노선_조회_요청() {
+		Long lineId = 10L;
+		return RestAssured.given().log().all()
+			.when().get("/lines/{id}", lineId)
+			.then().log().all().extract();
+	}
+
+
+	private ExtractableResponse<Response> 존재하지_않는_지하철_수정_요청(String name, String color) {
+		Long lineId = 10L;
+
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		params.put("color", color);
+
+		return RestAssured.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.put("/lines/{id}", lineId)
 			.then().log().all()
 			.extract();
 	}

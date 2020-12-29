@@ -44,7 +44,7 @@ public class LineService {
 	}
 
 	private Line getLineById(Long id) {
-		return lineRepository.findById(id).orElseThrow(() -> new NotFoundException("노선이 존재하지 않습니다."));
+		return lineRepository.findById(id).orElseThrow(() -> new NotFoundException());
 	}
 
 	public void deleteLine(Long id) {
