@@ -14,7 +14,7 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.REMOVE)
     private List<Section> sections = new ArrayList<>();
 
     public Line() {

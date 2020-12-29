@@ -25,6 +25,7 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
+
         sectionService.saveSection(SectionRequest.of(persistLine.getId(), request));
         return LineResponse.of(persistLine);
     }
@@ -50,7 +51,6 @@ public class LineService {
     }
 
     public void deleteLine(Long lineId) {
-        sectionService.deleteAllByLineId(lineId);
         lineRepository.deleteById(lineId);
     }
 }

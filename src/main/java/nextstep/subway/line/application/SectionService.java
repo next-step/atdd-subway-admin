@@ -40,7 +40,6 @@ public class SectionService {
                 .orElseThrow(() -> new NotExistsStationIdException(request.getDownStationId()));
 
         Integer sectionNumber = getSectionNumber(line.getId());
-
         sectionRepository.save(new Section(line, upStation, downStation, request.getDistance(), sectionNumber));
     }
 
