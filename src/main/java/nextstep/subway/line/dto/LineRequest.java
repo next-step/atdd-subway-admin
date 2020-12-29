@@ -1,10 +1,17 @@
 package nextstep.subway.line.dto;
 
+import lombok.Getter;
+import nextstep.subway.distance.Distance;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
+@Getter
 public class LineRequest {
     private String name;
     private String color;
+    private long upStationId;
+    private long downStationId;
+    private long distance;
 
     public LineRequest() {
     }
@@ -12,14 +19,6 @@ public class LineRequest {
     public LineRequest(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public Line toLine() {

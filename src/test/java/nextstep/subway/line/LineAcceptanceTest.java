@@ -4,9 +4,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
@@ -21,16 +24,35 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     public static final String DEFAULT_LINES_URI = "/lines";
+
+    @Autowired
+    private StationRepository stationRepository;
+
     private final Map<String, String> params = new HashMap<>();
+    private Station sindorimStation;
+    private Station kkachisanStation;
 
     @BeforeEach
-    void 노선_생성_요청_파라미터_설정() {
-        노선_생성_요청시_노선_정보_설정("2호선", "초록색");
+    void 노선_생성_요청시_필요한_파라미터_설정() {
+        지하철역_생성();
+
+        생성_요청할_노선_정보_설정("2호선", "초록색");
     }
 
-    void 노선_생성_요청시_노선_정보_설정(final String name, final String color) {
+    void 지하철역_생성() {
+        sindorimStation = new Station("신도림역");
+        kkachisanStation = new Station("까치산역");
+
+        stationRepository.save(sindorimStation);
+        stationRepository.save(kkachisanStation);
+    }
+
+    void 생성_요청할_노선_정보_설정(final String name, final String color) {
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", Long.toString(sindorimStation.getId()));
+        params.put("downStationId", Long.toString(kkachisanStation.getId()));
+        params.put("distance", "123456");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -76,7 +98,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         final ExtractableResponse<Response> firstCreateResponse = 지하철_노선_생성_요청();
         // 지하철_노선_등록되어_있음
-        노선_생성_요청시_노선_정보_설정("5호선", "보라색");
+        생성_요청할_노선_정보_설정("5호선", "보라색");
         final ExtractableResponse<Response> secondCreateResponse = 지하철_노선_생성_요청();
 
         // when
