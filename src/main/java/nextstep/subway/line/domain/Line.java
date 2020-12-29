@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.route.domain.Route;
+import nextstep.subway.section.domain.Section;
 
 @Entity
 public class Line extends BaseEntity {
@@ -21,7 +21,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @OneToMany(mappedBy = "line")
-    private List<Route> routes = new ArrayList<>();
+    private List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
@@ -36,8 +36,8 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public void addByRoute(Route route) {
-        this.routes.add(route);
+    public void addBySection(Section section) {
+        this.sections.add(section);
     }
 
     public Long getId() {
@@ -52,7 +52,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Route> getRoutes() {
-        return routes;
+    public List<Section> getSections() {
+        return sections;
     }
 }

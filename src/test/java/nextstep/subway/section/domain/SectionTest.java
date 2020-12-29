@@ -1,4 +1,4 @@
-package nextstep.subway.route.domain;
+package nextstep.subway.section.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @DataJpaTest
-class RouteTest {
+class SectionTest {
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -28,7 +28,7 @@ class RouteTest {
 	@Autowired
 	private StationRepository stationRepository;
 	@Autowired
-	private RouteRepository routeRepository;
+	private SectionRepository sectionRepository;
 
 	private Line line;
 	private List<Station> stations;
@@ -45,17 +45,17 @@ class RouteTest {
 	@Test
 	void create() {
 		//when
-		Route route = new Route(line, stations.get(0), stations.get(1), 2);
-		line.addByRoute(route);
-		Route actual = routeRepository.save(route);
+		Section section = new Section(line, stations.get(0), stations.get(1), 2);
+		line.addBySection(section);
+		Section actual = sectionRepository.save(section);
 
 		//then
 		entityManager.clear();
 		entityManager.flush();
 
-		Optional<Route> expectedRoute = routeRepository.findById(actual.getId());
+		Optional<Section> expectedRoute = sectionRepository.findById(actual.getId());
 		Optional<Line> expectedLine = lineRepository.findById(line.getId());
 		assertThat(expectedRoute.isPresent()).isTrue();
-		assertThat(expectedLine.get().getRoutes()).hasSize(1);
+		assertThat(expectedLine.get().getSections()).hasSize(1);
 	}
 }

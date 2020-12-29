@@ -1,4 +1,4 @@
-package nextstep.subway.route.domain;
+package nextstep.subway.section.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,7 +10,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class Route {
+public class Section {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,10 +30,10 @@ public class Route {
 
 	private Integer distance;
 
-	protected Route() {
+	protected Section() {
 	}
 
-	public Route(Line line, Station upStation, Station downStation, Integer distance) {
+	public Section(Line line, Station upStation, Station downStation, Integer distance) {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
