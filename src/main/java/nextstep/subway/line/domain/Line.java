@@ -34,16 +34,22 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    private Line(final String name, final String color, final Station upStation, final Station downStation, final long distance) {
+//    private Line(final String name, final String color, final Station upStation, final Station downStation, final long distance) {
+//        this.name = name;
+//        this.color = color;
+//        final Section section = new Section(this, upStation, downStation, new Distance(distance));
+//        sections.add(section);
+//    }
+
+    public Line(final String name, final String color, final Station upStation, final Station downStation, final long distance) {
         this.name = name;
         this.color = color;
-        final Section section = new Section(this, upStation, downStation, new Distance(distance));
-        sections.add(section);
+        sections.add(new Section(this, upStation, downStation, new Distance(distance)));
     }
 
-    public static Line of(final LineRequest request, final Station upStation, final Station downStation) {
-        return new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
-    }
+//    public static Line of(final LineRequest request, final Station upStation, final Station downStation) {
+//        return new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
+//    }
 
     public void update(Line line) {
         this.name = line.getName();
