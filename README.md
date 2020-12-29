@@ -68,4 +68,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [x] 지하철 노선 수정
     - [x] 지하철 노선 조회
     - [x] 지하철 노선 삭제
-- [ ] 인수 테스트 리팩터링
+- [x] 인수 테스트 리팩터링
