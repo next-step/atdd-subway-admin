@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,5 +57,22 @@ class LineTest {
 		assertThat(section.getBack()).isEqualTo(back);
 		assertThat(section.getDistance()).isEqualTo(new Distance(distance));
 		assertThat(section.getLine()).isEqualTo(line);
+	}
+
+	@Test
+	@DisplayName("정렬된 station 갖고오는지 확인")
+	void getSortedStation() {
+		// given
+		Line line = new Line("2호선", "green", station2, station1, 50);
+		em.persist(line);
+		em.flush();
+		em.clear();
+
+		// when & then
+		assertThat(em.find(Line.class, line.getId()))
+				.extracting(Line::getSortedStations)
+				.asList()
+				.hasSize(2)
+				.containsSequence(station2, station1);
 	}
 }
