@@ -2,8 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.NewLineRequest;
 import nextstep.subway.line.dto.NewLineResponse;
 import nextstep.subway.station.application.StationService;
@@ -26,13 +25,7 @@ public class LineService {
 	}
 
 	@Transactional
-	public LineResponse saveLine(LineRequest request) {
-		Line persistLine = lineRepository.save(request.toLine());
-		return LineResponse.of(persistLine);
-	}
-
-	@Transactional
-	public NewLineResponse saveLine_new(NewLineRequest newLineRequest) {
+	public NewLineResponse saveLine(NewLineRequest newLineRequest) {
 		Station front = stationService.findById(newLineRequest.getUpStationId());
 		Station back = stationService.findById(newLineRequest.getDownStationId());
 		Line line = new Line(newLineRequest.getName(),
@@ -45,33 +38,21 @@ public class LineService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<LineResponse> findAllLine() {
-		return lineRepository.findAll().stream()
-				.map(LineResponse::of)
-				.collect(Collectors.toList());
-	}
-
-	@Transactional(readOnly = true)
-	public List<NewLineResponse> findAllLine_new () {
+	public List<NewLineResponse> findAllLine() {
 		return lineRepository.findAll().stream()
 				.map(NewLineResponse::of)
 				.collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
-	public LineResponse findLineById(Long id) {
-		return LineResponse.of(findLine(id));
-	}
-
-	@Transactional(readOnly = true)
-	public NewLineResponse findLineById_new(Long id) {
+	public NewLineResponse findLineById(Long id) {
 		return NewLineResponse.of(findLine(id));
 	}
 
 	@Transactional
-	public void updateLineById(Long id, LineRequest lineRequest) {
+	public void updateLineById(Long id, LineUpdateRequest lineUpdateRequest) {
 		Line line = findLine(id);
-		line.update(lineRequest.toLine());
+		line.update(lineUpdateRequest.toLine());
 	}
 
 	@Transactional

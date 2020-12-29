@@ -3,7 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.NewLineRequest;
 import nextstep.subway.line.dto.NewLineResponse;
 import nextstep.subway.station.dto.StationResponse;
@@ -84,9 +84,9 @@ class NewLineAcceptanceTestSupport {
 	                                                 String name, String color) {
 		String uri = createResponse.header("Location");
 
-		LineRequest lineRequest = new LineRequest(name, color);
+		LineUpdateRequest lineUpdateRequest = new LineUpdateRequest(name, color);
 		return RestAssured.given().log().all()
-				.body(lineRequest)
+				.body(lineUpdateRequest)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when().put(uri)
 				.then().log().all().extract();
