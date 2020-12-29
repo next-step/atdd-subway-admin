@@ -24,18 +24,7 @@ public class LineRequest {
     @Positive
     private int distance;
 
-    public LineRequest() {
-    }
-
-    public LineRequest(@NotBlank String name,
-            @NotBlank String color,
-            @NotNull @Positive Long upStationId,
-            @NotNull @Positive Long downStationId, @Positive int distance) {
-        this.name = name;
-        this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+    private LineRequest() {
     }
 
     public String getName() {

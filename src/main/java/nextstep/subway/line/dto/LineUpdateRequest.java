@@ -15,13 +15,7 @@ public class LineUpdateRequest {
     @NotBlank
     private String color;
 
-    public LineUpdateRequest() {
-    }
-
-    public LineUpdateRequest(@NotBlank String name,
-            @NotBlank String color) {
-        this.name = name;
-        this.color = color;
+    private LineUpdateRequest() {
     }
 
     public String getName() {

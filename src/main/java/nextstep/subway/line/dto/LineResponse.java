@@ -16,16 +16,7 @@ public class LineResponse {
     private LocalDateTime modifiedDate;
     private List<StationResponse> stations = new ArrayList<>();
 
-    public LineResponse() {
-    }
-
-    public LineResponse(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-    }
-
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
+    private LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
