@@ -11,7 +11,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/lines")
+@RequestMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LineController {
     private final LineService lineService;
 
@@ -19,14 +19,26 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+
+    @PutMapping("/{id}")
+    public ResponseEntity modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        LineResponse line = lineService.modifyLine(id, lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+    }
+
+    @GetMapping
     public ResponseEntity<List<LineResponse>> findAllLines() {
         return ResponseEntity.ok(lineService.findAllLines());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity findLine(@PathVariable Long id) {
+        return ResponseEntity.ok(lineService.findLine(id));
     }
 }

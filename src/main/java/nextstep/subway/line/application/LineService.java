@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.advice.exception.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -22,6 +23,17 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    public LineResponse modifyLine(Long id, LineRequest request) {
+        Line line = lineRepository.findById(id).orElseThrow(()->new LineNotFoundException());
+        line.setName(request.getName());
+        line.setColor(request.getColor());
+        return LineResponse.of(line);
+    }
+
+    public LineResponse findLine(Long id) {
+        return LineResponse.of(lineRepository.findById(id).orElseThrow(()->new LineNotFoundException()));
     }
 
     public List<LineResponse> findAllLines() {
