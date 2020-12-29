@@ -6,9 +6,9 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -31,4 +31,11 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public void updateLine(Long lineId, LineRequest request) {
+        Line line = lineRepository.getOne(lineId);
+        line.update(request.toLine());
+        lineRepository.save(line);
+    }
+
 }
