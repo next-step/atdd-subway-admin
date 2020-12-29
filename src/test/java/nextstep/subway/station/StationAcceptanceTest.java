@@ -8,7 +8,6 @@ import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("지하철역 관련 기능")
@@ -118,12 +118,18 @@ public class StationAcceptanceTest extends AcceptanceTest {
     public static void 생성된_지하철역_조회_검증(ExtractableResponse<Response> createResponse1,
                                       ExtractableResponse<Response> createResponse2,
                                       ExtractableResponse<Response> response) {
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
+        List<Long> expectedLineIds = Stream.of(생성된_지하철역(createResponse1), 생성된_지하철역(createResponse2))
                 .map(StationResponse::getId)
-                .collect(Collectors.toList());
+                .collect(toList());
+        List<Long> resultLineIds = response.jsonPath()
+                .getList(".", StationResponse.class)
+                .stream()
+                .map(StationResponse::getId)
+                .collect(toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    public static StationResponse 생성된_지하철역(ExtractableResponse<Response> createResponse) {
+        return createResponse.as(StationResponse.class);
     }
 }
