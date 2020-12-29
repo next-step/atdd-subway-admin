@@ -67,13 +67,18 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         
     *[x] Scenario: 지하철 노선 목록을 조회한다.
         Given: 지하철 노선이 등록되어 있다.
+        And 지하철 역이 록되어 있다.
+        And 노선의 구간정보가 등록되어 있다.
         When: 지하철 노선 목록을 요청한다.
         Then: 지하철 노선 목록을 반환한다.
         
     *[x] Scenario: 지하철 노선을 조회한다.
         Given: 지하철 노선이 등록되어 있다.
+        And 지하철 역이 등록되어 있다.
+        And 노선의 구간정보가 등록되어 있다.
         When: 지하철 노선을 요청한다.
         Then: 지하철 노선을 반환한다.
+        And 정렬된 구간 정보도 반환된다.
         
     *[x] Scenario: 지하철 노선정보를 수정한다.
         Given: 지하철 노선이 등록되어 있다.
