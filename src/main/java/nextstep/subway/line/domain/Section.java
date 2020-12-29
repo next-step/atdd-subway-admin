@@ -52,7 +52,7 @@ public class Section {
 
         if (isConnectDownStation(other)) {
             this.downStation = other.upStation;
-            this.distance = distance.subtract(other.getDistance());
+            this.distance = distance.subtract(other.distance);
         }
     }
 
@@ -64,11 +64,14 @@ public class Section {
         return other.isDownStation(downStation);
     }
 
-    public boolean canAddEndSection(final Section other) {
-        return other.isUpStation(downStation) ^ other.isDownStation(this.upStation);
-    }
-
     public boolean canAddBetweenSection(final Section other) {
-        return isConnectUpStation(other) ^ isConnectDownStation(other);
+        boolean connectUpStation = isConnectUpStation(other);
+        boolean connectDownStation = isConnectDownStation(other);
+
+        if (connectUpStation && connectDownStation) {
+            return false;
+        }
+
+        return connectUpStation || connectDownStation;
     }
 }

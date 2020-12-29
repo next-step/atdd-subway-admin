@@ -84,7 +84,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - `지하철 구간(Section)`
         - 새로운 지하철 구간을 입력받아 변경된 지하철 구간을 만든다.(A-B에서 A-C를 적용 시 B-C를 반환한다)
         - [X] 구간 사이에 새로운 역을 반영하여 기존 구간을 업데이트한다.
-        - [X] 구간 끝에 새로운 역을 등록할 수 있는지 확인한다.
     - `거리(Distance)`
         - [X] 다른 거리 값을 뺄수 있다.
     
