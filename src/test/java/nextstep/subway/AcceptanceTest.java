@@ -18,13 +18,11 @@ public class AcceptanceTest {
     private DatabaseCleanup databaseCleanup;
 
     @BeforeEach
-    @Order(0)
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
             databaseCleanup.afterPropertiesSet();
         }
-        RestAssured.defaultParser = Parser.JSON;
         databaseCleanup.execute();
     }
 }

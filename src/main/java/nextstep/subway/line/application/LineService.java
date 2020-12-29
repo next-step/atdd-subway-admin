@@ -49,7 +49,7 @@ public class LineService {
     }
 
     public LineStationResponse getOne(Long id) {
-        Line line = lineRepository.getOne(id);
+        Line line = lineRepository.getWithStations(id);
         List<Section> sections = line.getSections();
         return LineStationResponse.of(lineRepository.getOne(id), sections);
     }
@@ -62,6 +62,8 @@ public class LineService {
     }
 
     public void delete(Long id) {
+        Line deletingItem = lineRepository.getOne(id);
+        sectionService.delete(deletingItem.getSections());
         lineRepository.delete(lineRepository.getOne(id));
     }
 

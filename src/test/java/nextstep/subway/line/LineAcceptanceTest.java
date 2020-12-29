@@ -34,7 +34,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private LineCreateRequest lineThreeCreateRequest;
 
     @BeforeEach
-    @Order(1)
     public void setUpTest() {
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
