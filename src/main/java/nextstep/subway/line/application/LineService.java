@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,13 +42,13 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(this::throwNoLineException);
+                .orElseThrow(() -> throwNoLineException(id));
         return LineResponse.of(line, getStations(line));
     }
 
     public void updateLine(Long id, LineRequest request) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(this::throwNoLineException);
+                .orElseThrow(() -> throwNoLineException(id));
 
         line.update(request.toLine());
     }
@@ -56,15 +57,18 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private List<Station> getStations(Line it) {
+    private List<StationResponse> getStations(Line it) {
         List<Long> sectionIds = it.getSectionIds();
         if (sectionIds.isEmpty()) {
             return Collections.emptyList();
         }
-        return stationRepository.findAllById(sectionIds);
+        List<Station> stations = stationRepository.findAllById(sectionIds);
+        return stations.stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
     }
 
-    private NoLineException throwNoLineException() {
-        return new NoLineException("노선이 존재하지 않습니다.");
+    private NoLineException throwNoLineException(Long id) {
+        return new NoLineException(id);
     }
 }
