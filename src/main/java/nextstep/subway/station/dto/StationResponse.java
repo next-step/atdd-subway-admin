@@ -15,7 +15,7 @@ public class StationResponse {
 			station.getModifiedDate());
 	}
 
-	public StationResponse() {
+	protected StationResponse() {
 	}
 
 	public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
