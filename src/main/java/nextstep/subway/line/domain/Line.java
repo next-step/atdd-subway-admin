@@ -1,11 +1,16 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Distance;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Line extends BaseEntity {
@@ -16,9 +21,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "line_id")
-    private final List<Station> stations = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "line")
+    private final List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
@@ -28,16 +32,24 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        stations.add(upStation);
-        stations.add(downStation);
+        sections.add(new Section(this, upStation, downStation, new Distance(distance)));
     }
 
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public List<StationResponse> getStationResponses() {
+        Set<StationResponse> stations = new LinkedHashSet<>();
+        sections.forEach(section -> {
+            stations.add(StationResponse.of(section.getUpStation()));
+            stations.add(StationResponse.of(section.getDownStation()));
+        });
+        return new ArrayList<>(stations);
     }
 
     public Long getId() {
@@ -50,9 +62,5 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public List<Station> getStations() {
-        return stations;
     }
 }

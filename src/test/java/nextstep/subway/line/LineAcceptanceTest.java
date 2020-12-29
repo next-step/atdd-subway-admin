@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,12 +69,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(res -> Long.parseLong(응답_데이터에서_지하철_노선_id_추출(res)))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+        List<LineResponse> createResponses = Arrays.asList(createResponse1.as(LineResponse.class), createResponse2.as(LineResponse.class));
+        List<Long> expectedLineIds = 응답_데이터에서_지하철_노선_id들_추출(createResponses);
+        List<Long> resultLineIds = 응답_데이터에서_지하철_노선_id들_추출(Arrays.asList(response.as(LineResponse[].class)));
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -183,5 +180,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private String 응답_데이터에서_지하철_노선_id_추출(ExtractableResponse<Response> response) {
         return response.header("Location").split("/")[2];
+    }
+
+    private List<Long> 응답_데이터에서_지하철_노선_id들_추출(List<LineResponse> lineResponses) {
+        return lineResponses.stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
     }
 }
