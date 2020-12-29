@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
@@ -70,18 +71,21 @@ public class LineService {
     }
 
     private Section toSection(Line line, SectionRequest sectionRequest) {
-        Station preStation = findNullableStationById(sectionRequest.getUpStationId());
-        Station station = findNullableStationById(sectionRequest.getDownStationId());
+        sectionRequest.validateRequest();
+
+        Station preStation = findNullableStationById(sectionRequest.getUpStationId())
+            .orElseThrow(NoSuchElementException::new);
+        Station station = findNullableStationById(sectionRequest.getDownStationId())
+            .orElseThrow(NoSuchElementException::new);
 
         return new Section(line, station, sectionRequest.getDistance(), preStation);
     }
 
-    private Station findNullableStationById (Long id) {
-        if (id == null) {
-            return null;
+    private Optional<Station> findNullableStationById (Long id) {
+        if (id != null) {
+            return Optional.empty();
         }
-        return stationRepository.findById(id)
-            .orElseThrow(NoSuchElementException::new);
+        return stationRepository.findById(id);
     }
 
     private Station findOneStationById (List<Station> stations, Long id) {

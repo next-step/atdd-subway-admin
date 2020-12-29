@@ -14,6 +14,16 @@ public class SectionRequest {
 		this.distance = distance;
 	}
 
+	public void validateRequest() {
+		if (this.upStationId == null && this.downStationId == null) {
+			throw new IllegalArgumentException("상행역과 하행역 중 하나는 선택해야합니다.");
+		}
+
+		if (this.distance == 0) {
+			throw new IllegalArgumentException("추가되는 구간의 거리는 0이 될 수 없습니다.");
+		}
+	}
+
 	public Long getUpStationId() {
 		return upStationId;
 	}
