@@ -51,7 +51,7 @@ public class NewLineAcceptanceTest extends AcceptanceTest {
 
 		// 노선 생성 - then
 		지하철노선_프로퍼티_검사(created_2호선, "2호선", "green", Arrays.asList(stationId1, stationId2));
-		지하철노선_프로퍼티_검사(created_2호선, "3호선", "orange", Arrays.asList(stationId3, stationId1));
+		지하철노선_프로퍼티_검사(created_3호선, "3호선", "orange", Arrays.asList(stationId3, stationId1));
 
 		// 노선 단일 조회 - when
 		ExtractableResponse<Response> get_2호선 = 지하철노선_조회(created_2호선);
@@ -83,7 +83,7 @@ public class NewLineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void 노선생성_중복됨() {
 		// given
-		지하철노선_생성_요청("2호선", "green", stationId1, stationId1, 10);
+		지하철노선_생성_요청("2호선", "green", stationId1, stationId2, 10);
 
 		// when
 		ExtractableResponse<Response> response = 지하철노선_생성_요청("2호선", "green",

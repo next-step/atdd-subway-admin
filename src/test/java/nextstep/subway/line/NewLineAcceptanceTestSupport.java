@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.NewLineRequest;
 import nextstep.subway.line.dto.NewLineResponse;
 import nextstep.subway.station.dto.StationResponse;
@@ -26,7 +25,6 @@ class NewLineAcceptanceTestSupport {
 	                          String name, String color,
 	                          List<Long> orderedIds) {
 		final NewLineResponse createdObject = createResponse.body().as(NewLineResponse.class);
-		assertStatusCode(createResponse, HttpStatus.CREATED);
 		assertThat(createdObject.getName()).isEqualTo(name);
 		assertThat(createdObject.getColor()).isEqualTo(color);
 		assertThat(createdObject.getStations()).hasSize(orderedIds.size());
@@ -50,8 +48,8 @@ class NewLineAcceptanceTestSupport {
 				.map(response -> response.header("Location").split("/")[2])
 				.map(Long::parseLong)
 				.collect(Collectors.toList());
-		List<Long> actualStationIds = getResponse.jsonPath().getList(".", LineResponse.class).stream()
-				.map(LineResponse::getId)
+		List<Long> actualStationIds = getResponse.jsonPath().getList(".", NewLineResponse.class).stream()
+				.map(NewLineResponse::getId)
 				.collect(Collectors.toList());
 		assertThat(expectedStationIds).containsAll(actualStationIds);
 	}
@@ -72,7 +70,14 @@ class NewLineAcceptanceTestSupport {
 		// when & then
 		assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		assertThat(getObject.getId()).isEqualTo(createdObject.getId());
-		assertThat(getObject.getStations()).containsAll(createdObject.getStations());
+		final List<Long> actualStationIds = getObject.getStations().stream()
+				.map(StationResponse::getId)
+				.collect(Collectors.toList());
+		final List<Long> expectedStationIds = createdObject.getStations().stream()
+				.map(StationResponse::getId)
+				.collect(Collectors.toList());
+		assertThat(actualStationIds).containsAll(expectedStationIds)
+				.containsSequence(expectedStationIds);
 	}
 
 	static ExtractableResponse<Response> 지하철노선_수정_요청(ExtractableResponse<Response> createResponse,
