@@ -6,7 +6,7 @@ import nextstep.subway.line.domain.Line;
 import java.util.Objects;
 
 public class LineRequest {
-    public static final String NOT_FOUND_VALUE_ERROR_MESSAGE = "라인 생성시 상행역과 하행역은 필수 입력값 입니다.";
+    private static final String NOT_FOUND_VALUE_ERROR_MESSAGE = "라인 생성시 상행역과 하행역은 필수 입력값 입니다.";
     private String name;
     private String color;
     private Long upStationId;
