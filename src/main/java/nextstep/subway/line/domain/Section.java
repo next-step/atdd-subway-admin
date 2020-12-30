@@ -35,9 +35,16 @@ public class Section {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
+        checkSameStation(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void checkSameStation(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException("상행역 하행역이 같습니다.");
+        }
     }
 
     public void setLine(Line line) {
@@ -75,10 +82,6 @@ public class Section {
             this.changeDownStation(targetSection.downStation);
         }
         sumDistance(targetSection.distance);
-    }
-
-    public boolean isNotEqualsStation() {
-        return !this.upStation.equals(this.downStation);
     }
 
     public boolean isZeroDistance() {

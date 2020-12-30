@@ -22,9 +22,9 @@ public class Sections {
     public List<Station> getStations() {
         return Collections.unmodifiableList(
                 Optional.of(sectionElements())
-                .filter(sectionElements -> !sectionElements.isEmpty())
-                .map(this::convertElementsToStations)
-                .orElse(new ArrayList<>()));
+                        .filter(sectionElements -> !sectionElements.isEmpty())
+                        .map(this::convertElementsToStations)
+                        .orElse(new ArrayList<>()));
     }
 
     private Map<Station, Station> sectionElements() {
@@ -51,18 +51,18 @@ public class Sections {
                 .stream()
                 .filter(value -> !stationStationMap.containsValue(value))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException("첫번째 역을 찾을수 없습니다."));
     }
 
     public void create(Section targetSection) {
-        addSection(targetSection);
+        checkZeroDistance(targetSection);
+        this.sections.add(targetSection);
     }
 
     public void add(Section targetSection) {
         changeBetweenSection(targetSection);
         checkAddValidation(targetSection);
-
-        addSection(targetSection);
+        this.sections.add(targetSection);
     }
 
     public void update(Section targetSection) {
@@ -73,14 +73,15 @@ public class Sections {
         }
     }
 
-    private void addSection(Section section) {
+    private void checkZeroDistance(Section section) {
         if (section.isZeroDistance()) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("거리가 0은 등록할수 없습니다.");
         }
-        this.sections.add(section);
     }
 
     private void checkAddValidation(Section targetSection) {
+        checkZeroDistance(targetSection);
+
         if (this.sections.contains(targetSection)) {
             throw new IllegalArgumentException("이미 노선에 모두 등록되어 있습니다.");
         }
@@ -132,7 +133,7 @@ public class Sections {
         return Optional.of(this.sections.stream()
                 .filter(section -> section.containStation(targetStation))
                 .collect(Collectors.toList()).iterator())
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException("삭제 대상 역이 존재하지 않습니다."));
     }
 
     public boolean isRemovable() {
