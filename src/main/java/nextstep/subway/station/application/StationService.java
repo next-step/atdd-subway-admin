@@ -1,5 +1,7 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +34,10 @@ public class StationService {
         return stations.stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
+    }
+
+    public Station findStationById(Long id) {
+        return stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + id));
     }
 
     public void deleteStationById(Long id) {
