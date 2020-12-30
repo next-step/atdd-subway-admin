@@ -2,10 +2,6 @@ package nextstep.subway.utils;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.station.domain.Station;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class LineBuilder {
     private String lineName;
