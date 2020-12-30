@@ -38,7 +38,27 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
+    }
+
+    public boolean isSameUpStation(final Section section) {
+        return this.upStation.equals(section.getUpStation());
+    }
+
+    public boolean isSameDownStation(final Section section) {
+        return this.downStation.equals(section.getDownStation());
     }
 }

@@ -3,13 +3,11 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.distance.Distance;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Entity
 public class Line extends BaseEntity {
@@ -22,8 +20,8 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = Sections.of();
 
     public Line() {
     }
@@ -36,7 +34,7 @@ public class Line extends BaseEntity {
     public Line(final String name, final String color, final Station upStation, final Station downStation, final long distance) {
         this.name = name;
         this.color = color;
-        sections.add(new Section(this, upStation, downStation, new Distance(distance)));
+        sections.addSection(new Section(this, upStation, downStation, new Distance(distance)));
     }
 
     public void update(Line line) {
@@ -57,6 +55,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.stream().map(Section::getDownStation).collect(toList());
+        return sections.getStations();
     }
 }
