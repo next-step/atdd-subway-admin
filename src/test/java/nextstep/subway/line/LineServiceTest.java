@@ -49,9 +49,9 @@ public class LineServiceTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우")
     @Test
     void betweenStationRegister() {
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 판교역 = stationRepository.save(new Station("판교역"));
-        Station 양재역 = stationRepository.save(new Station("양재역"));
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
         Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
 
         addSection(line, 강남역, 양재역, 6);
@@ -64,10 +64,10 @@ public class LineServiceTest {
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
     @Test
     void sameUpStationRegister() {
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 판교역 = stationRepository.save(new Station("판교역"));
-        Station 양재역 = stationRepository.save(new Station("양재역"));
-        Station 양재시민의숲 = stationRepository.save(new Station("양재시민의숲"));
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
+        Station 양재시민의숲 = saveStation("양재시민의숲");
         Line line = saveLine("신분당선", "bg-red-300", 강남역, 양재역, 10);
 
         addSection(line, 판교역, 강남역, 6);
@@ -81,10 +81,10 @@ public class LineServiceTest {
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
     @Test
     void sameDownStationRegister() {
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 판교역 = stationRepository.save(new Station("판교역"));
-        Station 양재역 = stationRepository.save(new Station("양재역"));
-        Station 양재시민의숲 = stationRepository.save(new Station("양재시민의숲"));
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
+        Station 양재시민의숲 = saveStation("양재시민의숲");
         Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
 
         addSection(line, 판교역, 양재역, 6);
@@ -99,9 +99,9 @@ public class LineServiceTest {
     @DisplayName("노선에 상행 종점 구간을 제거한다.")
     @Test
     void deleteUpEndSection() {
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 판교역 = stationRepository.save(new Station("판교역"));
-        Station 양재역 = stationRepository.save(new Station("양재역"));
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
         Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
 
         addSection(line, 판교역, 양재역, 6);
@@ -116,9 +116,9 @@ public class LineServiceTest {
     @DisplayName("노선에 하행 종점 구간을 제거한다.")
     @Test
     void deleteDownEndSection() {
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 판교역 = stationRepository.save(new Station("판교역"));
-        Station 양재역 = stationRepository.save(new Station("양재역"));
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
         Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
 
         addSection(line, 판교역, 양재역, 6);
@@ -133,9 +133,9 @@ public class LineServiceTest {
     @DisplayName("노선 구간에 중간역을 제거한다.")
     @Test
     void deleteBetweenSection() {
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 판교역 = stationRepository.save(new Station("판교역"));
-        Station 양재역 = stationRepository.save(new Station("양재역"));
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
         Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
 
         addSection(line, 강남역, 양재역, 6);
@@ -150,8 +150,8 @@ public class LineServiceTest {
     @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거한다.")
     @Test
     void deleteSectionExpectedException() {
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 판교역 = stationRepository.save(new Station("판교역"));
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
 
         Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
 
@@ -162,14 +162,18 @@ public class LineServiceTest {
     @DisplayName("노선 구간에 포함 되지 않은 역 삭제")
     @Test
     void deleteNotConnectedSectionExpectedException() {
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 판교역 = stationRepository.save(new Station("판교역"));
-        Station 양재역 = stationRepository.save(new Station("양재역"));
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
 
         Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
 
         assertThatThrownBy(() -> lineService.removeSectionByStationId(line.getId(), 양재역.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private Station saveStation(String name) {
+        return stationRepository.save(new Station(name));
     }
 
     private Line saveLine(String lineName, String lineColor, Station upStation, Station downStation, int distance) {
