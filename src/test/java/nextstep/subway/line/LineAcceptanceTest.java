@@ -318,4 +318,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_지하철역_등록_실패됨(response);
     }
+
+    @DisplayName("지하철 노선에서 지하철 역을 제거한다.")
+    @Test
+    void deleteStation() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "교대역");
+        StationResponse newStation = StationAcceptanceTest.지하철_역_생성_요청(params).as(StationResponse.class);
+        SectionRequest request = new SectionRequest(upStation.getId(), newStation.getId(), 10);
+        지하철_노선에_지하철역_등록_요청(line2.getId(), request);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_삭제_요청(line2.getId(), newStation.getId());
+
+        // then
+        지하철_노선_지하철역_삭제_성공됨(response);
+    }
+
+
+    @DisplayName("지하철 구간이 하나이거나 등록되지 않은 역이면 제거할 수 없다.")
+    @Test
+    void deleteFailStation() {
+        // when
+        ExtractableResponse<Response> response1 = 지하철_노선에_지하철역_삭제_요청(line2.getId(), upStation.getId());
+        ExtractableResponse<Response> response2 = 지하철_노선에_지하철역_삭제_요청(line2.getId(), 100L);
+
+        // then
+        지하철_노선_지하철역_삭제_실패됨(response1);
+        지하철_노선_지하철역_삭제_실패됨(response2);
+    }
 }

@@ -86,6 +86,16 @@ public class LineFixture {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_삭제_요청(final Long lineId, final Long stationId) {
+        return RestAssured.given().log().all()
+                .when()
+                .accept(MediaType.ALL_VALUE)
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .then()
+                .log().all()
+                .extract();
+    }
+
     public static void 지하철_노선_응답됨(final ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
@@ -139,6 +149,14 @@ public class LineFixture {
     }
 
     public static void 지하철_노선_지하철역_등록_실패됨(final ExtractableResponse<Response> response){
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static void 지하철_노선_지하철역_삭제_성공됨(final ExtractableResponse<Response> response){
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static void 지하철_노선_지하철역_삭제_실패됨(final ExtractableResponse<Response> response){
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
