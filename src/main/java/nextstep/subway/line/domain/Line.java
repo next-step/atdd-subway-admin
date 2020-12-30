@@ -21,11 +21,6 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
-
     public Long getId() {
         return id;
     }
@@ -38,11 +33,9 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void updateName(String name) {
+    public void updateLine(String name, String color) {
         this.name = name;
-    }
-
-    public void updateColor(String color) {
         this.color = color;
     }
+
 }
