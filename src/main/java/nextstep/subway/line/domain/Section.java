@@ -60,21 +60,21 @@ public class Section {
         return downStation;
     }
 
-    public void update(Section section) {
-        this.upStation = section.upStation;
-        this.downStation = section.downStation;
-        this.distance = section.distance;
+    public void update(Section targetSection) {
+        this.upStation = targetSection.upStation;
+        this.downStation = targetSection.downStation;
+        this.distance = targetSection.distance;
     }
 
-    public void merge(Section target, Station excludeStation) {
+    public void merge(Section targetSection, Station excludeStation) {
         if (isSameUpStation(excludeStation)) {
-            this.changeUpStation(target.upStation);
+            this.changeUpStation(targetSection.upStation);
         }
 
         if (isSameDownStation(excludeStation)) {
-            this.changeDownStation(target.downStation);
+            this.changeDownStation(targetSection.downStation);
         }
-        sumDistance(target.distance);
+        sumDistance(targetSection.distance);
     }
 
     public boolean isNotEqualsStation() {
@@ -85,36 +85,40 @@ public class Section {
         return distance <= 0;
     }
 
-    public boolean containStation(Station target) {
-        return isSameUpStation(target) || isSameDownStation(target);
+    public boolean containStation(Station targetStation) {
+        return isSameUpStation(targetStation) || isSameDownStation(targetStation);
     }
 
-    public boolean isConnectable(Section section) {
-        return isSameUpStation(section.downStation) || isSameDownStation(section.upStation);
+    public boolean isConnectable(Section targetSection) {
+        return isSameUpStation(targetSection.downStation) || isSameDownStation(targetSection.upStation);
     }
 
     public void switchUpStationAndDistance(Section targetSection) {
         this.changeUpStation(targetSection.downStation);
-        this.divideDistance(targetSection.distance);
+        this.subtractDistance(targetSection.distance);
     }
 
-    public boolean isSameUpStation(Section target) {
-        return this.upStation.equals(target.upStation);
+    public boolean isSameUpStation(Section targetSection) {
+        return this.upStation.equals(targetSection.upStation);
     }
 
-    private boolean isSameUpStation(Station target) {
-        return this.upStation.equals(target);
+    private boolean isSameUpStation(Station targetStation) {
+        return this.upStation.equals(targetStation);
     }
 
-    private boolean isSameDownStation(Station target) {
-        return this.downStation.equals(target);
+    private boolean isSameDownStation(Station targetStation) {
+        return this.downStation.equals(targetStation);
     }
 
-    private void divideDistance(int targetDistance) {
-        if (targetDistance >= this.distance) {
+    private void subtractDistance(int targetDistance) {
+        if (isGraterThanDistance(targetDistance)) {
             throw new IllegalArgumentException();
         }
         this.distance -= targetDistance;
+    }
+
+    private boolean isGraterThanDistance(int targetDistance) {
+        return targetDistance >= this.distance;
     }
 
     private void sumDistance(int targetDistance) {

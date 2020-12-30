@@ -31,8 +31,8 @@ public class Sections {
         return Collections.unmodifiableList(stations);
     }
 
-    public void create(Section section) {
-        addSection(section);
+    public void create(Section targetSection) {
+        addSection(targetSection);
     }
 
     public void add(Section targetSection) {
@@ -42,11 +42,11 @@ public class Sections {
         addSection(targetSection);
     }
 
-    public void update(Section section) {
-        if (isChanged(section)) {
+    public void update(Section targetSection) {
+        if (isChanged(targetSection)) {
             this.sections.stream()
                     .findFirst()
-                    .ifPresent(s -> s.update(section));
+                    .ifPresent(section -> section.update(targetSection));
         }
     }
 
@@ -74,14 +74,14 @@ public class Sections {
 
     private void changeBetweenSection(Section targetSection) {
         this.sections.stream()
-                .filter(base -> base.isSameUpStation(targetSection))
+                .filter(section -> section.isSameUpStation(targetSection))
                 .findFirst()
-                .ifPresent(base -> base.switchUpStationAndDistance(targetSection));
+                .ifPresent(section -> section.switchUpStationAndDistance(targetSection));
     }
 
-    private boolean isChanged(Section section) {
+    private boolean isChanged(Section targetSection) {
         return !this.sections.stream()
-                .allMatch(base -> base.equals(section));
+                .allMatch(section -> section.equals(targetSection));
     }
 
     private Map<Station, Station> sectionElements() {
@@ -100,18 +100,18 @@ public class Sections {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    public void remove(Station station) {
-        Iterator<Section> removeSections = getConnectedSectionsByStation(station);
+    public void remove(Station targetStation) {
+        Iterator<Section> removeSections = getConnectedSectionsByStation(targetStation);
         Section removeSection = removeSections.next();
         if (removeSections.hasNext()) {
-            removeSections.next().merge(removeSection, station);
+            removeSections.next().merge(removeSection, targetStation);
         }
         this.sections.remove(removeSection);
     }
 
-    private Iterator<Section> getConnectedSectionsByStation(Station station) {
+    private Iterator<Section> getConnectedSectionsByStation(Station targetStation) {
         return Optional.of(this.sections.stream()
-                .filter(section -> section.containStation(station))
+                .filter(section -> section.containStation(targetStation))
                 .collect(Collectors.toList()).iterator())
                 .orElseThrow(IllegalArgumentException::new);
     }
