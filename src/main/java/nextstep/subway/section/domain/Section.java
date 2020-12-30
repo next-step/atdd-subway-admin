@@ -35,13 +35,14 @@ public class Section extends BaseEntity {
 	protected Section() {
 	}
 
-	public Section(Line line, Station upStation, Station downStation, Integer distance) {
-		this.line = line;
+	public Section(Station upStation, Station downStation, int distance) {
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
+	}
 
-		line.addBySection(this);
+	public void addLine(Line line) {
+		this.line = line;
 	}
 
 	public Long getId() {

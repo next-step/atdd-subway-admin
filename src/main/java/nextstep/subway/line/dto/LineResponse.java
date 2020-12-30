@@ -9,81 +9,84 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
-    private Long id;
-    private String name;
-    private String color;
-    private List<StationResponse> stations;
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
 
-    public LineResponse() {
-    }
+	private Long id;
+	private String name;
+	private String color;
+	private List<StationResponse> stations;
+	private LocalDateTime createdDate;
+	private LocalDateTime modifiedDate;
 
-    public LineResponse(Long id, String name, String color, List<Section> sections, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.stations = addStationsInOrder(sections);
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-    }
+	public LineResponse() {
+	}
 
-    public LineResponse(List<Section> stations) {
-        this.stations = addStationsInOrder(stations);
-    }
+	public LineResponse(Long id, String name, String color, List<Section> sections,
+		  LocalDateTime createdDate, LocalDateTime modifiedDate) {
+		this.id = id;
+		this.name = name;
+		this.color = color;
+		this.stations = addStationsInOrder(sections);
+		this.createdDate = createdDate;
+		this.modifiedDate = modifiedDate;
+	}
 
-    public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getSections(), line.getCreatedDate(), line.getModifiedDate());
-    }
+	protected LineResponse(List<Section> stations) {
+		this.stations = addStationsInOrder(stations);
+	}
 
-    private List<StationResponse> addStationsInOrder(List<Section> sections) {
-        List<StationResponse> stations = new ArrayList<>();
-        for (Section section : sections) {
-            stations.add(StationResponse.of(section.getUpStation()));
-            stations.add(StationResponse.of(section.getDownStation()));
-        }
+	public static LineResponse of(Line line) {
+		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getSections(),
+			  line.getCreatedDate(), line.getModifiedDate());
+	}
 
-        return stations;
-    }
+	private List<StationResponse> addStationsInOrder(List<Section> sections) {
+		List<StationResponse> stations = new ArrayList<>();
+		for (Section section : sections) {
+			stations.add(StationResponse.of(section.getUpStation()));
+			stations.add(StationResponse.of(section.getDownStation()));
+		}
 
-    public Long getId() {
-        return id;
-    }
+		return stations;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getColor() {
-        return color;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public List<StationResponse> getStations() {
-        return stations;
-    }
+	public String getColor() {
+		return color;
+	}
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
+	public List<StationResponse> getStations() {
+		return stations;
+	}
 
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
+	public LocalDateTime getCreatedDate() {
+		return createdDate;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        LineResponse that = (LineResponse) o;
-        return Objects.equals(id, that.id);
-    }
+	public LocalDateTime getModifiedDate() {
+		return modifiedDate;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		LineResponse that = (LineResponse) o;
+		return Objects.equals(id, that.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
 }

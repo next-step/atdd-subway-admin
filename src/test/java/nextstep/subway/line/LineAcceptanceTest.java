@@ -25,8 +25,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine() {
 		// when
-		// 지하철_노선_생성_요청
-		ExtractableResponse<Response> response = LineTestApi.지하철_노선_생성_요청("bg-red-600", "신분당선");
+		// 지하철_노선_등록
+		LineRequest lineRequest = 노선_등록_요청용_기본데이터_생성("2호선", "bg-green-600", "강남역", "역삼역");
+		ExtractableResponse<Response> response = LineTestApi
+			  .지하철_노선_생성_요청(lineRequest);
 
 		// then
 		// 지하철_노선_생성됨
@@ -40,11 +42,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void createLine2() {
 		// given
 		// 지하철_노선_등록되어_있음
-		LineTestApi.지하철_노선_등록되어_있음("bg-red-600", "신분당선");
+		LineRequest lineRequest = 노선_등록_요청용_기본데이터_생성("2호선", "bg-green-600", "강남역", "역삼역");
+		LineTestApi.지하철_노선_생성_요청(lineRequest);
 
 		// when
 		// 지하철_노선_생성_요청
-		ExtractableResponse<Response> response = LineTestApi.지하철_노선_생성_요청("bg-red-600", "신분당선");
+		ExtractableResponse<Response> response = LineTestApi.지하철_노선_생성_요청(lineRequest);
 
 		// then
 		// 지하철_노선_생성_실패됨
@@ -56,11 +59,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void showLines() {
 		// given
 		// 지하철_노선_등록되어_있음
-		ExtractableResponse<Response> createResponse1 = LineTestApi
-			  .지하철_노선_등록되어_있음("bg-red-600", "신분당선");
-		// 지하철_노선_등록되어_있음
-		ExtractableResponse<Response> createResponse2 = LineTestApi
-			  .지하철_노선_등록되어_있음("bg-green-600", "2호선");
+		LineRequest lineRequest1 = 노선_등록_요청용_기본데이터_생성("2호선", "bg-green-600", "강남역", "역삼역");
+		LineRequest lineRequest2 = 노선_등록_요청용_기본데이터_생성("신분당선", "bg-red-600", "미금역", "정자역");
+		ExtractableResponse<Response> createResponse1 = LineTestApi.지하철_노선_생성_요청(lineRequest1);
+		ExtractableResponse<Response> createResponse2 = LineTestApi.지하철_노선_생성_요청(lineRequest2);
 
 		// when
 		// 지하철_노선_목록_조회_요청
@@ -96,16 +98,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLine() {
 		// given
 		// 지하철_역_등록되어_있음
-		ExtractableResponse<Response> createdStations1 = StationTestApi.지하철_역_등록_요청("교대역");
-		ExtractableResponse<Response> createdStations2 = StationTestApi.지하철_역_등록_요청("강남역");
-		List<Long> stationIds = expectedIdList(createdStations1, createdStations2);
-
 		// 지하철_노선_등록되어_있음
-		LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", stationIds.get(0),
-			  stationIds.get(1), 5);
-
-		ExtractableResponse<Response> createResponse = LineTestApi
-			  .지하철_노선_생성_요청2(lineRequest);
+		LineRequest lineRequest = 노선_등록_요청용_기본데이터_생성("2호선", "bg-green-600", "강남역", "역삼역");
+		ExtractableResponse<Response> createResponse = LineTestApi.지하철_노선_생성_요청(lineRequest);
 
 		// when
 		// 지하철_노선_조회_요청
@@ -120,10 +115,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		응답_상태코드_확인(response, HttpStatus.OK);
 		assertThat(response.body().as(LineResponse.class).getId()).isEqualTo(lineIds.get(0));
-		assertThat(stations).containsExactly(
-			  createdStations1.body().as(StationResponse.class),
-			  createdStations2.body().as(StationResponse.class)
-		);
+		assertThat(stations).hasSize(2);
 	}
 
 	@DisplayName("존재하지 않는 지하철 노선을 조회한다.")
@@ -143,8 +135,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void updateLine() {
 		// given
 		// 지하철_노선_등록되어_있음
-		ExtractableResponse<Response> createResponse = LineTestApi
-			  .지하철_노선_등록되어_있음("bg-red-600", "신분당선");
+		LineRequest lineRequest = 노선_등록_요청용_기본데이터_생성("2호선", "bg-green-600", "강남역", "역삼역");
+		ExtractableResponse<Response> createResponse = LineTestApi.지하철_노선_생성_요청(lineRequest);
 
 		// when
 		// 지하철_노선_수정_요청
@@ -183,8 +175,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLine() {
 		// given
 		// 지하철_노선_등록되어_있음
-		ExtractableResponse<Response> createResponse = LineTestApi
-			  .지하철_노선_등록되어_있음("bg-red-600", "신분당선");
+		LineRequest lineRequest = 노선_등록_요청용_기본데이터_생성("2호선", "bg-green-600", "강남역", "역삼역");
+		ExtractableResponse<Response> createResponse = LineTestApi.지하철_노선_생성_요청(lineRequest);
 
 		// when
 		// 지하철_노선_제거_요청
@@ -207,6 +199,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then
 		// 지하철_노선_삭제됨
 		실패응답_상태_확인(response);
+	}
+
+	private LineRequest 노선_등록_요청용_기본데이터_생성(String lineName, String lineColor, String upStationName,
+		  String downStationName) {
+		ExtractableResponse<Response> createdStations1 = StationTestApi
+			  .지하철_역_등록_요청(upStationName);
+		ExtractableResponse<Response> createdStations2 = StationTestApi
+			  .지하철_역_등록_요청(downStationName);
+		List<Long> stationIds = expectedIdList(createdStations1, createdStations2);
+
+		return new LineRequest(lineName, lineColor, stationIds.get(0),
+			  stationIds.get(1), 5);
 	}
 
 	private void 실패응답_상태_확인(ExtractableResponse<Response> response) {

@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
@@ -17,7 +16,7 @@ class LineResponseTest {
 	@Test
 	void stationsInOrder() {
 		//given
-		Section section = new Section(new Line(), new Station("강남역"), new Station("역삼역"), 2);
+		Section section = new Section(new Station("강남역"), new Station("역삼역"), 2);
 		List<Section> sections = Arrays.asList(section);
 
 		//when
