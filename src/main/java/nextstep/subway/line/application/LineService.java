@@ -1,28 +1,27 @@
 package nextstep.subway.line.application;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineFactory;
-import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.exception.LineNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class LineService {
 
     private final LineRepository lineRepository;
 
-    private final LineFactory lineFactory;
+    private final SectionFactory sectionFactory;
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(lineFactory.create(request));
+        Line persistLine = lineRepository.save(request.toLine(sectionFactory));
         return LineResponse.of(persistLine);
     }
 
@@ -41,7 +40,7 @@ public class LineService {
     @Transactional
     public LineResponse updateLine(final Long id, final LineRequest request) {
         Line persistLine = getPersistLine(id);
-        persistLine.update(lineFactory.create(request));
+        persistLine.update(request.toLine(sectionFactory));
         return LineResponse.of(persistLine);
     }
 
@@ -51,8 +50,21 @@ public class LineService {
         lineRepository.delete(persistLine);
     }
 
+    @Transactional
+    public LineResponse addSection(final Long id, final SectionRequest request) {
+        Line persistLine = getPersistLine(id);
+        Section section = sectionFactory.create(
+                request.getUpStationId(),
+                request.getDownStationId(),
+                request.getDistance()
+        );
+        persistLine.add(new LineStation(persistLine,section));
+        return LineResponse.of(persistLine);
+    }
+
     private Line getPersistLine(final Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new LineNotFoundException(String.format("노선이 존재하지 않습니다. (입력 id 값: %d)", id)));
     }
 }
+

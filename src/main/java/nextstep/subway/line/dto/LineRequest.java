@@ -3,6 +3,9 @@ package nextstep.subway.line.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionFactory;
 
 @Getter
 @NoArgsConstructor
@@ -23,5 +26,13 @@ public class LineRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public Line toLine(final SectionFactory sectionFactory) {
+        return Line.of(name, color, toSection(sectionFactory));
+    }
+
+    public Section toSection(final SectionFactory sectionFactory) {
+        return sectionFactory.create(upStationId, downStationId, distance);
     }
 }

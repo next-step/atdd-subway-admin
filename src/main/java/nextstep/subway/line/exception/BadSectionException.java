@@ -3,9 +3,9 @@ package nextstep.subway.line.exception;
 import nextstep.subway.exception.ServiceException;
 import org.springframework.http.HttpStatus;
 
-public class LineStationDuplicatedException extends ServiceException {
+public class BadSectionException extends ServiceException {
 
-    public LineStationDuplicatedException(final String message) {
+    public BadSectionException(final String message) {
         super(HttpStatus.BAD_REQUEST, message);
     }
 }

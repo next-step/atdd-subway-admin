@@ -21,7 +21,7 @@ public class LineStation {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
 
@@ -47,5 +47,17 @@ public class LineStation {
 
     public boolean isDownStation(final Station station) {
         return section.isDownStation(station);
+    }
+
+    public boolean contains(final Station station) {
+        return isUpStation(station) || isDownStation(station);
+    }
+
+    public boolean canAddBetweenSection(final Section other) {
+        return section.canAddBetweenSection(other);
+    }
+
+    public void update(final Section other) {
+        section.update(other);
     }
 }

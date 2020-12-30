@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@NoArgsConstructor
 @EqualsAndHashCode
+@NoArgsConstructor
 public class LineResponse {
 
     private Long id;
@@ -40,7 +40,7 @@ public class LineResponse {
                 .id(line.getId())
                 .name(line.getName())
                 .color(line.getColor())
-                .stations(StationResponse.ofList(line.getStationsOrderByUp()))
+                .stations(StationResponse.ofList(line.getOrderedStations()))
                 .createdDate(line.getCreatedDate())
                 .modifiedDate(line.getModifiedDate())
                 .build();
