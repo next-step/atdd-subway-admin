@@ -83,9 +83,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         ExtractableResponse<Response> created1 = 지하철_노선_생성_요청(new LineRequest("2호선", "GREEN", stationResponse1.getId(), stationResponse2.getId(), 5));
         ExtractableResponse<Response> created2 = 지하철_노선_생성_요청(new LineRequest("3호선", "ORANGE", stationResponse1.getId(), stationResponse2.getId(), 5));
+        Long id = 생성된_지하철_노선_목록(asList(created2)).get(0);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회("2호선");
+        ExtractableResponse<Response> response = 지하철_노선_조회(id);
 
         // then
         정상_OK_응답됨(response);
@@ -139,11 +140,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_조회(String name) {
+    public static ExtractableResponse<Response> 지하철_노선_조회(Long id) {
         return RestAssured
                 .given().log().all()
                 .when()
-                .get("/lines/" + name)
+                .get("/lines/" + id)
                 .then().log().all()
                 .extract();
     }
