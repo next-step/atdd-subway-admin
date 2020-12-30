@@ -1,11 +1,11 @@
 package nextstep.subway.line.dto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
@@ -20,7 +20,7 @@ public class LineResponse {
 	public LineResponse() {
 	}
 
-	public LineResponse(Long id, String name, String color, List<Section> sections,
+	public LineResponse(Long id, String name, String color, Sections sections,
 		  LocalDateTime createdDate, LocalDateTime modifiedDate) {
 		this.id = id;
 		this.name = name;
@@ -30,23 +30,15 @@ public class LineResponse {
 		this.modifiedDate = modifiedDate;
 	}
 
-	protected LineResponse(List<Section> stations) {
-		this.stations = addStationsInOrder(stations);
-	}
-
 	public static LineResponse of(Line line) {
 		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getSections(),
 			  line.getCreatedDate(), line.getModifiedDate());
 	}
 
-	private List<StationResponse> addStationsInOrder(List<Section> sections) {
-		List<StationResponse> stations = new ArrayList<>();
-		for (Section section : sections) {
-			stations.add(StationResponse.of(section.getUpStation()));
-			stations.add(StationResponse.of(section.getDownStation()));
-		}
-
-		return stations;
+	private List<StationResponse> addStationsInOrder(Sections sections) {
+		return sections.stationsInOrder().stream()
+			  .map(StationResponse::of)
+			  .collect(Collectors.toList());
 	}
 
 	public Long getId() {

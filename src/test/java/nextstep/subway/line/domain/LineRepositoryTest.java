@@ -8,6 +8,7 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -46,6 +47,7 @@ class LineRepositoryTest {
 
 		Optional<Line> actual = lineRepository.findByName("2호선");
 		assertThat(actual).isNotNull();
-		assertThat(actual.get().getSections()).hasSize(1);
+		Sections sections = actual.get().getSections();
+		assertThat(sections).isEqualTo(new Sections(Arrays.asList(section)));
 	}
 }
