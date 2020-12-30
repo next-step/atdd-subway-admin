@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-class StationAcceptanceTest extends AcceptanceTest {
+public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -72,7 +72,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         지하철역_제거_성공(response);
     }
 
-    private ExtractableResponse<Response> 지하철역_생성_요청(String stationName) {
+    public static ExtractableResponse<Response> 지하철역_생성_요청(String stationName) {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
@@ -81,10 +81,14 @@ class StationAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
+                .when().post("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    public static Long 지하철역_등록되어_있음(String name) {
+        ExtractableResponse<Response> createResponse = 지하철역_생성_요청(name);
+        return Long.parseLong(createResponse.header("Location").split("/")[2]);
     }
 
     private ExtractableResponse<Response> 지하철_목록_조회_요청() {

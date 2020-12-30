@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("8호선", "pink");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("8호선", "pink", "암사역", "모란역", 15);
 
         // then
         지하철_노선_생성됨(response);
@@ -32,12 +33,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void createDuplicateLine() {
         // given
-        지하철_노선_등록되어_있음("8호선", "pink");
+        지하철_노선_등록되어_있음("8호선", "pink", "암사역", "모란역", 15);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("8호선", "pink");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("8호선", "pink", "잠실역", "문정역", 15);
 
         // then
         지하철_노선_생성_실패됨(response);
@@ -47,8 +48,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        String createResponse1 = 지하철_노선_등록되어_있음("2호선", "green");
-        String createResponse2 = 지하철_노선_등록되어_있음("8호선", "pink");
+        String createResponse1 = 지하철_노선_등록되어_있음("2호선", "green", "잠실역", "신도림역", 20);
+        String createResponse2 = 지하철_노선_등록되어_있음("8호선", "pink", "암사", "모란", 15);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -62,7 +63,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        String createdLocationUri = 지하철_노선_등록되어_있음("8호선", "pink");
+        String createdLocationUri = 지하철_노선_등록되어_있음("8호선", "pink", "암사", "모란", 15);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdLocationUri);
@@ -75,7 +76,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        String createdLocationUri = 지하철_노선_등록되어_있음("8호선", "pink");
+        String createdLocationUri = 지하철_노선_등록되어_있음("8호선", "pink", "암사", "모란", 15);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdLocationUri, "신분당선", "red");
@@ -88,7 +89,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        String createdLocationUri = 지하철_노선_등록되어_있음("8호선", "pink");
+        String createdLocationUri = 지하철_노선_등록되어_있음("8호선", "pink", "암사", "모란", 15);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(createdLocationUri);
@@ -97,20 +98,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-        LineRequest request = new LineRequest(name, color);
+    public ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, String upStationName, String downStationName, int distance) {
+        Long upStationId = StationAcceptanceTest.지하철역_등록되어_있음(upStationName);
+        Long downStationId = StationAcceptanceTest.지하철역_등록되어_있음(downStationName);
+
+        LineRequest request = LineRequest.builder()
+                .name(name)
+                .color(color)
+                .upStationId(upStationId)
+                .downStationId(downStationId)
+                .distance(distance)
+                .build();
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
-                .then().log().all().extract();
+                .then().log().all()
+                .extract();
+
         return response;
     }
 
-    private String 지하철_노선_등록되어_있음(String name, String color) {
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(name, color);
+    public String 지하철_노선_등록되어_있음(String name, String color, String upStationName, String downStationName, int distance) {
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(name, color, upStationName, downStationName, distance);
         return createResponse.header("Location");
     }
 
