@@ -1,31 +1,33 @@
 package nextstep.subway.line.dto;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class LineResponseTest {
 
-	class TestSection extends Section {
-		public TestSection(Long id) {
-
-		}
-	}
-
-	@DisplayName("노선정보 응답객체 생성시 구간정보를 역 목록으로 변환한다.")
+	@DisplayName("정렬된 역 정보 확인")
 	@Test
-	void stations() {
-		//givne
-//		Arrays.asList(new Station(1L, "강남역"));
-//		List<Section> sections = Arrays.asList(new Section(), new Section());
+	void stationsInOrder() {
+		//given
+		Section section = new Section(new Line(), new Station("강남역"), new Station("역삼역"), 2);
+		List<Section> sections = Arrays.asList(section);
 
 		//when
-//		LineResponse lineResponse = new LineResponse(null, null, null, sections, null, null);
+		LineResponse lineResponse = new LineResponse(sections);
 
 		//then
-//		List<Station> expected = Arrays.asList();
-//		for (int i = 0; i < expected.size(); i++) {
-//			assertThat(expected.get(i)).isEqualTo(lineResponse.getStations().get(0));
-//		}
+		List<StationResponse> expected = Arrays
+			  .asList(StationResponse.of(section.getUpStation())
+					, StationResponse.of(section.getDownStation())
+			  );
+		assertThat(lineResponse.getStations()).containsExactly(expected.get(0), expected.get(1));
 	}
 }

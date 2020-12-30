@@ -95,26 +95,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
-		// 지하철_역_등록되어_있음 * 4
+		// 지하철_역_등록되어_있음
 		ExtractableResponse<Response> createdStations1 = StationTestApi.지하철_역_등록_요청("교대역");
 		ExtractableResponse<Response> createdStations2 = StationTestApi.지하철_역_등록_요청("강남역");
-		ExtractableResponse<Response> createdStations3 = StationTestApi.지하철_역_등록_요청("역삼역");
-		ExtractableResponse<Response> createdStations4 = StationTestApi.지하철_역_등록_요청("선릉역");
-		List<Long> stationIds = expectedIdList(createdStations1, createdStations2, createdStations3,
-			  createdStations4);
+		List<Long> stationIds = expectedIdList(createdStations1, createdStations2);
 
-		// 지하철_노선_등록되어_있음 * 3
-		LineRequest lineRequest1 = new LineRequest("2호선", "bg-green-600", stationIds.get(1),
-			  stationIds.get(2), 5);
-		LineRequest lineRequest2 = new LineRequest("2호선", "bg-green-600", stationIds.get(0),
+		// 지하철_노선_등록되어_있음
+		LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", stationIds.get(0),
 			  stationIds.get(1), 5);
-		LineRequest lineRequest3 = new LineRequest("2호선", "bg-green-600", stationIds.get(2),
-			  stationIds.get(3), 5);
 
-		LineTestApi.지하철_노선_생성_요청2(lineRequest1);
-		LineTestApi.지하철_노선_생성_요청2(lineRequest2);
 		ExtractableResponse<Response> createResponse = LineTestApi
-			  .지하철_노선_생성_요청2(lineRequest3);
+			  .지하철_노선_생성_요청2(lineRequest);
 
 		// when
 		// 지하철_노선_조회_요청
@@ -129,12 +120,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		응답_상태코드_확인(response, HttpStatus.OK);
 		assertThat(response.body().as(LineResponse.class).getId()).isEqualTo(lineIds.get(0));
-		assertThat(stations).containsAll(Arrays.asList(
+		assertThat(stations).containsExactly(
 			  createdStations1.body().as(StationResponse.class),
-			  createdStations2.body().as(StationResponse.class),
-			  createdStations3.body().as(StationResponse.class),
-			  createdStations4.body().as(StationResponse.class)
-		));
+			  createdStations2.body().as(StationResponse.class)
+		);
 	}
 
 	@DisplayName("존재하지 않는 지하철 노선을 조회한다.")
