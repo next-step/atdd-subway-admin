@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -47,7 +48,9 @@ public class Line extends BaseEntity {
         return sections.getStations();
     }
 
-    public void addSection(Station upStation, Station downStation, Long distance) {
-        addSection(new Section(this, upStation, downStation, distance));
+    public Section addSection(Station upStation, Station downStation, Long distance) {
+        Section section = new Section(this, upStation, downStation, distance);
+        addSection(section);
+        return section;
     }
 }
