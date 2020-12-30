@@ -98,6 +98,11 @@ public class Section {
         this.subtractDistance(targetSection.distance);
     }
 
+    public void switchDownStationAndDistance(Section targetSection) {
+        this.changeDownStation(targetSection.upStation);
+        this.subtractDistance(targetSection.distance);
+    }
+
     public boolean isSameUpStation(Section targetSection) {
         return this.upStation.equals(targetSection.upStation);
     }
@@ -106,7 +111,11 @@ public class Section {
         return this.upStation.equals(targetStation);
     }
 
-    private boolean isSameDownStation(Station targetStation) {
+    public boolean isSameDownStation(Section targetStation) {
+        return this.downStation.equals(targetStation.downStation);
+    }
+
+    public boolean isSameDownStation(Station targetStation) {
         return this.downStation.equals(targetStation);
     }
 

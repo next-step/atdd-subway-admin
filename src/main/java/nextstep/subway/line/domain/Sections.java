@@ -82,11 +82,11 @@ public class Sections {
 
     private void checkAddValidation(Section targetSection) {
         if (this.sections.contains(targetSection)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("이미 노선에 모두 등록되어 있습니다.");
         }
 
         if (checkConnectableSection(targetSection)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("둘 중 하나도 구간에 포함되어있지 않습니다.");
         }
     }
 
@@ -96,6 +96,18 @@ public class Sections {
     }
 
     private void changeBetweenSection(Section targetSection) {
+        changeBetweenUpStation(targetSection);
+        changeBetweenDownStation(targetSection);
+    }
+
+    private void changeBetweenDownStation(Section targetSection) {
+        this.sections.stream()
+                .filter(section -> section.isSameDownStation(targetSection))
+                .findFirst()
+                .ifPresent(section -> section.switchDownStationAndDistance(targetSection));
+    }
+
+    private void changeBetweenUpStation(Section targetSection) {
         this.sections.stream()
                 .filter(section -> section.isSameUpStation(targetSection))
                 .findFirst()

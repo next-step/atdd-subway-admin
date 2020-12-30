@@ -46,19 +46,34 @@ public class LineServiceTest {
         stationRepository.deleteAllInBatch();
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록할 경우")
+    @DisplayName("역 사이에 상행역 기준 새로운 역을 등록할 경우")
     @Test
-    void betweenStationRegister() {
-        Station 강남역 = saveStation("강남역");
-        Station 판교역 = saveStation("판교역");
+    void betweenUpStationRegister() {
         Station 양재역 = saveStation("양재역");
-        Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
+        Station 정자역 = saveStation("정자역");
+        Station 판교역 = saveStation("판교역");
+        Line line = saveLine("신분당선", "bg-red-300", 양재역, 정자역, 10);
 
-        addSection(line, 강남역, 양재역, 6);
+        addSection(line, 양재역, 판교역, 6);
 
         assertThat(getStationResponses(line))
                 .extracting("name")
-                .containsExactly("강남역", "양재역", "판교역");
+                .containsExactly("양재역", "판교역", "정자역");
+    }
+
+    @DisplayName("역 사이에 하행역 기준 새로운 역을 등록할 경우")
+    @Test
+    void betweenDownStationRegister() {
+        Station 양재역 = saveStation("양재역");
+        Station 정자역 = saveStation("정자역");
+        Station 판교역 = saveStation("판교역");
+        Line line = saveLine("신분당선", "bg-red-300", 양재역, 정자역, 10);
+
+        addSection(line, 판교역, 정자역, 6);
+
+        assertThat(getStationResponses(line))
+                .extracting("name")
+                .containsExactly("양재역", "판교역", "정자역");
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
