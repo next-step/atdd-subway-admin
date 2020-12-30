@@ -11,7 +11,6 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,29 +20,10 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
-        addUpToUp(section);
-        addDownToDown(section);
+        validation(section);
+        addUptoUpStation(section);
+        addDownToDownStation(section);
         sections.add(section);
-    }
-
-    private void addUpToUp(Section section) {
-        sections.stream()
-                .filter(oldSection -> section.getUpStation() == oldSection.getUpStation())
-                .findFirst()
-                .ifPresent(oldSection -> {
-                    sections.add(new Section(oldSection.getLine(), section.getDownStation(), oldSection.getDownStation(), oldSection.getDistance().get() - section.getDistance().get()));
-                    sections.remove(oldSection);
-                });
-    }
-
-    private void addDownToDown(Section section) {
-        sections.stream()
-                .filter(oldSection -> section.getUpStation() == oldSection.getDownStation())
-                .findFirst()
-                .ifPresent(oldSection -> {
-                    sections.add(new Section(oldSection.getLine(), oldSection.getUpStation(), section.getUpStation(), section.getDistance().get()));
-                    sections.remove(oldSection);
-                });
     }
 
     public List<Station> getStations() {
@@ -55,6 +35,34 @@ public class Sections {
             nextSection = findNextSection(nextSection.get().getDownStation());
         }
         return stations;
+    }
+
+    private void addUptoUpStation(Section section) {
+        sections.stream()
+                .filter(oldSection -> section.getUpStation() == oldSection.getUpStation())
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    sections.add(new Section(oldSection.getLine(), section.getDownStation(), oldSection.getDownStation(), getUpStationDistance(section, oldSection)));
+                    sections.remove(oldSection);
+                });
+    }
+
+    private void addDownToDownStation(Section section) {
+        sections.stream()
+                .filter(oldSection -> section.getUpStation() == oldSection.getDownStation())
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    sections.add(new Section(oldSection.getLine(), oldSection.getUpStation(), section.getUpStation(), section.getDistance().get()));
+                    sections.remove(oldSection);
+                });
+    }
+
+    private long getUpStationDistance(Section section, Section oldSection) {
+        long nextDistance = oldSection.getDistance().get() - section.getDistance().get();
+        if (nextDistance < 1) {
+            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+        }
+        return nextDistance;
     }
 
     private Section findStartSection() {
@@ -76,5 +84,31 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.getUpStation() == downStation)
                 .findFirst();
+    }
+
+    private void validation(Section section) {
+        if (sections.size() == 0) return;
+        int containsCount = getContainsCount(section);
+        stationExistValid(containsCount);
+    }
+
+    private int getContainsCount(Section section) {
+        List<Station> stations = this.getStations();
+        int containsCount = 0;
+        for (Station station : section.getStations()) {
+            if (stations.contains(station)) {
+                containsCount++;
+            }
+        }
+        return containsCount;
+    }
+
+    private void stationExistValid(int containsCount) {
+        if (containsCount == 2) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+        }
+        if (containsCount == 0) {
+            throw new IllegalArgumentException("상행역과 하행역 중 노선에 등록된 역이 없습니다.");
+        }
     }
 }
