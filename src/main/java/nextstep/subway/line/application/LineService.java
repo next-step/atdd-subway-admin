@@ -26,19 +26,18 @@ public class LineService {
     }
 
     public void deleteLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(()->new LineNotFoundException());
-        lineRepository.delete(line);
+        lineRepository.delete(getLindById(id));
     }
 
     public LineResponse modifyLine(Long id, LineRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(()->new LineNotFoundException());
+        Line line = getLindById(id);
         line.setName(request.getName());
         line.setColor(request.getColor());
         return LineResponse.of(line);
     }
 
     public LineResponse findLine(Long id) {
-        return LineResponse.of(lineRepository.findById(id).orElseThrow(()->new LineNotFoundException()));
+        return LineResponse.of(getLindById(id));
     }
 
     public List<LineResponse> findAllLines() {
@@ -46,5 +45,9 @@ public class LineService {
         return lines.stream()
                 .map(line -> LineResponse.of(line))
                 .collect(Collectors.toList());
+    }
+
+    private Line getLindById(Long id) {
+        return lineRepository.findById(id).orElseThrow(()->new LineNotFoundException(id));
     }
 }

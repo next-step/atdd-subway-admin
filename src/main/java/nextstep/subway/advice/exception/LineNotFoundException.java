@@ -6,7 +6,7 @@ public class LineNotFoundException extends RuntimeException {
         super(message);
     }
 
-    public LineNotFoundException() {
-        super("존재하는 노선이 없습니다");
+    public LineNotFoundException(Long id) {
+        super("존재하는 노선이 없습니다 (id : " +id+" )");
     }
 }
