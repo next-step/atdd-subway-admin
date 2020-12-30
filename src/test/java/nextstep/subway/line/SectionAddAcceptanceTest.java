@@ -11,7 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.line.SectionAddAcceptanceTestHelper.*;
+import static nextstep.subway.line.SectionAddAcceptanceTestRequest.*;
+import static nextstep.subway.line.SectionAddAcceptanceTestResponse.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선에 역 등록 관련 기능")
