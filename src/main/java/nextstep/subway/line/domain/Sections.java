@@ -7,11 +7,11 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -115,23 +115,22 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Queue<Section> containsSections = getContainsSections(station);
-        Section deleteTarget = containsSections.remove();
-        if (!containsSections.isEmpty()) {
-            containsSections.remove().merge(deleteTarget);
+        Iterator<Section> removeSections = getContainsSectionsByStation(station).iterator();
+        Section removeSection = removeSections.next();
+        if (removeSections.hasNext()) {
+            removeSections.next().merge(removeSection);
         }
-        this.sections.remove(deleteTarget);
+        this.sections.remove(removeSection);
     }
 
-    private Queue<Section> getContainsSections(Station station) {
-        Queue<Section> containsSections = new LinkedList<>();
-        findSameUpStation(station)
-                .ifPresent(containsSections::add);
-        findSameDownStation(station)
-                .ifPresent(containsSections::add);
-        if (containsSections.isEmpty() || this.sections.size() <= 1) {
-            throw new IllegalArgumentException();
-        }
-        return containsSections;
+    private List<Section> getContainsSectionsByStation(Station station) {
+        return Optional.of(this.sections.stream()
+                .filter(section -> section.containStation(station))
+                .collect(Collectors.toList()))
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public boolean isRemove() {
+        return this.sections.size() <= 1;
     }
 }

@@ -88,6 +88,10 @@ public class Section {
         return this.downStation.equals(target);
     }
 
+    public boolean containStation(Station target) {
+        return isSameUpStation(target) || isSameDownStation(target);
+    }
+
     public void changeDistance(int targetDistance) {
         if (targetDistance >= this.distance) {
             throw new IllegalArgumentException();
