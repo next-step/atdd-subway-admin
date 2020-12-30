@@ -10,8 +10,8 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.line.LineTestCommon.createLineParams;
-import static nextstep.subway.line.LineTestCommon.createResponse;
+import static nextstep.subway.line.LineAcceptanceTestRequest.지하철_노선_요청_생성;
+import static nextstep.subway.line.LineAcceptanceTestRequest.지하철_노선_등록되어_있음;
 
 
 public class SectionAddAcceptanceTestRequest {
@@ -29,11 +29,11 @@ public class SectionAddAcceptanceTestRequest {
     }
 
     public static LineRequest 노선_구간_요청_생성(String lineName, String lineColor, Long upStationId, Long downStationId, long distance) {
-        return createLineParams(lineName, lineColor, upStationId, downStationId, distance);
+        return 지하철_노선_요청_생성(lineName, lineColor, upStationId, downStationId, distance);
     }
 
     public static ExtractableResponse<Response> 노선_등록시_구간_등록되어_있음(LineRequest request) {
-        return createResponse(request, "/lines");
+        return 지하철_노선_등록되어_있음(request, "/lines");
     }
 
     public static ExtractableResponse<Response> 지하철역_등록되어_있음(String name) {
