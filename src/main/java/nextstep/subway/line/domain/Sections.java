@@ -10,6 +10,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,49 +21,60 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
+        addUpToUp(section);
+        addDownToDown(section);
         sections.add(section);
     }
 
+    private void addUpToUp(Section section) {
+        sections.stream()
+                .filter(oldSection -> section.getUpStation() == oldSection.getUpStation())
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    sections.add(new Section(oldSection.getLine(), section.getDownStation(), oldSection.getDownStation(), oldSection.getDistance().get() - section.getDistance().get()));
+                    sections.remove(oldSection);
+                });
+    }
+
+    private void addDownToDown(Section section) {
+        sections.stream()
+                .filter(oldSection -> section.getUpStation() == oldSection.getDownStation())
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    sections.add(new Section(oldSection.getLine(), oldSection.getUpStation(), section.getUpStation(), section.getDistance().get()));
+                    sections.remove(oldSection);
+                });
+    }
+
     public List<Station> getStations() {
-        Section startSection = getStartSection();
+        Section startSection = findStartSection();
         List<Station> stations = startSection.getStations();
-        Section nextSection = getNextSection(startSection.getDownStation());
-        while (nextSection != null) {
-            stations.add(nextSection.getDownStation());
-            nextSection = getNextSection(nextSection.getDownStation());
+        Optional<Section> nextSection = findNextSection(startSection.getDownStation());
+        while (nextSection.isPresent()) {
+            stations.add(nextSection.get().getDownStation());
+            nextSection = findNextSection(nextSection.get().getDownStation());
         }
         return stations;
     }
 
-    private Section getStartSection() {
-        Section ret = new Section();
-        for (Section section : this.sections) {
-            ret = findNotContainDownStations(section.getUpStation());
+    private Section findStartSection() {
+        return sections.stream()
+                .filter(s -> !isContainsDownStation(s.getUpStation()))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private boolean isContainsDownStation(Station station) {
+        boolean flag = false;
+        for (Section section : sections) {
+            flag = section.getDownStation() == station;
         }
-        return ret;
+        return flag;
     }
 
-    private Section findNotContainDownStations(Station upStation) {
-        return this.sections
-                .stream()
-                .filter(section -> isNotEqualsDownStation(section, upStation))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("순환 구간은 없습니다."));
-    }
-
-    private boolean isNotEqualsDownStation(Section section, Station upStation) {
-        return !section.getDownStation().getId().equals(upStation.getId());
-    }
-
-    private Section getNextSection(Station downStation) {
-        return this.sections
-                .stream()
-                .filter(section -> isNextStation(section, downStation))
-                .findFirst()
-                .orElse(null);
-    }
-
-    private boolean isNextStation(Section section, Station downStation) {
-        return section.getUpStation().getId().equals(downStation.getId());
+    private Optional<Section> findNextSection(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation() == downStation)
+                .findFirst();
     }
 }
