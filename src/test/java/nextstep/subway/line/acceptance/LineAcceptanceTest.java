@@ -111,6 +111,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(LineResponse response) {
+        return RestAssured.given().log().all().
+                accept(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                get("/lines/{lineId}", response.getId()).
+                then().
+                log().all().
+                extract();
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> response, LineRequest lineRequest) {
         String uri = response.header("Location");
 

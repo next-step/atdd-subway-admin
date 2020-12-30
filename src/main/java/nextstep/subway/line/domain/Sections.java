@@ -36,12 +36,12 @@ public class Sections {
     }
 
     private Section findUpEndSection() {
-        List<Long> downStationIds = this.sections.stream()
-                .map(it -> it.getDownStation().getId())
+        List<Station> downStations = this.sections.stream()
+                .map(it -> it.getDownStation())
                 .collect(Collectors.toList());
 
         return this.sections.stream()
-                .filter(it -> !downStationIds.contains(it.getUpStation().getId()))
+                .filter(it -> !downStations.contains(it.getUpStation()))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
