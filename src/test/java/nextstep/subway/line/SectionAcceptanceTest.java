@@ -118,8 +118,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .지하철_노선에_지하철역_등록_요청(lineUri, lineUpStationId, lineNewStationId, INIT_LINE_DISTANCE);
 
         // then
-        // 지하철_노선에_지하철역_등록됨
-        SectionAcceptanceTestResponse.지하철_노선에_지하철역이_등록되지않음(response);
+        // 지하철_노선에_유효하지않은_구간정보는_등록되지않음
+        SectionAcceptanceTestResponse.지하철_노선에_유효하지않은_구간정보는_등록되지않음(response);
     }
 
     @DisplayName("노선에 구간의 길이보다 긴 거리로 등록하면 등록할 수 없다")
@@ -131,8 +131,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .지하철_노선에_지하철역_등록_요청(lineUri, lineNewStationId, lineDownStationId, INIT_LINE_DISTANCE + 1);
 
         // then
-        // 지하철_노선에_지하철역_등록됨
-        SectionAcceptanceTestResponse.지하철_노선에_지하철역이_등록되지않음(response);
+        // 지하철_노선에_유효하지않은_구간정보는_등록되지않음
+        SectionAcceptanceTestResponse.지하철_노선에_유효하지않은_구간정보는_등록되지않음(response);
     }
 
     @DisplayName("노선에 이미 등록된 역들로 구간을 등록할 수 없다")
@@ -144,8 +144,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .지하철_노선에_지하철역_등록_요청(lineUri, lineDownStationId, lineUpStationId, 4);
 
         // then
-        // 지하철_노선에_지하철역_등록됨
-        SectionAcceptanceTestResponse.지하철_노선에_지하철역이_등록되지않음(response);
+        // 지하철_노선에_유효하지않은_구간정보는_등록되지않음
+        SectionAcceptanceTestResponse.지하철_노선에_유효하지않은_구간정보는_등록되지않음(response);
     }
 
     @DisplayName("노선에 등록된 역이 하나도 없는 구간은 등록할 수 없다")
@@ -159,8 +159,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .지하철_노선에_지하철역_등록_요청(lineUri, notInLineStationId, notInLineStationId2, 4);
 
         // then
-        // 지하철_노선에_지하철역_등록됨
-        List<Long> expectedStations = Arrays.asList(lineUpStationId, lineDownStationId, lineNewStationId);
-        SectionAcceptanceTestResponse.지하철_노선에_지하철역이_등록되지않음(response);
+        // 지하철_노선에_유효하지않은_구간정보는_등록되지않음
+        SectionAcceptanceTestResponse.지하철_노선에_유효하지않은_구간정보는_등록되지않음(response);
     }
 }
