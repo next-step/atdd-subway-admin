@@ -1,13 +1,17 @@
 package nextstep.subway.line.application;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -26,10 +30,10 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId())
-            .orElseThrow(NoSuchElementException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId())
-            .orElseThrow(NoSuchElementException::new);
+        List<Station> stations = stationRepository.findByIdIn(Arrays.asList(request.getUpStationId(), request.getDownStationId()));
+        Station upStation = findOneStationById(stations, request.getUpStationId());
+        Station downStation = findOneStationById(stations, request.getDownStationId());
+
         Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
@@ -55,5 +59,38 @@ public class LineService {
 
     public void deleteById(long id) {
         lineRepository.deleteById(id);
+    }
+
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(NoSuchElementException::new);
+
+        Section newSection = toSection(line, sectionRequest);
+        line.addLineSection(newSection);
+        return LineResponse.of(lineRepository.save(line));
+    }
+
+    private Section toSection(Line line, SectionRequest sectionRequest) {
+        sectionRequest.validateRequest();
+
+        Station preStation = findNullableStationById(sectionRequest.getUpStationId()).get();
+        Station station = findNullableStationById(sectionRequest.getDownStationId()).get();
+
+        return new Section(line, station, sectionRequest.getDistance(), preStation);
+    }
+
+    private Optional<Station> findNullableStationById (Long id) {
+        if (id == null) {
+            return Optional.empty();
+        }
+        return Optional.of(stationRepository.findById(id)
+            .orElseThrow(NoSuchElementException::new));
+    }
+
+    private Station findOneStationById (List<Station> stations, Long id) {
+        return stations.stream()
+            .filter(station -> station.getId().equals(id))
+            .findFirst()
+            .orElseThrow(NoSuchElementException::new);
     }
 }

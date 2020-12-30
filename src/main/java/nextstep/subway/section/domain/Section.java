@@ -37,6 +37,9 @@ public class Section {
 	}
 
 	public Section(Line line, Station station, int distance, Station preStation) {
+		if (preStation != null && distance == 0) {
+			throw new IllegalArgumentException("상행 종점외에는 거리가 0일 수 없습니다");
+		}
 		this.line = line;
 		this.station = station;
 		this.distance = new Distance(distance);
@@ -52,10 +55,32 @@ public class Section {
 	}
 
 	public int getDistance() {
-		return distance.getDistance();
+		return distance.get();
 	}
 
 	public Station getPreStation() {
 		return preStation;
+	}
+
+	public boolean isPreStationInSection(Station preStation) {
+		return isEqualStation(this.preStation, preStation);
+	}
+
+	public boolean isStationInSection(Station station) {
+		return isEqualStation(this.station, station);
+	}
+
+	public void updatePreStationTo(Station preStation, int distance) {
+		this.preStation = preStation;
+		this.distance.subtract(distance);
+	}
+
+	public void updateStationTo(Station station, int distance) {
+		this.station = station;
+		this.distance.subtract(distance);
+	}
+
+	private boolean isEqualStation(Station origin, Station target) {
+		return target.equals(origin);
 	}
 }
