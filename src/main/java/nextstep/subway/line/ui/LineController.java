@@ -1,11 +1,14 @@
 package nextstep.subway.line.ui;
 
 import java.util.List;
+import javax.validation.Valid;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.LinesResponse;
+import nextstep.subway.line.exception.AlreadySavedLineException;
 import nextstep.subway.line.exception.LineNotFoundException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,7 +31,7 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity<?> showLines() {
-        List<LineResponse> lines = lineService.findAll();
+        List<LinesResponse> lines = lineService.findAll();
         return ResponseEntity.ok(lines);
     }
 
@@ -45,8 +48,8 @@ public class LineController {
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity<?> updateLine(@PathVariable Long id, @RequestBody @Valid LineRequest lineRequest) {
-        lineService.updateLine(id, lineRequest);
+    public ResponseEntity<?> updateLine(@PathVariable Long id, @RequestBody @Valid LineUpdateRequest request) {
+        lineService.updateLine(id, request);
         return ResponseEntity.ok().build();
     }
 
@@ -57,7 +60,13 @@ public class LineController {
     }
 
     @ExceptionHandler(LineNotFoundException.class)
-    public ResponseEntity<?> handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity<?> handleLineNotFoundException(LineNotFoundException exception) {
         return ResponseEntity.notFound().build();
     }
+
+    @ExceptionHandler(AlreadySavedLineException.class)
+    public ResponseEntity<?> handleAlreadySavedLineException(AlreadySavedLineException exception) {
+        return ResponseEntity.badRequest().build();
+    }
+
 }
