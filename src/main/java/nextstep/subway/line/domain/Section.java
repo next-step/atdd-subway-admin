@@ -45,33 +45,41 @@ public class Section {
     }
 
     public void update(final Section other) {
-        if (isConnectUpStation(other)) {
+        if (canConnectUpStation(other)) {
             this.upStation = other.downStation;
             this.distance = distance.subtract(other.distance);
         }
 
-        if (isConnectDownStation(other)) {
+        if (canConnectDownStation(other)) {
             this.downStation = other.upStation;
             this.distance = distance.subtract(other.distance);
         }
     }
 
-    private boolean isConnectUpStation(final Section other) {
+    private boolean canConnectUpStation(final Section other) {
         return other.isUpStation(upStation);
     }
 
-    private boolean isConnectDownStation(final Section other) {
+    private boolean canConnectDownStation(final Section other) {
         return other.isDownStation(downStation);
     }
 
     public boolean canAddBetweenSection(final Section other) {
-        boolean connectUpStation = isConnectUpStation(other);
-        boolean connectDownStation = isConnectDownStation(other);
+        boolean connectUpStation = canConnectUpStation(other);
+        boolean connectDownStation = canConnectDownStation(other);
 
-        if (connectUpStation && connectDownStation) {
+        if (canConnectAll(connectUpStation, connectDownStation)) {
             return false;
         }
 
+        return canConnectOne(connectUpStation, connectDownStation);
+    }
+
+    private boolean canConnectAll(final boolean connectUpStation, final boolean connectDownStation) {
+        return connectUpStation && connectDownStation;
+    }
+
+    private boolean canConnectOne(final boolean connectUpStation, final boolean connectDownStation) {
         return connectUpStation || connectDownStation;
     }
 }
