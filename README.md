@@ -36,12 +36,32 @@ npm run dev
 ```
 ./gradlew bootRun
 ```
+
+#### 프론트에서 정상적으로 접근이 안되는 경우  
+```
+Backend 구동 -> Front 구동 -> Front 접근
+``` 
 <br>
 
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
 <br>
+
+## "Step 1"
+
+### 요구사항
+-[ ] 지하철 노선 관련 기능의 인수 테스트를 작성하기
+-[ ] 지하철 노선 관련 기능 구현하기
+-[ ] 인수 테스트 리팩터링
+
+### 기능목록  
+지하철 노선 기능
+- 지하철 노선 생성
+- 지하철 노선 목록 조회
+- 지하철 노선 조회
+- 지하철 노선 수정
+- 지하철 노선 삭제
 
 ## 🐞 Bug Report
 
