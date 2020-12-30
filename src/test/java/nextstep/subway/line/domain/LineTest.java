@@ -19,6 +19,9 @@ class LineTest {
 	@Autowired
 	private EntityManager em;
 
+	@Autowired
+	private SectionRepository sections;
+
 	private Station station1;
 	private Station station2;
 
@@ -43,7 +46,7 @@ class LineTest {
 
 		// then
 		Line actual = em.find(Line.class, line.getId());
-		assertThat(actual.getSections()).hasSize(3).anySatisfy(section -> {
+		assertThat(sections.findAllByLine(actual)).hasSize(3).anySatisfy(section -> {
 			assertSection(section, line, null, station1, 0);
 		}).anySatisfy(section -> {
 			assertSection(section, line, station1, station2, 50);
