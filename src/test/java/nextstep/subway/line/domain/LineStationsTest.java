@@ -50,7 +50,7 @@ class LineStationsTest {
 
     @DisplayName("상행 순으로 지하철 역을 정렬하여 가져옵니다.")
     @Test
-    void getStationsOrderByUp() {
+    void getOrderedStations() {
         // given
         Station 청량리역 = new Station("청량리역");
         Station 신도림역 = new Station("신도림역");

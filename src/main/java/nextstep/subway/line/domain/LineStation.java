@@ -53,11 +53,11 @@ public class LineStation {
         return isUpStation(station) || isDownStation(station);
     }
 
-    public boolean canReflect(final Section other) {
+    public boolean canAddBetweenSection(final Section other) {
         return section.canAddBetweenSection(other);
     }
 
-    public void reflect(final Section other) {
+    public void update(final Section other) {
         section.update(other);
     }
 }

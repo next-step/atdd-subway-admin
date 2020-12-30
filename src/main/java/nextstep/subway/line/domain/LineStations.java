@@ -75,9 +75,9 @@ public class LineStations {
 
         Section newSection = newLineStation.getSection();
         lineStations.stream()
-                .filter(lineStation -> lineStation.canReflect(newSection))
+                .filter(lineStation -> lineStation.canAddBetweenSection(newSection))
                 .findFirst()
-                .ifPresent(lineStation -> lineStation.reflect(newSection));
+                .ifPresent(lineStation -> lineStation.update(newSection));
         lineStations.add(newLineStation);
     }
 

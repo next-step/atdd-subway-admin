@@ -99,7 +99,7 @@ class LineStationTest {
 
     @DisplayName("새로운 지하철 구간을 반영할 수 있는지 확인한다.")
     @Test
-    void canReflect() {
+    void canAddBetweenSection() {
         // given
         Station station1 = new Station("청량리역");
         Station station2 = new Station("신도림역");
@@ -120,8 +120,8 @@ class LineStationTest {
                 .build();
 
         // when
-        boolean result1 = line1Station.canReflect(section1);
-        boolean result2 = line1Station.canReflect(section2);
+        boolean result1 = line1Station.canAddBetweenSection(section1);
+        boolean result2 = line1Station.canAddBetweenSection(section2);
 
         // then
         assertThat(result1).isTrue();
@@ -130,7 +130,7 @@ class LineStationTest {
 
     @DisplayName("새로운 지하철 구간을 반영하여 기존 지하철 노선 구간을 변경한다.")
     @Test
-    void reflect() {
+    void update() {
         // given
         Station station1 = new Station("청량리역");
         Station station2 = new Station("신도림역");
@@ -142,7 +142,7 @@ class LineStationTest {
                 .build();
 
         // when
-        line1Station.reflect(section);
+        line1Station.update(section);
 
         // then
         assertThat(line1Station.getUpStation()).isEqualTo(station2);
