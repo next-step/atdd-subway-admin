@@ -5,6 +5,9 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Distance;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
@@ -53,5 +56,12 @@ public class LineService {
     private Line findByLineId(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 지하철 노선을 찾을 수가 없습니다."));
+    }
+
+    public void addSection(Long id, SectionRequest sectionRequest) {
+        Station upStation = stationService.findByStationId(sectionRequest.getUpStationId());
+        Station downStation = stationService.findByStationId(sectionRequest.getDownStationId());
+        Line line = findByLineId(id);
+        line.addSection(new Section(line, upStation, downStation, new Distance(sectionRequest.getDistance())));
     }
 }
