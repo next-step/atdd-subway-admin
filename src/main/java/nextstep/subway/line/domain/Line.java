@@ -38,11 +38,11 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void setName(String name) {
+    public void updateName(String name) {
         this.name = name;
     }
 
-    public void setColor(String color) {
+    public void updateColor(String color) {
         this.color = color;
     }
 }

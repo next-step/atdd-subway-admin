@@ -31,8 +31,8 @@ public class LineService {
 
     public LineResponse modifyLine(Long id, LineRequest request) {
         Line line = getLindById(id);
-        line.setName(request.getName());
-        line.setColor(request.getColor());
+        line.updateName(request.getName());
+        line.updateColor(request.getColor());
         return LineResponse.of(line);
     }
 
