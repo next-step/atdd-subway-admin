@@ -46,7 +46,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + savedLine.getId() +"/sections")
+                .when().post("/lines/" + savedLine.getId() +"/sections")
                 .then().log().all().extract();
 
         // then

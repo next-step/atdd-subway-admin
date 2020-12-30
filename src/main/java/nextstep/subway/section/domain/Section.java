@@ -22,9 +22,9 @@ public class Section {
     private Integer distance;
 
     public Section(Long upStationId, Long downStationId, int distance) {
-        upStationId = upStationId;
-        downStationId = downStationId;
-        distance = distance;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 
     public List<Long> allStationIds() {

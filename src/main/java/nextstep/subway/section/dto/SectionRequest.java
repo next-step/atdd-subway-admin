@@ -1,12 +1,12 @@
 package nextstep.subway.section.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nextstep.subway.section.domain.Section;
+import org.springframework.stereotype.Service;
 
 @Builder
 @Getter
+@AllArgsConstructor
 public class SectionRequest {
     private Long upStationId;
     private Long downStationId;

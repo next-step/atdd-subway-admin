@@ -19,9 +19,8 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public Sections(Section section) {
-        new Sections(Arrays.asList(section));
+        this.sections = Arrays.asList(section);
     }
-
 
     public static Sections of(List<Section> sections) {
         return new Sections(sections);

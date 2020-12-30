@@ -65,12 +65,6 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> throwNoLineException(lineId));
-        line.addSection(sectionRequest.toSection());
-    }
-
     private NoLineException throwNoLineException(Long id) {
         return new NoLineException(id);
     }
