@@ -7,8 +7,8 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,15 +32,19 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return lineRepository.findById(id).map(LineResponse::of)
-                .orElseThrow(NoSuchElementException::new);
+        return LineResponse.of(selectLineById(id));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line persistLine = lineRepository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
+        Line persistLine = selectLineById(id);
         persistLine.update(lineRequest.toLine());
+    }
+
+    private Line selectLineById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     public void deleteById(Long id) {
