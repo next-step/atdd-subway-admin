@@ -25,10 +25,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // When
-        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
 
         // then
-        지하철_생성_완료(response);
+        지하철_생성_완료(강남역);
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -49,24 +49,24 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = 지하철역_생성_요청("강남역");
-        ExtractableResponse<Response> createResponse2 = 지하철역_생성_요청("역삼역");
+        ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> 역삼역 = 지하철역_생성_요청("역삼역");
 
         // when
         ExtractableResponse<Response> response = 지하철역_모두_조회();
 
         // then
-        지하철역_리스트_조회_완료(createResponse1, createResponse2, response);
+        지하철역_리스트_조회_완료(강남역, 역삼역, response);
     }
 
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철역_삭제_요청(createResponse);
+        ExtractableResponse<Response> response = 지하철역_삭제_요청(강남역);
 
         // then
         지하철역_삭제_성공(response);
