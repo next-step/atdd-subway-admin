@@ -22,4 +22,8 @@ public class LineDataHelper {
                 .map(Line::getId)
                 .collect(Collectors.toList());
     }
+
+    public Line 지하철_노선_추가(Line line) {
+        return lineRepository.save(line);
+    }
 }

@@ -4,13 +4,13 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,15 +57,18 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private List<StationResponse> getStations(Line it) {
-        List<Long> sectionIds = it.getSectionIds();
-        if (sectionIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<Station> stations = stationRepository.findAllById(sectionIds);
+    private List<StationResponse> getStations(Line line) {
+        List<Long> stationIds = line.getAllIncludedStationIds();
+        List<Station> stations =  stationRepository.findAllById(stationIds);
         return stations.stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> throwNoLineException(lineId));
+        line.addSection(sectionRequest.toSection());
     }
 
     private NoLineException throwNoLineException(Long id) {

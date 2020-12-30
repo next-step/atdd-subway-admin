@@ -3,7 +3,10 @@ package nextstep.subway.line.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
+
+import java.util.Arrays;
 
 @Getter
 @NoArgsConstructor
@@ -15,6 +18,7 @@ public class LineRequest {
     private int distance;
 
     public Line toLine() {
-        return new Line(name, color, new Section(upStationId, downStationId, distance));
+        Section section = new Section(upStationId, downStationId, distance);
+        return new Line(name, color, new Sections(section));
     }
 }
