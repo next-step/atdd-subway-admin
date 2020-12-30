@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 
-@DisplayName("지하철 구간 관련 기능 테스")
+@DisplayName("지하철 구간 관련 기능 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
     StationResponse station1;
     StationResponse station2;
@@ -33,16 +33,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
          station3 = StationAcceptanceTest.createStation("판교역").as(StationResponse.class);
          line = LineAcceptanceTest
                 .createSubwayLine("신분당선", "bg-red-600",
-                        station1.getId() + "", station2.getId() + "",
-                        10 + "").as(LineResponse.class);
+                        station1.getId(), station2.getId(),
+                        10).as(LineResponse.class);
     }
 
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("노선에 구간을 등록한다. case1 : 새로운 역을 하행 종점으로 등록할 경우")
     @Test
-    void addSection() {
+    void addSection1() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        LineAcceptanceTest.addSubwayStation(line.getId(), station2.getId() + "", station3.getId() + "", 6 + "");
+        LineAcceptanceTest.addSubwayStation(line.getId(), station2.getId(), station3.getId(), 6);
 
         // then
         // 지하철_노선에_지하철역_등록됨
@@ -51,7 +51,58 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(lineResponse.getName()).isEqualTo(line.getName());
         Assertions.assertThat(lineResponse.getStations())
                 .extracting(StationResponse::getName)
-                .contains(station1.getName(), station2.getName(), station3.getName());
+                .containsExactly(station1.getName(), station2.getName(), station3.getName());
+    }
+
+    @DisplayName("노선에 구간을 등록한다. case2 : 새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void addSection2() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        LineAcceptanceTest.addSubwayStation(line.getId(), station3.getId(), station1.getId(), 6);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        ExtractableResponse<Response> response = LineAcceptanceTest.searchSubwayLineOne(line.getId());
+        LineResponse lineResponse = response.response().getBody().as(LineResponse.class);
+        Assertions.assertThat(lineResponse.getName()).isEqualTo(line.getName());
+        Assertions.assertThat(lineResponse.getStations())
+                .extracting(StationResponse::getName)
+                .containsExactly(station3.getName(), station1.getName(), station2.getName());
+    }
+
+    @DisplayName("노선에 구간을 등록한다. case3 : 역 사이에 새로운 역을 등록할 경우(기존상행-새로운하행 관계)")
+    @Test
+    void addSection3() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        LineAcceptanceTest.addSubwayStation(line.getId(), station1.getId(), station3.getId(), 6);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        ExtractableResponse<Response> response = LineAcceptanceTest.searchSubwayLineOne(line.getId());
+        LineResponse lineResponse = response.response().getBody().as(LineResponse.class);
+        Assertions.assertThat(lineResponse.getName()).isEqualTo(line.getName());
+        Assertions.assertThat(lineResponse.getStations())
+                .extracting(StationResponse::getName)
+                .containsExactly(station1.getName(), station3.getName(), station2.getName());
+    }
+
+    @DisplayName("노선에 구간을 등록한다. case4 : 역 사이에 새로운 역을 등록할 경우(새로상행-기존하행 관계)")
+    @Test
+    void addSection4() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        LineAcceptanceTest.addSubwayStation(line.getId(), station3.getId(), station2.getId(), 6);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        ExtractableResponse<Response> response = LineAcceptanceTest.searchSubwayLineOne(line.getId());
+        LineResponse lineResponse = response.response().getBody().as(LineResponse.class);
+        Assertions.assertThat(lineResponse.getName()).isEqualTo(line.getName());
+        Assertions.assertThat(lineResponse.getStations())
+                .extracting(StationResponse::getName)
+                .containsExactly(station1.getName(), station3.getName(), station2.getName());
     }
 
     @DisplayName("노선에 구간등록 실패한다. case1 : 구간길이가 큰 경우")
@@ -59,7 +110,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void failAddSection1() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station1.getId() + "", station3.getId() + "", 12 + "");
+        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station1.getId(), station3.getId(), 12);
 
         // then
         // 지하철_노선에_지하철역_등록 실패됨
@@ -71,7 +122,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void failAddSection2() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station1.getId() + "", station3.getId() + "", 10 + "");
+        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station1.getId(), station3.getId(), 10);
 
         // then
         // 지하철_노선에_지하철역_등록 실패됨
@@ -83,7 +134,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void failAddSection3() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station1.getId() + "", station2.getId() + "", 6 + "");
+        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station1.getId(), station2.getId(), 6);
 
         // then
         // 지하철_노선에_지하철역_등록 실패됨
@@ -95,7 +146,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선에_지하철역_등록_요청
         StationResponse station4 = StationAcceptanceTest.createStation("정자역").as(StationResponse.class);
-        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station3.getId() + "", station4.getId() + "", 6 + "");
+        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station3.getId(), station4.getId(), 6);
 
         // then
         // 지하철_노선에_지하철역_등록 실패됨
