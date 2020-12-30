@@ -32,37 +32,14 @@ public class Sections {
     }
 
     public void create(Section section) {
-        if (section.isZeroDistance()) {
-            throw new IllegalArgumentException();
-        }
-        this.sections.add(section);
+        addSection(section);
     }
 
     public void add(Section targetSection) {
-        if (targetSection.isZeroDistance()) {
-            throw new IllegalArgumentException();
-        }
+        changeBetweenSection(targetSection);
+        checkAddValidation(targetSection);
 
         addSection(targetSection);
-    }
-
-    public void addSection(Section targetSection) {
-        changeBetweenSection(targetSection);
-        //둘다 포함되어있는지 확인
-        if (this.sections.contains(targetSection)) {
-            throw new IllegalArgumentException();
-        }
-
-        // 연결 가능한 노드가 있는지 확인
-        if (checkConnectableSection(targetSection)) {
-            throw new IllegalArgumentException();
-        }
-
-        this.sections.add(targetSection);
-    }
-
-    private boolean checkConnectableSection(Section targetSection) {
-        return !findSameUpStation(targetSection.getDownStation()).isPresent() && !findSameDownStation(targetSection.getUpStation()).isPresent();
     }
 
     public void update(Section section) {
@@ -73,29 +50,38 @@ public class Sections {
         }
     }
 
-    public void changeBetweenSection(Section targetSection) {
-        findSameUpStation(targetSection.getUpStation())
-                .ifPresent(base -> {
-                    base.changeUpStation(targetSection.getDownStation());
-                    base.changeDistance(targetSection.getDistance());
-                });
+    private void addSection(Section section) {
+        if (section.isZeroDistance()) {
+            throw new IllegalArgumentException();
+        }
+        this.sections.add(section);
     }
 
-    public Optional<Section> findSameUpStation(Station targetStation) {
-        return this.sections.stream()
-                .filter(section -> section.isSameUpStation(targetStation))
-                .findFirst();
+    private void checkAddValidation(Section targetSection) {
+        if (this.sections.contains(targetSection)) {
+            throw new IllegalArgumentException();
+        }
+
+        if (checkConnectableSection(targetSection)) {
+            throw new IllegalArgumentException();
+        }
     }
 
-    public Optional<Section> findSameDownStation(Station targetStation) {
+    private boolean checkConnectableSection(Section targetSection) {
         return this.sections.stream()
-                .filter(base -> base.isSameDownStation(targetStation))
-                .findFirst();
+                .noneMatch(section -> section.isConnectable(targetSection));
+    }
+
+    private void changeBetweenSection(Section targetSection) {
+        this.sections.stream()
+                .filter(base -> base.isSameUpStation(targetSection))
+                .findFirst()
+                .ifPresent(base -> base.switchUpStationAndDistance(targetSection));
     }
 
     private boolean isChanged(Section section) {
         return !this.sections.stream()
-                .allMatch(s -> s.equals(section));
+                .allMatch(base -> base.equals(section));
     }
 
     private Map<Station, Station> sectionElements() {
@@ -115,22 +101,22 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Iterator<Section> removeSections = getContainsSectionsByStation(station).iterator();
+        Iterator<Section> removeSections = getConnectedSectionsByStation(station);
         Section removeSection = removeSections.next();
         if (removeSections.hasNext()) {
-            removeSections.next().merge(removeSection);
+            removeSections.next().merge(removeSection, station);
         }
         this.sections.remove(removeSection);
     }
 
-    private List<Section> getContainsSectionsByStation(Station station) {
+    private Iterator<Section> getConnectedSectionsByStation(Station station) {
         return Optional.of(this.sections.stream()
                 .filter(section -> section.containStation(station))
-                .collect(Collectors.toList()))
+                .collect(Collectors.toList()).iterator())
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    public boolean isRemove() {
+    public boolean isRemovable() {
         return this.sections.size() <= 1;
     }
 }

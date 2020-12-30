@@ -9,8 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -46,12 +44,12 @@ public class Section {
         this.line = line;
     }
 
-    public void changeUpStation(Station upStation) {
+    private void changeUpStation(Station upStation) {
         this.upStation = upStation;
     }
 
-    public List<Station> upAndDownStations() {
-        return Arrays.asList(upStation, downStation);
+    private void changeDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 
     public Station getUpStation() {
@@ -62,14 +60,21 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
     public void update(Section section) {
         this.upStation = section.upStation;
         this.downStation = section.downStation;
         this.distance = section.distance;
+    }
+
+    public void merge(Section target, Station excludeStation) {
+        if (isSameUpStation(excludeStation)) {
+            this.changeUpStation(target.upStation);
+        }
+
+        if (isSameDownStation(excludeStation)) {
+            this.changeDownStation(target.downStation);
+        }
+        sumDistance(target.distance);
     }
 
     public boolean isNotEqualsStation() {
@@ -80,23 +85,40 @@ public class Section {
         return distance <= 0;
     }
 
-    public boolean isSameUpStation(Station target) {
-        return this.upStation.equals(target);
-    }
-
-    public boolean isSameDownStation(Station target) {
-        return this.downStation.equals(target);
-    }
-
     public boolean containStation(Station target) {
         return isSameUpStation(target) || isSameDownStation(target);
     }
 
-    public void changeDistance(int targetDistance) {
+    public boolean isConnectable(Section section) {
+        return isSameUpStation(section.downStation) || isSameDownStation(section.upStation);
+    }
+
+    public void switchUpStationAndDistance(Section targetSection) {
+        this.changeUpStation(targetSection.downStation);
+        this.divideDistance(targetSection.distance);
+    }
+
+    public boolean isSameUpStation(Section target) {
+        return this.upStation.equals(target.upStation);
+    }
+
+    private boolean isSameUpStation(Station target) {
+        return this.upStation.equals(target);
+    }
+
+    private boolean isSameDownStation(Station target) {
+        return this.downStation.equals(target);
+    }
+
+    private void divideDistance(int targetDistance) {
         if (targetDistance >= this.distance) {
             throw new IllegalArgumentException();
         }
         this.distance -= targetDistance;
+    }
+
+    private void sumDistance(int targetDistance) {
+        this.distance += targetDistance;
     }
 
     @Override
@@ -107,16 +129,11 @@ public class Section {
         return (upStation.equals(section.upStation) &&
                 downStation.equals(section.downStation)) ||
                 (upStation.equals(section.downStation) &&
-                downStation.equals(section.upStation));
+                        downStation.equals(section.upStation));
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(upStation, downStation);
-    }
-
-    public void merge(Section target) {
-        this.downStation = target.downStation;
-        this.distance += target.distance;
     }
 }
