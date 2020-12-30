@@ -2,8 +2,11 @@ package nextstep.subway.line.ui;
 
 import lombok.extern.slf4j.Slf4j;
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
 import java.net.URI;
 import java.util.List;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static nextstep.subway.line.dto.LineRequest.*;
 import static org.springframework.http.MediaType.*;
 
 @RestController
@@ -29,14 +33,23 @@ import static org.springframework.http.MediaType.*;
 @Slf4j
 public class LineController {
     private final LineService lineService;
+    private final StationRepository stationRepository;
 
-    public LineController(final LineService lineService) {
+    public LineController(final LineService lineService, final StationRepository stationRepository) {
         this.lineService = lineService;
+        this.stationRepository = stationRepository;
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLine(lineRequest);
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
+                .orElseThrow(() -> new NoResultException("상행 종점역이 존재하지 않습니다"));
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
+                .orElseThrow(() -> new NoResultException("하행 종점역이 존재하지 않습니다"));
+        LineStation upLineStation = LineStation.createLineStation(upStation, lineRequest.getDistance());
+        LineStation downLineStation = LineStation.createLineStation(downStation, DISTANCE_OF_LAST_STATION);
+
+        LineResponse line = lineService.saveLine(lineRequest, upLineStation, downLineStation);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
@@ -45,9 +58,9 @@ public class LineController {
         return ResponseEntity.ok(lineService.findAllLines());
     }
 
-    @GetMapping(value = "/{name}", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> showLine(@PathVariable("name") String name) {
-        return ResponseEntity.ok(lineService.findLineByName(name));
+    @GetMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> showLine(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(lineService.findLineById(id));
     }
 
     @PutMapping(value = "/{id}", produces = TEXT_PLAIN_VALUE)

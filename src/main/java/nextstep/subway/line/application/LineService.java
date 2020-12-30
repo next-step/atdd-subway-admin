@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
@@ -21,8 +22,12 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+    public LineResponse saveLine(LineRequest request, LineStation... lineStations) {
+        Line line = request.toLine();
+        for (LineStation lineStation : lineStations) {
+            line.addLineStation(lineStation);
+        }
+        Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
 
@@ -36,6 +41,11 @@ public class LineService {
         return lineRepository.findLineByName(name)
                 .map(LineResponse::of)
                 .orElseThrow(() -> new NoResultException(name + "은(는) 존재하지 않습니다"));
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse findLineById(Long id) {
+        return LineResponse.of(lineRepository.findLineByFetchJoin(id));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
