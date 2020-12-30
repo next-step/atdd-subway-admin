@@ -20,15 +20,38 @@ public class Sections {
     private final List<Section> sections = new LinkedList<>();
 
     public List<Station> getStations() {
+        return Collections.unmodifiableList(
+                Optional.of(sectionElements())
+                .filter(sectionElements -> !sectionElements.isEmpty())
+                .map(this::convertElementsToStations)
+                .orElse(new ArrayList<>()));
+    }
+
+    private Map<Station, Station> sectionElements() {
+        return this.sections.stream()
+                .collect(Collectors.toMap(
+                        Section::getUpStation,
+                        Section::getDownStation
+                ));
+    }
+
+    private List<Station> convertElementsToStations(Map<Station, Station> sectionElements) {
         List<Station> stations = new ArrayList<>();
-        Map<Station, Station> sectionElement = sectionElements();
-        Station node = getFirstNode(sectionElement);
-        stations.add(node);
-        while (sectionElement.containsKey(node)) {
-            node = sectionElement.get(node);
-            stations.add(node);
+        Station element = getFirstElement(sectionElements);
+        stations.add(element);
+        while (sectionElements.containsKey(element)) {
+            element = sectionElements.get(element);
+            stations.add(element);
         }
-        return Collections.unmodifiableList(stations);
+        return stations;
+    }
+
+    private Station getFirstElement(Map<Station, Station> stationStationMap) {
+        return stationStationMap.keySet()
+                .stream()
+                .filter(value -> !stationStationMap.containsValue(value))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     public void create(Section targetSection) {
@@ -82,22 +105,6 @@ public class Sections {
     private boolean isChanged(Section targetSection) {
         return !this.sections.stream()
                 .allMatch(section -> section.equals(targetSection));
-    }
-
-    private Map<Station, Station> sectionElements() {
-        return this.sections.stream()
-                .collect(Collectors.toMap(
-                        Section::getUpStation,
-                        Section::getDownStation
-                ));
-    }
-
-    private Station getFirstNode(Map<Station, Station> stationStationMap) {
-        return stationStationMap.keySet()
-                .stream()
-                .filter(value -> !stationStationMap.containsValue(value))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
     }
 
     public void remove(Station targetStation) {
