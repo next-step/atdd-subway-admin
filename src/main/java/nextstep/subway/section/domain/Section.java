@@ -32,17 +32,10 @@ public class Section extends BaseEntity {
     public Section() {
     }
 
-    public Section(int distance, Station upStation, Station station, Line line) {
-        this.distance = distance;
+    public Section(Station upStation, Station station, int distance) {
         this.upStation = upStation;
         this.station = station;
-        this.line = line;
-    }
-
-    public Section(int distance, Station upStation, Station station) {
         this.distance = distance;
-        this.upStation = upStation;
-        this.station = station;
     }
 
     public Long getId() {
@@ -67,16 +60,10 @@ public class Section extends BaseEntity {
 
     public void addLine(Line line) {
         if(Objects.nonNull(this.getLine())) {
-            this.line.getSections().remove(this);
+            this.line.removeSection(this);
         }
         this.line = line;
-        line.getSections().add(this);
-    }
-
-    public void updateSection(Station upStation, Station station, int distance) {
-        this.upStation = upStation;
-        this.station = station;
-        this.distance =distance;
+        this.line.addSection(this);
     }
 
     @Override
@@ -94,14 +81,18 @@ public class Section extends BaseEntity {
     }
 
     public boolean hasStation(Section newSection) {
-        if (this.getStation().equals(newSection.getUpStation())
-                || this.getStation().equals(newSection.getStation())) {
-            return true;
-        }
-        return false;
+        return this.getStation().equals(newSection.getUpStation())
+                || this.getStation().equals(newSection.getStation());
     }
 
-    public void setDistance(int distance) {
-        this.distance = distance;
+    public boolean isFirstSection() {
+        return Objects.isNull(this.getUpStation());
+    }
+
+    public void removeLine() {
+        if(Objects.nonNull(this.getLine())) {
+            this.line.removeSection(this);
+        }
+        this.line = null;
     }
 }
