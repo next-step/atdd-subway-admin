@@ -5,19 +5,24 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.exception.BadSectionException;
+import nextstep.subway.line.exception.StationNotDeleteException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class LineStations {
+
+    private static final int MIN_STATION = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<LineStation> lineStations = new ArrayList<>();
@@ -94,5 +99,27 @@ public class LineStations {
         if (!containsUpStation && !containsDownStation) {
             throw new BadSectionException("상행역과 하행역 둘 중 하나도 포함되어있지 않습니다.");
         }
+    }
+
+    public void delete(final Long stationId) {
+        if (lineStations.size() <= MIN_STATION) {
+            throw new StationNotDeleteException();
+        }
+
+        List<LineStation> lineStations = this.lineStations.stream()
+                .filter(lineStation -> lineStation.contains(stationId))
+                .collect(Collectors.toList());
+
+        if (lineStations.size() == 0) {
+            throw new StationNotFoundException(String.format("역이 존재하지 않습니다. (입력 id값: %d)", stationId));
+        }
+
+        if (lineStations.size() == 1) {
+            this.lineStations.remove(lineStations.get(0));
+            return;
+        }
+
+        lineStations.get(0).merge(lineStations.get(1));
+        this.lineStations.remove(lineStations.get(1));
     }
 }

@@ -109,4 +109,8 @@ public class Section {
     private boolean isConnectDown(final Section other) {
         return other.isUpStation(downStation);
     }
+
+    public boolean contains(final Long stationId) {
+        return upStation.isId(stationId) || downStation.isId(stationId);
+    }
 }
