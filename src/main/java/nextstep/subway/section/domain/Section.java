@@ -81,4 +81,43 @@ public class Section extends BaseEntity {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
+
+	public boolean isLinked(Section newSection) {
+		return this.upStation.equals(newSection.downStation)
+			  || this.downStation.equals(newSection.upStation);
+	}
+
+	public boolean isSame(Section newSection) {
+		return this.upStation.equals(newSection.upStation)
+			  && this.downStation.equals(newSection.downStation);
+	}
+
+	public boolean isInside(Section newSection) {
+		return (this.upStation.equals(newSection.upStation)
+			  && !this.downStation.equals(newSection.downStation))
+			  || (!this.upStation.equals(newSection.upStation)
+			  && this.downStation.equals(newSection.downStation));
+	}
+
+	public boolean isUpStationEquals(Section newSection) {
+		return this.upStation.equals(newSection.upStation);
+	}
+
+	public boolean isDownStationEquals(Section newSection) {
+		return this.downStation.equals(newSection.downStation);
+	}
+
+	public int calculateDistance(Section newSection) {
+		return this.distance - newSection.distance;
+	}
+
+	public void changeDownStation(Station downStation, int distance) {
+		this.downStation = downStation;
+		this.distance = distance;
+	}
+
+	public void changeUpStation(Station upStation, int distance) {
+		this.upStation = upStation;
+		this.distance = distance;
+	}
 }

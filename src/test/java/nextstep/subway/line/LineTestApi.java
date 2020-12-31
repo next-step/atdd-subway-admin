@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Map;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.MediaType;
 
 public class LineTestApi {
@@ -15,6 +16,13 @@ public class LineTestApi {
 			  .when().get(path)
 			  .then().log().all()
 			  .extract();
+	}
+
+	public static ExtractableResponse<Response> 지하철_노선과_구간정보가_등록되어_있음(String name, String color, StationResponse upStation,
+		  StationResponse downStation, int distance) {
+		LineRequest lineRequest = new LineRequest(name, color, upStation.getId(),
+			  downStation.getId(), distance);
+		return 지하철_노선_생성_요청(lineRequest);
 	}
 
 	public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {

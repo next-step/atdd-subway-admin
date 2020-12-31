@@ -3,6 +3,8 @@ package nextstep.subway.section.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -31,8 +33,82 @@ public class Sections {
 		return stations;
 	}
 
-	public void add(Section section) {
-		this.sections.add(section);
+	public void add(Section newSection) {
+		boolean isDone = addBeside(newSection);
+		if (isDone) {
+			return;
+		}
+
+		isDone = addInside(newSection);
+		if (isDone) {
+			return;
+		}
+
+		throw new IllegalArgumentException("잘못된 구간정보입니다.");
+	}
+
+	private boolean addBeside(Section newSection) {
+		Optional<Section> maybeSection = this.sections.stream()
+			  .filter(section -> section.isLinked(newSection))
+			  .filter(section -> !section.isSame(newSection))
+			  .findFirst();
+		if (!maybeSection.isPresent()) {
+			return false;
+		}
+
+		this.sections.add(newSection);
+		return true;
+	}
+
+	private boolean addInside(Section newSection) {
+		List<Section> matchSections = this.sections.stream()
+			  .filter(section -> section.isInside(newSection))
+			  .collect(Collectors.toList());
+		if (matchSections.isEmpty()) {
+			return false;
+		}
+
+		if (matchSections.size() > 1) {
+			throw new IllegalArgumentException("잘못된 구간정보입니다.");
+		}
+
+		Section section = matchSections.get(0);
+		addInsideUpSection(section, newSection);
+		addInsideDownSection(section, newSection);
+		this.sections.add(newSection);
+
+		return true;
+	}
+
+	private void addInsideDownSection(Section section, Section newSection) {
+		if (!section.isDownStationEquals(newSection)) {
+			return;
+		}
+
+		int remainDistance = calculateDistance(section, newSection);
+		section.changeDownStation(newSection.getUpStation(), remainDistance);
+	}
+
+	private void addInsideUpSection(Section section, Section newSection) {
+		if (!section.isUpStationEquals(newSection)) {
+			return;
+		}
+
+		int remainDistance = calculateDistance(section, newSection);
+		section.changeUpStation(newSection.getDownStation(), remainDistance);
+	}
+
+	private int calculateDistance(Section section, Section newSection) {
+		int distance = section.calculateDistance(newSection);
+		if (distance < 1) {
+			throw new IllegalArgumentException("추가하려는 구간의 길이는 기존 구간의 길이보다 작아야 합니다.");
+		}
+
+		return distance;
+	}
+
+	public List<Section> getSections() {
+		return sections;
 	}
 
 	@Override
