@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
@@ -10,6 +12,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,9 +24,6 @@ public class Line extends BaseEntity {
 
     @Embedded
     private final Sections sections = new Sections();
-
-    protected Line() {
-    }
 
     public Line(String name, String color) {
         this.name = name;

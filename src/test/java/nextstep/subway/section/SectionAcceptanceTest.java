@@ -225,6 +225,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
 
         // then
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

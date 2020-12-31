@@ -1,11 +1,14 @@
 package nextstep.subway.section.domain;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,9 +23,6 @@ public class Section extends BaseEntity {
     private Station downStation;
 
     private int distance;
-
-    protected Section() {
-    }
 
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
