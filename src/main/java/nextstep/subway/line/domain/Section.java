@@ -13,10 +13,6 @@ import java.util.Optional;
 @Table(name = "section")
 public class Section extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
 	@ManyToOne
 	@JoinColumn(name = "line_id", nullable = false)
 	private Line line;
@@ -92,10 +88,6 @@ public class Section extends BaseEntity {
 			throw new SectionValidationException("distance over");
 		}
 		return newSectionDistance;
-	}
-
-	public Long getId() {
-		return id;
 	}
 
 	public Line getLine() {
