@@ -40,10 +40,6 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public boolean equalStations(Section otherSection) {
-        return equalUpUpStation(otherSection) && equalDownDownStation(otherSection);
-    }
-
     public boolean equalUpUpStation(Section otherSection) {
         return upStation.equals(otherSection.getUpStation());
     }

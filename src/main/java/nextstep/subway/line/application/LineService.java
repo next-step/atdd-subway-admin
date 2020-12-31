@@ -52,15 +52,16 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private Line findByLineId(Long id) {
-        return lineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("해당 지하철 노선을 찾을 수가 없습니다."));
-    }
-
     public void addSection(Long id, SectionRequest sectionRequest) {
         Station upStation = stationService.findByStationId(sectionRequest.getUpStationId());
         Station downStation = stationService.findByStationId(sectionRequest.getDownStationId());
         Line line = findByLineId(id);
+
         line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
+    }
+
+    private Line findByLineId(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 지하철 노선을 찾을 수가 없습니다."));
     }
 }
