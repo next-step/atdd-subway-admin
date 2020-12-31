@@ -40,16 +40,40 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .as(LineResponse.class));
     }
     
-    @DisplayName("역 사이에 새로운 역을 등록한다.")
+    @DisplayName("역 사이에 새로운 역을 등록 - 상행 종점역이 일치하는 경우")
     @Test
-    void addSection() {
+    void addSection1() {
+        LineResponse createLineResponse = lineResponses.get(0);
+        Long id = createLineResponse.getId();
+
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "1");
+        params.put("downStationId", "3");
+        params.put("distance", "5");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + id + "/sections")
+                .then().log().all().extract();
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록 - 하행 종점역이 일치하는 경우")
+    @Test
+    void addSection2() {
         LineResponse createLineResponse = lineResponses.get(0);
         Long id = createLineResponse.getId();
         // when
         Map<String, String> params = new HashMap<>();
-        params.put("downStationId", "3");
-        params.put("upStationId", "2");
-        params.put("distance", "10");
+        params.put("upStationId", "3");
+        params.put("downStationId", "2");
+        params.put("distance", "5");
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
@@ -66,25 +90,141 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     @Test
     void addNewUpStation() {
+        LineResponse createLineResponse = lineResponses.get(0);
+        Long id = createLineResponse.getId();
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "3");
+        params.put("downStationId", "1");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + id + "/sections")
+                .then().log().all().extract();
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
     void addNewDownStation() {
+        LineResponse createLineResponse = lineResponses.get(0);
+        Long id = createLineResponse.getId();
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "2");
+        params.put("downStationId", "3");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + id + "/sections")
+                .then().log().all().extract();
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크면 등록을 할 수 없음")
     @Test
     void addSectionException1() {
+        LineResponse createLineResponse = lineResponses.get(0);
+        Long id = createLineResponse.getId();
+
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "1");
+        params.put("downStationId", "3");
+        params.put("distance", "15");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + id + "/sections")
+                .then().log().all().extract();
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이랑 같으면 등록을 할 수 없음")
+    @Test
+    void addSectionException2() {
+        LineResponse createLineResponse = lineResponses.get(0);
+        Long id = createLineResponse.getId();
+
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "1");
+        params.put("downStationId", "3");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + id + "/sections")
+                .then().log().all().extract();
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
-    void addSectionException2() {
+    void addSectionException3() {
+        LineResponse createLineResponse = lineResponses.get(0);
+        Long id = createLineResponse.getId();
+
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + id + "/sections")
+                .then().log().all().extract();
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
-    void addSectionException3() {
+    void addSectionException4() {
+        LineResponse createLineResponse = lineResponses.get(0);
+        Long id = createLineResponse.getId();
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", "3");
+        params.put("downStationId", "4");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + id + "/sections")
+                .then().log().all().extract();
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
