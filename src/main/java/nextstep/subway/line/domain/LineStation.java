@@ -57,7 +57,7 @@ public class LineStation {
         return section.contains(stationId);
     }
 
-    public boolean canAddBetweenSection(final Section other) {
+    public boolean canSeparate(final Section other) {
         return section.canSeparate(other);
     }
 
