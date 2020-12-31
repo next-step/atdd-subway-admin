@@ -2,8 +2,11 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,16 +16,25 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
-	private LineRepository lineRepository;
+	private final LineRepository lineRepository;
+	private final StationService stationService;
 
-	public LineService(LineRepository lineRepository) {
+	public LineService(LineRepository lineRepository, StationService stationService) {
 		this.lineRepository = lineRepository;
+		this.stationService = stationService;
 	}
 
 	@Transactional
-	public LineResponse saveLine(LineRequest request) {
-		Line persistLine = lineRepository.save(request.toLine());
-		return LineResponse.of(persistLine);
+	public LineResponse saveLine(LineCreateRequest lineCreateRequest) {
+		Station front = stationService.findById(lineCreateRequest.getUpStationId());
+		Station back = stationService.findById(lineCreateRequest.getDownStationId());
+		Line line = new Line(lineCreateRequest.getName(),
+				lineCreateRequest.getColor(),
+				front,
+				back,
+				lineCreateRequest.getStationDistance());
+		line = lineRepository.save(line);
+		return LineResponse.of(line);
 	}
 
 	@Transactional(readOnly = true)
@@ -38,9 +50,9 @@ public class LineService {
 	}
 
 	@Transactional
-	public void updateLineById(Long id, LineRequest lineRequest) {
+	public void updateLineById(Long id, LineUpdateRequest lineUpdateRequest) {
 		Line line = findLine(id);
-		line.update(lineRequest.toLine());
+		line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
 	}
 
 	@Transactional

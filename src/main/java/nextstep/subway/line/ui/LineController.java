@@ -1,8 +1,9 @@
 package nextstep.subway.line.ui;
 
-import nextstep.subway.line.application.LineNotFoundException;
+import nextstep.subway.common.NotFoundException;
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
@@ -21,7 +22,7 @@ public class LineController {
 	}
 
 	@PostMapping
-	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+	public ResponseEntity createLine(@RequestBody LineCreateRequest lineRequest) {
 		LineResponse line = lineService.saveLine(lineRequest);
 		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
 	}
@@ -37,9 +38,9 @@ public class LineController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity updateLine(@RequestBody LineRequest lineRequest,
+	public ResponseEntity updateLine(@RequestBody LineUpdateRequest lineUpdateRequest,
 	                                 @PathVariable Long id) {
-		lineService.updateLineById(id, lineRequest);
+		lineService.updateLineById(id, lineUpdateRequest);
 		return ResponseEntity.ok().build();
 	}
 
@@ -54,8 +55,8 @@ public class LineController {
 		return ResponseEntity.badRequest().build();
 	}
 
-	@ExceptionHandler(LineNotFoundException.class)
-	public ResponseEntity handleLineNotFoundException(LineNotFoundException e) {
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity handleLineNotFoundException(NotFoundException e) {
 		return ResponseEntity.notFound().build();
 	}
 }
