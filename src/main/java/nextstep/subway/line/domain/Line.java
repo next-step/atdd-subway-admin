@@ -12,13 +12,19 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
+    private Long upStationId;
+    private Long downStationId;
+    private long distance;
 
     public Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(String name, String color, long upStationId, long downStationId, long distance) {
         this.name = name;
         this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 
     public void update(Line line) {
@@ -36,5 +42,17 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public long getUpStationId() {
+        return upStationId;
+    }
+
+    public long getDownStationId() {
+        return downStationId;
+    }
+
+    public long getDistance() {
+        return distance;
     }
 }
