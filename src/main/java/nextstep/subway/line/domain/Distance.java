@@ -32,4 +32,8 @@ public class Distance {
     public Distance subtract(final Distance other) {
         return new Distance(this.value - other.value);
     }
+
+    public Distance add(final Distance other) {
+        return new Distance(this.value + other.value);
+    }
 }

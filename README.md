@@ -111,4 +111,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - `지하철 구간(Section)`
         - [ ] 지하철 구간을 병한한다.
     - `거리(Distance)`
-        - [ ] 다른 거리를 더할 수 있다.
+        - [X] 다른 거리를 더할 수 있다.

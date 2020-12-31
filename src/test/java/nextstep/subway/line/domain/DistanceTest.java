@@ -57,4 +57,20 @@ class DistanceTest {
         // then
         assertThat(actual).isEqualTo(result);
     }
+
+    @DisplayName("다른 거리 값을 더할 수 있다.")
+    @ParameterizedTest
+    @CsvSource(value = {"10,5,15", "1000,330,1330"})
+    void add(int value1, int value2, int expected) {
+        // given
+        Distance distance1 = Distance.valueOf(value1);
+        Distance distance2 = Distance.valueOf(value2);
+        Distance result = Distance.valueOf(expected);
+
+        // when
+        Distance actual = distance1.add(distance2);
+
+        // then
+        assertThat(actual).isEqualTo(result);
+    }
 }
