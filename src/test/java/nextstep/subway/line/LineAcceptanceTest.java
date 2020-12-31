@@ -7,7 +7,6 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -37,7 +36,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertResponseHttpStatusIsCreate(response);
         assertThat(response.header("Location")).isNotBlank();
     }
 
@@ -54,7 +53,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성_실패됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertResponseHttpStatusIsBadRequest(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -79,7 +78,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_목록_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertResponseHttpStatusIsOk(response);
         // 지하철_노선_목록_포함됨
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
@@ -107,7 +106,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertResponseHttpStatusIsOk(response);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -133,8 +132,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
+        assertResponseHttpStatusIsOk(response);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -155,7 +153,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertResponseHttpStatusIsNoContent(response);
     }
 
     private ExtractableResponse<Response> createNewLine(Map<String, String> params) {
