@@ -53,7 +53,7 @@ public class LineSections {
 	@Nullable
 	private static Section findSectionByFrontStation(List<Section> sections, Station station) {
 		return sections.stream()
-				.filter(section -> Objects.equals(section.getFront(), station))
+				.filter(section -> section.isFrontEqual(station))
 				.findFirst()
 				.orElse(null);
 	}
@@ -61,7 +61,7 @@ public class LineSections {
 	@Nullable
 	private static Section findSectionByBackStation(List<Section> sections, Station station) {
 		return sections.stream()
-				.filter(section -> Objects.equals(section.getBack(), station))
+				.filter(section -> section.isBackEqual(station))
 				.findFirst()
 				.orElse(null);
 	}

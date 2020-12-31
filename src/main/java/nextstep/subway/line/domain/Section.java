@@ -61,7 +61,7 @@ public class Section extends BaseEntity {
 
 		Distance newSectionDistance = calculateDistance(section);
 		Section newSection = Optional.of(section)
-				.filter(this::isFrontEqual)
+				.filter(s -> isFrontEqual(s.front))
 				.map(s -> new Section(this.line, section.back, this.back, newSectionDistance))
 				.orElseGet(() -> new Section(this.line, this.front, section.front, newSectionDistance));
 
@@ -69,15 +69,15 @@ public class Section extends BaseEntity {
 	}
 
 	public boolean isCanSplit(Section section) {
-		return isFrontEqual(section) ^ isBackEqual(section);
+		return isFrontEqual(section.front) ^ isBackEqual(section.back);
 	}
 
-	private boolean isFrontEqual(Section section) {
-		return this.front.equals(section.front);
+	public boolean isFrontEqual(Station station) {
+		return this.front.equals(station);
 	}
 
-	private boolean isBackEqual(Section section) {
-		return this.back.equals(section.back);
+	public boolean isBackEqual(Station station) {
+		return this.back.equals(station);
 	}
 
 	private Distance calculateDistance(Section section) throws SectionValidationException {
