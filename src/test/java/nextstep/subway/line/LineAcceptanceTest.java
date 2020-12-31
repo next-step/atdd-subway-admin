@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.assertj.core.api.Assertions;
+import nextstep.subway.line.domain.Line;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -30,7 +33,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선_생성(params);
 
 		// then
-		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertAll(
+				() -> assertThat(response).isNotNull(),
+				() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value())
+		);
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -46,19 +52,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선_생성(params);
 
 		// then
-		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@DisplayName("지하철 노선 목록을 조회한다.")
 	@Test
 	void getLines() {
 		// given
-		// 지하철_노선_등록되어_있음
-		// 지하철_노선_등록되어_있음
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "2호선");
-		params.put("color", "green");
-		지하철_노선_생성(params);
+		List<Map> params = 지하철_노선
+		지하철_노선_생성();
 
 		// when
 		// 지하철_노선_목록_조회_요청
@@ -69,13 +71,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all().extract();
 
 		// then
-		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		List<LineResponse> lines = response.jsonPath().getList(".", LineResponse.class);
-		Assertions.assertThat(lines).hasSize(1);
+		assertThat(lines).hasSize(1);
 
 		// then
 		// 지하철_노선_목록_응답됨
 		// 지하철_노선_목록_포함됨
+	}
+
+	private void 지하철__생성() {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", "2호선");
+		params.put("color", "green");
+		지하철_노선_생성(params);
 	}
 
 	@DisplayName("지하철 노선을 조회한다.")
