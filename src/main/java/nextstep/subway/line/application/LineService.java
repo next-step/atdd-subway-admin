@@ -75,4 +75,11 @@ public class LineService {
         sections.updateSection(line, newSection);
         return LineResponse.of(line, line.getStations());
     }
+
+    public void deleteStation(Long id, Long stationId) {
+        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        Sections sections = line.getSections();
+
+        sections.deleteSection(line, findStationById(stationId));
+    }
 }
