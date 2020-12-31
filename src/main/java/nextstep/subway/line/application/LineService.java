@@ -50,12 +50,12 @@ public class LineService {
 
     public LineResponse findLineById(Long id) {
         return LineResponse.of(lineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 라인입니다.")));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 노선입니다.")));
     }
 
     public LineResponse updateLine(LineRequest lineRequest, Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 라인입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 노선입니다."));
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
@@ -65,9 +65,9 @@ public class LineService {
     }
 
     public SectionResponse addSection(Long lindId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lindId).orElseThrow(RuntimeException::new);
-        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(RuntimeException::new);
-        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(RuntimeException::new);
+        Line line = lineRepository.findById(lindId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 노선입니다."));
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다."));
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다."));
         Section section = line.addSection(upStation, downStation, sectionRequest.getDistance());
         return SectionResponse.of(section);
     }

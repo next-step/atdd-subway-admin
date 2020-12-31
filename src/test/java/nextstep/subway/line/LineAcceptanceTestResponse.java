@@ -41,7 +41,7 @@ public class LineAcceptanceTestResponse {
     }
 
     public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public static void 지하철_노선_생성됨(Long firstStationId, Long secondStationId, ExtractableResponse<Response> response) {

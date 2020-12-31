@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,9 +21,13 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
-        validation(section);
-        addUptoUpStation(section);
-        addDownToDownStation(section);
+        validateSection(section);
+        if (isUpToUpSectionCase(section)) {
+            addUpToUpSection(section);
+        }
+        if (isDownToDownSectionCase(section)) {
+            addDownToDownSection(section);
+        }
         sections.add(section);
     }
 
@@ -37,24 +42,42 @@ public class Sections {
         return stations;
     }
 
-    private void addUptoUpStation(Section section) {
-        sections.stream()
-                .filter(oldSection -> section.getUpStation() == oldSection.getUpStation())
-                .findFirst()
-                .ifPresent(oldSection -> {
-                    sections.add(new Section(oldSection.getLine(), section.getDownStation(), oldSection.getDownStation(), getUpStationDistance(section, oldSection)));
-                    sections.remove(oldSection);
-                });
+    private boolean isDownToDownSectionCase(Section section) {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList())
+                .contains(section.getUpStation());
     }
 
-    private void addDownToDownStation(Section section) {
-        sections.stream()
-                .filter(oldSection -> section.getUpStation() == oldSection.getDownStation())
-                .findFirst()
-                .ifPresent(oldSection -> {
-                    sections.add(new Section(oldSection.getLine(), oldSection.getUpStation(), section.getUpStation(), section.getDistance().get()));
-                    sections.remove(oldSection);
-                });
+    private boolean isUpToUpSectionCase(Section section) {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList())
+                .contains(section.getUpStation());
+    }
+
+    private void addUpToUpSection(Section section) {
+        Section oldSection = findUpToUpSection(section);
+        sections.add(new Section(oldSection.getLine(), section.getDownStation(), oldSection.getDownStation(), getUpStationDistance(section, oldSection)));
+        sections.remove(oldSection);
+    }
+
+    private void addDownToDownSection(Section section) {
+        Section oldSection = findDownToDownSection(section);
+        sections.add(new Section(oldSection.getLine(), oldSection.getUpStation(), section.getUpStation(), section.getDistance().get()));
+        sections.remove(oldSection);
+    }
+
+    private Section findUpToUpSection(Section section) {
+        return sections.stream()
+                .filter(oldSection -> isSameStation(oldSection.getUpStation(), section.getUpStation()))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("등록하려는 구간의 상행역과 같은 상행역을 가진 구간이 없습니다."));
+    }
+
+    private Section findDownToDownSection(Section section) {
+        return sections.stream()
+                .filter(oldSection -> isSameStation(oldSection.getDownStation(), section.getUpStation()))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("등록하려는 구간의 상행역과 같은 하행역을 가진 구간이 없습니다."));
     }
 
     private long getUpStationDistance(Section section, Section oldSection) {
@@ -73,26 +96,27 @@ public class Sections {
     }
 
     private boolean isContainsDownStation(Station station) {
-        boolean flag = false;
-        for (Section section : sections) {
-            flag = section.getDownStation() == station;
-        }
-        return flag;
+        return this.sections.stream()
+                .anyMatch((section) -> section.getDownStation() == station);
+    }
+
+    private boolean isSameStation(Station station, Station downStation) {
+        return downStation == station;
     }
 
     private Optional<Section> findNextSection(Station downStation) {
         return sections.stream()
-                .filter(section -> section.getUpStation() == downStation)
+                .filter(section -> isSameStation(downStation, section.getUpStation()))
                 .findFirst();
     }
 
-    private void validation(Section section) {
+    private void validateSection(Section section) {
         if (sections.size() == 0) return;
-        int containsCount = getContainsCount(section);
-        stationExistValid(containsCount);
+        int containsCount = getContainsStationCount(section);
+        validateStationExist(containsCount);
     }
 
-    private int getContainsCount(Section section) {
+    private int getContainsStationCount(Section section) {
         List<Station> stations = this.getStations();
         int containsCount = 0;
         for (Station station : section.getStations()) {
@@ -103,7 +127,7 @@ public class Sections {
         return containsCount;
     }
 
-    private void stationExistValid(int containsCount) {
+    private void validateStationExist(int containsCount) {
         if (containsCount == 2) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
         }
