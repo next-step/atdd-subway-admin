@@ -21,7 +21,7 @@ public class LineRequest {
         this.distance = distance;
     }
 
-    public boolean isSectionInfoEmpty() {
+    public boolean validateSectionInfo() {
         return upStationId == null || downStationId == null;
     }
 

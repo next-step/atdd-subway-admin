@@ -2,8 +2,11 @@ package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -23,16 +26,6 @@ public class Sections {
 		this.sections = sections;
 	}
 
-	public List<Station> stationsInOrder() {
-		List<Station> stations = new ArrayList<>();
-		for (Section section : sections) {
-			stations.add(section.getUpStation());
-			stations.add(section.getDownStation());
-		}
-
-		return stations;
-	}
-
 	public void add(Section newSection) {
 		boolean isDone = addBeside(newSection);
 		if (isDone) {
@@ -47,7 +40,39 @@ public class Sections {
 		throw new IllegalArgumentException("잘못된 구간정보입니다.");
 	}
 
+	public List<Station> stationsInOrder() {
+		Section firstUpSection = findFirstUpSection();
+		Map<Station, Section> stationMap = this.sections.stream()
+			  .collect(Collectors.toMap(Section::getUpStation, Function.identity()));
+
+		List<Station> stations = new ArrayList<>();
+		stations.add(firstUpSection.getUpStation());
+		stations.add(firstUpSection.getDownStation());
+
+		Section currentSection = firstUpSection;
+		while(stations.size() < this.sections.size() + 1) {
+			currentSection = stationMap.get(currentSection.getDownStation());
+			stations.add(currentSection.getDownStation());
+		}
+
+		return stations;
+	}
+
+	private Section findFirstUpSection() {
+		Map<Station, Section> downStationMap = this.sections.stream()
+			  .collect(Collectors.toMap(Section::getDownStation, Function.identity()));
+
+		return this.sections.stream()
+			  .filter(section -> !downStationMap.containsKey(section.getUpStation()))
+			  .findFirst().orElseThrow(() -> new NoSuchElementException("상행종점역을 찾을 수 없습니다."));
+	}
+
 	private boolean addBeside(Section newSection) {
+		if (this.sections.isEmpty()) {
+			this.sections.add(newSection);
+			return true;
+		}
+
 		Optional<Section> maybeSection = this.sections.stream()
 			  .filter(section -> section.isLinked(newSection))
 			  .filter(section -> !section.isSame(newSection))

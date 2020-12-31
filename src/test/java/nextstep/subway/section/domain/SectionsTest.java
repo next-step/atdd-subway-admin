@@ -63,14 +63,17 @@ class SectionsTest {
 	@Test
 	void stationsInOrder() {
 		//given
-		Section section = new Section(new Station("강남역"), new Station("역삼역"), 2);
-		Sections sections = new Sections(Arrays.asList(section));
+		sections.add(sectionMap.get("upSection"));
+		sections.add(sectionMap.get("downSection"));
 
 		//when
 		List<Station> stations = sections.stationsInOrder();
 
 		//then
-		assertThat(stations).containsExactly(section.getUpStation(), section.getDownStation());
+		Section upSection = sectionMap.get("upSection");
+		Section section = sectionMap.get("section");
+		Section downSection = sectionMap.get("downSection");
+		assertThat(stations).containsExactly(upSection.getUpStation(), upSection.getDownStation(), section.getDownStation(), downSection.getDownStation());
 	}
 
 	@DisplayName("등록된 구간 앞 또는 뒤에 구간을 추가한다.")

@@ -89,7 +89,7 @@ public class LineService {
 	}
 
 	private void validateSectionInfo(LineRequest request) {
-		if (request.isSectionInfoEmpty()) {
+		if (request.validateSectionInfo()) {
 			throw new IllegalArgumentException("구간정보가 존재하지 않습니다.");
 		}
 	}
