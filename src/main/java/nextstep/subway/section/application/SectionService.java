@@ -1,5 +1,6 @@
 package nextstep.subway.section.application;
 
+import nextstep.subway.common.exception.BadRequestException;
 import nextstep.subway.common.exception.NotExistsLineIdException;
 import nextstep.subway.common.exception.NotExistsStationIdException;
 import nextstep.subway.line.domain.Line;
@@ -7,19 +8,22 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
 public class SectionService {
-    private static final Integer INIT_SECTION_NUMBER = 0;
-    private static final Integer SECTION_NUMBER_OFFSET = 1;
 
     private LineRepository lineRepository;
     private SectionRepository sectionRepository;
@@ -31,7 +35,9 @@ public class SectionService {
         this.stationRepository = stationRepository;
     }
 
-    public void saveSection(SectionRequest request) {
+    public SectionResponse saveSection(SectionRequest request) {
+        validateRequest(request);
+
         Line line = lineRepository.findById(request.getLineId())
                 .orElseThrow(() -> new NotExistsLineIdException(request.getLineId()));
         Station upStation = stationRepository.findById(request.getUpStationId())
@@ -39,19 +45,159 @@ public class SectionService {
         Station downStation = stationRepository.findById(request.getDownStationId())
                 .orElseThrow(() -> new NotExistsStationIdException(request.getDownStationId()));
 
-        Integer sectionNumber = getSectionNumber(line.getId());
-        sectionRepository.save(new Section(line, upStation, downStation, request.getDistance(), sectionNumber));
+        Integer distance = request.getDistance();
+        Integer sectionNumber = getSectionNumber(line.getId(), upStation, downStation, distance);
+        Section persistSection = sectionRepository.save(new Section(line, upStation, downStation, distance, sectionNumber));
+        return SectionResponse.of(persistSection);
     }
 
-    public void deleteAllByLineId(Long lineId) {
-        List<Section> sections = sectionRepository.findByLineId(lineId);
-        sectionRepository.deleteAll(sections);
+    public List<SectionResponse> findAll(Long lineId) {
+        List<Section> sections = sectionRepository.findByLineId(lineId, Sort.by(Order.asc("sectionNumber")));
+        return sections.stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList());
     }
 
-    private Integer getSectionNumber(Long lineId) {
-        Optional<Section> section = sectionRepository.findTop1ByLineIdOrderBySectionNumberDesc(lineId);
+    private void validateRequest(SectionRequest request) {
+        if (request.getUpStationId().equals(request.getDownStationId())) {
+            throw new BadRequestException("UpStation and DownStation should not be same");
+        }
+    }
 
-        return section.map(Section::getSectionNumber)
-                .orElse(INIT_SECTION_NUMBER) + SECTION_NUMBER_OFFSET;
+    private Integer getSectionNumber(Long lineId, Station upStation, Station downStation, Integer distance) {
+        checkDuplicateAndThrow(lineId, upStation.getId(), downStation.getId());
+        AddSectionType addSectionType = AddSectionType.select(sectionRepository, lineId, upStation.getId(), downStation.getId());
+        return addSectionType.updateAndGetSectionNumber(sectionRepository, lineId, upStation, downStation, distance);
+    }
+
+    private void checkDuplicateAndThrow(Long lineId, Long upStationId, Long downStationId) {
+        Optional<Section> duplicationSection = sectionRepository.findByLineIdAndUpStationIdAndDownStationId(lineId, upStationId, downStationId);
+        if ( duplicationSection.isPresent() ) {
+            throw new BadRequestException("Section is already exists");
+        }
+    }
+
+    private enum AddSectionType {
+        CREATED {
+            @Override
+            public Integer updateAndGetSectionNumber(SectionRepository sectionRepository, Long lineId,
+                                                     Station upStation, Station downStation, Integer distance) {
+                return INIT_SECTION_NUMBER;
+            }
+
+            @Override
+            protected boolean checkType(SectionRepository sectionRepository, Long lineId, Long upStationId, Long downStationId) {
+                return sectionRepository.findByLineId(lineId)
+                        .isEmpty();
+            }
+        },
+        UP_INSERTION {
+            @Override
+            public Integer updateAndGetSectionNumber(SectionRepository sectionRepository, Long lineId,
+                                                     Station upStation, Station downStation, Integer distance) {
+                Section expectedSection = findSectionThrows(sectionRepository, lineId, upStation.getId(), downStation.getId());
+                if ( expectedSection.getDistance() <= distance ) {
+                    throw new BadRequestException("distance must be lower than " + expectedSection.getDistance());
+                }
+                return updateAndGetSectionNumberUpCase(sectionRepository, expectedSection, lineId, downStation);
+            }
+
+            @Override
+            protected Optional<Section> findSection(SectionRepository sectionRepository, Long lineId, Long upStationId, Long downStationId) {
+                return sectionRepository.findByLineIdAndUpStationId(lineId, upStationId);
+            }
+        },
+        UP_LAST {
+            @Override
+            public Integer updateAndGetSectionNumber(SectionRepository sectionRepository, Long lineId,
+                                                     Station upStation, Station downStation, Integer distance) {
+                Section expectedSection = findSectionThrows(sectionRepository, lineId, upStation.getId(), downStation.getId());
+                return updateAndGetSectionNumberUpCase(sectionRepository, expectedSection, lineId, downStation);
+            }
+
+            @Override
+            protected Optional<Section> findSection(SectionRepository sectionRepository, Long lineId, Long upStationId, Long downStationId) {
+                return sectionRepository.findByLineIdAndUpStationId(lineId, downStationId);
+            }
+        },
+        DOWN_INSERTION {
+            @Override
+            public Integer updateAndGetSectionNumber(SectionRepository sectionRepository, Long lineId,
+                                                     Station upStation, Station downStation, Integer distance) {
+                Section expectedSection = findSectionThrows(sectionRepository, lineId, upStation.getId(), downStation.getId());
+                if (expectedSection.getDistance() <= distance) {
+                    throw new BadRequestException("distance must be lower than " + expectedSection.getDistance());
+                }
+                return updateAndGetSectionNumberDownCase(sectionRepository, expectedSection, lineId, upStation);
+            }
+
+            @Override
+            protected Optional<Section> findSection(SectionRepository sectionRepository, Long lineId, Long upStationId, Long downStationId) {
+                return sectionRepository.findByLineIdAndDownStationId(lineId, downStationId);
+            }
+        },
+        DOWN_LAST {
+            @Override
+            public Integer updateAndGetSectionNumber(SectionRepository sectionRepository, Long lineId,
+                                                     Station upStation, Station downStation, Integer distance) {
+                Section expectedSection = findSectionThrows(sectionRepository, lineId, upStation.getId(), downStation.getId());
+                return updateAndGetSectionNumberDownCase(sectionRepository, expectedSection, lineId, upStation);
+            }
+
+            @Override
+            protected Optional<Section> findSection(SectionRepository sectionRepository, Long lineId, Long upStationId, Long downStationId) {
+                return sectionRepository.findByLineIdAndDownStationId(lineId, upStationId);
+            }
+        },
+        NOT_RELATED,
+        ;
+        private static final Integer INIT_SECTION_NUMBER = 1;
+
+        public Integer updateAndGetSectionNumber(SectionRepository sectionRepository, Long lineId, Station upStation, Station downStation, Integer distance) {
+            throw new BadRequestException("Not found related station");
+        }
+
+        public static AddSectionType select(SectionRepository sectionRepository, Long lineId, Long upStationId, Long downStationId) {
+            return Stream.of(AddSectionType.values())
+                    .filter(type -> type != NOT_RELATED && type.checkType(sectionRepository, lineId, upStationId, downStationId))
+                    .findFirst()
+                    .orElse(NOT_RELATED);
+        }
+
+        protected void incrementSectionNumberGreaterThanEqual(SectionRepository sectionRepository, Long lineId, Integer sectionNumber) {
+            List<Section> sections = sectionRepository.findByLineIdAndSectionNumberGreaterThanEqual(lineId, sectionNumber);
+            sections.forEach(Section::incrementSectionNumber);
+        }
+
+        protected Section findSectionThrows(SectionRepository sectionRepository, Long lineId, Long upStationId, Long downStationId) {
+            return findSection(sectionRepository, lineId, upStationId, downStationId)
+                    .orElseThrow(() -> new BadRequestException("Not found section"));
+        }
+
+        protected Integer updateAndGetSectionNumberUpCase(SectionRepository sectionRepository, Section expectedSection,
+                                                          Long lineId, Station downStation) {
+            expectedSection.updateUpStation(downStation);
+            Integer sectionNumber = expectedSection.getSectionNumber();
+            incrementSectionNumberGreaterThanEqual(sectionRepository, lineId, sectionNumber);
+            return sectionNumber;
+        }
+
+        protected Integer updateAndGetSectionNumberDownCase(SectionRepository sectionRepository, Section expectedSection,
+                                                            Long lineId, Station upStation) {
+            expectedSection.updateDownStation(upStation);
+            Integer sectionNumber = expectedSection.getSectionNumber() + 1;
+            incrementSectionNumberGreaterThanEqual(sectionRepository, lineId, sectionNumber);
+            return sectionNumber;
+        }
+
+
+        protected boolean checkType(SectionRepository sectionRepository, Long lineId, Long upStationId, Long downStationId) {
+            return findSection(sectionRepository, lineId, upStationId, downStationId)
+                    .isPresent();
+        }
+
+        protected Optional<Section> findSection(SectionRepository sectionRepository, Long lineId, Long upStationId, Long downStationId) {
+            return Optional.empty();
+        }
     }
 }

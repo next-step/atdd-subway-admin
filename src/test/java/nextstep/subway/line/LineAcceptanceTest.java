@@ -192,7 +192,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> createRequest(LineRequest lineRequest) {
+    public static ExtractableResponse<Response> createRequest(LineRequest lineRequest) {
         final String url = "/lines";
         return RequestTest.doPost(url, lineRequest);
     }
