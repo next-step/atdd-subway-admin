@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.application.SectionValidationException;
 import nextstep.subway.station.domain.Station;
 import org.springframework.lang.Nullable;
 
@@ -65,4 +66,31 @@ public class LineSections {
 				.orElse(null);
 	}
 
+	public void addSection(Section section) {
+		validateAddSection(section);
+		Optional<Section> splitTarget = this.sections.stream()
+				.filter(s -> s.isCanSplit(section))
+				.findFirst();
+
+		if (splitTarget.isPresent()) {
+			List<Section> split = splitTarget.get().splitSection(section);
+			this.sections.remove(splitTarget.get());
+			this.sections.addAll(split);
+			return;
+		}
+
+		this.sections.add(section);
+	}
+
+	private void validateAddSection(Section section) throws SectionValidationException {
+		final boolean hasSameStations = this.sections.stream().anyMatch(section::containsAllStation);
+		if (hasSameStations) {
+			throw new SectionValidationException("same stations already added");
+		}
+
+		final boolean hasNoStations = this.sections.stream().noneMatch(section::containsAnyStation);
+		if (hasNoStations) {
+			throw new SectionValidationException("one station must be included in sections");
+		}
+	}
 }

@@ -37,6 +37,11 @@ public class Line extends BaseEntity {
     	this.color = color;
     }
 
+    public void addSection(Station front, Station back, int distance) {
+        Section section = new Section(this, front, back, distance);
+        this.sections.addSection(section);
+    }
+
     public List<Station> getSortedStations() {
 	    return this.sections.getSortedStations();
     }
