@@ -37,4 +37,8 @@ public class SectionAcceptanceTestResponse {
 	public static void 지하철_노선에_지하철역_제거됨(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
+
+	public static void 지하철_노선에_유효하지않은_구간정보는_제거되지않음(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
 }

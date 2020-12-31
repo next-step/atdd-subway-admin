@@ -231,4 +231,41 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
         SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
+
+    @DisplayName("노선에 등록되지 않은 역은 제거할 수 없다")
+    @Test
+    void deleteNoExistStations() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        Long notInLineStationId = StationAcceptanceTestRequest.지하철역_등록되어_있음_등록된_ID("신사역");
+        ExtractableResponse<Response> response = SectionAcceptanceTestRequest.지하철_노선에_지하철역_제거_요청(lineUri, notInLineStationId);
+
+        // then
+        // 지하철_노선에_유효하지않은_구간정보는_제거되지않음
+        SectionAcceptanceTestResponse.지하철_노선에_유효하지않은_구간정보는_제거되지않음(response);
+    }
+
+    @DisplayName("노선에 등록된 구간이 1개일 때, 상행역을 제거할 수 없다")
+    @Test
+    void deleteUpStationInOnlyOneSections() {
+        // when
+        // 지하철_노선에_지하철역_제거_요청
+        ExtractableResponse<Response> response = SectionAcceptanceTestRequest.지하철_노선에_지하철역_제거_요청(lineUri, lineUpStationId);
+
+        // then
+        // 지하철_노선에_유효하지않은_구간정보는_등록되지않음
+        SectionAcceptanceTestResponse.지하철_노선에_유효하지않은_구간정보는_제거되지않음(response);
+    }
+
+    @DisplayName("노선에 등록된 구간이 1개일 때, 하행역을 제거할 수 없다")
+    @Test
+    void deleteDownStationInOnlyOneSections() {
+        // when
+        // 지하철_노선에_지하철역_제거_요청
+        ExtractableResponse<Response> response = SectionAcceptanceTestRequest.지하철_노선에_지하철역_제거_요청(lineUri, lineDownStationId);
+
+        // then
+        // 지하철_노선에_유효하지않은_구간정보는_등록되지않음
+        SectionAcceptanceTestResponse.지하철_노선에_유효하지않은_구간정보는_제거되지않음(response);
+    }
 }
