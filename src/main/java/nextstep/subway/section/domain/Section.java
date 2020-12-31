@@ -70,9 +70,22 @@ public class Section {
 		return isEqualStation(this.station, station);
 	}
 
+	public boolean isStationInSection(Long stationId) {
+		return stationId.equals(this.station.getId());
+	}
+
 	public void updatePreStationTo(Station preStation, int distance) {
 		this.preStation = preStation;
 		this.distance.subtract(distance);
+	}
+
+	public void updatePreStationForRemove(Station preStation, int distance) {
+		this.preStation = preStation;
+		if (preStation == null) {
+			this.distance.reset();
+			return;
+		}
+		this.distance.add(distance);
 	}
 
 	public void updateStationTo(Station station, int distance) {

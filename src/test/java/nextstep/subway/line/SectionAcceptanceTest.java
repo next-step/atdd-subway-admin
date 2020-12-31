@@ -172,8 +172,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteMiddleSection() {
         // given
         // 지하철_노선에_지하철역_등록_요청 [A-(4)-NEW-(6)-B]
-        int newSectionDistance = 4;
-        SectionAcceptanceTestRequest.지하철_노선에_지하철역_등록_요청(lineUri, lineUpStationId, lineNewStationId, newSectionDistance);
+        SectionAcceptanceTestRequest.지하철_노선에_지하철역_등록_요청(lineUri, lineUpStationId, lineNewStationId, 4);
 
         // 지하철_노선에_지하철역_제거_요청
         ExtractableResponse<Response> response = SectionAcceptanceTestRequest.지하철_노선에_지하철역_제거_요청(lineUri, lineNewStationId);
@@ -183,10 +182,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 지하철_노선에_구간_포함됨
         // 지하철_노선_구간_거리_계산됨 [A-(10)-B]
         List<Long> expectedStations = Arrays.asList(lineUpStationId, lineDownStationId);
-        List<Integer> expectedDistances = Arrays.asList(INIT_LINE_DISTANCE);
+        List<Integer> expectedDistances = Arrays.asList(0, 10);
         SectionAcceptanceTestResponse.지하철_노선에_지하철역_제거됨(response);
-        // SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
-        // SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
+        SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
+        SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
 
     @DisplayName("노선에 구간을 제거한다. (CASE1) A-NEW-B : A 제거")
@@ -194,8 +193,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteStartSection() {
         // given
         // 지하철_노선에_지하철역_등록_요청 [A-(4)-NEW-(6)-B]
-        int newSectionDistance = 4;
-        SectionAcceptanceTestRequest.지하철_노선에_지하철역_등록_요청(lineUri, lineUpStationId, lineNewStationId, newSectionDistance);
+        SectionAcceptanceTestRequest.지하철_노선에_지하철역_등록_요청(lineUri, lineUpStationId, lineNewStationId, 4);
 
         // when
         // 지하철_노선에_지하철역_제거_요청
@@ -206,10 +204,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 지하철_노선에_구간_포함됨
         // 지하철_노선_구간_거리_계산됨 [NEW-(6)-B]
         List<Long> expectedStations = Arrays.asList(lineNewStationId, lineDownStationId);
-        List<Integer> expectedDistances = Arrays.asList(INIT_LINE_DISTANCE - newSectionDistance);
+        List<Integer> expectedDistances = Arrays.asList(0, 6);
         SectionAcceptanceTestResponse.지하철_노선에_지하철역_제거됨(response);
-        // SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
-        // SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
+        SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
+        SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
 
     @DisplayName("노선에 구간을 제거한다. (CASE1) A-NEW-B : B 제거")
@@ -217,8 +215,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteEndSection() {
         // given
         // 지하철_노선에_지하철역_등록_요청 [A-(4)-NEW-(6)-B]
-        int newSectionDistance = 4;
-        SectionAcceptanceTestRequest.지하철_노선에_지하철역_등록_요청(lineUri, lineUpStationId, lineNewStationId, newSectionDistance);
+        SectionAcceptanceTestRequest.지하철_노선에_지하철역_등록_요청(lineUri, lineUpStationId, lineNewStationId, 4);
 
         // when
         // 지하철_노선에_지하철역_제거_요청
@@ -229,9 +226,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 지하철_노선에_구간_포함됨
         // 지하철_노선_구간_거리_계산됨 [A-(4)-NEW]
         List<Long> expectedStations = Arrays.asList(lineUpStationId, lineNewStationId);
-        List<Integer> expectedDistances = Arrays.asList(newSectionDistance);
+        List<Integer> expectedDistances = Arrays.asList(0, 4);
         SectionAcceptanceTestResponse.지하철_노선에_지하철역_제거됨(response);
-        // SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
-        // SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
+        SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
+        SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
 }

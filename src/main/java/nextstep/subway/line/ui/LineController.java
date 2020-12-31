@@ -68,8 +68,7 @@ public class LineController {
     public ResponseEntity removeLineStation(
         @PathVariable Long lineId,
         @RequestParam Long stationId) {
-        // lineService.removeSectionByStationId(lineId, stationId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(lineService.removeSectionByStationId(lineId, stationId));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

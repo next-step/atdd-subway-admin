@@ -27,4 +27,12 @@ public class Distance {
 		}
 		this.distance -= distance;
 	}
+
+	public void add(int distance) {
+		this.distance += distance;
+	}
+
+	public void reset() {
+		this.distance = 0;
+	}
 }

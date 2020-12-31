@@ -82,6 +82,20 @@ public class LineSections {
         return result;
     }
 
+    public void removeSection(Long stationId) {
+        Section removeSection = this.sections.stream()
+            .filter(section -> section.isStationInSection(stationId))
+            .findFirst()
+            .get();
+
+        this.sections.stream()
+            .filter(it -> it.isPreStationInSection(removeSection.getStation()))
+            .findFirst()
+            .ifPresent(section -> section.updatePreStationForRemove(removeSection.getPreStation(), removeSection.getDistance()));
+
+        this.sections.remove(removeSection);
+    }
+
     private boolean findByStation(Station station) {
         return this.sections.stream()
             .anyMatch(section -> section.isStationInSection(station));
