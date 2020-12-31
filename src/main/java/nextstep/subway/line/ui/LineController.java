@@ -1,7 +1,9 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.common.NotFoundException;
+import nextstep.subway.common.ValidationException;
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.dto.AddSectionRequest;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -50,6 +52,13 @@ public class LineController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@PostMapping("/{id}/sections")
+	public ResponseEntity postSections(@PathVariable Long id,
+	                                   @RequestBody AddSectionRequest addSectionRequest) {
+		lineService.addSection(id, addSectionRequest);
+		return ResponseEntity.ok().build();
+	}
+
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
 		return ResponseEntity.badRequest().build();
@@ -58,5 +67,10 @@ public class LineController {
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity handleLineNotFoundException(NotFoundException e) {
 		return ResponseEntity.notFound().build();
+	}
+
+	@ExceptionHandler(ValidationException.class)
+	public ResponseEntity handleValidationException(ValidationException e) {
+		return ResponseEntity.badRequest().build();
 	}
 }

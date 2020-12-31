@@ -8,6 +8,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTestSupport;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ public class SectionAcceptanceTestSupport {
 		return RestAssured
 				.given().log().all()
 				.body(addSectionRequest)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when().post(String.format("/lines/%d/sections", lineId))
 				.then().log().all().extract();
 	}
