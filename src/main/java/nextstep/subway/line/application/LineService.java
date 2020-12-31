@@ -34,4 +34,8 @@ public class LineService {
     public Optional<LineResponse> findLine(Long id) {
         return this.lineRepository.findById(id).map(LineResponse::of);
     }
+
+    public void deleteLine(Long id) {
+        this.lineRepository.delete(this.lineRepository.getOne(id));
+    }
 }

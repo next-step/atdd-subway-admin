@@ -55,10 +55,33 @@ public class LineController {
      */
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        if (!this.lineService.findLine(id).isPresent()) {
+        if (this.existLineById(id)) {
             return ResponseEntity.badRequest().build();
         }
         this.lineService.saveLine(lineRequest);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 해당 ID의 노선이 있으면 삭제합니다.
+     * @param id
+     * @return
+     */
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
+        if (this.existLineById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        this.lineService.deleteLine(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 해당 ID로 지하철 노선이 존재하는지 여부를 반환합니다.
+     * @param id
+     * @return
+     */
+    private boolean existLineById(Long id) {
+        return !this.lineService.findLine(id).isPresent();
     }
 }
