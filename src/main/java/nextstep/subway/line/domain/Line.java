@@ -45,11 +45,15 @@ public class Line extends BaseEntity {
         this.color = other.getColor();
     }
 
-    public void add(final LineStation lineStation){
+    public void add(final LineStation lineStation) {
         lineStations.add(lineStation);
     }
 
     public List<Station> getOrderedStations() {
         return lineStations.getOrderedStations();
+    }
+
+    public void delete(final Long stationId) {
+        lineStations.delete(stationId);
     }
 }

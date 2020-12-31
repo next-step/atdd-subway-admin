@@ -159,4 +159,8 @@ public class LineFixture {
     public static void 지하철_노선_지하철역_삭제_실패됨(final ExtractableResponse<Response> response){
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    public static void 지하철_노선_지하철역_삭제_대상없음(final ExtractableResponse<Response> response){
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
 }
