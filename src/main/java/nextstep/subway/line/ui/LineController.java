@@ -35,10 +35,30 @@ public class LineController {
         return ResponseEntity.ok().body(this.lineService.findAllLines());
     }
 
-    @GetMapping(value = "/{id}" ,produces = MediaType.APPLICATION_JSON_VALUE)
+    /**
+     * ID로 지하철 노선을 검색합니다
+     * @param id 
+     * @return 검색 된 지하철 노선
+     */
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
-        Optional<LineResponse> line = this.lineService.findLine(id);
-        return line.map(lineResponse -> ResponseEntity.ok().body(lineResponse))
+        return this.lineService.findLine(id)
+                    .map(lineResponse -> ResponseEntity.ok().body(lineResponse))
                         .orElseGet(() -> ResponseEntity.badRequest().build());
+    }
+
+    /**
+     * 주어진 ID의 노선이 있는 경우 내용을 수정합니다.
+     * @param id
+     * @param lineRequest
+     * @return HttpStatus.OK
+     */
+    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        if (!this.lineService.findLine(id).isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+        this.lineService.saveLine(lineRequest);
+        return ResponseEntity.ok().build();
     }
 }
