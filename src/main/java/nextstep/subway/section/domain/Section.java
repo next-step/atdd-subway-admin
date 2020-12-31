@@ -74,12 +74,12 @@ public class Section {
 		return stationId.equals(this.station.getId());
 	}
 
-	public void updatePreStationTo(Station preStation, int distance) {
+	public void updatePreStationToAdd(Station preStation, int distance) {
 		this.preStation = preStation;
 		this.distance.subtract(distance);
 	}
 
-	public void updatePreStationForRemove(Station preStation, int distance) {
+	public void updatePreStationToRemove(Station preStation, int distance) {
 		this.preStation = preStation;
 		if (preStation == null) {
 			this.distance.reset();
@@ -88,7 +88,7 @@ public class Section {
 		this.distance.add(distance);
 	}
 
-	public void updateStationTo(Station station, int distance) {
+	public void updateStationToAdd(Station station, int distance) {
 		this.station = station;
 		this.distance.subtract(distance);
 	}

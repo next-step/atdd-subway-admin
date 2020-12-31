@@ -58,14 +58,30 @@ public class LineSections {
         this.sections.stream()
             .filter(section -> section.isPreStationInSection(newSection.getPreStation()))
             .findFirst()
-            .ifPresent(section -> section.updatePreStationTo(newSection.getStation(), newSection.getDistance()));
+            .ifPresent(section -> section.updatePreStationToAdd(newSection.getStation(), newSection.getDistance()));
     }
 
     public void updateStationToNewUpStation(Section newSection) {
         this.sections.stream()
             .filter(section -> section.isStationInSection(newSection.getStation()))
             .findFirst()
-            .ifPresent(section -> section.updateStationTo(newSection.getPreStation(), newSection.getDistance()));
+            .ifPresent(section -> section.updateStationToAdd(newSection.getPreStation(), newSection.getDistance()));
+    }
+
+    public void removeSection(Long stationId) {
+        checkRemovableSections();
+
+        Section removeSection = this.sections.stream()
+            .filter(section -> section.isStationInSection(stationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("노선에 등록되지 않은 역은 제거할 수 없습니다."));
+
+        this.sections.stream()
+            .filter(it -> it.isPreStationInSection(removeSection.getStation()))
+            .findFirst()
+            .ifPresent(section -> section.updatePreStationToRemove(removeSection.getPreStation(), removeSection.getDistance()));
+
+        this.sections.remove(removeSection);
     }
 
     public List<Section> getOrderedSections() {
@@ -82,22 +98,6 @@ public class LineSections {
                 .findFirst();
         }
         return result;
-    }
-
-    public void removeSection(Long stationId) {
-        checkRemovableSections();
-
-        Section removeSection = this.sections.stream()
-            .filter(section -> section.isStationInSection(stationId))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("노선에 등록되지 않은 역은 제거할 수 없습니다."));
-
-        this.sections.stream()
-            .filter(it -> it.isPreStationInSection(removeSection.getStation()))
-            .findFirst()
-            .ifPresent(section -> section.updatePreStationForRemove(removeSection.getPreStation(), removeSection.getDistance()));
-
-        this.sections.remove(removeSection);
     }
 
     private void checkRemovableSections() {
