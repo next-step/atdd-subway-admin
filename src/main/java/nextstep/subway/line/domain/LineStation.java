@@ -54,10 +54,10 @@ public class LineStation {
     }
 
     public boolean canAddBetweenSection(final Section other) {
-        return section.canAddBetweenSection(other);
+        return section.canSeparate(other);
     }
 
     public void update(final Section other) {
-        section.update(other);
+        section.separate(other);
     }
 }

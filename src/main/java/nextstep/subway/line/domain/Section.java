@@ -44,42 +44,69 @@ public class Section {
         return this.downStation.equals(station);
     }
 
-    public void update(final Section other) {
-        if (canConnectUpStation(other)) {
+    public void separate(final Section other) {
+        if (isSameUpStation(other)) {
             this.upStation = other.downStation;
             this.distance = distance.subtract(other.distance);
         }
 
-        if (canConnectDownStation(other)) {
+        if (isSameDownStation(other)) {
             this.downStation = other.upStation;
             this.distance = distance.subtract(other.distance);
         }
     }
 
-    private boolean canConnectUpStation(final Section other) {
-        return other.isUpStation(upStation);
-    }
+    public boolean canSeparate(final Section other) {
+        boolean sameUpStation = isSameUpStation(other);
+        boolean sameDownStation = isSameDownStation(other);
 
-    private boolean canConnectDownStation(final Section other) {
-        return other.isDownStation(downStation);
-    }
-
-    public boolean canAddBetweenSection(final Section other) {
-        boolean connectUpStation = canConnectUpStation(other);
-        boolean connectDownStation = canConnectDownStation(other);
-
-        if (canConnectAll(connectUpStation, connectDownStation)) {
+        if (sameUpStation && sameDownStation) {
             return false;
         }
 
-        return canConnectOne(connectUpStation, connectDownStation);
+        return sameUpStation || sameDownStation;
     }
 
-    private boolean canConnectAll(final boolean connectUpStation, final boolean connectDownStation) {
-        return connectUpStation && connectDownStation;
+    private boolean isSameUpStation(final Section other) {
+        return other.isUpStation(upStation);
     }
 
-    private boolean canConnectOne(final boolean connectUpStation, final boolean connectDownStation) {
-        return connectUpStation || connectDownStation;
+    private boolean isSameDownStation(final Section other) {
+        return other.isDownStation(downStation);
+    }
+
+    public void merge(final Section other) {
+        if (!canMerge(other)) {
+            throw new IllegalStateException("병합할 수 없는 구간입니다.");
+        }
+
+        if (isConnectUp(other)) {
+            this.upStation = other.upStation;
+        }
+
+        if (isConnectDown(other)) {
+            this.downStation = other.downStation;
+        }
+
+        this.distance = this.distance.add(other.distance);
+    }
+
+    public boolean canMerge(final Section other) {
+        boolean connectUp = isConnectUp(other);
+        boolean connectDown = isConnectDown(other);
+
+        if (connectUp && connectDown) {
+            return false;
+        }
+
+        return connectUp || connectDown;
+    }
+
+    private boolean isConnectUp(final Section other) {
+        return other.isDownStation(upStation);
+    }
+
+    private boolean isConnectDown(final Section other) {
+        return other.isUpStation(downStation);
     }
 }
