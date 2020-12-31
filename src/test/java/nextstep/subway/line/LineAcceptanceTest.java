@@ -7,6 +7,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -70,6 +71,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_응답됨(response, createdLocationUri);
+        지하철_노선_지하철역_목록_포함됨(response, Arrays.asList("암사", "모란"));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -185,6 +187,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private void 지하철_노선_지하철역_목록_포함됨(ExtractableResponse<Response> response, List<String> expectedStationNames) {
+        List<String> result = response.jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertThat(result).containsAll(expectedStationNames);
     }
 
     private void 지하철_노선_응답됨(ExtractableResponse<Response> response, String uri) {
