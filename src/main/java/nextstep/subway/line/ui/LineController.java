@@ -9,7 +9,6 @@ import nextstep.subway.section.dto.SectionResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,12 +57,6 @@ public class LineController {
     @PostMapping(value = "/{id}/sections")
     public ResponseEntity addSection(@PathVariable Long id, @RequestBody SectionRequest request) {
         SectionResponse sectionResponse = lineService.addSection(id, request);
-        System.out.println("====================================22");
         return ResponseEntity.created(URI.create("/lines/" + id + "/sections/" + sectionResponse.getId())).body(sectionResponse);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
     }
 }

@@ -32,7 +32,8 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> createdStation3 = StationTestApi.지하철_역_등록_요청("선릉역");
 		//지하철_노선과_구간정보가_등록되어_있음
 		ExtractableResponse<Response> createdLine = LineTestApi
-			  .지하철_노선과_구간정보가_등록되어_있음("2호선", "green", createdStation1.body().as(StationResponse.class),
+			  .지하철_노선과_구간정보가_등록되어_있음("2호선", "green",
+					createdStation1.body().as(StationResponse.class),
 					createdStation2.body().as(StationResponse.class), 10);
 		LineResponse lineResponse = createdLine.body().as(LineResponse.class);
 		SectionRequest request = new SectionRequest(
@@ -51,9 +52,41 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(response.header("Location")).isNotBlank();
 		SectionResponse actual = response.body().as(SectionResponse.class);
-		SectionResponse expected = new SectionResponse(request.getUpStationId(), request.getDownStationId(), request.getDistance());
+		SectionResponse expected = new SectionResponse(request.getUpStationId(),
+			  request.getDownStationId(), request.getDistance());
 		assertThat(actual.getUpStationId()).isEqualTo(expected.getUpStationId());
 		assertThat(actual.getDownStationId()).isEqualTo(expected.getDownStationId());
 		assertThat(actual.getDistance()).isEqualTo(expected.getDistance());
+	}
+
+	@DisplayName("연결되지 않는 지하철 구간 정보를 추가한다.")
+	@Test
+	void addSectionWitUnlinkedSection() {
+		//givne
+		//지하철_역이_등록되어_있음
+		ExtractableResponse<Response> createdStation1 = StationTestApi.지하철_역_등록_요청("강남역");
+		ExtractableResponse<Response> createdStation2 = StationTestApi.지하철_역_등록_요청("역삼역");
+		ExtractableResponse<Response> createdStation3 = StationTestApi.지하철_역_등록_요청("선릉역");
+		ExtractableResponse<Response> createdStation4 = StationTestApi.지하철_역_등록_요청("삼성역");
+		//지하철_노선과_구간정보가_등록되어_있음
+		ExtractableResponse<Response> createdLine = LineTestApi
+			  .지하철_노선과_구간정보가_등록되어_있음("2호선", "green",
+					createdStation1.body().as(StationResponse.class),
+					createdStation2.body().as(StationResponse.class), 10);
+		LineResponse lineResponse = createdLine.body().as(LineResponse.class);
+		SectionRequest request = new SectionRequest(
+			  createdStation3.body().as(StationResponse.class).getId(),
+			  createdStation4.body().as(StationResponse.class).getId(), 10);
+
+		//when
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			  .contentType(MediaType.APPLICATION_JSON_VALUE)
+			  .body(request)
+			  .when().post("/lines/" + lineResponse.getId() + "/sections")
+			  .then().log().all()
+			  .extract();
+
+		//then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 }
