@@ -72,9 +72,7 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
 
         Sections sections = line.getSections();
-        sections.validation(newSection);
-        sections.updateSection(newSection);
-        line.addSection(newSection);
+        sections.updateSection(line, newSection);
         return LineResponse.of(line, line.getStations());
     }
 }
