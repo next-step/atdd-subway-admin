@@ -44,11 +44,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선에_지하철역_등록됨
+        // 지하철_노선에_구간_포함됨
         // 지하철_노선_구간_거리_계산됨
         List<Long> expectedStations = Arrays.asList(lineUpStationId, lineNewStationId, lineDownStationId);
         List<Integer> expectedDistances = Arrays.asList(0, newSectionDistance, INIT_LINE_DISTANCE - newSectionDistance);
         SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨(response);
-        SectionAcceptanceTestResponse.지하철_노선에_등록한_구간_포함됨(response, expectedStations);
+        SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
         SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
 
@@ -63,11 +64,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선에_지하철역_등록됨
+        // 지하철_노선에_구간_포함됨
         // 지하철_노선_구간_거리_계산됨
         List<Long> expectedStations = Arrays.asList(lineUpStationId, lineNewStationId, lineDownStationId);
         List<Integer> expectedDistances = Arrays.asList(0, INIT_LINE_DISTANCE - newSectionDistance, newSectionDistance);
         SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨(response);
-        SectionAcceptanceTestResponse.지하철_노선에_등록한_구간_포함됨(response, expectedStations);
+        SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
         SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
 
@@ -82,11 +84,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선에_지하철역_등록됨
+        // 지하철_노선에_구간_포함됨
         // 지하철_노선_구간_거리_계산됨
         List<Long> expectedStations = Arrays.asList(lineNewStationId, lineUpStationId, lineDownStationId);
         List<Integer> expectedDistances = Arrays.asList(0, newSectionDistance, INIT_LINE_DISTANCE);
         SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨(response);
-        SectionAcceptanceTestResponse.지하철_노선에_등록한_구간_포함됨(response, expectedStations);
+        SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
         SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
 
@@ -101,11 +104,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선에_지하철역_등록됨
+        // 지하철_노선에_구간_포함됨
         // 지하철_노선_구간_거리_계산됨
         List<Long> expectedStations = Arrays.asList(lineUpStationId, lineDownStationId, lineNewStationId);
         List<Integer> expectedDistances = Arrays.asList(0, INIT_LINE_DISTANCE, newSectionDistance);
         SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨(response);
-        SectionAcceptanceTestResponse.지하철_노선에_등록한_구간_포함됨(response, expectedStations);
+        SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
         SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
 
@@ -161,5 +165,73 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_유효하지않은_구간정보는_등록되지않음
         SectionAcceptanceTestResponse.지하철_노선에_유효하지않은_구간정보는_등록되지않음(response);
+    }
+
+    @DisplayName("노선에 구간을 제거한다. (CASE1) A-NEW-B : NEW 제거")
+    @Test
+    void deleteMiddleSection() {
+        // given
+        // 지하철_노선에_지하철역_등록_요청 [A-(4)-NEW-(6)-B]
+        int newSectionDistance = 4;
+        SectionAcceptanceTestRequest.지하철_노선에_지하철역_등록_요청(lineUri, lineUpStationId, lineNewStationId, newSectionDistance);
+
+        // 지하철_노선에_지하철역_제거_요청
+        ExtractableResponse<Response> response = SectionAcceptanceTestRequest.지하철_노선에_지하철역_제거_요청(lineUri, lineNewStationId);
+
+        // then
+        // 지하철_노선에_지하철역_제거됨
+        // 지하철_노선에_구간_포함됨
+        // 지하철_노선_구간_거리_계산됨 [A-(10)-B]
+        List<Long> expectedStations = Arrays.asList(lineUpStationId, lineDownStationId);
+        List<Integer> expectedDistances = Arrays.asList(INIT_LINE_DISTANCE);
+        SectionAcceptanceTestResponse.지하철_노선에_지하철역_제거됨(response);
+        // SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
+        // SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
+    }
+
+    @DisplayName("노선에 구간을 제거한다. (CASE1) A-NEW-B : A 제거")
+    @Test
+    void deleteStartSection() {
+        // given
+        // 지하철_노선에_지하철역_등록_요청 [A-(4)-NEW-(6)-B]
+        int newSectionDistance = 4;
+        SectionAcceptanceTestRequest.지하철_노선에_지하철역_등록_요청(lineUri, lineUpStationId, lineNewStationId, newSectionDistance);
+
+        // when
+        // 지하철_노선에_지하철역_제거_요청
+        ExtractableResponse<Response> response = SectionAcceptanceTestRequest.지하철_노선에_지하철역_제거_요청(lineUri, lineUpStationId);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        // 지하철_노선에_구간_포함됨
+        // 지하철_노선_구간_거리_계산됨 [NEW-(6)-B]
+        List<Long> expectedStations = Arrays.asList(lineNewStationId, lineDownStationId);
+        List<Integer> expectedDistances = Arrays.asList(INIT_LINE_DISTANCE - newSectionDistance);
+        SectionAcceptanceTestResponse.지하철_노선에_지하철역_제거됨(response);
+        // SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
+        // SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
+    }
+
+    @DisplayName("노선에 구간을 제거한다. (CASE1) A-NEW-B : B 제거")
+    @Test
+    void deleteEndSection() {
+        // given
+        // 지하철_노선에_지하철역_등록_요청 [A-(4)-NEW-(6)-B]
+        int newSectionDistance = 4;
+        SectionAcceptanceTestRequest.지하철_노선에_지하철역_등록_요청(lineUri, lineUpStationId, lineNewStationId, newSectionDistance);
+
+        // when
+        // 지하철_노선에_지하철역_제거_요청
+        ExtractableResponse<Response> response = SectionAcceptanceTestRequest.지하철_노선에_지하철역_제거_요청(lineUri, lineDownStationId);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        // 지하철_노선에_구간_포함됨
+        // 지하철_노선_구간_거리_계산됨 [A-(4)-NEW]
+        List<Long> expectedStations = Arrays.asList(lineUpStationId, lineNewStationId);
+        List<Integer> expectedDistances = Arrays.asList(newSectionDistance);
+        SectionAcceptanceTestResponse.지하철_노선에_지하철역_제거됨(response);
+        // SectionAcceptanceTestResponse.지하철_노선에_구간_포함됨(response, expectedStations);
+        // SectionAcceptanceTestResponse.지하철_노선_구간_거리_계산됨(response, expectedDistances);
     }
 }
