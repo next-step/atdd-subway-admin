@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,17 +25,18 @@ public class LineController {
 	}
 
 	@PostMapping
-	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
 		try {
 			LineResponse line = lineService.saveLine(lineRequest);
 			return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
 		} catch (RuntimeException exception) {
-			return ResponseEntity.badRequest().body(null);
+			return ResponseEntity.badRequest().build();
 		}
 	}
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity showLine() {
+	public ResponseEntity<List<LineResponse>> showLine() {
 		return ResponseEntity.ok().body(lineService.showLines());
 	}
+
 }
