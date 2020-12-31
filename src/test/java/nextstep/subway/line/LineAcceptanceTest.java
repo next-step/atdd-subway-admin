@@ -1,10 +1,12 @@
 package nextstep.subway.line;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nextstep.subway.line.domain.Line;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -16,26 +18,21 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
 		// given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
+		Map<String, String> params = 라인_파람_생성("2호선", "green");
 
-	    // when
+		// when
 		ExtractableResponse<Response> response = 지하철_노선_생성(params);
 
 		// then
 		assertAll(
-				() -> assertThat(response).isNotNull(),
-				() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value())
+			() -> assertThat(response).isNotNull(),
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value())
 		);
 	}
 
@@ -43,9 +40,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine2() {
 		// given
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "2호선");
-		params.put("color", "green");
+		Map<String, String> params = 라인_파람_생성("2호선", "green");
 		지하철_노선_생성(params);
 
 		// when
@@ -59,32 +54,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
-		List<Map> params = 지하철_노선
-		지하철_노선_생성();
+		Map<String, String> line1Param = 라인_파람_생성("1호선", "blue");
+		Map<String, String> line2Param = 라인_파람_생성("2호선", "green");
+		지하철_노선_생성(line1Param);
+		지하철_노선_생성(line2Param);
 
 		// when
-		// 지하철_노선_목록_조회_요청
-		// when
-		ExtractableResponse<Response> response = RestAssured
-			.given().log().all()
-			.when().get("/lines")
-			.then().log().all().extract();
-
-		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		ExtractableResponse<Response> response = 지하철_노선_조회();
 		List<LineResponse> lines = response.jsonPath().getList(".", LineResponse.class);
-		assertThat(lines).hasSize(1);
 
 		// then
-		// 지하철_노선_목록_응답됨
-		// 지하철_노선_목록_포함됨
-	}
-
-	private void 지하철__생성() {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "2호선");
-		params.put("color", "green");
-		지하철_노선_생성(params);
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(lines).hasSize(2)
+		);
 	}
 
 	@DisplayName("지하철 노선을 조회한다.")
@@ -128,12 +111,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	private ExtractableResponse<Response> 지하철_노선_생성(Map<String, String> params) {
 		// when
-		ExtractableResponse<Response> response = RestAssured
+		return RestAssured
 			.given().log().all()
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when().post("/lines")
 			.then().log().all().extract();
-		return response;
+	}
+
+	private ExtractableResponse<Response> 지하철_노선_조회() {
+		return RestAssured
+			.given().log().all()
+			.when().get("/lines")
+			.then().log().all().extract();
+	}
+
+	private Map<String, String> 라인_파람_생성(String name, String color) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		params.put("color", color);
+		return params;
 	}
 }
