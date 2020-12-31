@@ -30,7 +30,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = createSubwayLine(
-                "분당선", "yellow", "1", "2","8"
+                "분당선", "yellow",  1L, 2L, 8
         );
 
         // then
@@ -55,13 +55,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createStation("잠실역");
         // 지하철_노선_등록되어_있음
         createSubwayLine(
-                "분당선", "yellow", "1", "2","8"
+                "분당선", "yellow",  1L, 2L, 8
         );
 
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = createSubwayLine(
-                "분당선", "yellow", "1", "3","6"
+                "분당선", "yellow", 1L, 3L, 6
         );
 
         // then
@@ -80,10 +80,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createStation("오금역");
         // 지하철_노선_등록되어_있음
         createSubwayLine(
-                "분당선", "yellow", "1", "2","8"
+                "분당선", "yellow", 1L, 2L, 8
         );
         createSubwayLine(
-                "5호선", "purple", "1", "4","4"
+                "5호선", "purple", 1L, 4L, 4
         );
 
         // when
@@ -109,10 +109,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createStation("오금역");
         // 지하철_노선_등록되어_있음
         createSubwayLine(
-                "분당선", "yellow", "1", "2","8"
+                "분당선", "yellow",  1L, 2L, 8
         );
         createSubwayLine(
-                "5호선", "purple", "1", "4","4"
+                "5호선", "purple", 1L, 4L, 4
         );
 
         // when
@@ -142,7 +142,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createStation("신도림역");
         // 지하철_노선_등록되어_있음
         createSubwayLine(
-                "분당선", "yellow", "1", "2","8"
+                "분당선", "yellow",  1L, 2L, 8
         );
 
         // when
@@ -164,17 +164,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createStation("신도림역");
         // 지하철_노선_등록되어_있음
         createSubwayLine(
-                "분당선", "yellow", "1", "2","8"
+                "분당선", "yellow", 1L, 2L, 8
         );
 
         // when
         // 지하철_노선_수정_요청
         Long id = 1L;
         ExtractableResponse<Response> response =
-                modifySubwayLine(
-                        id,
-                        modifyParams("2호선", "green")
-                );
+                modifySubwayLine(id, "2호선", "green");
 
         // then
         // 지하철_노선_수정됨
@@ -193,7 +190,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createStation("신도림역");
         // 지하철_노선_등록되어_있음
         createSubwayLine(
-                "분당선", "yellow", "1", "2","8"
+                "분당선", "yellow", 1L, 2L, 8
         );
 
         // when
@@ -210,7 +207,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationAcceptanceTest.createStation(station);
     }
 
-    public Map<String, String> createParams(String name, String color,
+    public static Map<String, String> createParams(String name, String color,
                                             String upStationId, String downStationId,
                                             String distance) {
         Map<String, String> params = new HashMap<>();
@@ -227,12 +224,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", color);
         return params;
     }
+    public static Map<String, String> addStationParams(String upStationId, String downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        return params;
+    }
+
 
     @DisplayName("지하철 노선 생성 요청")
-    public ExtractableResponse<Response> createSubwayLine(String name, String color,
-                                                          String upStationId, String downStationId,
-                                                          String distance) {
-        Map<String, String> params = createParams(name, color, upStationId, downStationId, distance);
+    public static ExtractableResponse<Response> createSubwayLine(String name, String color,
+                                                          Long upStationId, Long downStationId,
+                                                          int distance) {
+
+        Map<String, String> params = createParams(name, color,
+                String.valueOf(upStationId), String.valueOf(downStationId), String.valueOf(distance));
         return RestAssured.given().log().all().
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
@@ -244,7 +251,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철 노선 조회")
-    public ExtractableResponse<Response> searchSubwayLineOne(Long id) {
+    public static ExtractableResponse<Response> searchSubwayLineOne(Long id) {
         return RestAssured.given().log().all().
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
@@ -266,7 +273,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철 노선 수정")
-    public ExtractableResponse<Response> modifySubwayLine(Long id, Map<String, String> params) {
+    public ExtractableResponse<Response> modifySubwayLine(Long id, String name, String color) {
+        Map<String, String> params = modifyParams(name, color);
         return RestAssured.given().log().all().
                 body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
@@ -282,6 +290,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all().
                 when().
                 delete("/lines/" + id).
+                then().
+                log().all().
+                extract();
+    }
+
+    @DisplayName("지하철 구간 추가")
+    public static ExtractableResponse<Response> addSubwayStation(Long id, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = addStationParams(String.valueOf(upStationId), String.valueOf(downStationId), String.valueOf(distance));
+        return RestAssured.given().log().all().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                post("/lines/" + id + "/sections").
                 then().
                 log().all().
                 extract();

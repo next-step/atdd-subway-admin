@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -31,11 +32,10 @@ public class Section extends BaseEntity {
     public Section() {
     }
 
-    public Section(int distance, Station upStation, Station station, Line line) {
-        this.distance = distance;
+    public Section(Station upStation, Station station, int distance) {
         this.upStation = upStation;
         this.station = station;
-        this.line = line;
+        this.distance = distance;
     }
 
     public Long getId() {
@@ -56,5 +56,43 @@ public class Section extends BaseEntity {
 
     public Line getLine() {
         return line;
+    }
+
+    public void addLine(Line line) {
+        if(Objects.nonNull(this.getLine())) {
+            this.line.removeSection(this);
+        }
+        this.line = line;
+        this.line.addSection(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Section)) return false;
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation) &&
+                Objects.equals(station, section.station);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, station);
+    }
+
+    public boolean hasStation(Section newSection) {
+        return this.getStation().equals(newSection.getUpStation())
+                || this.getStation().equals(newSection.getStation());
+    }
+
+    public boolean isFirstSection() {
+        return Objects.isNull(this.getUpStation());
+    }
+
+    public void removeLine() {
+        if(Objects.nonNull(this.getLine())) {
+            this.line.removeSection(this);
+        }
+        this.line = null;
     }
 }
