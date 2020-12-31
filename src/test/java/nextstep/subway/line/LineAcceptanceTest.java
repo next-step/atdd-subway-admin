@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -89,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청(params);
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청(params, "/lines");
 
         // then
         // 지하철_노선_목록_응답됨
@@ -104,11 +105,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(expectedLineIds).containsAll(lineIds);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청(Map<String, String> params) {
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청(Map<String, String> params, String requestPath) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get("/lines")
+                .get(requestPath)
                 .then().log().all()
                 .extract();
     }
@@ -118,12 +119,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_생성_요청(params);
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response
+                = 지하철_노선_목록_조회_요청(params, createResponse1.header("Location"));
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        Long inputLineId = createResponse1.jsonPath().get("$.id");
+        Long findLineId = response.jsonPath().get("$.id");
+        assertEquals(inputLineId, findLineId);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
