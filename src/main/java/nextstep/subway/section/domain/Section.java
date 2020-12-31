@@ -54,11 +54,15 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public boolean isSameUpStation(final Section section) {
-        return this.upStation.equals(section.getUpStation());
+    public boolean isSameUpStation(final Section newSection) {
+        return this.upStation == newSection.getUpStation();
     }
 
-    public boolean isSameDownStation(final Section section) {
-        return this.downStation.equals(section.getDownStation());
+    public boolean isSameDownStation(final Section newSection) {
+        return this.downStation == newSection.getDownStation();
+    }
+
+    public boolean distanceIsLessThan(final Section newSection) {
+        return this.distance.isLessThan(newSection.getDistance());
     }
 }

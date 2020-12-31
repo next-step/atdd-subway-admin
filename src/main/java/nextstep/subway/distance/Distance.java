@@ -20,4 +20,12 @@ public class Distance {
 
         this.distance = distance;
     }
+
+    public boolean isLessThan(final Distance newSection) {
+         return this.distance <= newSection.getDistance();
+    }
+
+    public Distance minus(final Distance newSection) {
+        return new Distance(this.distance - newSection.getDistance());
+    }
 }
