@@ -92,7 +92,7 @@ public class Sections {
         return sections.stream()
                 .filter(s -> !isContainsDownStation(s.getUpStation()))
                 .findFirst()
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new IllegalStateException("구간의 첫번째 역을 찾을 수 없습니다."));
     }
 
     private boolean isContainsDownStation(Station station) {
