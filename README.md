@@ -107,7 +107,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         - [ ] 지하철 노선 구간을 제거한다.
         - [ ] 지하철 노선 구간이 하나 이거나 등록되지 않은 역이면 예외 처리 한다. 
     - `지하철 노선 구간(LineStation)`
-        - [ ] 지하철 노선 구간을 병합한다.
+        - [X] 지하철 노선 구간을 병합한다.
     - `지하철 구간(Section)`
         - [X] 지하철 구간을 병합한다.
     - `거리(Distance)`

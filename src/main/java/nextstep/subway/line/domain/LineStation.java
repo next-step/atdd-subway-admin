@@ -60,4 +60,8 @@ public class LineStation {
     public void update(final Section other) {
         section.separate(other);
     }
+
+    public void merge(final LineStation other) {
+        section.merge(other.section);
+    }
 }
