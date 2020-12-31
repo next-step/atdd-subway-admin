@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,81 +16,15 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new LinkedList<>();
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        Map<Station, Station> sectionElement = sectionElements();
-        Station node = getFirstNode(sectionElement);
-        stations.add(node);
-        while (sectionElement.containsKey(node)) {
-            node = sectionElement.get(node);
-            stations.add(node);
-        }
-        return Collections.unmodifiableList(stations);
-    }
-
-    public void create(Section section) {
-        checkValidation(section);
-        this.sections.add(section);
-    }
-
-    public void add(Section targetSection) {
-        checkValidation(targetSection);
-        changeUpStation(targetSection);
-        this.sections.add(findAscendIndex(targetSection), targetSection);
-    }
-
-    public void checkValidation(Section targetSection) {
-        if (this.sections.contains(targetSection) || targetSection.isZeroDistance()) {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    public void update(Section section) {
-        if (isChanged(section)) {
-            this.sections.stream()
-                    .findFirst()
-                    .ifPresent(s -> s.update(section));
-        }
-    }
-
-    public void changeUpStation(Section targetSection) {
-        findSameUpStation(targetSection.getUpStation())
-                .ifPresent(base -> {
-                    base.changeUpStation(targetSection.getDownStation());
-                    base.changeDistance(targetSection.getDistance());
-                });
-    }
-
-    private Optional<Section> findSameUpStation(Station targetStation) {
-        return this.sections.stream()
-                .filter(section -> section.isSameUpStation(targetStation))
-                .findFirst();
-    }
-
-    private Optional<Section> findSameDownStation(Station targetStation) {
-        return this.sections.stream()
-                .filter(base -> base.isSameDownStation(targetStation))
-                .findFirst();
-    }
-
-    private boolean isChanged(Section section) {
-        return !this.sections.stream()
-                .allMatch(s -> s.equals(section));
-    }
-
-    private Integer findAscendIndex(Section targetSection) {
-        return findSameUpStation(targetSection.getDownStation())
-                .map(this.sections::indexOf)
-                .orElseGet(() -> findDescendIndex(targetSection));
-    }
-
-    private Integer findDescendIndex(Section targetSection) {
-        return findSameDownStation(targetSection.getUpStation())
-                .map(base -> this.sections.indexOf(base) + 1)
-                .orElseThrow(IllegalArgumentException::new);
+        return Collections.unmodifiableList(
+                Optional.of(sectionElements())
+                        .filter(sectionElements -> !sectionElements.isEmpty())
+                        .map(this::convertElementsToStations)
+                        .orElse(new ArrayList<>()));
     }
 
     private Map<Station, Station> sectionElements() {
@@ -100,11 +35,108 @@ public class Sections {
                 ));
     }
 
-    private Station getFirstNode(Map<Station, Station> stationStationMap) {
+    private List<Station> convertElementsToStations(Map<Station, Station> sectionElements) {
+        List<Station> stations = new ArrayList<>();
+        Station element = getFirstElement(sectionElements);
+        stations.add(element);
+        while (sectionElements.containsKey(element)) {
+            element = sectionElements.get(element);
+            stations.add(element);
+        }
+        return stations;
+    }
+
+    private Station getFirstElement(Map<Station, Station> stationStationMap) {
         return stationStationMap.keySet()
                 .stream()
                 .filter(value -> !stationStationMap.containsValue(value))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException("첫번째 역을 찾을수 없습니다."));
+    }
+
+    public void create(Section targetSection) {
+        checkZeroDistance(targetSection);
+        this.sections.add(targetSection);
+    }
+
+    public void add(Section targetSection) {
+        changeBetweenSection(targetSection);
+        checkAddValidation(targetSection);
+        this.sections.add(targetSection);
+    }
+
+    public void update(Section targetSection) {
+        if (isChanged(targetSection)) {
+            this.sections.stream()
+                    .findFirst()
+                    .ifPresent(section -> section.update(targetSection));
+        }
+    }
+
+    private void checkZeroDistance(Section section) {
+        if (section.isZeroDistance()) {
+            throw new IllegalArgumentException("거리가 0은 등록할수 없습니다.");
+        }
+    }
+
+    private void checkAddValidation(Section targetSection) {
+        checkZeroDistance(targetSection);
+
+        if (this.sections.contains(targetSection)) {
+            throw new IllegalArgumentException("이미 노선에 모두 등록되어 있습니다.");
+        }
+
+        if (checkConnectableSection(targetSection)) {
+            throw new IllegalArgumentException("둘 중 하나도 구간에 포함되어있지 않습니다.");
+        }
+    }
+
+    private boolean checkConnectableSection(Section targetSection) {
+        return this.sections.stream()
+                .noneMatch(section -> section.isConnectable(targetSection));
+    }
+
+    private void changeBetweenSection(Section targetSection) {
+        changeBetweenUpStation(targetSection);
+        changeBetweenDownStation(targetSection);
+    }
+
+    private void changeBetweenDownStation(Section targetSection) {
+        this.sections.stream()
+                .filter(section -> section.isSameDownStation(targetSection))
+                .findFirst()
+                .ifPresent(section -> section.switchDownStationAndDistance(targetSection));
+    }
+
+    private void changeBetweenUpStation(Section targetSection) {
+        this.sections.stream()
+                .filter(section -> section.isSameUpStation(targetSection))
+                .findFirst()
+                .ifPresent(section -> section.switchUpStationAndDistance(targetSection));
+    }
+
+    private boolean isChanged(Section targetSection) {
+        return !this.sections.stream()
+                .allMatch(section -> section.equals(targetSection));
+    }
+
+    public void remove(Station targetStation) {
+        Iterator<Section> removeSections = getConnectedSectionsByStation(targetStation);
+        Section removeSection = removeSections.next();
+        if (removeSections.hasNext()) {
+            removeSections.next().merge(removeSection, targetStation);
+        }
+        this.sections.remove(removeSection);
+    }
+
+    private Iterator<Section> getConnectedSectionsByStation(Station targetStation) {
+        return Optional.of(this.sections.stream()
+                .filter(section -> section.containStation(targetStation))
+                .collect(Collectors.toList()).iterator())
+                .orElseThrow(() -> new IllegalArgumentException("삭제 대상 역이 존재하지 않습니다."));
+    }
+
+    public boolean isRemovable() {
+        return this.sections.size() <= 1;
     }
 }

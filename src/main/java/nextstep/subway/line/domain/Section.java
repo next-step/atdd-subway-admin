@@ -9,8 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -37,21 +35,28 @@ public class Section {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
+        checkSameStation(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void checkSameStation(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException("상행역 하행역이 같습니다.");
+        }
     }
 
     public void setLine(Line line) {
         this.line = line;
     }
 
-    public void changeUpStation(Station upStation) {
+    private void changeUpStation(Station upStation) {
         this.upStation = upStation;
     }
 
-    public List<Station> upAndDownStations() {
-        return Arrays.asList(upStation, downStation);
+    private void changeDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 
     public Station getUpStation() {
@@ -62,37 +67,74 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance;
+    public void update(Section targetSection) {
+        this.upStation = targetSection.upStation;
+        this.downStation = targetSection.downStation;
+        this.distance = targetSection.distance;
     }
 
-    public void update(Section section) {
-        this.upStation = section.upStation;
-        this.downStation = section.downStation;
-        this.distance = section.distance;
-    }
+    public void merge(Section targetSection, Station excludeStation) {
+        if (isSameUpStation(excludeStation)) {
+            this.changeUpStation(targetSection.upStation);
+        }
 
-    public boolean isNotEqualsStation() {
-        return !this.upStation.equals(this.downStation);
+        if (isSameDownStation(excludeStation)) {
+            this.changeDownStation(targetSection.downStation);
+        }
+        sumDistance(targetSection.distance);
     }
 
     public boolean isZeroDistance() {
         return distance <= 0;
     }
 
-    public boolean isSameUpStation(Station target) {
-        return this.upStation.equals(target);
+    public boolean containStation(Station targetStation) {
+        return isSameUpStation(targetStation) || isSameDownStation(targetStation);
     }
 
-    public boolean isSameDownStation(Station target) {
-        return this.downStation.equals(target);
+    public boolean isConnectable(Section targetSection) {
+        return isSameUpStation(targetSection.downStation) || isSameDownStation(targetSection.upStation);
     }
 
-    public void changeDistance(int targetDistance) {
-        if (targetDistance >= this.distance) {
+    public void switchUpStationAndDistance(Section targetSection) {
+        this.changeUpStation(targetSection.downStation);
+        this.subtractDistance(targetSection.distance);
+    }
+
+    public void switchDownStationAndDistance(Section targetSection) {
+        this.changeDownStation(targetSection.upStation);
+        this.subtractDistance(targetSection.distance);
+    }
+
+    public boolean isSameUpStation(Section targetSection) {
+        return this.upStation.equals(targetSection.upStation);
+    }
+
+    private boolean isSameUpStation(Station targetStation) {
+        return this.upStation.equals(targetStation);
+    }
+
+    public boolean isSameDownStation(Section targetStation) {
+        return this.downStation.equals(targetStation.downStation);
+    }
+
+    public boolean isSameDownStation(Station targetStation) {
+        return this.downStation.equals(targetStation);
+    }
+
+    private void subtractDistance(int targetDistance) {
+        if (isGraterThanDistance(targetDistance)) {
             throw new IllegalArgumentException();
         }
         this.distance -= targetDistance;
+    }
+
+    private boolean isGraterThanDistance(int targetDistance) {
+        return targetDistance >= this.distance;
+    }
+
+    private void sumDistance(int targetDistance) {
+        this.distance += targetDistance;
     }
 
     @Override
@@ -103,7 +145,7 @@ public class Section {
         return (upStation.equals(section.upStation) &&
                 downStation.equals(section.downStation)) ||
                 (upStation.equals(section.downStation) &&
-                downStation.equals(section.upStation));
+                        downStation.equals(section.upStation));
     }
 
     @Override

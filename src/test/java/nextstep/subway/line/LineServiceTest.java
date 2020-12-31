@@ -1,76 +1,216 @@
 package nextstep.subway.line;
 
-import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.station.StationAcceptanceTest;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.SectionRepository;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.utils.LineBuilder;
+import nextstep.subway.utils.SectionBuilder;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class LineServiceTest extends AcceptanceTest {
+@SpringBootTest
+public class LineServiceTest {
 
     @Autowired
     LineService lineService;
 
-    private long 강남역;
-    private long 양재역;
-    private long 판교역;
-    private long 양재시민의숲;
-    private long 신분당선;
+    @Autowired
+    StationService stationService;
 
-    @Override
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
+    @Autowired
+    LineRepository lineRepository;
 
-        // given
-        // 지하철_역_생성_요청
-        강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역");
-        양재역 = StationAcceptanceTest.지하철역_등록되어_있음("양재역");
-        판교역 = StationAcceptanceTest.지하철역_등록되어_있음("판교역");
-        양재시민의숲 = StationAcceptanceTest.지하철역_등록되어_있음("양재시민의숲");
+    @Autowired
+    StationRepository stationRepository;
 
-        // 지하철_노선_생성_요청
-        신분당선 = LineAcceptanceTest.지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역, 양재역, 7);
+    @Autowired
+    SectionRepository sectionRepository;
+
+    @AfterEach
+    public void cleanup() {
+        sectionRepository.deleteAllInBatch();
+        lineRepository.deleteAllInBatch();
+        stationRepository.deleteAllInBatch();
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록할 경우")
+    @DisplayName("역 사이에 상행역 기준 새로운 역을 등록할 경우")
     @Test
-    void betweenStationRegister() {
-        lineService.addSection(신분당선, new SectionRequest(강남역, 판교역, 6));
-        LineResponse lineById = lineService.findLineById(신분당선);
+    void betweenUpStationRegister() {
+        Station 양재역 = saveStation("양재역");
+        Station 정자역 = saveStation("정자역");
+        Station 판교역 = saveStation("판교역");
+        Line line = saveLine("신분당선", "bg-red-300", 양재역, 정자역, 10);
 
-        assertThat(lineById.getStations().get(0).getId()).isEqualTo(강남역);
-        assertThat(lineById.getStations().get(1).getId()).isEqualTo(판교역);
-        assertThat(lineById.getStations().get(2).getId()).isEqualTo(양재역);
+        addSection(line, 양재역, 판교역, 6);
+
+        assertThat(getStationResponses(line))
+                .extracting("name")
+                .containsExactly("양재역", "판교역", "정자역");
+    }
+
+    @DisplayName("역 사이에 하행역 기준 새로운 역을 등록할 경우")
+    @Test
+    void betweenDownStationRegister() {
+        Station 양재역 = saveStation("양재역");
+        Station 정자역 = saveStation("정자역");
+        Station 판교역 = saveStation("판교역");
+        Line line = saveLine("신분당선", "bg-red-300", 양재역, 정자역, 10);
+
+        addSection(line, 판교역, 정자역, 6);
+
+        assertThat(getStationResponses(line))
+                .extracting("name")
+                .containsExactly("양재역", "판교역", "정자역");
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
     @Test
     void sameUpStationRegister() {
-        lineService.addSection(신분당선, new SectionRequest(판교역, 강남역, 10));
-        LineResponse lineById = lineService.findLineById(신분당선);
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
+        Station 양재시민의숲 = saveStation("양재시민의숲");
+        Line line = saveLine("신분당선", "bg-red-300", 강남역, 양재역, 10);
 
-        assertThat(lineById.getStations().get(0).getId()).isEqualTo(판교역);
-        assertThat(lineById.getStations().get(1).getId()).isEqualTo(강남역);
-        assertThat(lineById.getStations().get(2).getId()).isEqualTo(양재역);
+        addSection(line, 판교역, 강남역, 6);
+        addSection(line, 양재시민의숲, 판교역, 6);
+
+        assertThat(getStationResponses(line))
+                .extracting("name")
+                .containsExactly("양재시민의숲", "판교역", "강남역", "양재역");
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
     @Test
     void sameDownStationRegister() {
-        lineService.addSection(신분당선, new SectionRequest(양재역, 판교역, 10));
-        lineService.addSection(신분당선, new SectionRequest(판교역, 양재시민의숲, 10));
-        LineResponse lineById = lineService.findLineById(신분당선);
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
+        Station 양재시민의숲 = saveStation("양재시민의숲");
+        Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
 
-        assertThat(lineById.getStations().get(0).getId()).isEqualTo(강남역);
-        assertThat(lineById.getStations().get(1).getId()).isEqualTo(양재역);
-        assertThat(lineById.getStations().get(2).getId()).isEqualTo(판교역);
-        assertThat(lineById.getStations().get(3).getId()).isEqualTo(양재시민의숲);
+        addSection(line, 판교역, 양재역, 6);
+
+        addSection(line, 양재역, 양재시민의숲, 6);
+
+        assertThat(getStationResponses(line))
+                .extracting("name")
+                .containsExactly("강남역", "판교역", "양재역", "양재시민의숲");
+    }
+
+    @DisplayName("노선에 상행 종점 구간을 제거한다.")
+    @Test
+    void deleteUpEndSection() {
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
+        Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
+
+        addSection(line, 판교역, 양재역, 6);
+
+        lineService.removeSectionByStationId(line.getId(), 강남역.getId());
+
+        assertThat(getStationResponses(line))
+                .extracting("name")
+                .containsExactly("판교역", "양재역");
+    }
+
+    @DisplayName("노선에 하행 종점 구간을 제거한다.")
+    @Test
+    void deleteDownEndSection() {
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
+        Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
+
+        addSection(line, 판교역, 양재역, 6);
+
+        lineService.removeSectionByStationId(line.getId(), 양재역.getId());
+
+        assertThat(getStationResponses(line))
+                .extracting("name")
+                .containsExactly("강남역", "판교역");
+    }
+
+    @DisplayName("노선 구간에 중간역을 제거한다.")
+    @Test
+    void deleteBetweenSection() {
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
+        Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
+
+        addSection(line, 강남역, 양재역, 6);
+
+        lineService.removeSectionByStationId(line.getId(), 양재역.getId());
+
+        assertThat(getStationResponses(line))
+                .extracting("name")
+                .containsExactly("강남역", "판교역");
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거한다.")
+    @Test
+    void deleteSectionExpectedException() {
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+
+        Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
+
+        assertThatThrownBy(() -> lineService.removeSectionByStationId(line.getId(), 강남역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선 구간에 포함 되지 않은 역 삭제")
+    @Test
+    void deleteNotConnectedSectionExpectedException() {
+        Station 강남역 = saveStation("강남역");
+        Station 판교역 = saveStation("판교역");
+        Station 양재역 = saveStation("양재역");
+
+        Line line = saveLine("신분당선", "bg-red-300", 강남역, 판교역, 10);
+
+        assertThatThrownBy(() -> lineService.removeSectionByStationId(line.getId(), 양재역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private Station saveStation(String name) {
+        return stationRepository.save(new Station(name));
+    }
+
+    private Line saveLine(String lineName, String lineColor, Station upStation, Station downStation, int distance) {
+        return lineRepository.save(new LineBuilder()
+                .withName(lineName)
+                .withColor(lineColor)
+                .withSection(new SectionBuilder()
+                        .withUpStation(upStation)
+                        .withDownStation(downStation)
+                        .withDistance(distance)
+                        .build())
+                .build());
+    }
+
+    private void addSection(Line line, Station upStation, Station downStation, int distance) {
+        lineService.addSection(line.getId(), new SectionBuilder()
+                .withUpStation(upStation)
+                .withDownStation(downStation)
+                .withDistance(distance).toSectionRequest());
+    }
+
+    private List<StationResponse> getStationResponses(Line line) {
+        return lineService.findLineById(line.getId()).getStations();
     }
 }

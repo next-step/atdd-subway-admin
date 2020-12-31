@@ -65,4 +65,11 @@ public class Line extends BaseEntity {
     public List<Station> getStation() {
         return this.sections.getStations();
     }
+
+    public void removeSection(Station station) {
+        if (this.sections.isRemovable()) {
+            throw new IllegalArgumentException();
+        }
+        this.sections.remove(station);
+    }
 }
