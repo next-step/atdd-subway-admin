@@ -35,9 +35,9 @@ public class LineService {
     public void updateLine(Long lineId, LineRequest request) {
         Line line = lineRepository.getOne(lineId);
         line.update(request.toLine());
-        lineRepository.save(line);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long lineId) {
         return LineResponse.of(lineRepository.getOne(lineId));
     }
