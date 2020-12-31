@@ -19,6 +19,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 
+import static nextstep.subway.line.LineAcceptanceTest.searchSubwayLineOne;
+
 
 @DisplayName("지하철 구간 관련 기능 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -142,6 +144,51 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선에_지하철역_등록 실패됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+    @DisplayName("구간을 제거한다. : 중간역 제거")
+    @ParameterizedTest
+    @ValueSource(longs = {1L, 2L, 3L})
+    void deleteSection(Long stationId) {
+        // given
+        // 지하철_노선이 등록되어 있음.
+        LineAcceptanceTest.addSubwayStation(line.getId(), station2.getId(), station3.getId(), 6);
+
+        // when
+        // 지하철_노선에_지하철역_제거_요청
+        ExtractableResponse<Response> response = LineAcceptanceTest.deleteSubwayStation(line.getId(), stationId);
+        ExtractableResponse<Response> searchResult = searchSubwayLineOne(line.getId());
+
+        // then
+        // 지하철_노선에_지하철역_삭제됨.
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse lineResponse = searchResult.response().getBody().as(LineResponse.class);
+        Assertions.assertThat(lineResponse.getStations().size()).isEqualTo(2);
+    }
+    @DisplayName("역제거 실패한다. case1 : 등록된 역이 아닌 경우")
+    @Test
+    void deleteSection1() {
+        // given
+        // 지하철_노선이 등록되어 있음.
+        LineAcceptanceTest.addSubwayStation(line.getId(), station2.getId(), station3.getId(), 6);
+
+        // when
+        // 지하철_노선에_지하철역_제거_요청
+        ExtractableResponse<Response> response = LineAcceptanceTest.deleteSubwayStation(line.getId(), 5L);
+
+        // then
+        // 지하철_노선에_지하철역_삭제_실패됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+    @DisplayName("역제거 실패한다. case1 : 최소 구간일 경우")
+    @Test
+    void deleteSection2() {
+        // when
+        // 지하철_노선에_지하철역_제거_요청
+        ExtractableResponse<Response> response = LineAcceptanceTest.deleteSubwayStation(line.getId(), station1.getId());
+
+        // then
+        // 지하철_노선에_지하철역_삭제_실패됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
