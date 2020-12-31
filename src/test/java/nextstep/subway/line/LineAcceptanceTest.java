@@ -21,31 +21,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
-		// when
-		// 지하철_노선_생성_요청
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "2호선");
-		params.put("color", "green");
+		// given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "green");
+
+	    // when
 		ExtractableResponse<Response> response = 지하철_노선_생성(params);
 
 		// then
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-		// then
-		// 지하철_노선_생성됨
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
 	@Test
 	void createLine2() {
 		// given
-		// 지하철_노선_등록되어_있음
+		Map<String, String> params = new HashMap<>();
+		params.put("name", "2호선");
+		params.put("color", "green");
+		지하철_노선_생성(params);
 
 		// when
-		// 지하철_노선_생성_요청
+		ExtractableResponse<Response> response = 지하철_노선_생성(params);
 
 		// then
-		// 지하철_노선_생성_실패됨
+		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@DisplayName("지하철 노선 목록을 조회한다.")
