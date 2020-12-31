@@ -35,8 +35,7 @@ public class LineService {
 				front,
 				back,
 				lineCreateRequest.getStationDistance());
-		line = lineRepository.save(line);
-		return LineResponse.of(line);
+		return LineResponse.of(lineRepository.save(line));
 	}
 
 	@Transactional(readOnly = true)
@@ -53,14 +52,12 @@ public class LineService {
 
 	@Transactional
 	public void updateLineById(Long id, LineUpdateRequest lineUpdateRequest) {
-		Line line = findLine(id);
-		line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
+		findLine(id).update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
 	}
 
 	@Transactional
 	public void deleteLineById(Long id) {
-		Line line = findLine(id);
-		lineRepository.delete(line);
+		lineRepository.delete(findLine(id));
 	}
 
 	private Line findLine(Long id) {

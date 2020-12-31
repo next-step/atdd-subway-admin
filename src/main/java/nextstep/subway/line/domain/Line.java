@@ -33,8 +33,7 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Station front, Station back, int distance) {
-        Section section = new Section(this, front, back, distance);
-        this.sections.addSection(section);
+        this.sections.addSection(new Section(this, front, back, distance));
     }
 
     public List<Station> getSortedStations() {
