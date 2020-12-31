@@ -18,11 +18,11 @@ public class Section extends BaseEntity {
 	private Line line;
 
 	@ManyToOne
-	@JoinColumn(name = "front_station_id", nullable = true)
+	@JoinColumn(name = "front_station_id", nullable = false)
 	private Station front;
 
 	@ManyToOne
-	@JoinColumn(name = "back_station_id", nullable = true)
+	@JoinColumn(name = "back_station_id", nullable = false)
 	private Station back;
 
 	@Embedded
@@ -32,9 +32,6 @@ public class Section extends BaseEntity {
 	}
 
 	public Section(Line line, Station front, Station back, int distance) {
-		if (front == null && back == null) {
-			throw new IllegalArgumentException("both station cannot be null");
-		}
 		this.line = line;
 		this.front = front;
 		this.back = back;

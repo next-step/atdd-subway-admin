@@ -6,10 +6,7 @@ import org.springframework.lang.Nullable;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Embeddable
 public class LineSections {
@@ -25,9 +22,14 @@ public class LineSections {
 	}
 
 	public List<Station> getSortedStations() {
+		Section section = findFirstSection();
+		if (section == null) {
+			return Collections.emptyList();
+		}
+
 		List<Station> stations = new ArrayList<>();
-		Section section = findSectionByFrontStation(sections, null);
-		while (section.getBack() != null) {
+		stations.add(section.getFront());
+		while (section != null) {
 			stations.add(section.getBack());
 			section = findSectionByFrontStation(sections, section.getBack());
 		}
@@ -35,10 +37,32 @@ public class LineSections {
 		return stations;
 	}
 
-	private static Section findSectionByFrontStation(List<Section> sections, @Nullable Station station) {
+	@Nullable
+	private Section findFirstSection() {
+		Section nextSection = this.sections.stream().findAny().orElse(null);
+		Section firstSection = nextSection;
+		while (nextSection != null) {
+			firstSection = nextSection;
+			nextSection = findSectionByBackStation(this.sections, nextSection.getFront());
+		}
+
+		return firstSection;
+	}
+
+	@Nullable
+	private static Section findSectionByFrontStation(List<Section> sections, Station station) {
 		return sections.stream()
 				.filter(section -> Objects.equals(section.getFront(), station))
 				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("cannot find station"));
+				.orElse(null);
 	}
+
+	@Nullable
+	private static Section findSectionByBackStation(List<Section> sections, Station station) {
+		return sections.stream()
+				.filter(section -> Objects.equals(section.getBack(), station))
+				.findFirst()
+				.orElse(null);
+	}
+
 }

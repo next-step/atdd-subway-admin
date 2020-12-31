@@ -46,12 +46,8 @@ class LineTest {
 
 		// then
 		Line actual = em.find(Line.class, line.getId());
-		assertThat(sections.findAllByLine(actual)).hasSize(3).anySatisfy(section -> {
-			assertSection(section, line, null, station1, 0);
-		}).anySatisfy(section -> {
+		assertThat(sections.findAllByLine(actual)).hasSize(1).allSatisfy(section -> {
 			assertSection(section, line, station1, station2, 50);
-		}).anySatisfy(section -> {
-			assertSection(section, line, station2, null, 0);
 		});
 	}
 
