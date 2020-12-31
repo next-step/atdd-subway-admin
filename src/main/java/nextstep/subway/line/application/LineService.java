@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,8 @@ public class LineService {
     }
 
     public void updateLine(Long lineId, LineRequest request) {
-        Line line = lineRepository.getOne(lineId);
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(EntityNotFoundException::new);
         line.update(request.toLine());
     }
 
@@ -43,6 +45,8 @@ public class LineService {
     }
 
     public void deleteLineById(Long lineId) {
-        lineRepository.deleteById(lineId);
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(EntityNotFoundException::new);
+        lineRepository.delete(line);
     }
 }
