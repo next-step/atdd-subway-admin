@@ -40,7 +40,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Long> getAllIncludedStationIds() {
-        return sections.allStationIds();
+        return sections.allDistinctStationIds();
     }
 
     public void addSection(Section section) {

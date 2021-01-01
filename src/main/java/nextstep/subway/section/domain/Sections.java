@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Embeddable
 public class Sections {
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private List<Section> sections = new ArrayList<>();
 
@@ -26,15 +26,36 @@ public class Sections {
         return new Sections(sections);
     }
 
-    public List<Long> allStationIds() {
+    public List<Long> allDistinctStationIds() {
         List<Long> results = new ArrayList<>();
-        sections.stream()
-                .map(Section::allStationIds)
-                .forEach(results::addAll);
+        sections.forEach(it -> addStationIds(results, it));
         return results;
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
+    private List<Long> addStationIds(List<Long> results, Section it) {
+        for (Long stationId : it.allStationIds()) {
+            if(!results.contains(stationId)) results.add(stationId);
+        }
+        return results;
+    }
+
+    public void addSection(Section newSection) {
+        sections.stream()
+                .filter(down -> down.getDownStationId().equals(newSection.getDownStationId()))
+                .findFirst()
+                .ifPresent(orgSection -> {
+                    sections.add(new Section(orgSection.getUpStationId(), newSection.getUpStationId(), orgSection.getDistance() - newSection.getDistance()));
+                    sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
+                    sections.remove(orgSection);
+                });
+
+        sections.stream()
+                .filter(up -> up.getUpStationId().equals(newSection.getUpStationId()))
+                .findFirst()
+                .ifPresent(org -> {
+                    sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
+                    sections.add(new Section(newSection.getDownStationId(), org.getDownStationId(), org.getDistance() - newSection.getDistance()));
+                    sections.remove(org);
+                });
     }
 }

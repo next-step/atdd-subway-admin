@@ -1,4 +1,4 @@
-package nextstep.subway.section.ui;
+package nextstep.subway.section.application;
 
 import nextstep.subway.line.application.NoLineException;
 import nextstep.subway.line.domain.Line;
