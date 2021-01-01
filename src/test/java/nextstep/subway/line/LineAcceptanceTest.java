@@ -158,6 +158,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertResponseHttpStatusIsNoContent(response);
     }
 
+    @DisplayName("상행역과 하행역을 똑같이 하여 노선을 생성한다.")
+    @Test
+    void createLineWithSameUpDownStation() {
+        // given
+        // 상행역_하행역_일치
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "bg-green-600");
+        String stationId = createStationId("이대역");
+        params.put("upStationId", stationId);
+        params.put("downStationId", stationId);
+        params.put("distance", "10");
+        // when
+        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = createNewLine(params);
+
+        // then
+        // 지하철_노선_생성_실패됨
+        assertResponseHttpStatusIsBadRequest(response);
+    }
+
     private Map<String, String> createLineParams() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
