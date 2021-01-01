@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.api.Assertions;
@@ -19,21 +20,22 @@ import java.util.Map;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
-    private String 신분당선_id;
+    private Long 신분당선_id;
 
-    private String 강남역_id;
-    private String 역삼역_id;
-    private String 방배역_id;
-    private String 잠실역_id;
+    private Long 강남역_id;
+    private Long 역삼역_id;
+    private Long 방배역_id;
+    private Long 잠실역_id;
 
     @BeforeEach
     void beforeSetUp() {
-        강남역_id = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class).getId().toString();
-        역삼역_id = StationAcceptanceTest.지하철역_생성("역삼역").as(StationResponse.class).getId().toString();
-        방배역_id = StationAcceptanceTest.지하철역_생성("방배역").as(StationResponse.class).getId().toString();
-        잠실역_id = StationAcceptanceTest.지하철역_생성("잠실역").as(StationResponse.class).getId().toString();
+        강남역_id = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class).getId();
+        역삼역_id = StationAcceptanceTest.지하철역_생성("역삼역").as(StationResponse.class).getId();
+        방배역_id = StationAcceptanceTest.지하철역_생성("방배역").as(StationResponse.class).getId();
+        잠실역_id = StationAcceptanceTest.지하철역_생성("잠실역").as(StationResponse.class).getId();
 
-        LineAcceptanceTest.지하철_노선_생성("신분당선", "bg-red-600", 1L, 2L, 10);
+        신분당선_id = LineAcceptanceTest.지하철_노선_생성("신분당선", "bg-red-600", 강남역_id, 역삼역_id, 10)
+                .as(LineResponse.class).getId();
     }
     
     @DisplayName("역 사이에 새로운 역을 등록 - 상행 종점역이 일치하는 경우")
@@ -124,10 +126,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private ExtractableResponse<Response> 새로운_역_추가(String id, String upStationId, String downStationId, int distance) {
+    private ExtractableResponse<Response> 새로운_역_추가(Long id, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
+        params.put("upStationId", String.valueOf(upStationId));
+        params.put("downStationId", String.valueOf(downStationId));
         params.put("distance", String.valueOf(distance));
 
         return RestAssured
