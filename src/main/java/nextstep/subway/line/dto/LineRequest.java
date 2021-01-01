@@ -1,10 +1,14 @@
 package nextstep.subway.line.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class LineRequest {
 
     private String name;
