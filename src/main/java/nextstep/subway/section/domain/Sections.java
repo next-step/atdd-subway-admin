@@ -18,6 +18,7 @@ import static java.util.stream.Collectors.toList;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sections {
     private static final String ERR_TEXT_INVALID_SECTION = "유효하지 않은 구간데이터입니다.";
+    private static final String ERR_TEXT_NOT_EXIST_DATA = "해당 데이터가 존재하지 않습니다";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -124,5 +125,37 @@ public class Sections {
 
     private Distance getMinusDistance(final Section originSection, final Section newSection) {
         return originSection.getDistance().minus(newSection.getDistance());
+    }
+
+    public void deleteByStation(final Station targetStation) {
+        if (this.sections.isEmpty()) {
+            throw new IllegalArgumentException(ERR_TEXT_NOT_EXIST_DATA);
+        }
+
+        final List<Station> stations = getStations();
+        if (!stations.contains(targetStation)) {
+            throw new IllegalArgumentException(ERR_TEXT_NOT_EXIST_DATA);
+        }
+
+        delete(targetStation);
+    }
+
+    private void delete(final Station targetStation) {
+        final Section containByDownStation = findSection(sec -> sec.getDownStation() == targetStation).orElse(null);
+        final Section containByUpStation = findSection(sec -> sec.getUpStation() == targetStation).orElse(null);
+
+        this.sections.remove(containByDownStation);
+        this.sections.remove(containByUpStation);
+
+        if (containByDownStation != null && containByUpStation != null) {
+
+            this.sections.add(new Section(
+                containByDownStation.getLine(),
+                containByDownStation.getUpStation(),
+                containByUpStation.getDownStation(),
+                containByUpStation.plusDistance(containByDownStation)));
+        }
+
+        System.out.println(this.sections.size());
     }
 }
