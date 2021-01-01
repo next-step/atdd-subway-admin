@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -43,6 +45,7 @@ public class Section {
 	private int distance;
 
 	public Section(Line line, Station upStation, Station downStation, int distance) {
+		checkArgument(!upStation.equals(downStation), "상행역과 하행역은 같을 수 없습니다.");
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
