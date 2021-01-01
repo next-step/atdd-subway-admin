@@ -22,4 +22,12 @@ public class SectionAcceptanceTestRequest {
 	private static SectionRequest createSectionRequest (Long upStationId, Long downStationId, int distance) {
 		return new SectionRequest(upStationId, downStationId, distance);
 	}
+
+	public static ExtractableResponse<Response> 지하철_노선에_지하철역_제거_요청(String lineUri, Long stationId) {
+		return RestAssured
+		        .given().log().all()
+		        .contentType(MediaType.APPLICATION_JSON_VALUE)
+		        .when().delete(lineUri + "/sections?stationId=" + stationId)
+		        .then().log().all().extract();
+	}
 }

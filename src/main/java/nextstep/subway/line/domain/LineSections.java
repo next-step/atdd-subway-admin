@@ -16,6 +16,8 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class LineSections {
 
+    private final static int REMOVABLE_SECTION_SIZE = 3;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -56,14 +58,30 @@ public class LineSections {
         this.sections.stream()
             .filter(section -> section.isPreStationInSection(newSection.getPreStation()))
             .findFirst()
-            .ifPresent(section -> section.updatePreStationTo(newSection.getStation(), newSection.getDistance()));
+            .ifPresent(section -> section.updatePreStationToAdd(newSection.getStation(), newSection.getDistance()));
     }
 
     public void updateStationToNewUpStation(Section newSection) {
         this.sections.stream()
             .filter(section -> section.isStationInSection(newSection.getStation()))
             .findFirst()
-            .ifPresent(section -> section.updateStationTo(newSection.getPreStation(), newSection.getDistance()));
+            .ifPresent(section -> section.updateStationToAdd(newSection.getPreStation(), newSection.getDistance()));
+    }
+
+    public void removeSection(Long stationId) {
+        checkRemovableSections();
+
+        Section removeSection = this.sections.stream()
+            .filter(section -> section.isStationInSection(stationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("노선에 등록되지 않은 역은 제거할 수 없습니다."));
+
+        this.sections.stream()
+            .filter(it -> it.isPreStationInSection(removeSection.getStation()))
+            .findFirst()
+            .ifPresent(section -> section.updatePreStationToRemove(removeSection.getPreStation(), removeSection.getDistance()));
+
+        this.sections.remove(removeSection);
     }
 
     public List<Section> getOrderedSections() {
@@ -82,9 +100,10 @@ public class LineSections {
         return result;
     }
 
-    private boolean findByStation(Station station) {
-        return this.sections.stream()
-            .anyMatch(section -> section.isStationInSection(station));
+    private void checkRemovableSections() {
+        if (this.sections.size() < REMOVABLE_SECTION_SIZE) {
+            throw new IllegalArgumentException("노선에 제거 가능한 역이 없습니다.");
+        }
     }
 
     private void checkValidStation(boolean includeUpStationInSection, boolean includeDownStationInSection) {
@@ -95,5 +114,10 @@ public class LineSections {
         if (!includeUpStationInSection && !includeDownStationInSection) {
             throw new IllegalArgumentException("상행역과 하행역 중 노선에 등록된 역이 없습니다.");
         }
+    }
+
+    private boolean findByStation(Station station) {
+        return this.sections.stream()
+            .anyMatch(section -> section.isStationInSection(station));
     }
 }

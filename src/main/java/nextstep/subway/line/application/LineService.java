@@ -70,6 +70,14 @@ public class LineService {
         return LineResponse.of(lineRepository.save(line));
     }
 
+    public LineResponse removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(NoSuchElementException::new);
+
+        line.removeStation(stationId);
+        return LineResponse.of(lineRepository.save(line));
+    }
+
     private Section toSection(Line line, SectionRequest sectionRequest) {
         sectionRequest.validateRequest();
 
