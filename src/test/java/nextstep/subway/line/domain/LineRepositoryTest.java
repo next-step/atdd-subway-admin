@@ -38,4 +38,38 @@ class LineRepositoryTest {
 		// when
 		assertThatThrownBy(() -> lineRepository.save(new Line("2호선", "green"))).isInstanceOf(RuntimeException.class);
 	}
+
+	@DisplayName("DB: Line 조회 테스트")
+	@Test
+	void findLineTest() {
+		// given
+		Line expected = lineRepository.save(new Line("2호선", "green"));
+
+		// when
+		Line actual = lineRepository.findById(expected.getId()).get();
+
+		// then
+		assertAll(
+			() -> assertThat(actual).isNotNull(),
+			() -> assertThat(actual).isEqualTo(expected)
+		);
+	}
+
+	@DisplayName("DB: Line 조회 실패 테스트")
+	@Test
+	void findLineFailTest() {
+		// given
+		Line expected = lineRepository.save(new Line("2호선", "green"));
+
+		// when
+		Line actual =
+			lineRepository.findById(expected.getId())
+				.orElseThrow(IllegalArgumentException::new);
+
+		// then
+		assertAll(
+			() -> assertThat(actual).isNotNull(),
+			() -> assertThat(actual).isEqualTo(expected)
+		);
+	}
 }

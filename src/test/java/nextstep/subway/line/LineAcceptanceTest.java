@@ -16,6 +16,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -24,15 +25,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine() {
 		// given
-		Map<String, String> params = 라인_파람_생성("2호선", "green");
+		Map<String, String> params = generateParam("2호선", "green");
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_생성(params);
+		ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
 		// then
 		assertAll(
 			() -> assertThat(response).isNotNull(),
-			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value())
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+			() -> assertThat(response.as(Line.class).getId()).isNotNull()
 		);
 	}
 
@@ -40,11 +42,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine2() {
 		// given
-		Map<String, String> params = 라인_파람_생성("2호선", "green");
-		지하철_노선_생성(params);
+		지하철_노선_생성("2호선", "green");
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_생성(params);
+		ExtractableResponse<Response> response = 지하철_노선_생성_요청(generateParam("2호선", "green"));
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -54,13 +55,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
-		Map<String, String> line1Param = 라인_파람_생성("1호선", "blue");
-		Map<String, String> line2Param = 라인_파람_생성("2호선", "green");
-		지하철_노선_생성(line1Param);
-		지하철_노선_생성(line2Param);
+		지하철_노선_생성("1호선", "blue");
+		지하철_노선_생성("2호선", "green");
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_조회();
+		ExtractableResponse<Response> response = 지하철_노선_전체_조회_요청();
 		List<LineResponse> lines = response.jsonPath().getList(".", LineResponse.class);
 
 		// then
@@ -74,26 +73,52 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
-		// 지하철_노선_등록되어_있음
+		Line line = 지하철_노선_생성("2호선", "green");
 
 		// when
-		// 지하철_노선_조회_요청
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(line.getId());
 
 		// then
-		// 지하철_노선_응답됨
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response.as(Line.class)).isNotNull(),
+			() -> assertThat(response.as(Line.class).getId()).isNotNull()
+		);
+	}
+
+	@DisplayName("지하철 없는 노선 조회한다.")
+	@Test
+	void getLineFailTest() {
+		// given
+		Line line = 지하철_노선_생성("2호선", "green");
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(line.getId() + 1);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@DisplayName("지하철 노선을 수정한다.")
 	@Test
 	void updateLine() {
 		// given
-		// 지하철_노선_등록되어_있음
+		Line line = 지하철_노선_생성("2호선", "green");
 
 		// when
-		// 지하철_노선_수정_요청
+		ExtractableResponse<Response> response = RestAssured
+			.given().log().all()
+			.body(generateParam("3호선", "orange"))
+			.when().put("/lines/" + line.getId())
+			.then().log().all()
+			.extract();
 
 		// then
-		// 지하철_노선_수정됨
+		assertAll(
+			() -> assertThat(response).isNotNull(),
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response.as(Line.class)).isEqualTo(line)
+		);
 	}
 
 	@DisplayName("지하철 노선을 제거한다.")
@@ -109,8 +134,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// 지하철_노선_삭제됨
 	}
 
-	private ExtractableResponse<Response> 지하철_노선_생성(Map<String, String> params) {
-		// when
+	private Line 지하철_노선_생성(String name, String color) {
+		return 지하철_노선_생성_요청(generateParam(name, color)).as(Line.class);
+	}
+
+	private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
 		return RestAssured
 			.given().log().all()
 			.body(params)
@@ -119,14 +147,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all().extract();
 	}
 
-	private ExtractableResponse<Response> 지하철_노선_조회() {
+	private ExtractableResponse<Response> 지하철_노선_전체_조회_요청() {
 		return RestAssured
 			.given().log().all()
 			.when().get("/lines")
 			.then().log().all().extract();
 	}
 
-	private Map<String, String> 라인_파람_생성(String name, String color) {
+	private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+		ExtractableResponse<Response> response = RestAssured
+			.given().log().all()
+			.when().get("/lines/" + id)
+			.then().log().all().extract();
+		return response;
+	}
+
+	private Map<String, String> generateParam(String name, String color) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 		params.put("color", color);
