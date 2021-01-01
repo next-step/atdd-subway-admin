@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line extends BaseEntity {
     @Id
@@ -33,8 +35,12 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        System.out.println(distance);
-        sections.addInitSection(new Section(upStation, downStation, distance));
+
+        sections.addInitSection(Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build());
     }
 
     public void addSection(Section section) {
@@ -48,17 +54,5 @@ public class Line extends BaseEntity {
 
     public List<StationResponse> getStationResponses() {
         return sections.getStationResponses();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
     }
 }

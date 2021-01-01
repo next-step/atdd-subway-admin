@@ -1,13 +1,13 @@
 package nextstep.subway.section.domain;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Section extends BaseEntity {
     @Id
@@ -24,6 +24,7 @@ public class Section extends BaseEntity {
 
     private int distance;
 
+    @Builder
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
@@ -62,17 +63,5 @@ public class Section extends BaseEntity {
 
     public int minusDistance(Section otherSection) {
         return distance - otherSection.getDistance();
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 }

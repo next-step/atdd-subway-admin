@@ -57,7 +57,11 @@ public class LineService {
         Station downStation = stationService.findByStationId(sectionRequest.getDownStationId());
         Line line = findByLineId(id);
 
-        line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(sectionRequest.getDistance())
+                .build());
     }
 
     private Line findByLineId(Long id) {
