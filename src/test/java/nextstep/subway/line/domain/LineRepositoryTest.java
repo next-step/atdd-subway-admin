@@ -72,4 +72,16 @@ class LineRepositoryTest {
 			() -> assertThat(actual).isEqualTo(expected)
 		);
 	}
+
+	@DisplayName("DB: Line 삭제 실패 테스트")
+	@Test
+	void deleteLineTest() {
+		// given
+		Line expected = lineRepository.save(new Line("2호선", "green"));
+
+		// when // then
+		assertThatThrownBy(
+			() -> lineRepository.deleteById(expected.getId() + 1)
+		).isInstanceOf(RuntimeException.class);
+	}
 }
