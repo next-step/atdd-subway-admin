@@ -59,14 +59,7 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(LineNotFoundException.class)
-    public ResponseEntity<?> handleLineNotFoundException(LineNotFoundException exception) {
-        return ResponseEntity.notFound().build();
-    }
 
-    @ExceptionHandler(AlreadySavedLineException.class)
-    public ResponseEntity<?> handleAlreadySavedLineException(AlreadySavedLineException exception) {
-        return ResponseEntity.badRequest().build();
     }
 
 }

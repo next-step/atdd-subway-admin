@@ -1,6 +1,9 @@
 package nextstep.subway.error;
 
 import java.net.BindException;
+import nextstep.subway.line.exception.AlreadySavedLineException;
+import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +37,23 @@ public class ErrorAdviceController {
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().build();
     }
+
+
+    @ExceptionHandler(LineNotFoundException.class)
+    public ResponseEntity<?> handleLineNotFoundException(LineNotFoundException exception) {
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(AlreadySavedLineException.class)
+    public ResponseEntity<?> handleAlreadySavedLineException(AlreadySavedLineException exception) {
+        return ResponseEntity.badRequest().build();
+    }
+
+
+    @ExceptionHandler(StationNotFoundException.class)
+    public ResponseEntity<?> handleStationNotFoundException(StationNotFoundException exception) {
+        return ResponseEntity.notFound().build();
+    }
+
 
 }
