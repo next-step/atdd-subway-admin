@@ -32,7 +32,12 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
-        return LineResponse.ofList(lineRepository.findAll());
+        return LineResponse.valueOfList(lineRepository.findAll());
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse findLineById(Long id) {
+        return LineResponse.of(lineRepository.findLineByFetchJoin(id));
     }
 
     @Transactional(readOnly = true)
@@ -40,11 +45,6 @@ public class LineService {
         return lineRepository.findLineByName(name)
                 .map(LineResponse::of)
                 .orElseThrow(() -> new NoResultException(name + "은(는) 존재하지 않습니다"));
-    }
-
-    @Transactional(readOnly = true)
-    public LineResponse findLineById(Long id) {
-        return LineResponse.of(lineRepository.findLineByFetchJoin(id));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
