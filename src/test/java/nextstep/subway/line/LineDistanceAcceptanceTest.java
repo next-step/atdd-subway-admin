@@ -7,7 +7,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,13 +41,10 @@ public class LineDistanceAcceptanceTest extends AcceptanceTest {
 
 		LineResponse lineResponse = linesResponse.jsonPath().getObject(".", LineResponse.class);
 		assertThat(lineResponse.getName()).isEqualTo(lineName);
-		List<String> stationNames = lineResponse.getStations().stream().map(Station::getName).collect(Collectors.toList());
+		List<String> stationNames = lineResponse.getStations().stream().map(StationResponse::getName).collect(Collectors.toList());
 
-		//검증문
-///		assertThat(stationNames).containsExactly(upStationName, downStationName);
-		//검증 데이터 추출 및 검증
-		assertThat(lineResponse.getStations())
-				.extracting(Station::getName)
+		assertThat(lineResponse.getStations().stream())
+				.extracting(StationResponse::getName)
 				.containsExactly(upStationName, downStationName);
 	}
 
@@ -84,8 +81,10 @@ public class LineDistanceAcceptanceTest extends AcceptanceTest {
 	@DisplayName("노선 조회 응답 결과에 등록된 구간을 참고하여 역 목록 응답 추가하기")
 	@Test
 	void listLineWithTerminal() throws JsonProcessingException {
-		Long upStationId = 역_생성_후_stationId응답("강변역");
-		Long downStationId = 역_생성_후_stationId응답("건대입구역");
+		String upStationName = "강변역";
+		String downStationName = "건대입구역";
+		Long upStationId = 역_생성_후_stationId응답(upStationName);
+		Long downStationId = 역_생성_후_stationId응답(downStationName);
 		// when
 		// 지하철_노선_생성_요청
 		ExtractableResponse response = 노선_생성_함수("2호선", "bg-green-600", upStationId, downStationId, 3);
@@ -97,8 +96,7 @@ public class LineDistanceAcceptanceTest extends AcceptanceTest {
 
 		assertThat(linesResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		List<LineResponse> lineResponse = linesResponse.jsonPath().getList(".", LineResponse.class);
-		assertThat(lineResponse.get(0).getStations().size()).isNotEqualTo(0);
+		assertThat(lineResponse.get(0).getStations().stream().map(StationResponse::getName)).containsExactly(upStationName, downStationName);
 	}
-
 
 }
