@@ -40,6 +40,5 @@ class LineServiceTest {
 		// then
 		assertThat(lineResponse).isNotNull();
 		assertThat(lineResponse.getId()).isNotNull();
-
 	}
 }

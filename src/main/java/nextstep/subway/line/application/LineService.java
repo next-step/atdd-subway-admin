@@ -35,7 +35,22 @@ public class LineService {
 
 	@Transactional(readOnly = true)
 	public LineResponse showLine(Long id) {
-		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+		Line persistLine = findLine(id);
 		return LineResponse.of(persistLine);
+	}
+
+	public LineResponse updateLine(Long id, LineRequest request) {
+		Line line = findLine(id);
+		line.update(request.toLine());
+		return LineResponse.of(line);
+	}
+
+	private Line findLine(Long id) {
+		return lineRepository.findById(id).orElseThrow(RuntimeException::new);
+	}
+
+	public void deleteLine(Long id) {
+		Line line = findLine(id);
+		lineRepository.delete(line);
 	}
 }
