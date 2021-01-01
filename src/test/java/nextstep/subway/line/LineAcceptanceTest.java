@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -57,6 +58,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_생성_실패됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 노선을 종점역(상행,하행)을 함께 추가해 생성한다.")
+    @Test
+    void createLineWithUpDownStation() {
+        // when
+        // 종점역 생성 요청
+        Map<String, String> stationParams1 = new HashMap<>();
+        stationParams1.put("name", "강남역");
+        ExtractableResponse<Response> response1 = StationAcceptanceTest.지하철_생성_요청(stationParams1);
+        long stationId1 = StationAcceptanceTest.지하철_생성_응답에서_id_추출(response1);
+
+        Map<String, String> stationParams2 = new HashMap<>();
+        stationParams2.put("name", "역삼역");
+        ExtractableResponse<Response> response2 = StationAcceptanceTest.지하철_생성_요청(stationParams2);
+        long stationId2 = StationAcceptanceTest.지하철_생성_응답에서_id_추출(response2);
+
+        // 지하철_노선_생성_요청
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "bg-red-600");
+        params.put("name", "신분당선");
+        params.put("upStationId", String.valueOf(stationId1));
+        params.put("downStationId", String.valueOf(stationId2));
+        params.put("distance", String.valueOf(10));
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
+
+        // then
+        // 지하철_노선_생성됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        assertThat(response.header("Location")).startsWith("/lines/");
+        assertThat(response.jsonPath().getLong("upStationId")).isEqualTo(stationId1);
+        assertThat(response.jsonPath().getLong("downStationId")).isEqualTo(stationId2);
+        assertThat(response.jsonPath().getLong("distance")).isEqualTo(10);
+
+        노선_응답_검증(response, "bg-red-600", "신분당선");
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
