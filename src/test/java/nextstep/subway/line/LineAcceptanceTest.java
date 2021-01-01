@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -72,13 +73,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(extractableResponse ->
-                        Long.parseLong(extractableResponse.header(HttpHeaders.LOCATION).split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> lineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId).collect(Collectors.toList());
-        assertThat(expectedLineIds).containsAll(lineIds);
+        List<LineResponse> results = response.jsonPath().getList(".", LineResponse.class);
+        assertThat(results).contains(createResponse1.as(LineResponse.class), createResponse2.as(LineResponse.class));
+
     }
 
     @DisplayName("지하철 노선을 조회한다.")
