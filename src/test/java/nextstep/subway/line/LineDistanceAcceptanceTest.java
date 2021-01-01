@@ -42,7 +42,13 @@ public class LineDistanceAcceptanceTest extends AcceptanceTest {
 		LineResponse lineResponse = linesResponse.jsonPath().getObject(".", LineResponse.class);
 		assertThat(lineResponse.getName()).isEqualTo(lineName);
 		List<String> stationNames = lineResponse.getStations().stream().map(Station::getName).collect(Collectors.toList());
-		assertThat(stationNames.equals(Arrays.asList(upStationName, downStationName))).isTrue();
+
+		//검증문
+///		assertThat(stationNames).containsExactly(upStationName, downStationName);
+		//검증 데이터 추출 및 검증
+		assertThat(lineResponse.getStations())
+				.extracting(Station::getName)
+				.containsExactly(upStationName, downStationName);
 	}
 
 	private static Long 역_생성_후_stationId응답(String stationName) {

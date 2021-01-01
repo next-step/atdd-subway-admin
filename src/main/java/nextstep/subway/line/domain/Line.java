@@ -30,11 +30,11 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color,int distance, List<Station> stationsList) {
+    public Line(String name, String color,int distance, List<Station> stations) {
         this.name = name;
         this.color = color;
         this.distance = distance;
-        this.stations = new ArrayList<>(stationsList);
+        this.stations = new ArrayList<>(stations);
     }
 
     public void update(Line line) {
