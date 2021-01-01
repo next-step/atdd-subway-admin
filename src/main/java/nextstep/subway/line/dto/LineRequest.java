@@ -5,8 +5,8 @@ import nextstep.subway.line.domain.Line;
 public class LineRequest {
     private String name;
     private String color;
-    private Long upStationId;       // 추가
-    private Long downStationId;     // 추가
+    private Long upStationId;
+    private Long downStationId;
     private int distance;
 
     public LineRequest() {

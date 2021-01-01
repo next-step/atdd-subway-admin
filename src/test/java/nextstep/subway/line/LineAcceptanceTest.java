@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineCreateResponse;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
@@ -86,14 +87,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-        assertThat(response.header("Location")).startsWith("/lines/");
-        assertThat(response.jsonPath().getLong("upStationId")).isEqualTo(stationId1);
-        assertThat(response.jsonPath().getLong("downStationId")).isEqualTo(stationId2);
-        assertThat(response.jsonPath().getLong("distance")).isEqualTo(10);
-
-        노선_응답_검증(response, "bg-red-600", "신분당선");
+        노선_생성_응답_검증(response, "bg-red-600", "신분당선", stationId1, stationId2, 10);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -291,6 +285,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void 노선_응답_검증(ExtractableResponse<Response> response, String color, String name) {
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
         assertThat(lineResponse.getColor()).isEqualTo(color);
+        assertThat(lineResponse.getName()).isEqualTo(name);
+        assertThat(lineResponse.getId()).isNotNull();
+        assertThat(lineResponse.getCreatedDate()).isNotNull();
+        assertThat(lineResponse.getModifiedDate()).isNotNull();
+    }
+    private void 노선_생성_응답_검증(ExtractableResponse<Response> response, String color, String name,
+                             long upStationId, long downStationId, int distance) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        assertThat(response.header("Location")).startsWith("/lines/");
+
+        LineCreateResponse lineResponse = response.jsonPath().getObject(".", LineCreateResponse.class);
+        assertThat(lineResponse.getColor()).isEqualTo(color);
+        assertThat(lineResponse.getName()).isEqualTo(name);
+        assertThat(lineResponse.getUpStationId()).isEqualTo(upStationId);
+        assertThat(lineResponse.getDownStationId()).isEqualTo(downStationId);
+        assertThat(lineResponse.getDistance()).isEqualTo(distance);
         assertThat(lineResponse.getName()).isEqualTo(name);
         assertThat(lineResponse.getId()).isNotNull();
         assertThat(lineResponse.getCreatedDate()).isNotNull();
