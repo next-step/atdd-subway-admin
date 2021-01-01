@@ -22,8 +22,7 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request, LineStation... lineStations) {
-        Line line = request.toLine();
+    public LineResponse saveLine(Line line, LineStation... lineStations) {
         for (LineStation lineStation : lineStations) {
             line.addLineStation(lineStation);
         }
