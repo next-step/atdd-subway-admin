@@ -6,24 +6,12 @@ import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import org.springframework.http.MediaType;
 
-public class LineTestCommon {
-    /**
-     * Line 파라미터 생성
-     * @param name
-     * @param color
-     * @return LineRequest params
-     */
-    public static LineRequest createLineParams(String name, String color, Long upStationId, Long downStationId, Long distance) {
+public class LineAcceptanceTestRequest {
+    public static LineRequest 지하철_노선_요청_생성(String name, String color, Long upStationId, Long downStationId, Long distance) {
         return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 
-    /**
-     * 생성 요청
-     * @param params
-     * @param path
-     * @return ExtractableResponse<Response>
-     */
-    public static ExtractableResponse<Response> createResponse(LineRequest params, String path) {
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest params, String path) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -33,12 +21,7 @@ public class LineTestCommon {
                 .extract();
     }
 
-    /**
-     * 전체 조회 요청
-     * @param path
-     * @return ExtractableResponse<Response>
-     */
-    public static ExtractableResponse<Response> findAllResponse(String path) {
+    public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청(String path) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -47,12 +30,7 @@ public class LineTestCommon {
                 .extract();
     }
 
-    /**
-     * 단일 조회 요청
-     * @param path
-     * @return ExtractableResponse<Response>
-     */
-    public static ExtractableResponse<Response> findOneResponse(String path) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(String path) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -61,13 +39,7 @@ public class LineTestCommon {
                 .extract();
     }
 
-    /**
-     * 수정 요청
-     * @param params
-     * @param path
-     * @return ExtractableResponse<Response>
-     */
-    public static ExtractableResponse<Response> updateResponse(LineRequest params, String path) {
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(LineRequest params, String path) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -77,12 +49,7 @@ public class LineTestCommon {
                 .extract();
     }
 
-    /**
-     * 삭제 요청
-     * @param path
-     * @return ExtractableResponse<Response>
-     */
-    public static ExtractableResponse<Response> deleteResponse(String path) {
+    public static ExtractableResponse<Response> 지하철_노선_제거_요청(String path) {
         return RestAssured.given().log().all()
                 .when()
                 .delete(path)
