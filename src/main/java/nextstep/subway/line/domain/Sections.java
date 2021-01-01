@@ -2,6 +2,8 @@ package nextstep.subway.line.domain;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import nextstep.subway.line.exception.SectionException;
+import nextstep.subway.line.util.ErrorMessage;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -25,6 +27,8 @@ public class Sections {
     boolean isIncludeUpStation = findByStation(newSection.getUpStation());
     boolean isIncludeDownStation = findByStation(newSection.getDownStation());
 
+    validateSection(isIncludeUpStation, isIncludeDownStation);
+
     if (isIncludeUpStation) {
       updateSectionWhenEqualUpStation(newSection);
     }
@@ -34,11 +38,6 @@ public class Sections {
     }
 
     this.sections.add(newSection);
-  }
-
-  private boolean findByStation(Station station) {
-    return this.sections.stream()
-        .anyMatch(section -> section.isIncludeInSection(station));
   }
 
   public void updateSectionWhenEqualUpStation(Section newSection) {
@@ -76,5 +75,19 @@ public class Sections {
     return this.getOrderedSections().stream()
         .map(Section::getDownStation)
         .collect(Collectors.toList());
+  }
+
+  private void validateSection(boolean isIncludeUpStation, boolean isIncludeDownStation) {
+    if (isIncludeUpStation && isIncludeDownStation) {
+      throw new SectionException(ErrorMessage.ALREADY_SECTION_EXIST);
+    }
+    if (!isIncludeUpStation && !isIncludeDownStation) {
+      throw new SectionException(ErrorMessage.MUST_HAVING_UP_OR_DOWN_STATION);
+    }
+  }
+
+  private boolean findByStation(Station station) {
+    return this.sections.stream()
+        .anyMatch(section -> section.isIncludeInSection(station));
   }
 }

@@ -4,11 +4,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.exception.SectionException;
+import nextstep.subway.line.util.ErrorMessage;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -48,21 +48,29 @@ public class Section extends BaseEntity {
     return this.downStation.equals(station);
   }
 
-  public boolean isUpStationInSection(Station upStation) {
-    if (this.upStation == null || upStation == null) {
-      return this.upStation == upStation;
+  public boolean isUpStationInSection(Station preStation) {
+    if (this.upStation == null || preStation == null) {
+      return this.upStation == preStation;
     }
-    return this.upStation.getId().equals(upStation.getId());
+    return this.upStation.getId().equals(preStation.getId());
   }
 
   public void updateUpToDown(Station preStation, int distance) {
+    validateDistance(distance);
     this.upStation = preStation;
     this.distance -= distance;
   }
 
   public void updateDownToUp(Station station, int distance) {
+    validateDistance(distance);
     this.downStation = station;
     this.distance -= distance;
+  }
+
+  private void validateDistance(int distance) {
+    if (this.upStation != null && this.distance <= distance) {
+      throw new SectionException(ErrorMessage.WRONG_DISTANCE);
+    }
   }
 
 }
