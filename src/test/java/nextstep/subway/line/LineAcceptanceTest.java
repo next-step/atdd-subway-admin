@@ -59,12 +59,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse1 = createNewLine(createLineParams());
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-green-600");
-        params.put("upStationId", createStationId("이대역"));
-        params.put("downStationId", createStationId("신촌역"));
-        params.put("distance", "10");
+        Map<String, String> params = new LineParameter()
+                .name("2호선")
+                .color("bg-green-600")
+                .upStationId(createStationId("이대"))
+                .downStationId(createStationId("신촌"))
+                .distance("10")
+                .getMap();
         ExtractableResponse<Response> createResponse2 = createNewLine(params);
 
         // when
@@ -120,9 +121,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "구분당선");
-        params.put("color", "bg-blue-600");
+        Map<String, String> params = new LineParameter()
+                .name("구분당선")
+                .color("bg-blue-600")
+                .distance("10")
+                .getMap();
         String uri = createResponse.header("Location");
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(params)
@@ -163,13 +166,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithSameUpDownStation() {
         // given
         // 상행역_하행역_일치
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-green-600");
-        String stationId = createStationId("이대역");
-        params.put("upStationId", stationId);
-        params.put("downStationId", stationId);
-        params.put("distance", "10");
+        String stationId = createStationId("이대");
+        Map<String, String> params = new LineParameter()
+                .name("2호선")
+                .color("bg-green-600")
+                .upStationId(stationId)
+                .downStationId(stationId)
+                .distance("10")
+                .getMap();
+
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = createNewLine(params);
@@ -179,14 +184,90 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertResponseHttpStatusIsBadRequest(response);
     }
 
+    @DisplayName("잘못된 노선 이름으로 생성한다.")
+    @Test
+    void createLineWithInvalidName() {
+        // given
+        Map<String, String> params = new LineParameter()
+                .name("   ")
+                .color("bg-red-600")
+                .upStationId(createStationId("강남"))
+                .downStationId(createStationId("광교"))
+                .distance("10")
+                .getMap();
+
+        // when
+        ExtractableResponse<Response> response = createNewLine(params);
+
+        // then
+        assertResponseHttpStatusIsBadRequest(response);
+    }
+
+    @DisplayName("잘못된 노선 색상으로 생성한다.")
+    @Test
+    void createLineWithInvalidColor() {
+        // given
+        Map<String, String> params = new LineParameter()
+                .name("신분당선")
+                .color("   ")
+                .upStationId(createStationId("강남"))
+                .downStationId(createStationId("광교"))
+                .distance("10")
+                .getMap();
+
+        // when
+        ExtractableResponse<Response> response = createNewLine(params);
+
+        // then
+        assertResponseHttpStatusIsBadRequest(response);
+    }
+
+    @DisplayName("잘못된 노선 거리로 생성한다.")
+    @Test
+    void createLineWithInvalidDistance() {
+        // given
+        Map<String, String> params = new LineParameter()
+                .name("신분당선")
+                .color("bg-red-600")
+                .upStationId(createStationId("강남"))
+                .downStationId(createStationId("광교"))
+                .distance("0")
+                .getMap();
+
+        // when
+        ExtractableResponse<Response> response = createNewLine(params);
+
+        // then
+        assertResponseHttpStatusIsBadRequest(response);
+    }
+
+    @DisplayName("존재하지 않는 노선 역으로 생성한다.")
+    @Test
+    void createLineWithInvalidStation() {
+        // given
+        Map<String, String> params = new LineParameter()
+                .name("신분당선")
+                .color("bg-red-600")
+                .upStationId("100")
+                .downStationId("100")
+                .distance("10")
+                .getMap();
+
+        // when
+        ExtractableResponse<Response> response = createNewLine(params);
+
+        // then
+        assertResponseHttpStatusIsNotFound(response);
+    }
+
     private Map<String, String> createLineParams() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", createStationId("강남역"));
-        params.put("downStationId", createStationId("광교역"));
-        params.put("distance", "10");
-        return params;
+        return new LineParameter()
+                .name("신분당선")
+                .color("bg-red-600")
+                .upStationId(createStationId("강남"))
+                .downStationId(createStationId("광교"))
+                .distance("10")
+                .getMap();
     }
 
     private String createStationId(String name) {
@@ -206,5 +287,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .post("/lines")
             .then().log().all()
             .extract();
+    }
+
+    public static class LineParameter {
+
+        private final Map<String, String> map = new HashMap<>();
+
+        public LineParameter name(String name) {
+            map.put("name", name);
+            return this;
+        }
+
+        public LineParameter color(String color) {
+            map.put("color", color);
+            return this;
+        }
+
+        public LineParameter upStationId(String upStationId) {
+            map.put("upStationId", upStationId);
+            return this;
+        }
+
+        public LineParameter downStationId(String downStationId) {
+            map.put("downStationId", downStationId);
+            return this;
+        }
+
+        public LineParameter distance(String distance) {
+            map.put("distance", distance);
+            return this;
+        }
+
+        public Map<String, String> getMap() {
+            return map;
+        }
     }
 }

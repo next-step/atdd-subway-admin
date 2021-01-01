@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
     LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
@@ -45,7 +46,7 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateLine(@PathVariable Long id,
-                                        @RequestBody LineRequest lineRequest) {
+                                        @RequestBody @Valid LineRequest lineRequest) {
         Line line = lineService.findLineById(id);
         lineService.updateLine(line, lineRequest);
         return ResponseEntity.ok().build();

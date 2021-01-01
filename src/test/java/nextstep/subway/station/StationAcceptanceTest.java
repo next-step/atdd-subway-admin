@@ -23,7 +23,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     public static final Map<String, String> STATION_PARAMS = new HashMap<>();
 
     static {
-        STATION_PARAMS.put("name", "강남역");
+        STATION_PARAMS.put("name", "강남");
     }
 
     @DisplayName("지하철역을 생성한다.")
@@ -57,7 +57,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse1 = createNewStation(STATION_PARAMS);
 
         Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
+        params2.put("name", "역삼");
         ExtractableResponse<Response> createResponse2 = createNewStation(params2);
 
         // when

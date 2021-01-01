@@ -6,15 +6,21 @@ import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class LineRequest {
 
+    @NotBlank
     private String name;
+    @NotBlank
     private String color;
     private long upStationId;
     private long downStationId;
+    @Min(1)
     private int distance;
 
     public Line toLine() {
