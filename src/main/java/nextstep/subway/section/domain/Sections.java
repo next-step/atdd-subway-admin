@@ -22,7 +22,7 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public static Sections of() {
+    public static Sections newInstance() {
         return new Sections();
     }
 

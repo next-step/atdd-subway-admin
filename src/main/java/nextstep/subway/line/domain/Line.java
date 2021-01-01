@@ -21,7 +21,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private final Sections sections = Sections.of();
+    private final Sections sections = Sections.newInstance();
 
     public Line() {
     }
