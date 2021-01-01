@@ -88,16 +88,14 @@ public class Sections {
 
     private void addSectionUpToUp(final Section newSection) {
         findSection(section -> section.isSameUpStation(newSection))
-            .ifPresent(section -> {
-                if (section.distanceIsLessThan(newSection)) {
-                    throw new IllegalArgumentException(ERR_TEXT_INVALID_SECTION);
-                }
-
-                replaceSectionWithDownStation(section, newSection);
-            });
+            .ifPresent(section -> replaceSectionWithDownStation(section, newSection));
     }
 
     private void replaceSectionWithDownStation(final Section originSection, final Section newSection) {
+        if (originSection.distanceIsLessThan(newSection)) {
+            throw new IllegalArgumentException(ERR_TEXT_INVALID_SECTION);
+        }
+
         sections.add(new Section(
             originSection.getLine(),
             newSection.getDownStation(),
@@ -108,16 +106,14 @@ public class Sections {
 
     private void addSectionDownToDown(final Section newSection) {
         findSection(section -> section.isSameDownStation(newSection))
-            .ifPresent(section -> {
-                if (section.distanceIsLessThan(newSection)) {
-                    throw new IllegalArgumentException(ERR_TEXT_INVALID_SECTION);
-                }
-
-                replaceSectionWithUpStation(section, newSection);
-            });
+            .ifPresent(section -> replaceSectionWithUpStation(section, newSection));
     }
 
     private void replaceSectionWithUpStation(final Section originSection, final Section newSection) {
+        if (originSection.distanceIsLessThan(newSection)) {
+            throw new IllegalArgumentException(ERR_TEXT_INVALID_SECTION);
+        }
+
         sections.add(new Section(
             originSection.getLine(),
             originSection.getUpStation(),
