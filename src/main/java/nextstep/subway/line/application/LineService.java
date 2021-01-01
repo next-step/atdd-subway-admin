@@ -25,10 +25,17 @@ public class LineService {
 		return LineResponse.of(persistLine);
 	}
 
+	@Transactional(readOnly = true)
 	public List<LineResponse> showLines() {
 		List<Line> lines = lineRepository.findAll();
 		return lines.stream()
 			.map(LineResponse::of)
 			.collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public LineResponse showLine(Long id) {
+		Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+		return LineResponse.of(persistLine);
 	}
 }

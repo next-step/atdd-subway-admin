@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,17 +28,22 @@ public class LineController {
 
 	@PostMapping
 	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-		try {
-			LineResponse line = lineService.saveLine(lineRequest);
-			return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
-		} catch (RuntimeException exception) {
-			return ResponseEntity.badRequest().build();
-		}
+		LineResponse line = lineService.saveLine(lineRequest);
+		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
 	}
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<LineResponse>> showLine() {
+	public ResponseEntity<List<LineResponse>> showLines() {
 		return ResponseEntity.ok().body(lineService.showLines());
 	}
 
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+		return ResponseEntity.ok().body(lineService.showLine(id));
+	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<LineResponse> handleLineRuntimeException(RuntimeException e) {
+		return ResponseEntity.badRequest().build();
+	}
 }

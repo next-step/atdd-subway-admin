@@ -1,40 +1,49 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.common.BaseEntity;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-import javax.persistence.*;
+import nextstep.subway.common.BaseEntity;
 
 @Entity
 public class Line extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
-    private String name;
-    private String color;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@Column(unique = true)
+	private String name;
+	private String color;
 
-    public Line() {
-    }
+	public Line() {
+	}
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
+	public Line(String name, String color) {
+		this.name = name;
+		this.color = color;
+	}
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
+	public Line(long id, String name, String color) {
+		this(name, color);
+		this.id = id;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void update(Line line) {
+		this.name = line.getName();
+		this.color = line.getColor();
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getColor() {
-        return color;
-    }
+	public String getName() {
+		return name;
+	}
+
+	public String getColor() {
+		return color;
+	}
 }
