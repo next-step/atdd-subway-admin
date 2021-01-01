@@ -38,7 +38,7 @@ public class LineService {
     public List<LinesResponse> findAll() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(line -> LinesResponse.of(line))
+                .map(LinesResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -90,16 +90,14 @@ public class LineService {
         Line line = lineRepository.save(request.toLine());
         createNewLineStations(
                 line, request.getUpStationId(),
-                request.getDownStationId(), request.getDistance())
-                .forEach(line::add);
+                request.getDownStationId(), request.getDistance()
+        ).forEach(line::add);
         return LineResponse.of(line);
     }
 
     private List<LineStation> createNewLineStations(Line line, Long upStationId, Long downStationId, long distance) {
-        Station upStation = stationRepository.findById(upStationId)
-                .orElseThrow(StationNotFoundException::new);
-        Station downStation = stationRepository.findById(downStationId)
-                .orElseThrow(StationNotFoundException::new);
+        Station upStation = stationService.findById(upStationId);
+        Station downStation = stationService.findById(downStationId);
         return Arrays.asList(
                 new LineStation(line, upStation, null, 0),
                 new LineStation(line, downStation, upStation, distance)

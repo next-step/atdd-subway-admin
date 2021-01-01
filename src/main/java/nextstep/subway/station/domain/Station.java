@@ -1,12 +1,9 @@
 package nextstep.subway.station.domain;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
-import nextstep.subway.line.domain.LineStation;
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
@@ -19,19 +16,12 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "station")
-    private List<LineStation> lineStations = new ArrayList<>();
-
     public Station() {
     }
 
     public Station(String name) {
         validation(name);
         this.name = name;
-    }
-
-    public void add(LineStation lineStation) {
-        this.lineStations.add(lineStation);
     }
 
     public Long getId() {
