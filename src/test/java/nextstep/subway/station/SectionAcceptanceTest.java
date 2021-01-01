@@ -61,7 +61,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
   @Test
   void addSection2() {
     // when
-    StationResponse 강남전역 = StationAcceptanceTest.지하철_등록_요청("강남앞역").as(StationResponse.class); // 강남역 앞
+    StationResponse 강남전역 = StationAcceptanceTest.지하철_등록_요청("강남전역").as(StationResponse.class); // 강남역 앞
     ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남전역.getId(), 강남역.getId(), 5);
 
     // then
