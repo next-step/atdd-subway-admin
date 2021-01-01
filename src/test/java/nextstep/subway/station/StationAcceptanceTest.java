@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    static final Map<String, String> STATION_PARAMS = new HashMap<>();
+    public static final Map<String, String> STATION_PARAMS = new HashMap<>();
 
     static {
         STATION_PARAMS.put("name", "강남역");
@@ -96,7 +96,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertResponseHttpStatusIsNoContent(response);
     }
 
-    private ExtractableResponse<Response> createNewStation(Map<String, String> params) {
+    public static ExtractableResponse<Response> createNewStation(Map<String, String> params) {
         return RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
