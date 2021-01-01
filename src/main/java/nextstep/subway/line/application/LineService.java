@@ -1,7 +1,9 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.LineStationRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
@@ -13,13 +15,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class LineService {
 
 	private LineRepository lineRepository;
 
-	public LineService(LineRepository lineRepository) {
+	private LineStationRepository lineStationRepository;
+
+	public LineService(LineRepository lineRepository, LineStationRepository lineStationRepository) {
 		this.lineRepository = lineRepository;
+		this.lineStationRepository = lineStationRepository;
 	}
 
 	public List<LineResponse> listLine() {
@@ -32,21 +37,23 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
+	@Transactional
 	public void update(LineRequest lineRequest) {
 		Line line = lineRepository.findById(lineRequest.getId()).orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다 id=" + lineRequest.getId()));
 		line.update(lineRequest.toLine());
 		lineRepository.save(line);
 	}
 
+	@Transactional
 	public void delete(Long id) {
 		Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다 id=" + id));
 		lineRepository.delete(line);
 	}
 
+	@Transactional
 	public LineResponse saveLine(LineRequest lineRequest, Station upStation, Station downStation) {
-		List<Station> stations = Arrays.asList(upStation, downStation);
-		Line line = new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance(), stations);
-		lineRepository.save(line);
-		return LineResponse.of(line);
+		Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance()));
+		List<LineStation> lineStations  = lineStationRepository.saveAll(Arrays.asList(new LineStation(line, upStation), new LineStation(line, downStation)));
+		return LineResponse.of(line, lineStations);
 	}
 }
