@@ -11,14 +11,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.HttpTestStatusCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -160,13 +160,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_목록_포함됨(List<String> requestedUrls, ExtractableResponse<Response> response) {
+        List<LineResponse> resultLines = new ArrayList<>(response.jsonPath().getList(".", LineResponse.class));
         List<Long> expectedLineIds = requestedUrls.stream()
                 .map(it -> Long.parseLong(it.split("/")[2]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+        List<Long> resultLineIds = resultLines.stream().map(LineResponse::getId).collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+        for (LineResponse resultLine : resultLines) {
+            assertAll(
+                    () -> assertNotNull(resultLine.getColor()),
+                    () -> assertNotNull(resultLine.getName()),
+                    () -> assertNotNull(resultLine.getStations())
+            );
+        }
     }
 
     private String 지하철_노선_등록되어_있음(String name, String color, long upStationId, long downStationId, long distance) {
@@ -183,7 +189,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void 지하철_노선_응답됨(String uri, ExtractableResponse<Response> response) {
         요청_완료(response);
         String expected = uri.split("/")[2];
-        assertThat(String.valueOf((int) response.jsonPath().get("id"))).isEqualTo(expected);
+        assertAll(
+                () -> assertThat(String.valueOf((int) response.jsonPath().get("id"))).isEqualTo(expected),
+                () -> assertNotNull(response.jsonPath().get("name")),
+                () -> assertNotNull(response.jsonPath().get("color")),
+                () -> assertNotNull(response.jsonPath().get("stations"))
+        );
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(String createdUrl, String name, String color, long upStationId, long downStationId, long distance) {

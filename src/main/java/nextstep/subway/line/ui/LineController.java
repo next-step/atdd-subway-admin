@@ -3,12 +3,15 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/lines")
@@ -27,12 +30,18 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> getAllLines() {
-        return ResponseEntity.ok().body(lineService.findAllLines());
+        List<LineResponse> allLines = lineService.findAllLines()
+                .stream()
+                .map(line -> line.setStations(Arrays.asList(new Station("잠실"), new Station("역삼"))))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(allLines);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable("id") long id) {
-        return ResponseEntity.ok().body(lineService.findById(id));
+        LineResponse line = lineService.findById(id);
+        line.setStations(Arrays.asList(new Station("잠실"), new Station("역삼")));
+        return ResponseEntity.ok().body(line);
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
