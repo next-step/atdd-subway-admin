@@ -22,13 +22,11 @@ public class SectionService {
         Station upStation = stationService.selectStationById(upStationId);
         Station downStation = stationService.selectStationById(downStationId);
 
-        Section section = Section.builder()
+        return Section.builder()
                 .line(line)
                 .upStation(upStation)
                 .downStation(downStation)
                 .distance(new Distance(distance))
                 .build();
-
-        return section;
     }
 }

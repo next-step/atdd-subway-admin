@@ -26,7 +26,7 @@ public class Line extends BaseEntity {
     @Column(name = "color")
     private String color;
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Line(String name, String color) {
