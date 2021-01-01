@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import nextstep.subway.common.BaseEntity;
@@ -21,8 +20,8 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LineStation> lineStations = new ArrayList<>();
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
     public Line() {
     }
@@ -54,8 +53,12 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<LineStation> getLineStations() {
-        return Collections.unmodifiableList(lineStations);
+    public LineStations getLineStations() {
+        return lineStations;
+    }
+
+    public List<LineStation> getSections() {
+        return lineStations.getLineStations();
     }
 
     private void validation(String name, String color) {
@@ -80,4 +83,5 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }
