@@ -41,7 +41,7 @@ public class Sections {
 
     public void addSection(Section newSection) {
         sections.stream()
-                .filter(down -> down.getDownStationId().equals(newSection.getDownStationId()))
+                .filter(orgSection -> orgSection.getDownStationId().equals(newSection.getDownStationId()))
                 .findFirst()
                 .ifPresent(orgSection -> {
                     sections.add(new Section(orgSection.getUpStationId(), newSection.getUpStationId(), orgSection.getDistance() - newSection.getDistance()));
@@ -50,12 +50,30 @@ public class Sections {
                 });
 
         sections.stream()
-                .filter(up -> up.getUpStationId().equals(newSection.getUpStationId()))
+                .filter(orgSection -> orgSection.getUpStationId().equals(newSection.getUpStationId()))
                 .findFirst()
-                .ifPresent(org -> {
+                .ifPresent(orgSection -> {
                     sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
-                    sections.add(new Section(newSection.getDownStationId(), org.getDownStationId(), org.getDistance() - newSection.getDistance()));
-                    sections.remove(org);
+                    sections.add(new Section(newSection.getDownStationId(), orgSection.getDownStationId(), orgSection.getDistance() - newSection.getDistance()));
+                    sections.remove(orgSection);
+                });
+
+        sections.stream()
+                .filter(orgSection -> orgSection.getUpStationId().equals(newSection.getDownStationId()))
+                .findFirst()
+                .ifPresent(orgSection -> {
+                    sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
+                    sections.add(new Section(orgSection.getUpStationId(), orgSection.getDownStationId(), orgSection.getDistance()));
+                    sections.remove(orgSection);
+                });
+
+        sections.stream()
+                .filter(orgSection -> orgSection.getDownStationId().equals(newSection.getUpStationId()))
+                .findFirst()
+                .ifPresent(orgSection -> {
+                    sections.add(new Section(orgSection.getUpStationId(), orgSection.getDownStationId(), orgSection.getDistance()));
+                    sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
+                    sections.remove(orgSection);
                 });
     }
 }

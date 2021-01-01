@@ -83,4 +83,62 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(found.get().getAllIncludedStationIds()).containsExactly(강남Id, 양재Id, 광교Id);
     }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void saveSectionAsNewUpStation() {
+        // given
+        Long 강남Id = stationDataHelper.역추가("강남역");
+        Long 광교Id = stationDataHelper.역추가("광교역");
+        Long 상행종점Id = stationDataHelper.역추가("상행종점");
+        Line savedLine = lineDataHelper.지하철_노선_추가(
+                new Line("신분당선", "red", new Sections(new Section(강남Id, 광교Id, 10)))
+        );
+
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId" , 상행종점Id.toString());
+        params.put("downStationId" , 강남Id.toString());
+        params.put("distance" ,"3");
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/" + savedLine.getId() +"/sections")
+                .then().log().all().extract();
+
+        // then
+        Optional<Line> found = lineDataHelper.지하철_노선_조회(savedLine.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(found.get().getAllIncludedStationIds()).containsExactly(상행종점Id, 강남Id, 광교Id);
+    }
+
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void saveSectionAsNewDownStation() {
+        // given
+        Long 강남Id = stationDataHelper.역추가("강남역");
+        Long 광교Id = stationDataHelper.역추가("광교역");
+        Long 하행종점Id = stationDataHelper.역추가("하행종점");
+        Line savedLine = lineDataHelper.지하철_노선_추가(
+                new Line("신분당선", "red", new Sections(new Section(강남Id, 광교Id, 10)))
+        );
+
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId" , 광교Id.toString());
+        params.put("downStationId" , 하행종점Id.toString());
+        params.put("distance" ,"3");
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/" + savedLine.getId() +"/sections")
+                .then().log().all().extract();
+
+        // then
+        Optional<Line> found = lineDataHelper.지하철_노선_조회(savedLine.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(found.get().getAllIncludedStationIds()).containsExactly(강남Id, 광교Id, 하행종점Id);
+    }
 }
