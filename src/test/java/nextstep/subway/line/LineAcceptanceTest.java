@@ -39,7 +39,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
         assertThat(response.header("Location")).startsWith("/lines/");
 
-        노선_응답_검증(response, "bg-red-600", "신분당선");
+        노선_생성_응답_검증(response, "bg-red-600", "신분당선");
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -290,8 +290,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getCreatedDate()).isNotNull();
         assertThat(lineResponse.getModifiedDate()).isNotNull();
     }
+
+    private void 노선_생성_응답_검증(ExtractableResponse<Response> response, String color, String name) {
+        노선_생성_응답_검증(response, color, name, null, null, 0);
+    }
+
     private void 노선_생성_응답_검증(ExtractableResponse<Response> response, String color, String name,
-                             long upStationId, long downStationId, int distance) {
+                             Long upStationId, Long downStationId, Integer distance) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
         assertThat(response.header("Location")).startsWith("/lines/");

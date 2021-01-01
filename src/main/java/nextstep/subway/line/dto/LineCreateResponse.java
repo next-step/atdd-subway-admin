@@ -1,6 +1,7 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +11,7 @@ public class LineCreateResponse {
     private String color;
     private Long upStationId;
     private Long downStationId;
-    private int distance;
+    private Integer distance;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
@@ -25,7 +26,8 @@ public class LineCreateResponse {
         this.modifiedDate = modifiedDate;
     }
 
-    public LineCreateResponse(Long id, String name, String color, Long upStationId, Long downStationId, int distance, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public LineCreateResponse(Long id, String name, String color, Long upStationId, Long downStationId, Integer distance,
+                              LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -37,7 +39,15 @@ public class LineCreateResponse {
     }
 
     public static LineCreateResponse of(Line line) {
-        return new LineCreateResponse(line.getId(), line.getName(), line.getColor(), 1L, 2L, 10, line.getCreatedDate(), line.getModifiedDate());
+        Station upStation = line.getUpStation();
+        Station downStation = line.getDownStation();
+
+        Long upStationId = upStation != null ? upStation.getId(): null;
+        Long downStationId = downStation != null ? downStation.getId(): null;
+        return new LineCreateResponse(
+                line.getId(), line.getName(), line.getColor(),
+                upStationId, downStationId, line.getDistance(),
+                line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
@@ -60,7 +70,7 @@ public class LineCreateResponse {
         return downStationId;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
