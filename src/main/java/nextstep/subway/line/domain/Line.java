@@ -1,12 +1,18 @@
 package nextstep.subway.line.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -16,6 +22,9 @@ public class Line extends BaseEntity {
 	@Column(unique = true)
 	private String name;
 	private String color;
+
+	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+	private List<Station> stations = new ArrayList<>();
 
 	public Line() {
 	}
@@ -47,12 +56,7 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	@Override
-	public String toString() {
-		return "Line{" +
-			"id=" + id +
-			", name='" + name + '\'' +
-			", color='" + color + '\'' +
-			'}';
+	public List<Station> getStations() {
+		return stations;
 	}
 }
