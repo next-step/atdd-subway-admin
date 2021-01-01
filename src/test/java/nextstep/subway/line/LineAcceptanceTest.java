@@ -129,7 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// then
 		assertAll(
-			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
 			() -> assertThat(지하철_노선_조회_요청(line.getId()).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
 		);
 	}
@@ -165,6 +165,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	private ExtractableResponse<Response> 지하철_노선_전체_조회_요청() {
 		return RestAssured
 			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when().get("/lines")
 			.then().log().all().extract();
 	}
@@ -172,6 +173,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
 		ExtractableResponse<Response> response = RestAssured
 			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when().get("/lines/" + id)
 			.then().log().all().extract();
 		return response;

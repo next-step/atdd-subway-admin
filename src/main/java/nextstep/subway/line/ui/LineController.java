@@ -52,7 +52,7 @@ public class LineController {
 	@DeleteMapping(path = "/{id}")
 	public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
 		lineService.deleteLine(id);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 
 	@ExceptionHandler(RuntimeException.class)
