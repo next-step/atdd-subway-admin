@@ -30,18 +30,12 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> getAllLines() {
-        List<LineResponse> allLines = lineService.findAllLines()
-                .stream()
-                .map(line -> line.setStations(Arrays.asList(new Station("잠실"), new Station("역삼"))))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(allLines);
+        return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable("id") long id) {
-        LineResponse line = lineService.findById(id);
-        line.setStations(Arrays.asList(new Station("잠실"), new Station("역삼")));
-        return ResponseEntity.ok().body(line);
+        return ResponseEntity.ok().body(lineService.findById(id));
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -7,6 +7,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -23,12 +24,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    private long upStationId;
+    private long downStationId;
+
+    @BeforeEach
+    void beforeEach() {
+        upStationId = 지하철역_생성_요청후_Id("역삼역");
+        downStationId = 지하철역_생성_요청후_Id("잠실역");
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "GREEN", 1L, 2L, 1000L);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "GREEN", upStationId, downStationId, 1000L);
 
         // then
         // 지하철_노선_생성됨
@@ -42,8 +53,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         String lineName = "2호선";
         String lineColor = "GREEN";
-        long upStationId = 1L;
-        long downStationId = 2L;
         long distance = 1000L;
         지하철_노선_생성_요청(lineName, lineColor, upStationId, downStationId, distance);
 
@@ -63,8 +72,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
         List<String> createdUrls = Arrays.asList(
-                지하철_노선_등록되어_있음("2호선", "GREEN", 1L, 2L, 1000L),
-                지하철_노선_등록되어_있음("1호선", "BLUE", 3L, 4L, 500L)
+                지하철_노선_등록되어_있음("2호선", "GREEN", upStationId, downStationId, 1000L),
+                지하철_노선_등록되어_있음("1호선", "BLUE", upStationId, downStationId, 500L)
         );
 
         // when
@@ -83,7 +92,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        String createdUrl = 지하철_노선_등록되어_있음("2호선", "GREEN", 1L, 2L, 1000L);
+
+        String createdUrl = 지하철_노선_등록되어_있음("2호선", "GREEN", upStationId, downStationId, 1000L);
 
         // when
         // 지하철_노선_조회_요청
@@ -99,14 +109,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        String createdUrl = 지하철_노선_등록되어_있음("2호선", "GREEN", 1L, 2L, 1000L);
+        String createdUrl = 지하철_노선_등록되어_있음("2호선", "GREEN", upStationId, downStationId, 1000L);
 
         // when
         // 지하철_노선_수정_요청
         String name = "1호선";
         String color = "BLUE";
-        long upStationId = 지하철역_생성_요청후_Id("잠실역");
-        long downStationId = 지하철역_생성_요청후_Id("역삼역");
+        long upStationId = 지하철역_생성_요청후_Id("청량리역");
+        long downStationId = 지하철역_생성_요청후_Id("천안역");
         long distance = 1000L;
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdUrl, name, color, upStationId, downStationId, distance);
 
