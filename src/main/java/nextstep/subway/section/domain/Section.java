@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -25,7 +26,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"line_id", "up_station_id", "down_station_id"}))
-public class Section {
+public class Section extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
