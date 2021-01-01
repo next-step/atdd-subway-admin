@@ -24,7 +24,7 @@ public class Sections {
         checkContainSection(section);
         checkContainAnyStations(section);
 
-        addInOrOutSection(section);
+        addSectionInMatch(section);
     }
 
     public List<StationResponse> getStationResponses() {
@@ -33,7 +33,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private void addInOrOutSection(Section newSection) {
+    private void addSectionInMatch(Section newSection) {
         // Add InSection
         // 기존 Section 상행 종점과 새로운 Section 상행 종점이 일치한 경우
         if (isExistCompare(section -> section.equalUpUpStation(newSection))) {
