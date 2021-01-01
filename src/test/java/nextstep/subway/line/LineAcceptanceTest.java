@@ -77,7 +77,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         생성된_지하철_노선_목록_응답된_지하철_노선_목록_검증(response, asList(created1, created2, created3, created4), "$");
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("지하철역 포함하여 노선을 조회한다.")
     @Test
     void getLine() {
         // given
