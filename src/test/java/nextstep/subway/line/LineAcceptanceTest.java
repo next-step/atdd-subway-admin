@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.station.StationAcceptanceTestRequest.지하철역_생성_요청후_Id;
 import static nextstep.subway.utils.HttpTestStatusCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -104,8 +105,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_수정_요청
         String name = "1호선";
         String color = "BLUE";
-        long upStationId = 1L;
-        long downStationId = 2L;
+        long upStationId = 지하철역_생성_요청후_Id("잠실역");
+        long downStationId = 지하철역_생성_요청후_Id("역삼역");
         long distance = 1000L;
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdUrl, name, color, upStationId, downStationId, distance);
 
