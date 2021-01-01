@@ -45,7 +45,6 @@ public class LineService {
     public Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 노선입니다: " + id));
-    }
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
