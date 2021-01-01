@@ -1,8 +1,13 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.common.exception.CustomException;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -11,25 +16,28 @@ public class Line extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
+    @Column
     private String color;
-    private Long upStationId;
-    private Long downStationId;
-    private long distance;
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private final List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
 
-    public Line(String name, String color, long upStationId, long downStationId, long distance) {
-        this.name = name;
-        this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+    public Line(String name, String color, Station upStation, Station downStation, long distance) {
+        this(name, color);
+        Section section = new Section(this, upStation, downStation, distance);
+        this.sections.addAll(Arrays.asList(section.toUpwardEndSection(), section, section.toDownwardEndSection()));
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+    private Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public Long getId() {
@@ -44,15 +52,29 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public long getUpStationId() {
-        return upStationId;
+    public List<Station> getUpToDownSortedStations() {
+        List<Station> stations = new ArrayList<>();
+        Station upwardEndStation = this.getUpwardEndStation();
+        while (upwardEndStation != null) {
+            stations.add(upwardEndStation);
+            upwardEndStation = findNextUpStation(upwardEndStation);
+        }
+        return stations;
     }
 
-    public long getDownStationId() {
-        return downStationId;
+    private Station findNextUpStation(Station upwardEndStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation() == upwardEndStation)
+                .findAny()
+                .map(Section::getDownStation)
+                .orElse(null);
     }
 
-    public long getDistance() {
-        return distance;
+    private Station getUpwardEndStation() {
+        return sections.stream()
+                .filter(Section::isUpwardEndSection)
+                .findAny()
+                .orElseThrow(() -> new CustomException("상행선 종점이 존재하지 않습니다."))
+                .getDownStation();
     }
 }
