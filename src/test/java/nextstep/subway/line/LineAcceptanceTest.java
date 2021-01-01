@@ -51,7 +51,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	@DisplayName("지하철 노선 목록을 조회한다.")
+	@DisplayName("지하철 노선전체를 조회한다.")
 	@Test
 	void getLines() {
 		// given
@@ -106,18 +106,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Line line = 지하철_노선_생성("2호선", "green");
 
 		// when
-		ExtractableResponse<Response> response = RestAssured
-			.given().log().all()
-			.body(generateParam("3호선", "orange"))
-			.when().put("/lines/" + line.getId())
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> response = 지하철_노선_수정_요청(line.getId(), generateParam("3호선", "orange"));
 
 		// then
 		assertAll(
 			() -> assertThat(response).isNotNull(),
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-			() -> assertThat(response.as(Line.class)).isEqualTo(line)
+			() -> assertThat(response.as(Line.class)).isNotEqualTo(line),
+			() -> assertThat(response.as(Line.class).getId()).isEqualTo(line.getId()),
+			() -> assertThat(response.as(Line.class).getName()).isEqualTo("3호선")
 		);
 	}
 
@@ -125,13 +122,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
-		// 지하철_노선_등록되어_있음
+		Line line = 지하철_노선_생성("2호선", "green");
 
 		// when
-		// 지하철_노선_제거_요청
+		ExtractableResponse<Response> response = 지하철_노삭_삭제_요청(line.getId());
 
 		// then
-		// 지하철_노선_삭제됨
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(지하철_노선_조회_요청(line.getId()).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+		);
+	}
+
+	@DisplayName("지하철 잘못된 노선을 제거한다.")
+	@Test
+	void deleteFailLine() {
+		// given
+		Line line = 지하철_노선_생성("2호선", "green");
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노삭_삭제_요청(line.getId() + 1);
+
+		// then
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+		);
 	}
 
 	private Line 지하철_노선_생성(String name, String color) {
@@ -160,6 +175,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.when().get("/lines/" + id)
 			.then().log().all().extract();
 		return response;
+	}
+
+	private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Map<String, String> params) {
+		return RestAssured
+			.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().put("/lines/" + id)
+			.then().log().all()
+			.extract();
+	}
+
+	private ExtractableResponse<Response> 지하철_노삭_삭제_요청(Long id) {
+		return RestAssured
+			.given().log().all()
+			.when().delete("/lines/" + id)
+			.then().log().all()
+			.extract();
 	}
 
 	private Map<String, String> generateParam(String name, String color) {
