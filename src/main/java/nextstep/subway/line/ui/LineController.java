@@ -55,9 +55,8 @@ public class LineController {
      */
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        if (this.lineService.existLineById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
+        this.notExistLineById(id);
+
         this.lineService.saveLine(lineRequest);
         return ResponseEntity.ok().build();
     }
@@ -69,11 +68,19 @@ public class LineController {
      */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
-        if (this.lineService.existLineById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
+        this.notExistLineById(id);
+
         this.lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 해당 ID로 노선이 존재하지 않으면 예외를 발생시킵니다.
+     * @param id
+     */
+    private void notExistLineById(Long id) {
+        this.lineService.findLine(id)
+                .orElseThrow(() -> new IllegalArgumentException("cannot find line."));
     }
 
 }

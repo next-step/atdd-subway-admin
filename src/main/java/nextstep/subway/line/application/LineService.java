@@ -52,12 +52,4 @@ public class LineService {
         this.lineRepository.delete(this.lineRepository.getOne(id));
     }
 
-    /**
-     * 해당 ID로 지하철 노선이 존재하는지 여부를 반환합니다.
-     * @param id
-     * @return
-     */
-    public boolean existLineById(Long id) {
-        return !this.findLine(id).isPresent();
-    }
 }

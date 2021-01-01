@@ -169,6 +169,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    @DisplayName("ID가 없는 노선을 수정 요청 하는 경우 오류 발생")
+    @Test
+    void updateLineByNotExistIdOccurredException() {
+        // given
+        // 지하철_노선_등록되어_있음
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_생성_요청(params);
+
+        // when
+        // 지하철_노선_수정_요청
+        String modifeName = "구분당선";
+        params.put("name", modifeName);
+        ExtractableResponse<Response> response
+                = 지하철_노선_수정_요청(params, createResponse1.header("Location") + "00");
+
+        // then
+        // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
