@@ -66,5 +66,11 @@ public class LineService {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new LineNotFoundException(String.format("노선이 존재하지 않습니다. (입력 id 값: %d)", id)));
     }
+
+    @Transactional
+    public void deleteStation(final Long id, final Long stationId) {
+        Line persistLine = getPersistLine(id);
+        persistLine.delete(stationId);
+    }
 }
 

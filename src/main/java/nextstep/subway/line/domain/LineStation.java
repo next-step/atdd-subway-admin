@@ -53,11 +53,19 @@ public class LineStation {
         return isUpStation(station) || isDownStation(station);
     }
 
-    public boolean canAddBetweenSection(final Section other) {
-        return section.canAddBetweenSection(other);
+    public boolean contains(final Long stationId) {
+        return section.contains(stationId);
+    }
+
+    public boolean canSeparate(final Section other) {
+        return section.canSeparate(other);
     }
 
     public void update(final Section other) {
-        section.update(other);
+        section.separate(other);
+    }
+
+    public void merge(final LineStation other) {
+        section.merge(other.section);
     }
 }

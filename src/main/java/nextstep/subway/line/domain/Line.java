@@ -40,16 +40,20 @@ public class Line extends BaseEntity {
         return new Line(name, color, section);
     }
 
+    public List<Station> getOrderedStations() {
+        return lineStations.getOrderedStations();
+    }
+
     public void update(Line other) {
         this.name = other.getName();
         this.color = other.getColor();
     }
 
-    public void add(final LineStation lineStation){
+    public void add(final LineStation lineStation) {
         lineStations.add(lineStation);
     }
 
-    public List<Station> getOrderedStations() {
-        return lineStations.getOrderedStations();
+    public void delete(final Long stationId) {
+        lineStations.delete(stationId);
     }
 }

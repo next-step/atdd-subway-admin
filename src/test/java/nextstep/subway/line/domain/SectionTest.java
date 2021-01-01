@@ -133,8 +133,8 @@ class SectionTest {
                 .distance(newDistance)
                 .build();
 
-        boolean result = section1.canAddBetweenSection(newSection);
-        section1.update(newSection);
+        boolean result = section1.canSeparate(newSection);
+        section1.separate(newSection);
 
         // then
         assertThat(result).isTrue();
@@ -155,8 +155,8 @@ class SectionTest {
                 .distance(newDistance)
                 .build();
 
-        boolean result = section1.canAddBetweenSection(newSection);
-        section1.update(newSection);
+        boolean result = section1.canSeparate(newSection);
+        section1.separate(newSection);
 
         // then
         assertThat(result).isTrue();
@@ -186,8 +186,8 @@ class SectionTest {
                 .build();
 
         // when
-        boolean between = section1.canAddBetweenSection(betweenSection);
-        boolean end = section1.canAddBetweenSection(endSection);
+        boolean between = section1.canSeparate(betweenSection);
+        boolean end = section1.canSeparate(endSection);
 
         // then
         assertThat(between).isTrue();
@@ -215,11 +215,110 @@ class SectionTest {
                 .build();
 
         // when
-        boolean between = section1.canAddBetweenSection(betweenSection);
-        boolean end = section1.canAddBetweenSection(endSection);
+        boolean between = section1.canSeparate(betweenSection);
+        boolean end = section1.canSeparate(endSection);
 
         // then
         assertThat(between).isTrue();
         assertThat(end).isFalse();
+    }
+
+    @DisplayName("지하철 구간의 상행역과 연결된 구간을 병합한다.")
+    @Test
+    void mergeDown() {
+        // given
+        Station 당정역 = new Station("당정역");
+        Station 군포역 = new Station("군포역");
+        Station 금정역 = new Station("금정역");
+        Distance distance1 = Distance.valueOf(20);
+        Distance distance2 = Distance.valueOf(50);
+
+        Section base = Section.builder()
+                .upStation(당정역)
+                .downStation(군포역)
+                .distance(distance1)
+                .build();
+
+        Section section = Section.builder()
+                .upStation(군포역)
+                .downStation(금정역)
+                .distance(distance2)
+                .build();
+
+        // when
+        base.merge(section);
+
+        // then
+        Section expected = Section.builder()
+                .upStation(당정역)
+                .downStation(금정역)
+                .distance(distance1.add(distance2))
+                .build();
+
+        assertThat(base).isEqualTo(expected);
+        assertThat(base.getDistance()).isEqualTo(distance1.add(distance2));
+    }
+
+    @DisplayName("지하철 구간의 하행역과 연결된 구간을 병합한다.")
+    @Test
+    void mergeUp() {
+        // given
+        Station 당정역 = new Station("당정역");
+        Station 군포역 = new Station("군포역");
+        Station 금정역 = new Station("금정역");
+        Distance distance1 = Distance.valueOf(20);
+        Distance distance2 = Distance.valueOf(50);
+
+        Section base = Section.builder()
+                .upStation(군포역)
+                .downStation(금정역)
+                .distance(distance1)
+                .build();
+
+        Section section = Section.builder()
+                .upStation(당정역)
+                .downStation(군포역)
+                .distance(distance2)
+                .build();
+
+        // when
+        base.merge(section);
+
+        // then
+        Section expected = Section.builder()
+                .upStation(당정역)
+                .downStation(금정역)
+                .distance(distance1.add(distance2))
+                .build();
+
+        assertThat(base).isEqualTo(expected);
+        assertThat(base.getDistance()).isEqualTo(distance1.add(distance2));
+    }
+
+    @DisplayName("연결된 구간이 아니면 지하철 병합 할 수 없다.")
+    @Test
+    void mergeFail() {
+        // given
+        Station station1 = new Station("당정역");
+        Station station2 = new Station("군포역");
+        Station station3 = new Station("금정역");
+        Station station4 = new Station("관악역");
+        Distance distance1 = Distance.valueOf(20);
+        Distance distance2 = Distance.valueOf(50);
+
+        Section base = Section.builder()
+                .upStation(station1)
+                .downStation(station2)
+                .distance(distance1)
+                .build();
+
+        Section section = Section.builder()
+                .upStation(station3)
+                .downStation(station4)
+                .distance(distance2)
+                .build();
+
+        // when / then
+        assertThrows(IllegalStateException.class, () -> base.merge(section));
     }
 }

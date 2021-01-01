@@ -99,7 +99,7 @@ class LineStationTest {
 
     @DisplayName("새로운 지하철 구간을 반영할 수 있는지 확인한다.")
     @Test
-    void canAddBetweenSection() {
+    void canSeparate() {
         // given
         Station station1 = new Station("청량리역");
         Station station2 = new Station("신도림역");
@@ -120,8 +120,8 @@ class LineStationTest {
                 .build();
 
         // when
-        boolean result1 = line1Station.canAddBetweenSection(section1);
-        boolean result2 = line1Station.canAddBetweenSection(section2);
+        boolean result1 = line1Station.canSeparate(section1);
+        boolean result2 = line1Station.canSeparate(section2);
 
         // then
         assertThat(result1).isTrue();
@@ -148,5 +148,41 @@ class LineStationTest {
         assertThat(line1Station.getUpStation()).isEqualTo(station2);
         assertThat(line1Station.getDownStation()).isEqualTo(line1Station.getDownStation());
         assertThat(line1Station.getSection().getDistance()).isEqualTo(Distance.valueOf(90));
+    }
+
+    @DisplayName("지하철 노선 구간을 병합한다.")
+    @Test
+    void merge() {
+        // given
+        Station station1 = new Station("금정역");
+        Station station2 = new Station("당정역");
+        Station station3 = new Station("관악역");
+        Distance distance1 = Distance.valueOf(100);
+        Distance distance2 = Distance.valueOf(200);
+
+        Section section1 = Section.builder()
+                .upStation(station1)
+                .downStation(station2)
+                .distance(distance1)
+                .build();
+        Section section2 = Section.builder()
+                .upStation(station2)
+                .downStation(station3)
+                .distance(distance2)
+                .build();
+
+        LineStation lineStation1 = new LineStation(line1, section1);
+        LineStation lineStation2 = new LineStation(line1, section2);
+
+        // when
+        lineStation1.merge(lineStation2);
+
+        // then
+        Section expected = Section.builder()
+                .upStation(station1)
+                .downStation(station3)
+                .distance(distance1.add(distance2))
+                .build();
+        assertThat(lineStation1.getSection()).isEqualTo(expected);
     }
 }
