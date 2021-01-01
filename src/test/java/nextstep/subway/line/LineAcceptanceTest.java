@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -68,6 +69,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+        assertThat(stationRepository.findById(1L).orElseThrow(NotFoundException::new).getName()).isEqualTo("신도림역");
+        assertThat(stationRepository.findById(2L).orElseThrow(NotFoundException::new).getName()).isEqualTo("까치산역");
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -91,6 +94,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return POST_요청_보내기(params, DEFAULT_LINES_URI);
     }
 
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(final String name, final String color) {
+        생성_요청할_노선_정보_설정(name, color);
+        return 지하철_노선_생성_요청();
+    }
+
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
@@ -98,8 +106,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         final ExtractableResponse<Response> firstCreateResponse = 지하철_노선_생성_요청();
         // 지하철_노선_등록되어_있음
-        생성_요청할_노선_정보_설정("5호선", "보라색");
-        final ExtractableResponse<Response> secondCreateResponse = 지하철_노선_생성_요청();
+        final ExtractableResponse<Response> secondCreateResponse = 지하철_노선_생성_요청("5호선", "보라색");
 
         // when
         // 지하철_노선_목록_조회_요청

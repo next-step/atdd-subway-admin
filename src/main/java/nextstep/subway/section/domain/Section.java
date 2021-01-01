@@ -21,24 +21,48 @@ public class Section extends BaseEntity {
     private Line line;
 
     @ManyToOne
-    @JoinColumn(name = "departure_id")
-    private Station departure;
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
 
     @ManyToOne
-    @JoinColumn(name = "arrival_id")
-    private Station arrival;
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
 
     @Embedded
     private Distance distance;
 
-    public Section(final Line line, final Station departure, final Station arrival, final Distance distance) {
+    public Section(final Line line, final Station upStation, final Station downStation, final Distance distance) {
         this.line = line;
-        this.departure = departure;
-        this.arrival = arrival;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Station getArrival() {
-        return arrival;
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
+    }
+
+    public boolean isSameUpStation(final Section newSection) {
+        return this.upStation == newSection.getUpStation();
+    }
+
+    public boolean isSameDownStation(final Section newSection) {
+        return this.downStation == newSection.getDownStation();
+    }
+
+    public boolean distanceIsLessThan(final Section newSection) {
+        return this.distance.isLessThan(newSection.getDistance());
     }
 }

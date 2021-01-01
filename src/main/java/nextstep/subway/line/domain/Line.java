@@ -2,15 +2,12 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.distance.Distance;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Entity
 public class Line extends BaseEntity {
@@ -23,8 +20,8 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = Sections.of();
 
     public Line() {
     }
@@ -34,26 +31,19 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-//    private Line(final String name, final String color, final Station upStation, final Station downStation, final long distance) {
-//        this.name = name;
-//        this.color = color;
-//        final Section section = new Section(this, upStation, downStation, new Distance(distance));
-//        sections.add(section);
-//    }
-
     public Line(final String name, final String color, final Station upStation, final Station downStation, final long distance) {
         this.name = name;
         this.color = color;
         sections.add(new Section(this, upStation, downStation, new Distance(distance)));
     }
 
-//    public static Line of(final LineRequest request, final Station upStation, final Station downStation) {
-//        return new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
-//    }
-
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void addSection(final Section newSection) {
+        sections.add(newSection);
     }
 
     public Long getId() {
@@ -69,6 +59,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.stream().map(Section::getArrival).collect(toList());
+        return sections.getStations();
     }
 }
