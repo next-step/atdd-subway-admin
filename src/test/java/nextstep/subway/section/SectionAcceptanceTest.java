@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,9 @@ import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.*;
 import static nextstep.subway.line.LineAcceptanceTest.DEFAULT_LINES_URI;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -81,9 +84,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             () -> assertThat(lineAfterAddSection).isNotNull(),
             () -> assertThat(lineAfterAddSection.getName()).isEqualTo("5호선"),
             () -> assertThat(lineAfterAddSection.getColor()).isEqualTo("보라색"),
-            () -> assertThat(lineAfterAddSection.getStations().get(0).getName()).isEqualTo("김포공항역"),
-            () -> assertThat(lineAfterAddSection.getStations().get(1).getName()).isEqualTo("까치산역"),
-            () -> assertThat(lineAfterAddSection.getStations().get(2).getName()).isEqualTo("목동역")
+            () -> assertThat(lineAfterAddSection.getStations().stream().map(StationResponse::getName).collect(toList()))
+                .containsOnly("김포공항역", "까치산역", "목동역")
         );
     }
 
