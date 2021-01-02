@@ -119,8 +119,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_목록_응답됨
-        assertThat(노선목록조회Response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(노선목록조회Response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        지하철_노선조회_응답_해더_검증(노선목록조회Response);
 
         노선_목록_ID_검증(신분당선Response, 제2호선Response, 노선목록조회Response);
 
@@ -137,8 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> response = 지하철_노선_목록조회_요청();
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        지하철_노선조회_응답_해더_검증(response);
         assertThat(response.jsonPath().getList(".", LineResponse.class).size()).isEqualTo(0);
     }
 
@@ -169,8 +167,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_응답됨
-        assertThat(단건조회Response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(단건조회Response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        지하철_노선조회_응답_해더_검증(단건조회Response);
 
         노선_응답_검증(단건조회Response, "bg-red-600", "신분당선");
 
@@ -343,6 +340,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getUpStationId()).isEqualTo(upStationId);
         assertThat(lineResponse.getDownStationId()).isEqualTo(downStationId);
         assertThat(lineResponse.getDistance()).isEqualTo(distance);
+    }
+
+    private void 지하철_노선조회_응답_해더_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
     }
 
     private long 노선_응답에서_ID_추출(ExtractableResponse<Response> response) {
