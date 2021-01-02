@@ -14,7 +14,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
+
+import static nextstep.subway.line.LineAcceptanceTest.searchSubwayLineOne;
 
 
 @DisplayName("지하철 구간 관련 기능 테스트")
@@ -105,28 +110,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .containsExactly(station1.getName(), station3.getName(), station2.getName());
     }
 
-    @DisplayName("노선에 구간등록 실패한다. case1 : 구간길이가 큰 경우")
-    @Test
-    void failAddSection1() {
+    @DisplayName("노선에 구간등록 실패한다. case1 : 구간길이가 크거나 같을 경우")
+    @ParameterizedTest
+    @CsvSource({"1, 3, 12", "1, 3, 10"})
+    void failAddSection1(Long station1Id, Long station3Id, int distance) {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station1.getId(), station3.getId(), 12);
+        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station1Id, station3Id, distance);
 
         // then
         // 지하철_노선에_지하철역_등록 실패됨
          Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-    }
-
-    @DisplayName("노선에 구간등록 실패한다. case1 : 구간길이가 같은 경우")
-    @Test
-    void failAddSection2() {
-        // when
-        // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> response = LineAcceptanceTest.addSubwayStation(line.getId(), station1.getId(), station3.getId(), 10);
-
-        // then
-        // 지하철_노선에_지하철역_등록 실패됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("노선에 구간등록 실패한다. case2 : 이미 등록되어 있는 구간인 경우")
@@ -150,6 +144,51 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선에_지하철역_등록 실패됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+    @DisplayName("구간을 제거한다. : 중간역 제거")
+    @ParameterizedTest
+    @ValueSource(longs = {1L, 2L, 3L})
+    void deleteSection(Long stationId) {
+        // given
+        // 지하철_노선이 등록되어 있음.
+        LineAcceptanceTest.addSubwayStation(line.getId(), station2.getId(), station3.getId(), 6);
+
+        // when
+        // 지하철_노선에_지하철역_제거_요청
+        ExtractableResponse<Response> response = LineAcceptanceTest.deleteSubwayStation(line.getId(), stationId);
+        ExtractableResponse<Response> searchResult = searchSubwayLineOne(line.getId());
+
+        // then
+        // 지하철_노선에_지하철역_삭제됨.
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse lineResponse = searchResult.response().getBody().as(LineResponse.class);
+        Assertions.assertThat(lineResponse.getStations().size()).isEqualTo(2);
+    }
+    @DisplayName("역제거 실패한다. case1 : 등록된 역이 아닌 경우")
+    @Test
+    void deleteSection1() {
+        // given
+        // 지하철_노선이 등록되어 있음.
+        LineAcceptanceTest.addSubwayStation(line.getId(), station2.getId(), station3.getId(), 6);
+
+        // when
+        // 지하철_노선에_지하철역_제거_요청
+        ExtractableResponse<Response> response = LineAcceptanceTest.deleteSubwayStation(line.getId(), 5L);
+
+        // then
+        // 지하철_노선에_지하철역_삭제_실패됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+    @DisplayName("역제거 실패한다. case1 : 최소 구간일 경우")
+    @Test
+    void deleteSection2() {
+        // when
+        // 지하철_노선에_지하철역_제거_요청
+        ExtractableResponse<Response> response = LineAcceptanceTest.deleteSubwayStation(line.getId(), station1.getId());
+
+        // then
+        // 지하철_노선에_지하철역_삭제_실패됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

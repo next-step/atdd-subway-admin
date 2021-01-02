@@ -5,7 +5,6 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
-    private static final int INITIAL_DISTANCE = 0;
     private LineRepository lineRepository;
     private StationRepository stationRepository;
 
@@ -36,8 +34,7 @@ public class LineService {
         Station upStation = findStationById(request.getUpStationId());
         Station downStation = findStationById(request.getDownStationId());
         Line persistLine = lineRepository.save(request.toLine());
-        persistLine.addSection(new Section(null, upStation, INITIAL_DISTANCE));
-        persistLine.addSection(new Section(upStation, downStation, request.getDistance()));
+        persistLine.initialSection(upStation, downStation, request.getDistance());
         return LineResponse.of(persistLine, persistLine.getStations());
     }
 
@@ -70,11 +67,12 @@ public class LineService {
                                     sectionRequest.getDistance());
 
         Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
-
-        Sections sections = line.getSections();
-        sections.validation(newSection);
-        sections.updateSection(newSection);
-        line.addSection(newSection);
+        line.updateSection(newSection);
         return LineResponse.of(line, line.getStations());
+    }
+
+    public void deleteStation(Long id, Long stationId) {
+        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        line.deleteSection(findStationById(stationId));
     }
 }

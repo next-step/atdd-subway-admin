@@ -307,4 +307,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 log().all().
                 extract();
     }
+    @DisplayName("지하철 구간 삭제")
+    public static ExtractableResponse<Response> deleteSubwayStation(Long id, Long stationId) {
+        return RestAssured.given().log().all().
+                param("stationId", stationId).
+                when().
+                delete("/lines/" + id + "/sections").
+                then().
+                log().all().
+                extract();
+    }
 }
