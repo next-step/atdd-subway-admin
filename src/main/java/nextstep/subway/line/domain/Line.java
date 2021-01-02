@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
+    private static final int INITIAL_DISTANCE = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -50,6 +51,10 @@ public class Line extends BaseEntity {
     public Sections getSections() {
         return this.sections;
     }
+    public void initialSection(Station upStation, Station downStation, int distance) {
+        addSection(new Section(null, upStation, INITIAL_DISTANCE));
+        addSection(new Section(upStation, downStation, distance));
+    }
 
     public void addSection(Section section) {
         this.sections.addSection(section);
@@ -72,5 +77,14 @@ public class Line extends BaseEntity {
 
     public void removeSection(Section section) {
         this.sections.getSections().remove(section);
+    }
+
+    public void deleteSection(Station station) {
+        this.sections.deleteSection(station);
+    }
+
+    public void updateSection(Section newSection) {
+        this.sections.updateSection(newSection);
+        addSection(newSection);
     }
 }

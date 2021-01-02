@@ -63,7 +63,9 @@ public class Section extends BaseEntity {
             this.line.removeSection(this);
         }
         this.line = line;
-        this.line.addSection(this);
+        if(!this.line.getSections().hasSection(this)) {
+            this.line.addSection(this);
+        }
     }
 
     @Override

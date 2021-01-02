@@ -33,27 +33,30 @@ public class Sections {
         sections.add(section);
     }
 
-    public void updateSection(Line line, Section newSection) {
+    public void updateSection(Section newSection) {
         updateValidation(newSection);
         updateWithUpStation(newSection);
         updateWithDownStation(newSection);
-        line.addSection(newSection);
     }
 
-    public void deleteSection(Line line, Station station) {
-        deleteValidation(line, station);
+    public void deleteSection(Station station) {
+        deleteValidation(station);
         Section upSection = getSection(station);
         deleteStation(station, upSection);
         upSection.removeLine();
     }
 
     public void updateValidation(Section newSection) {
-        if (sections.stream().anyMatch(oldSection -> oldSection.equals(newSection))) {
+        if (hasSection(newSection)) {
             throw new RuntimeException("동일한 구간 추가 요청");
         }
         if (sections.stream().noneMatch(oldSection -> oldSection.hasStation(newSection))) {
             throw new RuntimeException("등록되어 있지 않은 구간 추가 요청");
         }
+    }
+
+    public boolean hasSection(Section newSection) {
+        return sections.stream().anyMatch(oldSection -> oldSection.equals(newSection));
     }
 
     private void updateWithDownStation(Section newSection) {
@@ -94,12 +97,11 @@ public class Sections {
                     .findFirst().orElseThrow(NoSuchElementException::new);
     }
 
-    private void deleteValidation(Line line, Station station) {
-        List<Station> stations = line.getStations();
-        if(stations.size() <= MINIMUN_STATION_NUMBER) {
+    private void deleteValidation(Station station) {
+        if(getSections().size() <= MINIMUN_STATION_NUMBER) {
             throw new RuntimeException("최소 구간에 등록된 역입니다.");
         }
-        if(!stations.contains(station)) {
+        if(sections.stream().noneMatch(section -> section.getStation().equals(station))) {
             throw new RuntimeException("등록된 역이 아닙니다.");
         }
     }
