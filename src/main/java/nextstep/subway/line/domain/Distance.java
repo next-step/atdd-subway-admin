@@ -34,6 +34,13 @@ public class Distance {
 		return Objects.hash(distance);
 	}
 
+	@Override
+	public String toString() {
+		return "Distance{" +
+				"distance=" + distance +
+				'}';
+	}
+
 	public Distance minus(Distance secondOperand) {
 		return new Distance(this.distance - secondOperand.distance);
 	}

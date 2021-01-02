@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SuppressWarnings("NonAsciiCharacters")
 class LineSectionsTest {
 
+	private static final int DISTANCE = 50;
 	private Line 노선;
 	private Station A역;
 	private Station 추가역;
@@ -22,7 +23,7 @@ class LineSectionsTest {
 		A역 = new Station(1L, "A");
 		C역 = new Station(2L, "C");
 		추가역 = new Station(3L, "추가역");
-		노선 = new Line("노선", "green", A역, C역, 50);
+		노선 = new Line("노선", "green", A역, C역, DISTANCE);
 	}
 
 	@Test
@@ -32,6 +33,7 @@ class LineSectionsTest {
 
 		// then
 		assertThat(노선.getSortedStations()).containsExactly(A역, 추가역, C역);
+		assertThat(노선.getDistance()).isEqualTo(new Distance(DISTANCE));
 	}
 
 	@Test
@@ -41,6 +43,7 @@ class LineSectionsTest {
 
 		// then
 		assertThat(노선.getSortedStations()).containsExactly(A역, 추가역, C역);
+		assertThat(노선.getDistance()).isEqualTo(new Distance(DISTANCE));
 	}
 
 	@Test
@@ -57,6 +60,7 @@ class LineSectionsTest {
 
 		// then
 		assertThat(노선.getSortedStations()).containsExactly(추가역, A역, C역);
+		assertThat(노선.getDistance()).isEqualTo(new Distance(DISTANCE + 80));
 	}
 
 	@Test
@@ -66,6 +70,7 @@ class LineSectionsTest {
 
 		// then
 		assertThat(노선.getSortedStations()).containsExactly(A역, C역, 추가역);
+		assertThat(노선.getDistance()).isEqualTo(new Distance(DISTANCE + 30));
 	}
 
 	@Test
@@ -108,6 +113,7 @@ class LineSectionsTest {
 		assertThat(노선.getSortedStations())
 				.hasSize(2)
 				.containsSequence(추가역, C역);
+		assertThat(노선.getDistance()).isEqualTo(new Distance(DISTANCE + 50));
 	}
 
 	@Test
@@ -122,6 +128,7 @@ class LineSectionsTest {
 		assertThat(노선.getSortedStations())
 				.hasSize(2)
 				.containsSequence(C역, 추가역);
+		assertThat(노선.getDistance()).isEqualTo(new Distance(DISTANCE));
 	}
 
 	@Test
@@ -136,6 +143,7 @@ class LineSectionsTest {
 		assertThat(노선.getSortedStations())
 				.hasSize(2)
 				.containsSequence(A역, C역);
+		assertThat(노선.getDistance()).isEqualTo(new Distance(DISTANCE));
 	}
 
 	@Test
