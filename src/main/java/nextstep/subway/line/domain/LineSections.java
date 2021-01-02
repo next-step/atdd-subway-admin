@@ -23,47 +23,42 @@ public class LineSections {
 	}
 
 	public List<Station> getSortedStations() {
-		Section section = findFirstSection();
-		if (section == null) {
+		Optional<Section> section = findFirstSection();
+		if (!section.isPresent()) {
 			return Collections.emptyList();
 		}
 
 		List<Station> stations = new ArrayList<>();
-		stations.add(section.getFront());
-		while (section != null) {
-			stations.add(section.getBack());
-			section = findSectionByFrontStation(sections, section.getBack());
+		stations.add(section.get().getFront());
+		while (section.isPresent()) {
+			stations.add(section.get().getBack());
+			section = findSectionByFrontStation(sections, section.get().getBack());
 		}
 
 		return stations;
 	}
 
-	@Nullable
-	private Section findFirstSection() {
-		Section nextSection = this.sections.stream().findAny().orElse(null);
-		Section firstSection = nextSection;
-		while (nextSection != null) {
+	private Optional<Section> findFirstSection() {
+		Optional<Section> nextSection = this.sections.stream().findAny();
+		Optional<Section> firstSection = nextSection;
+		while (nextSection.isPresent()) {
 			firstSection = nextSection;
-			nextSection = findSectionByBackStation(this.sections, nextSection.getFront());
+			nextSection = findSectionByBackStation(this.sections, nextSection.get().getFront());
 		}
 
 		return firstSection;
 	}
 
-	@Nullable
-	private static Section findSectionByFrontStation(List<Section> sections, Station station) {
+	private static Optional<Section> findSectionByFrontStation(List<Section> sections, Station station) {
 		return sections.stream()
 				.filter(section -> section.isFrontEqual(station))
-				.findFirst()
-				.orElse(null);
+				.findFirst();
 	}
 
-	@Nullable
-	private static Section findSectionByBackStation(List<Section> sections, Station station) {
+	private static Optional<Section> findSectionByBackStation(List<Section> sections, Station station) {
 		return sections.stream()
 				.filter(section -> section.isBackEqual(station))
-				.findFirst()
-				.orElse(null);
+				.findFirst();
 	}
 
 	public void addSection(Section section) {
