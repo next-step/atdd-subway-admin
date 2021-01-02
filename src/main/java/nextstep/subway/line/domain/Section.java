@@ -41,10 +41,6 @@ public class Section extends BaseEntity {
     this.distance = distance;
   }
 
-  public void changeLine(final Line line) {
-    this.line = line;
-  }
-
   public boolean isDownStationInSection(Station station) {
     return this.downStation.equals(station);
   }
