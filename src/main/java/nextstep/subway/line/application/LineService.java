@@ -11,7 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,22 +33,26 @@ public class LineService {
     public LineCreateResponse saveLine(LineRequest request) {
         Line line = request.toLine();
 
-        Long upStationId = request.getUpStationId();
-        if (upStationId != null) {
-            Station upStation = stationRepository.findById(upStationId)
-                    .orElseThrow(EntityNotFoundException::new);
-            line.changeUpStation(upStation);
-        }
-
-        Long downStationId = request.getDownStationId();
-        if (downStationId != null) {
-            Station downStation = stationRepository.findById(downStationId)
-                    .orElseThrow(EntityNotFoundException::new);
-            line.changeDownStation(downStation);
-        }
+        changeStations(request, line);
 
         Line persistLine = lineRepository.save(line);
         return LineCreateResponse.of(persistLine);
+    }
+
+    private void changeStations(LineRequest request, Line line) {
+        Long upStationId = request.getUpStationId();
+        Long downStationId = request.getDownStationId();
+        List<Station> stations = stationRepository.findAllById(Arrays.asList(upStationId, downStationId));
+
+        changeStation(upStationId, stations, line::changeUpStation);
+        changeStation(downStationId, stations, line::changeDownStation);
+    }
+
+    private void changeStation(Long stationId, List<Station> stations, Consumer<Station> stationConsumer) {
+        stations.stream()
+                .filter(station -> station.getId().equals(stationId))
+                .findAny()
+                .ifPresent(stationConsumer);
     }
 
     @Transactional(readOnly = true)

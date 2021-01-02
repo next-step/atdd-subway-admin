@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,13 +36,11 @@ class LineServiceTest {
         Station station2 = new Station(2L, "강남역");
         LineService lineService = new LineService(lineRepository, stationRepository);
 
-        when(stationRepository.findById(any()))
-                .thenReturn(Optional.of(station2))
-                .thenReturn(Optional.of(station1));
+        when(stationRepository.findAllById(any()))
+                .thenReturn(Arrays.asList(station2, station1));
+
         when(lineRepository.save(any()))
-                .thenReturn(
-                        new Line(1L, "신분당선", "bg-red-600", station2, station1, 7)
-                );
+                .thenReturn(new Line(1L, "신분당선", "bg-red-600", station2, station1, 7));
 
         //when
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station2.getId(), station1.getId(),
