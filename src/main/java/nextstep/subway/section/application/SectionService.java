@@ -9,6 +9,7 @@ import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -32,6 +33,10 @@ public class SectionService {
         return SectionCreateResponse.of(section);
     }
 
+    public void delete(List<Section> sections) {
+        sectionRepository.deleteAll(sections);
+    }
+
     private int getNextSequence() {
         Section section = sectionRepository.findFirstByOrderBySequenceDesc();
         if (section == null) {
@@ -39,4 +44,6 @@ public class SectionService {
         }
         return section.getSequence() + STEP;
     }
+
+
 }
