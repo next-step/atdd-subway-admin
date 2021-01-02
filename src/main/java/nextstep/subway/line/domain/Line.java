@@ -1,18 +1,20 @@
 package nextstep.subway.line.domain;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,11 +24,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "line")
-    private final List<Section> sections = new ArrayList<>();
-
-    public Line() {
-    }
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line(String name, String color) {
         this.name = name;
@@ -36,7 +35,16 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        sections.add(new Section(this, upStation, downStation, new Distance(distance)));
+
+        sections.addInitSection(Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build());
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
     }
 
     public void update(Line line) {
@@ -45,23 +53,6 @@ public class Line extends BaseEntity {
     }
 
     public List<StationResponse> getStationResponses() {
-        Set<StationResponse> stations = new LinkedHashSet<>();
-        sections.forEach(section -> {
-            stations.add(StationResponse.of(section.getUpStation()));
-            stations.add(StationResponse.of(section.getDownStation()));
-        });
-        return new ArrayList<>(stations);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
+        return sections.getStationResponses();
     }
 }

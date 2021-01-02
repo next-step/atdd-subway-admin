@@ -99,6 +99,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    public static List<Long> 응답_데이터에서_지하철역_id들_추출(List<StationResponse> stationResponses) {
+        return stationResponses.stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+    }
+
     private ExtractableResponse<Response> 모든_지하철역_조회() {
         return RestAssured.given().log().all()
                 .when()

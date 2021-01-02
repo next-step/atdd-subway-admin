@@ -20,20 +20,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private List<LineResponse> lineResponses = new ArrayList<>();
+    private Long 강남역_id;
+    private Long 역삼역_id;
+
+    private Long 신분당선_id;
+    private Long twoLine_id;
 
     @BeforeEach
     void beforeSetUp() {
-        StationResponse 강남역 = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class);
-        StationResponse 역삼역 = StationAcceptanceTest.지하철역_생성("역삼역").as(StationResponse.class);
+        강남역_id = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class).getId();
+        역삼역_id = StationAcceptanceTest.지하철역_생성("역삼역").as(StationResponse.class).getId();
 
-        Long upStationId = 강남역.getId();
-        Long downStationId = 역삼역.getId();
-
-        lineResponses.add(지하철_노선_생성("신분당선", "bg-red-600", upStationId, downStationId, 10)
-                        .as(LineResponse.class));
-        lineResponses.add(지하철_노선_생성("2호선", "bg-green-600", upStationId, downStationId, 20)
-                        .as(LineResponse.class));
+        신분당선_id = 지하철_노선_생성("신분당선", "bg-red-600", 강남역_id, 역삼역_id, 10)
+                        .as(LineResponse.class).getId();
+        twoLine_id = 지하철_노선_생성("2호선", "bg-green-600", 강남역_id, 역삼역_id, 20)
+                        .as(LineResponse.class).getId();
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -41,7 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         ExtractableResponse<Response> response =
-                지하철_노선_생성("1호선", "bg-blue-600", 1L, 2L, 10);
+                지하철_노선_생성("1호선", "bg-blue-600", 강남역_id, 역삼역_id, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -53,7 +54,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // when
         ExtractableResponse<Response> response =
-                지하철_노선_생성("신분당선", "bg-red-600", 1L, 2L, 10);
+                지하철_노선_생성("신분당선", "bg-red-600", 강남역_id, 역삼역_id, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -68,17 +69,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<Long> expectedLineIds = 응답_데이터에서_지하철_노선_id들_추출(lineResponses);
         List<Long> resultLineIds = 응답_데이터에서_지하철_노선_id들_추출(Arrays.asList(response.as(LineResponse[].class)));
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(resultLineIds).containsAll(Arrays.asList(신분당선_id, twoLine_id));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
         // when
-        LineResponse createLineResponse = lineResponses.get(0);
-        ExtractableResponse<Response> response = 지하철_노선_조회(createLineResponse.getId().toString());
+        ExtractableResponse<Response> response = 지하철_노선_조회(String.valueOf(신분당선_id));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -88,8 +87,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // when
-        LineResponse createLineResponse = lineResponses.get(0);
-        ExtractableResponse<Response> response = 지하철_노선_수정(createLineResponse.getId(), "구분당선", "bg-blue-600");
+        ExtractableResponse<Response> response = 지하철_노선_수정(신분당선_id, "구분당선", "bg-blue-600");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -98,15 +96,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
-        // when
-        LineResponse createLineResponse = lineResponses.get(0);
-        ExtractableResponse<Response> response = 지하철_노선_제거(createLineResponse.getId());
+        // when]
+        ExtractableResponse<Response> response = 지하철_노선_제거(신분당선_id);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성(String name, String color,
+    public static ExtractableResponse<Response> 지하철_노선_생성(String name, String color,
                                                     Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
