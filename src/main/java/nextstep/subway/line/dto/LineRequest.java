@@ -1,28 +1,37 @@
 package nextstep.subway.line.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class LineRequest {
+
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String color;
 
-    public LineRequest() {
-    }
+    private long upStationId;
 
-    public LineRequest(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
+    private long downStationId;
 
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
+    @Min(1)
+    private int distance;
 
     public Line toLine() {
         return new Line(name, color);
+    }
+
+    public Line toLineWithStations(Station upStation, Station downStation) {
+        return new Line(name, color, upStation, downStation, distance);
     }
 }

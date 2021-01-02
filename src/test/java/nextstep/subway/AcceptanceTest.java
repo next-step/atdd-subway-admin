@@ -45,4 +45,8 @@ public class AcceptanceTest {
     protected void assertResponseHttpStatusIsNoContent(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    protected void assertResponseHttpStatusIsNotFound(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
 }
