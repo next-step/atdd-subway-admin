@@ -3,6 +3,9 @@ package nextstep.subway.station.dto;
 import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static java.util.stream.Collectors.*;
 
 public class StationResponse {
     private Long id;
@@ -14,8 +17,13 @@ public class StationResponse {
         return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
     }
 
-    public StationResponse() {
+    public static List<StationResponse> ofList(List<Station> stations) {
+        return stations.stream()
+                .map(StationResponse::of)
+                .collect(toList());
     }
+
+    public StationResponse() {}
 
     public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
