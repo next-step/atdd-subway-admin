@@ -86,13 +86,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
-	private ExtractableResponse<Response> 지하철_조회_요청(long id) {
-		return RestAssured
-			.given().log().all()
-			.when().get("/stations/" + id)
-			.then().log().all().extract();
-	}
-
 	private long location_header에서_ID_추출(ExtractableResponse<Response> extractableResponse) {
 		return Long.parseLong(extractableResponse.header("Location").split("/")[2]);
 	}

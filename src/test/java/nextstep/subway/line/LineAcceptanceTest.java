@@ -3,22 +3,21 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import nextstep.subway.AcceptanceTest;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.AcceptanceTest;
 
 /**
  * Feature: 지하철 노선 관련 기능
@@ -84,7 +83,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given : 지하철_노선_등록되어_있음
-		List<Long> 등록된역_ID_목록 = Stream.of(
+		List<Long> 지하철노선_ID_목록 = Stream.of(
 			지하철노선_생성_요청("2호선", "green"),
 			지하철노선_생성_요청("5호선", "purple")
 		).map(this::location_header에서_ID_추출)
@@ -99,7 +98,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then : 지하철_노선_목록_응답됨 & 지하철_노선_목록_포함됨
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-			() -> assertThat(response.jsonPath().getList("id", Long.class)).containsAll(등록된역_ID_목록)
+			() -> assertThat(response.jsonPath().getList("id", Long.class)).containsAll(지하철노선_ID_목록)
 		);
 	}
 
