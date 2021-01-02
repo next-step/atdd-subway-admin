@@ -24,8 +24,8 @@ public class Sections {
   }
 
   public void addSection(Section newSection) {
-    boolean isIncludeUpStation = findByStation(newSection.getUpStation());
-    boolean isIncludeDownStation = findByStation(newSection.getDownStation());
+    boolean isIncludeUpStation = isIncludeStationList(newSection.getUpStation());
+    boolean isIncludeDownStation = isIncludeStationList(newSection.getDownStation());
 
     validateSection(isIncludeUpStation, isIncludeDownStation);
 
@@ -86,7 +86,7 @@ public class Sections {
     }
   }
 
-  private boolean findByStation(Station station) {
+  private boolean isIncludeStationList(Station station) {
     return this.sections.stream()
         .anyMatch(section -> section.isIncludeInSection(station));
   }
