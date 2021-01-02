@@ -2,12 +2,12 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.application.SectionValidationException;
 import nextstep.subway.station.domain.Station;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class LineSections {
@@ -19,7 +19,14 @@ public class LineSections {
 	}
 
 	public LineSections(Section... sections) {
-		this.sections = new ArrayList<>(Arrays.asList(sections));
+		this(Arrays.asList(sections));
+	}
+
+	public LineSections(List<Section> sections) {
+		if (sections.size() == 0) {
+			throw new IllegalArgumentException("sections cannot be empty");
+		}
+		this.sections = new ArrayList<>(sections);
 	}
 
 	public List<Station> getSortedStations() {
@@ -87,5 +94,47 @@ public class LineSections {
 		if (hasNoStations) {
 			throw new SectionValidationException("one station must be included in sections");
 		}
+	}
+
+	public void removeSection(Station station) {
+		validateRemoveSection(station);
+		LineSections stationIncluded = getStationIncludedSections(station);
+		if (stationIncluded.sections.size() > 1) {
+			Section mergedSection = stationIncluded.merge();
+			this.sections.add(mergedSection);
+		}
+		this.sections.removeAll(stationIncluded.sections);
+	}
+
+	private void validateRemoveSection(Station station) {
+		final boolean hasNoStations = this.sections.stream().noneMatch(section -> section.containsAnyStation(station));
+		if (hasNoStations) {
+			throw new SectionValidationException("not included station");
+		}
+
+		if (this.sections.size() == 1) {
+			throw new SectionValidationException("last section");
+		}
+	}
+
+	private LineSections getStationIncludedSections(Station station) {
+		List<Section> sections = this.sections.stream()
+				.filter(section -> section.containsAnyStation(station))
+				.collect(Collectors.toList());
+		return new LineSections(sections);
+	}
+
+	private Section merge() {
+		List<Station> stations = getSortedStations();
+		return new Section(this.sections.get(0).getLine(),
+				stations.get(0), stations.get(stations.size() - 1),
+				getDistance());
+	}
+
+	public Distance getDistance() {
+		return this.sections.stream()
+				.map(Section::getDistance)
+				.reduce(Distance::plus)
+				.orElseGet(() -> new Distance(0));
 	}
 }

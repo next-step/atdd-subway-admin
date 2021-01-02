@@ -8,9 +8,10 @@ import java.util.Objects;
 public class Distance {
 
 	@Column(name = "distance", nullable = false)
-	private int distance;
+	private final int distance;
 
 	public Distance() {
+		distance = 0;
 	}
 
 	public Distance(int distance) {
@@ -35,5 +36,9 @@ public class Distance {
 
 	public Distance minus(Distance secondOperand) {
 		return new Distance(this.distance - secondOperand.distance);
+	}
+
+	public Distance plus(Distance secondOperand) {
+		return new Distance(this.distance + secondOperand.distance);
 	}
 }

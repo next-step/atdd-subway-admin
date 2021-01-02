@@ -46,6 +46,10 @@ public class Section extends BaseEntity {
 		return isStationContains(section.front) && isStationContains(section.back);
 	}
 
+	public boolean containsAnyStation(Station station) {
+		return isStationContains(station);
+	}
+
 	public boolean containsAnyStation(Section section) {
 		return isStationContains(section.front) || isStationContains(section.back);
 	}

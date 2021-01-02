@@ -95,4 +95,62 @@ class LineSectionsTest {
 				.hasSize(2)
 				.containsSequence(C역, A역);
 	}
- }
+
+	@Test
+	void removeSection_역사이() {
+		// given
+		노선.addSection(추가역, A역, 50);
+
+		// when
+		노선.removeSection(A역);
+
+		// then
+		assertThat(노선.getSortedStations())
+				.hasSize(2)
+				.containsSequence(추가역, C역);
+	}
+
+	@Test
+	void removeSection_상행종점() {
+		// given
+		노선.addSection(C역, 추가역, 50);
+
+		// when
+		노선.removeSection(A역);
+
+		// then
+		assertThat(노선.getSortedStations())
+				.hasSize(2)
+				.containsSequence(C역, 추가역);
+	}
+
+	@Test
+	void removeSection_하행종점() {
+		// given
+		노선.addSection(C역, 추가역, 50);
+
+		// when
+		노선.removeSection(추가역);
+
+		// then
+		assertThat(노선.getSortedStations())
+				.hasSize(2)
+				.containsSequence(A역, C역);
+	}
+
+	@Test
+	void removeSection_구간미포함역() {
+		// when & then
+		assertThatThrownBy(() -> 노선.removeSection(추가역))
+				.isInstanceOf(SectionValidationException.class)
+				.hasMessageContaining("not included station");
+	}
+
+	@Test
+	void removeSection_마지막구간() {
+		// when & then
+		assertThatThrownBy(() -> 노선.removeSection(C역))
+				.isInstanceOf(SectionValidationException.class)
+				.hasMessageContaining("last section");
+	}
+}
