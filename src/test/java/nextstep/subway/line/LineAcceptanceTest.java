@@ -7,17 +7,15 @@ import nextstep.subway.station.StationAcceptanceTestSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 
-import static nextstep.subway.line.NewLineAcceptanceTestSupport.*;
+import static nextstep.subway.line.LineAcceptanceTestSupport.*;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class NewLineAcceptanceTest extends AcceptanceTest {
+public class LineAcceptanceTest extends AcceptanceTest {
 
 	private Long stationId1;
 

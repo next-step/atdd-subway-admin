@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseEntity {
+public abstract class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +21,13 @@ public class BaseEntity {
 
     @LastModifiedDate
     private LocalDateTime modifiedDate;
+
+    public BaseEntity() {
+    }
+
+    protected BaseEntity(Long id) {
+        this.id = id;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -32,4 +32,8 @@ public class Distance {
 	public int hashCode() {
 		return Objects.hash(distance);
 	}
+
+	public Distance minus(Distance secondOperand) {
+		return new Distance(this.distance - secondOperand.distance);
+	}
 }

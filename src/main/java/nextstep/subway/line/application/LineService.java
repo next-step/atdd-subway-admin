@@ -2,9 +2,11 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.AddSectionRequest;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.application.StationNotFoundException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
@@ -33,8 +35,7 @@ public class LineService {
 				front,
 				back,
 				lineCreateRequest.getStationDistance());
-		line = lineRepository.save(line);
-		return LineResponse.of(line);
+		return LineResponse.of(lineRepository.save(line));
 	}
 
 	@Transactional(readOnly = true)
@@ -51,18 +52,30 @@ public class LineService {
 
 	@Transactional
 	public void updateLineById(Long id, LineUpdateRequest lineUpdateRequest) {
-		Line line = findLine(id);
-		line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
+		findLine(id).update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
 	}
 
 	@Transactional
 	public void deleteLineById(Long id) {
-		Line line = findLine(id);
-		lineRepository.delete(line);
+		lineRepository.delete(findLine(id));
 	}
 
 	private Line findLine(Long id) {
 		return lineRepository.findById(id)
 				.orElseThrow(() -> new LineNotFoundException("cannot find line"));
+	}
+
+	@Transactional
+	public void addSection(Long id, AddSectionRequest addSectionRequest) {
+		Station upStation;
+		Station downStation;
+		try {
+			upStation = stationService.findById(addSectionRequest.getUpStationId());
+			downStation = stationService.findById(addSectionRequest.getDownStationId());
+		} catch (StationNotFoundException e) {
+			throw new SectionValidationException("station not found");
+		}
+
+		findLine(id).addSection(upStation, downStation, addSectionRequest.getDistance());
 	}
 }

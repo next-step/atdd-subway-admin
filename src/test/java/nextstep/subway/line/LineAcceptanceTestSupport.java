@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("NonAsciiCharacters")
-class NewLineAcceptanceTestSupport {
-	NewLineAcceptanceTestSupport() {
+class LineAcceptanceTestSupport {
+	LineAcceptanceTestSupport() {
 	}
 
 	static void 지하철노선_프로퍼티_검사(ExtractableResponse<Response> createResponse,
