@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;

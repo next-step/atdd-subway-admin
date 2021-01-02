@@ -33,10 +33,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-        assertThat(response.header("Location")).startsWith("/lines/");
-
         노선_생성_응답_검증(response, "bg-red-600", "신분당선");
     }
 
@@ -359,15 +355,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).startsWith("/lines/");
 
         LineCreateResponse lineResponse = response.jsonPath().getObject(".", LineCreateResponse.class);
+        assertThat(lineResponse.getId()).isNotNull();
         assertThat(lineResponse.getColor()).isEqualTo(color);
         assertThat(lineResponse.getName()).isEqualTo(name);
+        assertThat(lineResponse.getCreatedDate()).isNotNull();
+        assertThat(lineResponse.getModifiedDate()).isNotNull();
         assertThat(lineResponse.getUpStationId()).isEqualTo(upStationId);
         assertThat(lineResponse.getDownStationId()).isEqualTo(downStationId);
         assertThat(lineResponse.getDistance()).isEqualTo(distance);
-        assertThat(lineResponse.getName()).isEqualTo(name);
-        assertThat(lineResponse.getId()).isNotNull();
-        assertThat(lineResponse.getCreatedDate()).isNotNull();
-        assertThat(lineResponse.getModifiedDate()).isNotNull();
     }
 
     private long 노선_응답에서_id_추출(ExtractableResponse<Response> response) {

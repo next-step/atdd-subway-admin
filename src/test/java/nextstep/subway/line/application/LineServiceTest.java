@@ -44,7 +44,8 @@ class LineServiceTest {
                 );
 
         //when
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station2.getId(), station1.getId(), 7);
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station2.getId(), station1.getId(),
+                7);
         LineCreateResponse lineCreateResponse = lineService.saveLine(lineRequest);
 
         //then
