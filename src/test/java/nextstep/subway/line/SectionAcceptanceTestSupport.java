@@ -52,4 +52,16 @@ public class SectionAcceptanceTestSupport {
 	static void assertStatusCode(ExtractableResponse<Response> response, HttpStatus httpStatus) {
 		assertThat(response.statusCode()).isEqualTo(httpStatus.value());
 	}
+
+	static ExtractableResponse<Response> 지하철노선_구간_제거(long lineId, long stationId) {
+		return RestAssured
+				.given().log().all()
+				.queryParam("station", stationId)
+				.when().delete(String.format("/lines/%d/sections", lineId))
+				.then().log().all().extract();
+	}
+
+	static void assertMessageContains(ExtractableResponse<Response> response, String message) {
+		assertThat(response.jsonPath().getString("message")).contains(message);
+	}
 }
