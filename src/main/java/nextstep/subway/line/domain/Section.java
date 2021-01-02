@@ -45,15 +45,15 @@ public class Section extends BaseEntity {
     this.line = line;
   }
 
-  public boolean isIncludeInSection(Station station) {
+  public boolean isDownStationInSection(Station station) {
     return this.downStation.equals(station);
   }
 
-  public boolean isUpStationInSection(Station preStation) {
-    if (this.upStation == null || preStation == null) {
-      return this.upStation == preStation;
+  public boolean isUpStationInSection(Station upStation) {
+    if (this.upStation == null) {
+      return false;
     }
-    return this.upStation.getId().equals(preStation.getId());
+    return this.upStation.getId().equals(upStation.getId());
   }
 
   public void updateUpToDown(Station preStation, int distance) {

@@ -51,7 +51,7 @@ public class Sections {
 
   public void updateSectionWhenEqualDownStation(Section newSection) {
     this.sections.stream()
-        .filter(section -> section.isIncludeInSection(newSection.getDownStation()))
+        .filter(section -> section.isDownStationInSection(newSection.getDownStation()))
         .findFirst()
         .ifPresent(section -> section.updateDownToUp(newSection.getUpStation(), newSection.getDistance()));
   }
@@ -90,6 +90,6 @@ public class Sections {
 
   private boolean isIncludeStationList(Station station) {
     return this.sections.stream()
-        .anyMatch(section -> section.isIncludeInSection(station));
+        .anyMatch(section -> section.isDownStationInSection(station));
   }
 }
