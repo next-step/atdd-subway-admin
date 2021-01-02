@@ -1,11 +1,9 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
