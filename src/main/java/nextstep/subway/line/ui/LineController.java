@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static nextstep.subway.line.domain.LineStation.*;
+import static nextstep.subway.section.domain.Distance.*;
 import static org.springframework.http.MediaType.*;
 
 @RestController
@@ -45,10 +46,8 @@ public class LineController {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
 
-        LineStation upLineStation = createLineStation(upStation);
-        LineStation downLineStation = createLineStation(downStation);
-        upLineStation.applyPreviousStationAndNextStationWithDistanceForNextStation(null, downStation, lineRequest.getDistance());
-        downLineStation.applyPreviousStationAndNextStationWithDistanceForNextStation(upStation, null, DISTANCE_OF_LAST_STATION);
+        LineStation upLineStation = createLineStation(upStation, null, downStation, lineRequest.getDistance());
+        LineStation downLineStation = createLineStation(downStation, upStation, null, MIN_DISTANCE);
 
         LineResponse line = lineService.saveLine(lineRequest.toLine(), upLineStation, downLineStation);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
