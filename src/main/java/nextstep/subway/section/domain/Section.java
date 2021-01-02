@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.exception.BadRequestException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -31,6 +32,12 @@ public class Section extends BaseEntity {
         this.downStation = downStation;
         this.distance = distance;
         this.sectionNumber = sectionNumber;
+    }
+
+    public void validateDistance(Integer distance) {
+        if ( this.distance <= distance ) {
+            throw new BadRequestException("distance must be lower than " + this.distance);
+        }
     }
 
     public Line getLine() {

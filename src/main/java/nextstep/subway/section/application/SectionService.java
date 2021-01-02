@@ -37,7 +37,6 @@ public class SectionService {
 
     public SectionResponse saveSection(SectionRequest request) {
         request.validate();
-
         Line line = lineRepository.findById(request.getLineId())
                 .orElseThrow(() -> new NotExistsLineIdException(request.getLineId()));
         Station upStation = stationRepository.findById(request.getUpStationId())
@@ -90,9 +89,7 @@ public class SectionService {
             public Integer updateAndGetSectionNumber(SectionRepository sectionRepository, Long lineId,
                                                      Station upStation, Station downStation, Integer distance) {
                 Section expectedSection = findSectionThrows(sectionRepository, lineId, upStation.getId(), downStation.getId());
-                if ( expectedSection.getDistance() <= distance ) {
-                    throw new BadRequestException("distance must be lower than " + expectedSection.getDistance());
-                }
+                expectedSection.validateDistance(distance);
                 return updateAndGetSectionNumberUpCase(sectionRepository, expectedSection, lineId, downStation);
             }
 
@@ -119,9 +116,7 @@ public class SectionService {
             public Integer updateAndGetSectionNumber(SectionRepository sectionRepository, Long lineId,
                                                      Station upStation, Station downStation, Integer distance) {
                 Section expectedSection = findSectionThrows(sectionRepository, lineId, upStation.getId(), downStation.getId());
-                if (expectedSection.getDistance() <= distance) {
-                    throw new BadRequestException("distance must be lower than " + expectedSection.getDistance());
-                }
+                expectedSection.validateDistance(distance);
                 return updateAndGetSectionNumberDownCase(sectionRepository, expectedSection, lineId, upStation);
             }
 
