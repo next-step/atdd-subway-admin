@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.exception.SectionException;
-import nextstep.subway.line.util.ErrorMessage;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -14,6 +13,8 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Section extends BaseEntity {
+
+  public static final String WRONG_DISTANCE = "역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음";
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,7 +70,7 @@ public class Section extends BaseEntity {
 
   private void validateDistance(int distance) {
     if (this.upStation != null && this.distance <= distance) {
-      throw new SectionException(ErrorMessage.WRONG_DISTANCE);
+      throw new SectionException(WRONG_DISTANCE);
     }
   }
 

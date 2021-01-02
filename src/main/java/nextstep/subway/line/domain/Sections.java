@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.exception.SectionException;
-import nextstep.subway.line.util.ErrorMessage;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -15,6 +14,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Sections {
+
+  public static final String ALREADY_SECTION_EXIST = "상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음";
+  public static final String MUST_HAVING_UP_OR_DOWN_STATION = "상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음";
 
   @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
   private List<Section> sections = new ArrayList<>();
@@ -79,10 +81,10 @@ public class Sections {
 
   private void validateSection(boolean isIncludeUpStation, boolean isIncludeDownStation) {
     if (isIncludeUpStation && isIncludeDownStation) {
-      throw new SectionException(ErrorMessage.ALREADY_SECTION_EXIST);
+      throw new SectionException(ALREADY_SECTION_EXIST);
     }
     if (!isIncludeUpStation && !isIncludeDownStation) {
-      throw new SectionException(ErrorMessage.MUST_HAVING_UP_OR_DOWN_STATION);
+      throw new SectionException(MUST_HAVING_UP_OR_DOWN_STATION);
     }
   }
 
