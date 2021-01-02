@@ -18,7 +18,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
-@DisplayName("FavoriteRepositoryTest : 정렬, 페이징 테스트")
+@DisplayName("LineService 테스트")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest
 class LineServiceTest {
