@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -58,7 +59,11 @@ public class LineController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@ExceptionHandler(value = {DataIntegrityViolationException.class, NoSuchElementException.class})
+	@ExceptionHandler(value = {
+		DataIntegrityViolationException.class,
+		NoSuchElementException.class,
+		EmptyResultDataAccessException.class
+	})
 	public ResponseEntity handleIllegalArgsException(Exception e) {
 		return ResponseEntity.badRequest().build();
 	}
