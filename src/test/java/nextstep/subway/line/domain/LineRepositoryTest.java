@@ -44,4 +44,13 @@ class LineRepositoryTest {
 			.usingElementComparator(Comparator.comparing(Line::getId))
 			.containsAll(savedLines);
 	}
+
+	@Test
+	void findOne() {
+		Line 이호선 = savedLines.get(0);
+		assertThat(lineRepository.findById(이호선.getId()))
+			.isPresent()
+			.map(Line::getName)
+			.hasValue(이호선.getName());
+	}
 }

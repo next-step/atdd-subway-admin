@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -11,11 +12,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("FavoriteRepositoryTest : 정렬, 페이징 테스트")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest
 class LineServiceTest {
 
@@ -40,5 +43,16 @@ class LineServiceTest {
 			.hasSize(savedlineResponses.size())
 			.usingElementComparator(Comparator.comparing(LineResponse::getId))
 			.containsAll(lineResponses);
+	}
+
+	@Test
+	void findOne() {
+		LineResponse 저장해둔_이호선_응답 = savedlineResponses.get(0);
+		LineResponse lineResponse = lineService.findOne(저장해둔_이호선_응답.getId());
+		assertAll(
+			() -> assertThat(lineResponse.getId()).isEqualTo(저장해둔_이호선_응답.getId()),
+			() -> assertThat(lineResponse.getName()).isEqualTo(저장해둔_이호선_응답.getName()),
+			() -> assertThat(lineResponse.getColor()).isEqualTo(저장해둔_이호선_응답.getColor())
+		);
 	}
 }
