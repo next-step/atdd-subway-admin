@@ -68,3 +68,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ** 지하철 구간 등록 기능 구현
 ** 구간 등록 예외 케이스 인수 테스트 작성
 ** 구간 등록 예외 케이스 처리 기능 구현
+
+## 기능목록 step4
+** 노선의 구간을 제거하는 인수 테스트 작성 
+** 노선의 구간을 제거하는 기능을 구현하기
+** 구간 삭제 시 예외 케이스를 고려하기
