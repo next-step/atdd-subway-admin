@@ -14,6 +14,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -37,23 +38,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     public void setUpTest() {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "삼성역");
 
-        StationResponse response1 = StationAcceptanceTest.지하철_역_생성_요청(params1).as(StationResponse.class);
-        StationResponse response2 = StationAcceptanceTest.지하철_역_생성_요청(params2).as(StationResponse.class);
+        StationResponse response1 = StationAcceptanceTest.지하철_역_생성되어_있음("강남역").as(StationResponse.class);
+        StationResponse response2 = StationAcceptanceTest.지하철_역_생성되어_있음("삼성역").as(StationResponse.class);
 
         lineTwoCreateRequest = new LineCreateRequest("2호선", "green", response1.getId(), response2.getId(), 10);
 
-        Map<String, String> params3 = new HashMap<>();
-        params3.put("name", "잠원역");
-        Map<String, String> params4 = new HashMap<>();
-        params4.put("name", "신사역");
-
-        StationResponse response3 = StationAcceptanceTest.지하철_역_생성_요청(params3).as(StationResponse.class);
-        StationResponse response4 = StationAcceptanceTest.지하철_역_생성_요청(params4).as(StationResponse.class);
+        StationResponse response3 = StationAcceptanceTest.지하철_역_생성되어_있음("잠원역").as(StationResponse.class);
+        StationResponse response4 = StationAcceptanceTest.지하철_역_생성되어_있음("신사역").as(StationResponse.class);
 
         lineThreeCreateRequest = new LineCreateRequest("3호선", "orange", response3.getId(), response4.getId(), 10);
     }
