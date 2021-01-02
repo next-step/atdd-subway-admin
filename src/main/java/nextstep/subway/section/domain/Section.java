@@ -8,8 +8,6 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,8 +32,7 @@ public class Section extends BaseEntity {
     private Distance distance;
 
     @Builder
-    public Section(Long id, Line line, Station upStation, Station downStation, Distance distance) {
-        this.id = id;
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -46,7 +43,24 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    public List<Station> getStations() {
-        return Arrays.asList(upStation, downStation);
+    public boolean isUpStationInSection(Station newUpStation) {
+        if (this.upStation == null) {
+            return false;
+        }
+        return this.upStation.getId().equals(newUpStation.getId());
+    }
+
+    public boolean isDownStationInSection(Station newDownStation) {
+        return this.downStation.equals(newDownStation);
+    }
+
+    public void updateUpStationToDownStation(Station downStation, Distance distance) {
+        this.upStation = downStation;
+        this.distance.updateDistance(distance.getDistance());
+    }
+
+    public void updateDownStationToUpStation(Station upStation, Distance distance) {
+        this.downStation = upStation;
+        this.distance.updateDistance(distance.getDistance());
     }
 }

@@ -10,18 +10,26 @@ import javax.persistence.Embeddable;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Distance {
-    private static final String INVALID_VALUE_ERROR_MESSAGE = "거리는 0보다 커야 합니다.";
+    private static final String NEGATIVE_VALUE_ERROR_MESSAGE = "거리는 0보다 커야 합니다.";
     private static final int ZERO = 0;
     private int distance;
 
     public Distance(int distance) {
-        validateDistance(distance);
+        validateInitDistance(distance);
         this.distance = distance;
     }
 
-    private void validateDistance(int distance) {
-        if(distance <= ZERO) {
-            throw new IllegalArgumentException(INVALID_VALUE_ERROR_MESSAGE);
+    private void validateInitDistance(int distance) {
+        if(distance < ZERO) {
+            throw new IllegalArgumentException(NEGATIVE_VALUE_ERROR_MESSAGE);
         }
     }
+
+    public void updateDistance(int newDistance) {
+        if (this.distance != 0) {
+            this.distance -= newDistance;
+        }
+        this.distance = newDistance;
+    }
+
 }
