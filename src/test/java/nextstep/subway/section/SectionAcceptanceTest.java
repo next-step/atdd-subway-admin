@@ -15,6 +15,8 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -101,6 +103,64 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_등록한_구간_포함됨(response, Arrays.asList("천호역", "문정역", "모란역"));
     }
 
+    @DisplayName("상행역 기준, 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @ParameterizedTest
+    @ValueSource(ints = {10, 30})
+    void addInvalidDistanceBasedUpStation(int distance) {
+        // given
+        StationResponse 모란역 = StationAcceptanceTest.지하철역_생성_요청("모란역").as(StationResponse.class);
+        SectionRequest sectionRequest = getSectionRequest(천호역, 모란역.getId(), distance);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(lineNumber8.getId(), sectionRequest);
+
+        // then
+        지하철_노선에_유효하지_않은_구간_등록할수없음(response);
+    }
+
+    @DisplayName("하행역 기준, 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @ParameterizedTest
+    @ValueSource(ints = {10, 30})
+    void addInvalidDistanceBasedDownStation(int distance) {
+        // given
+        StationResponse 모란역 = StationAcceptanceTest.지하철역_생성_요청("모란역").as(StationResponse.class);
+        SectionRequest sectionRequest = getSectionRequest(모란역.getId(), 문정역, distance);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(lineNumber8.getId(), sectionRequest);
+
+        // then
+        지하철_노선에_유효하지_않은_구간_등록할수없음(response);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addSectionAlreadyExistStations() {
+        // given
+        SectionRequest sectionRequest = getSectionRequest(천호역, 문정역, 10);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(lineNumber8.getId(), sectionRequest);
+
+        // then
+        지하철_노선에_유효하지_않은_구간_등록할수없음(response);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void addNotExistStationsInLine() {
+        // given
+        StationResponse 강남역 = StationAcceptanceTest.지하철역_생성_요청("강남역").as(StationResponse.class);
+        StationResponse 판교역 = StationAcceptanceTest.지하철역_생성_요청("판교역").as(StationResponse.class);
+        SectionRequest sectionRequest = getSectionRequest(강남역.getId(), 판교역.getId(), 7);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(lineNumber8.getId(), sectionRequest);
+
+        // then
+        지하철_노선에_유효하지_않은_구간_등록할수없음(response);
+    }
+
     public ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(Long lineId, SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)
@@ -126,5 +186,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .map(SectionResponse::getName)
                 .collect(Collectors.toList());
         assertThat(resultStations).containsAll(expectedStations);
+    }
+
+    private void 지하철_노선에_유효하지_않은_구간_등록할수없음(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
