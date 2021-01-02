@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.section.dto;
 
 public class SectionAddCondition {
 	private boolean isOldUpStation;
@@ -20,19 +20,12 @@ public class SectionAddCondition {
 		return isOldUpStation;
 	}
 
-	public boolean isOldDownStation() {
-		return isOldDownStation;
-	}
-
 	public boolean isBetweenAdd(){
 		return this.isOldUpStation || this.isOldDownStation;
 	}
+
 	public boolean isNewUpStation() {
 		return isNewUpStation;
-	}
-
-	public boolean isNewDownStation() {
-		return isNewDownStation;
 	}
 
 }

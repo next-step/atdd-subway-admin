@@ -1,10 +1,15 @@
-package nextstep.subway.section;
+package nextstep.subway.section.application;
 
 import nextstep.subway.common.StationType;
+import nextstep.subway.common.exception.AlreadyExistsStationException;
+import nextstep.subway.common.exception.DistanceException;
+import nextstep.subway.common.exception.NotIncludeLineBothStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.domain.LineStationRepository;
+import nextstep.subway.section.dto.SectionAddCondition;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -42,7 +47,7 @@ public class SectionService {
 		SectionAddCondition sectionAddCondition = checkAddSectionStatus(sectionRequest, typeLineStationMap);
 		if (sectionAddCondition.isBetweenAdd()) {
 			if (line.checkDistanceValidate(sectionRequest.getDistance())) {
-				throw new RuntimeException("상.하행역 사이에 추가되는 역의 길이는 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다");
+				throw new DistanceException();
 			}
 			updateBetweenStation(sectionAddCondition, sectionRequest, line);
 			return;
@@ -55,10 +60,10 @@ public class SectionService {
 		boolean isOldDownStation = typeLineStationMap.get(StationType.DOWN_STATION).getStationId() == sectionRequest.getDownStationId();
 
 		if (!isOldUpStation && !isOldDownStation) {
-			throw new RuntimeException("해당 노선에 상행역과 하행역 둘 중 하나의 역도 포함되어있지 않습니다");
+			throw new NotIncludeLineBothStationException();
 		}
 		if (isOldUpStation && isOldDownStation) {
-			throw new RuntimeException("기등록된 상행역, 하행역 정보와 같습니다");
+			throw new AlreadyExistsStationException();
 		}
 
 		boolean isNewUpStation = typeLineStationMap.get(StationType.UP_STATION).getStationId() == sectionRequest.getDownStationId();
