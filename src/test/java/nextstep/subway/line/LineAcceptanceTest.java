@@ -61,14 +61,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithUpDownStation() {
         // when
         // 종점역 생성 요청
-        Map<String, String> 강남역Params = new HashMap<>();
-        강남역Params.put("name", "강남역");
-        ExtractableResponse<Response> 강남역Response = StationAcceptanceTest.지하철_생성_요청(강남역Params);
+        ExtractableResponse<Response> 강남역Response = StationAcceptanceTest.지하철_생성_요청("강남역");
         long 강남역Id = StationAcceptanceTest.지하철_생성_응답에서_id_추출(강남역Response);
 
-        Map<String, String> 역삼역Params = new HashMap<>();
-        역삼역Params.put("name", "역삼역");
-        ExtractableResponse<Response> 역삼역Response = StationAcceptanceTest.지하철_생성_요청(역삼역Params);
+        ExtractableResponse<Response> 역삼역Response = StationAcceptanceTest.지하철_생성_요청("역삼역");
         long 역삼역Id = StationAcceptanceTest.지하철_생성_응답에서_id_추출(역삼역Response);
 
         // 지하철_노선_생성_요청
@@ -90,19 +86,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 종점역 생성 요청
-        Map<String, String> 강남역Params = new HashMap<>();
-        강남역Params.put("name", "강남역");
-        ExtractableResponse<Response> 강남역Response = StationAcceptanceTest.지하철_생성_요청(강남역Params);
+        ExtractableResponse<Response> 강남역Response = StationAcceptanceTest.지하철_생성_요청("강남역");
         long 강남역Id = StationAcceptanceTest.지하철_생성_응답에서_id_추출(강남역Response);
 
-        Map<String, String> 역삼역Params = new HashMap<>();
-        역삼역Params.put("name", "역삼역");
-        ExtractableResponse<Response> 역삼역Response = StationAcceptanceTest.지하철_생성_요청(역삼역Params);
+        ExtractableResponse<Response> 역삼역Response = StationAcceptanceTest.지하철_생성_요청("역삼역");
         long 역삼역Id = StationAcceptanceTest.지하철_생성_응답에서_id_추출(역삼역Response);
 
-        Map<String, String> 선릉역Params = new HashMap<>();
-        선릉역Params.put("name", "선릉역");
-        ExtractableResponse<Response> 선릉역Response = StationAcceptanceTest.지하철_생성_요청(선릉역Params);
+        ExtractableResponse<Response> 선릉역Response = StationAcceptanceTest.지하철_생성_요청("선릉역");
         long 선릉역Id = StationAcceptanceTest.지하철_생성_응답에서_id_추출(선릉역Response);
 
         // 지하철_노선_등록되어_있음
@@ -157,14 +147,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 종점역 생성 요청
-        Map<String, String> 강남역Params = new HashMap<>();
-        강남역Params.put("name", "강남역");
-        ExtractableResponse<Response> 강남역Response = StationAcceptanceTest.지하철_생성_요청(강남역Params);
+        ExtractableResponse<Response> 강남역Response = StationAcceptanceTest.지하철_생성_요청("강남역");
         long 강남역Id = StationAcceptanceTest.지하철_생성_응답에서_id_추출(강남역Response);
 
-        Map<String, String> 역삼역Params = new HashMap<>();
-        역삼역Params.put("name", "역삼역");
-        ExtractableResponse<Response> 역삼역Response = StationAcceptanceTest.지하철_생성_요청(역삼역Params);
+        ExtractableResponse<Response> 역삼역Response = StationAcceptanceTest.지하철_생성_요청("역삼역");
         long 역삼역Id = StationAcceptanceTest.지하철_생성_응답에서_id_추출(역삼역Response);
 
         // 지하철_노선_등록되어_있음
