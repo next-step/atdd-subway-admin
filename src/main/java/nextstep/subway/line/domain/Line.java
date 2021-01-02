@@ -26,7 +26,7 @@ public class Line extends BaseEntity {
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
 	private List<Station> stations = new ArrayList<>();
 
-	public Line() {
+	protected Line() {
 	}
 
 	public Line(String name, String color) {

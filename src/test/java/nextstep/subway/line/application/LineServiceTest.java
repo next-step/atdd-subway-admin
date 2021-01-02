@@ -32,7 +32,7 @@ class LineServiceTest {
 	void saveTest() {
 		// given
 		LineRequest lineRequest = new LineRequest("2호선", "green");
-		when(lineRepository.save(any())).thenReturn(new Line(1L, "2호선", "green"));
+		when(lineRepository.findById(any())).thenReturn(java.util.Optional.of(new Line(1L, "2호선", "green")));
 
 		// when
 		LineResponse lineResponse = lineService.showLine(1L);
