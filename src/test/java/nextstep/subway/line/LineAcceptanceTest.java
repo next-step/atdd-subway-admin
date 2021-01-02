@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
@@ -14,9 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,13 +34,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         강남역 = StationAcceptanceTest.지하철_등록_요청("강남역").as(StationResponse.class);
         광교역 = StationAcceptanceTest.지하철_등록_요청("광교역").as(StationResponse.class);
-        Map<String, String> createParams = new HashMap<>();
-        createParams.put("name", "신분당선");
-        createParams.put("color", "bg-red-600");
-        createParams.put("upStationId", 강남역.getId() + "");
-        createParams.put("downStationId", 광교역.getId() + "");
-        createParams.put("distance", 10 + "");
-        response = LineAcceptanceTest.지하철_노선_생성_요청(createParams);
+
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10);
+        response = LineAcceptanceTest.지하철_노선_생성_요청(lineRequest);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -61,13 +56,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse 삼성역 = StationAcceptanceTest.지하철_등록_요청("삼성역").as(StationResponse.class);
         StationResponse 잠실역 = StationAcceptanceTest.지하철_등록_요청("잠실역").as(StationResponse.class);
-        Map<String, String> createParams = new HashMap<>();
-        createParams.put("name", "2호선");
-        createParams.put("color", "bg-green-600");
-        createParams.put("upStationId", 삼성역.getId() + "");
-        createParams.put("downStationId", 잠실역.getId() + "");
-        createParams.put("distance", 10 + "");
-        ExtractableResponse<Response> response2 = LineAcceptanceTest.지하철_노선_생성_요청(createParams);
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 삼성역.getId(), 잠실역.getId(), 10);
+        ExtractableResponse<Response> response2 = LineAcceptanceTest.지하철_노선_생성_요청(lineRequest);
 
         // when
         ExtractableResponse<Response> listResponse = 지하철_노선_목록_조회_요청();
@@ -101,46 +91,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        // given
-        Map<String, String> params = 지하철_노선_생성_파라미터("2호선", "green");
-        ExtractableResponse<Response> createdLine = 지하철_노선_생성_요청(params);
-
         // when
-        Map<String, String> params2 = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bluegreen");
-        Long lineId = getCreatedLineId(createdLine);
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(params2, lineId);
+        LineRequest lineRequest = new LineRequest("신분당선", "bluegreen");
+        Long lineId = getCreatedLineId(response);
+        ExtractableResponse<Response> update_response = 지하철_노선_수정_요청(lineRequest, lineId);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(update_response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
-        // given
-        Map<String, String> params = 지하철_노선_생성_파라미터("2호선", "green");
-        ExtractableResponse<Response> createdLine = 지하철_노선_생성_요청(params);
-
         // when
-        Long lineId = getCreatedLineId(createdLine);
+        Long lineId = getCreatedLineId(response);
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private Map<String, String> 지하철_노선_생성_파라미터(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        return params;
-    }
-
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
         return RestAssured.given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -165,9 +138,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(Map<String, String> params2, Long lineId) {
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(LineRequest lineRequest, Long lineId) {
         return RestAssured.given().log().all()
-            .body(params2)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put("/lines/" + lineId)

@@ -5,7 +5,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,13 +35,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     강남역 = StationAcceptanceTest.지하철_등록_요청("강남역").as(StationResponse.class);
     광교역 = StationAcceptanceTest.지하철_등록_요청("광교역").as(StationResponse.class);
 
-    Map<String, String> createParams = new HashMap<>();
-    createParams.put("name", "신분당선");
-    createParams.put("color", "bg-red-600");
-    createParams.put("upStationId", 강남역.getId() + "");
-    createParams.put("downStationId", 광교역.getId() + "");
-    createParams.put("distance", 10 + "");
-    신분당선 = LineAcceptanceTest.지하철_노선_생성_요청(createParams).as(LineResponse.class);
+    LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10);
+    신분당선 = LineAcceptanceTest.지하철_노선_생성_요청(lineRequest).as(LineResponse.class);
   }
 
   @DisplayName("노선에 구간을 등록 - 역 사이에 새로운 역을 등록할 경우")
@@ -119,12 +116,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
   }
 
   private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
-    Map<String, String> param = new HashMap<>();
-    param.put("upStationId", upStationId + "");
-    param.put("downStationId", downStationId + "");
-    param.put("distance", distance + "");
+    SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
     return RestAssured.given().log().all()
-        .body(param)
+        .body(sectionRequest)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .when()
         .post("/lines/" + lineId + "/sections")
