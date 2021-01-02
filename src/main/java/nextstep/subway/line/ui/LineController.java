@@ -1,8 +1,8 @@
 package nextstep.subway.line.ui;
 
-import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
+import java.net.URI;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
@@ -11,13 +11,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-import java.util.List;
-import java.util.NoSuchElementException;
+import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 
 @RestController
 @RequestMapping("/lines")
@@ -42,6 +43,12 @@ public class LineController {
 	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
 		return ResponseEntity.ok().body(lineService.findOne(id));
+	}
+
+	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+		lineService.update(id, lineRequest);
+		return ResponseEntity.ok().build();
 	}
 
 	@ExceptionHandler(value = {DataIntegrityViolationException.class, NoSuchElementException.class})

@@ -55,4 +55,15 @@ class LineServiceTest {
 			() -> assertThat(lineResponse.getColor()).isEqualTo(저장해둔_이호선_응답.getColor())
 		);
 	}
+
+	@Test
+	void update() {
+		LineResponse 저장해둔_이호선_응답 = savedlineResponses.get(0);
+
+		lineService.update(저장해둔_이호선_응답.getId(), new LineRequest("3호선", "orange"));
+
+		assertThat(lineService.findOne(저장해둔_이호선_응답.getId()))
+			.hasFieldOrPropertyWithValue("name", "3호선")
+			.hasFieldOrPropertyWithValue("color", "orange");
+	}
 }

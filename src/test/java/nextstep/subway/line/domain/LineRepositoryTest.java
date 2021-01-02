@@ -53,4 +53,21 @@ class LineRepositoryTest {
 			.map(Line::getName)
 			.hasValue(이호선.getName());
 	}
+
+	@Test
+	void update() {
+		Line 이호선 = savedLines.get(0);
+
+		lineRepository
+			.findById(이호선.getId())
+			.ifPresent(line -> line.update(new Line("3호선", "orange")));
+
+		em.flush();
+		em.clear();
+
+		assertThat(lineRepository.findById(이호선.getId()))
+			.isPresent()
+			.map(Line::getName)
+			.hasValue("3호선");
+	}
 }
