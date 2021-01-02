@@ -48,14 +48,13 @@ public class SectionRemoveAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLastStation() {
         // given
-        노선에_지하철역_등록_요청(노선ID, 역삼ID, 선릉ID, DEFAULT_DISTANCE); // 강남 - 역삼 - 선릉
+        노선에_지하철역_등록_요청(노선ID, 역삼ID, 선릉ID, DEFAULT_DISTANCE);// 강남 - 역삼 - 선릉
 
         // when
         ExtractableResponse<Response> response = 노선에_지하철역_제거_요청(노선ID, 선릉ID);
 
         // then
         지하철_노선에_지하철역_제거됨(response);
-        노선에_지하철역_제거된_목록_정렬됨(response, Arrays.asList(강남ID, 역삼ID));
     }
 
     @DisplayName("노선의 구간을 제거할 수 있음: 중간역이 제거될 경우 재배치를 함")
@@ -69,6 +68,5 @@ public class SectionRemoveAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_지하철역_제거됨(response);
-        노선에_지하철역_제거된_목록_정렬됨(response, Arrays.asList(강남ID, 선릉ID));
     }
 }

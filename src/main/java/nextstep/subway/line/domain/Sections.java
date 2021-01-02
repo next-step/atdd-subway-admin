@@ -42,6 +42,10 @@ public class Sections {
         return stations;
     }
 
+    public void remove(Section section) {
+        sections.remove(section);
+    }
+
     private boolean isDownToDownSectionCase(Section section) {
         return sections.stream()
                 .map(Section::getDownStation)
@@ -59,13 +63,13 @@ public class Sections {
     private void addUpToUpSection(Section section) {
         Section oldSection = findUpToUpSection(section);
         sections.add(new Section(oldSection.getLine(), section.getDownStation(), oldSection.getDownStation(), getUpStationDistance(section, oldSection)));
-        sections.remove(oldSection);
+        remove(oldSection);
     }
 
     private void addDownToDownSection(Section section) {
         Section oldSection = findDownToDownSection(section);
         sections.add(new Section(oldSection.getLine(), oldSection.getUpStation(), section.getUpStation(), section.getDistance().get()));
-        sections.remove(oldSection);
+        remove(oldSection);
     }
 
     private Section findUpToUpSection(Section section) {

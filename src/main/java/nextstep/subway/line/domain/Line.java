@@ -4,11 +4,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -52,5 +53,27 @@ public class Line extends BaseEntity {
         Section section = new Section(this, upStation, downStation, distance);
         addSection(section);
         return section;
+    }
+
+    public void removeStationInSection(Station station) {
+        if (sections.getSections().size() <= 1) {
+            throw new IllegalStateException("구간에서 역을 제거할 수 없습니다.");
+        }
+
+        Optional<Section> upLineStation = sections.getSections().stream()
+                .filter(it -> it.getUpStation() == station)
+                .findFirst();
+        Optional<Section> downLineStation = sections.getSections().stream()
+                .filter(it -> it.getDownStation() == station)
+                .findFirst();
+
+        if (upLineStation.isPresent() && downLineStation.isPresent()) {
+            Long newDistance = upLineStation.get().getDistance().get() + downLineStation.get().getDistance().get();
+            Section newSection = new Section(this, downLineStation.get().getUpStation(), upLineStation.get().getDownStation(), newDistance);
+            sections.getSections().add(newSection);
+        }
+
+        upLineStation.ifPresent(it -> sections.remove(it));
+        downLineStation.ifPresent(it -> sections.remove(it));
     }
 }
