@@ -266,4 +266,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> response = 구간_내_지하철역_삭제_요청(lineNumber5.getId(), mokdongStation.getId());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
+
+    @DisplayName("노선에 속한 구간이 오직 한 개 일때 삭제한다.")
+    @Test
+    void deleteSectionWhenExistOnlyOneSection() {
+        final ExtractableResponse<Response> response = 구간_내_지하철역_삭제_요청(lineNumber5.getId(), gimpoAirportStation.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }

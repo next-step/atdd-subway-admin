@@ -18,7 +18,9 @@ import static java.util.stream.Collectors.toList;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sections {
     private static final String ERR_TEXT_INVALID_SECTION = "유효하지 않은 구간데이터입니다.";
-    private static final String ERR_TEXT_NOT_EXIST_DATA = "해당 데이터가 존재하지 않습니다";
+    private static final String ERR_TEXT_NOT_EXIST_DATA = "해당 데이터가 존재하지 않습니다.";
+    private static final String ERR_TEXT_EXIST_ONLY_ONE_SECTION = "구간이 하나밖에 존재하지 않는 경우 구간을 삭제할 수 없습니다.";
+    private static final int EXIST_ONLY_ONE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -128,16 +130,24 @@ public class Sections {
     }
 
     public void deleteByStation(final Station targetStation) {
+        makeSureThatCanDeleteSection(targetStation);
+
+        delete(targetStation);
+    }
+
+    private void makeSureThatCanDeleteSection(final Station targetStation) {
         if (this.sections.isEmpty()) {
             throw new IllegalArgumentException(ERR_TEXT_NOT_EXIST_DATA);
+        }
+
+        if (this.sections.size() == EXIST_ONLY_ONE) {
+            throw new IllegalArgumentException(ERR_TEXT_EXIST_ONLY_ONE_SECTION);
         }
 
         final List<Station> stations = getStations();
         if (!stations.contains(targetStation)) {
             throw new IllegalArgumentException(ERR_TEXT_NOT_EXIST_DATA);
         }
-
-        delete(targetStation);
     }
 
     private void delete(final Station targetStation) {
