@@ -1,5 +1,6 @@
 package nextstep.subway.line.ui;
 
+import nextstep.subway.common.ExceptionResponse;
 import nextstep.subway.common.NotFoundException;
 import nextstep.subway.common.ValidationException;
 import nextstep.subway.line.application.LineService;
@@ -59,9 +60,16 @@ public class LineController {
 		return ResponseEntity.ok().build();
 	}
 
+	@DeleteMapping("/{id}/sections")
+	public ResponseEntity removeSections(@PathVariable Long id,
+	                                     @RequestParam Long stationId) {
+		lineService.removeSection(id, stationId);
+		return ResponseEntity.noContent().build();
+	}
+
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-		return ResponseEntity.badRequest().build();
+		return ResponseEntity.badRequest().body(new ExceptionResponse(e.getMessage()));
 	}
 
 	@ExceptionHandler(NotFoundException.class)
@@ -71,6 +79,6 @@ public class LineController {
 
 	@ExceptionHandler(ValidationException.class)
 	public ResponseEntity handleValidationException(ValidationException e) {
-		return ResponseEntity.badRequest().build();
+		return ResponseEntity.badRequest().body(new ExceptionResponse(e.getMessage()));
 	}
 }

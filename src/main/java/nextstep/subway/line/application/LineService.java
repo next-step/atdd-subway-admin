@@ -78,4 +78,15 @@ public class LineService {
 
 		findLine(id).addSection(upStation, downStation, addSectionRequest.getDistance());
 	}
+
+	public void removeSection(Long id, Long stationId) {
+		Station station;
+		try {
+			station = stationService.findById(stationId);
+		} catch (StationNotFoundException e) {
+			throw new SectionValidationException("station not found");
+		}
+
+		findLine(id).removeSection(station);
+	}
 }
