@@ -17,7 +17,7 @@ public class LineResponse {
     private List<StationResponse> stations;
     private int distance;
 
-    public LineResponse() {
+    private LineResponse() {
     }
 
     public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
