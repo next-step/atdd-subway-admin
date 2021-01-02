@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,10 +26,12 @@ public class LineDistanceAcceptanceTest extends AcceptanceTest {
 		String downStationName = "건대입구역";
 		Long upStationId = 역_생성_후_stationId응답(upStationName);
 		Long downStationId = 역_생성_후_stationId응답(downStationName);
+
+		LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 3);
 		// when
 		// 지하철_노선_생성_요청
 		String lineName = "2호선";
-		ExtractableResponse response = 노선_생성_함수(lineName, "bg-green-600", upStationId, downStationId, 3);
+		ExtractableResponse response = 노선_생성_함수(lineRequest);
 		// then
 		// 지하철_노선_생성됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -41,7 +42,6 @@ public class LineDistanceAcceptanceTest extends AcceptanceTest {
 
 		LineResponse lineResponse = linesResponse.jsonPath().getObject(".", LineResponse.class);
 		assertThat(lineResponse.getName()).isEqualTo(lineName);
-		List<String> stationNames = lineResponse.getStations().stream().map(StationResponse::getName).collect(Collectors.toList());
 
 		assertThat(lineResponse.getStations().stream())
 				.extracting(StationResponse::getName)
@@ -66,18 +66,6 @@ public class LineDistanceAcceptanceTest extends AcceptanceTest {
 		return Long.valueOf(response.header("Location").split("/")[2]);
 	}
 
-	private ExtractableResponse 노선_생성_함수(String name, String color, long upStationId, long downStationId, int distance) throws JsonProcessingException {
-		ExtractableResponse<Response> response = RestAssured.given().log().all().
-				body(new LineRequest(name, color, upStationId, downStationId, distance)).
-				contentType(MediaType.APPLICATION_JSON_VALUE).
-				when().
-				post(LINE_URL).
-				then().
-				log().all().
-				extract();
-		return response;
-	}
-
 	@DisplayName("노선 조회 응답 결과에 등록된 구간을 참고하여 역 목록 응답 추가하기")
 	@Test
 	void listLineWithTerminal() throws JsonProcessingException {
@@ -85,9 +73,10 @@ public class LineDistanceAcceptanceTest extends AcceptanceTest {
 		String downStationName = "건대입구역";
 		Long upStationId = 역_생성_후_stationId응답(upStationName);
 		Long downStationId = 역_생성_후_stationId응답(downStationName);
+		LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", upStationId, downStationId, 3);
 		// when
 		// 지하철_노선_생성_요청
-		ExtractableResponse response = 노선_생성_함수("2호선", "bg-green-600", upStationId, downStationId, 3);
+		ExtractableResponse response = 노선_생성_함수(lineRequest);
 		// then
 		// 지하철_노선_생성됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());

@@ -158,20 +158,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(deleteLineResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
-	private ExtractableResponse 노선_생성_함수(String name, String color) {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
-		params.put("color", color);
-
-		ExtractableResponse<Response> response = RestAssured.given().log().all().
-				body(params).
-				contentType(MediaType.APPLICATION_JSON_VALUE).
-				when().
-				post(LINE_URL).
-				then().
-				log().all().
-				extract();
-		return response;
-	}
-
 }

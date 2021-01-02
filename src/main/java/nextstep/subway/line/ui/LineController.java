@@ -3,6 +3,7 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -53,4 +54,14 @@ public class LineController {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity addSection(
+            @PathVariable Long lineId,
+            @RequestBody SectionRequest sectionRequest) {
+        // TODO: 구간 등록 기능 구현
+        // ...
+        return ResponseEntity.created(URI.create("/lines/1")).body(new LineResponse());
+    }
+
 }
