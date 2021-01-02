@@ -65,19 +65,7 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public Section toUpwardEndSection() {
-        return new Section(this.line, null, this.upStation, 0L);
-    }
-
-    public Section toDownwardEndSection() {
-        return new Section(this.line, this.downStation, null, 0L);
-    }
-
-    public boolean isUpwardEndSection() {
-        return upStation == null;
-    }
-
-    public boolean isDownwardEndSection() {
-        return downStation == null;
+    public boolean isEndSection() {
+        return distance.isZero();
     }
 }

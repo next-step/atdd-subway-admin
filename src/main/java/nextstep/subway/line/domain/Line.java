@@ -26,8 +26,9 @@ public class Line extends BaseEntity {
 
     public Line(String name, String color, Station upStation, Station downStation, long distance) {
         this(name, color);
-        Section section = new Section(this, upStation, downStation, distance);
-        this.sections.addAll(Arrays.asList(section.toUpwardEndSection(), section, section.toDownwardEndSection()));
+        this.sections.addAll(Arrays.asList(
+                new Section(this, upStation, downStation, 0L),
+                new Section(this, upStation, downStation, distance)));
     }
 
     private Line(String name, String color) {
@@ -54,27 +55,27 @@ public class Line extends BaseEntity {
 
     public List<Station> getUpToDownSortedStations() {
         List<Station> stations = new ArrayList<>();
-        Station upwardEndStation = this.getUpwardEndStation();
-        while (upwardEndStation != null) {
-            stations.add(upwardEndStation);
-            upwardEndStation = findNextUpStation(upwardEndStation);
+        Station upStation = getEndSection().getUpStation();
+        while (upStation != null) {
+            stations.add(upStation);
+            upStation = findNextUpStation(upStation);
         }
         return stations;
     }
 
-    private Station findNextUpStation(Station upwardEndStation) {
+    private Station findNextUpStation(Station upStation) {
         return sections.stream()
-                .filter(section -> section.getUpStation() == upwardEndStation)
+                .filter(section -> !section.isEndSection())
+                .filter(section -> section.getUpStation() == upStation)
                 .findAny()
                 .map(Section::getDownStation)
                 .orElse(null);
     }
 
-    private Station getUpwardEndStation() {
+    private Section getEndSection() {
         return sections.stream()
-                .filter(Section::isUpwardEndSection)
+                .filter(Section::isEndSection)
                 .findAny()
-                .orElseThrow(() -> new CustomException("상행선 종점이 존재하지 않습니다."))
-                .getDownStation();
+                .orElseThrow(() -> new CustomException("상/하행선 종점이 존재하지 않습니다."));
     }
 }

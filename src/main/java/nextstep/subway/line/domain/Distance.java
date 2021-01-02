@@ -17,4 +17,8 @@ public class Distance {
         }
         this.distance = distance;
     }
+
+    public boolean isZero() {
+        return distance == 0L;
+    }
 }
