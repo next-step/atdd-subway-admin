@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,5 +66,15 @@ class LineServiceTest {
 		assertThat(lineService.findOne(저장해둔_이호선_응답.getId()))
 			.hasFieldOrPropertyWithValue("name", "3호선")
 			.hasFieldOrPropertyWithValue("color", "orange");
+	}
+
+	@Test
+	void delete() {
+		LineResponse 저장해둔_이호선_응답 = savedlineResponses.get(0);
+
+		lineService.deleteLineById(저장해둔_이호선_응답.getId());
+
+		assertThatThrownBy(() -> lineService.findOne(저장해둔_이호선_응답.getId()))
+			.isInstanceOf(NoSuchElementException.class);
 	}
 }

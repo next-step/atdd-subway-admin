@@ -70,4 +70,16 @@ class LineRepositoryTest {
 			.map(Line::getName)
 			.hasValue("3호선");
 	}
+
+	@Test
+	void delete() {
+		Line 이호선 = savedLines.get(0);
+
+		lineRepository.deleteById(이호선.getId());
+
+		em.flush();
+		em.clear();
+
+		assertThat(lineRepository.findById(이호선.getId())).isNotPresent();
+	}
 }
