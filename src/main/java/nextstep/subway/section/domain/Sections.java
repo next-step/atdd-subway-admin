@@ -147,15 +147,16 @@ public class Sections {
         this.sections.remove(containByDownStation);
         this.sections.remove(containByUpStation);
 
-        if (containByDownStation != null && containByUpStation != null) {
+        addNewSectionWhenDeleteStationsIsMiddleStation(containByDownStation, containByUpStation);
+    }
 
+    private void addNewSectionWhenDeleteStationsIsMiddleStation(final Section containByDownStation, final Section containByUpStation) {
+        if (containByDownStation != null && containByUpStation != null) {
             this.sections.add(new Section(
                 containByDownStation.getLine(),
                 containByDownStation.getUpStation(),
                 containByUpStation.getDownStation(),
                 containByUpStation.plusDistance(containByDownStation)));
         }
-
-        System.out.println(this.sections.size());
     }
 }
