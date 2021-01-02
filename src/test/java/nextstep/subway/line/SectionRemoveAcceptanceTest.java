@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static nextstep.subway.line.SectionAddAcceptanceTestRequest.*;
+import static nextstep.subway.line.SectionAddAcceptanceTestResponse.지하철_노선_구간_등록_예외_케이스로_등록되지_않음;
 import static nextstep.subway.line.SectionRemoveAcceptanceTestRequest.*;
 import static nextstep.subway.line.SectionRemoveAcceptanceTestResponse.*;
 
@@ -68,5 +69,25 @@ public class SectionRemoveAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_지하철역_제거됨(response);
+    }
+
+    @DisplayName("노선에 등록되어있지 않은 역을 제거할 때 제거 할 수 없음")
+    @Test
+    void canNotRemoveUnregisteredStation() {
+        // when
+        ExtractableResponse<Response> response = 노선에_지하철역_제거_요청(노선ID, 선릉ID);
+
+        // then
+        지하철_노선_구간_등록_예외_케이스로_등록되지_않음(response);
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 때 제거 할 수 없음")
+    @Test
+    void canNotRemoveStationInOneSection() {
+        // when
+        ExtractableResponse<Response> response = 노선에_지하철역_제거_요청(노선ID, 역삼ID);
+
+        // then
+        지하철_노선_구간_등록_예외_케이스로_등록되지_않음(response);
     }
 }

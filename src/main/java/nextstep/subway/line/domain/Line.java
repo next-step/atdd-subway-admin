@@ -60,11 +60,16 @@ public class Line extends BaseEntity {
             throw new IllegalStateException("구간에서 역을 제거할 수 없습니다.");
         }
 
+        Station removePossibleStation = sections.getStations().stream()
+                .filter(it -> it == station)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("제거 할 역이 노선 구간에 없습니다."));
+
         Optional<Section> upLineStation = sections.getSections().stream()
-                .filter(it -> it.getUpStation() == station)
+                .filter(it -> it.getUpStation() == removePossibleStation)
                 .findFirst();
         Optional<Section> downLineStation = sections.getSections().stream()
-                .filter(it -> it.getDownStation() == station)
+                .filter(it -> it.getDownStation() == removePossibleStation)
                 .findFirst();
 
         if (upLineStation.isPresent() && downLineStation.isPresent()) {
