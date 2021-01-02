@@ -32,27 +32,29 @@ class LineServiceTest {
     @Test
     void saveLine() {
         //given
-        Station station1 = new Station(1L, "역삼역");
-        Station station2 = new Station(2L, "강남역");
+        Long 역삼역Id = 1L;
+        Long 강남역Id = 2L;
+        Station 역삼역 = new Station(역삼역Id, "역삼역");
+        Station 강남역 = new Station(강남역Id, "강남역");
         LineService lineService = new LineService(lineRepository, stationRepository);
 
         when(stationRepository.findAllById(any()))
-                .thenReturn(Arrays.asList(station2, station1));
+                .thenReturn(Arrays.asList(강남역, 역삼역));
 
         when(lineRepository.save(any()))
-                .thenReturn(new Line(1L, "신분당선", "bg-red-600", station2, station1, 7));
+                .thenReturn(new Line(1L, "신분당선", "bg-red-600", 강남역, 역삼역, 7));
 
         //when
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station2.getId(), station1.getId(),
+        LineRequest 신분당선LineRequest = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(),
                 7);
-        LineCreateResponse lineCreateResponse = lineService.saveLine(lineRequest);
+        LineCreateResponse 신분당선LineCreateResponse = lineService.saveLine(신분당선LineRequest);
 
         //then
-        assertThat(lineCreateResponse).isNotNull();
-        assertThat(lineCreateResponse.getName()).isEqualTo("신분당선");
-        assertThat(lineCreateResponse.getColor()).isEqualTo("bg-red-600");
-        assertThat(lineCreateResponse.getUpStationId()).isEqualTo(2L);
-        assertThat(lineCreateResponse.getDownStationId()).isEqualTo(1L);
-        assertThat(lineCreateResponse.getDistance()).isEqualTo(7);
+        assertThat(신분당선LineCreateResponse).isNotNull();
+        assertThat(신분당선LineCreateResponse.getName()).isEqualTo("신분당선");
+        assertThat(신분당선LineCreateResponse.getColor()).isEqualTo("bg-red-600");
+        assertThat(신분당선LineCreateResponse.getUpStationId()).isEqualTo(강남역Id);
+        assertThat(신분당선LineCreateResponse.getDownStationId()).isEqualTo(역삼역Id);
+        assertThat(신분당선LineCreateResponse.getDistance()).isEqualTo(7);
     }
 }
