@@ -56,7 +56,7 @@ public class SectionAcceptanceTestSupport {
 	static ExtractableResponse<Response> 지하철노선_구간_제거(long lineId, long stationId) {
 		return RestAssured
 				.given().log().all()
-				.queryParam("station", stationId)
+				.queryParam("stationId", stationId)
 				.when().delete(String.format("/lines/%d/sections", lineId))
 				.then().log().all().extract();
 	}
