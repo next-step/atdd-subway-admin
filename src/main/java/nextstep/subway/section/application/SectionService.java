@@ -36,7 +36,7 @@ public class SectionService {
     }
 
     public SectionResponse saveSection(SectionRequest request) {
-        validateRequest(request);
+        request.validate();
 
         Line line = lineRepository.findById(request.getLineId())
                 .orElseThrow(() -> new NotExistsLineIdException(request.getLineId()));
@@ -56,12 +56,6 @@ public class SectionService {
         return sections.stream()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
-    }
-
-    private void validateRequest(SectionRequest request) {
-        if (request.getUpStationId().equals(request.getDownStationId())) {
-            throw new BadRequestException("UpStation and DownStation should not be same");
-        }
     }
 
     private Integer getSectionNumber(Long lineId, Station upStation, Station downStation, Integer distance) {

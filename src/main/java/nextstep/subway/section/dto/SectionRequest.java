@@ -1,5 +1,6 @@
 package nextstep.subway.section.dto;
 
+import nextstep.subway.common.exception.BadRequestException;
 import nextstep.subway.line.dto.LineRequest;
 
 public class SectionRequest {
@@ -19,6 +20,12 @@ public class SectionRequest {
 
     public static SectionRequest of(Long lineId, LineRequest lineRequest) {
         return new SectionRequest(lineId, lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+    }
+
+    public void validate() {
+        if (upStationId.equals(downStationId)) {
+            throw new BadRequestException("UpStation and DownStation should not be same");
+        }
     }
 
     public Long getLineId() {
