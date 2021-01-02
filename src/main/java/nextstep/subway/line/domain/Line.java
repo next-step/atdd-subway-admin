@@ -64,4 +64,15 @@ public class Line extends BaseEntity {
 	public Line(List<LineStation> lineStations) {
 		this.lineStations = lineStations;
 	}
+
+	public void addDistance(int distance) {
+		this.distance += distance;
+	}
+
+	public boolean checkDistanceValidate(int newDistance) {
+		if(this.distance <= newDistance){
+			return true;
+		}
+		return false;
+	}
 }

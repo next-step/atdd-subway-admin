@@ -14,8 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -51,14 +49,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSection() {
 		// when
-		// 지하철_노선에_지하철역_등록_요청
-		SectionRequest sectionRequest = new SectionRequest(1L, 2L, 3);
+		StationResponse 판교역 = StationAcceptanceTest.지하철역_등록되어_있음("역");
+		SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 판교역.getId(), 3);
 
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 				.body(sectionRequest)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when()
-				.post(String.format("/%s/sections",String.valueOf(신분당선.getId())))
+				.post(String.format("/lines/%s/sections",String.valueOf(신분당선.getId())))
 				.then().log().all()
 				.extract();
 

@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.StationType;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -21,20 +22,27 @@ public class LineStation extends BaseEntity {
 	@JoinColumn(name = "line_id")
 	private Line line;
 
+	@Column
+	@Enumerated(EnumType.STRING)
+	private StationType stationType;
+
 	public LineStation() {
 	}
 
-	public LineStation(Line line, Station station) {
+	public LineStation(Line line, Station station, StationType stationType) {
 		this.line = line;
 		this.station = station;
+		this.stationType = stationType;
 	}
 
 	public Long getPreStationId() {
+
 		return 0L;
+
 	}
 
 	public Long getStationId() {
-		return 0L;
+		return this.station.getId();
 	}
 
 	public void updatePreStationTo(Long stationId) {
@@ -51,5 +59,21 @@ public class LineStation extends BaseEntity {
 
 	public Line getLine() {
 		return line;
+	}
+
+	public StationType getStationType() {
+		return stationType;
+	}
+
+	public void updateNoneStationType() {
+		this.stationType  = StationType.NONE;
+	}
+
+	public void updateUpStationType() {
+		this.stationType = StationType.UP_STATION;
+	}
+
+	public void updateDownStationType() {
+		this.stationType = StationType.DOWN_STATION;
 	}
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.StationType;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -53,7 +54,7 @@ public class LineService {
 	@Transactional
 	public LineResponse saveLine(LineRequest lineRequest, Station upStation, Station downStation) {
 		Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance()));
-		List<LineStation> lineStations  = lineStationRepository.saveAll(Arrays.asList(new LineStation(line, upStation), new LineStation(line, downStation)));
+		List<LineStation> lineStations  = lineStationRepository.saveAll(Arrays.asList(new LineStation(line, upStation, StationType.UP_STATION), new LineStation(line, downStation, StationType.DOWN_STATION)));
 		return LineResponse.of(line, lineStations);
 	}
 }

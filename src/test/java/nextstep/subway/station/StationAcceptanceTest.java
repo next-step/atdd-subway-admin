@@ -44,10 +44,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 				.then().log().all()
 				.extract();
 
-		List<StationResponse> resultLineIds = postResponse.jsonPath().getList(".", StationResponse.class).stream()
-				.collect(Collectors.toList());
-		assertThat(resultLineIds.isEmpty()).isFalse();
-		return resultLineIds.get(0);
+		StationResponse stationResponse = postResponse.jsonPath().getObject(".", StationResponse.class);
+		assertThat(stationResponse.getId()).isEqualTo(Long.valueOf(stationId));
+		return stationResponse;
 	}
 
 

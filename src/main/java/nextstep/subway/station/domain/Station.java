@@ -34,4 +34,5 @@ public class Station extends BaseEntity {
     public String getName() {
         return name;
     }
+
 }
