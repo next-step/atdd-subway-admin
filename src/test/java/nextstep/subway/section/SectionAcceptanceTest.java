@@ -48,10 +48,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			양재 --- 양재시민의숲 --- 청계산입구
 
 		 */
-		Map<String, String> params = new HashMap<>();
-		params.put("upStationId", upStationId);
-		params.put("downStationId", createStationId("양재시민의숲"));
-		params.put("distance", "4");
+		Map<String, String> params = new SectionParameter()
+				.upStationId(upStationId)
+				.downStationId(createStationId("양재시민의숲"))
+				.distance("4")
+				.getMap();
 
 		// when
 		// 지하철_구간_등록_요청
@@ -79,10 +80,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			강남 --- 양재 --- 청계산입구
 
 		 */
-		Map<String, String> params = new HashMap<>();
-		params.put("upStationId", createStationId("강남"));
-		params.put("downStationId", upStationId);
-		params.put("distance", "4");
+		Map<String, String> params = new SectionParameter()
+				.upStationId(createStationId("강남"))
+				.downStationId(upStationId)
+				.distance("4")
+				.getMap();
 
 		// when
 		// 지하철_구간_등록_요청
@@ -110,10 +112,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			양재 --- 청계산입구 --- 판교(판교테크노밸리)
 
 		 */
-		Map<String, String> params = new HashMap<>();
-		params.put("upStationId", downStationId);
-		params.put("downStationId", createStationId("판교(판교테크노밸리)"));
-		params.put("distance", "4");
+		Map<String, String> params = new SectionParameter()
+				.upStationId(downStationId)
+				.downStationId(createStationId("판교(판교테크노밸리)"))
+				.distance("4")
+				.getMap();
 
 		// when
 		// 지하철_구간_등록_요청
@@ -135,10 +138,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 						 	 ↓
 			양재 -----------(10)---------- 청계산입구
 		 */
-		Map<String, String> params = new HashMap<>();
-		params.put("upStationId", upStationId);
-		params.put("downStationId", createStationId("양재시민의숲"));
-		params.put("distance", "15");
+		Map<String, String> params = new SectionParameter()
+				.upStationId(upStationId)
+				.downStationId(createStationId("양재시민의숲"))
+				.distance("15")
+				.getMap();
 
 		// when
 		// 지하철_구간_등록_요청
@@ -160,10 +164,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			 ↓		 	↓
 			양재 --- 청계산입구
 		*/
-		Map<String, String> params = new HashMap<>();
-		params.put("upStationId", upStationId);
-		params.put("downStationId", downStationId);
-		params.put("distance", "15");
+		Map<String, String> params = new SectionParameter()
+				.upStationId(upStationId)
+				.downStationId(downStationId)
+				.distance("10")
+				.getMap();
 
 		// when
 		// 지하철_구간_등록_요청
@@ -185,10 +190,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			 ↓		 ↓
 			양재 --- 청계산입구
 		*/
-		Map<String, String> params = new HashMap<>();
-		params.put("upStationId", createStationId("정자"));
-		params.put("downStationId", createStationId("미금"));
-		params.put("distance", "15");
+		Map<String, String> params = new SectionParameter()
+				.upStationId(createStationId("정자"))
+				.downStationId(createStationId("미금"))
+				.distance("10")
+				.getMap();
 
 		// when
 		// 지하철_구간_등록_요청
@@ -197,6 +203,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// then
 		// 지하철_구간_등록_실패됨
 		assertResponseHttpStatusIsBadRequest(response);
+	}
+
+	private static class SectionParameter {
+		private final Map<String, String> map = new HashMap<>();
+
+		public SectionParameter upStationId(String upStationId) {
+			map.put("upStationId", upStationId);
+			return this;
+		}
+
+		public SectionParameter downStationId(String downStationId) {
+			map.put("downStationId", downStationId);
+			return this;
+		}
+
+		public SectionParameter distance(String distance) {
+			map.put("distance", distance);
+			return this;
+		}
+
+		public Map<String, String> getMap() {
+			return map;
+		}
 	}
 
 	private ExtractableResponse<Response> createNewSection(Map<String, String> params) {
