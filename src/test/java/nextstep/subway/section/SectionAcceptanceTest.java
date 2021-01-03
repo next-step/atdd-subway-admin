@@ -178,9 +178,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         /*
             양재 --- 청계산입구
-             |			|
-             X			X
-             ↓		 	↓
+             |          |
+             X          X
+             ↓          ↓
             양재 --- 청계산입구
         */
         Map<String, String> params = new SectionParameter()
@@ -204,9 +204,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         /*
             정자 --- 미금
-             |		 |
-             ?		 ?
-             ↓		 ↓
+             |        |
+             ?        ?
+             ↓        ↓
             양재 --- 청계산입구
         */
         Map<String, String> params = new SectionParameter()
