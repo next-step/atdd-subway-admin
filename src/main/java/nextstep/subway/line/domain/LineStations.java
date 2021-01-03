@@ -79,30 +79,34 @@ public class LineStations {
     private void addDownLineStation(LineStation persistenceLineStation, LineStation newLineStation, Distance distance) {
         if (persistenceLineStation.isFirst()) {
             LineStation oldNext = getLineStationByStation(persistenceLineStation.getNextStation());
-
+            persistenceLineStation.applyNextStation(newLineStation.getStation());
             newLineStation.applyPreviousStationAndNextStation(persistenceLineStation.getStation(), oldNext.getStation());
             oldNext.applyPreviousStation(newLineStation.getStation());
+
             applyDistance(persistenceLineStation, newLineStation, distance);
         } else if (persistenceLineStation.isLast()) {
             newLineStation.applyPreviousStation(persistenceLineStation.getStation());
+            persistenceLineStation.applyNextStation(newLineStation.getStation());
+
             persistenceLineStation.applyDistanceForNextStation(distance);
             newLineStation.applyDistanceForNextStation(new Distance(MIN_DISTANCE));
         }
-        persistenceLineStation.applyNextStation(newLineStation.getStation());
     }
 
     private void addUpLineStation(LineStation newLineStation, LineStation persistenceLineStation, Distance distance) {
         if (persistenceLineStation.isFirst()) {
             newLineStation.applyNextStation(persistenceLineStation.getStation());
+            persistenceLineStation.applyPreviousStation(newLineStation.getStation());
+
             newLineStation.applyDistanceForNextStation(distance);
         } else if (persistenceLineStation.isLast()) {
             LineStation oldPrevious = getLineStationByStation(persistenceLineStation.getPreviousStation());
-
+            persistenceLineStation.applyPreviousStation(newLineStation.getStation());
             newLineStation.applyPreviousStationAndNextStation(oldPrevious.getStation(), persistenceLineStation.getStation());
             oldPrevious.applyNextStation(newLineStation.getStation());
+
             applyDistance(oldPrevious, newLineStation, distance);
         }
-        persistenceLineStation.applyPreviousStation(newLineStation.getStation());
     }
 
     private void applyDistance(LineStation lineStation, LineStation newLineStation, Distance newDistance) {
