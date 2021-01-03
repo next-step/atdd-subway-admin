@@ -31,6 +31,7 @@ public class Distance {
         if (this.distance != 0) {
             validateDistance(newSectionDistance);
             this.distance -= newSectionDistance;
+            return;
         }
         this.distance = newSectionDistance;
     }
@@ -41,4 +42,11 @@ public class Distance {
         }
     }
 
+    public void addDistance(Distance newDistance) {
+        this.distance += newDistance.getDistance();
+    }
+
+    public void initDistance() {
+        this.distance = 0;
+    }
 }

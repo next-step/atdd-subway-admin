@@ -8,7 +8,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
@@ -21,12 +20,6 @@ public class Sections {
 
     public Sections(Section upSection, Section downSection) {
         this.sections = Arrays.asList(upSection, downSection);
-    }
-
-    public List<Station> getStations() {
-        return this.sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
     }
 
     public void addSection(Section newSection) {
@@ -51,6 +44,26 @@ public class Sections {
         this.sections.add(newSection);
     }
 
+    public void removeSection(Long stationId) {
+        Section removeSection = findSection(stationId);
+        updateSectionByRemove(removeSection);
+        this.sections.remove(removeSection);
+    }
+
+    private Section findSection(Long stationId) {
+        return this.sections.stream()
+                .filter(section -> section.isDownStationInSection(stationId))
+                .findFirst()
+                .get();
+    }
+
+    private void updateSectionByRemove(Section removeSection) {
+        this.sections.stream()
+                .filter(section -> section.isUpStationInSection(removeSection.getDownStation()))
+                .findFirst()
+                .ifPresent(section -> section.updateUpStationToRemove(removeSection.getUpStation(), removeSection.getDistance()));
+    }
+
     private void validateSection(boolean isUpStationInSection, boolean isDownStationInSection) {
         if (isUpStationInSection && isDownStationInSection) {
             throw new IllegalArgumentException(SECTION_ALREADY_EXIST_ERROR_MESSAGE);
@@ -64,5 +77,9 @@ public class Sections {
     private boolean isStationInSection(Station station) {
         return this.sections.stream()
                 .anyMatch(section -> section.isDownStationInSection(station));
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

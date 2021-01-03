@@ -8,6 +8,7 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,14 +19,14 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Station downStation;
 
     @Embedded
@@ -54,6 +55,10 @@ public class Section extends BaseEntity {
         return this.downStation.equals(newDownStation);
     }
 
+    public boolean isDownStationInSection(Long stationId) {
+        return this.downStation.isSameById(stationId);
+    }
+
     public void updateUpStationToDownStation(Station downStation, Distance newDistance) {
         this.upStation = downStation;
         this.distance.updateDistance(newDistance);
@@ -62,5 +67,22 @@ public class Section extends BaseEntity {
     public void updateDownStationToUpStation(Station upStation, Distance newDistance) {
         this.downStation = upStation;
         this.distance.updateDistance(newDistance);
+    }
+
+    public void updateUpStationToRemove(Station newUpStation, Distance newDistance) {
+        this.upStation = newUpStation;
+        if(Objects.isNull(upStation)) {
+            this.distance.initDistance();
+            return;
+        }
+        this.distance.addDistance(newDistance);
+    }
+
+    public Station getStation() {
+        return downStation;
+    }
+
+    public int getSectionDistance() {
+        return distance.getDistance();
     }
 }

@@ -1,6 +1,8 @@
 package nextstep.subway.section.dto;
 
 import lombok.Getter;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 
@@ -21,5 +23,10 @@ public class SectionResponse {
         this.distance = distance;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
+    }
+
+    public static SectionResponse of(Section section) {
+        Station station = section.getStation();
+        return new SectionResponse(station.getId(), station.getName(), section.getSectionDistance(), station.getCreatedDate(), station.getModifiedDate());
     }
 }
