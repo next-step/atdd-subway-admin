@@ -8,16 +8,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+
 @DataJpaTest
 class LineRepositoryTest {
 	@Autowired
 	private LineRepository lineRepository;
+	@Autowired
+	private StationRepository stationRepository;
 
 	@DisplayName("DB: Line 저장 테스트")
 	@Test
 	void saveTest() {
 		// given
-		Line given = new Line("2호선", "green");
+		Line given = 라인_2호선_생성("강남역", "양재역");
 
 		// when
 		Line line = lineRepository.save(given);
@@ -25,8 +30,18 @@ class LineRepositoryTest {
 		// then
 		assertAll(
 			() -> assertThat(line).isNotNull(),
-			() -> assertThat(line.getId()).isNotNull()
+			() -> assertThat(line.getId()).isNotNull(),
+			() -> assertThat(line.getSections()).hasSize(1),
+			() -> assertThat(line.getStations()).hasSize(2)
 		);
+
+		System.out.println(line.getStations());
+	}
+
+	private Line 라인_2호선_생성(String upStationName, String downStationName) {
+		Station upStation = stationRepository.save(new Station(upStationName));
+		Station downStation = stationRepository.save(new Station(downStationName));
+		return new Line("2호선", "green", upStation, downStation, 100);
 	}
 
 	@DisplayName("DB: Line 중복된 노선이름 저장 테스트")
