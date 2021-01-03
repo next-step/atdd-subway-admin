@@ -17,10 +17,6 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-//    @ManyToMany(mappedBy = "stations")
-//    @JsonBackReference
-//    private List<Line> lines = new ArrayList<>();
-
     public Station() {
     }
 
@@ -35,14 +31,6 @@ public class Station extends BaseEntity {
     public String getName() {
         return name;
     }
-
-//    public List<Line> getLines() {
-//        return lines;
-//    }
-
-//    public void addLine(Line line) {
-//        this.lines.add(line);
-//    }
 
     @Override
     public boolean equals(Object o) {
