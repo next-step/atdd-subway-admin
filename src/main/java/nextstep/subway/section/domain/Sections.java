@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Sections {
-    public static final String SECTION_ALREADY_EXIST_ERROR_MESSAGE = "노선에 이미 구간이 등록되어 있습니다.";
-    public static final String NOT_MATCH_STATION_ERROR_MESSAGE = "노선에 선택한 상행역과 하행역 둘다 포함되어 있지 않습니다.";
+    private static final String SECTION_ALREADY_EXIST_ERROR_MESSAGE = "노선에 이미 구간이 등록되어 있습니다.";
+    private static final String NOT_MATCH_STATION_ERROR_MESSAGE = "노선에 선택한 상행역과 하행역 둘다 포함되어 있지 않습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();

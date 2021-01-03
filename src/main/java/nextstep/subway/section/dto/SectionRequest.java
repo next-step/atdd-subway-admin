@@ -8,8 +8,8 @@ import java.util.Objects;
 
 @Getter
 public class SectionRequest {
-    public static final String NOT_EXIST_STATIONS_ERROR = "추가하려는 구간의 상행역과 하행역 모두 선택해야 합니다.";
-    public static final String INVALID_DISTANCE_VALUE_ERROR = "추가되는 구간의 거리는 0이 될 수 없습니다.";
+    private static final String NOT_EXIST_STATIONS_ERROR = "추가하려는 구간의 상행역과 하행역 모두 선택해야 합니다.";
+    private static final String INVALID_DISTANCE_VALUE_ERROR = "추가되는 구간의 거리는 0이 될 수 없습니다.";
     private Long upStationId;
     private Long downStationId;
     private int distance;
