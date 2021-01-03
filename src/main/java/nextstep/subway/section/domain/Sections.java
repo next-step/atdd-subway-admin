@@ -1,7 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.section.exception.InvalidAddSectionException;
-import nextstep.subway.section.exception.SectionNotFoundException;
+import nextstep.subway.section.exception.InvalidDeleteSectionException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static final Integer MIN_SECTION_SIZE = 1;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private final List<Section> sections = new ArrayList<>();
@@ -27,6 +29,13 @@ public class Sections {
         checkContainAnyStations(section);
 
         addSectionInMatch(section);
+    }
+
+    public void removeSection(Station station) {
+        checkSectionsSize();
+        checkExistStation(station);
+
+        deleteSectionInMatch(station);
     }
 
     public List<StationResponse> getStationResponses() {
@@ -47,6 +56,19 @@ public class Sections {
         List<Station> stations = getStations();
         if(!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
             throw new InvalidAddSectionException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
+        }
+    }
+
+    private void checkSectionsSize() {
+        if (sections.size() == MIN_SECTION_SIZE) {
+            throw new InvalidDeleteSectionException("구간이 하나여서 지울 수 없습니다.");
+        }
+    }
+
+    private void checkExistStation(Station station) {
+        List<Station> stations = getStations();
+        if (!stations.contains(station)) {
+            throw new InvalidDeleteSectionException("노선에 등록되어 있지 않은 지하철입니다.");
         }
     }
 
@@ -88,6 +110,27 @@ public class Sections {
         }
     }
 
+    private void deleteSectionInMatch(Station station) {
+        Section preSection = findSection(section -> section.equalDownStation(station)).orElse(null);
+        Section nextSection = findSection(section -> section.equalUpStation(station)).orElse(null);
+
+        if (isNotNull(preSection)&& isNotNull(nextSection)) {
+            modifySection(preSection, nextSection);
+        }
+        sections.remove(preSection);
+        sections.remove(nextSection);
+    }
+
+    private void modifySection(Section preSection, Section nextSection) {
+        sections.add(Section.builder()
+                .upStation(preSection.getUpStation())
+                .downStation(nextSection.getDownStation())
+                .distance(preSection.getDistance() + nextSection.getDistance())
+                .build());
+        sections.remove(preSection);
+        sections.remove(nextSection);
+    }
+
     private List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
 
@@ -108,7 +151,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> !downStations.contains(section.getUpStation()))
                 .findFirst()
-                .orElseThrow(() -> new SectionNotFoundException("첫번째 Section을 찾을 수가 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("첫번째 Section을 찾을 수가 없습니다."));
     }
 
     private List<Station> getDownStations() {

@@ -64,6 +64,13 @@ public class LineService {
                 .build());
     }
 
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Station station = stationService.findByStationId(stationId);
+        Line line = findByLineId(lineId);
+
+        line.removeSection(station);
+    }
+
     private Line findByLineId(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 지하철 노선을 찾을 수가 없습니다."));
