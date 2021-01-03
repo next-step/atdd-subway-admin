@@ -35,11 +35,16 @@ public class SectionService {
 		this.lineRepository = lineRepository;
 	}
 
+	// 비즈니스 로직은 최대한 도메인 객체에 구현하고 서비스는 데이터베이스에서 엔티티를 불러와 도메인을 호출하는 형태로 바꿔보면
+//	Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다 id=" + lineId));
+//	LIneStation lineStation = new LineStation();
+//		line.addSection(lineStation);
+
 	@Transactional
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
 		Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다 id=" + lineId));
 		List<LineStation> lineStations = line.getLineStations();
-
+		
 		Map<StationType, LineStation> typeLineStationMap = lineStations.stream()
 				.filter(lineStation -> !lineStation.getStationType().equals(StationType.NONE))
 				.collect(Collectors.toMap(LineStation::getStationType, lineStation -> lineStation));

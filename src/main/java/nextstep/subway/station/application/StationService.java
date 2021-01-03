@@ -27,6 +27,15 @@ public class StationService {
         return StationResponse.of(persistStation);
     }
 
+    /**
+     * 애플리케이션 계층:
+     *  - 해야 할 작업을 정의(작업 조율), 작업의 진행상태 나타내는 정보는 가질 수 있다.
+     *  - 도메인 객체들에게 작업을 위임한다.
+     *  - 비즈니스적인 관점에서 의미가 있거나, 타 시스템의 애플리케이션 계층과 연동하기 위한 것이다.
+     *  - 이 계층은 얇게 유지되어야 한다.
+     *  - 업무 로직이나 지식을 가지고 있지 않는다
+     */
+
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
