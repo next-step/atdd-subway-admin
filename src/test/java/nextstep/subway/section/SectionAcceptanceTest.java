@@ -20,22 +20,22 @@ import java.util.Map;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
-    private Long 신분당선_id;
+    private LineResponse 신분당선;
 
-    private Long 강남역_id;
-    private Long 역삼역_id;
-    private Long 방배역_id;
-    private Long 잠실역_id;
+    private StationResponse 강남역;
+    private StationResponse 역삼역;
+    private StationResponse 방배역;
+    private StationResponse 잠실역;
 
     @BeforeEach
     void beforeSetUp() {
-        강남역_id = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class).getId();
-        역삼역_id = StationAcceptanceTest.지하철역_생성("역삼역").as(StationResponse.class).getId();
-        방배역_id = StationAcceptanceTest.지하철역_생성("방배역").as(StationResponse.class).getId();
-        잠실역_id = StationAcceptanceTest.지하철역_생성("잠실역").as(StationResponse.class).getId();
+        강남역 = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class);
+        역삼역 = StationAcceptanceTest.지하철역_생성("역삼역").as(StationResponse.class);
+        방배역 = StationAcceptanceTest.지하철역_생성("방배역").as(StationResponse.class);
+        잠실역 = StationAcceptanceTest.지하철역_생성("잠실역").as(StationResponse.class);
 
-        신분당선_id = LineAcceptanceTest.지하철_노선_생성("신분당선", "bg-red-600", 강남역_id, 역삼역_id, 10)
-                .as(LineResponse.class).getId();
+        신분당선 = LineAcceptanceTest.지하철_노선_생성("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10)
+                .as(LineResponse.class);
     }
     
     @DisplayName("역 사이에 새로운 역을 등록 - 상행 종점역이 일치하는 경우")
@@ -43,7 +43,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection1() {
         // 강남역-역삼역 -> 강남역-방배역-역삼역
         // when
-        ExtractableResponse<Response> response = 새로운_역_추가(신분당선_id, 강남역_id, 방배역_id, 5);
+        ExtractableResponse<Response> response = 새로운_역_추가(신분당선.getId(), 강남역.getId(), 방배역.getId(), 5);
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -54,7 +54,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection2() {
         // 강남역-역삼역 -> 강남역-방배역-역삼역
         // when
-        ExtractableResponse<Response> response = 새로운_역_추가(신분당선_id, 방배역_id, 역삼역_id, 5);
+        ExtractableResponse<Response> response = 새로운_역_추가(신분당선.getId(), 방배역.getId(), 역삼역.getId(), 5);
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -65,7 +65,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addNewUpStation() {
         // 강남역-역삼역 -> 역삼역-강남역-방배역
         // when
-        ExtractableResponse<Response> response = 새로운_역_추가(신분당선_id, 방배역_id, 강남역_id, 10);
+        ExtractableResponse<Response> response = 새로운_역_추가(신분당선.getId(), 방배역.getId(), 강남역.getId(), 10);
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -76,7 +76,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addNewDownStation() {
         // 강남역-역삼역 -> 강남역-역삼역-방배역
         // when
-        ExtractableResponse<Response> response = 새로운_역_추가(신분당선_id, 역삼역_id, 방배역_id, 10);
+        ExtractableResponse<Response> response = 새로운_역_추가(신분당선.getId(), 역삼역.getId(), 방배역.getId(), 10);
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -87,7 +87,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionException1() {
         // 강남역-역삼역(10), new : 강남역-방배역(15)
         // when
-        ExtractableResponse<Response> response = 새로운_역_추가(신분당선_id, 강남역_id, 방배역_id, 15);
+        ExtractableResponse<Response> response = 새로운_역_추가(신분당선.getId(), 강남역.getId(), 방배역.getId(), 15);
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -98,7 +98,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionException2() {
         // 강남역-역삼역(10), new : 강남역-방배역(10)
         // when
-        ExtractableResponse<Response> response = 새로운_역_추가(신분당선_id, 강남역_id, 방배역_id, 10);
+        ExtractableResponse<Response> response = 새로운_역_추가(신분당선.getId(), 강남역.getId(), 방배역.getId(), 10);
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -109,7 +109,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionException3() {
         // 강남역-역삼역(10), new : 강남역-역삼역(10)
         // when
-        ExtractableResponse<Response> response = 새로운_역_추가(신분당선_id, 강남역_id, 역삼역_id, 10);
+        ExtractableResponse<Response> response = 새로운_역_추가(신분당선.getId(), 강남역.getId(), 역삼역.getId(), 10);
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -120,7 +120,54 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionException4() {
         // 강남역-역삼역, new : 방배역-잠실역
         // when
-        ExtractableResponse<Response> response = 새로운_역_추가(신분당선_id, 방배역_id, 잠실역_id, 10);
+        ExtractableResponse<Response> response = 새로운_역_추가(신분당선.getId(), 방배역.getId(), 잠실역.getId(), 10);
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("중간역 제거")
+    @Test
+    void deleteMiddleStation() {
+        // given
+        새로운_역_추가(신분당선.getId(), 강남역.getId(), 방배역.getId(), 5);    // 강남역-방배역-역삼역
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_제거(신분당선.getId(), 방배역.getId());
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("마지막 종점역 제거")
+    @Test
+    void deleteEndStation() {
+        // given
+        새로운_역_추가(신분당선.getId(), 역삼역.getId(), 잠실역.getId(), 5);    // 강남역-역삼역-잠실역
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_제거(신분당선.getId(), 잠실역.getId());
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("노선에 등록되어있지 않은 역을 제거하려 하면 Exception 발생")
+    @Test
+    void deleteSectionException1() {
+        // when
+        ExtractableResponse<Response> response = 지하철역_제거(신분당선.getId(), 잠실역.getId());
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없음")
+    @Test
+    void deleteSectionException2() {
+        // 강남역-역삼역
+        // when
+        ExtractableResponse<Response> response = 지하철역_제거(신분당선.getId(), 역삼역.getId());
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -132,12 +179,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", String.valueOf(downStationId));
         params.put("distance", String.valueOf(distance));
 
-        return RestAssured
-                .given().log().all()
+        return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/" + id + "/sections")
-                .then().log().all().extract();
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철역_제거(Long id, Long stationId) {
+        return RestAssured.given().log().all()
+                .queryParam("stationId", stationId)
+                .when()
+                .delete("/lines/" + id + "/sections")
+                .then().log().all()
+                .extract();
     }
 }

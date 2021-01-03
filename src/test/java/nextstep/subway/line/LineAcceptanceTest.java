@@ -20,21 +20,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private Long 강남역_id;
-    private Long 역삼역_id;
+    private StationResponse 강남역;
+    private StationResponse 역삼역;
 
-    private Long 신분당선_id;
-    private Long twoLine_id;
+    private LineResponse 신분당선;
+    private LineResponse twoLine;
 
     @BeforeEach
     void beforeSetUp() {
-        강남역_id = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class).getId();
-        역삼역_id = StationAcceptanceTest.지하철역_생성("역삼역").as(StationResponse.class).getId();
+        강남역 = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class);
+        역삼역 = StationAcceptanceTest.지하철역_생성("역삼역").as(StationResponse.class);
 
-        신분당선_id = 지하철_노선_생성("신분당선", "bg-red-600", 강남역_id, 역삼역_id, 10)
-                        .as(LineResponse.class).getId();
-        twoLine_id = 지하철_노선_생성("2호선", "bg-green-600", 강남역_id, 역삼역_id, 20)
-                        .as(LineResponse.class).getId();
+        신분당선 = 지하철_노선_생성("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10)
+                        .as(LineResponse.class);
+        twoLine = 지하철_노선_생성("2호선", "bg-green-600", 강남역.getId(), 역삼역.getId(), 20)
+                        .as(LineResponse.class);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -42,7 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         ExtractableResponse<Response> response =
-                지하철_노선_생성("1호선", "bg-blue-600", 강남역_id, 역삼역_id, 10);
+                지하철_노선_생성("1호선", "bg-blue-600", 강남역.getId(), 역삼역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -54,7 +54,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // when
         ExtractableResponse<Response> response =
-                지하철_노선_생성("신분당선", "bg-red-600", 강남역_id, 역삼역_id, 10);
+                지하철_노선_생성("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -70,14 +70,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         List<Long> resultLineIds = 응답_데이터에서_지하철_노선_id들_추출(Arrays.asList(response.as(LineResponse[].class)));
-        assertThat(resultLineIds).containsAll(Arrays.asList(신분당선_id, twoLine_id));
+        assertThat(resultLineIds).containsAll(Arrays.asList(신분당선.getId(), twoLine.getId()));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회(String.valueOf(신분당선_id));
+        ExtractableResponse<Response> response = 지하철_노선_조회(String.valueOf(신분당선.getId()));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -87,7 +87,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정(신분당선_id, "구분당선", "bg-blue-600");
+        ExtractableResponse<Response> response = 지하철_노선_수정(신분당선.getId(), "구분당선", "bg-blue-600");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -97,7 +97,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // when]
-        ExtractableResponse<Response> response = 지하철_노선_제거(신분당선_id);
+        ExtractableResponse<Response> response = 지하철_노선_제거(신분당선.getId());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
