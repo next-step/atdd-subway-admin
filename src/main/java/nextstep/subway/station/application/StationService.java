@@ -41,7 +41,7 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public void cacheByIds(List<Long> ids) {
-        stationRepository.findAllByIds(ids);
+    public List<Station> findByIds(List<Long> ids) {
+        return stationRepository.findAllByIds(ids);
     }
 }

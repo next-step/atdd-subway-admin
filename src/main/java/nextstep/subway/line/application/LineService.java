@@ -18,6 +18,7 @@ import nextstep.subway.line.exception.AlreadySavedLineException;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,19 +72,23 @@ public class LineService {
         Line savedLine = findByIdWithLineStation(id);
         LineStations stations = savedLine.getLineStations();
 
-        List<Long> ids = stations.getLineStations().stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
+        List<Long> stationIds = Arrays.asList(request.getUpStationId(), request.getDownStationId());
+        List<Station> stationList = stationService.findByIds(stationIds);
 
-        stationService.cacheByIds(ids);
-
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
+        Station upStation = findFirstStationInList(stationList, request.getUpStationId());
+        Station downStation = findFirstStationInList(stationList, request.getDownStationId());
 
         LineStation lineStation = new LineStation(savedLine, downStation, upStation, request.getDistance());
         stations.add(lineStation);
 
         return SectionCreateResponse.of(savedLine);
+    }
+
+    private Station findFirstStationInList(List<Station> stationList, Long id) {
+        return stationList.stream()
+                .filter(it -> it.getId().equals(id))
+                .findFirst()
+                .orElseThrow(StationNotFoundException::new);
     }
 
     private LineResponse persistLine(LineRequest request) {
@@ -96,8 +101,10 @@ public class LineService {
     }
 
     private List<LineStation> createNewLineStations(Line line, Long upStationId, Long downStationId, long distance) {
-        Station upStation = stationService.findById(upStationId);
-        Station downStation = stationService.findById(downStationId);
+        List<Station> stationList = stationService.findByIds(Arrays.asList(upStationId, downStationId));
+
+        Station upStation = findFirstStationInList(stationList, upStationId);
+        Station downStation = findFirstStationInList(stationList, downStationId);
         return Arrays.asList(
                 new LineStation(line, upStation, null, 0),
                 new LineStation(line, downStation, upStation, distance)
