@@ -83,6 +83,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## 3단계 - 지하철 노선에 구간 등록 TODO list
 
 - [ ] 지하철 구간 등록 인수 테스트 작성
+  - [x] Happy Path 경우를 검증하기 위한 인수 테스트 작성
   - [ ] 역 사이에 새로운 역을 등록할 경우
   - [ ] 새로운 역을 상행 종점으로 등록할 경우
   - [ ] 새로운 역을 하행 종점으로 등록할 경우
