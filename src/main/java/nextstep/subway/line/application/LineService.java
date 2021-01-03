@@ -64,11 +64,17 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public SectionResponse addSection(Long lindId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lindId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 노선입니다."));
+    public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 노선입니다."));
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다."));
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다."));
         Section section = line.addSection(upStation, downStation, sectionRequest.getDistance());
         return SectionResponse.of(section);
+    }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 노선입니다."));
+        Station station = stationRepository.findById(stationId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다."));
+        line.removeStationInSection(station);
     }
 }

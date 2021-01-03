@@ -4,11 +4,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -52,5 +52,49 @@ public class Line extends BaseEntity {
         Section section = new Section(this, upStation, downStation, distance);
         addSection(section);
         return section;
+    }
+
+    public void removeStationInSection(Station station) {
+        removeStation(findPossibleStation(station));
+    }
+
+    private Station findPossibleStation(Station station) {
+        if (sections.getSections().size() <= 1) {
+            throw new IllegalStateException("구간에서 역을 제거할 수 없습니다.");
+        }
+
+        return sections.getStations().stream()
+                .filter(it -> it == station)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("제거 할 역이 노선 구간에 없습니다."));
+    }
+
+    private void removeStation(Station removePossibleStation) {
+        Optional<Section> upLineStation = getUpLineStation(removePossibleStation);
+        Optional<Section> downLineStation = getDownLineStation(removePossibleStation);
+
+        if (upLineStation.isPresent() && downLineStation.isPresent()) {
+            addNewSection(upLineStation.get(), downLineStation.get());
+        }
+
+        upLineStation.ifPresent(it -> sections.remove(it));
+        downLineStation.ifPresent(it -> sections.remove(it));
+    }
+
+    private void addNewSection(Section upLineStation, Section downLineStation) {
+        Long newDistance = upLineStation.getDistance().addDistanceToLong(downLineStation.getDistance());
+        sections.getSections().add(new Section(this, downLineStation.getUpStation(), upLineStation.getDownStation(), newDistance));
+    }
+
+    private Optional<Section> getDownLineStation(Station removePossibleStation) {
+        return sections.getSections().stream()
+                .filter(it -> it.getDownStation() == removePossibleStation)
+                .findFirst();
+    }
+
+    private Optional<Section> getUpLineStation(Station removePossibleStation) {
+        return sections.getSections().stream()
+                .filter(it -> it.getUpStation() == removePossibleStation)
+                .findFirst();
     }
 }

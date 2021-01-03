@@ -10,4 +10,8 @@ public class Distance {
     public Long get() {
         return distance;
     }
+
+    public Long addDistanceToLong(Distance addDistance) {
+        return distance + addDistance.get();
+    }
 }
