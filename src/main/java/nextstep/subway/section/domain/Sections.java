@@ -1,14 +1,12 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.station.dto.StationResponse;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -24,15 +22,15 @@ public class Sections {
         return items.remove(section);
     }
 
-    public List<StationResponse> toStationResponses() {
-        List<StationResponse> stations = items.stream()
-                .map(Section::getUpStation)
-                .map(StationResponse::of)
-                .collect(Collectors.toList());
+    public int size() {
+        return items.size();
+    }
 
-        int lastIdx = items.size() - 1;
-        Section lastSection = items.get(lastIdx);
-        stations.add(StationResponse.of(lastSection.getDownStation()));
-        return stations;
+    public Section get(int idx) {
+        return items.get(idx);
+    }
+
+    public Stream<Section> stream() {
+        return items.stream();
     }
 }
