@@ -38,8 +38,7 @@ public class LineStation extends BaseEntity {
 //		this.stationType = stationType;
 //	}
 
-	public LineStation(Line line, Station station, Section section) {
-		this.line = line;
+	public LineStation(Station station, Section section) {
 		this.station = station;
 		this.section = section;
 	}
@@ -84,5 +83,9 @@ public class LineStation extends BaseEntity {
 
 	public void updateDownStationType() {
 		this.stationType = StationType.DOWN_STATION;
+	}
+
+	public void addLine(Line line) {
+		this.line = line;
 	}
 }

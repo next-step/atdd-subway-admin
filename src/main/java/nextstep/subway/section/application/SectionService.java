@@ -1,23 +1,10 @@
 package nextstep.subway.section.application;
 
-import nextstep.subway.common.StationType;
-import nextstep.subway.common.exception.AlreadyExistsStationException;
-import nextstep.subway.common.exception.DistanceException;
-import nextstep.subway.common.exception.NotIncludeLineBothStationException;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.line.domain.LineStationRepository;
-import nextstep.subway.section.dto.SectionAddCondition;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,10 +14,7 @@ public class SectionService {
 
 	private final LineRepository lineRepository;
 
-	private final LineStationRepository lineStationRepository;
-
-	public SectionService(LineStationRepository lineStationRepository, StationRepository stationRepository, LineRepository lineRepository) {
-		this.lineStationRepository = lineStationRepository;
+	public SectionService(StationRepository stationRepository, LineRepository lineRepository) {
 		this.stationRepository = stationRepository;
 		this.lineRepository = lineRepository;
 	}

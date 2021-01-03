@@ -19,7 +19,7 @@ public class Line extends BaseEntity {
 
 //	private int distance;
 
-	@OneToMany(mappedBy = "line")
+	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
 	private List<LineStation> lineStations = new ArrayList<>();
 
 	public Line() {
@@ -28,6 +28,12 @@ public class Line extends BaseEntity {
 	public Line(String name, String color) {
 		this.name = name;
 		this.color = color;
+	}
+
+	public Line(String name, String color, List<LineStation> lineStations) {
+		this.name = name;
+		this.color = color;
+		this.lineStations = lineStations;
 	}
 
 //	public Line(String name, String color, int distance) {
@@ -62,6 +68,13 @@ public class Line extends BaseEntity {
 	}
 
 	public Line(List<LineStation> lineStations) {
+		this.lineStations = lineStations;
+	}
+
+	public void addLineStations(List<LineStation> lineStations) {
+		for(LineStation lineStation : lineStations){
+			lineStation.addLine(this);
+		}
 		this.lineStations = lineStations;
 	}
 

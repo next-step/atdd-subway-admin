@@ -18,11 +18,8 @@ public class LineService {
 
 	private LineRepository lineRepository;
 
-	private LineStationRepository lineStationRepository;
-
-	public LineService(LineRepository lineRepository, LineStationRepository lineStationRepository) {
+	public LineService(LineRepository lineRepository) {
 		this.lineRepository = lineRepository;
-		this.lineStationRepository = lineStationRepository;
 	}
 
 	public List<LineResponse> listLine() {
@@ -50,9 +47,11 @@ public class LineService {
 
 	@Transactional
 	public LineResponse saveLine(LineRequest lineRequest, Station upStation, Station downStation) {
-		Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
-//		List<LineStation> lineStations  = lineStationRepository.saveAll(Arrays.asList(new LineStation(line, upStation, StationType.UP_STATION), new LineStation(line, downStation, StationType.)));
-		List<LineStation> lineStations  = lineStationRepository.saveAll(Arrays.asList(new LineStation(line, upStation, new Section(upStation.getId(), downStation.getId(), lineRequest.getDistance())), new LineStation(line, downStation, new Section(upStation.getId(), downStation.getId(), lineRequest.getDistance()))));
-		return LineResponse.of(line, lineStations);
+		Section section = new Section(upStation.getId(), downStation.getId(), lineRequest.getDistance());
+		List<LineStation> lineStations = Arrays.asList(new LineStation(upStation, section), new LineStation(downStation, section));
+		Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+		line.addLineStations(lineStations);
+		lineRepository.save(line);
+		return LineResponse.of(line);
 	}
 }
