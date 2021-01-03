@@ -17,7 +17,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -198,6 +197,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.extract();
 	}
 
+	public ExtractableResponse<Response> 지하철역_생성_요청(String station) {
+		// given
+		Map<String, String> params = new HashMap<>();
+		params.put("name", station);
+
+		// when
+		return RestAssured.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/stations")
+			.then().log().all()
+			.extract();
+	}
+
 	private Map<String, String> generateParam(String name, String color) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
@@ -218,7 +232,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private String createStationId(String name) {
-		ExtractableResponse<Response> response = StationAcceptanceTest.지하철역_생성_요청(name);
+		ExtractableResponse<Response> response = 지하철역_생성_요청(name);
 		return response.as(StationResponse.class).getId().toString();
 	}
 }
