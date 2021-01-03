@@ -4,15 +4,13 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -214,8 +212,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_지하철역_목록_포함됨(ExtractableResponse<Response> response, List<String> expectedStationNames) {
-        List<String> result = response.jsonPath().getList("stations", StationResponse.class).stream()
-                .map(StationResponse::getName)
+        List<String> result = response.jsonPath().getList("stations", SectionResponse.class).stream()
+                .map(SectionResponse::getName)
                 .collect(Collectors.toList());
         assertThat(result).containsAll(expectedStationNames);
     }
