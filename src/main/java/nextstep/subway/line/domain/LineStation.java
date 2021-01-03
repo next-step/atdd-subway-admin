@@ -18,7 +18,8 @@ import javax.persistence.Table;
 import static nextstep.subway.section.domain.Distance.*;
 
 @Entity
-@Table(indexes = {@Index(columnList = "line_id, station_id, previous_station_id, next_station_id", unique = true)})
+@Table(indexes = {@Index(columnList = "line_id, station_id", unique = true),
+        @Index(columnList = "line_id, station_id, previous_station_id, next_station_id", unique = true)})
 public class LineStation extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,12 +44,17 @@ public class LineStation extends BaseEntity {
     @Embedded
     private Distance distanceForNextStation;
 
-    public LineStation() {}
+    private LineStation() {}
+
+    public LineStation(Line line, Station station) {
+        this.line = line;
+        this.station = station;
+    }
 
     public static LineStation createLineStation(Station station,
                                                 Station previousStation,
                                                 Station nextStation,
-                                                int distanceForNextStation) {
+                                                Distance distanceForNextStation) {
         LineStation lineStation = new LineStation();
         lineStation.changeStation(station);
         lineStation.applyPreviousStationAndNextStation(previousStation, nextStation);
@@ -84,20 +90,33 @@ public class LineStation extends BaseEntity {
         this.station = station;
     }
 
+    public void applyPreviousStation(Station station) {
+        this.previousStation = station;
+    }
+
+    public void applyNextStation(Station station) {
+        this.nextStation = station;
+    }
+
     public void applyPreviousStationAndNextStation(Station previousStation, Station nextStation) {
-        this.previousStation = previousStation;
-        this.nextStation = nextStation;
+        applyPreviousStation(previousStation);
+        applyNextStation(nextStation);
     }
 
-    public void applyDistanceForNextStation(int distanceForNextStation) {
+    public void applyDistanceForNextStation(Distance distanceForNextStation) {
         checkDistance(distanceForNextStation);
-        this.distanceForNextStation = new Distance(distanceForNextStation);
+        this.distanceForNextStation = distanceForNextStation;
     }
 
-    private void checkDistance(int distance) {
-        if (nextStation != null && distance == MIN_DISTANCE) {
+    public void changeDistanceForNextStation(Distance newDistance) {
+        Distance changedDistance = new Distance(distanceForNextStation.getDistance() - newDistance.getDistance());
+        applyDistanceForNextStation(changedDistance);
+    }
+
+    private void checkDistance(Distance distance) {
+        if (nextStation != null && distance.getDistance() == MIN_DISTANCE) {
             throw new IllegalArgumentException(MIN_DISTANCE + "보다 큰 거리만 허용됩니다");
-        } else if (isLast() && distance > MIN_DISTANCE) {
+        } else if (isLast() && distance.getDistance() > MIN_DISTANCE) {
             throw new IllegalArgumentException("거리가 " + MIN_DISTANCE + "만 허용됩니다");
         }
     }
@@ -108,5 +127,13 @@ public class LineStation extends BaseEntity {
 
     public boolean isLast() {
         return nextStation == null;
+    }
+
+    public boolean isNew() {
+        return id == null && getCreatedDate() == null;
+    }
+
+    public boolean isPersistence() {
+        return id != null && getCreatedDate() != null;
     }
 }
