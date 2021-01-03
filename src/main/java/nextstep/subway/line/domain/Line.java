@@ -70,9 +70,6 @@ public class Line extends BaseEntity {
 	}
 
 	public boolean checkDistanceValidate(int newDistance) {
-		if(this.distance <= newDistance){
-			return true;
-		}
-		return false;
+		return this.distance <= newDistance;
 	}
 }
