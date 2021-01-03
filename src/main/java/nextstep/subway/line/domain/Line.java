@@ -1,8 +1,13 @@
 package nextstep.subway.line.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -13,6 +18,13 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
+
+    @ManyToMany
+    @JoinTable(name = "station_line"
+            , joinColumns = @JoinColumn(name = "line_id")
+            , inverseJoinColumns = @JoinColumn(name = "station_id"))
+    @JsonManagedReference
+    private List<Station> stations = new ArrayList<>();
 
     public Line() {
     }
@@ -37,6 +49,15 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Station> getStations() {
+        return this.stations;
+    }
+
+    public void addStations(Station station) {
+        this.stations.add(station);
+//        station.addLine(this);
     }
 
     @Override

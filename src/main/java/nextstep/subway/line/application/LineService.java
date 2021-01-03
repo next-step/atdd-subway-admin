@@ -4,6 +4,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.StationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,15 +16,35 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    @Autowired
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
+    /**
+     * 지하철 노선을 저장합니다.
+     * @param request
+     * @return
+     */
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Line persistLine = lineRepository.save(this.lineRequestToLine(request));
         return LineResponse.of(persistLine);
+    }
+
+    /**
+     * 노선 생성 요청시 종점역 정보가 있는 경우 노선에 추가합니다.
+     * @param lineRequest
+     * @return
+     */
+    private Line lineRequestToLine(LineRequest lineRequest) {
+        Line line = lineRequest.toLine();
+        this.stationRepository.findById(lineRequest.getUpStationId()).ifPresent(line::addStations);
+        this.stationRepository.findById(lineRequest.getDownStationId()).ifPresent(line::addStations);
+        return line;
     }
 
     /**
