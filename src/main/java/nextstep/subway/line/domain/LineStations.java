@@ -81,7 +81,7 @@ public class LineStations {
         }
 
         if (!upStationExist && !downStationExist) {
-            throw new StationNotFoundException("등록할 수 없는 구간입니다.");
+            throw new NotRegisteredStationException("등록할 수 없는 구간입니다.");
         }
     }
 
