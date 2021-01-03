@@ -63,10 +63,12 @@ public class Section extends BaseEntity {
     }
 
     public Distance addDistance(Section otherSection) {
-        return distance.add(otherSection.getDistance());
+        distance.add(otherSection.getDistance());
+        return distance;
     }
 
     public Distance minusDistance(Section otherSection) {
-        return distance.minus(otherSection.getDistance());
+        distance.minus(otherSection.getDistance());
+        return distance;
     }
 }

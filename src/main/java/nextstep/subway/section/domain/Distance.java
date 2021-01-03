@@ -18,12 +18,12 @@ public class Distance {
         this.distance = distance;
     }
 
-    public Distance add(Distance otherDistance) {
-        return new Distance(this.distance + otherDistance.getDistance());
+    public void add(Distance otherDistance) {
+        this.distance += otherDistance.getDistance();
     }
 
-    public Distance minus(Distance otherDistance) {
-        return new Distance(this.distance - otherDistance.getDistance());
+    public void minus(Distance otherDistance) {
+        this.distance -= otherDistance.getDistance();
     }
 
     public boolean isEqualOrMore(Distance otherDistance) {
