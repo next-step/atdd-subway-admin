@@ -18,11 +18,14 @@ import static java.util.stream.Collectors.toList;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sections {
     private static final String ERR_TEXT_INVALID_SECTION = "유효하지 않은 구간데이터입니다.";
+    private static final String ERR_TEXT_NOT_EXIST_DATA = "해당 데이터가 존재하지 않습니다.";
+    private static final String ERR_TEXT_EXIST_ONLY_ONE_SECTION = "구간이 하나밖에 존재하지 않는 경우 구간을 삭제할 수 없습니다.";
+    private static final int EXIST_ONLY_ONE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public static Sections of() {
+    public static Sections newInstance() {
         return new Sections();
     }
 
@@ -88,16 +91,14 @@ public class Sections {
 
     private void addSectionUpToUp(final Section newSection) {
         findSection(section -> section.isSameUpStation(newSection))
-            .ifPresent(section -> {
-                if (section.distanceIsLessThan(newSection)) {
-                    throw new IllegalArgumentException(ERR_TEXT_INVALID_SECTION);
-                }
-
-                replaceSectionWithDownStation(section, newSection);
-            });
+            .ifPresent(section -> replaceSectionWithDownStation(section, newSection));
     }
 
     private void replaceSectionWithDownStation(final Section originSection, final Section newSection) {
+        if (originSection.distanceIsLessThan(newSection)) {
+            throw new IllegalArgumentException(ERR_TEXT_INVALID_SECTION);
+        }
+
         sections.add(new Section(
             originSection.getLine(),
             newSection.getDownStation(),
@@ -108,16 +109,14 @@ public class Sections {
 
     private void addSectionDownToDown(final Section newSection) {
         findSection(section -> section.isSameDownStation(newSection))
-            .ifPresent(section -> {
-                if (section.distanceIsLessThan(newSection)) {
-                    throw new IllegalArgumentException(ERR_TEXT_INVALID_SECTION);
-                }
-
-                replaceSectionWithUpStation(section, newSection);
-            });
+            .ifPresent(section -> replaceSectionWithUpStation(section, newSection));
     }
 
     private void replaceSectionWithUpStation(final Section originSection, final Section newSection) {
+        if (originSection.distanceIsLessThan(newSection)) {
+            throw new IllegalArgumentException(ERR_TEXT_INVALID_SECTION);
+        }
+
         sections.add(new Section(
             originSection.getLine(),
             originSection.getUpStation(),
@@ -128,5 +127,46 @@ public class Sections {
 
     private Distance getMinusDistance(final Section originSection, final Section newSection) {
         return originSection.getDistance().minus(newSection.getDistance());
+    }
+
+    public void deleteByStation(final Station targetStation) {
+        makeSureThatCanDeleteSection(targetStation);
+
+        delete(targetStation);
+    }
+
+    private void makeSureThatCanDeleteSection(final Station targetStation) {
+        if (this.sections.isEmpty()) {
+            throw new IllegalArgumentException(ERR_TEXT_NOT_EXIST_DATA);
+        }
+
+        if (this.sections.size() == EXIST_ONLY_ONE) {
+            throw new IllegalArgumentException(ERR_TEXT_EXIST_ONLY_ONE_SECTION);
+        }
+
+        final List<Station> stations = getStations();
+        if (!stations.contains(targetStation)) {
+            throw new IllegalArgumentException(ERR_TEXT_NOT_EXIST_DATA);
+        }
+    }
+
+    private void delete(final Station targetStation) {
+        final Section containByDownStation = findSection(sec -> sec.getDownStation() == targetStation).orElse(null);
+        final Section containByUpStation = findSection(sec -> sec.getUpStation() == targetStation).orElse(null);
+
+        this.sections.remove(containByDownStation);
+        this.sections.remove(containByUpStation);
+
+        addNewSectionWhenDeleteStationsIsMiddleStation(containByDownStation, containByUpStation);
+    }
+
+    private void addNewSectionWhenDeleteStationsIsMiddleStation(final Section containByDownStation, final Section containByUpStation) {
+        if (containByDownStation != null && containByUpStation != null) {
+            this.sections.add(new Section(
+                containByDownStation.getLine(),
+                containByDownStation.getUpStation(),
+                containByUpStation.getDownStation(),
+                containByUpStation.plusDistance(containByDownStation)));
+        }
     }
 }

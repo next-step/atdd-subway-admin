@@ -3,7 +3,6 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -64,13 +63,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = 지하철_노선_생성_요청();
+        final LineResponse newLine = response.as(LineResponse.class);
 
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(stationRepository.findById(1L).orElseThrow(NotFoundException::new).getName()).isEqualTo("신도림역");
-        assertThat(stationRepository.findById(2L).orElseThrow(NotFoundException::new).getName()).isEqualTo("까치산역");
+        assertThat(newLine.getStations().get(0).getName()).isEqualTo("신도림역");
+        assertThat(newLine.getStations().get(1).getName()).isEqualTo("까치산역");
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")

@@ -28,4 +28,8 @@ public class Distance {
     public Distance minus(final Distance newSection) {
         return new Distance(this.distance - newSection.getDistance());
     }
+
+    public Distance plus(final Distance otherDistance) {
+        return new Distance(this.distance + otherDistance.distance);
+    }
 }

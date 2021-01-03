@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static java.util.stream.Collectors.toList;
 import static nextstep.subway.line.LineAcceptanceTest.DEFAULT_LINES_URI;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -81,9 +84,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             () -> assertThat(lineAfterAddSection).isNotNull(),
             () -> assertThat(lineAfterAddSection.getName()).isEqualTo("5호선"),
             () -> assertThat(lineAfterAddSection.getColor()).isEqualTo("보라색"),
-            () -> assertThat(lineAfterAddSection.getStations().get(0).getName()).isEqualTo("김포공항역"),
-            () -> assertThat(lineAfterAddSection.getStations().get(1).getName()).isEqualTo("까치산역"),
-            () -> assertThat(lineAfterAddSection.getStations().get(2).getName()).isEqualTo("목동역")
+            () -> assertThat(lineAfterAddSection.getStations().stream().map(StationResponse::getName).collect(toList()))
+                .containsOnly("김포공항역", "까치산역", "목동역")
         );
     }
 
@@ -182,6 +184,93 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         final ExtractableResponse<Response> response = 구간_등록_요청(params, lineNumber5.getId());
 
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("노선에 속한 두 개의 구간에 포함된 지하철역 기준으로 구간을 삭제한다.")
+    @Test
+    void delete2SectionByStation() {
+        final Map<String, String> params = new HashMap<>();
+        params.put("upStationId", kkachisanStation.getId() + "");
+        params.put("downStationId", mokdongStation.getId() + "");
+        params.put("distance", 10L + "");
+
+        구간_등록_요청(params, lineNumber5.getId());
+
+        final ExtractableResponse<Response> deleteResponse = 구간_내_지하철역_삭제_요청(lineNumber5.getId(), kkachisanStation.getId());
+
+        final ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(lineNumber5.getId());
+        final LineResponse getLine = getResponse.as(LineResponse.class);
+        final List<String> stationsName = getLine.getStations().stream().map(StationResponse::getName).collect(toList());
+
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(stationsName.get(0)).isEqualTo("김포공항역");
+        assertThat(stationsName.get(1)).isEqualTo("목동역");
+    }
+
+    private ExtractableResponse<Response> 구간_내_지하철역_삭제_요청(final long lineId, final long stationId) {
+        final String uri = DEFAULT_LINES_URI + "/" + lineId + DEFAULT_SECTIONS_URI + "?stationId=" + stationId;
+        System.out.println(uri);
+        return DELETE_요청_보내기(uri);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(final long lineId) {
+        return GET_요청_보내기(DEFAULT_LINES_URI + "/" + lineId);
+    }
+
+    @DisplayName("노선에 속한 한 개의 구간에 상행역을 기준으로 구간을 삭제한다.")
+    @Test
+    void deleteSectionByUpStation() {
+        final Map<String, String> params = new HashMap<>();
+        params.put("upStationId", kkachisanStation.getId() + "");
+        params.put("downStationId", mokdongStation.getId() + "");
+        params.put("distance", 10L + "");
+
+        구간_등록_요청(params, lineNumber5.getId());
+
+        final ExtractableResponse<Response> response = 구간_내_지하철역_삭제_요청(lineNumber5.getId(), gimpoAirportStation.getId());
+        final ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(lineNumber5.getId());
+        final LineResponse getLine = getResponse.as(LineResponse.class);
+        final List<String> stationsName = getLine.getStations().stream().map(StationResponse::getName).collect(toList());
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(stationsName.get(0)).isEqualTo("까치산역");
+        assertThat(stationsName.get(1)).isEqualTo("목동역");
+    }
+
+    @DisplayName("노선에 속한 한 개의 구간에 하행역을 기준으로 구간을 삭제한다.")
+    @Test
+    void deleteSectionByDownStation() {
+        final Map<String, String> params = new HashMap<>();
+        params.put("upStationId", kkachisanStation.getId() + "");
+        params.put("downStationId", mokdongStation.getId() + "");
+        params.put("distance", 10L + "");
+
+        구간_등록_요청(params, lineNumber5.getId());
+
+        final ExtractableResponse<Response> response = 구간_내_지하철역_삭제_요청(lineNumber5.getId(), mokdongStation.getId());
+        final ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(lineNumber5.getId());
+        final LineResponse getLine = getResponse.as(LineResponse.class);
+        final List<String> stationsName = getLine.getStations().stream().map(StationResponse::getName).collect(toList());
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(stationsName.get(0)).isEqualTo("김포공항역");
+        assertThat(stationsName.get(1)).isEqualTo("까치산역");
+    }
+
+    @DisplayName("노선에 속한 구간 중 어느 구간에도 속하지 못한 역을 삭제한다.")
+    @Test
+    void deleteSectionWhenNotExist() {
+        final ExtractableResponse<Response> response = 구간_내_지하철역_삭제_요청(lineNumber5.getId(), mokdongStation.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("노선에 속한 구간이 오직 한 개 일때 삭제한다.")
+    @Test
+    void deleteSectionWhenExistOnlyOneSection() {
+        final ExtractableResponse<Response> response = 구간_내_지하철역_삭제_요청(lineNumber5.getId(), gimpoAirportStation.getId());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

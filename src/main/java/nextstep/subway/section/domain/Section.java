@@ -65,4 +65,8 @@ public class Section extends BaseEntity {
     public boolean distanceIsLessThan(final Section newSection) {
         return this.distance.isLessThan(newSection.getDistance());
     }
+
+    public Distance plusDistance(final Section otherSection) {
+        return this.getDistance().plus(otherSection.getDistance());
+    }
 }

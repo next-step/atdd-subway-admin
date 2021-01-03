@@ -81,4 +81,12 @@ public class LineService {
 
         return LineResponse.of(foundLine);
     }
+
+    @Transactional
+    public void deleteSectionByStation(final Long lineId, final Long stationId) {
+        final Station targetStation = findStationById(stationId);
+        final Line targetLine = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
+
+        targetLine.deleteSectionByStation(targetStation);
+    }
 }

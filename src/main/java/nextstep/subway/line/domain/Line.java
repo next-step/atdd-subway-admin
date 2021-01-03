@@ -21,7 +21,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private final Sections sections = Sections.of();
+    private final Sections sections = Sections.newInstance();
 
     public Line() {
     }
@@ -60,5 +60,9 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return sections.getStations();
+    }
+
+    public void deleteSectionByStation(final Station targetStation) {
+        sections.deleteByStation(targetStation);
     }
 }
