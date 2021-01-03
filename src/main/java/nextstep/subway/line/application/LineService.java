@@ -9,6 +9,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,15 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
+	public LineResponse addSection(Long lineId, SectionRequest request) {
+		Line line = getLine(lineId);
+		Section section = toSection(request.getUpStationId(), request.getDownStationId(),
+			  request.getDistance());
+		line.addSection(section);
+
+		return LineResponse.of(line);
+	}
+
 	private Line toLineWithSection(LineRequest request) {
 		Line line = request.toLine();
 
@@ -74,12 +84,18 @@ public class LineService {
 	}
 
 	private void validateSectionInfo(LineRequest request) {
-		if (request.isSectionInfoEmpty()) {
+		if (request.validateSectionInfo()) {
 			throw new IllegalArgumentException("구간정보가 존재하지 않습니다.");
 		}
 	}
 
 	private Optional<Line> findById(Long id) {
 		return lineRepository.findById(id);
+	}
+
+	private Section toSection(Long upStationId, Long downStationId, Integer distance) {
+		Station upStation = stationService.findById(upStationId);
+		Station downStation = stationService.findById(downStationId);
+		return new Section(upStation, downStation, distance);
 	}
 }

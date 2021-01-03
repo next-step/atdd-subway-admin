@@ -89,3 +89,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         Given: 지하철 노선이 등록되어 있다.
         When: 지하철 노선 삭제를 요청한다.
         Then: 지하철 노선정보가 삭제된다.
+     
+    *[x] Scenario: 지하철 구간정보를 추가한다.
+        Given 지하철 노선이 등록되어 있다.
+        And 지하철 역이 등록되어 있다.
+        And 지하철 구간 정보가 하나 이상 등록되어 있다.
+        When 지하철 구간 정보를 추가한다.
+        Then 지하철 구간정보가 추가된다.

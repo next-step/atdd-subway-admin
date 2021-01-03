@@ -4,10 +4,10 @@ import java.net.URI;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,42 +19,44 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    private final LineService lineService;
 
-    public LineController(final LineService lineService) {
-        this.lineService = lineService;
-    }
+	private final LineService lineService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity showLines() {
-        return ResponseEntity.ok(lineService.findAllLines());
-    }
+	public LineController(final LineService lineService) {
+		this.lineService = lineService;
+	}
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getLine(@PathVariable Long id) {
-        return ResponseEntity.ok(lineService.findLine(id));
-    }
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity showLines() {
+		return ResponseEntity.ok(lineService.findAllLines());
+	}
 
-    @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLine(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
-    }
+	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity getLine(@PathVariable Long id) {
+		return ResponseEntity.ok(lineService.findLine(id));
+	}
 
-    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.updateLine(id, lineRequest);
-        return ResponseEntity.ok(line);
-    }
+	@PostMapping
+	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+		LineResponse line = lineService.saveLine(lineRequest);
+		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+	}
 
-    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity deleteLine(@PathVariable Long id) {
-        lineService.deleteLine(id);
-        return ResponseEntity.noContent().build();
-    }
+	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+		LineResponse line = lineService.updateLine(id, lineRequest);
+		return ResponseEntity.ok(line);
+	}
 
-    @ExceptionHandler
-    public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
-    }
+	@DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity deleteLine(@PathVariable Long id) {
+		lineService.deleteLine(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping(value = "/{id}/sections")
+	public ResponseEntity addSection(@PathVariable Long id, @RequestBody SectionRequest request) {
+		LineResponse lineResponse = lineService.addSection(id, request);
+		return ResponseEntity.created(URI.create("/lines/" + id + "/sections/")).body(lineResponse);
+	}
 }
