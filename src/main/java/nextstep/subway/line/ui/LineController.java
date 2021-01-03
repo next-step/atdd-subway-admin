@@ -66,7 +66,7 @@ public class LineController {
                                         @RequestBody @Valid SectionRequest sectionRequest) {
         Line line = lineService.findLineById(id);
         Section section = lineService.addSection(line, sectionRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId() + "/sections"))
+        return ResponseEntity.created(URI.create("/sections/" + section.getId()))
                 .body(SectionResponse.of(section));
     }
 }

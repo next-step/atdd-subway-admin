@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.section.dto.SectionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.line.LineAcceptanceTest.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -25,6 +27,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	public void setUp() {
 		super.setUp();
 		// 지하철_노선_생성
+		// 상행: 양재
+		// 하행: 청계산입구
 		Map<String, String> params = createLineParams();
 		upStationId = params.get("upStationId");
 		downStationId = params.get("downStationId");
@@ -49,19 +53,33 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			양재 --- 양재시민의숲 --- 청계산입구
 
 		 */
+		int distance = 4;
 		Map<String, String> params = new SectionParameter()
 				.upStationId(upStationId)
 				.downStationId(createStationId("양재시민의숲"))
-				.distance("4")
+				.distance(String.valueOf(distance))
 				.getMap();
 
 		// when
 		// 지하철_구간_등록_요청
-		ExtractableResponse<Response> response = createNewSection(params);
+		ExtractableResponse<Response> addResponse = createNewSection(params);
 
 		// then
 		// 지하철_구간_등록됨
-		assertResponseHttpStatusIsCreate(response);
+		assertResponseHttpStatusIsCreate(addResponse);
+		// 구간_조회_요청
+		ExtractableResponse<Response> sectionResponse = RestAssured.given().log().all()
+				.when()
+				.get(addResponse.header("Location"))
+				.then().log().all()
+				.extract();
+		// 구간_조회_정상
+		assertResponseHttpStatusIsOk(sectionResponse);
+		SectionResponse response = sectionResponse.jsonPath().getObject(".", SectionResponse.class);
+
+		assertThat(response.getUpStation().getId()).isEqualTo(Long.parseLong(upStationId));
+		assertThat(response.getDownStation().getId()).isEqualTo(Long.parseLong(params.get("downStationId")));
+		assertThat(response.getDistance()).isEqualTo(distance);
 	}
 
 	@DisplayName("새로운 역을 상행 종점으로 구간을 등록한다")
