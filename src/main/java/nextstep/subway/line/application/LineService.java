@@ -41,6 +41,11 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
+    public Line findLineAndLineStations(Long id) {
+        return lineRepository.findLineByFetchJoin(id);
+    }
+
+    @Transactional(readOnly = true)
     public Line findLine(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NoResultException(id + "엔티티가 존재하지 않습니다"));
