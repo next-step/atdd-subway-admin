@@ -9,9 +9,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
@@ -23,14 +21,11 @@ public class LineService {
 
 	private final LineRepository lineRepository;
 	private final StationService stationService;
-	private final SectionRepository sectionRepository;
 
 	public LineService(LineRepository lineRepository,
-		  StationService stationService,
-		  SectionRepository sectionRepository) {
+		  StationService stationService) {
 		this.lineRepository = lineRepository;
 		this.stationService = stationService;
-		this.sectionRepository = sectionRepository;
 	}
 
 	public List<LineResponse> findAllLines() {
@@ -62,13 +57,13 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
-	public SectionResponse addSection(Long lineId, SectionRequest request) {
+	public LineResponse addSection(Long lineId, SectionRequest request) {
 		Line line = getLine(lineId);
-		Section section = toSection(request.getUpStationId(), request.getDownStationId(), request.getDistance());
+		Section section = toSection(request.getUpStationId(), request.getDownStationId(),
+			  request.getDistance());
 		line.addSection(section);
 
-		Section persistSection = getSection(section);
-		return SectionResponse.of(persistSection);
+		return LineResponse.of(line);
 	}
 
 	private Line toLineWithSection(LineRequest request) {
@@ -102,10 +97,5 @@ public class LineService {
 		Station upStation = stationService.findById(upStationId);
 		Station downStation = stationService.findById(downStationId);
 		return new Section(upStation, downStation, distance);
-	}
-
-	private Section getSection(Section section) {
-		return sectionRepository
-			  .findByUpStationAndDownStation(section.getUpStation(), section.getDownStation());
 	}
 }

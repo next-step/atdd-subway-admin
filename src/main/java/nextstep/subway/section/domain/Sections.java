@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -27,17 +27,73 @@ public class Sections {
 	}
 
 	public void add(Section newSection) {
-		boolean isDone = addBeside(newSection);
-		if (isDone) {
+		if (this.sections.isEmpty()) {
+			this.sections.add(newSection);
 			return;
 		}
 
-		isDone = addInside(newSection);
-		if (isDone) {
+		Set<Station> upStations = sections.stream()
+			  .map(Section::getUpStation)
+			  .collect(Collectors.toSet());
+		Set<Station> downStations = sections.stream()
+			  .map(Section::getDownStation)
+			  .collect(Collectors.toSet());
+
+		validateNewSection(newSection, upStations, downStations);
+
+		if (isEndSection(newSection, upStations, downStations)) {
+			this.sections.add(newSection);
 			return;
 		}
 
-		throw new IllegalArgumentException("잘못된 구간정보입니다.");
+		if (isMiddleSection(newSection, upStations, downStations)) {
+			addInMiddleOfSection(newSection, upStations, downStations);
+		}
+	}
+
+	private void validateNewSection(Section newSection, Set<Station> upStations,
+		  Set<Station> downStations) {
+		if (!isContainedAnyStationInSections(newSection, upStations, downStations)) {
+			throw new IllegalArgumentException("연결가능한 구간정보가 없습니다.");
+		}
+
+		if (isContainedAllStationsInExistedSection(newSection, upStations, downStations)) {
+			throw new IllegalArgumentException("이미 등록된 구간과 중복되거나, 추가할 수 없는 비정상적인 구간입니다.");
+		}
+	}
+
+	private boolean isContainedAnyStationInSections(Section newSection, Set<Station> upStations,
+		  Set<Station> downStations) {
+		boolean containedInUpStations = newSection
+			  .isContainedUpStationsInExistSections(upStations, downStations);
+		boolean containedInDownStations = newSection
+			  .isContainedDownStationsInExistSections(upStations, downStations);
+
+		return containedInUpStations || containedInDownStations;
+	}
+
+	private boolean isContainedAllStationsInExistedSection(Section newSection,
+		  Set<Station> upStations, Set<Station> downStations) {
+		boolean containedInUpStations = newSection
+			  .isContainedUpStationsInExistSections(upStations, downStations);
+		boolean containedInDownStations = newSection
+			  .isContainedDownStationsInExistSections(upStations, downStations);
+
+		return containedInUpStations && containedInDownStations;
+	}
+
+	private boolean isEndSection(Section newSection, Set<Station> upStations,
+		  Set<Station> downStations) {
+
+		//n.up은 둘다 없고, n.down은 up에만 존재
+		//n.up은 down에만 존재, n.down은 없음
+		return newSection.isEndOfUpSection(upStations, downStations)
+			  || newSection.isEndOfDownSection(upStations, downStations);
+	}
+
+	private boolean isMiddleSection(Section newSection, Set<Station> upStations,
+		  Set<Station> downStations) {
+		return newSection.isMiddleOfSection(upStations, downStations);
 	}
 
 	public List<Station> stationsInOrder() {
@@ -50,7 +106,7 @@ public class Sections {
 		stations.add(firstUpSection.getDownStation());
 
 		Section currentSection = firstUpSection;
-		while(stations.size() < this.sections.size() + 1) {
+		while (stations.size() < this.sections.size() + 1) {
 			currentSection = stationMap.get(currentSection.getDownStation());
 			stations.add(currentSection.getDownStation());
 		}
@@ -67,60 +123,37 @@ public class Sections {
 			  .findFirst().orElseThrow(() -> new NoSuchElementException("상행종점역을 찾을 수 없습니다."));
 	}
 
-	private boolean addBeside(Section newSection) {
-		if (this.sections.isEmpty()) {
-			this.sections.add(newSection);
-			return true;
+	private void addInMiddleOfSection(Section newSection, Set<Station> upStations,
+		  Set<Station> downStations) {
+		if (newSection.isLinkedUpStation(upStations, downStations)) {
+			addUpSection(newSection);
 		}
 
-		Optional<Section> maybeSection = this.sections.stream()
-			  .filter(section -> section.isLinked(newSection))
-			  .filter(section -> !section.isSame(newSection))
-			  .findFirst();
-		if (!maybeSection.isPresent()) {
-			return false;
+		if (newSection.isLinkedDownStation(upStations, downStations)) {
+			addDownSection(newSection);
 		}
 
 		this.sections.add(newSection);
-		return true;
 	}
 
-	private boolean addInside(Section newSection) {
-		List<Section> matchSections = this.sections.stream()
-			  .filter(section -> section.isInside(newSection))
-			  .collect(Collectors.toList());
-		if (matchSections.isEmpty()) {
-			return false;
-		}
+	private void addUpSection(Section newSection) {
+		Section targetSection = this.sections.stream()
+			  .filter(section -> section.isUpStationEquals(newSection))
+			  .findFirst()
+			  .orElseThrow(() -> new NoSuchElementException("관련구간을 찾을 수 없습니다."));
 
-		if (matchSections.size() > 1) {
-			throw new IllegalArgumentException("잘못된 구간정보입니다.");
-		}
-
-		Section section = matchSections.get(0);
-		addInsideUpSection(section, newSection);
-		addInsideDownSection(section, newSection);
-		this.sections.add(newSection);
-
-		return true;
+		int newDistance = calculateDistance(targetSection, newSection);
+		targetSection.changeUpStation(newSection.getDownStation(), newDistance);
 	}
 
-	private void addInsideDownSection(Section section, Section newSection) {
-		if (!section.isDownStationEquals(newSection)) {
-			return;
-		}
+	private void addDownSection(Section newSection) {
+		Section targetSection = this.sections.stream()
+			  .filter(section -> section.isDownStationEquals(newSection))
+			  .findFirst()
+			  .orElseThrow(() -> new NoSuchElementException("관련구간을 찾을 수 없습니다."));
 
-		int remainDistance = calculateDistance(section, newSection);
-		section.changeDownStation(newSection.getUpStation(), remainDistance);
-	}
-
-	private void addInsideUpSection(Section section, Section newSection) {
-		if (!section.isUpStationEquals(newSection)) {
-			return;
-		}
-
-		int remainDistance = calculateDistance(section, newSection);
-		section.changeUpStation(newSection.getDownStation(), remainDistance);
+		int newDistance = calculateDistance(targetSection, newSection);
+		targetSection.changeDownStation(newSection.getUpStation(), newDistance);
 	}
 
 	private int calculateDistance(Section section, Section newSection) {

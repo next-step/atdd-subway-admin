@@ -73,7 +73,8 @@ class SectionsTest {
 		Section upSection = sectionMap.get("upSection");
 		Section section = sectionMap.get("section");
 		Section downSection = sectionMap.get("downSection");
-		assertThat(stations).containsExactly(upSection.getUpStation(), upSection.getDownStation(), section.getDownStation(), downSection.getDownStation());
+		assertThat(stations).containsExactly(upSection.getUpStation(), upSection.getDownStation(),
+			  section.getDownStation(), downSection.getDownStation());
 	}
 
 	@DisplayName("등록된 구간 앞 또는 뒤에 구간을 추가한다.")
@@ -93,7 +94,7 @@ class SectionsTest {
 		//when,then
 		assertThatIllegalArgumentException()
 			  .isThrownBy(() -> sections.add(sectionMap.get("unLinkedSection")))
-			  .withMessage("잘못된 구간정보입니다.");
+			  .withMessage("연결가능한 구간정보가 없습니다.");
 	}
 
 	@DisplayName("동일한 구간을 추가할 경우 추가할 수 없다.")
@@ -102,7 +103,19 @@ class SectionsTest {
 		//when,then
 		assertThatIllegalArgumentException()
 			  .isThrownBy(() -> sections.add(sectionMap.get("section")))
-			  .withMessage("잘못된 구간정보입니다.");
+			  .withMessage("이미 등록된 구간과 중복되거나, 추가할 수 없는 비정상적인 구간입니다.");
+	}
+
+	@DisplayName("다른 구간에 등록된 역을 추가할 수 없다.")
+	@Test
+	void addWrongSection() {
+		//given
+		Section newSection = new Section(stationMap.get("역삼역"), stationMap.get("강남역"), 2);
+
+		//when,then
+		assertThatIllegalArgumentException()
+			  .isThrownBy(() -> sections.add(newSection))
+			  .withMessage("이미 등록된 구간과 중복되거나, 추가할 수 없는 비정상적인 구간입니다.");
 	}
 
 	@DisplayName("역 사이에 새로운 역을 등록한다.")
@@ -126,6 +139,38 @@ class SectionsTest {
 
 		assertThat(sections.getSections()).hasSize(2);
 		assertThat(sections.getSections()).containsAll(Arrays.asList(expected1, expected2));
+	}
+
+	@DisplayName("역 사이에 새로운 역을 등록한다. - 상행역이 같은 경우")
+	@Test
+	void addSectionInner2() {
+		//given
+		sections.add(sectionMap.get("upSection"));
+		sections.add(sectionMap.get("downSection"));
+
+		//when
+		Section section = new Section(stationMap.get("강남역"), stationMap.get("강변역"), 1);
+		sections.add(section);
+
+		//then
+		Section expectedSection = new Section(stationMap.get("강변역"), stationMap.get("역삼역"), 1);
+		assertThat(sections.getSections()).containsAll(Arrays.asList(section, expectedSection));
+	}
+
+	@DisplayName("역 사이에 새로운 역을 등록한다. - 하행역이 같은 경우")
+	@Test
+	void addSectionInner3() {
+		//given
+		sections.add(sectionMap.get("upSection"));
+		sections.add(sectionMap.get("downSection"));
+
+		//when
+		Section section = new Section(stationMap.get("강변역"), stationMap.get("역삼역"), 1);
+		sections.add(section);
+
+		//then
+		Section expected = new Section(stationMap.get("강남역"), stationMap.get("강변역"), 1);
+		assertThat(sections.getSections()).containsAll(Arrays.asList(section, expected));
 	}
 
 	@DisplayName("역 사이에 새로운 역을 등록할 경우 거리가 같거나 길면 추가할 수 없다")
@@ -163,6 +208,6 @@ class SectionsTest {
 		//when
 		assertThatIllegalArgumentException()
 			  .isThrownBy(() -> sections.add(wrongSection))
-			  .withMessage("잘못된 구간정보입니다.");
+			  .withMessage("이미 등록된 구간과 중복되거나, 추가할 수 없는 비정상적인 구간입니다.");
 	}
 }
