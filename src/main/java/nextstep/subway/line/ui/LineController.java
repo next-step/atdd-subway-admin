@@ -29,9 +29,7 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
-        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
-        LineResponse line = lineService.saveLine(lineRequest, upStation, downStation);
+        LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
