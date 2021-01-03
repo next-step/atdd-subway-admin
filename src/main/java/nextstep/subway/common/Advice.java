@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import lombok.extern.slf4j.Slf4j;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.exception.StationNotFoundException;
 
 @Slf4j
@@ -20,8 +21,14 @@ public class Advice {
 	}
 
 	@ExceptionHandler(StationNotFoundException.class)
-	public ResponseEntity<LineResponse> handleStationNotFoundException(StationNotFoundException e) {
+	public ResponseEntity<StationResponse> handleStationNotFoundException(StationNotFoundException e) {
 		log.error("StationNotFoundException: " + e.getMessage());
+		return ResponseEntity.badRequest().build();
+	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
+		log.error("RuntimeException: " + e.getMessage());
 		return ResponseEntity.badRequest().build();
 	}
 }
