@@ -177,20 +177,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_구간_거리_계산됨(response, Arrays.asList(0, 10));
     }
 
-
-    @Autowired
-    private LineService lineService;
-
-    @Test
-    void test2() {
-        SectionRequest sectionRequest = getSectionRequest(천호역, 잠실역, 4);
-        지하철_노선에_구간_등록_요청(lineNumber8.getId(), sectionRequest);
-
-        LineResponse lineResponse = lineService.removeSectionByStationId(lineNumber8.getId(), 천호역);
-    }
-
-
-
     @DisplayName("노선에서 상행 종점 제거")
     @Test
     void deleteStartSection() {
