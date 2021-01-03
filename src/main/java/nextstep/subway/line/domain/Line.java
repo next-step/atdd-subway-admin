@@ -30,7 +30,6 @@ public class Line extends BaseEntity {
 	@Column(unique = true)
 	private String name;
 	private String color;
-
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
 	private final List<Section> sections = new ArrayList<>();
 
@@ -55,6 +54,9 @@ public class Line extends BaseEntity {
 	}
 
 	private void createSection(Station upStation, Station downStation, int distance) {
+		if (upStation.equals(downStation)) {
+			throw new RuntimeException("중복된 Station 입니다.");
+		}
 		this.sections.add(new Section(this, upStation, downStation, distance));
 	}
 
