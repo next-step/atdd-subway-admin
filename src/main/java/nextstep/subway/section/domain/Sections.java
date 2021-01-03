@@ -1,6 +1,5 @@
 package nextstep.subway.section.domain;
 
-import com.sun.istack.NotNull;
 import nextstep.subway.section.exception.InvalidAddSectionException;
 import nextstep.subway.section.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
@@ -18,7 +17,9 @@ public class Sections {
     private final List<Section> sections = new ArrayList<>();
 
     public void addInitSection(Section section) {
-        sections.add(section);
+        if (sections.isEmpty()) {
+            sections.add(section);
+        }
     }
 
     public void addSection(Section section) {
@@ -34,63 +35,6 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private void addSectionInMatch(Section newSection) {
-        // Add InSection
-        // 기존 Section 상행 종점과 새로운 Section 상행 종점이 일치한 경우
-        if (isExistCompare(section -> section.equalUpUpStation(newSection))) {
-            Section oldSection = findSection(section -> section.equalUpUpStation(newSection));
-            addSectionUpToUp(oldSection, newSection);
-            return;
-        }
-        // 기존 Section 하행 종점과 새로운 Section 하행 종점이 일치한 경우
-        if (isExistCompare(section -> section.equalDownDownStation(newSection))) {
-            Section oldSection = findSection(section -> section.equalDownDownStation(newSection));
-            addSectionDownToDown(oldSection, newSection);
-            return;
-        }
-
-        // Add OutSection
-        addOutSection(newSection);
-    }
-
-    private boolean isExistCompare(Predicate<Section> predicate) {
-        return findSection(predicate) != null;
-    }
-
-    private Section findSection(Predicate<Section> predicate) {
-        return sections.stream()
-                .filter(predicate)
-                .findFirst()
-                .orElse(null);
-    }
-
-    private void addSectionUpToUp(Section oldSection, Section newSection) {
-        checkDistance(oldSection, newSection);
-
-        sections.add(sections.indexOf(oldSection), newSection);
-        oldSection.updateUpStation(newSection.getDownStation(), oldSection.minusDistance(newSection));
-    }
-
-    private void addSectionDownToDown(Section oldSection, Section newSection) {
-        checkDistance(oldSection, newSection);
-
-        oldSection.updateDownStation(newSection.getUpStation(), oldSection.minusDistance(newSection));
-        sections.add(sections.indexOf(oldSection) + 1, newSection);
-    }
-
-    private void addOutSection(Section newSection) {
-        // 기존 Section 상행 종점과 새로운 Section 하행 종점이 일치한 경우 -> 새로운 역을 상행 종점으로..
-        Section oldSection = findSection(section -> section.equalUpDownStation(newSection));
-        if (oldSection != null) {
-            sections.add(sections.indexOf(oldSection), newSection);
-            return;
-        }
-
-        // 기존 Section 하행 종점과 새로운 Section 상행 종점이 일치한 경우 -> 새로운 역을 하행 종점으로..
-        int index = sections.indexOf(findSection(section -> section.equalDownUpStation(newSection)));
-        sections.add(index + 1, newSection);
-    }
-
     private void checkContainSection(Section section) {
         List<Station> stations = getStations();
         List<Station> stationsOfNewSection = Arrays.asList(section.getUpStation(), section.getDownStation());
@@ -104,6 +48,38 @@ public class Sections {
         if(!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
             throw new InvalidAddSectionException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
         }
+    }
+
+    private void addSectionInMatch(Section newSection) {
+        // 기존 Section 상행 종점과 새로운 Section 상행 종점이 일치한 경우
+        addSectionUpToUp(newSection);
+
+        // 기존 Section 하행 종점과 새로운 Section 하행 종점이 일치한 경우
+        addSectionDownToDown(newSection);
+
+        sections.add(newSection);
+    }
+
+    private void addSectionUpToUp(Section newSection) {
+        Optional<Section> oldSection = findSection(section -> section.equalUpUpStation(newSection));
+        oldSection.ifPresent(section -> {
+            checkDistance(section, newSection);
+            section.updateUpStation(newSection.getDownStation(), section.minusDistance(newSection));
+        });
+    }
+
+    private void addSectionDownToDown(Section newSection) {
+        Optional<Section> oldSection = findSection(section -> section.equalDownDownStation(newSection));
+        oldSection.ifPresent(section -> {
+            checkDistance(section, newSection);
+            section.updateDownStation(newSection.getUpStation(), section.minusDistance(newSection));
+        });
+    }
+
+    private Optional<Section> findSection(Predicate<Section> predicate) {
+        return sections.stream()
+                .filter(predicate)
+                .findFirst();
     }
 
     private void checkDistance(Section oldSection, Section newSection) {

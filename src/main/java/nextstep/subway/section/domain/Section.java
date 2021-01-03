@@ -14,11 +14,11 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
@@ -47,14 +47,6 @@ public class Section extends BaseEntity {
 
     public boolean equalDownDownStation(Section otherSection) {
         return downStation.equals(otherSection.getDownStation());
-    }
-
-    public boolean equalUpDownStation(Section otherSection) {
-        return upStation.equals(otherSection.getDownStation());
-    }
-
-    public boolean equalDownUpStation(Section otherSection) {
-        return downStation.equals(otherSection.getUpStation());
     }
 
     public boolean isEqualOrMoreDistance(Section otherSection) {
