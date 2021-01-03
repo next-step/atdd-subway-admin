@@ -30,8 +30,8 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
-        boolean isUpStationInSection = findStationInSection(newSection.getUpStation());
-        boolean isDownStationInSection = findStationInSection(newSection.getDownStation());
+        boolean isUpStationInSection = isStationInSection(newSection.getUpStation());
+        boolean isDownStationInSection = isStationInSection(newSection.getDownStation());
         validateSection(isUpStationInSection, isDownStationInSection);
 
         if (isUpStationInSection) {
@@ -61,7 +61,7 @@ public class Sections {
         }
     }
 
-    private boolean findStationInSection(Station station) {
+    private boolean isStationInSection(Station station) {
         return this.sections.stream()
                 .anyMatch(section -> section.isDownStationInSection(station));
     }
