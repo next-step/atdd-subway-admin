@@ -153,7 +153,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return sectionNames;
     }
 
-    private ExtractableResponse<Response> createRequest(SectionRequest sectionRequest) {
+    public static ExtractableResponse<Response> createRequest(SectionRequest sectionRequest) {
         final String url = "/sections";
         return RequestTest.doPost(url, sectionRequest);
     }

@@ -5,14 +5,15 @@ import nextstep.subway.station.dto.StationResponse;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.REMOVE)
+    @OrderBy("sectionNumber")
     private List<Section> items = new ArrayList<>();
 
     public void add(Section section) {
@@ -24,24 +25,13 @@ public class Sections {
     }
 
     public List<StationResponse> toStationResponses() {
-        List<Section> sortedSections = makeSortedSections();
-        return makeStationResponses(sortedSections);
-    }
-
-    private List<Section> makeSortedSections() {
-        return items.stream()
-                .sorted(Comparator.comparing(Section::getSectionNumber))
-                .collect(Collectors.toList());
-    }
-
-    private List<StationResponse> makeStationResponses(List<Section> sections) {
-        List<StationResponse> stations = sections.stream()
+        List<StationResponse> stations = items.stream()
                 .map(Section::getUpStation)
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
 
-        int lastIdx = sections.size() - 1;
-        Section lastSection = sections.get(lastIdx);
+        int lastIdx = items.size() - 1;
+        Section lastSection = items.get(lastIdx);
         stations.add(StationResponse.of(lastSection.getDownStation()));
         return stations;
     }
