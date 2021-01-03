@@ -6,22 +6,25 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.AllArgsConstructor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
+@AllArgsConstructor
 @Service
 @Transactional
 public class LineService {
 	private final LineRepository lineRepository;
-
-	public LineService(LineRepository lineRepository) {
-		this.lineRepository = lineRepository;
-	}
+	private final StationRepository stationRepository;
 
 	public LineResponse saveLine(LineRequest request) {
-		Line persistLine = lineRepository.save(request.toLine());
+		Station upStation = findStationById(request.getUpStationId());
+		Station downStation = findStationById(request.getDownStationId());
+		Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
 		return LineResponse.of(persistLine);
 	}
 
@@ -45,12 +48,16 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
+	public void deleteLine(Long id) {
+		Line line = findLine(id);
+		lineRepository.delete(line);
+	}
+
 	private Line findLine(Long id) {
 		return lineRepository.findById(id).orElseThrow(RuntimeException::new);
 	}
 
-	public void deleteLine(Long id) {
-		Line line = findLine(id);
-		lineRepository.delete(line);
+	private Station findStationById(String stationId) {
+		return stationRepository.findById(Long.parseLong(stationId)).orElseThrow(RuntimeException::new);
 	}
 }
