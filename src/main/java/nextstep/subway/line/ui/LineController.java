@@ -5,6 +5,7 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -46,8 +47,8 @@ public class LineController {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
 
-        LineStation upLineStation = createLineStation(upStation, null, downStation, lineRequest.getDistance());
-        LineStation downLineStation = createLineStation(downStation, upStation, null, MIN_DISTANCE);
+        LineStation upLineStation = createLineStation(upStation, null, downStation, new Distance(lineRequest.getDistance()));
+        LineStation downLineStation = createLineStation(downStation, upStation, null, new Distance(MIN_DISTANCE));
 
         LineResponse line = lineService.saveLine(lineRequest.toLine(), upLineStation, downLineStation);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
