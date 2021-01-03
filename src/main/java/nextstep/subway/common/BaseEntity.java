@@ -34,7 +34,7 @@ public abstract class BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BaseEntity that = (BaseEntity) o;
-        return id.equals(that.id);
+        return (id != null) && id.equals(that.id);
     }
 
     @Override

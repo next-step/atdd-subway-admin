@@ -95,4 +95,41 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		SectionAcceptanceTestSupport.assertStatusCode(response1, HttpStatus.BAD_REQUEST);
 		SectionAcceptanceTestSupport.assertStatusCode(response2, HttpStatus.BAD_REQUEST);
 	}
+
+	@Test
+	@DisplayName("노선의 구간 제거")
+	void removeSection() {
+		// given
+		SectionAcceptanceTestSupport.지하철노선_구간_추가(노선, 추가역, C역, 30);
+		SectionAcceptanceTestSupport.지하철노선_구간_검사(노선, A역, 추가역, C역);
+
+		// when
+		ExtractableResponse<Response> response = SectionAcceptanceTestSupport.지하철노선_구간_제거(노선, C역);
+
+		// then
+		SectionAcceptanceTestSupport.assertStatusCode(response, HttpStatus.NO_CONTENT);
+		SectionAcceptanceTestSupport.지하철노선_구간_검사(노선, A역, 추가역);
+	}
+
+	@Test
+	@DisplayName("예외 : 노선 구간 제거시 마지막구간일때")
+	void removeSection_마지막구간제거() {
+		// when
+		ExtractableResponse<Response> response = SectionAcceptanceTestSupport.지하철노선_구간_제거(노선, C역);
+
+		// then
+		SectionAcceptanceTestSupport.assertStatusCode(response, HttpStatus.BAD_REQUEST);
+		SectionAcceptanceTestSupport.assertMessageContains(response, "last section");
+	}
+
+	@Test
+	@DisplayName("예외 : 노선 구간 제거 구간에 포함되지 않은 역을 제거할 때")
+	void removeSection_역미포함() {
+		// when
+		ExtractableResponse<Response> response = SectionAcceptanceTestSupport.지하철노선_구간_제거(노선, 추가역);
+
+		// then
+		SectionAcceptanceTestSupport.assertStatusCode(response, HttpStatus.BAD_REQUEST);
+		SectionAcceptanceTestSupport.assertMessageContains(response, "not included station");
+	}
 }
