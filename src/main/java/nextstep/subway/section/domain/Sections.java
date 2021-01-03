@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.section.exception.InvalidAddSectionException;
+import nextstep.subway.section.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -13,8 +14,7 @@ import java.util.stream.Collectors;
 public class Sections {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
-    @OrderColumn
-    private final List<Section> sections = new LinkedList<>();
+    private final List<Section> sections = new ArrayList<>();
 
     public void addInitSection(Section section) {
         sections.add(section);
@@ -112,12 +112,42 @@ public class Sections {
     }
 
     private List<Station> getStations() {
-        Set<Station> stations = new LinkedHashSet<>();
-        sections.forEach(section -> {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
-        });
+        List<Station> stations = new ArrayList<>();
 
-        return new ArrayList<>(stations);
+        Section firstSection = findFirstSection();
+        stations.add(firstSection.getUpStation());
+
+        Section nextSection = firstSection;
+        while(isNotNull(nextSection)) {
+            stations.add(nextSection.getDownStation());
+            nextSection = findNextSection(nextSection.getDownStation());
+        }
+        return stations;
+    }
+
+    private Section findFirstSection() {
+        List<Station> downStations = getDownStations();
+
+        return sections.stream()
+                .filter(section -> !downStations.contains(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new SectionNotFoundException("첫번째 Section을 찾을 수가 없습니다."));
+    }
+
+    private List<Station> getDownStations() {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+    }
+
+    private boolean isNotNull(Section section) {
+        return section != null;
+    }
+
+    private Section findNextSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElse(null);
     }
 }
