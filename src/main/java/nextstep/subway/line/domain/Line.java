@@ -1,12 +1,9 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -18,17 +15,17 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private final List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     public Line() {
     }
 
     public Line(String name, String color, Station upStation, Station downStation, long distance) {
         this(name, color);
-        this.sections.addAll(Arrays.asList(
-                new Section(this, upStation, downStation, 0L),
-                new Section(this, upStation, downStation, distance)));
+        this.sections = new Sections(
+                new Section(this, null, upStation, 0),
+                new Section(this, upStation, downStation, distance));
     }
 
     private Line(String name, String color) {
@@ -54,28 +51,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getUpToDownSortedStations() {
-        List<Station> stations = new ArrayList<>();
-        Station upStation = getEndSection().getUpStation();
-        while (upStation != null) {
-            stations.add(upStation);
-            upStation = findNextUpStation(upStation);
-        }
-        return stations;
-    }
-
-    private Station findNextUpStation(Station upStation) {
-        return sections.stream()
-                .filter(section -> !section.isEndSection())
-                .filter(section -> section.getUpStation() == upStation)
-                .findAny()
-                .map(Section::getDownStation)
-                .orElse(null);
-    }
-
-    private Section getEndSection() {
-        return sections.stream()
-                .filter(Section::isEndSection)
-                .findAny()
-                .orElseThrow(() -> new CustomException("상/하행선 종점이 존재하지 않습니다."));
+        return sections.getStations();
     }
 }
