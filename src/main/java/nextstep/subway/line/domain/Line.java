@@ -21,7 +21,10 @@ public class Line extends BaseEntity {
     @ManyToOne
     private Station downStation;
 
-    public Line() {
+    @Embedded
+    private LineStations lineStations = new LineStations();
+
+    protected Line() {
     }
 
     public Line(String name, String color) {
