@@ -53,7 +53,8 @@ public class Sections {
 
     private void checkDistance(Section oldSection, int distance) {
         if (oldSection.getDistance() <= distance) {
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException(
+                    String.format("기존 역 사이 길이 (%d) 보다 크거나 같습니다: %d", oldSection.getDistance(), distance));
         }
     }
 
@@ -63,7 +64,7 @@ public class Sections {
                 .filter(station -> station.equals(section.getUpStation()) || station.equals(section.getDownStation()))
                 .count();
         if (count != 1) {
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException("기존에 존재하는 구간이거나 상행역 또는 하행역 모두 등록되어 있지 않습니다.");
         }
     }
 }
