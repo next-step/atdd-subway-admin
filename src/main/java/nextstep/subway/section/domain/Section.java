@@ -47,7 +47,7 @@ public class Section extends BaseEntity {
         if (this.upStation == null) {
             return false;
         }
-        return this.upStation.getId().equals(newUpStation.getId());
+        return this.upStation.equals(newUpStation);
     }
 
     public boolean isDownStationInSection(Station newDownStation) {
