@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
@@ -55,6 +54,6 @@ public class Line extends BaseEntity {
         if (upStationId == null || downStationId == null)
             return;
 
-        lineStations.addLineStation(new LineStation(upStationId, downStationId, distance));
+        lineStations.addLineStation(new LineStation(downStationId, upStationId, distance));
     }
 }

@@ -26,6 +26,22 @@ public class LineStations {
     }
 
     public void addLineStation(LineStation newLineStation) {
+        lineStations.stream()
+                .filter(
+                        lineStation -> lineStation.getPreStationId().equals(newLineStation.getPreStationId())
+                )
+                .findFirst()
+                .ifPresent(lineStation -> {
+                    lineStations.add(
+                            new LineStation(
+                                    lineStation.getStationId(), newLineStation.getStationId(),
+                                    lineStation.getDistance() - newLineStation.getDistance()
+                            )
+                    );
+                    lineStations.remove(lineStation);
+                });
+
+
         lineStations.add(newLineStation);
     }
 }

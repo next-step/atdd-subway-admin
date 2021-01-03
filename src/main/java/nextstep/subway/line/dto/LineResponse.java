@@ -19,14 +19,6 @@ public class LineResponse {
     private LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-    }
-
     public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate,
                         List<StationResponse> stations) {
         this.id = id;
@@ -35,21 +27,6 @@ public class LineResponse {
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
         this.stations = stations;
-    }
-
-    public static LineResponse of(Line line) {
-        Station upStation = line.getUpStation();
-        Station downStation = line.getDownStation();
-        List<StationResponse> stations = new ArrayList<>();
-        if (upStation != null) {
-            stations.add(StationResponse.of(upStation));
-        }
-        if (downStation != null) {
-            stations.add(StationResponse.of(downStation));
-        }
-
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(),
-                stations);
     }
 
     public static LineResponse of(Line line, List<Station> stations) {
