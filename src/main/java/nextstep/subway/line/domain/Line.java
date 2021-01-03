@@ -10,6 +10,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -79,6 +81,63 @@ public class Line extends BaseEntity {
         this.addStations(section.getUpStation());
         this.addStations(section.getDownStation());
         section.setLine(this);
+    }
+
+    /**
+     * 노선에 포함 된 구간과 역을 상행 종점부터 하행 종점까지 순서대로 정렬합니다.
+     */
+    public void sort() {
+        this.sections = this.sortSections();
+        this.stations = this.sortStation();
+    }
+
+    /**
+     * 노선의 구간을 상행 종점부터 하행 종점까지 순서대로 정렬합니다.
+     */
+    private List<Section> sortSections() {
+        List<Section> sortedSections = new ArrayList<>();
+
+        // set first upStation
+        Long firstUpStationId = this.findFirstUpStationInSections();
+        this.sections.stream().filter(section -> section.getUpStation().getId().equals(firstUpStationId))
+                .findAny().ifPresent(sortedSections::add);
+
+        // add Sections
+        for (int i = 0; i < this.sections.size() - 1; i++) {
+            Long downStationId = sortedSections.get(i).getDownStation().getId();
+            this.sections.stream().filter(section -> section.getUpStation().getId().equals(downStationId))
+                    .findAny().ifPresent(sortedSections::add);
+        }
+
+        return sortedSections;
+    }
+
+    /**
+     * 노선의 구간에서 상행 종점역의 ID를 찾습니다.
+     * @return 상행 종점역의 ID
+     */
+    private Long findFirstUpStationInSections() {
+        Set<Long> upStationIds = this.sections.stream().map(section -> section.getUpStation().getId())
+                .collect(Collectors.toSet());
+        Set<Long> downStationIds = this.sections.stream().map(section -> section.getDownStation().getId())
+                .collect(Collectors.toSet());
+        upStationIds.removeAll(downStationIds);
+        return upStationIds.stream().findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("cannot found first up-station."));
+    }
+
+    /**
+     * 정렬된 구간을 기준으로 역을 정렬합니다.
+     * @return
+     */
+    private List<Station> sortStation() {
+        List<Station> sortedStations = new ArrayList<>();
+        int i = 0;
+        for (i = 0; i < this.sections.size(); i++) {
+            sortedStations.add(this.sections.get(i).getUpStation());
+        }
+        sortedStations.add(this.sections.get(i - 1).getDownStation());
+        return sortedStations;
     }
 
     @Override

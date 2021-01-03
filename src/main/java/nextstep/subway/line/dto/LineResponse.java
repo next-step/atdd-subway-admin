@@ -30,6 +30,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
+        line.sort();
         return new LineResponse(line.getId(), line.getName(), line.getColor()
                 ,line.getStations(), line.getCreatedDate(), line.getModifiedDate());
     }
