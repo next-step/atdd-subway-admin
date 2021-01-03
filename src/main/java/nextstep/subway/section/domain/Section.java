@@ -54,13 +54,13 @@ public class Section extends BaseEntity {
         return this.downStation.equals(newDownStation);
     }
 
-    public void updateUpStationToDownStation(Station downStation, Distance distance) {
+    public void updateUpStationToDownStation(Station downStation, Distance newDistance) {
         this.upStation = downStation;
-        this.distance.updateDistance(distance.getDistance());
+        this.distance.updateDistance(newDistance);
     }
 
-    public void updateDownStationToUpStation(Station upStation, Distance distance) {
+    public void updateDownStationToUpStation(Station upStation, Distance newDistance) {
         this.downStation = upStation;
-        this.distance.updateDistance(distance.getDistance());
+        this.distance.updateDistance(newDistance);
     }
 }
