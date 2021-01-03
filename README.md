@@ -87,8 +87,8 @@ npm run dev
     
     * 구간 삭제시 예외 케이스 인수 테스트 작성
     * 구간 삭제시 예외 케이스 처리 기능 구현
-        - [ ] 노선에 등록되지 않은 역은 제거할 수 없음
-        - [ ] 등록된 구간이 1개일 때, 제거할 수 없음
+        - [X] 노선에 등록되지 않은 역은 제거할 수 없음
+        - [X] 등록된 구간이 1개일 때, 제거할 수 없음
 
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
