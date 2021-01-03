@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.line.exception.AlreadySavedLineException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.NotRegisteredStationException;
 import nextstep.subway.station.exception.StationNotFoundException;
 
 /**
@@ -22,7 +23,7 @@ import nextstep.subway.station.exception.StationNotFoundException;
 public class LineStations {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
+    @JoinColumn(name = "line_id")
     private List<LineStation> lineStations = new ArrayList<>();
 
     public List<LineStation> getLineStations() {
