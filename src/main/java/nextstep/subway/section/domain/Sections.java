@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import com.sun.istack.NotNull;
 import nextstep.subway.section.exception.InvalidAddSectionException;
 import nextstep.subway.section.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
@@ -120,7 +121,7 @@ public class Sections {
         Section nextSection = firstSection;
         while(isNotNull(nextSection)) {
             stations.add(nextSection.getDownStation());
-            nextSection = findNextSection(nextSection.getDownStation());
+            nextSection = findNextSection(nextSection.getDownStation()).orElse(null);
         }
         return stations;
     }
@@ -144,10 +145,9 @@ public class Sections {
         return section != null;
     }
 
-    private Section findNextSection(Station station) {
+    private Optional<Section> findNextSection(Station station) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(station))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 }
