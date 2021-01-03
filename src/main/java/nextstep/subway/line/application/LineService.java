@@ -4,7 +4,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +18,12 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
     @Autowired
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     /**
@@ -47,26 +48,16 @@ public class LineService {
 
     /**
      * LineRequest를 Line으로 변환합니다.
-     * 이때 종점역 정보가 있는 경우 Line에 station을 추가해줍니다.
+     * 이때 구간 정보가 있는 경우 Line에 구간을 추가해줍니다.
      * @param lineRequest
      * @return
      */
     private Line lineRequestToLine(LineRequest lineRequest) {
         Line line = lineRequest.toLine();
-        addStationToLine(line, lineRequest.getUpStationId());
-        addStationToLine(line, lineRequest.getDownStationId());
+        line.addSections(this.stationService.findStation(lineRequest.getUpStationId())
+                , this.stationService.findStation(lineRequest.getDownStationId())
+                , lineRequest.getDistance());
         return line;
-    }
-
-    /**
-     * 노선에 요청에 있는 지하철 역을 추가합니다.
-     * @param line
-     * @param stationId
-     */
-    private void addStationToLine(Line line, Long stationId) {
-        if (stationId != null) {
-            this.stationRepository.findById(stationId).ifPresent(line::addStations);
-        }
     }
 
     /**
@@ -105,5 +96,4 @@ public class LineService {
         return this.lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("cannot find line."));
     }
-
 }
