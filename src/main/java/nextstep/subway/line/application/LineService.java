@@ -11,8 +11,10 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.exception.StationNotFoundException;
 
 @AllArgsConstructor
 @Service
@@ -54,10 +56,10 @@ public class LineService {
 	}
 
 	private Line findLine(Long id) {
-		return lineRepository.findById(id).orElseThrow(RuntimeException::new);
+		return lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
 	}
 
-	private Station findStationById(String stationId) {
-		return stationRepository.findById(Long.parseLong(stationId)).orElseThrow(RuntimeException::new);
+	private Station findStationById(Long stationId) {
+		return stationRepository.findById(stationId).orElseThrow(StationNotFoundException::new);
 	}
 }
