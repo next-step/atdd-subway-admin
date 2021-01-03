@@ -2,6 +2,8 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
@@ -12,6 +14,9 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author : leesangbae
@@ -93,6 +98,38 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(stations.get(1).getName()).isEqualTo("판교역");
         assertThat(stations.get(2).getName()).isEqualTo("광교역");
 
+    }
+
+    @DisplayName("지하철 구간 생성 - 기존의 길이보다 같거나 큰 값이 들어왔을때")
+    @ParameterizedTest(name = "{displayName}[{index}] - \"{arguments}\"")
+    @ValueSource(ints = {100, 200})
+    void createLineStationBadRequestTest01() {
+        Station 광교역 = StationRestHelper.지하철역_생성("광교역").as(Station.class);
+
+        ExtractableResponse<Response> response = SectionRestHelper.지하철_구간_생성(신분당선.getId(), 양재역, 광교역, 100);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    @DisplayName("지하철 구간 생성 - 등록되지 않은 지하철역")
+    @Test
+    void createLineStationBadRequestTest02() {
+        Station 광교역 = StationRestHelper.지하철역_생성("광교역").as(Station.class);
+        Station 정자역 = StationRestHelper.지하철역_생성("정자역").as(Station.class);
+
+        ExtractableResponse<Response> response = SectionRestHelper.지하철_구간_생성(신분당선.getId(), 광교역, 정자역, 100);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    @DisplayName("지하철 구간 생성 - 이미 등록된 구간 등록")
+    @Test
+    void createLineStationBadRequestTest03() {
+        ExtractableResponse<Response> response = SectionRestHelper.지하철_구간_생성(신분당선.getId(), 양재역, 판교역, 100);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 }
