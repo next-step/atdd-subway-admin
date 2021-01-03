@@ -24,7 +24,6 @@ public class LineStation extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
@@ -80,17 +79,13 @@ public class LineStation extends BaseEntity {
     }
 
     public void updatePreStation(Station station, long distance) {
-        if (this.preStation != null && this.distance <= distance) {
-            throw new IllegalArgumentException("기존의 거리보다 더 커야합니다.");
-        }
+        validateDistance(distance);
         this.preStation = station;
         this.distance = this.distance - distance;
     }
 
     public void updateStation(Station station, long distance) {
-        if (this.preStation != null && this.distance <= distance) {
-            throw new IllegalArgumentException("기존의 거리보다 더 커야합니다.");
-        }
+        validateDistance(distance);
         this.station = station;
         this.distance = this.distance - distance;
     }
@@ -102,6 +97,12 @@ public class LineStation extends BaseEntity {
 
         if (station.equals(preStation)) {
             throw new IllegalArgumentException("이전역과 지금역은 같을 수 없습니다.");
+        }
+    }
+
+    private void validateDistance(long distance) {
+        if (this.preStation != null && this.distance <= distance) {
+            throw new IllegalArgumentException("기존의 거리보다 더 커야합니다.");
         }
     }
 
