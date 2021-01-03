@@ -105,10 +105,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void updateLine() {
 		// given
 		LineResponse line = 지하철_노선_생성_요청(createLine2Params()).as(LineResponse.class);
+		Map<String, String> params = new HashMap<>();
+		params.put("name", "3호선");
+		params.put("color", "orange");
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_수정_요청(line.getId(),
-			generateParam("3호선", "orange", "강남역", "시청역", "100"));
+		ExtractableResponse<Response> response = 지하철_노선_수정_요청(line.getId(), params);
 
 		// then
 		assertAll(
