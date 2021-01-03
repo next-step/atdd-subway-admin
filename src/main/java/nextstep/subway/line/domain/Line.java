@@ -1,8 +1,8 @@
 package nextstep.subway.line.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -37,6 +37,7 @@ public class Line extends BaseEntity {
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+        this.stations = line.getStations();
     }
 
     public Long getId() {

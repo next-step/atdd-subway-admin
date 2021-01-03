@@ -114,19 +114,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse1
                 = LineAcceptanceTestSupport.지하철_노선_생성_요청("신분당선", "bg-red-600"
                 , "강남역", "역삼역", 10);
+        String updateLineName = "구분당선";
 
         // when
         // 지하철_노선_수정_요청
-        LineRequest modifiedLineRequest = new LineRequest("구분당선", "bg-red-600"
+        LineRequest modifiedLineRequest = new LineRequest(updateLineName, "bg-red-600"
                 , LineAcceptanceTestSupport.getUpStationId(), LineAcceptanceTestSupport.getDownStationId()
                 , 10);
         ExtractableResponse<Response> response
                 = LineAcceptanceTestSupport.지하철_노선_수정_요청(modifiedLineRequest
                                                 , createResponse1.header(HttpHeaders.LOCATION));
+        LineResponse findUpdateLineResponse
+                = LineAcceptanceTestSupport.지하철_노선_조회_요청(createResponse1.header(HttpHeaders.LOCATION))
+                    .as(LineResponse.class);
 
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findUpdateLineResponse.getName()).isEqualTo(updateLineName);
     }
 
     @DisplayName("ID가 없는 노선을 수정 요청 하는 경우 오류 발생")

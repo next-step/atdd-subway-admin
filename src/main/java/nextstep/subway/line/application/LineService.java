@@ -36,15 +36,37 @@ public class LineService {
     }
 
     /**
-     * 노선 생성 요청시 종점역 정보가 있는 경우 노선에 추가합니다.
+     * 지하철 노선을 수정합니다.
+     * @param request
+     */
+    public void updateLine(Long id, LineRequest request) {
+        Line line = findLineById(id);
+        line.update(this.lineRequestToLine(request));
+        LineResponse.of(lineRepository.save(line));
+    }
+
+    /**
+     * LineRequest를 Line으로 변환합니다.
+     * 이때 종점역 정보가 있는 경우 Line에 station을 추가해줍니다.
      * @param lineRequest
      * @return
      */
     private Line lineRequestToLine(LineRequest lineRequest) {
         Line line = lineRequest.toLine();
-        this.stationRepository.findById(lineRequest.getUpStationId()).ifPresent(line::addStations);
-        this.stationRepository.findById(lineRequest.getDownStationId()).ifPresent(line::addStations);
+        addStationToLine(line, lineRequest.getUpStationId());
+        addStationToLine(line, lineRequest.getDownStationId());
         return line;
+    }
+
+    /**
+     * 노선에 요청에 있는 지하철 역을 추가합니다.
+     * @param line
+     * @param stationId
+     */
+    private void addStationToLine(Line line, Long stationId) {
+        if (stationId != null) {
+            this.stationRepository.findById(stationId).ifPresent(line::addStations);
+        }
     }
 
     /**
@@ -71,7 +93,17 @@ public class LineService {
      * @param id
      */
     public void deleteLine(Long id) {
-        this.lineRepository.delete(this.lineRepository.getOne(id));
+        this.lineRepository.delete(findLineById(id));
+    }
+
+    /**
+     * 해당 ID로 노선을 찾고, 존재하지 않으면 예외를 발생시킵니다.
+     * @param id
+     * @return
+     */
+    private Line findLineById(Long id) {
+        return this.lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("cannot find line."));
     }
 
 }
