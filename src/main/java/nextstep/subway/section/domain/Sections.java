@@ -125,7 +125,7 @@ public class Sections {
         sections.add(Section.builder()
                 .upStation(preSection.getUpStation())
                 .downStation(nextSection.getDownStation())
-                .distance(preSection.getDistance() + nextSection.getDistance())
+                .distance(preSection.addDistance(nextSection))
                 .build());
         sections.remove(preSection);
         sections.remove(nextSection);

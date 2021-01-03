@@ -22,21 +22,22 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @Builder
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public void updateUpStation(Station upStation, int distance) {
+    public void updateUpStation(Station upStation, Distance distance) {
         this.upStation = upStation;
         this.distance = distance;
     }
 
-    public void updateDownStation(Station downStation, int distance) {
+    public void updateDownStation(Station downStation, Distance distance) {
         this.downStation = downStation;
         this.distance = distance;
     }
@@ -58,10 +59,14 @@ public class Section extends BaseEntity {
     }
 
     public boolean isEqualOrMoreDistance(Section otherSection) {
-        return distance >= otherSection.getDistance();
+        return distance.isEqualOrMore(otherSection.getDistance());
     }
 
-    public int minusDistance(Section otherSection) {
-        return distance - otherSection.getDistance();
+    public Distance addDistance(Section otherSection) {
+        return distance.add(otherSection.getDistance());
+    }
+
+    public Distance minusDistance(Section otherSection) {
+        return distance.minus(otherSection.getDistance());
     }
 }

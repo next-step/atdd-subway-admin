@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
@@ -60,7 +61,7 @@ public class LineService {
         line.addSection(Section.builder()
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(sectionRequest.getDistance())
+                .distance(new Distance(sectionRequest.getDistance()))
                 .build());
     }
 
