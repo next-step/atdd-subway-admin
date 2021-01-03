@@ -17,7 +17,7 @@ public class Line extends BaseEntity {
 
 	private String color;
 
-	private int distance;
+//	private int distance;
 
 	@OneToMany(mappedBy = "line")
 	private List<LineStation> lineStations = new ArrayList<>();
@@ -30,11 +30,11 @@ public class Line extends BaseEntity {
 		this.color = color;
 	}
 
-	public Line(String name, String color, int distance) {
-		this.name = name;
-		this.color = color;
-		this.distance = distance;
-	}
+//	public Line(String name, String color, int distance) {
+//		this.name = name;
+//		this.color = color;
+//		this.distance = distance;
+//	}
 
 	public void update(Line line) {
 		this.name = line.getName();
@@ -53,9 +53,9 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public int getDistance() {
-		return distance;
-	}
+//	public int getDistance() {
+//		return distance;
+//	}
 
 	public List<LineStation> getLineStations() {
 		return lineStations;
@@ -65,11 +65,11 @@ public class Line extends BaseEntity {
 		this.lineStations = lineStations;
 	}
 
-	public void addDistance(int distance) {
-		this.distance += distance;
-	}
+//	public void addDistance(int distance) {
+//		this.distance += distance;
+//	}
 
-	public boolean checkDistanceValidate(int newDistance) {
-		return this.distance <= newDistance;
-	}
+//	public boolean checkDistanceValidate(int newDistance) {
+//		return this.distance <= newDistance;
+//	}
 }

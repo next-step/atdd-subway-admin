@@ -25,13 +25,23 @@ public class LineStation extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private StationType stationType;
 
+	@Embedded
+	@Column
+	private Section section;
+
 	public LineStation() {
 	}
 
-	public LineStation(Line line, Station station, StationType stationType) {
+//	public LineStation(Line line, Station station, StationType stationType) {
+//		this.line = line;
+//		this.station = station;
+//		this.stationType = stationType;
+//	}
+
+	public LineStation(Line line, Station station, Section section) {
 		this.line = line;
 		this.station = station;
-		this.stationType = stationType;
+		this.section = section;
 	}
 
 	public Long getPreStationId() {

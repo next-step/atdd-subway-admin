@@ -1,10 +1,7 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.common.StationType;
-import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.LineStationRepository;
+import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
@@ -53,8 +50,9 @@ public class LineService {
 
 	@Transactional
 	public LineResponse saveLine(LineRequest lineRequest, Station upStation, Station downStation) {
-		Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance()));
-		List<LineStation> lineStations  = lineStationRepository.saveAll(Arrays.asList(new LineStation(line, upStation, StationType.UP_STATION), new LineStation(line, downStation, StationType.DOWN_STATION)));
+		Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+//		List<LineStation> lineStations  = lineStationRepository.saveAll(Arrays.asList(new LineStation(line, upStation, StationType.UP_STATION), new LineStation(line, downStation, StationType.)));
+		List<LineStation> lineStations  = lineStationRepository.saveAll(Arrays.asList(new LineStation(line, upStation, new Section(upStation.getId(), downStation.getId(), lineRequest.getDistance())), new LineStation(line, downStation, new Section(upStation.getId(), downStation.getId(), lineRequest.getDistance()))));
 		return LineResponse.of(line, lineStations);
 	}
 }
