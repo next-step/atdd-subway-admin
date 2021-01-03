@@ -48,24 +48,6 @@ public class LineDistanceAcceptanceTest extends AcceptanceTest {
 				.containsExactly(upStationName, downStationName);
 	}
 
-	private static Long 역_생성_후_stationId응답(String stationName) {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", stationName);
-
-		// when
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
-				.body(params)
-				.contentType(MediaType.APPLICATION_JSON_VALUE)
-				.when()
-				.post("/stations")
-				.then().log().all()
-				.extract();
-
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-		assertThat(response.header("Location")).isNotBlank();
-		return Long.valueOf(response.header("Location").split("/")[2]);
-	}
-
 	@DisplayName("노선 조회 응답 결과에 등록된 구간을 참고하여 역 목록 응답 추가하기")
 	@Test
 	void listLineWithTerminal() throws JsonProcessingException {
