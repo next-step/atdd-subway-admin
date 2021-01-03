@@ -23,6 +23,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	@BeforeEach
 	public void setUp() {
+		super.setUp();
 		// 지하철_노선_생성
 		Map<String, String> params = createLineParams();
 		upStationId = params.get("upStationId");
@@ -233,7 +234,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
-			.post(lineUri + "/section")
+			.post(lineUri + "/sections")
 			.then().log().all()
 			.extract();
 	}

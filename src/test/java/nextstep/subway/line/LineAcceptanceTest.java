@@ -264,7 +264,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return new LineParameter()
                 .name("신분당선")
                 .color("bg-red-600")
-                .upStationId(createStationId("강남"))
+                .upStationId(createStationId("양재"))
                 .downStationId(createStationId("청계산입구"))
                 .distance("10")
                 .getMap();
