@@ -5,7 +5,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceTest;
-import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -207,6 +205,39 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_제거됨(response);
         지하철_노선에_구간_포함됨(response, Arrays.asList("천호역", "잠실역"));
         지하철_노선에_구간_거리_계산됨(response, Arrays.asList(0, 4));
+    }
+
+    @DisplayName("노선에 등록되지 않은 역 제거할 수 없음")
+    @Test
+    void deleteNotExistStations() {
+        // given
+        StationResponse 강남역 = StationAcceptanceTest.지하철역_생성_요청("강남역").as(StationResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(lineNumber8.getId(), 강남역.getId());
+
+        // then
+        지하철_노선에_유효하지_않은_구간은_제거되지않음(response);
+    }
+
+    @DisplayName("등록된 구간이 1개일 때, 상행역을 제거할 수 없음")
+    @Test
+    void deleteStartStationOnlyOneSections() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(lineNumber8.getId(), 천호역);
+
+        // then
+        지하철_노선에_유효하지_않은_구간은_제거되지않음(response);
+    }
+
+    @DisplayName("등록된 구간이 1개일 때, 행역을 제거할 수 없음")
+    @Test
+    void deleteEndStationOnlyOneSections() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(lineNumber8.getId(), 문정역);
+
+        // then
+        지하철_노선에_유효하지_않은_구간은_제거되지않음(response);
     }
 
     public ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(Long lineId, SectionRequest sectionRequest) {
