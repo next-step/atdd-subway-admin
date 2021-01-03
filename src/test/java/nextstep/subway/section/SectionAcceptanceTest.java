@@ -143,6 +143,44 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(sectionNames).containsExactly("도림천", "신정네거리", "까치산");
     }
 
+    @DisplayName("역을 삭제한다")
+    @Test
+    void deleteSection() {
+        StationResponse station = StationAcceptanceTest.createRequest(new StationRequest("양천구청"))
+                .as(StationResponse.class);
+        SectionResponse createdResponse = createRequest(new SectionRequest(line.getId(), station.getId(), lastDownStation.getId(), 3))
+                .as(SectionResponse.class);
+
+        ExtractableResponse<Response> deletedResponse = deleteRequest(line.getId(), station.getId());
+        assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> selectedResponse = selectAllRequest(line.getId());
+        assertThat(selectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<SectionResponse> sections = selectedResponse.jsonPath().getList(".", SectionResponse.class);
+        assertThat(sections.get(0).getDistance()).isEqualTo(30);
+
+        List<String> sectionNames = toSectionNames(selectedResponse);
+        assertThat(sectionNames).containsExactly("도림천", "신정네거리");
+    }
+
+    @DisplayName("노선에 등록되지 않은 역을 삭제한다")
+    @Test
+    void deleteSectionWithInvalidStation() {
+        StationResponse station = StationAcceptanceTest.createRequest(new StationRequest("양천구청"))
+                .as(StationResponse.class);
+
+        ExtractableResponse<Response> deletedResponse = deleteRequest(line.getId(), station.getId());
+        assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("마지막 하나 남은 구간의 역을 삭제한다")
+    @Test
+    void deleteLastSection() {
+        ExtractableResponse<Response> deletedResponse = deleteRequest(line.getId(), lastUpStation.getId());
+        assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private List<String> toSectionNames(ExtractableResponse<Response> selectedResponse) {
         List<SectionResponse> sections = selectedResponse.jsonPath()
                 .getList(".", SectionResponse.class);
@@ -153,7 +191,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return sectionNames;
     }
 
-    public static ExtractableResponse<Response> createRequest(SectionRequest sectionRequest) {
+    private ExtractableResponse<Response> createRequest(SectionRequest sectionRequest) {
         final String url = "/sections";
         return RequestTest.doPost(url, sectionRequest);
     }
@@ -161,5 +199,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> selectAllRequest(Long lineId) {
         final String url = "/sections/" + lineId;
         return RequestTest.doGet(url);
+    }
+
+    private ExtractableResponse<Response> deleteRequest(Long lineId, Long stationId) {
+        final String url = "/sections/" + lineId + "/" + stationId;
+        return RequestTest.doDelete(url);
     }
 }

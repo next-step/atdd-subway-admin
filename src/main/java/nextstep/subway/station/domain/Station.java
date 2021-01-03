@@ -27,6 +27,10 @@ public class Station extends BaseEntity {
         return name;
     }
 
+    public boolean equalsId(Long id) {
+        return this.id.equals(id);
+    }
+
     @Override
     public String toString() {
         return "Station{" +

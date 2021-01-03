@@ -2,6 +2,7 @@ package nextstep.subway.section.application;
 
 import nextstep.subway.common.exception.BadRequestException;
 import nextstep.subway.common.exception.NotExistsLineIdException;
+import nextstep.subway.common.exception.NotLastStationException;
 import nextstep.subway.common.exception.NotExistsStationIdException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -24,10 +25,11 @@ import java.util.stream.Stream;
 @Service
 @Transactional
 public class SectionService {
+    private static final int DELETE_THRESHOLD = 1;
 
-    private LineRepository lineRepository;
-    private SectionRepository sectionRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final SectionRepository sectionRepository;
+    private final StationRepository stationRepository;
 
     public SectionService(LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -55,6 +57,58 @@ public class SectionService {
         return sections.stream()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public void delete(Long lineId, Long stationId) {
+        List<Section> sections = sectionRepository.findByLineId(lineId, Sort.by(Order.asc("sectionNumber")));
+        if ( sections.size() <= DELETE_THRESHOLD ) {
+            throw new BadRequestException("section count must greater than 1");
+        }
+
+        Section deleteSection = findDeleteSection(sections, stationId);
+        try {
+            updateDistance(sections, stationId);
+        } catch (NotLastStationException ignored){}
+
+        decreaseGreaterThanSectionNumbers(sections, deleteSection.getSectionNumber());
+        sectionRepository.deleteById(deleteSection.getId());
+    }
+
+    private Section findDeleteSection(List<Section> sections, Long stationId) {
+        Section deleteSection = findDownSection(sections, stationId)
+                .orElseGet(findUpSection(sections, stationId)::get);
+        if ( deleteSection == null ) {
+            throw new BadRequestException("Not found delete section, contains station : " + stationId);
+        }
+        return deleteSection;
+    }
+
+    private Optional<Section> findDownSection(List<Section> sections, Long stationId) {
+        return sections.stream()
+                .filter(section -> section.equalsUpStationId(stationId))
+                .findFirst();
+    }
+
+    private Optional<Section> findUpSection(List<Section> sections, Long stationId) {
+        return sections.stream()
+                .filter(section -> section.equalsDownStationId(stationId))
+                .findFirst();
+    }
+
+    private void updateDistance(List<Section> sections, Long stationId) {
+        Section downSection = findDownSection(sections, stationId)
+                .orElseThrow(() -> new NotLastStationException("is not last station : " + stationId));
+        Section upSection = findUpSection(sections, stationId)
+                .orElseThrow(() -> new NotLastStationException("is not last station : " + stationId));
+
+        upSection.addDistance(downSection.getDistance());
+        upSection.updateDownStation(downSection.getDownStation());
+    }
+
+    private void decreaseGreaterThanSectionNumbers(List<Section> sections, Integer sectionNumber) {
+        sections.stream()
+                .filter(section -> section.greaterThanSectionNumber(sectionNumber))
+                .forEach(Section::decreaseSectionNumber);
     }
 
     private Integer getSectionNumber(Long lineId, Station upStation, Station downStation, Integer distance) {
@@ -89,7 +143,7 @@ public class SectionService {
             public Integer updateAndGetSectionNumber(SectionRepository sectionRepository, Long lineId,
                                                      Station upStation, Station downStation, Integer distance) {
                 Section expectedSection = findSectionThrows(sectionRepository, lineId, upStation.getId(), downStation.getId());
-                expectedSection.validateDistance(distance);
+                expectedSection.subtractDistance(distance);
                 return updateAndGetSectionNumberUpCase(sectionRepository, expectedSection, lineId, downStation);
             }
 
@@ -116,7 +170,7 @@ public class SectionService {
             public Integer updateAndGetSectionNumber(SectionRepository sectionRepository, Long lineId,
                                                      Station upStation, Station downStation, Integer distance) {
                 Section expectedSection = findSectionThrows(sectionRepository, lineId, upStation.getId(), downStation.getId());
-                expectedSection.validateDistance(distance);
+                expectedSection.subtractDistance(distance);
                 return updateAndGetSectionNumberDownCase(sectionRepository, expectedSection, lineId, upStation);
             }
 
