@@ -43,7 +43,7 @@ public class LineStation extends BaseEntity {
     @Embedded
     private Distance distanceForNextStation;
 
-    protected LineStation() {}
+    public LineStation() {}
 
     public static LineStation createLineStation(Station station,
                                                 Station previousStation,
@@ -97,8 +97,16 @@ public class LineStation extends BaseEntity {
     private void checkDistance(int distance) {
         if (nextStation != null && distance == MIN_DISTANCE) {
             throw new IllegalArgumentException(MIN_DISTANCE + "보다 큰 거리만 허용됩니다");
-        } else if (nextStation == null && distance > MIN_DISTANCE) {
+        } else if (isLast() && distance > MIN_DISTANCE) {
             throw new IllegalArgumentException("거리가 " + MIN_DISTANCE + "만 허용됩니다");
         }
+    }
+
+    public boolean isFirst() {
+        return previousStation == null;
+    }
+
+    public boolean isLast() {
+        return nextStation == null;
     }
 }
