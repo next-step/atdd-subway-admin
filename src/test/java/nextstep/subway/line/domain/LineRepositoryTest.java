@@ -32,8 +32,6 @@ class LineRepositoryTest {
 			lineRepository.save(new Line("2호선", "green")),
 			lineRepository.save(new Line("5호선", "purple"))
 		);
-		em.flush();
-		em.clear();
 		System.out.println("\n>> saveBeforeEach 종료\n");
 	}
 
@@ -62,9 +60,6 @@ class LineRepositoryTest {
 			.findById(이호선.getId())
 			.ifPresent(line -> line.update(new Line("3호선", "orange")));
 
-		em.flush();
-		em.clear();
-
 		assertThat(lineRepository.findById(이호선.getId()))
 			.isPresent()
 			.map(Line::getName)
@@ -76,9 +71,6 @@ class LineRepositoryTest {
 		Line 이호선 = savedLines.get(0);
 
 		lineRepository.deleteById(이호선.getId());
-
-		em.flush();
-		em.clear();
 
 		assertThat(lineRepository.findById(이호선.getId())).isNotPresent();
 	}
