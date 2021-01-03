@@ -1,14 +1,11 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -18,10 +15,10 @@ public class LineResponse {
     private LocalDateTime modifiedDate;
     private List<StationResponse> stations;
 
-    public LineResponse() {
+    private LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
+    private LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -32,7 +29,7 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate()
-                , line.getModifiedDate(), toStations(line.getSections()));
+                , line.getModifiedDate(), line.makeStationsOfSections());
     }
 
     public Long getId() {
@@ -45,14 +42,6 @@ public class LineResponse {
 
     public String getColor() {
         return color;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
     }
 
     public List<StationResponse> getStations() {
@@ -81,28 +70,5 @@ public class LineResponse {
         result = 31 * result + (createdDate != null ? createdDate.hashCode() : 0);
         result = 31 * result + (modifiedDate != null ? modifiedDate.hashCode() : 0);
         return result;
-    }
-
-    private static List<StationResponse> toStations(List<Section> sections) {
-        List<Section> sortedSections = makeSortedSections(sections);
-        return makeStationResponses(sortedSections);
-    }
-
-    private static List<Section> makeSortedSections(List<Section> sections) {
-        return sections.stream()
-                .sorted(Comparator.comparing(Section::getSectionNumber))
-                .collect(Collectors.toList());
-    }
-
-    private static List<StationResponse> makeStationResponses(List<Section> sections) {
-        List<StationResponse> stations = sections.stream()
-                .map(Section::getUpStation)
-                .map(StationResponse::of)
-                .collect(Collectors.toList());
-
-        int lastIdx = sections.size() - 1;
-        Section lastSection = sections.get(lastIdx);
-        stations.add(StationResponse.of(lastSection.getDownStation()));
-        return stations;
     }
 }

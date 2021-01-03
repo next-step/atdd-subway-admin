@@ -1,6 +1,8 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.exception.BadRequestException;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -8,6 +10,8 @@ import javax.persistence.*;
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"up_station_id", "down_station_id"})})
 public class Section extends BaseEntity {
+    @Transient
+    private static final int SECTION_NUMBER_OFFSET = 1;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,6 +34,16 @@ public class Section extends BaseEntity {
         this.sectionNumber = sectionNumber;
     }
 
+    public void validateDistance(Integer distance) {
+        if ( this.distance <= distance ) {
+            throw new BadRequestException("distance must be lower than " + this.distance);
+        }
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
     public void setLine(Line line) {
         if ( this.line != null ) {
             this.line.getSections().remove(this);
@@ -38,20 +52,24 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public Long getId() {
+        return id;
     }
 
     public void updateUpStation(Station upStation) {
         this.upStation = upStation;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public Station getUpStation() {
+        return upStation;
     }
 
     public void updateDownStation(Station downStation) {
         this.downStation = downStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Integer getDistance() {
@@ -62,9 +80,10 @@ public class Section extends BaseEntity {
         return sectionNumber;
     }
 
-    public void updateSectionNumber(Integer sectionNumber) {
-        this.sectionNumber = sectionNumber;
+    public void incrementSectionNumber() {
+        sectionNumber += SECTION_NUMBER_OFFSET;
     }
+
 
     @Override
     public String toString() {
