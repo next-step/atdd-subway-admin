@@ -66,6 +66,11 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
+	public void deleteSection(Long lineId, Long stationId) {
+		Line line = getLine(lineId);
+		line.deleteSection(stationId);
+	}
+
 	private Line toLineWithSection(LineRequest request) {
 		Line line = request.toLine();
 

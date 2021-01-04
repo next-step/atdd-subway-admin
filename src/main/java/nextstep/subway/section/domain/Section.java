@@ -115,6 +115,18 @@ public class Section extends BaseEntity {
 		return stations.contains(this.downStation);
 	}
 
+	public boolean containStation(Long stationId) {
+		return isUpStationEquals(stationId) || isDownStationEquals(stationId);
+	}
+
+	public boolean isUpStationEquals(Long stationId) {
+		return this.upStation.isMatchId(stationId);
+	}
+
+	public boolean isDownStationEquals(Long stationId) {
+		return this.downStation.isMatchId(stationId);
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -150,5 +162,9 @@ public class Section extends BaseEntity {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
+	}
+
+	public int addDistance(Section section) {
+		return this.distance + section.distance;
 	}
 }
