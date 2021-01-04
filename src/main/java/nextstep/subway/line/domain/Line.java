@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
@@ -13,35 +12,30 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-    private Integer distance;
 
-    @ManyToOne
-    private Station upStation;
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
-    @ManyToOne
-    private Station downStation;
-
-    public Line() {
+    protected Line() {
     }
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
-    public Line(String name, String color, Integer distance) {
-        this.name = name;
-        this.color = color;
-        this.distance = distance;
-    }
-
-    public Line(Long id, String name, String color, Station upStation, Station downStation, Integer distance) {
+    public Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    }
+
+    public Line(String name, String color) {
+        this(null, name, color);
+    }
+
+    public Line(String name, String color, Long upStationId, Long downStationId, int distance) {
+        this(null, name, color, upStationId, downStationId, distance);
+    }
+
+    public Line(Long id, String name, String color, Long upStationId, Long downStationId, int distance) {
+        this(id, name, color);
+        lineStations.initLineStation(upStationId, downStationId, distance);
     }
 
     public void update(Line line) {
@@ -61,23 +55,14 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public LineStations getLineStations() {
+        return lineStations;
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
+    public void addLineStation(Long upStationId, Long downStationId, int distance) {
+        if (upStationId == null || downStationId == null)
+            return;
 
-    public Integer getDistance() {
-        return distance;
-    }
-
-    public void changeUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
-    public void changeDownStation(Station downStation) {
-        this.downStation = downStation;
+        lineStations.addLineStation(upStationId, downStationId, distance);
     }
 }

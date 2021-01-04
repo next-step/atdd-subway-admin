@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineCreateResponse;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
@@ -13,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -124,9 +125,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         노선_목록_ID_검증(신분당선Response, 제2호선Response, 노선목록조회Response);
 
         노선_응답_종점_검증(노선목록조회Response.jsonPath().getObject("[0]", LineResponse.class),
-                강남역Id, 역삼역Id, 7);
+                강남역Id, 역삼역Id);
         노선_응답_종점_검증(노선목록조회Response.jsonPath().getObject("[1]", LineResponse.class),
-                역삼역Id, 선릉역Id, 12);
+                역삼역Id, 선릉역Id);
     }
 
     @DisplayName("지하철 노선 목록을 조회시 아무 것도 없을때")
@@ -172,7 +173,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         노선_응답_검증(단건조회Response, "bg-red-600", "신분당선");
 
         LineResponse 신분당선LineResponse = 단건조회Response.jsonPath().getObject(".", LineResponse.class);
-        노선_응답_종점_검증(신분당선LineResponse, 강남역Id, 역삼역Id, 10);
+        노선_응답_종점_검증(신분당선LineResponse, 강남역Id, 역삼역Id);
     }
 
     @DisplayName("존재하지 않은 지하철 1개 노선을 조회한다.")
@@ -256,7 +257,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -307,8 +308,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getModifiedDate()).isNotNull();
     }
 
-    private void 노선_응답_종점_검증(LineResponse response, Long expectedUpStationId, Long expectedDownStationId,
-                             Integer expectedDistance) {
+    private void 노선_응답_종점_검증(LineResponse response, Long expectedUpStationId, Long expectedDownStationId) {
         int stationsSize = response.getStations().size();
         assertThat(stationsSize).isEqualTo(2);
 
@@ -317,8 +317,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         StationResponse station2 = response.getStations().get(1);
         assertThat(station2.getId()).isEqualTo(expectedDownStationId);
-
-        assertThat(response.getDistance()).isEqualTo(expectedDistance);
     }
 
     private void 노선_생성_응답_검증(ExtractableResponse<Response> response, String color, String name) {
@@ -331,15 +329,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
         assertThat(response.header("Location")).startsWith("/lines/");
 
-        LineCreateResponse lineResponse = response.jsonPath().getObject(".", LineCreateResponse.class);
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
         assertThat(lineResponse.getId()).isNotNull();
         assertThat(lineResponse.getColor()).isEqualTo(color);
         assertThat(lineResponse.getName()).isEqualTo(name);
         assertThat(lineResponse.getCreatedDate()).isNotNull();
         assertThat(lineResponse.getModifiedDate()).isNotNull();
-        assertThat(lineResponse.getUpStationId()).isEqualTo(upStationId);
-        assertThat(lineResponse.getDownStationId()).isEqualTo(downStationId);
-        assertThat(lineResponse.getDistance()).isEqualTo(distance);
+
+        if (upStationId != null && downStationId != null) {
+            assertThat(
+                    lineResponse.getStations()
+                            .stream()
+                            .map(StationResponse::getId)
+                            .collect(Collectors.toList())
+            ).contains(upStationId, downStationId);
+        }
     }
 
     private void 지하철_노선조회_응답_해더_검증(ExtractableResponse<Response> response) {
