@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStations;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -65,5 +66,13 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(EntityNotFoundException::new);
         lineRepository.delete(line);
+    }
+
+    public void addLineStation(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        line.addLineStation(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
     }
 }

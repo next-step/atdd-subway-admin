@@ -1,10 +1,11 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.domain.LineStation;
+import nextstep.subway.line.domain.LineStationRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.line.dto.SectionResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,11 @@ import java.util.List;
 public class LineController {
     private final LineService lineService;
 
-    public LineController(final LineService lineService) {
+    private final LineStationRepository lineStationRepository;
+
+    public LineController(LineService lineService, LineStationRepository lineStationRepository) {
         this.lineService = lineService;
+        this.lineStationRepository = lineStationRepository;
     }
 
     @PostMapping
@@ -51,11 +55,11 @@ public class LineController {
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        // TODO: 구간 등록 기능 구현
-        // ...
+        lineService.addLineStation(lineId, sectionRequest);
+        LineStation lineStation = lineStationRepository.findLineStationByStationId(sectionRequest.getDownStationId());
 
-        SectionResponse sectionResponse = new SectionResponse();
-        Long sectionId = 1L;
-        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + sectionId)).body(sectionResponse);
+        return ResponseEntity
+                .created(URI.create("/lines/" + lineId + "/sections/" + lineStation.getId()))
+                .build();
     }
 }

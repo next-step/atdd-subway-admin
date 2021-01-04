@@ -53,7 +53,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
         assertThat(response.header("Location")).startsWith("/lines/" + 신분당선Id + "/sections/");
     }
 

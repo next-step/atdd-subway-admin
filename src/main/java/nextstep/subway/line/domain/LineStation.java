@@ -28,6 +28,10 @@ public class LineStation {
         return Objects.equals(this.stationId, newLineStation.stationId);
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Long getStationId() {
         return stationId;
     }
