@@ -26,4 +26,8 @@ public class Station extends BaseEntity {
     public static Station of(String name) {
         return new Station(name);
     }
+
+    public boolean isSameById(Long stationId) {
+        return this.id.equals(stationId);
+    }
 }

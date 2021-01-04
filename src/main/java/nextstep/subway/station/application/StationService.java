@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,8 +39,7 @@ public class StationService {
     }
 
     public Station selectStationById(Long id) {
-        return Optional.ofNullable(stationRepository.findById(id))
-                .orElseThrow(EntityNotFoundException::new)
-                .get();
+        return stationRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
     }
 }
