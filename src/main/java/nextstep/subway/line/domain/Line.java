@@ -54,9 +54,7 @@ public class Line extends BaseEntity {
 	}
 
 	private void createSection(Station upStation, Station downStation, int distance) {
-		if (upStation.equals(downStation)) {
-			throw new RuntimeException("중복된 Station 입니다.");
-		}
+
 		this.sections.add(new Section(this, upStation, downStation, distance));
 	}
 

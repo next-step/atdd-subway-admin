@@ -46,6 +46,9 @@ public class Section {
 	}
 
 	public Section(Line line, Station upStation, Station downStation, int distance) {
+		if (upStation.equals(downStation)) {
+			throw new RuntimeException("중복된 Station 입니다.");
+		}
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
