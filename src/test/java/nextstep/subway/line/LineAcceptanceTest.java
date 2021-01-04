@@ -192,7 +192,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .name("   ")
                 .color("bg-red-600")
                 .upStationId(createStationId("강남"))
-                .downStationId(createStationId("광교"))
+                .downStationId(createStationId("청계산입구"))
                 .distance("10")
                 .getMap();
 
@@ -211,7 +211,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .name("신분당선")
                 .color("   ")
                 .upStationId(createStationId("강남"))
-                .downStationId(createStationId("광교"))
+                .downStationId(createStationId("청계산입구"))
                 .distance("10")
                 .getMap();
 
@@ -230,7 +230,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .name("신분당선")
                 .color("bg-red-600")
                 .upStationId(createStationId("강남"))
-                .downStationId(createStationId("광교"))
+                .downStationId(createStationId("청계산입구"))
                 .distance("0")
                 .getMap();
 
@@ -260,17 +260,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertResponseHttpStatusIsNotFound(response);
     }
 
-    private Map<String, String> createLineParams() {
+    public static Map<String, String> createLineParams() {
         return new LineParameter()
                 .name("신분당선")
                 .color("bg-red-600")
-                .upStationId(createStationId("강남"))
-                .downStationId(createStationId("광교"))
+                .upStationId(createStationId("양재"))
+                .downStationId(createStationId("청계산입구"))
                 .distance("10")
                 .getMap();
     }
 
-    private String createStationId(String name) {
+    public static String createStationId(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         ExtractableResponse<Response> response = createNewStation(params);
@@ -279,7 +279,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .getId());
     }
 
-    private ExtractableResponse<Response> createNewLine(Map<String, String> params) {
+    public static ExtractableResponse<Response> createNewLine(Map<String, String> params) {
         return RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)

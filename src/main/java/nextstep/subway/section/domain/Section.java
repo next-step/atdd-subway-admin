@@ -28,33 +28,33 @@ import static com.google.common.base.Preconditions.checkArgument;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"line_id", "up_station_id", "down_station_id"}))
 public class Section extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "line_id")
-	private Line line;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id")
+    private Line line;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "up_station_id")
-	private Station upStation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "down_station_id")
-	private Station downStation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
 
-	private int distance;
+    private int distance;
 
-	public Section(Line line, Station upStation, Station downStation, int distance) {
-		checkArgument(!upStation.equals(downStation), "상행역과 하행역은 같을 수 없습니다.");
-		this.line = line;
-		this.upStation = upStation;
-		this.downStation = downStation;
-		this.distance = distance;
-	}
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        checkArgument(!upStation.equals(downStation), "상행역과 하행역은 같을 수 없습니다.");
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
 
-	public List<Station> getStations() {
-		return Collections.unmodifiableList(Arrays.asList(upStation, downStation));
-	}
+    public List<Station> getStations() {
+        return Collections.unmodifiableList(Arrays.asList(upStation, downStation));
+    }
 }
