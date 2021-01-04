@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -48,5 +49,22 @@ public class Section extends BaseEntity {
 
 	public List<Station> getStations(){
 		return Arrays.asList(upStation, downStation);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Section section = (Section)o;
+		return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line,
+			section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation,
+			section.downStation);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, line, upStation, downStation, distance);
 	}
 }
