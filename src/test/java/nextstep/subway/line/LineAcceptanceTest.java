@@ -16,20 +16,19 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.LineRestAssuredUtils.*;
 import static nextstep.subway.utils.StationRestAssuredUtils.지하철_역_생성_요청;
+import static nextstep.subway.utils.StationRestAssuredUtils.지하철_역_여러개_생성_요청;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // when
-        Map<String, String> stationParams = new HashMap<>();
-        stationParams.put("name", "강남역");
-        지하철_역_생성_요청(stationParams);
-        stationParams.put("name", "역삼역");
-        지하철_역_생성_요청(stationParams);
+        // given
+        지하철_역_여러개_생성_요청();
 
+        // when
         Map<String, String> lineParams = new HashMap<>();
         lineParams.put("name", "신분당선");
         lineParams.put("color", "bg-red-600");
@@ -42,17 +41,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
         // given
-        // 지하철_노선_등록되어_있음
+        지하철_역_여러개_생성_요청();
+
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
         params.put("upStationId", "1");
-        params.put("downStationId", "1");
+        params.put("downStationId", "2");
         params.put("distance", "10");
         지하철_노선_생성_요청(params);
 
@@ -95,7 +94,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        지하철_역_여러개_생성_요청();
+
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
