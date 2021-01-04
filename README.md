@@ -59,4 +59,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - 지하철 노선 생성
     - 지하철 노선 목록 조회
     - 지하철 노선 조회
-    - 지하철 노선 삭
+    - 지하철 노선 삭제
+    
+## STEP2
+### 요구사항
+- 노선 생성 시 상행, 하행 추가
+    - upStation, downStation
+- 노선의 역 목록을 조회하는 기능 추가
