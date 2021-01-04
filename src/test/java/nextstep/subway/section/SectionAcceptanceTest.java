@@ -40,16 +40,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("downStationId" ,"12");
-        params.put("upStationId" ,"20");
-        params.put("distance" ,"10");
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/" + savedLine.getId() +"/sections")
-                .then().log().all().extract();
+        Map<String, String> params = createParam("12", "20", "10");
+        ExtractableResponse<Response> response = callAddSectionApi(savedLine, params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -67,16 +59,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId" , 강남Id.toString());
-        params.put("downStationId" , 양재Id.toString());
-        params.put("distance" ,"3");
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/" + savedLine.getId() +"/sections")
-                .then().log().all().extract();
+        Map<String, String> params = createParam(강남Id.toString(), 양재Id.toString(), "3");
+        ExtractableResponse<Response> response = callAddSectionApi(savedLine, params);
 
         // then
         Optional<Line> found = lineDataHelper.지하철_노선_조회(savedLine.getId());
@@ -96,16 +80,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId" , 상행종점Id.toString());
-        params.put("downStationId" , 강남Id.toString());
-        params.put("distance" ,"3");
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/" + savedLine.getId() +"/sections")
-                .then().log().all().extract();
+        Map<String, String> params = createParam(상행종점Id.toString(), 강남Id.toString(), "3");
+        ExtractableResponse<Response> response = callAddSectionApi(savedLine, params);
 
         // then
         Optional<Line> found = lineDataHelper.지하철_노선_조회(savedLine.getId());
@@ -125,20 +101,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId" , 광교Id.toString());
-        params.put("downStationId" , 하행종점Id.toString());
-        params.put("distance" ,"3");
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/" + savedLine.getId() +"/sections")
-                .then().log().all().extract();
+        Map<String, String> params = createParam(광교Id.toString(), 하행종점Id.toString(), "3");
+        ExtractableResponse<Response> response = callAddSectionApi(savedLine, params);
 
         // then
         Optional<Line> found = lineDataHelper.지하철_노선_조회(savedLine.getId());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(found.get().getAllIncludedStationIds()).containsExactly(강남Id, 광교Id, 하행종점Id);
+    }
+
+    private Map<String, String> createParam(String upStationId, String downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        return params;
+    }
+
+    private ExtractableResponse<Response> callAddSectionApi(Line savedLine, Map params) {
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/" + savedLine.getId() + "/sections")
+                .then().log().all().extract();
     }
 }

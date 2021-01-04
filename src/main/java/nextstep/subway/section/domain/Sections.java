@@ -46,7 +46,6 @@ public class Sections {
             return;
         }
 
-
         sections.stream()
                 .filter(orgSection -> orgSection.getDownStationId().equals(newSection.getDownStationId()))
                 .findFirst()
@@ -54,7 +53,6 @@ public class Sections {
                     sections.add(new Section(orgSection.getUpStationId(), orgSection.getDownStationId(), orgSection.getDistance() - newSection.getDistance()));
                     sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
                     sections.remove(orgSection);
-                    return;
                 });
 
         sections.stream()
@@ -64,7 +62,6 @@ public class Sections {
                     sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
                     sections.add(new Section(newSection.getDownStationId(), orgSection.getDownStationId(), orgSection.getDistance() - newSection.getDistance()));
                     sections.remove(orgSection);
-                    return;
                 });
     }
 
