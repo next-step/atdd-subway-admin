@@ -37,19 +37,15 @@ public class LineAcceptanceTestSupport extends AcceptanceTest {
     }
 
     private static void setUpStationId(String upStationName) {
-        if (LineAcceptanceTestSupport.upStationId == null) {
             LineAcceptanceTestSupport.upStationId
                     = StationAcceptanceTestSupport.지하철_역_생성_요청(new StationRequest(upStationName))
                     .as(StationResponse.class).getId();
-        }
     }
 
     private static void setDownStationId(String downStationName) {
-        if(LineAcceptanceTestSupport.downStationId == null) {
             LineAcceptanceTestSupport.downStationId
                     = StationAcceptanceTestSupport.지하철_역_생성_요청(new StationRequest(downStationName))
                     .as(StationResponse.class).getId();
-        }
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color

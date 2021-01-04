@@ -53,7 +53,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response
                 = LineAcceptanceTestSupport.지하철_노선_생성_요청("신분당선", "bg-red-600"
-                , "강남역", "역삼역", 10);
+                , "양재역", "판교역", 10);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -69,7 +69,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 , "강남역", "역삼역", 10);
         ExtractableResponse<Response> createResponse2
                 = LineAcceptanceTestSupport.지하철_노선_생성_요청("4호선", "bg-blue-400"
-                , "강남역", "역삼역", 20);
+                , "양재역", "판교역", 20);
 
         // when
         // 지하철_노선_목록_조회_요청
