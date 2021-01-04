@@ -56,6 +56,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).startsWith("/lines/" + 신분당선Id + "/sections/");
     }
 
+    @Test
+    void removeLineStation() {
+        //given
+        Long 신분당선Id = 신분당선.getId();
+        //when
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("stationId", "2");
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(신분당선Id, params);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        //then
+    }
+
     static ExtractableResponse<Response> 지하철_구간_등록_요청(Long lineId, Map<String, Object> params) {
         return RestAssured
                 .given().log().all()
@@ -63,5 +78,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/" + lineId + "/sections")
                 .then().log().all().extract();
+    }
+
+    static ExtractableResponse<Response> 지하철_구간_삭제_요청(Long lineId, Map<String, String> params) {
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .params(params)
+                .when().delete("/lines/" + lineId + "/sections")
+                .then().log().all().extract();
+        return response;
     }
 }

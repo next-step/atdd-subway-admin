@@ -103,7 +103,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ## 4단계 - 지하철 노선에 구간 제거 TODO list
 
-- [ ] 지하철 구간 제거 인수 테스트 작성(Happy Path)
+- [x] 지하철 구간 제거 인수 테스트 작성(Happy Path)
+- [ ] controller 단 작성
 - [ ] 구간 제거 기능 단위 테스트 작성
 - [ ] 노선의 구간을 제거하는 기능을 구현하기 
 - [ ] 구간을 제거하는 기능 리펙토링
