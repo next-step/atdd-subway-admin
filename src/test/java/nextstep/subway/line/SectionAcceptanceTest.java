@@ -7,7 +7,6 @@ import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.line.dto.SectionCreateResponse;
 import nextstep.subway.station.StationRestHelper;
 import nextstep.subway.station.domain.Station;
