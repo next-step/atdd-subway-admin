@@ -6,13 +6,12 @@ import java.util.List;
 import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.line.exception.AlreadySavedLineException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.LessThanRemovableSizeException;
 import nextstep.subway.station.exception.NotRegisteredStationException;
-import nextstep.subway.station.exception.StationNotFoundException;
 
 /**
  * @author : leesangbae
@@ -21,6 +20,8 @@ import nextstep.subway.station.exception.StationNotFoundException;
  */
 @Embeddable
 public class LineStations {
+
+    private final static int REMOVABLE_MINIMUM_SIZE = 2;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
@@ -35,7 +36,7 @@ public class LineStations {
         while (preLineStation.isPresent()) {
             LineStation preStation = preLineStation.get();
             result.add(preStation);
-            preLineStation = lineStations.stream()
+            preLineStation = this.lineStations.stream()
                     .filter(it -> it.getPreStation() == preStation.getStation())
                     .findFirst();
         }
@@ -44,8 +45,8 @@ public class LineStations {
 
     public void add(LineStation lineStation) {
 
-        if (lineStations.isEmpty()) {
-            lineStations.add(lineStation);
+        if (this.lineStations.isEmpty()) {
+            this.lineStations.add(lineStation);
             return;
         }
 
@@ -56,7 +57,7 @@ public class LineStations {
                     .filter(it -> it.getPreStation() == lineStation.getPreStation())
                     .findFirst()
                     .ifPresent(it -> it.updatePreStation(lineStation.getStation(), lineStation.getDistance()));
-            lineStations.add(lineStation);
+            this.lineStations.add(lineStation);
             return;
         }
 
@@ -65,9 +66,42 @@ public class LineStations {
                     .filter(it -> it.getStation() == lineStation.getStation())
                     .findFirst()
                     .ifPresent(it -> it.updateStation(lineStation.getPreStation(), lineStation.getDistance()));
-            lineStations.add(lineStation);
+            this.lineStations.add(lineStation);
         }
     }
+
+    public void remove(Station station) {
+
+        removeSectionValidate();
+
+        Optional<LineStation> lineStation = this.lineStations.stream()
+                .filter(it -> station.equals(it.getPreStation()))
+                .findFirst();
+
+        Optional<LineStation> preLineStation = this.lineStations.stream()
+                .filter(it -> station.equals(it.getStation()))
+                .findFirst();
+
+        if (preLineStation.isPresent() && lineStation.isPresent()) {
+            LineStation mergedLineStation = mergeLineStation(preLineStation.get(), lineStation.get());
+            this.lineStations.add(mergedLineStation);
+        }
+        preLineStation.ifPresent(value -> this.lineStations.remove(value));
+        lineStation.ifPresent(value -> this.lineStations.remove(value));
+        System.out.println("lineStation = " + lineStation);
+    }
+
+    private LineStation mergeLineStation(LineStation preLineStation, LineStation lineStation) {
+        long totalDistance = preLineStation.getDistance() + lineStation.getDistance();
+        return new LineStation(
+                preLineStation.getLine(),
+                lineStation.getStation(),
+                preLineStation.getPreStation(),
+                totalDistance
+        );
+
+    }
+
 
     private boolean contains(Station station) {
         return this.lineStations.stream()
@@ -83,6 +117,13 @@ public class LineStations {
 
         if (!upStationExist && !downStationExist) {
             throw new NotRegisteredStationException("등록할 수 없는 구간입니다.");
+        }
+    }
+
+    private void removeSectionValidate() {
+        int size = this.lineStations.size();
+        if (size <= REMOVABLE_MINIMUM_SIZE) {
+            throw new LessThanRemovableSizeException("구간 삭제 가능한 최소 사이즈보다 작습니다.");
         }
     }
 
