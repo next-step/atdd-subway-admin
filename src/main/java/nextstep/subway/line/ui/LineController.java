@@ -7,11 +7,10 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.LinesResponse;
-import nextstep.subway.line.exception.AlreadySavedLineException;
-import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.line.dto.SectionCreateRequest;
+import nextstep.subway.line.dto.SectionCreateResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,14 +58,12 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(LineNotFoundException.class)
-    public ResponseEntity<?> handleLineNotFoundException(LineNotFoundException exception) {
-        return ResponseEntity.notFound().build();
-    }
+    @PostMapping("/lines/{id}/sections")
+    public ResponseEntity<?> createSection(@PathVariable Long id,
+            @RequestBody SectionCreateRequest request) {
 
-    @ExceptionHandler(AlreadySavedLineException.class)
-    public ResponseEntity<?> handleAlreadySavedLineException(AlreadySavedLineException exception) {
-        return ResponseEntity.badRequest().build();
+        SectionCreateResponse section = lineService.addSection(id, request);
+        return ResponseEntity.created(URI.create("/lines/" + section.getId())).body(section);
     }
 
 }
