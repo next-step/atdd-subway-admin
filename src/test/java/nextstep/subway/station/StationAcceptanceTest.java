@@ -93,7 +93,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		지하철역_생성_성공여부_확인(response, HttpStatus.NO_CONTENT);
 	}
 
-	public static ExtractableResponse<Response> 지하철역_생성_요청(String station) {
+	public ExtractableResponse<Response> 지하철역_생성_요청(String station) {
 		// given
 		Map<String, String> params = new HashMap<>();
 		params.put("name", station);
