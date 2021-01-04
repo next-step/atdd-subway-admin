@@ -5,7 +5,7 @@ package nextstep.subway.common.exception;
  * @date : 2020/12/29
  * @description :
  **/
-public class NotFoundException extends RuntimeException implements CommonException{
+public class NotFoundException extends RuntimeException implements CommonException {
 	public static final String ERROR_CODE = "NOT_FOUND_EXCEPTION";
 
 	private String errorMessage = "노선이 존재하지 않습니다.";

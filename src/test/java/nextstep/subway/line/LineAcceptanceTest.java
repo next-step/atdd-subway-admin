@@ -23,7 +23,6 @@ import nextstep.subway.common.dto.ErrorResponse;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.Station;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -38,8 +37,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		광교역_id = createStation("광교역");
 		강남역_광교역_거리 = 10;
 	}
-
-
 
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
@@ -81,7 +78,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Long 신도림역_id = createStation("신도림역");
 		Long 건대입구역_id = createStation("건대입구역");
 		int 신도림역_건대입구역_거리 = 20;
-		ExtractableResponse<Response> createdLine2 = 지하철_노선_생성_요청("2호선", "bg-green-600", 신도림역_id, 건대입구역_id, 신도림역_건대입구역_거리);
+		ExtractableResponse<Response> createdLine2 = 지하철_노선_생성_요청("2호선", "bg-green-600", 신도림역_id, 건대입구역_id,
+			신도림역_건대입구역_거리);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -110,7 +108,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then
 		지하철_노선_존재하지_않음(response);
 	}
-
 
 	@DisplayName("지하철 노선을 수정한다.")
 	@Test
@@ -154,7 +151,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
-	private void 지하철_노선_목록_포함됨(final ExtractableResponse<Response> response, final ExtractableResponse<Response>... createdLine) {
+	private void 지하철_노선_목록_포함됨(final ExtractableResponse<Response> response,
+		final ExtractableResponse<Response>... createdLine) {
 
 		List<Long> savedLineIds = Arrays.stream(createdLine).
 			map(line -> getLineId(line))
@@ -181,7 +179,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all().extract();
 	}
 
-	private void 지하철_노선_응답됨(final ExtractableResponse<Response> createdLine, final ExtractableResponse<Response> response) {
+	private void 지하철_노선_응답됨(final ExtractableResponse<Response> createdLine,
+		final ExtractableResponse<Response> response) {
 		Long lineId = getLineId(createdLine);
 
 		Long expectedId = response.jsonPath().getObject(".", LineResponse.class).getId();
@@ -196,7 +195,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all().extract();
 	}
 
-	private void 지하철_노선_수정됨(final ExtractableResponse<Response> beforeLine, final ExtractableResponse<Response> response) {
+	private void 지하철_노선_수정됨(final ExtractableResponse<Response> beforeLine,
+		final ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
@@ -242,7 +242,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.when().get("/lines/{id}", lineId)
 			.then().log().all().extract();
 	}
-
 
 	private ExtractableResponse<Response> 존재하지_않는_지하철_수정_요청(String name, String color) {
 		Long lineId = 10L;

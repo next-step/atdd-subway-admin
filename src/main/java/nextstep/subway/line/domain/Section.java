@@ -47,7 +47,7 @@ public class Section extends BaseEntity {
 		this.distance = distance;
 	}
 
-	public List<Station> getStations(){
+	public List<Station> getStations() {
 		return Arrays.asList(upStation, downStation);
 	}
 
