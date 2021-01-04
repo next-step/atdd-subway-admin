@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,12 +27,31 @@ import nextstep.subway.line.dto.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest extends AcceptanceTest {
+	Long 강남역_id;
+	Long 광교역_id;
+	int 강남역_광교역_거리 = 0;
+
+	@BeforeEach
+	void setUpLineTest() {
+		강남역_id = createStation("강남역");
+		광교역_id = createStation("광교역");
+		강남역_광교역_거리 = 10;
+	}
 
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+		ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역_id, 광교역_id, 강남역_광교역_거리);
+		// then
+		지하철_노선_생성됨(response);
+	}
+
+	@DisplayName("지하철 노선을 생성시 종점역을 추가한다.")
+	@Test
+	void createLineWithSection() {
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역_id, 광교역_id, 강남역_광교역_거리);
 		// then
 		지하철_노선_생성됨(response);
 	}
@@ -41,9 +61,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void createLine2() {
 		// given
 		// 지하철_노선_등록되어_있음
-		지하철_노선_생성_요청("신분당선", "bg-red-600");
+		지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역_id, 광교역_id, 강남역_광교역_거리);
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+		ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역_id, 광교역_id, 강남역_광교역_거리);
 		// then
 		지하철_노선_생성_실패됨(response);
 	}
@@ -53,9 +73,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLines() {
 		// given
 		// 지하철_노선_등록되어_있음
-		ExtractableResponse<Response> createdLine1 = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+		ExtractableResponse<Response> createdLine1 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역_id, 광교역_id, 강남역_광교역_거리);
 		// 지하철_노선_등록되어_있음
-		ExtractableResponse<Response> createdLine2 = 지하철_노선_생성_요청("2호선", "bg-green-600");
+		Long 신도림역_id = createStation("신도림역");
+		Long 건대입구역_id = createStation("건대입구역");
+		int 신도림역_건대입구역_거리 = 20;
+		ExtractableResponse<Response> createdLine2 = 지하철_노선_생성_요청("2호선", "bg-green-600", 신도림역_id, 건대입구역_id,
+			신도림역_건대입구역_거리);
+
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 		// then
@@ -68,7 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLine() {
 		// given
 		// 지하철_노선_등록되어_있음
-		ExtractableResponse<Response> createdLine = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+		ExtractableResponse<Response> createdLine = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역_id, 광교역_id, 강남역_광교역_거리);
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdLine);
 		// then
@@ -84,13 +109,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		지하철_노선_존재하지_않음(response);
 	}
 
-
 	@DisplayName("지하철 노선을 수정한다.")
 	@Test
 	void updateLine() {
 		// given
 		// 지하철_노선_등록되어_있음
-		ExtractableResponse<Response> beforeLine = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+		ExtractableResponse<Response> beforeLine = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역_id, 광교역_id, 강남역_광교역_거리);
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_수정_요청(beforeLine, "2호선", "bg-green-600");
 		// then
@@ -111,7 +135,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLine() {
 		// given
 		// 지하철_노선_등록되어_있음
-		ExtractableResponse<Response> line = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+		ExtractableResponse<Response> line = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역_id, 광교역_id, 강남역_광교역_거리);
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_제거_요청(line);
 		// then
@@ -123,21 +147,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.header("Location")).isNotBlank();
 	}
 
-	private ExtractableResponse<Response> 지하철_노선_생성_요청(final String name, final String color) {
-		return RestAssured.given().log().all()
-			.body(new LineRequest(name, color))
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines")
-			.then().log().all()
-			.extract();
-	}
-
 	private void 지하철_노선_생성_실패됨(final ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
-	private void 지하철_노선_목록_포함됨(final ExtractableResponse<Response> response, final ExtractableResponse<Response>... createdLine) {
+	private void 지하철_노선_목록_포함됨(final ExtractableResponse<Response> response,
+		final ExtractableResponse<Response>... createdLine) {
 
 		List<Long> savedLineIds = Arrays.stream(createdLine).
 			map(line -> getLineId(line))
@@ -164,7 +179,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all().extract();
 	}
 
-	private void 지하철_노선_응답됨(final ExtractableResponse<Response> createdLine, final ExtractableResponse<Response> response) {
+	private void 지하철_노선_응답됨(final ExtractableResponse<Response> createdLine,
+		final ExtractableResponse<Response> response) {
 		Long lineId = getLineId(createdLine);
 
 		Long expectedId = response.jsonPath().getObject(".", LineResponse.class).getId();
@@ -179,7 +195,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all().extract();
 	}
 
-	private void 지하철_노선_수정됨(final ExtractableResponse<Response> beforeLine, final ExtractableResponse<Response> response) {
+	private void 지하철_노선_수정됨(final ExtractableResponse<Response> beforeLine,
+		final ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
@@ -226,7 +243,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all().extract();
 	}
 
-
 	private ExtractableResponse<Response> 존재하지_않는_지하철_수정_요청(String name, String color) {
 		Long lineId = 10L;
 
@@ -243,4 +259,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.extract();
 	}
 
+	private static Long createStation(String name) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/stations")
+			.then().log().all()
+			.extract();
+
+		return Long.parseLong(response.header("Location").split("/")[2]);
+	}
+
+	private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId,
+		int distance) {
+		return RestAssured.given().log().all()
+			.body(new LineRequest(name, color, upStationId, downStationId, distance))
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines")
+			.then().log().all()
+			.extract();
+	}
 }
