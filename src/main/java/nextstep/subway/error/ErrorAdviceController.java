@@ -3,6 +3,7 @@ package nextstep.subway.error;
 import java.net.BindException;
 import nextstep.subway.line.exception.AlreadySavedLineException;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.exception.LessThanRemovableSizeException;
 import nextstep.subway.station.exception.NotRegisteredStationException;
 import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -62,4 +63,9 @@ public class ErrorAdviceController {
         return ResponseEntity.badRequest().build();
     }
 
+    @ExceptionHandler(LessThanRemovableSizeException.class)
+    public ResponseEntity<?> handleLessThanRemovableSizeException(
+            LessThanRemovableSizeException exception) {
+        return ResponseEntity.badRequest().build();
+    }
 }
