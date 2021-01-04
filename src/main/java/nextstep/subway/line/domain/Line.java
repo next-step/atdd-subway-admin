@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Distance;
@@ -12,7 +11,6 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.List;
 
-@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Line extends BaseEntity {
@@ -53,8 +51,8 @@ public class Line extends BaseEntity {
         section.addLine(this);
     }
 
-    public void removeStation(Long stationId) {
-        this.sections.removeSection(stationId);
+    public void removeStation(Station station) {
+        this.sections.removeSection(station);
     }
 
     public List<Section> getLineSections() {
