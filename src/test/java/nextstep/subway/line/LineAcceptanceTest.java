@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,10 +23,35 @@ import nextstep.subway.common.dto.ErrorResponse;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest extends AcceptanceTest {
+	Long 강남역_id;
+	Long 광교역_id;
+	int 강남역_광교역_거리 = 0;
+
+	@BeforeEach
+	void setUpLineTest() {
+		강남역_id = createStation("강남역");
+		광교역_id = createStation("광교역");
+		강남역_광교역_거리 = 10;
+	}
+
+	private static Long createStation(String name) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/stations")
+			.then().log().all()
+			.extract();
+
+		return Long.parseLong(response.header("Location").split("/")[2]);
+	}
 
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
@@ -34,6 +60,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600");
 		// then
 		지하철_노선_생성됨(response);
+	}
+
+	@DisplayName("지하철 노선을 생성시 종점역을 추가한다.")
+	@Test
+	void createLineWithSection() {
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역_id, 광교역_id, 강남역_광교역_거리);
+		// then
+		지하철_노선_생성됨(response);
+	}
+
+	private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId,
+		int distance) {
+		return RestAssured.given().log().all()
+			.body(new LineRequest(name, color, upStationId, downStationId, distance))
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines")
+			.then().log().all()
+			.extract();
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")

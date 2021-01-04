@@ -1,15 +1,22 @@
 package nextstep.subway.line.domain;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -20,12 +27,21 @@ public class Line extends BaseEntity {
 	private String name;
 	private String color;
 
+	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+	private List<Section> sections = new ArrayList<>();
+
 	protected Line() {
 	}
 
 	public Line(String name, String color) {
 		this.name = name;
 		this.color = color;
+	}
+
+	public Line(String name, String color, Station upStation, Station downStation, int distance) {
+		this.name = name;
+		this.color = color;
+		sections.add(new Section(upStation, downStation, distance));
 	}
 
 	public void update(Line line) {
@@ -35,7 +51,8 @@ public class Line extends BaseEntity {
 	}
 
 	private void validate(Line line) {
-		if(line == null) throw new NotFoundException();
+		if (line == null)
+			throw new NotFoundException();
 	}
 
 	public Long getId() {
@@ -48,6 +65,13 @@ public class Line extends BaseEntity {
 
 	public String getColor() {
 		return color;
+	}
+
+	public List<Station> getStations() {
+		return this.sections.stream()
+			.map(section -> section.getStations())
+			.flatMap(Collection::stream)
+			.collect(Collectors.toList());
 	}
 
 	@Override
