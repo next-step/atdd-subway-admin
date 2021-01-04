@@ -79,9 +79,10 @@ public class LineService {
                 .build();
     }
 
-    public LineResponse removeSectionByStationId(Long lineId, Long stationId) {
+    public LineResponse removeSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
-        line.removeStation(stationId);
+        Station station = stationService.selectStationById(stationId);
+        line.removeStation(station);
         return LineResponse.of(lineRepository.save(line));
     }
 

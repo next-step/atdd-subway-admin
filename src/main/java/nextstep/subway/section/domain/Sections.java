@@ -62,14 +62,14 @@ public class Sections {
                 .anyMatch(section -> section.isDownStationInSection(station));
     }
 
-    public void removeSection(Long stationId) {
-        validateRemovableStation(stationId);
-        Section removeSection = findSection(stationId);
+    public void removeSection(Station station) {
+        validateRemovableSection();
+        Section removeSection = findSection(station.getId());
         updateSectionByRemove(removeSection);
         this.sections.remove(removeSection);
     }
 
-    private void validateRemovableStation(Long stationId) {
+    private void validateRemovableSection() {
         if(this.sections.size() < REMOVABLE_SECTION_SIZE) {
             throw new IllegalArgumentException(NOT_REMOVE_SECTION_ERROR_MESSAGE);
         }
