@@ -156,14 +156,47 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
+        String expectedName = "5호선";
+        String expectedColor = "purple";
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> createParams = new HashMap<>();
+        createParams.put("name", "2호선");
+        createParams.put("color", "green");
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(createParams)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+
+        String id = createResponse.header("Location").split("/")[2];
 
         // when
         // 지하철_노선_수정_요청
+        Map<String, String> updateParams = new HashMap<>();
+        updateParams.put("name", expectedName);
+        updateParams.put("color", expectedColor);
+        RestAssured.given().log().all()
+            .body(updateParams)
+            .when()
+            .put("/lines/" + id)
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_수정됨
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/" + id)
+            .then().log().all()
+            .extract();
+
+        String actualName = response.body().jsonPath().get("name");
+        String actualColor = response.body().jsonPath().get("color");
+        assertThat(expectedName).isEqualTo(actualName);
+        assertThat(expectedColor).isEqualTo(actualColor);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
