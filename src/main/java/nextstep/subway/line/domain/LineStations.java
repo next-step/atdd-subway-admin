@@ -59,10 +59,9 @@ public class LineStations {
     }
 
     public void removeLineStation(Long stationId) {
-        LineStation removeLineStation = lineStations.stream()
-                .filter(lineStation -> lineStation.getStationId().equals(stationId))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
+        verifyRemoveLineStation();
+
+        LineStation removeLineStation = getRemoveLineStation(stationId);
 
         List<LineStation> lineStationsInOrder = getLineStationsInOrder();
         int index = lineStationsInOrder.indexOf(removeLineStation);
@@ -70,6 +69,18 @@ public class LineStations {
         updateNewTopLineStation(lineStationsInOrder, index);
         updateNewMidLineStation(lineStationsInOrder, index, removeLineStation);
         lineStations.remove(removeLineStation);
+    }
+
+    private LineStation getRemoveLineStation(Long stationId) {
+        return lineStations.stream()
+                .filter(lineStation -> lineStation.getStationId().equals(stationId))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private void verifyRemoveLineStation() {
+        if (lineStations.size() <= 2)
+            throw new RuntimeException();
     }
 
     private void updateNewMidLineStation(List<LineStation> lineStationsInOrder, int index, LineStation removeLineStation) {

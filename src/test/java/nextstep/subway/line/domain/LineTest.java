@@ -159,7 +159,6 @@ class LineTest {
         구간_검증(lineStations.get(1), 잠실역.getId(), 역삼역.getId(), 4);
     }
 
-
     @DisplayName("노선의 구간을 제거하는 기능 - Tail 종점이 제거될 경우")
     @Test
     void removeLineStation3() {
@@ -174,6 +173,15 @@ class LineTest {
         assertThat(lineStations.size()).isEqualTo(2);
         구간_검증(lineStations.get(0), null, 강남역.getId(), 0);
         구간_검증(lineStations.get(1), 강남역.getId(), 잠실역.getId(), 6);
+    }
+
+    @DisplayName("구간 삭제 시 예외 케이스 - 구간이 하나인 노선에서 마지막 구간을 제거할 때")
+    @Test
+    void verifyLineStation() {
+        //when
+        assertThatThrownBy(() -> {
+            신분당선.removeLineStation(강남역.getId());
+        }).isInstanceOf(RuntimeException.class);
     }
 
     private void 구간_검증(LineStation lineStation, Long preStationId, Long stationId, Integer distance) {
