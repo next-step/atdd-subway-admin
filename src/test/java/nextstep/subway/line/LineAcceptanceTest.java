@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.LineRestAssuredUtils.*;
-import static nextstep.subway.utils.StationRestAssuredUtils.지하철_역_생성_요청;
 import static nextstep.subway.utils.StationRestAssuredUtils.지하철_역_여러개_생성_요청;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -68,12 +67,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
+        지하철_역_여러개_생성_요청();
+
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         지하철_노선_생성_요청(params);
         params.put("name", "4호선");
         params.put("color", "blue");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         지하철_노선_생성_요청(params);
 
         // when
@@ -130,10 +137,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        지하철_역_여러개_생성_요청();
+
         Map<String, String> params = new HashMap<>();
         params.put("name", "4호선");
         params.put("color", "blue");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         ExtractableResponse<Response> request = 지하철_노선_생성_요청(params);
 
         // when
@@ -141,6 +152,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = request.jsonPath().getObject(".", LineResponse.class);
         params.put("name", "신4호선");
         params.put("color", "blue-green");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineResponse.getId(), params);
 
         // then
@@ -155,10 +169,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        지하철_역_여러개_생성_요청();
+
         Map<String, String> params = new HashMap<>();
         params.put("name", "4호선");
         params.put("color", "blue");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         ExtractableResponse<Response> request = 지하철_노선_생성_요청(params);
 
         // when
