@@ -7,6 +7,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.line.dto.SectionCreateResponse;
 import nextstep.subway.station.StationRestHelper;
 import nextstep.subway.station.domain.Station;
@@ -44,7 +45,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .as(LineResponse.class);
     }
 
-
     @DisplayName("지하철 구간 사이 새로운 구간 생성")
     @Test
     void createLineStation01() {
@@ -62,7 +62,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(stations.get(2).getName()).isEqualTo("판교역");
 
     }
-
 
     @DisplayName("지하철 구간 이전 새로운 구간 생성")
     @Test
@@ -128,6 +127,72 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineStationBadRequestTest03() {
         ExtractableResponse<Response> response = SectionRestHelper.지하철_구간_생성(신분당선.getId(), 양재역, 판교역, 100);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    @DisplayName("지하철 구간 삭제")
+    @Test
+    void deleteLineStation01() {
+        Station 청계산입구 = StationRestHelper.지하철역_생성("청계산입구").as(Station.class);
+        SectionRestHelper.지하철_구간_생성(신분당선.getId(), 양재역, 청계산입구, 50).as(SectionCreateResponse.class);
+
+        ExtractableResponse<Response> deleteResponse = SectionRestHelper.지하철_구간_삭제(신분당선.getId(), 청계산입구.getId());
+        LineResponse lineResponse = LineRestHelper.지하철_라인_조회(신분당선.getId()).as(LineResponse.class);
+
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(lineResponse.getStations().size()).isEqualTo(2);
+        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo("양재역");
+        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo("판교역");
+    }
+
+    @DisplayName("지하철 마지막 구간 삭제")
+    @Test
+    void deleteLineStation02() {
+        Station 청계산입구 = StationRestHelper.지하철역_생성("청계산입구").as(Station.class);
+        SectionRestHelper.지하철_구간_생성(신분당선.getId(), 양재역, 청계산입구, 50).as(SectionCreateResponse.class);
+
+        ExtractableResponse<Response> deleteResponse = SectionRestHelper.지하철_구간_삭제(신분당선.getId(), 판교역.getId());
+
+        LineResponse lineResponse = LineRestHelper.지하철_라인_조회(신분당선.getId()).as(LineResponse.class);
+
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(lineResponse.getStations().size()).isEqualTo(2);
+        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo("양재역");
+        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo("청계산입구");
+    }
+
+    @DisplayName("지하철 첫번째 구간 삭제")
+    @Test
+    void deleteLineStation03() {
+        Station 청계산입구 = StationRestHelper.지하철역_생성("청계산입구").as(Station.class);
+        SectionRestHelper.지하철_구간_생성(신분당선.getId(), 양재역, 청계산입구, 50).as(SectionCreateResponse.class);
+
+        ExtractableResponse<Response> deleteResponse = SectionRestHelper.지하철_구간_삭제(신분당선.getId(), 양재역.getId());
+
+        LineResponse lineResponse = LineRestHelper.지하철_라인_조회(신분당선.getId()).as(LineResponse.class);
+
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(lineResponse.getStations().size()).isEqualTo(2);
+        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo("청계산입구");
+        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo("판교역");
+    }
+
+    @DisplayName("지하철 첫번째 잘못된 요청")
+    @Test
+    void deleteLineStationBadRequestTest() {
+
+        ExtractableResponse<Response> response = SectionRestHelper.지하철_구간_삭제(신분당선.getId(), null);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 삭제 가능한 최소 사이즈 상황에서 삭제")
+    @Test
+    void deleteLineStationLessThenMinSize() {
+
+        ExtractableResponse<Response> response = SectionRestHelper.지하철_구간_삭제(신분당선.getId(), null);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
