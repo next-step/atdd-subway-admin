@@ -1,5 +1,6 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -27,10 +28,14 @@ public class StationService {
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
-
         return stations.stream()
-                .map(station -> StationResponse.of(station))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public Station findById(long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new CustomException("역의 정보가 존재하지 않습니다."));
     }
 
     public void deleteStationById(Long id) {

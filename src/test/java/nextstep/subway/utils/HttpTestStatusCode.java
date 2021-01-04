@@ -19,6 +19,10 @@ public final class HttpTestStatusCode {
         응답상태코드확인(response, HttpStatus.NO_CONTENT);
     }
 
+    public static void 잘못된_요청(ExtractableResponse<Response> response) {
+        응답상태코드확인(response, HttpStatus.BAD_REQUEST);
+    }
+
     public static void 요청_완료(ExtractableResponse<Response> response) {
         응답상태코드확인(response, HttpStatus.OK);
     }
