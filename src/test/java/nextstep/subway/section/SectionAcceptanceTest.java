@@ -52,7 +52,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void addSection() {
 		// when
 		StationResponse 판교역 = StationAcceptanceTest.지하철역_등록되어_있음("판교역");
-		SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 판교역.getId(), 3);
+		SectionRequest sectionRequest = new SectionRequest(판교역.getId(),광교역.getId(), 3);
 
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 				.body(sectionRequest)

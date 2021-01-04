@@ -33,8 +33,8 @@ public class Line extends BaseEntity {
 	public Line(String name, String color, Station upStation, Station downStation, int distance) {
 		this.name = name;
 		this.color = color;
-		Section upSection = new Section(this, null, upStation, 0);
-		Section downSection = new Section(this, upStation, downStation, distance);
+		Section upSection = new Section(this, null, downStation, 0);
+		Section downSection = new Section(this, upStation, null, distance);
 		this.sections = new Sections(upSection, downSection);
 	}
 
@@ -59,4 +59,8 @@ public class Line extends BaseEntity {
 		return sections.getSections();
 	}
 
+	public void addSection(Section section) {
+		this.sections.addSection(section);
+		section.addLine(this);
+	}
 }

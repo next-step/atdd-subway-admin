@@ -4,6 +4,7 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class SectionResponse {
 	private Long id;
@@ -25,6 +26,9 @@ public class SectionResponse {
 
 	public static SectionResponse of(Section section) {
 		Station station = section.getDownStation();
+		if(Objects.isNull(station)){
+			station = section.getUpStation();
+		}
 		return new SectionResponse(station.getId(), station.getName(), section.getDistanceMeter(), station.getCreatedDate(), station.getModifiedDate());
 	}
 

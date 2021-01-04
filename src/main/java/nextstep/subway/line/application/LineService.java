@@ -4,14 +4,18 @@ import nextstep.subway.common.StationType;
 import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import org.springframework.data.geo.Distance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,5 +62,18 @@ public class LineService {
 		Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
 		lineRepository.save(line);
 		return LineResponse.of(line);
+	}
+
+	public LineResponse new_addSection(Long lineId, SectionRequest sectionRequest) {
+		Line line = lineRepository.findById(lineId).get();
+		Section newSection = toSection(line, sectionRequest);
+		line.addSection(newSection);
+		return LineResponse.of(lineRepository.save(line));
+	}
+
+	private Section toSection(Line line, SectionRequest sectionRequest) {
+		Optional<Station> upStation = stationRepository.findById(sectionRequest.getUpStationId());
+		Optional<Station> downStation = stationRepository.findById(sectionRequest.getDownStationId());
+		return new Section(line, upStation.get(), downStation.get(), sectionRequest.getDistance());
 	}
 }

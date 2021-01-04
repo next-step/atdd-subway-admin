@@ -62,7 +62,7 @@ public class LineController {
     public ResponseEntity new_addSection(
             @PathVariable Long lineId,
             @RequestBody SectionRequest sectionRequest) {
-//        sectionService.new_addSection(lineId, sectionRequest);
+        lineService.new_addSection(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + String.valueOf(lineId))).build();
     }
 
