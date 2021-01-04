@@ -51,8 +51,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSection() {
 		// when
-		StationResponse 판교역 = StationAcceptanceTest.지하철역_등록되어_있음("판교역");
-		SectionRequest sectionRequest = new SectionRequest(판교역.getId(),광교역.getId(), 3);
+		StationResponse 새로운역 = StationAcceptanceTest.지하철역_등록되어_있음("새로운역");
+		SectionRequest sectionRequest = new SectionRequest(광교역.getId(), 새로운역.getId(), 3);
 
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 				.body(sectionRequest)

@@ -4,7 +4,6 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.exception.DistanceException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
-import org.springframework.data.geo.Distance;
 
 import javax.persistence.*;
 
@@ -33,6 +32,18 @@ public class Section extends BaseEntity {
 
 	public Section(int distanceMeter) {
 		this.distanceMeter = distanceMeter;
+	}
+
+
+	public Section(Station upStation, int distance) {
+		this.upStation = upStation;
+		this.downStation = null;
+		this.distanceMeter = distance;
+	}
+	public Section(Station downStation) {
+		this.upStation = null;
+		this.downStation = downStation;
+		this.distanceMeter = 0;
 	}
 
 	public Section(Line line, Station upStation, Station downStation, int distance) {
@@ -96,10 +107,10 @@ public class Section extends BaseEntity {
 
 	public void updateUpStation(Station station, int newDistanceMeter) {
 		this.upStation = station;
-		this.distanceMeter = updateDistance(newDistanceMeter);
+		this.distanceMeter = minusDistance(newDistanceMeter);
 	}
 
-	private int updateDistance(int newDistanceMeter) {
+	private int minusDistance(int newDistanceMeter) {
 		if (this.distanceMeter != 0 && this.distanceMeter <= newDistanceMeter) {
 			throw new DistanceException();
 		}
@@ -109,8 +120,19 @@ public class Section extends BaseEntity {
 		return this.distanceMeter;
 	}
 
+	private int plusDistance(int newDistanceMeter) {
+		return this.distanceMeter += newDistanceMeter;
+	}
+
 	public void updateDownStation(Station staion, int newDistanceMeter) {
 		this.downStation = staion;
-		this.distanceMeter = updateDistance(newDistanceMeter);
+		this.distanceMeter = minusDistance(newDistanceMeter);
+	}
+
+	public void updateDownStation(Station staion) {
+		this.downStation = staion;
+	}
+	public void updateDownStation(int newDistanceMeter) {
+		this.distanceMeter = plusDistance(newDistanceMeter);
 	}
 }
