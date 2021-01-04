@@ -26,18 +26,57 @@ class LineTest {
         신분당선 = new Line(1L, "신분당선", "bg-red-600");
         신분당선.addLineStation(강남역.getId(), 역삼역.getId(), 10);
     }
+    @DisplayName("최초 구간 등록을 하는 경우")
+    @Test
+    void addLineStation1() {
+        //then
+        List<LineStation> lineStations = 신분당선.getLineStations().getLineStationsInOrder();
+
+        구간_검증(lineStations.get(0), null, 강남역.getId(), 0);
+        구간_검증(lineStations.get(1), 강남역.getId(), 역삼역.getId(), 10);
+    }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우")
     @Test
-    void addLineStation() {
+    void addLineStation2() {
         //given / when
         신분당선.addLineStation(강남역.getId(), 잠실역.getId(), 6);
 
         //then
-        List<LineStation> lineStations = 신분당선.getLineStations().getLineStations();
+        List<LineStation> lineStations = 신분당선.getLineStations().getLineStationsInOrder();
 
+        구간_검증(lineStations.get(0), null, 강남역.getId(), 0);
         구간_검증(lineStations.get(1), 강남역.getId(), 잠실역.getId(), 6);
-        구간_검증(lineStations.get(0), 잠실역.getId(), 역삼역.getId(), 4);
+        구간_검증(lineStations.get(2), 잠실역.getId(), 역삼역.getId(), 4);
+    }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void addLineStation3() {
+        //given / when
+        신분당선.addLineStation(잠실역.getId(), 강남역.getId(), 6);
+
+        //then
+        List<LineStation> lineStations = 신분당선.getLineStations().getLineStationsInOrder();
+
+        구간_검증(lineStations.get(0), null, 잠실역.getId(), 0);
+        구간_검증(lineStations.get(1), 잠실역.getId(), 강남역.getId(), 6);
+        구간_검증(lineStations.get(2), 강남역.getId(), 역삼역.getId(), 10);
+    }
+
+
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void addLineStation4() {
+        //given / when
+        신분당선.addLineStation(역삼역.getId(), 잠실역.getId(), 6);
+
+        //then
+        List<LineStation> lineStations = 신분당선.getLineStations().getLineStationsInOrder();
+
+        구간_검증(lineStations.get(0), null, 강남역.getId(), 0);
+        구간_검증(lineStations.get(1), 강남역.getId(), 역삼역.getId(), 10);
+        구간_검증(lineStations.get(2), 역삼역.getId(), 잠실역.getId(), 6);
     }
 
     private void 구간_검증(LineStation lineStation, Long preStationId, Long stationId, Integer distance) {

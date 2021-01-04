@@ -43,4 +43,8 @@ public class LineStation {
     public void updatePreStationTo(Long newPreStationId) {
         this.preStationId = newPreStationId;
     }
+
+    public void updateDistance(Integer distance) {
+        this.distance = distance;
+    }
 }

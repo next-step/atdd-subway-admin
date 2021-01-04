@@ -54,6 +54,6 @@ public class Line extends BaseEntity {
         if (upStationId == null || downStationId == null)
             return;
 
-        lineStations.addLineStation(new LineStation(downStationId, upStationId, distance));
+        lineStations.addLineStation(upStationId, downStationId, distance);
     }
 }
