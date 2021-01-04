@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.station.domain.Station;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -46,15 +47,10 @@ public class LineStationsTest {
     @Test
     @DisplayName("노선에 포함된 지하철역 정렬 테스트")
     void sortTest() {
-        LineStation 이호선_강남역 = LineStation.createLineStation(강남역); // 기점
-        LineStation 이호선_선릉역 = LineStation.createLineStation(선릉역);
-        LineStation 이호선_잠실역 = LineStation.createLineStation(잠실역);
-        LineStation 이호선_왕십리역 = LineStation.createLineStation(왕십리역); // 종점
-
-        이호선_강남역.applyPreviousStationAndNextStationWithDistanceForNextStation(null, 선릉역, 5);
-        이호선_선릉역.applyPreviousStationAndNextStationWithDistanceForNextStation(강남역, 잠실역, 10);
-        이호선_잠실역.applyPreviousStationAndNextStationWithDistanceForNextStation(선릉역, 왕십리역, 15);
-        이호선_왕십리역.applyPreviousStationAndNextStationWithDistanceForNextStation(잠실역, null, 0);
+        LineStation 이호선_강남역 = LineStation.createLineStation(강남역, null, 선릉역, new Distance(5)); // 기점
+        LineStation 이호선_선릉역 = LineStation.createLineStation(선릉역, 강남역, 잠실역, new Distance(10));
+        LineStation 이호선_잠실역 = LineStation.createLineStation(잠실역, 선릉역, 왕십리역, new Distance(15));
+        LineStation 이호선_왕십리역 = LineStation.createLineStation(왕십리역, 잠실역, null, new Distance(0)); // 종점
 
         LineStations 이호선_구간 = new LineStations(asList(이호선_왕십리역, 이호선_잠실역, 이호선_선릉역, 이호선_강남역));
 

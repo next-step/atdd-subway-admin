@@ -8,7 +8,6 @@ public class LineRequest {
     private Long upStationId;
     private Long downStationId;
     private int distance;
-    public static final int DISTANCE_OF_LAST_STATION = 0;
 
     public LineRequest() {}
 

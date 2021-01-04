@@ -1,8 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.station.domain.Station;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,8 +15,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import static nextstep.subway.section.domain.Distance.*;
+
 @Entity
-@Table(indexes = {@Index(columnList = "line_id, station_id, previous_station_id, next_station_id", unique = true)})
+@Table(indexes = {@Index(columnList = "line_id, station_id", unique = true),
+        @Index(columnList = "line_id, station_id, previous_station_id, next_station_id", unique = true)})
 public class LineStation extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,15 +41,24 @@ public class LineStation extends BaseEntity {
     @JoinColumn(name = "next_station_id")
     private Station nextStation;
 
-    private int distanceForNextStation;
+    @Embedded
+    private Distance distanceForNextStation;
 
-    public static final int DISTANCE_OF_LAST_STATION = 0;
+    private LineStation() {}
 
-    protected LineStation() {}
+    public LineStation(Line line, Station station) {
+        this.line = line;
+        this.station = station;
+    }
 
-    public static LineStation createLineStation(Station station) {
+    public static LineStation createLineStation(Station station,
+                                                Station previousStation,
+                                                Station nextStation,
+                                                Distance distanceForNextStation) {
         LineStation lineStation = new LineStation();
         lineStation.changeStation(station);
+        lineStation.applyPreviousStationAndNextStation(previousStation, nextStation);
+        lineStation.applyDistanceForNextStation(distanceForNextStation);
         return lineStation;
     }
 
@@ -64,7 +78,7 @@ public class LineStation extends BaseEntity {
         return nextStation;
     }
 
-    public int getDistanceForNextStation() {
+    public Distance getDistanceForNextStation() {
         return distanceForNextStation;
     }
 
@@ -76,12 +90,50 @@ public class LineStation extends BaseEntity {
         this.station = station;
     }
 
-    public void applyPreviousStationAndNextStationWithDistanceForNextStation(Station previousStation, Station nextStation, int distanceForNextStation) {
-        this.previousStation = previousStation;
-        this.nextStation = nextStation;
-        if (nextStation != null && distanceForNextStation < 1) {
-            throw new IllegalArgumentException("1 이상의 거리가 필요합니다");
-        }
+    public void applyPreviousStation(Station station) {
+        this.previousStation = station;
+    }
+
+    public void applyNextStation(Station station) {
+        this.nextStation = station;
+    }
+
+    public void applyPreviousStationAndNextStation(Station previousStation, Station nextStation) {
+        applyPreviousStation(previousStation);
+        applyNextStation(nextStation);
+    }
+
+    public void applyDistanceForNextStation(Distance distanceForNextStation) {
+        checkDistance(distanceForNextStation);
         this.distanceForNextStation = distanceForNextStation;
+    }
+
+    public void changeDistanceForNextStation(Distance newDistance) {
+        Distance changedDistance = new Distance(distanceForNextStation.getDistance() - newDistance.getDistance());
+        applyDistanceForNextStation(changedDistance);
+    }
+
+    private void checkDistance(Distance distance) {
+        if (nextStation != null && distance.getDistance() == MIN_DISTANCE) {
+            throw new IllegalArgumentException(MIN_DISTANCE + "보다 큰 거리만 허용됩니다");
+        } else if (isLast() && distance.getDistance() > MIN_DISTANCE) {
+            throw new IllegalArgumentException("거리가 " + MIN_DISTANCE + "만 허용됩니다");
+        }
+    }
+
+    public boolean isFirst() {
+        return previousStation == null;
+    }
+
+    public boolean isLast() {
+        return nextStation == null;
+    }
+
+    public boolean isNew() {
+        return id == null && getCreatedDate() == null;
+    }
+
+    public boolean isPersistence() {
+        return id != null && getCreatedDate() != null;
     }
 }

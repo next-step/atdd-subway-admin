@@ -41,15 +41,18 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findLineByName(String name) {
-        return lineRepository.findLineByName(name)
-                .map(LineResponse::of)
-                .orElseThrow(() -> new NoResultException(name + "은(는) 존재하지 않습니다"));
+    public Line findLineAndLineStations(Long id) {
+        return lineRepository.findLineByFetchJoin(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Line findLine(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new NoResultException(id + "엔티티가 존재하지 않습니다"));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line findLine = lineRepository.findById(id)
-                .orElseThrow(() -> new NoResultException(id + "엔티티가 존재하지 않습니다"));
+        Line findLine = findLine(id);
         findLine.update(lineRequest.toLine());
     }
 
