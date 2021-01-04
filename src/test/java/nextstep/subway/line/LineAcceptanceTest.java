@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.LineRestAssuredUtils.*;
+import static nextstep.subway.utils.StationRestAssuredUtils.지하철_역_생성_요청;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -23,10 +24,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
+        Map<String, String> stationParams = new HashMap<>();
+        stationParams.put("name", "강남역");
+        지하철_역_생성_요청(stationParams);
+        stationParams.put("name", "역삼역");
+        지하철_역_생성_요청(stationParams);
+
+        Map<String, String> lineParams = new HashMap<>();
+        lineParams.put("name", "신분당선");
+        lineParams.put("color", "bg-red-600");
+        lineParams.put("upStationId", "1");
+        lineParams.put("downStationId", "2");
+        lineParams.put("distance", "10");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineParams);
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -39,8 +49,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "1");
+        params.put("distance", "10");
         지하철_노선_생성_요청(params);
 
         // when
@@ -84,8 +97,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         Map<String, String> params = new HashMap<>();
-        params.put("name", "4호선");
-        params.put("color", "blue");
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
         ExtractableResponse<Response> request = 지하철_노선_생성_요청(params);
 
         // when
