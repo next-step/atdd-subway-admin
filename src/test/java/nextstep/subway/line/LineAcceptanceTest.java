@@ -67,7 +67,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -180,6 +180,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         updateParams.put("color", expectedColor);
         RestAssured.given().log().all()
             .body(updateParams)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put("/lines/" + id)
             .then().log().all()
