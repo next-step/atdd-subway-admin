@@ -19,7 +19,7 @@ public class LineStations {
     }
 
     public List<LineStation> getLineStationsInOrder() {
-        Optional<LineStation> preLineStation = getFirstLineStation();
+        Optional<LineStation> preLineStation = getTopLineStation();
 
         List<LineStation> result = new ArrayList<>();
         while (preLineStation.isPresent()) {
@@ -41,7 +41,7 @@ public class LineStations {
     }
 
     public void addLineStation(Long upStationId, Long downStationId, int distance) {
-        // 새로운 역을 하행 종점으로 등록할 경우
+        // 역 사이에 새로운 역을 등록할 경우 and 새로운 역을 하행 종점으로 등록할 경우
         lineStations.stream()
                 .filter(lineStation -> upStationId.equals(lineStation.getPreStationId()))
                 .findFirst()
@@ -49,34 +49,25 @@ public class LineStations {
                     lineStations.add(new LineStation(lineStation.getStationId(), downStationId,
                             lineStation.getDistance() - distance));
                     lineStations.remove(lineStation);
-                    lineStations.add(new LineStation(downStationId, upStationId, distance));
-                });
-
-        // 역 사이에 새로운 역을 등록할 경우
-        lineStations.stream()
-                .filter(lineStation -> upStationId.equals(lineStation.getStationId()))
-                .findFirst()
-                .ifPresent(lineStation -> {
-                    lineStations.add(new LineStation(downStationId, upStationId, distance));
                 });
 
         // 최초로 등록할 경우
-        LineStation firstLineStation = getFirstLineStation().orElseGet(() -> {
-            LineStation lineStation = new LineStation(upStationId, null, 0);
-            lineStations.add(lineStation);
-            lineStations.add(new LineStation(downStationId, upStationId, distance));
-            return lineStation;
+        LineStation topLineStation = getTopLineStation().orElseGet(() -> {
+            LineStation newTopLineStation = new LineStation(upStationId, null, 0);
+            lineStations.add(newTopLineStation);
+            return newTopLineStation;
         });
 
         // 새로운 역을 상행 종점으로 등록할 경우
-        if (firstLineStation.getStationId().equals(downStationId)) {
-            firstLineStation.updatePreStationTo(upStationId);
-            firstLineStation.updateDistance(distance);
+        if (topLineStation.getStationId().equals(downStationId)) {
             lineStations.add(new LineStation(upStationId, null, 0));
+            lineStations.remove(topLineStation);
         }
+
+        lineStations.add(new LineStation(downStationId, upStationId, distance));
     }
 
-    private Optional<LineStation> getFirstLineStation() {
+    private Optional<LineStation> getTopLineStation() {
         return lineStations.stream()
                 .filter(lineStation -> lineStation.getPreStationId() == null)
                 .findFirst();
