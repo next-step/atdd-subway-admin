@@ -27,7 +27,7 @@ public class Distance {
     }
 
     public void updateDistance(Distance newDistance) {
-        int newSectionDistance = newDistance.getDistance();
+        int newSectionDistance = newDistance.distance;
         if (this.distance != 0) {
             validateDistance(newSectionDistance);
             this.distance -= newSectionDistance;
