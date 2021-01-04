@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.dto.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -22,18 +23,19 @@ public class Section extends BaseEntity {
     @ManyToOne
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         this.setUpStation(upStation);
         this.setDownStation(downStation);
         this.distance = distance;
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.setLine(line);
         this.setUpStation(upStation);
         this.setDownStation(downStation);
@@ -68,7 +70,7 @@ public class Section extends BaseEntity {
         this.downStation = downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 

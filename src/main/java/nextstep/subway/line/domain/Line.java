@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -73,6 +74,10 @@ public class Line extends BaseEntity {
     }
 
     public void addSections(Station upwardStation, Station downStation, int distance) {
+        this.addSections(new Section(this, upwardStation, downStation, new Distance(distance)));
+    }
+
+    public void addSections(Station upwardStation, Station downStation, Distance distance) {
         this.addSections(new Section(this, upwardStation, downStation, distance));
     }
 
