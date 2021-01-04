@@ -110,5 +110,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [x] 구간을 제거하는 기능 리펙토링
 - [x] 구간 삭제 시 예외 케이스 단위 테스트 작성
 - [x] 구간 삭제 시 예외 케이스를 고려하기
-- [ ] 예외 케이스 리펙토링
-- [ ] 전체 리펙토링
+- [x] 예외 케이스 리펙토링
+- [x] 전체 리펙토링
