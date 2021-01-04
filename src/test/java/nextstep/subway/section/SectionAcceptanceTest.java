@@ -261,7 +261,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 구간_제거_실패
-        assertResponseHttpStatusIsNotFound(response);
+        assertResponseHttpStatusIsBadRequest(response);
     }
 
     @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거한다")

@@ -59,6 +59,12 @@ public class LineService {
         return line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStationById(stationId);
+        line.removeSectionByStation(station);
+    }
+
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 역입니다: " + id));
