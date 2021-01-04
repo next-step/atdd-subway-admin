@@ -50,9 +50,23 @@ class LineTest {
         구간_검증(lineStations.get(2), 잠실역.getId(), 역삼역.getId(), 4);
     }
 
-    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 2")
     @Test
     void addLineStation3() {
+        //given / when
+        신분당선.addLineStation(잠실역.getId(), 역삼역.getId(), 6);
+
+        //then
+        List<LineStation> lineStations = 신분당선.getLineStations().getLineStationsInOrder();
+
+        구간_검증(lineStations.get(0), null, 강남역.getId(), 0);
+        구간_검증(lineStations.get(1), 강남역.getId(), 잠실역.getId(), 4);
+        구간_검증(lineStations.get(2), 잠실역.getId(), 역삼역.getId(), 6);
+    }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void addLineStation4() {
         //given / when
         신분당선.addLineStation(잠실역.getId(), 강남역.getId(), 6);
 
@@ -67,7 +81,7 @@ class LineTest {
 
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
     @Test
-    void addLineStation4() {
+    void addLineStation5() {
         //given / when
         신분당선.addLineStation(역삼역.getId(), 잠실역.getId(), 6);
 
