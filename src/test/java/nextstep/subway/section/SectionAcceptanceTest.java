@@ -110,6 +110,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(found.get().getAllIncludedStationIds()).containsExactly(강남Id, 광교Id, 하행종점Id);
     }
 
+    @Test
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    void exceedDistanceException() {
+        // given
+        Long 강남Id = stationDataHelper.역추가("강남역");
+        Long 광교Id = stationDataHelper.역추가("광교역");
+        Long 판교Id = stationDataHelper.역추가("판교역");
+        Line savedLine = lineDataHelper.지하철_노선_추가(
+                new Line("신분당선", "red", new Sections(new Section(강남Id, 광교Id, 10)))
+        );
+
+        // when
+        Map<String, String> params = createParam(강남Id.toString(), 판교Id.toString(), "100");
+        ExtractableResponse<Response> response = callAddSectionApi(savedLine, params);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private Map<String, String> createParam(String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId);

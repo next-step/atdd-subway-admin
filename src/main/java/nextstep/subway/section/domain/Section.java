@@ -30,4 +30,8 @@ public class Section {
     public List<Long> allStationIds() {
         return Arrays.asList(upStationId, downStationId);
     }
+
+    public boolean longer(Section orgSection) {
+        return distance >= orgSection.getDistance();
+    }
 }

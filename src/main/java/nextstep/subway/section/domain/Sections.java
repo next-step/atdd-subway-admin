@@ -3,6 +3,8 @@ package nextstep.subway.section.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.val;
+import nextstep.subway.section.application.ExceedDistanceException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -37,32 +39,40 @@ public class Sections {
 
     public void addSection(Section newSection) {
         if (firstStationId().equals(newSection.getDownStationId())) {
-            sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
+            this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
             return;
         }
 
         if (lastStationId().equals(newSection.getUpStationId())) {
-            sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
+            this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
             return;
         }
 
-        sections.stream()
+        this.sections.stream()
                 .filter(orgSection -> orgSection.getDownStationId().equals(newSection.getDownStationId()))
                 .findFirst()
                 .ifPresent(orgSection -> {
-                    sections.add(new Section(orgSection.getUpStationId(), orgSection.getDownStationId(), orgSection.getDistance() - newSection.getDistance()));
-                    sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
-                    sections.remove(orgSection);
+                    validateDistance(orgSection, newSection);
+                    this.sections.add(new Section(orgSection.getUpStationId(), orgSection.getDownStationId(), orgSection.getDistance() - newSection.getDistance()));
+                    this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
+                    this.sections.remove(orgSection);
                 });
 
-        sections.stream()
+        this.sections.stream()
                 .filter(orgSection -> orgSection.getUpStationId().equals(newSection.getUpStationId()))
                 .findFirst()
                 .ifPresent(orgSection -> {
-                    sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
-                    sections.add(new Section(newSection.getDownStationId(), orgSection.getDownStationId(), orgSection.getDistance() - newSection.getDistance()));
-                    sections.remove(orgSection);
+                    validateDistance(orgSection, newSection);
+                    this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
+                    this.sections.add(new Section(newSection.getDownStationId(), orgSection.getDownStationId(), orgSection.getDistance() - newSection.getDistance()));
+                    this.sections.remove(orgSection);
                 });
+    }
+
+    private void validateDistance(Section orgSection, Section newSection) {
+        if(newSection.longer(orgSection)) {
+            throw new ExceedDistanceException();
+        }
     }
 
     private Sections orderedSections() {
