@@ -58,6 +58,31 @@ public class LineStations {
         lineStations.add(new LineStation(downStationId, upStationId, distance));
     }
 
+    public void removeLineStation(Long stationId) {
+        List<LineStation> lineStationsInOrder = getLineStationsInOrder();
+
+        LineStation removeLineStation = lineStations.stream()
+                .filter(lineStation -> lineStation.getStationId().equals(stationId))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        int index = lineStationsInOrder.indexOf(removeLineStation);
+
+        if (index == 0) {
+            LineStation postLineStation = lineStationsInOrder.get(index + 1);
+            postLineStation.updatePreStationTo(null);
+            postLineStation.updateDistance(0);
+        } else if(index < lineStations.size() - 1) {
+            LineStation preLineStation = lineStationsInOrder.get(index - 1);
+            LineStation postLineStation = lineStationsInOrder.get(index + 1);
+
+            postLineStation.updatePreStationTo(preLineStation.getStationId());
+            postLineStation.updateDistance(removeLineStation.getDistance() + postLineStation.getDistance());
+        }
+
+        lineStations.remove(removeLineStation);
+    }
+
     private void addNewTopLineStation(Long upStationId, Long downStationId) {
         getFilteredLineStationStream(downStationId, true)
                 .findFirst()

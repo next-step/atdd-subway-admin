@@ -67,6 +67,6 @@ public class Line extends BaseEntity {
     }
 
     public void removeLineStation(Long stationId) {
-
+        lineStations.removeLineStation(stationId);
     }
 }
