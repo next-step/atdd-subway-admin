@@ -53,7 +53,8 @@ class LineServiceTest {
 		// given
 		LineRequest request = new LineRequest("2호선", "green", 1L, 2L, 100);
 		when(lineRepository.save(any())).thenReturn(new Line(1L, "2호선", "green"));
-		when(stationRepository.findById(any())).thenReturn(java.util.Optional.of(new Station("서울역")));
+		when(stationRepository.findById(1L)).thenReturn(java.util.Optional.of(new Station(1L, "서울역")));
+		when(stationRepository.findById(2L)).thenReturn(java.util.Optional.of(new Station(2L, "강남역")));
 
 		// when
 		LineResponse response = lineService.saveLine(request);
