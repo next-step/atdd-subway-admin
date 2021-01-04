@@ -59,6 +59,8 @@ public class LineStations {
                 .filter(lineStation -> upStationId.equals(lineStation.getPreStationId()))
                 .findFirst()
                 .ifPresent(lineStation -> {
+                    verifyOverDistance(distance, lineStation);
+
                     lineStations.add(new LineStation(lineStation.getStationId(), downStationId,
                             lineStation.getDistance() - distance));
                     lineStations.remove(lineStation);
@@ -70,6 +72,8 @@ public class LineStations {
                 .filter(lineStation -> downStationId.equals(lineStation.getStationId()))
                 .findFirst()
                 .ifPresent(lineStation -> {
+                    verifyOverDistance(distance, lineStation);
+
                     lineStations.add(new LineStation(upStationId, lineStation.getPreStationId(),
                             lineStation.getDistance() - distance));
                     lineStations.remove(lineStation);
@@ -77,6 +81,11 @@ public class LineStations {
 
         // 추가되는 구간은 무조건 들어감
         lineStations.add(new LineStation(downStationId, upStationId, distance));
+    }
+
+    private void verifyOverDistance(int distance, LineStation lineStation) {
+        if (distance >= lineStation.getDistance())
+            throw new RuntimeException();
     }
 
     private Optional<LineStation> getTopLineStation() {

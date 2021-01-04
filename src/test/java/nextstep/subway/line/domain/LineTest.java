@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LineTest {
@@ -91,6 +92,22 @@ class LineTest {
         구간_검증(lineStations.get(0), null, 강남역.getId(), 0);
         구간_검증(lineStations.get(1), 강남역.getId(), 역삼역.getId(), 10);
         구간_검증(lineStations.get(2), 역삼역.getId(), 잠실역.getId(), 6);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void verifyAddLineStation1() {
+        assertThatThrownBy(() -> {
+            신분당선.addLineStation(강남역.getId(), 잠실역.getId(), 10);
+        }).isInstanceOf(RuntimeException.class);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음 2")
+    @Test
+    void verifyAddLineStation2() {
+        assertThatThrownBy(() -> {
+            신분당선.addLineStation(잠실역.getId(), 역삼역.getId(), 10);
+        }).isInstanceOf(RuntimeException.class);
     }
 
     private void 구간_검증(LineStation lineStation, Long preStationId, Long stationId, Integer distance) {
