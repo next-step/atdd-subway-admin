@@ -1,12 +1,8 @@
 package nextstep.subway.station.domain;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.LineStation;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Station extends BaseEntity {
@@ -16,9 +12,6 @@ public class Station extends BaseEntity {
 
     @Column(unique = true)
     private String name;
-
-    @OneToMany(mappedBy = "station")
-    private List<LineStation> lineStations = new ArrayList<>();
 
     public Station() {
     }

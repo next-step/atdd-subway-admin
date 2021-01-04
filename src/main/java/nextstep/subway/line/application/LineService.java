@@ -9,6 +9,7 @@ import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,10 +55,7 @@ public class LineService {
 		Station upStation = stationRepository.findById(lineRequest.getUpStationId()).get();
 		Station downStation = stationRepository.findById(lineRequest.getDownStationId()).get();
 
-		Section section = new Section(upStation.getId(), downStation.getId(), lineRequest.getDistance());
-		List<LineStation> lineStations = Arrays.asList(new LineStation(upStation, section), new LineStation(downStation, section));
-		Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-		line.addLineStations(lineStations);
+		Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
 		lineRepository.save(line);
 		return LineResponse.of(line);
 	}

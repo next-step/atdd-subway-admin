@@ -1,9 +1,11 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,10 +19,8 @@ public class Line extends BaseEntity {
 
 	private String color;
 
-//	private int distance;
-
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-	private List<LineStation> lineStations = new ArrayList<>();
+	@Embedded
+	private Sections sections;
 
 	public Line() {
 	}
@@ -30,17 +30,13 @@ public class Line extends BaseEntity {
 		this.color = color;
 	}
 
-	public Line(String name, String color, List<LineStation> lineStations) {
+	public Line(String name, String color, Station upStation, Station downStation, int distance) {
 		this.name = name;
 		this.color = color;
-		this.lineStations = lineStations;
+		Section upSection = new Section(this, null, upStation, 0);
+		Section downSection = new Section(this, upStation, downStation, distance);
+		this.sections = new Sections(upSection, downSection);
 	}
-
-//	public Line(String name, String color, int distance) {
-//		this.name = name;
-//		this.color = color;
-//		this.distance = distance;
-//	}
 
 	public void update(Line line) {
 		this.name = line.getName();
@@ -59,30 +55,8 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-//	public int getDistance() {
-//		return distance;
-//	}
-
-	public List<LineStation> getLineStations() {
-		return lineStations;
+	public List<Section> getLineSections() {
+		return sections.getSections();
 	}
 
-	public Line(List<LineStation> lineStations) {
-		this.lineStations = lineStations;
-	}
-
-	public void addLineStations(List<LineStation> lineStations) {
-		for(LineStation lineStation : lineStations){
-			lineStation.addLine(this);
-		}
-		this.lineStations = lineStations;
-	}
-
-//	public void addDistance(int distance) {
-//		this.distance += distance;
-//	}
-
-//	public boolean checkDistanceValidate(int newDistance) {
-//		return this.distance <= newDistance;
-//	}
 }
