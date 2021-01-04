@@ -120,11 +120,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
+        String expectedName = "2호선";
+        String expectedColor = "green";
         // given
         // 지하철_노선_등록되어_있음
         Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
+        params.put("name", expectedName);
+        params.put("color", expectedColor);
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -133,7 +135,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all()
             .extract();
 
-        String id = createResponse.header("Location").split("/")[1];
+        String id = createResponse.header("Location").split("/")[2];
 
         // when
         // 지하철_노선_조회_요청
@@ -145,7 +147,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_응답됨
-        assertThat(id).isEqualTo(response.header("Location").split("/")[1]);
+        String actualName = response.body().jsonPath().get("name");
+        String actualColor = response.body().jsonPath().get("color");
+        assertThat(expectedName).isEqualTo(actualName);
+        assertThat(expectedColor).isEqualTo(actualColor);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
