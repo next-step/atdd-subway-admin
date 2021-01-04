@@ -46,6 +46,10 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color);
+        if (upStationId == null || downStationId == null) {
+            return new Line(name, color);
+        }
+
+        return new Line(name, color, upStationId, downStationId, distance);
     }
 }

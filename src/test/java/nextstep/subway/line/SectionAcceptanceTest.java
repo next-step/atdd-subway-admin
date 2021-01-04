@@ -48,7 +48,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 4);
         params.put("downStationId", 2);
-        params.put("distance", 10);
+        params.put("distance", 4);
         ExtractableResponse<Response> response = 지하철_구간_등록_요청(신분당선Id, params);
 
         // then

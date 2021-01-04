@@ -24,8 +24,8 @@ class LineTest {
         역삼역 = new Station(2L, "역삼역");
         잠실역 = new Station(3L, "잠실역");
 
-        신분당선 = new Line(1L, "신분당선", "bg-red-600");
-        신분당선.addLineStation(강남역.getId(), 역삼역.getId(), 10);
+        신분당선 = new Line(1L, "신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+//        신분당선.addLineStation(강남역.getId(), 역삼역.getId(), 10);
     }
     @DisplayName("최초 구간 등록을 하는 경우")
     @Test
@@ -107,6 +107,23 @@ class LineTest {
     void verifyAddLineStation2() {
         assertThatThrownBy(() -> {
             신분당선.addLineStation(잠실역.getId(), 역삼역.getId(), 10);
+        }).isInstanceOf(RuntimeException.class);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void verifyAddLineStation3() {
+        assertThatThrownBy(() -> {
+            신분당선.addLineStation(강남역.getId(), 역삼역.getId(), 3);
+        }).isInstanceOf(RuntimeException.class);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void verifyAddLineStation4() {
+        Station 교대역 = new Station(4L, "교대역");
+        assertThatThrownBy(() -> {
+            신분당선.addLineStation(잠실역.getId(), 교대역.getId(), 3);
         }).isInstanceOf(RuntimeException.class);
     }
 

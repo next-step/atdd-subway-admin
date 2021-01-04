@@ -29,7 +29,6 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         Line line = request.toLine();
-        line.addLineStation(request.getUpStationId(), request.getDownStationId(), request.getDistance());
         Line persistLine = lineRepository.save(line);
 
         List<Station> stations = getStations(line);

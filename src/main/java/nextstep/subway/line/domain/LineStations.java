@@ -40,19 +40,23 @@ public class LineStations {
                 .collect(Collectors.toList());
     }
 
+    public void initLineStation(Long upStationId, Long downStationId, int distance) {
+        lineStations.add(new LineStation(upStationId, null, 0));
+        lineStations.add(new LineStation(downStationId, upStationId, distance));
+    }
+
     public void addLineStation(Long upStationId, Long downStationId, int distance) {
-        // top 종점을 일단 만들기 - 최초로 등록할 경우
-        LineStation topLineStation = getTopLineStation().orElseGet(() -> {
-            LineStation newTopLineStation = new LineStation(upStationId, null, 0);
-            lineStations.add(newTopLineStation);
-            return newTopLineStation;
-        });
+        verifyDuplicateStation(upStationId, downStationId);
 
         // 나눠지는 새 구간 만들기 - 새로운 역을 상행 종점으로 등록할 경우
-        if (topLineStation.getStationId().equals(downStationId)) {
-            lineStations.add(new LineStation(upStationId, null, 0));
-            lineStations.remove(topLineStation);
-        }
+        lineStations.stream()
+                .filter(lineStation -> downStationId.equals(lineStation.getStationId()))
+                .filter(lineStation -> lineStation.getPreStationId() == null)
+                .findFirst()
+                .ifPresent(lineStation -> {
+                    lineStations.add(new LineStation(upStationId, null, 0));
+                    lineStations.remove(lineStation);
+                });
 
         // 나눠지는 새 구간 만들기 - 역 사이에 새로운 역을 등록할 경우 and 새로운 역을 하행 종점으로 등록할 경우
         lineStations.stream()
@@ -68,8 +72,8 @@ public class LineStations {
 
         // 나눠지는 새 구간 만들기 - 역 사이에 새로운 역을 등록할 경우 2
         lineStations.stream()
-                .filter(lineStation -> !topLineStation.isSame(lineStation))
                 .filter(lineStation -> downStationId.equals(lineStation.getStationId()))
+                .filter(lineStation -> lineStation.getPreStationId() != null)
                 .findFirst()
                 .ifPresent(lineStation -> {
                     verifyOverDistance(distance, lineStation);
@@ -81,6 +85,17 @@ public class LineStations {
 
         // 추가되는 구간은 무조건 들어감
         lineStations.add(new LineStation(downStationId, upStationId, distance));
+    }
+
+    private void verifyDuplicateStation(Long upStationId, Long downStationId) {
+        Stream<LineStation> upLineStationStream = lineStations.stream()
+                .filter(lineStation -> lineStation.getStationId().equals(upStationId));
+        Stream<LineStation> downLineStationStream = lineStations.stream()
+                .filter(lineStation -> lineStation.getStationId().equals(downStationId));
+
+        long count = Stream.concat(upLineStationStream, downLineStationStream).count();
+        if (count != 1)
+            throw new RuntimeException();
     }
 
     private void verifyOverDistance(int distance, LineStation lineStation) {
