@@ -44,4 +44,10 @@ public class LineService {
             .orElseThrow(() -> new IllegalArgumentException("아이디에 해당하는 데이터가 없습니다."));
         line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
     }
+
+    public void deleteLine(Long id) {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("아이디에 해당하는 데이터가 없습니다."));
+        lineRepository.delete(line);
+    }
 }
