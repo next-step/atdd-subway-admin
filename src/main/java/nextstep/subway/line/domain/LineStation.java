@@ -51,4 +51,8 @@ public class LineStation {
     public void updateDistance(Integer distance) {
         this.distance = distance;
     }
+
+    boolean isTopLineStation() {
+        return getPreStationId() == null;
+    }
 }

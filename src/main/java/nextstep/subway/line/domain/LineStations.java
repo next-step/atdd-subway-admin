@@ -59,9 +59,7 @@ public class LineStations {
     }
 
     private void addNewTopLineStation(Long upStationId, Long downStationId) {
-        lineStations.stream()
-                .filter(lineStation -> downStationId.equals(lineStation.getStationId()))
-                .filter(lineStation -> lineStation.getPreStationId() == null)
+        getFilteredLineStationStream(downStationId, true)
                 .findFirst()
                 .ifPresent(lineStation -> {
                     lineStations.add(new LineStation(upStationId, null, 0));
@@ -83,9 +81,7 @@ public class LineStations {
     }
 
     private void addNewMidLineStationByDownStationId(Long upStationId, Long downStationId, int distance) {
-        lineStations.stream()
-                .filter(lineStation -> downStationId.equals(lineStation.getStationId()))
-                .filter(lineStation -> lineStation.getPreStationId() != null)
+        getFilteredLineStationStream(downStationId, false)
                 .findFirst()
                 .ifPresent(lineStation -> {
                     verifyOverDistance(distance, lineStation);
@@ -94,6 +90,12 @@ public class LineStations {
                             lineStation.getDistance() - distance));
                     lineStations.remove(lineStation);
                 });
+    }
+
+    private Stream<LineStation> getFilteredLineStationStream(Long downStationId, boolean isTopLineStation) {
+        return lineStations.stream()
+                .filter(lineStation -> downStationId.equals(lineStation.getStationId()) &&
+                        (!isTopLineStation ^ lineStation.isTopLineStation()));
     }
 
     private void verifyDuplicateStation(Long upStationId, Long downStationId) {
@@ -117,7 +119,7 @@ public class LineStations {
 
     private Optional<LineStation> getTopLineStation() {
         return lineStations.stream()
-                .filter(lineStation -> lineStation.getPreStationId() == null)
+                .filter(LineStation::isTopLineStation)
                 .findFirst();
     }
 }

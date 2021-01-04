@@ -32,9 +32,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Map<String, String> createParams = new HashMap<>();
         createParams.put("name", "신분당선");
         createParams.put("color", "bg-red-600");
-        createParams.put("upStationId", 강남역.getId() + "");
-        createParams.put("downStationId", 광교역.getId() + "");
-        createParams.put("distance", 10 + "");
+        createParams.put("upStationId", String.valueOf(강남역.getId()));
+        createParams.put("downStationId", String.valueOf(광교역.getId()));
+        createParams.put("distance", String.valueOf(10));
         신분당선 = LineAcceptanceTest.지하철_노선_생성_요청(createParams).as(LineResponse.class);
     }
 

@@ -156,9 +156,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> 신분당선Params = new HashMap<>();
         신분당선Params.put("color", "bg-red-600");
         신분당선Params.put("name", "신분당선");
-        신분당선Params.put("upStationId", 강남역Id + "");
-        신분당선Params.put("downStationId", 역삼역Id + "");
-        신분당선Params.put("distance", 10 + "");
+        신분당선Params.put("upStationId", String.valueOf(강남역Id));
+        신분당선Params.put("downStationId", String.valueOf(역삼역Id));
+        신분당선Params.put("distance", String.valueOf(10));
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(신분당선Params);
         long 신분당선Id = 노선_응답에서_ID_추출(createResponse);
 
