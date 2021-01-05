@@ -15,34 +15,34 @@ import java.util.stream.Collectors;
 @Transactional
 public class StationService {
 
-    private static final String LINE_NOT_FOUND_MSG = "지하철 역을 찾을 수 없습니다.";
+  private static final String LINE_NOT_FOUND_MSG = "지하철 역을 찾을 수 없습니다.";
 
-    private final StationRepository stationRepository;
+  private final StationRepository stationRepository;
 
-    public StationService(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
+  public StationService(StationRepository stationRepository) {
+    this.stationRepository = stationRepository;
+  }
 
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationResponse.of(persistStation);
-    }
+  public StationResponse saveStation(StationRequest stationRequest) {
+    Station persistStation = stationRepository.save(stationRequest.toStation());
+    return StationResponse.of(persistStation);
+  }
 
-    @Transactional(readOnly = true)
-    public List<StationResponse> findAllStations() {
-        List<Station> stations = stationRepository.findAll();
+  @Transactional(readOnly = true)
+  public List<StationResponse> findAllStations() {
+    List<Station> stations = stationRepository.findAll();
 
-        return stations.stream()
-                .map(station -> StationResponse.of(station))
-                .collect(Collectors.toList());
-    }
+    return stations.stream()
+        .map(station -> StationResponse.of(station))
+        .collect(Collectors.toList());
+  }
 
-    public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
-    }
+  public void deleteStationById(Long id) {
+    stationRepository.deleteById(id);
+  }
 
-    public Station findById(Long id) {
-        return stationRepository.findById(id)
-            .orElseThrow(() -> new StationNotFoundException(LINE_NOT_FOUND_MSG));
-    }
+  public Station findById(Long id) {
+    return stationRepository.findById(id)
+        .orElseThrow(() -> new StationNotFoundException(LINE_NOT_FOUND_MSG));
+  }
 }

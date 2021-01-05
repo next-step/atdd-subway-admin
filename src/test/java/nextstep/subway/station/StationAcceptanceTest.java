@@ -19,89 +19,89 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-    @DisplayName("지하철역을 생성한다.")
-    @Test
-    void createStation() {
-        // when
-        ExtractableResponse<Response> response = 지하철_등록_요청("강남역");
+  @DisplayName("지하철역을 생성한다.")
+  @Test
+  void createStation() {
+    // when
+    ExtractableResponse<Response> response = 지하철_등록_요청("강남역");
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
-    }
+    // then
+    assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    assertThat(response.header("Location")).isNotBlank();
+  }
 
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
-    @Test
-    void createStationWithDuplicateName() {
-        // given
-        지하철_등록_요청("강남역");
+  @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+  @Test
+  void createStationWithDuplicateName() {
+    // given
+    지하철_등록_요청("강남역");
 
-        // when
-        ExtractableResponse<Response> response = 지하철_등록_요청("강남역");
+    // when
+    ExtractableResponse<Response> response = 지하철_등록_요청("강남역");
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
+    // then
+    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+  }
 
-    @DisplayName("지하철역을 조회한다.")
-    @Test
-    void getStations() {
-        /// given
-        ExtractableResponse<Response> 강남역 = 지하철_등록_요청("강남역");
-        ExtractableResponse<Response> 역삼역 = 지하철_등록_요청("역삼역");
+  @DisplayName("지하철역을 조회한다.")
+  @Test
+  void getStations() {
+    /// given
+    ExtractableResponse<Response> 강남역 = 지하철_등록_요청("강남역");
+    ExtractableResponse<Response> 역삼역 = 지하철_등록_요청("역삼역");
 
-        // when
-        ExtractableResponse<Response> response = 지하철_목록_조회_요청();
+    // when
+    ExtractableResponse<Response> response = 지하철_목록_조회_요청();
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(강남역, 역삼역).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
-    }
+    // then
+    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    List<Long> expectedLineIds = Arrays.asList(강남역, 역삼역).stream()
+        .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+        .collect(Collectors.toList());
+    List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
+        .map(it -> it.getId())
+        .collect(Collectors.toList());
+    assertThat(resultLineIds).containsAll(expectedLineIds);
+  }
 
-    @DisplayName("지하철역을 제거한다.")
-    @Test
-    void deleteStation() {
-        // given
-        ExtractableResponse<Response> createResponse = 지하철_등록_요청("강남역");
+  @DisplayName("지하철역을 제거한다.")
+  @Test
+  void deleteStation() {
+    // given
+    ExtractableResponse<Response> createResponse = 지하철_등록_요청("강남역");
 
-        // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = 지하철_제거_요청(uri);
+    // when
+    String uri = createResponse.header("Location");
+    ExtractableResponse<Response> response = 지하철_제거_요청(uri);
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
+    // then
+    assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+  }
 
-    public static ExtractableResponse<Response> 지하철_등록_요청(String name) {
-        StationRequest stationRequest = new StationRequest(name);
-        return RestAssured.given().log().all()
-            .body(stationRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
-    }
+  public static ExtractableResponse<Response> 지하철_등록_요청(String name) {
+    StationRequest stationRequest = new StationRequest(name);
+    return RestAssured.given().log().all()
+        .body(stationRequest)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .when()
+        .post("/stations")
+        .then().log().all()
+        .extract();
+  }
 
-    private ExtractableResponse<Response> 지하철_목록_조회_요청() {
-        return RestAssured.given().log().all()
-            .when()
-            .get("/stations")
-            .then().log().all()
-            .extract();
-    }
+  private ExtractableResponse<Response> 지하철_목록_조회_요청() {
+    return RestAssured.given().log().all()
+        .when()
+        .get("/stations")
+        .then().log().all()
+        .extract();
+  }
 
-    private ExtractableResponse<Response> 지하철_제거_요청(String uri) {
-        return RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .extract();
-    }
+  private ExtractableResponse<Response> 지하철_제거_요청(String uri) {
+    return RestAssured.given().log().all()
+        .when()
+        .delete(uri)
+        .then().log().all()
+        .extract();
+  }
 }
