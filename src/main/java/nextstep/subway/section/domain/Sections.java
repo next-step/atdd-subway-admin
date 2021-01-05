@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -10,7 +11,10 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Getter
 @NoArgsConstructor
@@ -37,6 +41,25 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    public void removeByStation(Line line, Station station) {
+        checkArgument(sections.size() > 1, "구간 개수가 하나이거나 없습니다");
+
+        List<Section> matchSections = matchedSectionsByStation(station);
+
+        checkArgument(matchSections.size() > 0, "노선에 등록 안된 역입니다");
+
+        if (matchSections.size() > 1) {
+            Section newSection = matchSections.stream()
+                    .sorted(this::comparing)
+                    .reduce(combineSection(line))
+                    .orElseThrow(() -> new IllegalArgumentException("구간 결합에 실패하였습니다"));
+
+            sections.add(newSection);
+        }
+
+        sections.removeAll(matchSections);
+    }
+
     private void adjustSections(Section newSection) {
         for (int i = 0; i < sections.size(); i++) {
             Section section = sections.get(i);
@@ -49,6 +72,24 @@ public class Sections {
                 break;
             }
         }
+    }
+
+    private BinaryOperator<Section> combineSection(Line line) {
+        return (frontSection, backSection) -> new Section(
+                line,
+                frontSection.getUpStation(),
+                backSection.getDownStation(),
+                frontSection.getDistance() + backSection.getDistance());
+    }
+
+    private List<Section> matchedSectionsByStation(Station station) {
+        return sections.stream()
+                .filter(section -> station.equals(section.getUpStation()) || station.equals(section.getDownStation()))
+                .collect(Collectors.toList());
+    }
+
+    private int comparing(Section s1, Section s2) {
+        return s1.getDownStation().equals(s2.getUpStation()) ? -1 : 1;
     }
 
     private void checkDistance(Section oldSection, int distance) {

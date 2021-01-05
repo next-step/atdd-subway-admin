@@ -224,6 +224,58 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertResponseHttpStatusIsBadRequest(response);
     }
 
+    @DisplayName("노선의 구간을 제거한다")
+    @Test
+    void removeSection() {
+        // given
+        // 구간_추가_등록
+        // 양재 --- 양재시민의숲 --- 청계산입구
+        String stationId = createStationId("양재시민의숲");
+        Map<String, String> params = new SectionParameter()
+                .upStationId(upStationId)
+                .downStationId(stationId)
+                .distance("4")
+                .getMap();
+
+        createNewSection(params);
+
+        // when
+        // 구간_제거_요청
+        ExtractableResponse<Response> response = removeSection(stationId);
+
+        // then
+        // 구간_제거_성공
+        assertResponseHttpStatusIsNoContent(response);
+    }
+
+    @DisplayName("노선에 등록되어 있지 않은 역을 제거한다")
+    @Test
+    void removeSectionWithNotRegistered() {
+        // given
+        // 역_생성_요청
+        String stationId = createStationId("시청");
+
+        // when
+        // 구간_제거_요청
+        ExtractableResponse<Response> response = removeSection(stationId);
+
+        // then
+        // 구간_제거_실패
+        assertResponseHttpStatusIsBadRequest(response);
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거한다")
+    @Test
+    void removeSectionWhenSingleSection() {
+        // when
+        // 구간_제거_요청
+        ExtractableResponse<Response> response = removeSection(upStationId);
+
+        // then
+        // 구간_제거_실패
+        assertResponseHttpStatusIsBadRequest(response);
+    }
+
     private static class SectionParameter {
         private final Map<String, String> map = new HashMap<>();
 
@@ -253,6 +305,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(lineUri + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> removeSection(String stationId) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete(lineUri + "/sections?stationId=" + stationId)
                 .then().log().all()
                 .extract();
     }
