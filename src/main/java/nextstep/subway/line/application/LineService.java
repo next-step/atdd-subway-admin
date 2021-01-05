@@ -12,6 +12,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.exception.StationNotFoundException;
@@ -40,26 +41,35 @@ public class LineService {
 
 	@Transactional(readOnly = true)
 	public LineResponse showLine(Long id) {
-		Line persistLine = findLine(id);
+		Line persistLine = findLineById(id);
 		return LineResponse.of(persistLine);
 	}
 
 	public LineResponse updateLine(Long id, LineRequest request) {
-		Line line = findLine(id);
+		Line line = findLineById(id);
 		line.update(request.toLine());
 		return LineResponse.of(line);
 	}
 
 	public void deleteLine(Long id) {
-		Line line = findLine(id);
+		Line line = findLineById(id);
 		lineRepository.delete(line);
 	}
 
-	private Line findLine(Long id) {
+	public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+		Station upStation = findStationById(sectionRequest.getUpStationId());
+		Station downStation = findStationById(sectionRequest.getDownStationId());
+		Line persistLine = findLineById(id);
+		persistLine.addSection(upStation, downStation, sectionRequest.getDistance());
+		return LineResponse.of(persistLine);
+	}
+
+	private Line findLineById(Long id) {
 		return lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
 	}
 
 	private Station findStationById(Long stationId) {
 		return stationRepository.findById(stationId).orElseThrow(StationNotFoundException::new);
 	}
+
 }
