@@ -29,12 +29,12 @@ public class Distance {
     }
 
     private void checkDistance(Distance otherDistance) {
-        if (isLessOrEqualDistance(otherDistance)) {
+        if (isLessOrEqualThan(otherDistance)) {
             throw new InvalidAddSectionException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수가 없습니다.");
         }
     }
 
-    private boolean isLessOrEqualDistance(Distance otherDistance) {
+    private boolean isLessOrEqualThan(Distance otherDistance) {
         return this.distance <= otherDistance.getDistance();
     }
 
