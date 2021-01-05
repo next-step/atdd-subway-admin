@@ -149,7 +149,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     void notIncludeException() {
+        // given
+        Long 강남Id = stationDataHelper.역추가("강남역");
+        Long 광교Id = stationDataHelper.역추가("광교역");
+        Long 오리Id = stationDataHelper.역추가("오리역");
+        Long 정자Id = stationDataHelper.역추가("정역");
+        Line savedLine = lineDataHelper.지하철_노선_추가(
+                new Line("신분당선", "red", new Sections(new Section(강남Id, 광교Id, 10)))
+        );
 
+        // when
+        Map<String, String> params = createParam(오리Id.toString(), 정자Id.toString(), "10");
+        ExtractableResponse<Response> response = callAddSectionApi(savedLine, params);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private Map<String, String> createParam(String upStationId, String downStationId, String distance) {
