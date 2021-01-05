@@ -24,32 +24,20 @@ public class Sections {
         this.sections = Arrays.asList(section);
     }
 
-    public static Sections of(List<Section> sections) {
-        return new Sections(sections);
-    }
-
     public List<Long> allDistinctStationIds() {
-        List<Long> results = new ArrayList<>();
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         Sections orderSections = orderedSections();
-        orderSections.sections.forEach(it -> addStationIds(results, it));
-        return results;
+        return orderSections.getStationIds();
     }
 
     public void addSection(Section newSection) {
         validate(newSection);
 
-        if(sections.isEmpty()) {
-            this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
-            return;
-        }
-
-        if (firstStationId().equals(newSection.getDownStationId())) {
-            this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
-            return;
-        }
-
-        if (lastStationId().equals(newSection.getUpStationId())) {
-            this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
+        if (sections.isEmpty() || isFirstOrLastSection(newSection)) {
+            this.sections.add(newSection);
             return;
         }
 
@@ -74,19 +62,32 @@ public class Sections {
                 });
     }
 
+    private boolean isFirstOrLastSection(Section newSection) {
+        return firstStationId().equals(newSection.getDownStationId())
+                || lastStationId().equals(newSection.getUpStationId());
+    }
+
     private void validate(Section newSection) {
         if (sections.isEmpty()) {
             return;
         }
+        if (newSection.getUpStationId() == null) {
+            throw new NoStationIdException("상행역을 입력해 주세요.");
+        }
+
+        if (newSection.getDownStationId() == null) {
+            throw new NoStationIdException("하행역을 입력해 주세요.");
+        }
+
         if (sections.contains(newSection)) {
             throw new AlreadyExistsException(newSection);
         }
-        if (noMatchAnyStationId(newSection)) {
+        if (noMatchExistsStation(newSection)) {
             throw new NoMatchStationException(newSection);
         }
     }
 
-    private boolean noMatchAnyStationId(Section newSection) {
+    private boolean noMatchExistsStation(Section newSection) {
         Set<Long> ids = allStationId();
         return !(ids.contains(newSection.getDownStationId())
                 || ids.contains(newSection.getUpStationId()));
@@ -122,7 +123,7 @@ public class Sections {
 
     private Section getFirstSection() {
         return sections.stream()
-                .filter(this::isFirst)
+                .filter(this::isFirstSection)
                 .findAny()
                 .get();
     }
@@ -133,21 +134,14 @@ public class Sections {
                 .findAny();
     }
 
-    private boolean isFirst(Section section) {
+    private boolean isFirstSection(Section section) {
         return sections.stream()
                 .noneMatch(it -> section.getUpStationId().equals(it.getDownStationId()));
     }
 
-    private boolean isLast(Section section) {
+    private boolean isLastSection(Section section) {
         return sections.stream()
                 .noneMatch(it -> section.getDownStationId().equals(it.getUpStationId()));
-    }
-
-    private List<Long> addStationIds(List<Long> results, Section it) {
-        for (Long stationId : it.allStationIds()) {
-            if (!results.contains(stationId)) results.add(stationId);
-        }
-        return results;
     }
 
     private Long firstStationId() {
@@ -156,9 +150,20 @@ public class Sections {
 
     private Long lastStationId() {
         Section section = sections.stream()
-                .filter(this::isLast)
+                .filter(this::isLastSection)
                 .findAny()
                 .get();
         return section.getDownStationId();
+    }
+
+    private List<Long> getStationIds() {
+        List<Long> stationIds = new ArrayList<>();
+
+        for (Section section : this.sections) {
+            stationIds.add(section.getUpStationId());
+        }
+        stationIds.add(lastStationId());
+
+        return stationIds;
     }
 }

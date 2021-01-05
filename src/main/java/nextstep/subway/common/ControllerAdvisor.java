@@ -4,6 +4,8 @@ import nextstep.subway.line.application.NoLineException;
 import nextstep.subway.section.application.AlreadyExistsException;
 import nextstep.subway.section.application.ExceedDistanceException;
 import nextstep.subway.section.application.NoMatchStationException;
+import nextstep.subway.section.domain.NoStationIdException;
+import nextstep.subway.station.application.NoSuchStationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -41,6 +43,18 @@ public class ControllerAdvisor {
     @ExceptionHandler(NoMatchStationException.class)
     public ResponseEntity handleNoMatchStationException(NoMatchStationException e) {
         logger.error("등록하려는 구간의 상행역과 하행역이 존재하지 않습니다. section: {}", e.getMessage());
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NoStationIdException.class)
+    public ResponseEntity handleNoMatchStationException(NoStationIdException e) {
+        logger.error(e.getMessage());
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NoSuchStationException.class)
+    public ResponseEntity handleNoSuchStationException(NoSuchStationException e) {
+        logger.error("아이디에 해당하는 역이 존재하지 않습니다. id: {}", e.getMessage());
         return ResponseEntity.badRequest().build();
     }
 }

@@ -6,8 +6,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 
-import java.util.Arrays;
-
 @Getter
 @NoArgsConstructor
 public class LineRequest {
@@ -18,6 +16,10 @@ public class LineRequest {
     private int distance;
 
     public Line toLine() {
+        if (upStationId == null || downStationId == null) {
+            return new Line(name, color);
+        }
+
         Section section = new Section(upStationId, downStationId, distance);
         return new Line(name, color, new Sections(section));
     }

@@ -1,8 +1,9 @@
 package nextstep.subway.section.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import nextstep.subway.section.domain.Section;
-import org.springframework.stereotype.Service;
 
 @Builder
 @Getter

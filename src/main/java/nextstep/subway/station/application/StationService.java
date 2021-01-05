@@ -25,6 +25,12 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
+    public Station findById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchStationException(id));
+    }
+
+    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
