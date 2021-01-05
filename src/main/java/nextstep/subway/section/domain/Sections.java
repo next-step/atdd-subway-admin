@@ -2,7 +2,6 @@ package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +20,7 @@ import nextstep.subway.station.domain.Station;
 public class Sections {
 
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL) //, orphanRemoval = true
-	private final List<Section> sections = new LinkedList<>();
+	private final List<Section> sections = new ArrayList<>();
 
 	public List<Station> getStations() {
 		Set<Station> result = new LinkedHashSet<>();
@@ -35,16 +34,30 @@ public class Sections {
 		this.sections.add(new Section(line, upStation, downStation, distance));
 	}
 
-	public void add(Section section) {
-		validateSection(section);
+	public void add(Section target) {
+		validateSection(target);
 
+		if (isContainStation(target.getUpStation())) {
+			this.sections.stream()
+				.filter(section -> section.getUpStation().equals(target.getUpStation()))
+				.findFirst()
+				.ifPresent(section -> section.updateUpStation(target));
+			this.sections.add(target);
+			return;
+		}
+
+		if (isContainStation(target.getDownStation())) {
+			this.sections.stream()
+				.filter(section -> section.getDownStation().equals(target.getDownStation()))
+				.findFirst()
+				.ifPresent(section -> section.updateDownStation(target));
+			this.sections.add(target);
+		}
 	}
 
 	private void validateSection(Section target) {
-		boolean upStationExist = this.sections.stream()
-			.anyMatch(section -> section.getStations().contains(target.getUpStation()));
-		boolean downStationExist = this.sections.stream()
-			.anyMatch(section -> section.getStations().contains(target.getDownStation()));
+		boolean upStationExist = isContainStation(target.getUpStation());
+		boolean downStationExist = isContainStation(target.getDownStation());
 
 		if (upStationExist && downStationExist) {
 			throw new ExistException("이미 존재하는 구간입니다.");
@@ -53,5 +66,10 @@ public class Sections {
 		if (!upStationExist && !downStationExist) {
 			throw new NothingException("등록할 수 없는 구간입니다.");
 		}
+	}
+
+	private boolean isContainStation(Station target) {
+		return this.sections.stream()
+			.anyMatch(station -> station.getStations().contains(target));
 	}
 }
