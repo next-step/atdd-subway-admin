@@ -1,5 +1,6 @@
 package nextstep.subway.section.ui;
 
+import lombok.extern.slf4j.Slf4j;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/lines")
+@Slf4j
 public class SectionController {
     private final SectionService sectionService;
     private final LineService lineService;
@@ -53,11 +55,13 @@ public class SectionController {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
+        log.info("log >>> " + e.getMessage());
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(NoResultException.class)
     public ResponseEntity<Void> handleNoResultException(NoResultException e) {
+        log.info("log >>> " + e.getMessage());
         return ResponseEntity.notFound().build();
     }
 }
