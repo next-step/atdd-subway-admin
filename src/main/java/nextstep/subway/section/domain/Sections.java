@@ -3,14 +3,12 @@ package nextstep.subway.section.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.val;
+import nextstep.subway.section.application.AlreadyExistsException;
 import nextstep.subway.section.application.ExceedDistanceException;
+import nextstep.subway.section.application.NoMatchStationException;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Getter
 @NoArgsConstructor
@@ -38,6 +36,13 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
+        validate(newSection);
+
+        if(sections.isEmpty()) {
+            this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
+            return;
+        }
+
         if (firstStationId().equals(newSection.getDownStationId())) {
             this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
             return;
@@ -69,9 +74,36 @@ public class Sections {
                 });
     }
 
+    private void validate(Section newSection) {
+        if (sections.isEmpty()) {
+            return;
+        }
+        if (sections.contains(newSection)) {
+            throw new AlreadyExistsException(newSection);
+        }
+        if (noMatchAnyStationId(newSection)) {
+            throw new NoMatchStationException(newSection);
+        }
+    }
+
+    private boolean noMatchAnyStationId(Section newSection) {
+        Set<Long> ids = allStationId();
+        return !(ids.contains(newSection.getDownStationId())
+                || ids.contains(newSection.getUpStationId()));
+    }
+
+    private Set<Long> allStationId() {
+        Set<Long> ids = new HashSet<>();
+        for (Section section : sections) {
+            ids.add(section.getUpStationId());
+            ids.add(section.getDownStationId());
+        }
+        return ids;
+    }
+
     private void validateDistance(Section orgSection, Section newSection) {
-        if(newSection.longer(orgSection)) {
-            throw new ExceedDistanceException();
+        if (newSection.longer(orgSection)) {
+            throw new ExceedDistanceException(orgSection.getDistance(), newSection.getDistance());
         }
     }
 

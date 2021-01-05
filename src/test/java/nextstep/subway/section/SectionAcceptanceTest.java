@@ -34,13 +34,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         Long 강남Id = stationDataHelper.역추가("강남역");
         Long 광교Id = stationDataHelper.역추가("광교역");
-        Section section = new Section(강남Id, 광교Id, 10);
         Line savedLine = lineDataHelper.지하철_노선_추가(
-                new Line("신분당선", "bg-red-600", new Sections(section))
+                new Line("신분당선", "bg-red-600")
         );
 
         // when
-        Map<String, String> params = createParam("12", "20", "10");
+        Map<String, String> params = createParam(강남Id.toString(), 광교Id.toString(), "10");
         ExtractableResponse<Response> response = callAddSectionApi(savedLine, params);
 
         // then
@@ -127,6 +126,30 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    void alreadyExistsException() {
+        // given
+        Long 강남Id = stationDataHelper.역추가("강남역");
+        Long 광교Id = stationDataHelper.역추가("광교역");
+        Line savedLine = lineDataHelper.지하철_노선_추가(
+                new Line("신분당선", "red", new Sections(new Section(강남Id, 광교Id, 10)))
+        );
+
+        // when
+        Map<String, String> params = createParam(강남Id.toString(), 광교Id.toString(), "10");
+        ExtractableResponse<Response> response = callAddSectionApi(savedLine, params);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    void notIncludeException() {
+
     }
 
     private Map<String, String> createParam(String upStationId, String downStationId, String distance) {

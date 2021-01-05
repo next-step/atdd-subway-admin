@@ -1,7 +1,9 @@
 package nextstep.subway.common;
 
 import nextstep.subway.line.application.NoLineException;
+import nextstep.subway.section.application.AlreadyExistsException;
 import nextstep.subway.section.application.ExceedDistanceException;
+import nextstep.subway.section.application.NoMatchStationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,7 +28,19 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(ExceedDistanceException.class)
     public ResponseEntity handleExceedDistanceException(ExceedDistanceException e) {
-        logger.error("구간의 길이가 기존 구간보다 깁니다");
+        logger.error("구간의 길이가 기존 구간보다 깁니다. {}", e.getMessage());
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity handleAlreadyExistsException(AlreadyExistsException e) {
+        logger.error("이미 동일한 구간이 존재합니다. section: {}", e.getMessage());
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NoMatchStationException.class)
+    public ResponseEntity handleNoMatchStationException(NoMatchStationException e) {
+        logger.error("등록하려는 구간의 상행역과 하행역이 존재하지 않습니다. section: {}", e.getMessage());
         return ResponseEntity.badRequest().build();
     }
 }
