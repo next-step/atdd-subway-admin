@@ -74,7 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
-		LineResponse line = 지하철_노선_생성_요청(createLine2Params()).as(LineResponse.class);
+		LineResponse line = 지하철_2호선_생성요청();
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(line.getId());
@@ -91,7 +91,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLineFailTest() {
 		// given
-		LineResponse line = 지하철_노선_생성_요청(createLine2Params()).as(LineResponse.class);
+		LineResponse line = 지하철_2호선_생성요청();
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(line.getId() + 1);
@@ -104,7 +104,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
-		LineResponse line = 지하철_노선_생성_요청(createLine2Params()).as(LineResponse.class);
+		LineResponse line = 지하철_2호선_생성요청();
 		Map<String, String> params = new HashMap<>();
 		params.put("name", "3호선");
 		params.put("color", "orange");
@@ -126,7 +126,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
-		LineResponse line = 지하철_노선_생성_요청(createLine2Params()).as(LineResponse.class);
+		LineResponse line = 지하철_2호선_생성요청();
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_삭제_요청(line.getId());
@@ -142,7 +142,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteFailLine() {
 		// given
-		LineResponse line = 지하철_노선_생성_요청(createLine2Params()).as(LineResponse.class);
+		LineResponse line = 지하철_2호선_생성요청();
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_삭제_요청(line.getId() + 1);
@@ -151,6 +151,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
 		);
+	}
+
+	@DisplayName("지하철 노선에 구간을 추가한다.")
+	@Test
+	void addSectionLineTest() {
+		// given
+		LineResponse line = 지하철_2호선_생성요청();
+		Map<String, String> params = createSectionParam("홍대역", "합정역", "10");
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_구간추가_요청(line.getId(), params);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+	}
+
+	private LineResponse 지하철_2호선_생성요청() {
+		return 지하철_노선_생성_요청(createLine2Params()).as(LineResponse.class);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
@@ -197,7 +215,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.extract();
 	}
 
-	public ExtractableResponse<Response> 지하철역_생성_요청(String station) {
+	private ExtractableResponse<Response> 지하철역_생성_요청(String station) {
 		// given
 		Map<String, String> params = new HashMap<>();
 		params.put("name", station);
@@ -212,12 +230,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.extract();
 	}
 
+	private ExtractableResponse<Response> 지하철_노선_구간추가_요청(long lineId, Map<String, String> params) {
+		return RestAssured
+			.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().post("/lines/" + lineId + "/sections")
+			.then().log().all().extract();
+	}
+
 	private Map<String, String> createLine1Params() {
 		return generateParam("1호선", "blue", "인천역", "소요산역", "350");
 	}
 
 	private Map<String, String> createLine2Params() {
-		return generateParam("2호선", "green", "강남역", "광교역", "100");
+		return generateParam("2호선", "green", "강남역", "서초역", "100");
 	}
 
 	private Map<String, String> generateParam(String name, String color, String upStationName, String downStationName,
@@ -229,6 +256,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		params.put("upStationId", createStationId(upStationName));
 		params.put("downStationId", createStationId(downStationName));
 		params.put("distance", distance);
+		return params;
+	}
+
+	private Map<String, String> createSectionParam(String upStationName, String downStationName, String distance) {
+		Map<String, String> params = new HashMap<>();
+		params.put("upStationId", createStationId(upStationName));
+		params.put("downStationId", createStationId(downStationName));
+		params.put("distance", distance);
+
 		return params;
 	}
 
