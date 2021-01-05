@@ -19,7 +19,6 @@ public class Line extends BaseEntity {
     private String color;
 
     @OneToMany(mappedBy = "line")
-    @OrderBy("sequence")
     private List<Section> sections;
 
     public Line() {

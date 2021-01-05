@@ -8,10 +8,10 @@ import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
-import nextstep.subway.section.dto.SectionCreateRequest;
+import nextstep.subway.line.dto.LineSectionCreateRequest;
+import nextstep.subway.section.dto.SectionAddRequest;
+import nextstep.subway.section.dto.SectionAddResponse;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,10 +34,11 @@ public class LineService {
     public LineResponse saveLine(LineCreateRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         sectionService.saveSection(
-                new SectionCreateRequest(persistLine,
+                new LineSectionCreateRequest(persistLine,
                         request.getUpStationId(),
                         request.getDownStationId(),
-                        request.getDistance()));
+                        request.getDistance(),
+                        true));
         return LineResponse.of(persistLine);
     }
 
@@ -50,8 +51,7 @@ public class LineService {
 
     public LineStationResponse getOne(Long id) {
         Line line = lineRepository.getWithStations(id);
-        List<Section> sections = line.getSections();
-        return LineStationResponse.of(lineRepository.getOne(id), sections);
+        return LineStationResponse.of(lineRepository.getOne(id), sectionService.getOrderedSections(line));
     }
 
 
@@ -65,6 +65,12 @@ public class LineService {
         Line deletingItem = lineRepository.getOne(id);
         sectionService.delete(deletingItem.getSections());
         lineRepository.delete(lineRepository.getOne(id));
+    }
+
+    public SectionAddResponse addSection(Long lineId, SectionAddRequest sectionAddRequest) {
+        Line addingLine = lineRepository.getOne(lineId);
+        SectionAddResponse response = sectionService.addSection(addingLine, sectionAddRequest);
+        return response;
     }
 
 }

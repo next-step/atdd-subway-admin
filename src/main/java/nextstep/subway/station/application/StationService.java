@@ -39,6 +39,6 @@ public class StationService {
 
     @Transactional(readOnly = true)
     public Station getOne(Long id) {
-        return stationRepository.getOne(id);
+        return stationRepository.findById(id).orElse(null);
     }
 }
