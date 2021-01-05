@@ -66,4 +66,10 @@ public class LineService {
         persistLine.addSection(sectionService.createSection(persistLine, request.getUpStationId(), request.getDownStationId(), request.getDistance()));
         return LineResponse.of(persistLine);
     }
+
+    public LineResponse removeSectionByStationId(Long id, Long stationId) {
+        Line persistLine = findById(id);
+        persistLine.removeSection(stationId);
+        return LineResponse.of(persistLine);
+    }
 }
