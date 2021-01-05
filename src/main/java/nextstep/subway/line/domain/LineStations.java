@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
@@ -28,20 +29,17 @@ public class LineStations {
     private List<LineStation> lineStations = new ArrayList<>();
 
     public List<LineStation> getLineStations() {
-        Optional<LineStation> preLineStation = lineStations.stream()
-                .filter(it -> it.getPreStation() == null)
-                .findFirst();
+        Optional<LineStation> preLineStation = findFirstByPredicate(it -> it.getPreStation() == null);
 
         List<LineStation> result = new LinkedList<>();
         while (preLineStation.isPresent()) {
             LineStation preStation = preLineStation.get();
             result.add(preStation);
-            preLineStation = this.lineStations.stream()
-                    .filter(it -> it.getPreStation() == preStation.getStation())
-                    .findFirst();
+            preLineStation = findFirstByPredicate(it -> it.getPreStation() == preStation.getStation());
         }
         return result;
     }
+
 
     public void add(LineStation lineStation) {
 
@@ -53,19 +51,15 @@ public class LineStations {
         addSectionValidate(lineStation);
 
         if (contains(lineStation.getPreStation())) {
-            this.lineStations.stream()
-                    .filter(it -> it.getPreStation() == lineStation.getPreStation())
-                    .findFirst()
-                    .ifPresent(it -> it.updatePreStation(lineStation.getStation(), lineStation.getDistance()));
+            findFirstByPredicate(it -> it.getPreStation() == lineStation.getPreStation())
+                 .ifPresent(it -> it.updatePreStation(lineStation.getStation(), lineStation.getDistance()));
             this.lineStations.add(lineStation);
             return;
         }
 
         if (contains(lineStation.getStation())) {
-            this.lineStations.stream()
-                    .filter(it -> it.getStation() == lineStation.getStation())
-                    .findFirst()
-                    .ifPresent(it -> it.updateStation(lineStation.getPreStation(), lineStation.getDistance()));
+            findFirstByPredicate(it -> it.getStation() == lineStation.getStation())
+                .ifPresent(it -> it.updateStation(lineStation.getPreStation(), lineStation.getDistance()));
             this.lineStations.add(lineStation);
         }
     }
@@ -74,13 +68,8 @@ public class LineStations {
 
         removeSectionValidate();
 
-        Optional<LineStation> lineStation = this.lineStations.stream()
-                .filter(it -> station.equals(it.getPreStation()))
-                .findFirst();
-
-        Optional<LineStation> preLineStation = this.lineStations.stream()
-                .filter(it -> station.equals(it.getStation()))
-                .findFirst();
+        Optional<LineStation> lineStation = findFirstByPredicate(it -> station.equals(it.getPreStation()));
+        Optional<LineStation> preLineStation = findFirstByPredicate(it -> station.equals(it.getStation()));
 
         if (preLineStation.isPresent() && lineStation.isPresent()) {
             LineStation mergedLineStation = mergeLineStation(preLineStation.get(), lineStation.get());
@@ -101,7 +90,6 @@ public class LineStations {
         );
 
     }
-
 
     private boolean contains(Station station) {
         return this.lineStations.stream()
@@ -127,4 +115,9 @@ public class LineStations {
         }
     }
 
+    private Optional<LineStation> findFirstByPredicate(Predicate<LineStation> predicate) {
+        return this.lineStations.stream()
+                .filter(predicate)
+                .findFirst();
+    }
 }
