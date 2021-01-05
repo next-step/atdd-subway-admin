@@ -23,4 +23,10 @@ public class Advice {
 		log.error("RuntimeException: " + e.getMessage());
 		return ResponseEntity.badRequest().build();
 	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<?> handleIllegalArgumentExceptionException(IllegalArgumentException e) {
+		log.error("IllegalArgumentException: " + e.getMessage());
+		return ResponseEntity.badRequest().build();
+	}
 }
