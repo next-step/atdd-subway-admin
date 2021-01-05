@@ -51,6 +51,74 @@ public class Sections {
 		}
 	}
 
+	public void deleteSection(Long stationId) {
+		validateDeleteSection();
+		List<Section> relatedSections = findDeleteTargetSections(stationId);
+
+		if (relatedSections.size() == 1) {
+			this.sections.removeAll(relatedSections);
+			return;
+		}
+
+		if (relatedSections.size() == 2) {
+			deleteStationInMiddleOfSections(relatedSections, stationId);
+		}
+	}
+
+	private void deleteStationInMiddleOfSections(List<Section> relatedSections, Long stationId) {
+		Section section1 = relatedSections.get(0);
+		Section section2 = relatedSections.get(1);
+
+		if (section1.isUpStationEquals(stationId)) {
+			changeStation(section2, section1);
+			return;
+		}
+
+		changeStation(section1, section2);
+	}
+
+	private void changeStation(Section changeSection, Section deleteSection) {
+		int newDistance = changeSection.addDistance(deleteSection);
+		changeSection.changeDownStation(deleteSection.getDownStation(), newDistance);
+		this.sections.remove(deleteSection);
+	}
+
+	private List<Section> findDeleteTargetSections(Long stationId) {
+		List<Section> targetSections = this.sections.stream()
+			  .filter(section -> section.containStation(stationId))
+			  .collect(Collectors.toList());
+
+		if (targetSections.isEmpty()) {
+			throw new NoSuchElementException("해당구간에 존재하지 않는 역입니다.");
+		}
+
+		return targetSections;
+	}
+
+	private void validateDeleteSection() {
+		if (this.sections.isEmpty() || this.sections.size() == 1) {
+			throw new IllegalArgumentException("등록된 구간이 최소 2개 이상일때 삭제할 수 있습니다.");
+		}
+	}
+
+	public List<Station> stationsInOrder() {
+		Section firstUpSection = findFirstUpSection();
+		Map<Station, Section> stationMap = this.sections.stream()
+			  .collect(Collectors.toMap(Section::getUpStation, Function.identity()));
+
+		List<Station> stations = new ArrayList<>();
+		stations.add(firstUpSection.getUpStation());
+		stations.add(firstUpSection.getDownStation());
+
+		Section currentSection = firstUpSection;
+		while (stations.size() < this.sections.size() + 1) {
+			currentSection = stationMap.get(currentSection.getDownStation());
+			stations.add(currentSection.getDownStation());
+		}
+
+		return stations;
+	}
+
 	private void validateNewSection(Section newSection, Set<Station> upStations,
 		  Set<Station> downStations) {
 		if (!isContainedAnyStationInSections(newSection, upStations, downStations)) {
@@ -94,24 +162,6 @@ public class Sections {
 	private boolean isMiddleSection(Section newSection, Set<Station> upStations,
 		  Set<Station> downStations) {
 		return newSection.isMiddleOfSection(upStations, downStations);
-	}
-
-	public List<Station> stationsInOrder() {
-		Section firstUpSection = findFirstUpSection();
-		Map<Station, Section> stationMap = this.sections.stream()
-			  .collect(Collectors.toMap(Section::getUpStation, Function.identity()));
-
-		List<Station> stations = new ArrayList<>();
-		stations.add(firstUpSection.getUpStation());
-		stations.add(firstUpSection.getDownStation());
-
-		Section currentSection = firstUpSection;
-		while (stations.size() < this.sections.size() + 1) {
-			currentSection = stationMap.get(currentSection.getDownStation());
-			stations.add(currentSection.getDownStation());
-		}
-
-		return stations;
 	}
 
 	private Section findFirstUpSection() {

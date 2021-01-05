@@ -5,7 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineTestApi;
 import nextstep.subway.line.dto.LineResponse;
@@ -27,30 +32,19 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
 	void addSection() {
 		//givne
 		//지하철_역이_등록되어_있음
-		ExtractableResponse<Response> createdStation1 = StationTestApi.지하철_역_등록_요청("강남역");
-		ExtractableResponse<Response> createdStation2 = StationTestApi.지하철_역_등록_요청("역삼역");
-		ExtractableResponse<Response> createdStation3 = StationTestApi.지하철_역_등록_요청("선릉역");
-		//지하철_노선과_구간정보가_등록되어_있음
-		StationResponse station1 = createdStation1.body().as(StationResponse.class);
-		StationResponse station2 = createdStation2.body().as(StationResponse.class);
-		StationResponse station3 = createdStation3.body().as(StationResponse.class);
+		Map<String, StationResponse> station = 지하철_역이_등록되어_있음("강남역", "역삼역", "선릉역");
 
 		ExtractableResponse<Response> createdLine = LineTestApi
 			  .지하철_노선과_구간정보가_등록되어_있음("2호선", "green",
-					station1,
-					station2, 10);
+					station.get("강남역"),
+					station.get("역삼역"), 10);
 		LineResponse lineResponse = createdLine.body().as(LineResponse.class);
 		SectionRequest request = new SectionRequest(
-			  station2.getId(),
-			  station3.getId(), 10);
+			  station.get("역삼역").getId(),
+			  station.get("선릉역").getId(), 10);
 
 		//when
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
-			  .contentType(MediaType.APPLICATION_JSON_VALUE)
-			  .body(request)
-			  .when().post("/lines/" + lineResponse.getId() + "/sections")
-			  .then().log().all()
-			  .extract();
+		ExtractableResponse<Response> response = 지하철_구간_정보를_등록한다(lineResponse.getId(), request);
 
 		//then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -59,7 +53,8 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
 		List<StationResponse> stations = response.jsonPath()
 			  .getList("stations", StationResponse.class);
 		assertThat(stations).hasSize(3);
-		assertThat(stations).containsExactly(station1, station2, station3);
+		assertThat(stations)
+			  .containsExactly(station.get("강남역"), station.get("역삼역"), station.get("선릉역"));
 	}
 
 	@DisplayName("연결되지 않는 지하철 구간 정보를 추가한다.")
@@ -67,29 +62,102 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
 	void addSectionWitUnlinkedSection() {
 		//givne
 		//지하철_역이_등록되어_있음
-		ExtractableResponse<Response> createdStation1 = StationTestApi.지하철_역_등록_요청("강남역");
-		ExtractableResponse<Response> createdStation2 = StationTestApi.지하철_역_등록_요청("역삼역");
-		ExtractableResponse<Response> createdStation3 = StationTestApi.지하철_역_등록_요청("선릉역");
-		ExtractableResponse<Response> createdStation4 = StationTestApi.지하철_역_등록_요청("삼성역");
+		Map<String, StationResponse> station = 지하철_역이_등록되어_있음("강남역", "역삼역", "선릉역", "삼성역");
 		//지하철_노선과_구간정보가_등록되어_있음
 		ExtractableResponse<Response> createdLine = LineTestApi
 			  .지하철_노선과_구간정보가_등록되어_있음("2호선", "green",
-					createdStation1.body().as(StationResponse.class),
-					createdStation2.body().as(StationResponse.class), 10);
+					station.get("강남역"),
+					station.get("역삼역"), 10);
 		LineResponse lineResponse = createdLine.body().as(LineResponse.class);
 		SectionRequest request = new SectionRequest(
-			  createdStation3.body().as(StationResponse.class).getId(),
-			  createdStation4.body().as(StationResponse.class).getId(), 10);
+			  station.get("선릉역").getId(),
+			  station.get("삼성역").getId(), 10);
+
+		//when
+		ExtractableResponse<Response> response = 지하철_구간_정보를_등록한다(lineResponse.getId(), request);
+
+		//then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@DisplayName("구간정보를 삭제한다")
+	@Test
+	void delete() {
+		//givne
+		//지하철_역이_등록되어_있음
+		Map<String, StationResponse> station = 지하철_역이_등록되어_있음("강남역", "역삼역", "선릉역");
+		ExtractableResponse<Response> createdLine = LineTestApi
+			  .지하철_노선과_구간정보가_등록되어_있음("2호선", "green",
+					station.get("강남역"),
+					station.get("역삼역"), 10);
+		LineResponse lineResponse = createdLine.body().as(LineResponse.class);
+		SectionRequest request = new SectionRequest(
+			  station.get("역삼역").getId(),
+			  station.get("선릉역").getId(), 10);
+		지하철_구간_정보를_등록한다(lineResponse.getId(), request);
+
+		Map<String, Long> params = new HashMap<>();
+		params.put("stationId", station.get("역삼역").getId());
 
 		//when
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			  .contentType(MediaType.APPLICATION_JSON_VALUE)
-			  .body(request)
-			  .when().post("/lines/" + lineResponse.getId() + "/sections")
+			  .params(params)
+			  .when().delete("/lines/" + lineResponse.getId() + "/sections")
+			  .then().log().all()
+			  .extract();
+
+		//then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
+	@DisplayName("구간정보에서 등록되지 않은 역을 삭제한다.")
+	@Test
+	void delete2() {
+		//givne
+		//지하철_역이_등록되어_있음
+		Map<String, StationResponse> station = 지하철_역이_등록되어_있음("강남역", "역삼역", "선릉역", "강변역");
+		ExtractableResponse<Response> createdLine = LineTestApi
+			  .지하철_노선과_구간정보가_등록되어_있음("2호선", "green",
+					station.get("강남역"),
+					station.get("역삼역"), 10);
+		LineResponse lineResponse = createdLine.body().as(LineResponse.class);
+		SectionRequest request = new SectionRequest(
+			  station.get("역삼역").getId(),
+			  station.get("선릉역").getId(), 10);
+		지하철_구간_정보를_등록한다(lineResponse.getId(), request);
+
+		Map<String, Long> params = new HashMap<>();
+		params.put("stationId", station.get("강변역").getId());
+
+		//when
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			  .contentType(MediaType.APPLICATION_JSON_VALUE)
+			  .params(params)
+			  .when().delete("/lines/" + lineResponse.getId() + "/sections")
 			  .then().log().all()
 			  .extract();
 
 		//then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	private ExtractableResponse<Response> 지하철_구간_정보를_등록한다(long lineId,
+		  SectionRequest request) {
+		return RestAssured.given().log().all()
+			  .contentType(MediaType.APPLICATION_JSON_VALUE)
+			  .body(request)
+			  .when().post("/lines/" + lineId + "/sections")
+			  .then().log().all()
+			  .extract();
+	}
+
+	private Map<String, StationResponse> 지하철_역이_등록되어_있음(String... stationNames) {
+		return Arrays.stream(stationNames)
+			  .map(stationName -> {
+				  ExtractableResponse<Response> stationResponse = StationTestApi
+						.지하철_역_등록_요청(stationName);
+				  return stationResponse.body().as(StationResponse.class);
+			  }).collect(Collectors.toMap(StationResponse::getName, Function.identity()));
 	}
 }

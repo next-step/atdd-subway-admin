@@ -2,12 +2,14 @@ package nextstep.subway.section.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,6 +50,10 @@ class SectionsTest {
 		Section upSection = new Section(교대역, 강남역, 2);
 		Section downSection = new Section(역삼역, 선릉역, 2);
 		Section unLinkedSection = new Section(잠실역, 강변역, 2);
+		ReflectionTestUtils.setField(section, "id", 1L);
+		ReflectionTestUtils.setField(upSection, "id", 2L);
+		ReflectionTestUtils.setField(downSection, "id", 3L);
+		ReflectionTestUtils.setField(unLinkedSection, "id", 4L);
 
 		sectionMap.put("section", section);
 		sectionMap.put("upSection", upSection);
@@ -209,5 +215,66 @@ class SectionsTest {
 		assertThatIllegalArgumentException()
 			  .isThrownBy(() -> sections.add(wrongSection))
 			  .withMessage("이미 등록된 구간과 중복되거나, 추가할 수 없는 비정상적인 구간입니다.");
+	}
+
+	@DisplayName("상행 종점 또는 하행종점역을 삭제한다.")
+	@Test
+	void deleteStationEndOfSection() {
+		//given
+		Section upSection = sectionMap.get("upSection");
+		Section downSection = sectionMap.get("downSection");
+		sections.add(upSection);
+		sections.add(downSection);
+
+		//when
+		sections.deleteSection(upSection.getUpStation().getId());
+		sections.deleteSection(downSection.getDownStation().getId());
+
+		//then
+		assertThat(sections.getSections()).containsExactly(sectionMap.get("section"));
+	}
+
+	@DisplayName("구간 중간에 있는 역 삭제하기")
+	@Test
+	void deleteStationInMiddleOfSection() {
+		//given
+		Section upSection = sectionMap.get("upSection");
+		Section section = sectionMap.get("section");
+		Section expected = new Section(upSection.getUpStation(), section.getDownStation(),
+			  upSection.getDistance() + section.getDistance());
+		sections.add(upSection);
+
+		//when
+		sections.deleteSection(upSection.getDownStation().getId());
+
+		//then
+		List<Section> actual = this.sections.getSections();
+		assertThat(actual).hasSize(1);
+		assertThat(actual.get(0).getUpStation()).isEqualTo(expected.getUpStation());
+		assertThat(actual.get(0).getDownStation()).isEqualTo(expected.getDownStation());
+		assertThat(actual.get(0).getDistance()).isEqualTo(expected.getDistance());
+	}
+
+	@DisplayName("구간에 등록되지 않은 역은 삭제할 수 없다.")
+	@Test
+	void deleteSectionWitWrongStation() {
+		//given
+		sections.add(sectionMap.get("downSection"));
+		Station station = stationMap.get("강변역");
+
+		//when
+		assertThatThrownBy(() -> sections.deleteSection(station.getId()))
+			  .isInstanceOf(NoSuchElementException.class)
+			  .hasMessage("해당구간에 존재하지 않는 역입니다.");
+	}
+
+	@DisplayName("구간이 하나밖에 없는 경우 삭제할 수 없다.")
+	@Test
+	void deleteSectionWhenSize1() {
+		//when
+		Station station = stationMap.get("강남역");
+		assertThatThrownBy(() -> sections.deleteSection(station.getId()))
+			  .isInstanceOf(IllegalArgumentException.class)
+			  .hasMessage("등록된 구간이 최소 2개 이상일때 삭제할 수 있습니다.");
 	}
 }
