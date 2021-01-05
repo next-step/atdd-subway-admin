@@ -32,14 +32,14 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public void updateUpStation(Station upStation, Distance distance) {
-        this.upStation = upStation;
-        this.distance = distance;
+    public void updateUpStation(Section newSection) {
+        this.upStation = newSection.getDownStation();
+        this.distance = this.distance.minus(newSection.getDistance());
     }
 
-    public void updateDownStation(Station downStation, Distance distance) {
-        this.downStation = downStation;
-        this.distance = distance;
+    public void updateDownStation(Section newSection) {
+        this.downStation = newSection.getUpStation();
+        this.distance = this.distance.minus(newSection.getDistance());
     }
 
     public boolean equalUpUpStation(Section otherSection) {
@@ -56,19 +56,5 @@ public class Section extends BaseEntity {
 
     public boolean equalDownStation(Station station) {
         return downStation.equals(station);
-    }
-
-    public boolean isEqualOrMoreDistance(Section otherSection) {
-        return distance.isEqualOrMore(otherSection.getDistance());
-    }
-
-    public Distance addDistance(Section otherSection) {
-        distance.add(otherSection.getDistance());
-        return distance;
-    }
-
-    public Distance minusDistance(Section otherSection) {
-        distance.minus(otherSection.getDistance());
-        return distance;
     }
 }

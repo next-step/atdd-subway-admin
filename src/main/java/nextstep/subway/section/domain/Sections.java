@@ -84,18 +84,12 @@ public class Sections {
 
     private void addSectionUpToUp(Section newSection) {
         Optional<Section> oldSection = findSection(section -> section.equalUpUpStation(newSection));
-        oldSection.ifPresent(section -> {
-            checkDistance(section, newSection);
-            section.updateUpStation(newSection.getDownStation(), section.minusDistance(newSection));
-        });
+        oldSection.ifPresent(section -> section.updateUpStation(newSection));
     }
 
     private void addSectionDownToDown(Section newSection) {
         Optional<Section> oldSection = findSection(section -> section.equalDownDownStation(newSection));
-        oldSection.ifPresent(section -> {
-            checkDistance(section, newSection);
-            section.updateDownStation(newSection.getUpStation(), section.minusDistance(newSection));
-        });
+        oldSection.ifPresent(section -> section.updateDownStation(newSection));
     }
 
     private Optional<Section> findSection(Predicate<Section> predicate) {
@@ -104,29 +98,17 @@ public class Sections {
                 .findFirst();
     }
 
-    private void checkDistance(Section oldSection, Section newSection) {
-        if (newSection.isEqualOrMoreDistance(oldSection)) {
-            throw new InvalidAddSectionException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수가 없습니다.");
-        }
-    }
-
     private void deleteSectionInMatch(Station station) {
         Section preSection = findSection(section -> section.equalDownStation(station)).orElse(null);
         Section nextSection = findSection(section -> section.equalUpStation(station)).orElse(null);
 
         if (isNotNull(preSection)&& isNotNull(nextSection)) {
-            modifySection(preSection, nextSection);
+            sections.add(Section.builder()
+                    .upStation(preSection.getUpStation())
+                    .downStation(nextSection.getDownStation())
+                    .distance(preSection.getDistance().add(nextSection.getDistance()))
+                    .build());
         }
-        sections.remove(preSection);
-        sections.remove(nextSection);
-    }
-
-    private void modifySection(Section preSection, Section nextSection) {
-        sections.add(Section.builder()
-                .upStation(preSection.getUpStation())
-                .downStation(nextSection.getDownStation())
-                .distance(preSection.addDistance(nextSection))
-                .build());
         sections.remove(preSection);
         sections.remove(nextSection);
     }
