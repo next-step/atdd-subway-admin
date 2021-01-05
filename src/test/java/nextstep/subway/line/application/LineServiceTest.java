@@ -72,8 +72,24 @@ class LineServiceTest {
     @DisplayName("노선이 없는 경우 조회하면 예외 발생")
     @Test
     void findByIdThrow() {
-        assertThatThrownBy(()->{
+        assertThatThrownBy(() -> {
             lineService.findById(1L);
+        }).isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @DisplayName("노선이 없는 경우 수정하면 예외 발생")
+    @Test
+    void updateThrow() {
+        assertThatThrownBy(() -> {
+            lineService.update(1L, new LineRequest("2호선", "black"));
+        }).isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @DisplayName("노선이 없는 경우 삭하면 예외 발생")
+    @Test
+    void deleteThrow() {
+        assertThatThrownBy(() -> {
+            lineService.delete(1L);
         }).isInstanceOf(EntityNotFoundException.class);
     }
 }

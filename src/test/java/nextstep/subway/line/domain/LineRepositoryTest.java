@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -61,6 +62,30 @@ class LineRepositoryTest {
         // then
         assertThat(actual).isNotNull();
         assertThat(actual == expected).isTrue();
+    }
+
+    @Test
+    void update() {
+        // given
+        Line line = lineRepository.save(new Line("5호선", "purple"));
+
+        // when
+        line.update(new Line("2호선", "green"));
+        lineRepository.flush();
+
+        assertThat(lineRepository.findById(line.getId()).get() == line).isTrue();
+    }
+
+    @Test
+    void delete() {
+        // given
+        Line line = lineRepository.save(new Line("5호선", "purple"));
+
+        // when
+        lineRepository.delete(line);
+        lineRepository.flush();
+
+        assertThat(lineRepository.findById(line.getId())).isEqualTo(Optional.empty());
     }
 
 }

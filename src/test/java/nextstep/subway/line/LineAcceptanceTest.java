@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -24,7 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철노선_생성_요청(request);
 
         // then
-        지하철노선_생성됨(response, HttpStatus.CREATED);
+        지하철노선_응답됨(response, HttpStatus.CREATED);
     }
 
     private void 지하철노선_생성됨(ExtractableResponse<Response> response, HttpStatus created) {
@@ -52,10 +53,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철노선_생성_요청(request);
 
         // then
-        지하철노선_생성_실패됨(response, HttpStatus.BAD_REQUEST);
+        지하철노선_응답됨(response, HttpStatus.BAD_REQUEST);
     }
 
-    private void 지하철노선_생성_실패됨(ExtractableResponse<Response> response, HttpStatus badRequest) {
+    private void 지하철노선_응답됨(ExtractableResponse<Response> response, HttpStatus badRequest) {
         Assertions.assertThat(response.statusCode()).isEqualTo(badRequest.value());
     }
 
@@ -70,7 +71,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철노선_목록_조회_요청();
 
         // then
-        지하철노선_정상_응답됨(response);
+        지하철노선_응답됨(response, HttpStatus.OK);
     }
 
     private ExtractableResponse<Response> 지하철노선_목록_조회_요청() {
@@ -79,10 +80,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .when().get("/lines")
                 .then().log().all().extract();
         return response;
-    }
-
-    private void 지하철노선_정상_응답됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -97,7 +94,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> getResponse = 지하철노선_조회_요청(url);
 
         // then
-        지하철노선_정상_응답됨(getResponse);
+        지하철노선_응답됨(getResponse, HttpStatus.OK);
         LineResponse lineResponse = getResponse.body().as(LineResponse.class);
         assertThat(lineResponse.getName()).isEqualTo(request.getName());
     }
@@ -113,25 +110,64 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineRequest request = new LineRequest("2호선", "green");
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청(request);
+        String url = createResponse.header("Location");
 
         // when
-        // 지하철_노선_수정_요청
+        LineRequest updateRequest = new LineRequest("3호선", "black");
+        ExtractableResponse<Response> response = 지하철노선_수정_요청(url, updateRequest);
 
         // then
-        // 지하철_노선_수정됨
+        지하철노선_응답됨(response, HttpStatus.OK);
+        지하철노선_수정_검증됨(url, updateRequest);
+    }
+
+    private ExtractableResponse<Response> 지하철노선_수정_요청(String url, LineRequest updateRequest) {
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(updateRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(url)
+                .then().log().all().extract();
+        return response;
+    }
+
+    private void 지하철노선_수정_검증됨(String url, LineRequest updateRequest) {
+        ExtractableResponse<Response> response = 지하철노선_조회_요청(url);
+        LineResponse lineResponse = response.body().as(LineResponse.class);
+        assertAll(
+                () -> assertThat(lineResponse.getName()).isEqualTo(updateRequest.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(updateRequest.getColor())
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineRequest request = new LineRequest("2호선", "green");
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청(request);
+        String url = createResponse.header("Location");
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철노선_제거_요청(url);
 
         // then
-        // 지하철_노선_삭제됨
+        지하철노선_응답됨(response, HttpStatus.NO_CONTENT);
+        지하철노선_삭제_검증됨(url);
+    }
+
+    private ExtractableResponse<Response> 지하철노선_제거_요청(String url) {
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().delete(url)
+                .then().log().all().extract();
+        return response;
+    }
+
+    private void 지하철노선_삭제_검증됨(String url) {
+        ExtractableResponse<Response> response = 지하철노선_조회_요청(url);
+        지하철노선_응답됨(response, HttpStatus.BAD_REQUEST);
     }
 }

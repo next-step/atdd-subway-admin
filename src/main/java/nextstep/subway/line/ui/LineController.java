@@ -7,7 +7,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
@@ -25,22 +27,34 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity showLines() {
+    public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity showLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findById(id));
     }
 
-    @PutMapping
-    public ResponseEntity updateLine(@RequestBody LineRequest lineRequest) {
+    @PutMapping("/{id}")
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.update(id, lineRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity handleEntityNotFoundException(EntityNotFoundException e) {
         return ResponseEntity.badRequest().build();
     }
 }
