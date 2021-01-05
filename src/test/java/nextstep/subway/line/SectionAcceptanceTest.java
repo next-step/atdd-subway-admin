@@ -20,14 +20,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
     private LineResponse 신분당선;
+    private StationResponse 강남역;
+    private StationResponse 광교역;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
 
         // given
-        StationResponse 강남역 = StationAcceptanceTest.지하철_생성_요청("강남역").as(StationResponse.class);
-        StationResponse 광교역 = StationAcceptanceTest.지하철_생성_요청("광교역").as(StationResponse.class);
+        강남역 = StationAcceptanceTest.지하철_생성_요청("강남역").as(StationResponse.class);
+        광교역 = StationAcceptanceTest.지하철_생성_요청("광교역").as(StationResponse.class);
 
         Map<String, String> createParams = new HashMap<>();
         createParams.put("name", "신분당선");
@@ -56,6 +58,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).startsWith("/lines/" + 신분당선Id + "/sections/");
     }
 
+    @Test
+    void removeLineStation() {
+        //given
+        Long 신분당선Id = 신분당선.getId();
+        StationResponse 역삼역 = StationAcceptanceTest.지하철_생성_요청("역삼역").as(StationResponse.class);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", 광교역.getId());
+        params.put("downStationId", 역삼역.getId());
+        params.put("distance", 4);
+        지하철_구간_등록_요청(신분당선Id, params);
+
+        // when
+        Map<String, String> 삭제Params = new HashMap<>();
+        삭제Params.put("stationId", String.valueOf(광교역.getId()));
+        ExtractableResponse<Response> 삭제Response = 지하철_구간_삭제_요청(신분당선Id, 삭제Params);
+
+        // then
+        assertThat(삭제Response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        //then
+    }
+
     static ExtractableResponse<Response> 지하철_구간_등록_요청(Long lineId, Map<String, Object> params) {
         return RestAssured
                 .given().log().all()
@@ -63,5 +87,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/" + lineId + "/sections")
                 .then().log().all().extract();
+    }
+
+    static ExtractableResponse<Response> 지하철_구간_삭제_요청(Long lineId, Map<String, String> params) {
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .params(params)
+                .when().delete("/lines/" + lineId + "/sections")
+                .then().log().all().extract();
+        return response;
     }
 }

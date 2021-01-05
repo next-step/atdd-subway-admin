@@ -58,6 +58,51 @@ public class LineStations {
         lineStations.add(new LineStation(downStationId, upStationId, distance));
     }
 
+    public void removeLineStation(Long stationId) {
+        verifyRemoveLineStation();
+
+        LineStation removeLineStation = getRemoveLineStation(stationId);
+
+        List<LineStation> lineStationsInOrder = getLineStationsInOrder();
+        int index = lineStationsInOrder.indexOf(removeLineStation);
+
+        updateNewTopLineStation(lineStationsInOrder, index);
+        updateNewMidLineStation(lineStationsInOrder, index, removeLineStation);
+        lineStations.remove(removeLineStation);
+    }
+
+    private LineStation getRemoveLineStation(Long stationId) {
+        return lineStations.stream()
+                .filter(lineStation -> lineStation.getStationId().equals(stationId))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private void verifyRemoveLineStation() {
+        if (lineStations.size() <= 2)
+            throw new RuntimeException();
+    }
+
+    private void updateNewMidLineStation(List<LineStation> lineStationsInOrder, int index, LineStation removeLineStation) {
+        if (index < 1 || index >= lineStations.size() - 1)
+            return;
+
+        LineStation preLineStation = lineStationsInOrder.get(index - 1);
+        LineStation postLineStation = lineStationsInOrder.get(index + 1);
+
+        postLineStation.updatePreStationTo(preLineStation.getStationId());
+        postLineStation.updateDistance(removeLineStation.getDistance() + postLineStation.getDistance());
+    }
+
+    private void updateNewTopLineStation(List<LineStation> lineStationsInOrder, int index) {
+        if(index != 0)
+            return;
+
+        LineStation postLineStation = lineStationsInOrder.get(index + 1);
+        postLineStation.updatePreStationTo(null);
+        postLineStation.updateDistance(0);
+    }
+
     private void addNewTopLineStation(Long upStationId, Long downStationId) {
         getFilteredLineStationStream(downStationId, true)
                 .findFirst()

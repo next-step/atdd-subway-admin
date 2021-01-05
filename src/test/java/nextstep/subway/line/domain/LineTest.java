@@ -25,7 +25,6 @@ class LineTest {
         잠실역 = new Station(3L, "잠실역");
 
         신분당선 = new Line(1L, "신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
-//        신분당선.addLineStation(강남역.getId(), 역삼역.getId(), 10);
     }
     @DisplayName("최초 구간 등록을 하는 경우")
     @Test
@@ -124,6 +123,64 @@ class LineTest {
         Station 교대역 = new Station(4L, "교대역");
         assertThatThrownBy(() -> {
             신분당선.addLineStation(잠실역.getId(), 교대역.getId(), 3);
+        }).isInstanceOf(RuntimeException.class);
+    }
+
+    @DisplayName("노선의 구간을 제거하는 기능 - 중간역이 제거될 경우")
+    @Test
+    void removeLineStation1() {
+        //given: 강남 <- 6 -> 잠실 <- 4 -> 역삼
+        신분당선.addLineStation(강남역.getId(), 잠실역.getId(), 6);
+
+        //when
+        신분당선.removeLineStation(잠실역.getId());
+
+        //then: 강남 <- 10 -> 역삼
+        List<LineStation> lineStations = 신분당선.getLineStations().getLineStationsInOrder();
+        assertThat(lineStations.size()).isEqualTo(2);
+        구간_검증(lineStations.get(0), null, 강남역.getId(), 0);
+        구간_검증(lineStations.get(1), 강남역.getId(), 역삼역.getId(), 10);
+    }
+
+
+    @DisplayName("노선의 구간을 제거하는 기능 - Top 종점이 제거될 경우")
+    @Test
+    void removeLineStation2() {
+        //given: 강남 <- 6 -> 잠실 <- 4 -> 역삼
+        신분당선.addLineStation(강남역.getId(), 잠실역.getId(), 6);
+
+        //when
+        신분당선.removeLineStation(강남역.getId());
+
+        //then: 잠실 <- 4 -> 역삼
+        List<LineStation> lineStations = 신분당선.getLineStations().getLineStationsInOrder();
+        assertThat(lineStations.size()).isEqualTo(2);
+        구간_검증(lineStations.get(0), null, 잠실역.getId(), 0);
+        구간_검증(lineStations.get(1), 잠실역.getId(), 역삼역.getId(), 4);
+    }
+
+    @DisplayName("노선의 구간을 제거하는 기능 - Tail 종점이 제거될 경우")
+    @Test
+    void removeLineStation3() {
+        //given: 강남 <- 6 -> 잠실 <- 4 -> 역삼
+        신분당선.addLineStation(강남역.getId(), 잠실역.getId(), 6);
+
+        //when
+        신분당선.removeLineStation(역삼역.getId());
+
+        //then: 강남 <- 6 -> 잠실
+        List<LineStation> lineStations = 신분당선.getLineStations().getLineStationsInOrder();
+        assertThat(lineStations.size()).isEqualTo(2);
+        구간_검증(lineStations.get(0), null, 강남역.getId(), 0);
+        구간_검증(lineStations.get(1), 강남역.getId(), 잠실역.getId(), 6);
+    }
+
+    @DisplayName("구간 삭제 시 예외 케이스 - 구간이 하나인 노선에서 마지막 구간을 제거할 때")
+    @Test
+    void verifyLineStation() {
+        //when
+        assertThatThrownBy(() -> {
+            신분당선.removeLineStation(강남역.getId());
         }).isInstanceOf(RuntimeException.class);
     }
 
