@@ -25,10 +25,7 @@ public class SectionResponse {
 	}
 
 	public static SectionResponse of(Section section) {
-		Station station = section.getDownStation();
-		if(Objects.isNull(station)){
-			station = section.getUpStation();
-		}
+		Station station = section.getMainStation();
 		return new SectionResponse(station.getId(), station.getName(), section.getDistanceMeter(), station.getCreatedDate(), station.getModifiedDate());
 	}
 

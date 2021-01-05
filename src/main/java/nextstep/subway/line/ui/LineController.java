@@ -50,14 +50,6 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-//    @PostMapping("/lines/{lineId}/sections")
-    public ResponseEntity addSection(
-            @PathVariable Long lineId,
-            @RequestBody SectionRequest sectionRequest) {
-//        sectionService.addSection(lineId, sectionRequest);
-        return ResponseEntity.created(URI.create("/lines/" + String.valueOf(lineId))).build();
-    }
-
     @PostMapping("/lines/{lineId}/sections")
     public ResponseEntity new_addSection(
             @PathVariable Long lineId,
@@ -65,5 +57,14 @@ public class LineController {
         lineService.new_addSection(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + String.valueOf(lineId))).build();
     }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity removeLineStation(
+            @PathVariable Long lineId,
+            @RequestParam Long stationId) {
+        lineService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

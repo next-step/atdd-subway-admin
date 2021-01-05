@@ -10,6 +10,9 @@ import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
+
+	private final static int MIN_SECTION_COUNT = 2;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -33,8 +36,8 @@ public class Line extends BaseEntity {
 	public Line(String name, String color, Station upStation, Station downStation, int distance) {
 		this.name = name;
 		this.color = color;
-		Section upSection = new Section(this, null, downStation, 0);
-		Section downSection = new Section(this, upStation, null, distance);
+		Section upSection = new Section(this, null, downStation, 0, upStation);
+		Section downSection = new Section(this, upStation, null, distance, downStation);
 		this.sections = new Sections(upSection, downSection);
 	}
 
@@ -59,8 +62,15 @@ public class Line extends BaseEntity {
 		return sections.getSections();
 	}
 
-	public void addSection(Section section) {
-		this.sections.addSection(section);
+	public void addSection(Section section, Line line) {
+		this.sections.addSection(section, line);
 		section.addLine(this);
+	}
+
+	public boolean isImpossibleRemoveSection() {
+		if(this.sections.getSections().size() == MIN_SECTION_COUNT){
+			return true;
+		}
+		return false;
 	}
 }

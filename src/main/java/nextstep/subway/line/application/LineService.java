@@ -1,6 +1,5 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.common.StationType;
 import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -8,12 +7,9 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import org.springframework.data.geo.Distance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -64,16 +60,49 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
+	@Transactional
 	public LineResponse new_addSection(Long lineId, SectionRequest sectionRequest) {
 		Line line = lineRepository.findById(lineId).get();
 		Section newSection = toSection(line, sectionRequest);
-		line.addSection(newSection);
+		line.addSection(newSection, line);
 		return LineResponse.of(lineRepository.save(line));
 	}
 
 	private Section toSection(Line line, SectionRequest sectionRequest) {
 		Optional<Station> upStation = stationRepository.findById(sectionRequest.getUpStationId());
 		Optional<Station> downStation = stationRepository.findById(sectionRequest.getDownStationId());
-		return new Section(line, upStation.get(), downStation.get(), sectionRequest.getDistance());
+		return new Section(line, upStation.get(), downStation.get(), sectionRequest.getDistance(), upStation.get());
+	}
+
+	@Transactional
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다 id=" + lineId));
+		Optional<Section> sectionOptional = line.getLineSections().stream().filter(sec -> (sec.getUpStation() == null && sec.getDownStation().getId() == stationId) ||
+				(sec.getDownStation() == null && sec.getUpStation().getId() == stationId)).findAny();
+		validate(sectionOptional, line);
+
+		Section section = sectionOptional.get();
+		if(section.isTerminal()){
+			//상행 종점역이 삭제되는 경우
+			Station newTerminal = section.getNetTerminal();
+			line.getLineSections().remove(section);
+
+
+
+			//하행 종점역이 삭제되는 경우
+		}
+		//중간역이 삭제되는 경우
+
+		lineRepository.save(line);
+	}
+
+	private void validate(Optional<Section> section, Line line) {
+		if(!section.isPresent()){
+			throw new RuntimeException("등록되어있지 않은 역입니다.");
+		}
+
+		if(line.isImpossibleRemoveSection()){
+			throw new RuntimeException("구간이 1개인 경우, 삭제할 수 없습니다");
+		}
 	}
 }

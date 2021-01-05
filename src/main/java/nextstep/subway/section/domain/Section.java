@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -24,33 +25,41 @@ public class Section extends BaseEntity {
 	@ManyToOne
 	private Station downStation;
 
+	@ManyToOne
+	private Station mainStation;
+
 	@Column
 	private int distanceMeter;
 
 	public Section() {
 	}
 
-	public Section(int distanceMeter) {
-		this.distanceMeter = distanceMeter;
-	}
+//	public Section(int distanceMeter) {
+//		this.distanceMeter = distanceMeter;
+//	}
 
 
-	public Section(Station upStation, int distance) {
+	public Section(Station upStation, int distance, Line line, Station mainStation) {
 		this.upStation = upStation;
 		this.downStation = null;
 		this.distanceMeter = distance;
+		this.line = line;
+		this.mainStation = mainStation;
 	}
-	public Section(Station downStation) {
+	public Section(Station downStation, Line line, Station mainStation) {
 		this.upStation = null;
 		this.downStation = downStation;
 		this.distanceMeter = 0;
+		this.line = line;
+		this.mainStation = mainStation;
 	}
 
-	public Section(Line line, Station upStation, Station downStation, int distance) {
+	public Section(Line line, Station upStation, Station downStation, int distance, Station mainStation) {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distanceMeter = distance;
+		this.mainStation = mainStation;
 	}
 
 	public Long getId() {
@@ -71,6 +80,10 @@ public class Section extends BaseEntity {
 
 	public int getDistanceMeter() {
 		return distanceMeter;
+	}
+
+	public Station getMainStation() {
+		return mainStation;
 	}
 
 	public void addLine(Line line) {
@@ -134,5 +147,26 @@ public class Section extends BaseEntity {
 	}
 	public void updateDownStation(int newDistanceMeter) {
 		this.distanceMeter = plusDistance(newDistanceMeter);
+	}
+
+	public boolean isTerminal() {
+		if(Objects.isNull(this.upStation) || Objects.isNull(this.downStation)){
+			return true;
+		}
+		return false;
+	}
+
+	public Station getNetTerminal() {
+		Station updateStation;
+		if(Objects.isNull(this.upStation)){
+			updateStation = this.downStation;
+
+		}
+		if(Objects.isNull(this.downStation)){
+			updateStation =  this.upStation;
+		}
+
+
+		return this.downStation;
 	}
 }
