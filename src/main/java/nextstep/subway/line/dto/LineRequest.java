@@ -13,15 +13,15 @@ import nextstep.subway.station.domain.Station;
 @AllArgsConstructor
 public class LineRequest {
 	@NotBlank
-	private String name;
+	private final String name;
 	@NotBlank
-	private String color;
+	private final String color;
 	@NotNull
-	private Long upStationId;
+	private final Long upStationId;
 	@NotNull
-	private Long downStationId;
+	private final Long downStationId;
 	@Min(1)
-	private int distance;
+	private final int distance;
 
 	public Line toLine() {
 		return new Line(name, color);

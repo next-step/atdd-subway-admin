@@ -15,6 +15,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -63,5 +64,31 @@ class LineServiceTest {
 		assertAll(
 			() -> assertThat(response.getName()).isEqualTo("2호선")
 		);
+	}
+
+	@DisplayName("지하철 노선 추가: 기존 노선에 section 추가 테스트 ")
+	@Test
+	void AddSectionAboutLineTest() {
+		// given
+		LineResponse response = 지하철_2호선_생성();
+		SectionRequest request = new SectionRequest(3L, 4L, 20);
+		when(stationRepository.findById(3L)).thenReturn(java.util.Optional.of(new Station(3L, "홍대역")));
+		when(stationRepository.findById(4L)).thenReturn(java.util.Optional.of(new Station(4L, "서초역")));
+
+		// when
+		LineResponse lineResponse = lineService.addSection(response.getId(), request);
+
+		// then
+		assertAll(
+			() -> assertThat(response.getName()).isEqualTo("2호선")
+		);
+	}
+
+	private LineResponse 지하철_2호선_생성() {
+		when(lineRepository.save(any())).thenReturn(new Line(1L, "2호선", "green"));
+		when(lineRepository.findById(any())).thenReturn(java.util.Optional.of(new Line(1L, "2호선", "green")));
+		when(stationRepository.findById(1L)).thenReturn(java.util.Optional.of(new Station(1L, "서초역")));
+		when(stationRepository.findById(2L)).thenReturn(java.util.Optional.of(new Station(2L, "강남역")));
+		return lineService.saveLine(new LineRequest("2호선", "green", 1L, 2L, 100));
 	}
 }
