@@ -7,15 +7,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
+import nextstep.subway.common.exception.NothingException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.exception.StationNotFoundException;
 
 @AllArgsConstructor
 @Service
@@ -65,11 +64,11 @@ public class LineService {
 	}
 
 	private Line findLineById(Long id) {
-		return lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+		return lineRepository.findById(id).orElseThrow(NothingException::new);
 	}
 
 	private Station findStationById(Long stationId) {
-		return stationRepository.findById(stationId).orElseThrow(StationNotFoundException::new);
+		return stationRepository.findById(stationId).orElseThrow(NothingException::new);
 	}
 
 }
