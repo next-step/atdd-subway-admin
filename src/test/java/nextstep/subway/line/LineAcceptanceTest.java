@@ -7,6 +7,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -17,11 +18,17 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    LineRequest request;
+
+    @BeforeEach
+    void setRequest() {
+        request = new LineRequest("2호선", "green");
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
-        LineRequest request = new LineRequest("2호선", "green");
         ExtractableResponse<Response> response = 지하철노선_생성_요청(request);
 
         // then
@@ -46,7 +53,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        LineRequest request = new LineRequest("2호선", "green");
         지하철노선_생성_요청(request);
 
         // when
@@ -64,7 +70,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         // given
-        LineRequest request = new LineRequest("2호선", "green");
         지하철노선_생성_요청(request);
 
         // when
@@ -86,7 +91,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineRequest request = new LineRequest("2호선", "green");
         ExtractableResponse<Response> createResponse = 지하철노선_생성_요청(request);
         String url = createResponse.header("Location");
 
@@ -110,7 +114,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineRequest request = new LineRequest("2호선", "green");
         ExtractableResponse<Response> createResponse = 지하철노선_생성_요청(request);
         String url = createResponse.header("Location");
 
@@ -146,7 +149,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineRequest request = new LineRequest("2호선", "green");
         ExtractableResponse<Response> createResponse = 지하철노선_생성_요청(request);
         String url = createResponse.header("Location");
 
