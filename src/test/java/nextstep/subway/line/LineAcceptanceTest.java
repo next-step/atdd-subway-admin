@@ -6,11 +6,11 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.StationDataHelper;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,11 +96,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        List<Long> ids = lineDataHelper.지하철_노선_추가(new Line("1호선", "blue"));
+        Line line = lineDataHelper.지하철_노선_추가(new Line("1호선", "blue"));
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(ids.get(0));
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(line.getId());
 
         // then
         // 지하철_노선_응답됨
@@ -114,12 +114,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        List<Long> ids = lineDataHelper.지하철_노선_추가(new Line("1호선", "blue"));
+        Line line = lineDataHelper.지하철_노선_추가(new Line("1호선", "blue"));
 
         // when
         // 지하철_노선_수정_요청
-        Long id = ids.get(0);
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(id, "2호선", "green");
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(line.getId(), "2호선", "green");
 
         // then
         // 지하철_노선_수정됨
@@ -131,12 +130,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        List<Long> ids = lineDataHelper.지하철_노선_추가(new Line("1호선", "blue"));
+        Line line = lineDataHelper.지하철_노선_추가(new Line("1호선", "blue"));
 
         // when
         // 지하철_노선_제거_요청
-        Long id = ids.get(0);
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(id);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(line.getId());
 
         // then
         // 지하철_노선_삭제됨
@@ -173,10 +171,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long upStationId = stationDataHelper.역추가("신창역");
         Long downStationId = stationDataHelper.역추가("인천역");
         Section section = new Section(upStationId, downStationId, 10);
-        List<Long> savedLine = lineDataHelper.지하철_노선_추가(new Line("1호선", "blue", section));
+        Line line = lineDataHelper.지하철_노선_추가(
+                new Line("1호선", "blue", new Sections(section))
+        );
 
         //when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(savedLine.get(0));
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(line.getId());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());

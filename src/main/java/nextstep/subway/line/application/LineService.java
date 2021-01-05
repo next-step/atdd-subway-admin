@@ -4,12 +4,12 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,14 +17,14 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
     public LineService(LineRepository lineRepository,
-                       StationRepository stationRepository) {
+                       StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
-
+    
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
@@ -41,13 +41,13 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(this::throwNoLineException);
+                .orElseThrow(() -> throwNoLineException(id));
         return LineResponse.of(line, getStations(line));
     }
 
     public void updateLine(Long id, LineRequest request) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(this::throwNoLineException);
+                .orElseThrow(() -> throwNoLineException(id));
 
         line.update(request.toLine());
     }
@@ -56,15 +56,18 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private List<Station> getStations(Line it) {
-        List<Long> sectionIds = it.getSectionIds();
-        if (sectionIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return stationRepository.findAllById(sectionIds);
+    private List<StationResponse> getStations(Line line) {
+        List<Long> stationIds = line.getAllIncludedStationIds();
+        List<Station> stations = stationIds.stream()
+                .map(stationService::findById)
+                .collect(Collectors.toList());
+
+        return stations.stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
     }
 
-    private NoLineException throwNoLineException() {
-        return new NoLineException("노선이 존재하지 않습니다.");
+    private NoLineException throwNoLineException(Long id) {
+        return new NoLineException(id);
     }
 }

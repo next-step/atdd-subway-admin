@@ -1,12 +1,16 @@
 package nextstep.subway.line.domain;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
+@Getter
+@NoArgsConstructor
 @Entity
 public class Line extends BaseEntity {
     @Id
@@ -17,20 +21,17 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Section section;
-
-    public Line() {
-    }
-
+    private Sections sections;
+    
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Line(String name, String color, Section section) {
+    public Line(String name, String color, Sections sections) {
         this.name = name;
         this.color = color;
-        this.section = section;
+        this.sections = sections;
     }
 
     public void update(Line line) {
@@ -38,22 +39,11 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public Long getId() {
-        return id;
+    public List<Long> getAllIncludedStationIds() {
+        return sections.allDistinctStationIds();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public List<Long> getSectionIds() {
-        if(section == null) {
-            return Collections.emptyList();
-        }
-        return Arrays.asList(section.getUpStationId(), section.getDownStationId());
+    public void addSection(Section section) {
+        sections.addSection(section);
     }
 }
