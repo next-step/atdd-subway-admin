@@ -138,9 +138,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRestHelper.지하철_구간_생성(신분당선.getId(), 양재역, 청계산입구, 50).as(SectionCreateResponse.class);
 
         ExtractableResponse<Response> deleteResponse = SectionRestHelper.지하철_구간_삭제(신분당선.getId(), 청계산입구.getId());
-        LineResponse lineResponse = LineRestHelper.지하철_라인_조회(신분당선.getId()).as(LineResponse.class);
-
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        LineResponse lineResponse = LineRestHelper.지하철_라인_조회(신분당선.getId()).as(LineResponse.class);
         assertThat(lineResponse.getStations().size()).isEqualTo(2);
         assertThat(lineResponse.getStations().get(0).getName()).isEqualTo("양재역");
         assertThat(lineResponse.getStations().get(1).getName()).isEqualTo("판교역");
@@ -153,10 +153,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRestHelper.지하철_구간_생성(신분당선.getId(), 양재역, 청계산입구, 50).as(SectionCreateResponse.class);
 
         ExtractableResponse<Response> deleteResponse = SectionRestHelper.지하철_구간_삭제(신분당선.getId(), 판교역.getId());
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         LineResponse lineResponse = LineRestHelper.지하철_라인_조회(신분당선.getId()).as(LineResponse.class);
-
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(lineResponse.getStations().size()).isEqualTo(2);
         assertThat(lineResponse.getStations().get(0).getName()).isEqualTo("양재역");
         assertThat(lineResponse.getStations().get(1).getName()).isEqualTo("청계산입구");
@@ -169,10 +168,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRestHelper.지하철_구간_생성(신분당선.getId(), 양재역, 청계산입구, 50).as(SectionCreateResponse.class);
 
         ExtractableResponse<Response> deleteResponse = SectionRestHelper.지하철_구간_삭제(신분당선.getId(), 양재역.getId());
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         LineResponse lineResponse = LineRestHelper.지하철_라인_조회(신분당선.getId()).as(LineResponse.class);
-
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(lineResponse.getStations().size()).isEqualTo(2);
         assertThat(lineResponse.getStations().get(0).getName()).isEqualTo("청계산입구");
         assertThat(lineResponse.getStations().get(1).getName()).isEqualTo("판교역");
