@@ -33,6 +33,10 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    public Station findStation(Long stationId) {
+        return this.stationRepository.findById(stationId).orElseGet(Station::new);
+    }
+
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
