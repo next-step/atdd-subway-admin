@@ -158,13 +158,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void addSectionLineTest() {
 		// given
 		LineResponse line = 지하철_2호선_생성요청();
-		Map<String, String> params = createSectionParam("홍대역", "합정역", "10");
+		String 강남ID = line.getStations().get(0).getId().toString();
+		String 서초ID = line.getStations().get(1).getId().toString();
+		String 홍대ID = createStationId("홍대역");
+		Map<String, String> params = createSectionParam(서초ID, 홍대ID, "10");
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선_구간추가_요청(line.getId(), params);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+	}
+
+	@DisplayName("지하철 노선에 구간을 추가할때, 예외처리를 한다.")
+	@Test
+	void addSectionLineExceptionTest() {
+		// given
+		LineResponse line = 지하철_2호선_생성요청();
+		String 강남ID = line.getStations().get(0).getId().toString();
+		String 서초ID = line.getStations().get(1).getId().toString();
+		String 홍대ID = createStationId("홍대역");
+		String 시청ID = createStationId("시청역");
+
+		// when
+		ExtractableResponse<Response> exist = 지하철_노선_구간추가_요청(line.getId(), createSectionParam(홍대ID, 시청ID, "20"));
+		ExtractableResponse<Response> nothing = 지하철_노선_구간추가_요청(line.getId(), createSectionParam(서초ID, 강남ID, "30"));
+		// then
+		assertAll(
+			() -> assertThat(exist.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+			() -> assertThat(nothing.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+		);
 	}
 
 	private LineResponse 지하철_2호선_생성요청() {
@@ -259,10 +282,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return params;
 	}
 
-	private Map<String, String> createSectionParam(String upStationName, String downStationName, String distance) {
+	private Map<String, String> createSectionParam(String upStationId, String downStationId, String distance) {
 		Map<String, String> params = new HashMap<>();
-		params.put("upStationId", createStationId(upStationName));
-		params.put("downStationId", createStationId(downStationName));
+		params.put("upStationId", upStationId);
+		params.put("downStationId", downStationId);
 		params.put("distance", distance);
 
 		return params;
