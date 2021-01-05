@@ -1,23 +1,20 @@
 package nextstep.subway.line.domain;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,8 +27,8 @@ public class Line extends BaseEntity {
 	@Column(unique = true)
 	private String name;
 	private String color;
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-	private final List<Section> sections = new ArrayList<>();
+	@Embedded
+	private final Sections sections = new Sections();
 
 	public Line(String name, String color) {
 		this.name = name;
@@ -45,7 +42,7 @@ public class Line extends BaseEntity {
 
 	public Line(String name, String color, Station upStation, Station downStation, int distance) {
 		this(name, color);
-		this.createSection(upStation, downStation, distance);
+		this.sections.createSection(this, upStation, downStation, distance);
 	}
 
 	public void update(Line line) {
@@ -53,17 +50,15 @@ public class Line extends BaseEntity {
 		this.color = line.getColor();
 	}
 
-	private void createSection(Station upStation, Station downStation, int distance) {
-
-		this.sections.add(new Section(this, upStation, downStation, distance));
+	public List<Station> Stations() {
+		return this.sections.getStations();
 	}
 
-	public List<Station> getStations() {
-		Set<Station> result = new LinkedHashSet<>();
-		for (Section section : this.sections) {
-			result.addAll(section.getStations());
-		}
+	public void addSection(Station upStation, Station downStation, int distance) {
+		Section section = new Section(this, upStation, downStation, distance);
+	}
 
-		return new ArrayList<>(result);
+	public List<Section> Sections() {
+		return this.sections.getSections();
 	}
 }
