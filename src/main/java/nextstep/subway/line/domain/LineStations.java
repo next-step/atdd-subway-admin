@@ -77,7 +77,6 @@ public class LineStations {
         }
         preLineStation.ifPresent(value -> this.lineStations.remove(value));
         lineStation.ifPresent(value -> this.lineStations.remove(value));
-        System.out.println("lineStation = " + lineStation);
     }
 
     private LineStation mergeLineStation(LineStation preLineStation, LineStation lineStation) {
