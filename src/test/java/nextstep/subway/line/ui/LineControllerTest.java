@@ -20,7 +20,7 @@ class LineControllerTest {
 
     @Test
     void createLineWithBadRequest() {
-        when(lineService.saveLine(any())).thenThrow(RuntimeException.class);
+        when(lineService.save(any())).thenThrow(RuntimeException.class);
         LineController lineController = new LineController(lineService);
 
         LineRequest lineRequest = new LineRequest("2호선", "green");

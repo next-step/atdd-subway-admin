@@ -40,7 +40,7 @@ class LineServiceTest {
         when(lineRepository.save(any())).thenReturn(new Line("5호선", "purple"));
 
         // when
-        LineResponse lineResponse = lineService.saveLine(lineRequest);
+        LineResponse lineResponse = lineService.save(lineRequest);
 
         // then
         assertThat(lineResponse).isNotNull();
@@ -53,7 +53,7 @@ class LineServiceTest {
         when(lineRepository.findAll()).thenReturn(Arrays.asList(new Line("2호선", "green"), new Line("5호선", "purple")));
 
         // when
-        List<LineResponse> lineResponses = lineService.findAllLines();
+        List<LineResponse> lineResponses = lineService.findAll();
 
         // then
         assertThat(lineResponses.size()).isEqualTo(2);
