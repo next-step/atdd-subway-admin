@@ -91,11 +91,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(lastUpStation.getId(), station.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> selectedResponse = selectAllRequest(line.getId());
-        assertThat(selectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<String> sectionNames = toSectionNames(selectedResponse);
-        assertThat(sectionNames).containsExactly("도림천", "양천구청", "신정네거리");
+        List<StationResponse> stations = selectStations(line.getId());
+        assertThat(stations).containsExactly(lastUpStation, station, lastDownStation);
     }
 
     @DisplayName("구간 사이에 새로운 구간을 등록한다(하행기준)")
@@ -106,11 +103,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(station.getId(), lastDownStation.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> selectedResponse = selectAllRequest(line.getId());
-        assertThat(selectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<String> sectionNames = toSectionNames(selectedResponse);
-        assertThat(sectionNames).containsExactly("도림천", "양천구청", "신정네거리");
+        List<StationResponse> stations = selectStations(line.getId());
+        assertThat(stations).containsExactly(lastUpStation, station, lastDownStation);
     }
 
 
@@ -122,11 +116,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(station.getId(), lastUpStation.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> selectedResponse = selectAllRequest(line.getId());
-        assertThat(selectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<String> sectionNames = toSectionNames(selectedResponse);
-        assertThat(sectionNames).containsExactly("신도림", "도림천", "신정네거리");
+        List<StationResponse> stations = selectStations(line.getId());
+        assertThat(stations).containsExactly(station, lastUpStation,lastDownStation);
     }
 
     @DisplayName("새로운 하행 종점구간을 등록한다")
@@ -137,11 +128,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(lastDownStation.getId(), station.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> selectedResponse = selectAllRequest(line.getId());
-        assertThat(selectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<String> sectionNames = toSectionNames(selectedResponse);
-        assertThat(sectionNames).containsExactly("도림천", "신정네거리", "까치산");
+        List<StationResponse> stations = selectStations(line.getId());
+        assertThat(stations).containsExactly(lastUpStation,lastDownStation,station);
     }
 
     @DisplayName("역을 삭제한다")
@@ -154,15 +142,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> deletedResponse = deleteRequest(line.getId(), station.getId());
         assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-
-        ExtractableResponse<Response> selectedResponse = selectAllRequest(line.getId());
-        assertThat(selectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<SectionResponse> sections = Arrays.asList(selectedResponse.as(SectionResponse[].class));
-        assertThat(sections.get(0).getDistance()).isEqualTo(30);
-
-        List<String> sectionNames = toSectionNames(selectedResponse);
-        assertThat(sectionNames).containsExactly("도림천", "신정네거리");
+        List<StationResponse> stations = selectStations(line.getId());
+        assertThat(stations).containsExactly(lastUpStation,lastDownStation);
     }
 
     @DisplayName("노선에 등록되지 않은 역을 삭제한다")
@@ -191,14 +172,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return sectionNames;
     }
 
+    private List<StationResponse> selectStations(Long lineId) {
+        LineResponse response = LineAcceptanceTest.selectRequestWithId(lineId)
+                .as(LineResponse.class);
+        return response.getStations();
+    }
+
     private ExtractableResponse<Response> createRequest(Long lineId, SectionRequest sectionRequest) {
         final String url = "/lines/" + lineId + "/sections";
         return RequestTest.doPost(url, sectionRequest);
     }
 
-    private ExtractableResponse<Response> selectAllRequest(Long lineId) {
+    private ExtractableResponse<Response> selectRequest(Long lineId) {
         final String url = "/lines/" + lineId + "/sections";
-        return RequestTest.doGet(url);
+        return RequestTest.doPost(url);
     }
 
     private ExtractableResponse<Response> deleteRequest(Long lineId, Long stationId) {
