@@ -17,4 +17,9 @@ public class CommonExceptionHandler {
 	protected ResponseEntity notFoundException(NotFoundException exception) {
 		return ResponseEntity.badRequest().body(new ErrorResponse(exception));
 	}
+
+	@ExceptionHandler(IllegalDistanceException.class)
+	protected ResponseEntity illegalDistanceException(IllegalDistanceException exception) {
+		return ResponseEntity.badRequest().body(new ErrorResponse(exception));
+	}
 }

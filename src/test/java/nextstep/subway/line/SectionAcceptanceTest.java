@@ -20,6 +20,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.common.dto.ErrorResponse;
+import nextstep.subway.common.exception.IllegalDistanceException;
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
@@ -98,6 +101,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철역_등록됨(response, 강남역, 광교역, 호매실역);
 	}
 
+	@DisplayName("노선에 구간등록시 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+	@Test
+	void addSectionSameUpStationIllegalDistanceException() {
+		// when
+		// 지하철_노선에_지하철역_등록_요청
+		StationResponse 판교역 = StationAcceptanceTest.지하철역_생성("판교역").as(StationResponse.class);
+		int distance = 10;
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 판교역.getId(),
+			distance);
+
+		// then
+		지하철_노선_구간_등록_길이_오류(response);
+	}
+
+	private void 지하철_노선_구간_등록_길이_오류(ExtractableResponse<Response> response) {
+		String errorCode = response.jsonPath().getObject(".", ErrorResponse.class).getErrorCode();
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(errorCode).isEqualTo(IllegalDistanceException.ERROR_CODE);
+	}
+
 	private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response, StationResponse... stationResponses) {
 		List<Long> stationIds = Arrays.stream(stationResponses)
 			.map(stationResponse -> stationResponse.getId())
@@ -107,6 +130,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.map(StationResponse::getId)
 			.collect(Collectors.toList());
 
+		// then
 		assertThat(actualStationIds).containsAll(stationIds);
 	}
 
@@ -119,9 +143,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when().post("/lines/{id}/sections", lineId)
 			.then().log().all().extract();
-
-		// then
-		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
 		return response;
 	}

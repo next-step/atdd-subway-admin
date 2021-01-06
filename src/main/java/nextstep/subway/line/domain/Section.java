@@ -83,6 +83,17 @@ public class Section extends BaseEntity {
 		return Objects.hash(getId(), getLine(), getUpStationId(), getDownStationId(), getDistance());
 	}
 
+	@Override
+	public String toString() {
+		return "Section{" +
+			"id=" + id +
+			", line=" + line +
+			", upStationId=" + upStationId +
+			", downStationId=" + downStationId +
+			", distance=" + distance +
+			'}';
+	}
+
 	public void changeUpStation(Long id, int distance) {
 		this.upStationId = id;
 		this.distance = distance;
@@ -91,5 +102,9 @@ public class Section extends BaseEntity {
 	public void changeDownStation(Long id, int distance) {
 		this.downStationId = id;
 		this.distance = distance;
+	}
+
+	public boolean isInValidDistance(int distance) {
+		return (this.getDistance() == distance || this.getDistance() < distance);
 	}
 }

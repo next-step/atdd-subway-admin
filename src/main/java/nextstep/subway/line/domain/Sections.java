@@ -9,6 +9,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.common.exception.IllegalDistanceException;
+
 /**
  * @author : byungkyu
  * @date : 2021/01/06
@@ -33,54 +35,62 @@ public class Sections {
 			sections.add(section);
 			return;
 		}
+
+		validateSection(section);
 		//역 사이에 새로운 역 등록
-		addSectionSameUpStation(section);
+		if (isEqualToUpStation(section.getUpStationId())) {
+			addSectionSameUpStation(section);
+			return;
+		}
 
 		// 새로운 역을 상행 종점으로 등록할 경우
-		addSectionNewUpStation(section);
+		if (isEqualToUpStation(section.getDownStationId())) {
+			addSectionNewUpStation(section);
+			return;
+		}
 
 		//새로운 역을 하향 종점으로 등록할 경우
-		addSectionNewDownStation(section);
+		if (isEqualToDownStation(section.getUpStationId())) {
+			addSectionNewDownStation(section);
+		}
+	}
+
+	private void validateSection(Section section) {
+		sections.forEach(originSection -> {
+			if(originSection.isInValidDistance(section.getDistance())) throw new IllegalDistanceException();
+		});
 	}
 
 	private void addSectionNewDownStation(Section section) {
-		if (isEqualToDownStation(section.getUpStationId())) {
-			sections.stream()
-				.filter(originSection -> originSection.getUpStationId().equals(section.getDownStationId()))
-				.findFirst()
-				.ifPresent(
-					originSection -> originSection.changeDownStation(section.getUpStationId(), section.getDistance()));
+		sections.stream()
+			.filter(originSection -> originSection.getUpStationId().equals(section.getDownStationId()))
+			.findFirst()
+			.ifPresent(
+				originSection -> originSection.changeDownStation(section.getUpStationId(), section.getDistance()));
 
-			sections.add(section);
-		}
+		sections.add(section);
 	}
 
 	private void addSectionNewUpStation(Section section) {
-		if (isEqualToUpStation(section.getDownStationId())) {
-			sections.stream()
-				.filter(originSection -> originSection.getUpStationId().equals(section.getDownStationId()))
-				.findFirst()
-				.ifPresent(
-					originSection -> originSection.changeUpStation(section.getDownStationId(), section.getDistance()));
+		sections.stream()
+			.filter(originSection -> originSection.getUpStationId().equals(section.getDownStationId()))
+			.findFirst()
+			.ifPresent(
+				originSection -> originSection.changeUpStation(section.getDownStationId(), section.getDistance()));
 
-			sections.add(section);
-			return;
-		}
+		sections.add(section);
 	}
 
 	private void addSectionSameUpStation(Section section) {
-		if (isEqualToUpStation(section.getUpStationId())) {
-			sections.stream()
-				.filter(originSection -> originSection.getUpStationId().equals(section.getUpStationId())
-					&& originSection.getDistance() > section
-					.getDistance())
-				.findFirst()
-				.ifPresent(originSection -> originSection.changeUpStation(section.getDownStationId(),
-					originSection.getDistance() - section.getDistance()));
+		sections.stream()
+			.filter(originSection -> originSection.getUpStationId().equals(section.getUpStationId())
+				&& originSection.getDistance() > section
+				.getDistance())
+			.findFirst()
+			.ifPresent(originSection -> originSection.changeUpStation(section.getDownStationId(),
+				originSection.getDistance() - section.getDistance()));
 
-			sections.add(section);
-			return;
-		}
+		sections.add(section);
 	}
 
 	private boolean isEqualToDownStation(Long stationId) {
