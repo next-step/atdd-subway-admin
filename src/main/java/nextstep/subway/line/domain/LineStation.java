@@ -96,10 +96,10 @@ public class LineStation extends BaseEntity {
     public void changePositionStatus(PositionStatus positionStatus) {
         this.status = positionStatus;
         if (isFirst()) {
-            applyPreviousStation(null);
+            applyEmptyPreviousStation();
         }
         if (isLast()) {
-            applyNextStation(null);
+            applyEmptyNextStation();
             applyDistanceForNextStation(new Distance(0));
         }
     }
@@ -113,6 +113,14 @@ public class LineStation extends BaseEntity {
             this.nextStation = lineStation.getStation();
             lineStation.applyPreviousStation(this.getStation());
         }
+    }
+
+    public void applyEmptyPreviousStation() {
+        this.previousStation = null;
+    }
+
+    public void applyEmptyNextStation() {
+        this.nextStation = null;
     }
 
     public void applyDistanceForNextStation(Distance distanceForNextStation) {
@@ -135,6 +143,10 @@ public class LineStation extends BaseEntity {
 
     public boolean isFirst() {
         return status.isFirst();
+    }
+
+    public boolean isMiddle() {
+        return status.isMiddle();
     }
 
     public boolean isLast() {

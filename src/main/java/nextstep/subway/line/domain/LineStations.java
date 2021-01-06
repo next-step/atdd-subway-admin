@@ -21,6 +21,9 @@ public class LineStations {
     private final Map<Station, LineStation> lineStations;
 
     public LineStations(List<LineStation> lineStations) {
+        if (lineStations.isEmpty()) {
+            throw new IllegalStateException("구간에 등록된 역이 존재하지 않습니다");
+        }
         this.lineStations = unmodifiableMap(lineStations.stream()
                 .collect(toMap(LineStation::getStation, Function.identity())));
     }
@@ -155,7 +158,7 @@ public class LineStations {
     }
 
     public LineStation removeSection(Station station) {
-        checkRemoveSection();
+        checkSectionForRemoving();
         LineStation removedLineStation = getLineStationByStation(station);
 
         if (removedLineStation.isFirst()) {
@@ -179,8 +182,8 @@ public class LineStations {
         return removedLineStation;
     }
 
-    private void checkRemoveSection() {
-        if (lineStations.size() <= MIN_STATION_COUNT) {
+    private void checkSectionForRemoving() {
+        if (lineStations.values().stream().noneMatch(LineStation::isMiddle)) {
             throw new IllegalStateException("현재 해당 구간에 역이 " + MIN_STATION_COUNT + "개만 존재하여 제거할 수 없습니다");
         }
     }

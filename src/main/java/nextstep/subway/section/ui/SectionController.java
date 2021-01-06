@@ -14,8 +14,6 @@ import nextstep.subway.station.dto.StationResponse;
 
 import java.net.URI;
 
-import javax.persistence.NoResultException;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -69,9 +67,9 @@ public class SectionController {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(NoResultException.class)
-    public ResponseEntity<Void> handleNoResultException(NoResultException e) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Void> handleRuntimeException(RuntimeException e) {
         log.info("log >>> " + e.getMessage());
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.badRequest().build();
     }
 }
