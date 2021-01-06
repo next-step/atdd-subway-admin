@@ -37,27 +37,35 @@ public class Sections {
 	public void add(Section target) {
 		validateSection(target);
 
-		if (isContainStation(target.getUpStation())) {
+		if (isExistUpStation(target)) {
 			this.sections.stream()
-				.filter(section -> section.getUpStation().equals(target.getUpStation()))
+				.filter(section -> section.isUpStation(target))
 				.findFirst()
 				.ifPresent(section -> section.updateUpStation(target));
 			this.sections.add(target);
 			return;
 		}
 
-		if (isContainStation(target.getDownStation())) {
+		if (isExistDownStation(target)) {
 			this.sections.stream()
-				.filter(section -> section.getDownStation().equals(target.getDownStation()))
+				.filter(section -> section.isDownStation(target))
 				.findFirst()
 				.ifPresent(section -> section.updateDownStation(target));
 			this.sections.add(target);
 		}
 	}
 
+	public boolean isExistUpStation(Section section) {
+		return isContainStation(section.getUpStation());
+	}
+
+	public boolean isExistDownStation(Section section) {
+		return isContainStation(section.getDownStation());
+	}
+
 	private void validateSection(Section target) {
-		boolean upStationExist = isContainStation(target.getUpStation());
-		boolean downStationExist = isContainStation(target.getDownStation());
+		boolean upStationExist = isExistUpStation(target);
+		boolean downStationExist = isExistDownStation(target);
 
 		if (upStationExist && downStationExist) {
 			throw new ExistException("이미 존재하는 구간입니다.");
@@ -70,6 +78,6 @@ public class Sections {
 
 	private boolean isContainStation(Station target) {
 		return this.sections.stream()
-			.anyMatch(station -> station.getStations().contains(target));
+			.anyMatch(station -> station.contains(target));
 	}
 }

@@ -71,6 +71,18 @@ public class Section {
 		this.downStation = target.getUpStation();
 	}
 
+	public boolean isUpStation(Section target) {
+		return this.upStation.equals(target.getUpStation());
+	}
+
+	public boolean isDownStation(Section target) {
+		return this.downStation.equals(target.getDownStation());
+	}
+
+	public boolean contains(Station target) {
+		return getStations().contains(target);
+	}
+
 	private void validateDistance(int distance) {
 		if (this.distance <= distance) {
 			throw new IllegalArgumentException("추가하는 구간의 거리가 기존구간보더 더 큽니다.");
