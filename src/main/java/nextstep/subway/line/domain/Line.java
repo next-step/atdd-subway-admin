@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -12,9 +13,9 @@ import nextstep.subway.station.dto.StationResponse;
 import javax.persistence.*;
 import java.util.List;
 
-@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +40,7 @@ public class Line extends BaseEntity {
         sections.addInitSection(Section.builder()
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(distance)
+                .distance(new Distance(distance))
                 .build());
     }
 
@@ -50,6 +51,10 @@ public class Line extends BaseEntity {
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void removeSection(Station station) {
+        sections.removeSection(station);
     }
 
     public List<StationResponse> getStationResponses() {

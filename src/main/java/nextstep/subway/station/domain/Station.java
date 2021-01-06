@@ -8,9 +8,9 @@ import nextstep.subway.common.BaseEntity;
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
