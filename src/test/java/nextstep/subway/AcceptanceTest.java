@@ -17,11 +17,12 @@ public class AcceptanceTest {
 
     @BeforeEach
     public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-            databaseCleanup.afterPropertiesSet();
-        }
-
+//        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
+//            RestAssured.port = port;
+//            databaseCleanup.afterPropertiesSet();
+//        }
+//        databaseCleanup.execute();
         databaseCleanup.execute();
+        RestAssured.port = port;
     }
 }
