@@ -59,10 +59,4 @@ public class LineController {
     LineResponse response = lineService.removeSectionByStationId(lineId, stationId);
     return ResponseEntity.ok().body(response);
   }
-
-  @ExceptionHandler(SectionException.class)
-  public Object badRequest(Exception e) {
-    return ResponseEntity.badRequest().build();
-  }
-
 }
