@@ -19,11 +19,11 @@ import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
+    private static final int INIT_DISTANCE = 30;
     private StationResponse lastUpStation;
     private StationResponse lastDownStation;
     private LineResponse line;
@@ -38,7 +38,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         lastDownStation = StationAcceptanceTest.createRequest(new StationRequest("신정네거리"))
                 .as(StationResponse.class);
 
-        line = LineAcceptanceTest.createRequest(new LineRequest("2호선", "초록색", lastUpStation.getId(), lastDownStation.getId(), 30))
+        line = LineAcceptanceTest.createRequest(new LineRequest("2호선", "초록색", lastUpStation.getId(), lastDownStation.getId(), INIT_DISTANCE))
                 .as(LineResponse.class);
     }
 
@@ -91,6 +91,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(lastUpStation.getId(), station.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        ExtractableResponse<Response> selectedResponse = selectRequest(line.getId());
+        assertThat(calculateTotalDistance(selectedResponse)).isEqualTo(INIT_DISTANCE);
         List<StationResponse> stations = selectStations(line.getId());
         assertThat(stations).containsExactly(lastUpStation, station, lastDownStation);
     }
@@ -103,6 +105,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(station.getId(), lastDownStation.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        ExtractableResponse<Response> selectedResponse = selectRequest(line.getId());
+        assertThat(calculateTotalDistance(selectedResponse)).isEqualTo(INIT_DISTANCE);
         List<StationResponse> stations = selectStations(line.getId());
         assertThat(stations).containsExactly(lastUpStation, station, lastDownStation);
     }
@@ -116,6 +120,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(station.getId(), lastUpStation.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        ExtractableResponse<Response> selectedResponse = selectRequest(line.getId());
+        assertThat(calculateTotalDistance(selectedResponse)).isEqualTo(INIT_DISTANCE + 3);
         List<StationResponse> stations = selectStations(line.getId());
         assertThat(stations).containsExactly(station, lastUpStation,lastDownStation);
     }
@@ -128,6 +134,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(lastDownStation.getId(), station.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        ExtractableResponse<Response> selectedResponse = selectRequest(line.getId());
+        assertThat(calculateTotalDistance(selectedResponse)).isEqualTo(INIT_DISTANCE + 3);
         List<StationResponse> stations = selectStations(line.getId());
         assertThat(stations).containsExactly(lastUpStation,lastDownStation,station);
     }
@@ -142,6 +150,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> deletedResponse = deleteRequest(line.getId(), station.getId());
         assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> selectedResponse = selectRequest(line.getId());
+        assertThat(calculateTotalDistance(selectedResponse)).isEqualTo(INIT_DISTANCE);
         List<StationResponse> stations = selectStations(line.getId());
         assertThat(stations).containsExactly(lastUpStation,lastDownStation);
     }
@@ -163,13 +173,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private List<String> toSectionNames(ExtractableResponse<Response> selectedResponse) {
-        List<SectionResponse> sections = Arrays.asList(selectedResponse.as(SectionResponse[].class));
-        List<String> sectionNames = sections.stream()
-                .map(SectionResponse::getUpStationName)
-                .collect(Collectors.toList());
-        sectionNames.add(sections.get(sections.size()-1).getDownStationName());
-        return sectionNames;
+    private Integer calculateTotalDistance(ExtractableResponse<Response> selectedResponse) {
+        List<SectionResponse> sectionResponses = Arrays.asList(selectedResponse.as(SectionResponse[].class));
+        return sectionResponses.stream()
+                .mapToInt(SectionResponse::getDistance)
+                .sum();
     }
 
     private List<StationResponse> selectStations(Long lineId) {
@@ -185,7 +193,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> selectRequest(Long lineId) {
         final String url = "/lines/" + lineId + "/sections";
-        return RequestTest.doPost(url);
+        return RequestTest.doGet(url);
     }
 
     private ExtractableResponse<Response> deleteRequest(Long lineId, Long stationId) {
