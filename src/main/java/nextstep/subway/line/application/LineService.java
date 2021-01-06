@@ -27,27 +27,26 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-        return lines.stream()
-                .map(line -> LineResponse.of(line))
-                .collect(Collectors.toList());
+        return LineResponse.ofList(lines);
     }
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("아이디에 해당하는 데이터가 없습니다."));
+        Line line = getLine(id);
         return LineResponse.of(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("아이디에 해당하는 데이터가 없습니다."));
+        Line line = getLine(id);
         line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
     }
 
     public void deleteLine(Long id) {
-        Line line = lineRepository.findById(id)
+        lineRepository.deleteById(id);
+    }
+
+    private Line getLine(Long id) {
+        return lineRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("아이디에 해당하는 데이터가 없습니다."));
-        lineRepository.delete(line);
     }
 }
