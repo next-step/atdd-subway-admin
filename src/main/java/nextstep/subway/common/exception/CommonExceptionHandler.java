@@ -22,4 +22,10 @@ public class CommonExceptionHandler {
 	protected ResponseEntity illegalDistanceException(IllegalDistanceException exception) {
 		return ResponseEntity.badRequest().body(new ErrorResponse(exception));
 	}
+
+	@ExceptionHandler(DuplicateAllStationException.class)
+	protected ResponseEntity duplicateAllStationException(DuplicateAllStationException exception) {
+		return ResponseEntity.badRequest().body(new ErrorResponse(exception));
+	}
+
 }

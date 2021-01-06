@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.common.exception.DuplicateAllStationException;
 import nextstep.subway.common.exception.IllegalDistanceException;
 
 /**
@@ -56,6 +57,17 @@ public class Sections {
 	}
 
 	private void validateSection(Section section) {
+		validateSectionAllStation(section);
+		validateSectionDistance(section);
+	}
+
+	private void validateSectionAllStation(Section section) {
+		sections.forEach(originSection -> {
+			if(originSection.isDuplicateAllStation(section.getUpStationId(), section.getDownStationId())) throw new DuplicateAllStationException();
+		});
+	}
+
+	private void validateSectionDistance(Section section) {
 		sections.forEach(originSection -> {
 			if(originSection.isInValidDistance(section.getDistance())) throw new IllegalDistanceException();
 		});

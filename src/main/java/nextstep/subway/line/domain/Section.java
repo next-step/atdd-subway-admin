@@ -107,4 +107,8 @@ public class Section extends BaseEntity {
 	public boolean isInValidDistance(int distance) {
 		return (this.getDistance() == distance || this.getDistance() < distance);
 	}
+
+	public boolean isDuplicateAllStation(Long upStationId, Long downStationId) {
+		return (this.upStationId == upStationId && this.downStationId == downStationId);
+	}
 }

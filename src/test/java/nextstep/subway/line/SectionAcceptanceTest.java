@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,8 +20,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.dto.ErrorResponse;
+import nextstep.subway.common.exception.DuplicateAllStationException;
 import nextstep.subway.common.exception.IllegalDistanceException;
-import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
@@ -105,7 +104,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSectionSameUpStationIllegalDistanceException() {
 		// when
-		// 지하철_노선에_지하철역_등록_요청
 		StationResponse 판교역 = StationAcceptanceTest.지하철역_생성("판교역").as(StationResponse.class);
 		int distance = 10;
 		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 판교역.getId(),
@@ -113,6 +111,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		지하철_노선_구간_등록_길이_오류(response);
+	}
+
+	@DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+	@Test
+	void duplicateAllStationException() {
+		// when
+		int distance = 5;
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 광교역.getId(),
+			distance);
+
+		// then
+		지하철_노선_구간_상행선_하행선_중복_오류(response);
+	}
+
+	private void 지하철_노선_구간_상행선_하행선_중복_오류(ExtractableResponse<Response> response) {
+		String errorCode = response.jsonPath().getObject(".", ErrorResponse.class).getErrorCode();
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(errorCode).isEqualTo(DuplicateAllStationException.ERROR_CODE);
 	}
 
 	private void 지하철_노선_구간_등록_길이_오류(ExtractableResponse<Response> response) {
