@@ -17,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -157,7 +158,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> selectedResponse = selectAllRequest(line.getId());
         assertThat(selectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<SectionResponse> sections = selectedResponse.jsonPath().getList(".", SectionResponse.class);
+        List<SectionResponse> sections = Arrays.asList(selectedResponse.as(SectionResponse[].class));
         assertThat(sections.get(0).getDistance()).isEqualTo(30);
 
         List<String> sectionNames = toSectionNames(selectedResponse);
@@ -182,8 +183,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private List<String> toSectionNames(ExtractableResponse<Response> selectedResponse) {
-        List<SectionResponse> sections = selectedResponse.jsonPath()
-                .getList(".", SectionResponse.class);
+        List<SectionResponse> sections = Arrays.asList(selectedResponse.as(SectionResponse[].class));
         List<String> sectionNames = sections.stream()
                 .map(SectionResponse::getUpStationName)
                 .collect(Collectors.toList());
