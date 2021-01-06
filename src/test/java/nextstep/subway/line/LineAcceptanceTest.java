@@ -24,9 +24,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
+        Map<String, String> params = getRequestParam("2호선", "green");
 
         // when
         ExtractableResponse<Response> response = createLine(params);
@@ -40,9 +38,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicatedName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
+        Map<String, String> params = getRequestParam("2호선", "green");
         createLine(params);
 
         // when
@@ -57,15 +53,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // param1 등록
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "2호선");
-        params1.put("color", "green");
+        Map<String, String> params1 = getRequestParam("2호선", "green");
         ExtractableResponse<Response> createResponse1 = createLine(params1);
 
         // param2 등록
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "5호선");
-        params2.put("color", "purple");
+        Map<String, String> params2 = getRequestParam("5호선", "purple");
         ExtractableResponse<Response> createResponse2 = createLine(params2);
 
         // when
@@ -90,9 +82,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String expectedColor = "green";
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", expectedName);
-        params.put("color", expectedColor);
+        Map<String, String> params = getRequestParam(expectedName, expectedColor);
         ExtractableResponse<Response> createResponse = createLine(params);
 
         String id = createResponse.header("Location").split("/")[2];
@@ -116,18 +106,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String expectedColor = "purple";
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> createParams = new HashMap<>();
-        createParams.put("name", "2호선");
-        createParams.put("color", "green");
+        Map<String, String> createParams = getRequestParam("2호선", "green");
         ExtractableResponse<Response> createResponse = createLine(createParams);
 
         String id = createResponse.header("Location").split("/")[2];
 
         // when
         // 지하철_노선_수정_요청
-        Map<String, String> updateParams = new HashMap<>();
-        updateParams.put("name", expectedName);
-        updateParams.put("color", expectedColor);
+        Map<String, String> updateParams = getRequestParam(expectedName, expectedColor);
         updateLine(id, updateParams);
 
         // then
@@ -145,9 +131,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> createParams = new HashMap<>();
-        createParams.put("name", "2호선");
-        createParams.put("color", "green");
+        Map<String, String> createParams = getRequestParam("2호선", "green");
         ExtractableResponse<Response> createResponse = createLine(createParams);
 
         String id = createResponse.header("Location").split("/")[2];
@@ -159,6 +143,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private Map<String, String> getRequestParam(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        return params;
     }
 
     private ExtractableResponse<Response> createLine(Map<String, String> params) {
