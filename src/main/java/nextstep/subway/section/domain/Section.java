@@ -74,6 +74,18 @@ public class Section extends BaseEntity {
         return distance;
     }
 
+    public Long getUpStationId() {
+        return this.getUpStation().getId();
+    }
+
+    public Long getDownStationId() {
+        return this.getDownStation().getId();
+    }
+
+    public boolean isEqualsUpStationId(Long stationId) {
+        return this.getUpStation().getId().equals(stationId);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

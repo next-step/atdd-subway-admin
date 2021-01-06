@@ -50,14 +50,14 @@ public class Sections {
 
         // set first upStation
         this.sections.stream()
-                .filter(section -> section.getUpStation().getId().equals(this.findFirstUpStationInSections()))
+                .filter(section -> section.isEqualsUpStationId(this.findFirstUpStationInSections()))
                 .findAny().ifPresent(sortedSections::add);
 
         // add Sections
         for (int i = 0; i < this.sections.size() - 1; i++) {
-            Long downStationId = sortedSections.get(i).getDownStation().getId();
+            Long downStationId = sortedSections.get(i).getDownStationId();
             this.sections.stream()
-                    .filter(section -> section.getUpStation().getId().equals(downStationId))
+                    .filter(section -> section.isEqualsUpStationId(downStationId))
                     .findAny().ifPresent(sortedSections::add);
         }
 
@@ -70,9 +70,9 @@ public class Sections {
      * @return 상행 종점역의 ID
      */
     private Long findFirstUpStationInSections() {
-        Set<Long> upStationIds = this.sections.stream().map(section -> section.getUpStation().getId())
+        Set<Long> upStationIds = this.sections.stream().map(Section::getUpStationId)
                 .collect(Collectors.toSet());
-        Set<Long> downStationIds = this.sections.stream().map(section -> section.getDownStation().getId())
+        Set<Long> downStationIds = this.sections.stream().map(Section::getDownStationId)
                 .collect(Collectors.toSet());
         upStationIds.removeAll(downStationIds);
         return upStationIds.stream().findFirst()
