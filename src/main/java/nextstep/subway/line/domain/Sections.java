@@ -75,7 +75,7 @@ public class Sections {
     removeValidationCheck();
 
     Section removeSection = findSectionByStationId(stationId);
-    findRemoveSectionAndUpdate(removeSection);
+    updateSectionToRemove(removeSection);
 
     this.sections.remove(removeSection);
   }
@@ -106,7 +106,7 @@ public class Sections {
         .orElseThrow(() -> new SectionException(NOT_REGISTERED_STATION));
   }
 
-  private void findRemoveSectionAndUpdate(Section removeSection) {
+  private void updateSectionToRemove(Section removeSection) {
     this.sections.stream()
         .filter(it -> it.isUpStationInSection(removeSection.getDownStation()))
         .findFirst()
