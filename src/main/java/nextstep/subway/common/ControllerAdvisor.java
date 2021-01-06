@@ -1,9 +1,7 @@
 package nextstep.subway.common;
 
 import nextstep.subway.line.application.NoLineException;
-import nextstep.subway.section.application.AlreadyExistsException;
-import nextstep.subway.section.application.ExceedDistanceException;
-import nextstep.subway.section.application.NoMatchStationException;
+import nextstep.subway.section.application.*;
 import nextstep.subway.section.domain.NoStationIdException;
 import nextstep.subway.station.application.NoSuchStationException;
 import org.slf4j.Logger;
@@ -55,6 +53,18 @@ public class ControllerAdvisor {
     @ExceptionHandler(NoSuchStationException.class)
     public ResponseEntity handleNoSuchStationException(NoSuchStationException e) {
         logger.error("아이디에 해당하는 역이 존재하지 않습니다. id: {}", e.getMessage());
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NoSectionException.class)
+    public ResponseEntity handleNoSectionException(NoSectionException e) {
+        logger.error("해당 구간이 존재 하지 않습니다. 노선 ID: {}", e.getMessage());
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(CannotRemoveException.class)
+    public ResponseEntity handleCannotRemoveException(CannotRemoveException e) {
+        logger.error(e.getMessage());
         return ResponseEntity.badRequest().build();
     }
 }

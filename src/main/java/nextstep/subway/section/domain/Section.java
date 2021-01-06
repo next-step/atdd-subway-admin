@@ -1,8 +1,6 @@
 package nextstep.subway.section.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nextstep.subway.section.application.ExceedDistanceException;
 
 import javax.persistence.*;
@@ -10,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 @Getter
+@Builder
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "section")
@@ -26,10 +26,6 @@ public class Section {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public List<Long> allStationIds() {
-        return Arrays.asList(upStationId, downStationId);
     }
 
     public boolean longer(Section orgSection) {
@@ -53,7 +49,7 @@ public class Section {
     }
 
     private void validateDistance(Section newSection) {
-        if (newSection.longer(this)) {
+        if (newSection.getDistance() > this.distance) {
             throw new ExceedDistanceException(distance, newSection.getDistance());
         }
     }

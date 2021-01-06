@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.section.application.AlreadyExistsException;
-import nextstep.subway.section.application.ExceedDistanceException;
+import nextstep.subway.section.application.CannotRemoveException;
 import nextstep.subway.section.application.NoMatchStationException;
 
 import javax.persistence.*;
@@ -44,6 +44,53 @@ public class Sections {
         insertWhenSameUpStation(newSection);
     }
 
+    public void removeSectionByStationId(Long stationId) {
+        if(sections.size() == 1) {
+            throw new CannotRemoveException("최종 구간의 역은 삭제할 수 없습니다.");
+        }
+
+        if(firstStationId().equals(stationId)) {
+            sections.remove(getFirstSection());
+            return;
+        }
+
+        if(lastStationId().equals(stationId)) {
+            sections.remove(getLastSection());
+            return;
+        }
+
+        Section preSection = getPreSectionByStationId(stationId);
+        Section nextSection = getNextSectionByStationId(stationId);
+        Section newSection = Section.builder()
+                .upStationId(preSection.getUpStationId())
+                .downStationId(nextSection.getDownStationId())
+                .distance(preSection.getDistance() + nextSection.getDistance())
+                .build();
+
+        sections.add(newSection);
+        sections.removeAll(Arrays.asList(preSection, nextSection));
+    }
+
+    private Optional<Section> getPreSection(Section section) {
+        return sections.stream()
+                .filter(it -> it.getDownStationId().equals(section.getUpStationId()))
+                .findFirst();
+    }
+
+    private Section getNextSectionByStationId(Long stationId) {
+        return sections.stream()
+                .filter(it -> it.getUpStationId().equals(stationId))
+                .findFirst()
+                .get();
+    }
+
+    private Section getPreSectionByStationId(Long stationId) {
+        return sections.stream()
+                .filter(it -> it.getDownStationId().equals(stationId))
+                .findFirst()
+                .get();
+    }
+
     private void insertWhenSameUpStation(Section newSection) {
         this.sections.stream()
                 .filter(newSection::sameUpStation)
@@ -64,9 +111,9 @@ public class Sections {
                 });
     }
 
-    private boolean isFirstOrLastSection(Section newSection) {
-        return firstStationId().equals(newSection.getDownStationId())
-                || lastStationId().equals(newSection.getUpStationId());
+    private boolean isFirstOrLastSection(Section section) {
+        return firstStationId().equals(section.getDownStationId())
+                || lastStationId().equals(section.getUpStationId());
     }
 
     private void validate(Section newSection) {
@@ -104,12 +151,6 @@ public class Sections {
         return ids;
     }
 
-    private void validateDistance(Section orgSection, Section newSection) {
-        if (newSection.longer(orgSection)) {
-            throw new ExceedDistanceException(orgSection.getDistance(), newSection.getDistance());
-        }
-    }
-
     private Sections orderedSections() {
         List<Section> orderedSections = new ArrayList<>();
 
@@ -126,6 +167,13 @@ public class Sections {
     private Section getFirstSection() {
         return sections.stream()
                 .filter(this::isFirstSection)
+                .findAny()
+                .get();
+    }
+
+    private Section getLastSection() {
+        return sections.stream()
+                .filter(this::isLastSection)
                 .findAny()
                 .get();
     }
