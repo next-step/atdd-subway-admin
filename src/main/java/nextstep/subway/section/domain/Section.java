@@ -15,7 +15,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -32,17 +31,14 @@ public class Section {
 	@JoinColumn(name = "line_id")
 	private Line line;
 
-	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "up_station_id")
 	private Station upStation;
 
-	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
-	@Setter
 	private int distance;
 
 	public List<Station> getStations() {
