@@ -39,7 +39,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header(HttpHeaders.LOCATION)).isNotBlank();
         assertThat(lineResponse.getStations().size()).isEqualTo(2);
-        assertThat(lineResponse.getStations().stream().map(Station::getName)).contains(upStationName, downStationName);
+        assertThat(lineResponse.getStations().stream().map(StationResponse::getName)).contains(upStationName, downStationName);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
