@@ -151,7 +151,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
-	private void 지하철_노선_목록_포함됨(final ExtractableResponse<Response> response,
+	public static void 지하철_노선_목록_포함됨(final ExtractableResponse<Response> response,
 		final ExtractableResponse<Response>... createdLine) {
 
 		List<Long> savedLineIds = Arrays.stream(createdLine).
@@ -164,7 +164,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(actualLineIds).containsAll(savedLineIds);
 	}
 
-	private Long getLineId(final ExtractableResponse<Response> line) {
+	private static Long getLineId(final ExtractableResponse<Response> line) {
 		return Long.parseLong(line.header("Location").split("/")[2]);
 	}
 
@@ -172,7 +172,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
-	private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+	public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
 		// when
 		return RestAssured.given().log().all()
 			.when().get("/lines")
@@ -188,8 +188,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
-	private ExtractableResponse<Response> 지하철_노선_조회_요청(final ExtractableResponse<Response> createdLine) {
+	public static ExtractableResponse<Response> 지하철_노선_조회_요청(final ExtractableResponse<Response> createdLine) {
 		Long lineId = getLineId(createdLine);
+		return 지하철_노선_조회_요청(lineId);
+	}
+
+	public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
 		return RestAssured.given().log().all()
 			.when().get("/lines/{id}", lineId)
 			.then().log().all().extract();
@@ -273,7 +277,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return Long.parseLong(response.header("Location").split("/")[2]);
 	}
 
-	private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId,
+	private static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId,
+		Long downStationId,
 		int distance) {
 		return RestAssured.given().log().all()
 			.body(new LineRequest(name, color, upStationId, downStationId, distance))
@@ -282,5 +287,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.post("/lines")
 			.then().log().all()
 			.extract();
+	}
+
+	public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+		String name = params.get("name");
+		String color = params.get("color");
+		Long upStationId = Long.parseLong(params.get("upStation"));
+		Long downStationId = Long.parseLong(params.get("downStation"));
+		int distance = Integer.parseInt(params.get("distance"));
+		return 지하철_노선_생성_요청(name, color, upStationId, downStationId, distance);
 	}
 }

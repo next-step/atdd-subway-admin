@@ -42,4 +42,8 @@ public class StationService {
 	public Station findStationById(Long upStationId) {
 		return stationRepository.findById(upStationId).orElseThrow(() -> new NotFoundException());
 	}
+
+	public List<Station> findAllById(List<Long> ids) {
+		return stationRepository.findAllById(ids);
+	}
 }

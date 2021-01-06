@@ -13,6 +13,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 @Service
 @Transactional
@@ -45,7 +46,13 @@ public class LineService {
 
 	public LineResponse findLine(Long id) {
 		Line persistLine = getLineById(id);
-		return LineResponse.of(persistLine);
+
+		List<StationResponse> stationResponses = stationService.findAllById(persistLine.getStationsIds()).stream()
+			.map(station -> new StationResponse(station.getId(), station.getName(), station.getCreatedDate(),
+				station.getModifiedDate()))
+			.collect(Collectors.toList());
+
+		return LineResponse.of(persistLine, stationResponses);
 	}
 
 	public void updateLine(Long id, LineRequest lineRequest) {
@@ -53,7 +60,7 @@ public class LineService {
 		persistLine.update(lineRequest.toLine());
 	}
 
-	private Line getLineById(Long id) {
+	public Line getLineById(Long id) {
 		return lineRepository.findById(id).orElseThrow(() -> new NotFoundException());
 	}
 

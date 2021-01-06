@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.station.domain.Station;
 
 /**
  * @author : byungkyu
@@ -25,30 +25,45 @@ public class Section extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "line_id")
 	private Line line;
-
-	@ManyToOne
-	@JoinColumn(name = "up_station_id")
-	private Station upStation;
-	@ManyToOne
-	@JoinColumn(name = "down_station_id")
-	private Station downStation;
-
+	private Long upStationId;
+	private Long downStationId;
 	private int distance;
 
 	protected Section() {
 	}
 
-	public Section(Station upStation, Station downStation, int distance) {
-		this.upStation = upStation;
-		this.downStation = downStation;
+	public Section(Long upStationId, Long downStationId, int distance) {
+		this.upStationId = upStationId;
+		this.downStationId = downStationId;
 		this.distance = distance;
 	}
 
-	public List<Station> getStations() {
-		return Arrays.asList(upStation, downStation);
+	public List<Long> getStationsIds() {
+		//return Arrays.asList(upStationId, downStationId).stream().sorted().collect(Collectors.toList());
+		return Arrays.asList(upStationId, downStationId);
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public Line getLine() {
+		return line;
+	}
+
+	public Long getUpStationId() {
+		return upStationId;
+	}
+
+	public Long getDownStationId() {
+		return downStationId;
+	}
+
+	public int getDistance() {
+		return distance;
 	}
 
 	@Override
@@ -58,13 +73,23 @@ public class Section extends BaseEntity {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		Section section = (Section)o;
-		return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line,
-			section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation,
-			section.downStation);
+		return getDistance() == section.getDistance() && Objects.equals(getId(), section.getId())
+			&& Objects.equals(getLine(), section.getLine()) && Objects.equals(getUpStationId(),
+			section.getUpStationId()) && Objects.equals(getDownStationId(), section.getDownStationId());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, line, upStation, downStation, distance);
+		return Objects.hash(getId(), getLine(), getUpStationId(), getDownStationId(), getDistance());
+	}
+
+	public void changeUpStation(Long id, int distance) {
+		this.upStationId = id;
+		this.distance = distance;
+	}
+
+	public void changeDownStation(Long id, int distance) {
+		this.downStationId = id;
+		this.distance = distance;
 	}
 }
