@@ -15,20 +15,20 @@ public class SectionController {
     @Autowired
     private SectionService sectionService;
 
-    @PostMapping("/sections")
-    public ResponseEntity<SectionResponse> create(@RequestBody SectionRequest request) {
-        SectionResponse response = sectionService.saveSection(request);
+    @PostMapping("/lines/{lineId}/sections")
+    public ResponseEntity<SectionResponse> create(@PathVariable Long lineId, @RequestBody SectionRequest request) {
+        SectionResponse response = sectionService.saveSection(lineId, request);
         return ResponseEntity.created(URI.create("/sections/" + response.getId())).body(response);
     }
 
-    @GetMapping("/sections/{lineId}")
+    @GetMapping("/lines/{lineId}/sections")
     public ResponseEntity<List<SectionResponse>> selectAll(@PathVariable Long lineId) {
         List<SectionResponse> responses = sectionService.findAll(lineId);
         return ResponseEntity.ok(responses);
     }
 
-    @DeleteMapping("/sections/{lineId}/{stationId}")
-    public ResponseEntity<Void> delete(@PathVariable Long lineId, @PathVariable Long stationId) {
+    @DeleteMapping("/lines/{lineId}/sections")
+    public ResponseEntity<Void> delete(@PathVariable Long lineId, @RequestParam Long stationId) {
         sectionService.delete(lineId, stationId);
         return ResponseEntity.noContent().build();
     }

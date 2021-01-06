@@ -37,10 +37,10 @@ public class SectionService {
         this.stationRepository = stationRepository;
     }
 
-    public SectionResponse saveSection(SectionRequest request) {
+    public SectionResponse saveSection(Long lineId, SectionRequest request) {
         request.validate();
-        Line line = lineRepository.findById(request.getLineId())
-                .orElseThrow(() -> new NotExistsLineIdException(request.getLineId()));
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new NotExistsLineIdException(lineId));
         Station upStation = stationRepository.findById(request.getUpStationId())
                 .orElseThrow(() -> new NotExistsStationIdException(request.getUpStationId()));
         Station downStation = stationRepository.findById(request.getDownStationId())

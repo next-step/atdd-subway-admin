@@ -44,28 +44,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행, 하행 역이 동일한 지하철 구간을 등록한다")
     @Test
     void createDuplicateStation() {
-        ExtractableResponse<Response> response = createRequest(new SectionRequest(line.getId(), lastUpStation.getId(), lastUpStation.getId(), 3));
+        ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(lastUpStation.getId(), lastUpStation.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("이미 등록 된 지하철 구간을 등록한다")
     @Test
     void createDuplicateSection() {
-        ExtractableResponse<Response> response = createRequest(new SectionRequest(line.getId(), lastUpStation.getId(), lastDownStation.getId(), 3));
+        ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(lastUpStation.getId(), lastDownStation.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("노선이 없는 지하철 구간을 등록한다")
     @Test
     void createWithNotExistsLine() {
-        ExtractableResponse<Response> response = createRequest(new SectionRequest(10L, lastUpStation.getId(), lastDownStation.getId(), 3));
+        ExtractableResponse<Response> response = createRequest(10L, new SectionRequest(lastUpStation.getId(), lastDownStation.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("역이 없는 지하철 구간을 등록한다")
     @Test
     void createWithNotExistsStation() {
-        ExtractableResponse<Response> response = createRequest(new SectionRequest(line.getId(), lastUpStation.getId(), 10L, 3));
+        ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(lastUpStation.getId(), 10L, 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -75,10 +75,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse station = StationAcceptanceTest.createRequest(new StationRequest("양천구청"))
                 .as(StationResponse.class);
 
-        ExtractableResponse<Response> upResponse = createRequest(new SectionRequest(line.getId(), lastUpStation.getId(), station.getId(), 50));
+        ExtractableResponse<Response> upResponse = createRequest(line.getId(), new SectionRequest(lastUpStation.getId(), station.getId(), 50));
         assertThat(upResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
-        ExtractableResponse<Response> downResponse = createRequest(new SectionRequest(line.getId(), station.getId(), lastDownStation.getId(), 50));
+        ExtractableResponse<Response> downResponse = createRequest(line.getId(), new SectionRequest(station.getId(), lastDownStation.getId(), 50));
         assertThat(downResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -88,7 +88,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse station = StationAcceptanceTest.createRequest(new StationRequest("양천구청"))
                 .as(StationResponse.class);
 
-        ExtractableResponse<Response> response = createRequest(new SectionRequest(line.getId(), lastUpStation.getId(), station.getId(), 3));
+        ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(lastUpStation.getId(), station.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> selectedResponse = selectAllRequest(line.getId());
         assertThat(selectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -103,7 +103,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse station = StationAcceptanceTest.createRequest(new StationRequest("양천구청"))
                 .as(StationResponse.class);
 
-        ExtractableResponse<Response> response = createRequest(new SectionRequest(line.getId(), station.getId(), lastDownStation.getId(), 3));
+        ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(station.getId(), lastDownStation.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> selectedResponse = selectAllRequest(line.getId());
         assertThat(selectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -119,7 +119,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse station = StationAcceptanceTest.createRequest(new StationRequest("신도림"))
                 .as(StationResponse.class);
 
-        ExtractableResponse<Response> response = createRequest(new SectionRequest(line.getId(), station.getId(), lastUpStation.getId(), 3));
+        ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(station.getId(), lastUpStation.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> selectedResponse = selectAllRequest(line.getId());
         assertThat(selectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -134,7 +134,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse station = StationAcceptanceTest.createRequest(new StationRequest("까치산"))
                 .as(StationResponse.class);
 
-        ExtractableResponse<Response> response = createRequest(new SectionRequest(line.getId(), lastDownStation.getId(), station.getId(), 3));
+        ExtractableResponse<Response> response = createRequest(line.getId(), new SectionRequest(lastDownStation.getId(), station.getId(), 3));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> selectedResponse = selectAllRequest(line.getId());
         assertThat(selectedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -148,7 +148,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteSection() {
         StationResponse station = StationAcceptanceTest.createRequest(new StationRequest("양천구청"))
                 .as(StationResponse.class);
-        SectionResponse createdResponse = createRequest(new SectionRequest(line.getId(), station.getId(), lastDownStation.getId(), 3))
+        SectionResponse createdResponse = createRequest(line.getId(), new SectionRequest(station.getId(), lastDownStation.getId(), 3))
                 .as(SectionResponse.class);
 
         ExtractableResponse<Response> deletedResponse = deleteRequest(line.getId(), station.getId());
@@ -191,18 +191,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return sectionNames;
     }
 
-    private ExtractableResponse<Response> createRequest(SectionRequest sectionRequest) {
-        final String url = "/sections";
+    private ExtractableResponse<Response> createRequest(Long lineId, SectionRequest sectionRequest) {
+        final String url = "/lines/" + lineId + "/sections";
         return RequestTest.doPost(url, sectionRequest);
     }
 
     private ExtractableResponse<Response> selectAllRequest(Long lineId) {
-        final String url = "/sections/" + lineId;
+        final String url = "/lines/" + lineId + "/sections";
         return RequestTest.doGet(url);
     }
 
     private ExtractableResponse<Response> deleteRequest(Long lineId, Long stationId) {
-        final String url = "/sections/" + lineId + "/" + stationId;
+        final String url = "/lines/" + lineId + "/sections?stationId=" + stationId;
         return RequestTest.doDelete(url);
     }
 }
