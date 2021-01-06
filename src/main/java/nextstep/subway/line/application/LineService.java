@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,7 +70,8 @@ public class LineService {
 
   public LineResponse removeSectionByStationId(Long id, Long stationId) {
     Line persistLine = findById(id);
-    persistLine.removeSection(stationId);
+    Station removeStation = stationService.findById(stationId);
+    persistLine.removeSection(removeStation);
     return LineResponse.of(persistLine);
   }
 }

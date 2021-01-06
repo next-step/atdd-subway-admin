@@ -70,11 +70,11 @@ public class Sections {
     this.sections.add(newSection);
   }
 
-  public void removeSection(Long stationId) {
+  public void removeSection(Station station) {
 
     removeValidationCheck();
 
-    Section removeSection = findSectionByStationId(stationId);
+    Section removeSection = findSectionByStationId(station);
     updateSectionToRemove(removeSection);
 
     this.sections.remove(removeSection);
@@ -99,9 +99,9 @@ public class Sections {
         .anyMatch(section -> section.isDownStationInSection(station));
   }
 
-  private Section findSectionByStationId(Long stationId) {
+  private Section findSectionByStationId(Station station) {
     return this.sections.stream()
-        .filter(section -> section.isDownStationInSection(stationId))
+        .filter(section -> section.isDownStationInSection(station))
         .findFirst()
         .orElseThrow(() -> new SectionException(NOT_REGISTERED_STATION));
   }

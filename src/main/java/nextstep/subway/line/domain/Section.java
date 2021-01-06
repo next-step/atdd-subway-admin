@@ -45,10 +45,6 @@ public class Section extends BaseEntity {
     return this.downStation.equals(station);
   }
 
-  public boolean isDownStationInSection(Long stationId) {
-    return this.downStation.getId().equals(stationId);
-  }
-
   public boolean isUpStationInSection(Station station) {
     return station.equals(this.upStation);
   }
