@@ -28,6 +28,19 @@ public class SectionRestHelper {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_구간_삭제(Long lineId, Long stationId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("stationId", String.valueOf(stationId));
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/"+ lineId +"/sections")
+                .then().log().all()
+                .extract();
+    }
+
     public static Map<String, String> lineStationParamsGenerator(
             Long upStationId, Long downStationId, long distance) {
         Map<String, String> params = new HashMap<>();

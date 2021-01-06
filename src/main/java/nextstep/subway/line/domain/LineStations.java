@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.line.exception.AlreadySavedLineException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.LessThanRemovableSizeException;
 import nextstep.subway.station.exception.NotRegisteredStationException;
-import nextstep.subway.station.exception.StationNotFoundException;
 
 /**
  * @author : leesangbae
@@ -22,51 +22,72 @@ import nextstep.subway.station.exception.StationNotFoundException;
 @Embeddable
 public class LineStations {
 
+    private final static int REMOVABLE_MINIMUM_SIZE = 2;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private List<LineStation> lineStations = new ArrayList<>();
 
     public List<LineStation> getLineStations() {
-        Optional<LineStation> preLineStation = lineStations.stream()
-                .filter(it -> it.getPreStation() == null)
-                .findFirst();
+        Optional<LineStation> preLineStation = findFirstByPredicate(it -> it.getPreStation() == null);
 
         List<LineStation> result = new LinkedList<>();
         while (preLineStation.isPresent()) {
             LineStation preStation = preLineStation.get();
             result.add(preStation);
-            preLineStation = lineStations.stream()
-                    .filter(it -> it.getPreStation() == preStation.getStation())
-                    .findFirst();
+            preLineStation = findFirstByPredicate(it -> it.getPreStation() == preStation.getStation());
         }
         return result;
     }
 
+
     public void add(LineStation lineStation) {
 
-        if (lineStations.isEmpty()) {
-            lineStations.add(lineStation);
+        if (this.lineStations.isEmpty()) {
+            this.lineStations.add(lineStation);
             return;
         }
 
         addSectionValidate(lineStation);
 
         if (contains(lineStation.getPreStation())) {
-            this.lineStations.stream()
-                    .filter(it -> it.getPreStation() == lineStation.getPreStation())
-                    .findFirst()
-                    .ifPresent(it -> it.updatePreStation(lineStation.getStation(), lineStation.getDistance()));
-            lineStations.add(lineStation);
+            findFirstByPredicate(it -> it.getPreStation() == lineStation.getPreStation())
+                 .ifPresent(it -> it.updatePreStation(lineStation.getStation(), lineStation.getDistance()));
+            this.lineStations.add(lineStation);
             return;
         }
 
         if (contains(lineStation.getStation())) {
-            this.lineStations.stream()
-                    .filter(it -> it.getStation() == lineStation.getStation())
-                    .findFirst()
-                    .ifPresent(it -> it.updateStation(lineStation.getPreStation(), lineStation.getDistance()));
-            lineStations.add(lineStation);
+            findFirstByPredicate(it -> it.getStation() == lineStation.getStation())
+                .ifPresent(it -> it.updateStation(lineStation.getPreStation(), lineStation.getDistance()));
+            this.lineStations.add(lineStation);
         }
+    }
+
+    public void remove(Station station) {
+
+        removeSectionValidate();
+
+        Optional<LineStation> lineStation = findFirstByPredicate(it -> station.equals(it.getPreStation()));
+        Optional<LineStation> preLineStation = findFirstByPredicate(it -> station.equals(it.getStation()));
+
+        if (preLineStation.isPresent() && lineStation.isPresent()) {
+            LineStation mergedLineStation = mergeLineStation(preLineStation.get(), lineStation.get());
+            this.lineStations.add(mergedLineStation);
+        }
+        preLineStation.ifPresent(value -> this.lineStations.remove(value));
+        lineStation.ifPresent(value -> this.lineStations.remove(value));
+    }
+
+    private LineStation mergeLineStation(LineStation preLineStation, LineStation lineStation) {
+        long totalDistance = preLineStation.getDistance() + lineStation.getDistance();
+        return new LineStation(
+                preLineStation.getLine(),
+                lineStation.getStation(),
+                preLineStation.getPreStation(),
+                totalDistance
+        );
+
     }
 
     private boolean contains(Station station) {
@@ -86,4 +107,16 @@ public class LineStations {
         }
     }
 
+    private void removeSectionValidate() {
+        int size = this.lineStations.size();
+        if (size <= REMOVABLE_MINIMUM_SIZE) {
+            throw new LessThanRemovableSizeException("구간 삭제 가능한 최소 사이즈보다 작습니다.");
+        }
+    }
+
+    private Optional<LineStation> findFirstByPredicate(Predicate<LineStation> predicate) {
+        return this.lineStations.stream()
+                .filter(predicate)
+                .findFirst();
+    }
 }

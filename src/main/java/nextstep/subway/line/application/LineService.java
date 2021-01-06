@@ -14,6 +14,7 @@ import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.line.dto.SectionCreateRequest;
 import nextstep.subway.line.dto.SectionCreateResponse;
+import nextstep.subway.line.dto.SectionDeleteRequest;
 import nextstep.subway.line.exception.AlreadySavedLineException;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.application.StationService;
@@ -116,4 +117,10 @@ public class LineService {
                 .orElseThrow(LineNotFoundException::new);
     }
 
+    public void removeSection(Long lineId, SectionDeleteRequest request) {
+        Line savedLine = findByIdWithLineStation(lineId);
+        LineStations stations = savedLine.getLineStations();
+        Station station = stationService.findById(request.getStationId());
+        stations.remove(station);
+    }
 }

@@ -2,7 +2,6 @@ package nextstep.subway.line.dto;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import nextstep.subway.line.domain.LineStation;
 
 /**
  * @author : leesangbae
