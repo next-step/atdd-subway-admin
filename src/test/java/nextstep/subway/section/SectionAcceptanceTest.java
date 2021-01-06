@@ -148,7 +148,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteSection() {
         StationResponse station = StationAcceptanceTest.createRequest(new StationRequest("양천구청"))
                 .as(StationResponse.class);
-        SectionResponse createdResponse = createRequest(line.getId(), new SectionRequest(station.getId(), lastDownStation.getId(), 3))
+        createRequest(line.getId(), new SectionRequest(station.getId(), lastDownStation.getId(), 3))
                 .as(SectionResponse.class);
 
         ExtractableResponse<Response> deletedResponse = deleteRequest(line.getId(), station.getId());
