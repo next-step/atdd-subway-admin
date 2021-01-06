@@ -65,14 +65,6 @@ public class Line extends BaseEntity {
 	public String getColor() {
 		return color;
 	}
-/*
-	public List<Station> getStations() {
-		return sections.getSections().stream()
-			.map(section -> section.getStationsIds())
-			.flatMap(Collection::stream)
-			.sorted(Comparator.comparingLong(Station::getId))
-			.collect(Collectors.toList());
-	}*/
 
 	public List<Long> getStationsIds() {
 		return sections.getSections().stream()

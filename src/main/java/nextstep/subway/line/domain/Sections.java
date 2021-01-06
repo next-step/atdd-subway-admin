@@ -21,7 +21,7 @@ public class Sections {
 	@JoinColumn(name = "line_id")
 	private List<Section> sections = new ArrayList<>();
 
-	public Sections() {
+	protected Sections() {
 	}
 
 	public List<Section> getSections() {
@@ -33,8 +33,42 @@ public class Sections {
 			sections.add(section);
 			return;
 		}
-
 		//역 사이에 새로운 역 등록
+		addSectionSameUpStation(section);
+
+		// 새로운 역을 상행 종점으로 등록할 경우
+		addSectionNewUpStation(section);
+
+		//새로운 역을 하향 종점으로 등록할 경우
+		addSectionNewDownStation(section);
+	}
+
+	private void addSectionNewDownStation(Section section) {
+		if (isEqualToDownStation(section.getUpStationId())) {
+			sections.stream()
+				.filter(originSection -> originSection.getUpStationId().equals(section.getDownStationId()))
+				.findFirst()
+				.ifPresent(
+					originSection -> originSection.changeDownStation(section.getUpStationId(), section.getDistance()));
+
+			sections.add(section);
+		}
+	}
+
+	private void addSectionNewUpStation(Section section) {
+		if (isEqualToUpStation(section.getDownStationId())) {
+			sections.stream()
+				.filter(originSection -> originSection.getUpStationId().equals(section.getDownStationId()))
+				.findFirst()
+				.ifPresent(
+					originSection -> originSection.changeUpStation(section.getDownStationId(), section.getDistance()));
+
+			sections.add(section);
+			return;
+		}
+	}
+
+	private void addSectionSameUpStation(Section section) {
 		if (isEqualToUpStation(section.getUpStationId())) {
 			sections.stream()
 				.filter(originSection -> originSection.getUpStationId().equals(section.getUpStationId())
@@ -46,29 +80,6 @@ public class Sections {
 
 			sections.add(section);
 			return;
-		}
-
-		// 새로운 역을 상행 종점으로 등록할 경우
-		if (isEqualToUpStation(section.getDownStationId())) {
-			sections.stream()
-				.filter(originSection -> originSection.getUpStationId().equals(section.getDownStationId()))
-				.findFirst()
-				.ifPresent(
-					originSection -> originSection.changeUpStation(section.getDownStationId(), section.getDistance()));
-
-			sections.add(section);
-			return;
-		}
-
-		//새로운 역을 하향 종점으로 등록할 경우
-		if (isEqualToDownStation(section.getUpStationId())) {
-			sections.stream()
-				.filter(originSection -> originSection.getUpStationId().equals(section.getDownStationId()))
-				.findFirst()
-				.ifPresent(
-					originSection -> originSection.changeDownStation(section.getUpStationId(), section.getDistance()));
-
-			sections.add(section);
 		}
 	}
 

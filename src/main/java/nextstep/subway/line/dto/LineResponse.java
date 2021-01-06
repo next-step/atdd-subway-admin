@@ -25,7 +25,6 @@ public class LineResponse {
 		this.color = color;
 		this.createdDate = createdDate;
 		this.modifiedDate = modifiedDate;
-		//this.stations = stationsToResponses(stations);
 		this.stations = stations;
 	}
 
@@ -33,12 +32,6 @@ public class LineResponse {
 		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(),
 			line.getModifiedDate(), stationResponses);
 	}
-
-	/*private List<StationResponse> stationsToResponses(List<Station> stations) {
-		return stations.stream()
-			.map(StationResponse::of)
-			.collect(Collectors.toList());
-	}*/
 
 	public static LineResponse of(Line line) {
 		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(),
