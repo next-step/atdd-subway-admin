@@ -22,4 +22,9 @@ public class SectionService {
     public LineStation addNewLineStation(Line line, LineStations lineStations, Station upStation, Station downStation, Distance distance) {
         return lineStationRepository.save(lineStations.addNewLineStation(line, upStation, downStation, distance));
     }
+
+    public void removeSection(Line line, Station station) {
+        LineStations lineStations = new LineStations(lineStationRepository.findLineStations(line, station, station, station));
+        lineStationRepository.delete(lineStations.removeSection(station));
+    }
 }
