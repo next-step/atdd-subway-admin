@@ -42,7 +42,6 @@ public class Section extends BaseEntity {
 	}
 
 	public List<Long> getStationsIds() {
-		//return Arrays.asList(upStationId, downStationId).stream().sorted().collect(Collectors.toList());
 		return Arrays.asList(upStationId, downStationId);
 	}
 

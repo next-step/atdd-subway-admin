@@ -28,8 +28,6 @@ public class SectionService {
 
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
 		Line line = lineService.getLineById(lineId);
-		//Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
-		//Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
 		line.addSection(new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
 			sectionRequest.getDistance()));
 	}
