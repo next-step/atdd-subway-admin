@@ -83,7 +83,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(response.as(LineResponse.class)).isNotNull(),
-			() -> assertThat(response.as(LineResponse.class).getId()).isNotNull()
+			() -> assertThat(response.as(LineResponse.class).getId()).isNotNull(),
+			() -> assertThat(response.as(LineResponse.class).getStations()).hasSize(2)
+
 		);
 	}
 
@@ -174,13 +176,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> 앞_중간_추가_결과 = 지하철_노선_구간추가_요청(line.getId(), 앞_중간_추가_요청);
 		ExtractableResponse<Response> 뒤_중간_추가_결과 = 지하철_노선_구간추가_요청(line.getId(), 뒤_중간_추가_요청);
 		ExtractableResponse<Response> 뒤_맨뒤_추가_결과 = 지하철_노선_구간추가_요청(line.getId(), 뒤_맨뒤_추가_요청);
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(line.getId());
 
 		// then
 		assertAll(
 			() -> assertThat(앞_맨앞_추가_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
 			() -> assertThat(앞_중간_추가_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
 			() -> assertThat(뒤_중간_추가_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-			() -> assertThat(뒤_맨뒤_추가_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value())
+			() -> assertThat(뒤_맨뒤_추가_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+			() -> assertThat(response.as(LineResponse.class).getStations()).hasSize(6)
 		);
 	}
 
@@ -228,12 +232,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
-		ExtractableResponse<Response> response = RestAssured
+		return RestAssured
 			.given().log().all()
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when().get("/lines/" + id)
 			.then().log().all().extract();
-		return response;
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Map<String, String> params) {

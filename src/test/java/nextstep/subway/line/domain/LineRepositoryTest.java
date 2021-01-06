@@ -58,7 +58,27 @@ class LineRepositoryTest {
 		// then
 		assertAll(
 			() -> assertThat(actual).isNotNull(),
-			() -> assertThat(actual).isEqualTo(expected)
+			() -> assertThat(actual).isEqualTo(expected),
+			() -> assertThat(actual.getSections().getSections()).hasSize(1),
+			() -> assertThat(actual.stations()).hasSize(2)
+		);
+	}
+
+	@DisplayName("DB: Line 조회 테스트")
+	@Test
+	void findtestLineTest() {
+		// given
+		Line expected = 라인_2호선_생성("강남역", "양재역");
+
+		// when
+		Line actual = lineRepository.findById(expected.getId()).get();
+
+		// then
+		assertAll(
+			() -> assertThat(actual).isNotNull(),
+			() -> assertThat(actual).isEqualTo(expected),
+			() -> assertThat(actual.sections()).hasSize(1),
+			() -> assertThat(actual.stations()).hasSize(2)
 		);
 	}
 
