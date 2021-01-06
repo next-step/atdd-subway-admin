@@ -22,6 +22,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.dto.ErrorResponse;
 import nextstep.subway.common.exception.DuplicateAllStationException;
 import nextstep.subway.common.exception.IllegalDistanceException;
+import nextstep.subway.common.exception.NotExistAllStationException;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
@@ -123,6 +124,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		지하철_노선_구간_상행선_하행선_중복_오류(response);
+	}
+
+	@DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+	@Test
+	void notExistAllStationException() {
+		// when
+		StationResponse 서울역 = StationAcceptanceTest.지하철역_생성("서울역").as(StationResponse.class);
+		StationResponse 호매실역 = StationAcceptanceTest.지하철역_생성("호매실역").as(StationResponse.class);
+		int distance = 5;
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 서울역.getId(), 호매실역.getId(),
+			distance);
+
+		// then
+		지하철_노선_구간_상행선_하행선_없음_오류(response);
+	}
+
+	private void 지하철_노선_구간_상행선_하행선_없음_오류(ExtractableResponse<Response> response) {
+		String errorCode = response.jsonPath().getObject(".", ErrorResponse.class).getErrorCode();
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(errorCode).isEqualTo(NotExistAllStationException.ERROR_CODE);
 	}
 
 	private void 지하철_노선_구간_상행선_하행선_중복_오류(ExtractableResponse<Response> response) {

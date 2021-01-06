@@ -28,4 +28,9 @@ public class CommonExceptionHandler {
 		return ResponseEntity.badRequest().body(new ErrorResponse(exception));
 	}
 
+	@ExceptionHandler(NotExistAllStationException.class)
+	protected ResponseEntity notExistAllStationException(NotExistAllStationException exception) {
+		return ResponseEntity.badRequest().body(new ErrorResponse(exception));
+	}
+
 }

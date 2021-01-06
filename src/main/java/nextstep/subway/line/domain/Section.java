@@ -111,4 +111,8 @@ public class Section extends BaseEntity {
 	public boolean isDuplicateAllStation(Long upStationId, Long downStationId) {
 		return (this.upStationId == upStationId && this.downStationId == downStationId);
 	}
+
+	public boolean isNotExistAllStation(Long upStationId, Long downStationId) {
+		return (!getStationsIds().contains(upStationId) && !getStationsIds().contains(downStationId));
+	}
 }

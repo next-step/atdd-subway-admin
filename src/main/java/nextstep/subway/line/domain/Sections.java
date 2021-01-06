@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 
 import nextstep.subway.common.exception.DuplicateAllStationException;
 import nextstep.subway.common.exception.IllegalDistanceException;
+import nextstep.subway.common.exception.NotExistAllStationException;
 
 /**
  * @author : byungkyu
@@ -59,17 +60,28 @@ public class Sections {
 	private void validateSection(Section section) {
 		validateSectionAllStation(section);
 		validateSectionDistance(section);
+		validateNotExistAllStation(section);
+	}
+
+	private void validateNotExistAllStation(Section section) {
+		sections.forEach(originSection -> {
+			if (originSection.isNotExistAllStation(section.getUpStationId(), section.getDownStationId()))
+				throw new NotExistAllStationException();
+		});
+
 	}
 
 	private void validateSectionAllStation(Section section) {
 		sections.forEach(originSection -> {
-			if(originSection.isDuplicateAllStation(section.getUpStationId(), section.getDownStationId())) throw new DuplicateAllStationException();
+			if (originSection.isDuplicateAllStation(section.getUpStationId(), section.getDownStationId()))
+				throw new DuplicateAllStationException();
 		});
 	}
 
 	private void validateSectionDistance(Section section) {
 		sections.forEach(originSection -> {
-			if(originSection.isInValidDistance(section.getDistance())) throw new IllegalDistanceException();
+			if (originSection.isInValidDistance(section.getDistance()))
+				throw new IllegalDistanceException();
 		});
 	}
 
