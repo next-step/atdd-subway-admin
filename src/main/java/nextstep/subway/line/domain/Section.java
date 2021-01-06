@@ -41,19 +41,12 @@ public class Section extends BaseEntity {
     this.distance = distance;
   }
 
-  public void changeLine(final Line line) {
-    this.line = line;
-  }
-
   public boolean isDownStationInSection(Station station) {
     return this.downStation.equals(station);
   }
 
-  public boolean isUpStationInSection(Station upStation) {
-    if (this.upStation == null) {
-      return false;
-    }
-    return this.upStation.getId().equals(upStation.getId());
+  public boolean isUpStationInSection(Station station) {
+    return station.equals(this.upStation);
   }
 
   public void updateUpToDown(Station preStation, int distance) {
@@ -66,6 +59,15 @@ public class Section extends BaseEntity {
     validateDistance(distance);
     this.downStation = station;
     this.distance -= distance;
+  }
+
+  public void updateUpStationToRemove(Station upStation, int distance) {
+    this.upStation = upStation;
+    if (upStation == null) {
+      this.distance = 0;
+      return;
+    }
+    this.distance += distance;
   }
 
   private void validateDistance(int distance) {

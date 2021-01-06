@@ -8,13 +8,13 @@ import nextstep.subway.station.domain.Station;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StationRequest {
-    private String name;
+  private String name;
 
-    public Station toStation() {
-        return new Station(name);
-    }
+  public Station toStation() {
+    return new Station(name);
+  }
 
-    public StationRequest(String name) {
-        this.name = name;
-    }
+  public StationRequest(String name) {
+    this.name = name;
+  }
 }
