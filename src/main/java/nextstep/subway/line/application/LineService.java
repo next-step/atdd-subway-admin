@@ -25,14 +25,16 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(long id) {
         Line line = find(id);
         return LineResponse.of(line);
@@ -45,7 +47,7 @@ public class LineService {
 
     private Line find(long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException());
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     public void delete(Long id) {
