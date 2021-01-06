@@ -17,7 +17,7 @@ import static nextstep.subway.line.domain.PositionStatus.*;
 
 public class LineStations {
     private static final int MIN_DISTANCE = 0;
-
+    private static final int MIN_STATION_COUNT = 2;
     private final Map<Station, LineStation> lineStations;
 
     public LineStations(List<LineStation> lineStations) {
@@ -34,45 +34,44 @@ public class LineStations {
         last.applyDistanceForNextStation(new Distance(MIN_DISTANCE));
     }
 
-    public void linkFirstAndNewLineStations(LineStation newLineStation, Distance distance) {
+    private void linkFirstAndNewLineStations(LineStation newLineStation, Distance distance) {
         LineStation first = getFirstLineStation();
         LineStation other = getLineStationByStation(first.getNextStation());
 
         first.applyNextStation(newLineStation);
         first.changeDistanceForNextStation(distance);
-        newLineStation.applyNextStation(other);
         newLineStation.changePositionStatus(MIDDLE);
+        newLineStation.applyNextStation(other);
         newLineStation.applyDistanceForNextStation(distance);
     }
 
-    public void linkNewAndFirstLineStations(LineStation newLineStation, Distance distance) {
+    private void linkNewAndFirstLineStations(LineStation newLineStation, Distance distance) {
         LineStation first = getFirstLineStation();
 
-        newLineStation.applyNextStation(first);
         newLineStation.changePositionStatus(FIRST);
+        newLineStation.applyNextStation(first);
         newLineStation.applyDistanceForNextStation(distance);
         first.changePositionStatus(MIDDLE);
     }
 
-    public void linkNewAndLastLineStations(LineStation newLineStation, Distance distance) {
+    private void linkNewAndLastLineStations(LineStation newLineStation, Distance distance) {
         LineStation last = getLastLineStation();
         LineStation other = getLineStationByStation(last.getPreviousStation());
 
         other.applyNextStation(newLineStation);
         other.changeDistanceForNextStation(distance);
-        newLineStation.applyNextStation(last);
         newLineStation.changePositionStatus(MIDDLE);
+        newLineStation.applyNextStation(last);
         newLineStation.applyDistanceForNextStation(distance);
     }
 
-    public void linkLastAndNewLineStations(LineStation newLineStation, Distance distance) {
+    private void linkLastAndNewLineStations(LineStation newLineStation, Distance distance) {
         LineStation last = getLastLineStation();
 
-        last.applyNextStation(newLineStation);
         last.changePositionStatus(MIDDLE);
+        last.applyNextStation(newLineStation);
         last.applyDistanceForNextStation(distance);
         newLineStation.changePositionStatus(LAST);
-        newLineStation.applyDistanceForNextStation(new Distance(MIN_DISTANCE));
     }
 
     public List<Station> getSortedStations() {
@@ -153,5 +152,36 @@ public class LineStations {
                 .filter(LineStation::isNew)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("상행 역과 하행 역 둘 중 하나라도 포함되어 있지 않으면 추가할 수 없습니다"));
+    }
+
+    public LineStation removeSection(Station station) {
+        checkRemoveSection();
+        LineStation removedLineStation = getLineStationByStation(station);
+
+        if (removedLineStation.isFirst()) {
+            return changeLineStationStatus(removedLineStation, removedLineStation.getNextStation(), FIRST);
+        }
+
+        if (removedLineStation.isLast()) {
+            return changeLineStationStatus(removedLineStation, removedLineStation.getPreviousStation(), LAST);
+        }
+
+        LineStation previousLineStation = getLineStationByStation(removedLineStation.getPreviousStation());
+        LineStation nextLineStation = getLineStationByStation(removedLineStation.getNextStation());
+        previousLineStation.applyNextStation(nextLineStation);
+        previousLineStation.mergeDistanceForNextStation(removedLineStation.getDistanceForNextStation());
+        return removedLineStation;
+    }
+
+    private LineStation changeLineStationStatus(LineStation removedLineStation, Station station, PositionStatus status) {
+        LineStation lineStation = getLineStationByStation(station);
+        lineStation.changePositionStatus(status);
+        return removedLineStation;
+    }
+
+    private void checkRemoveSection() {
+        if (lineStations.size() <= MIN_STATION_COUNT) {
+            throw new IllegalStateException("현재 해당 구간에 역이 " + MIN_STATION_COUNT + "개만 존재하여 제거할 수 없습니다");
+        }
     }
 }
