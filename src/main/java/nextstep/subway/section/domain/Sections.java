@@ -8,13 +8,17 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.common.exception.ExistException;
 import nextstep.subway.common.exception.NothingException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Embeddable
 public class Sections {
@@ -22,16 +26,15 @@ public class Sections {
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL) //, orphanRemoval = true
 	private final List<Section> sections = new ArrayList<>();
 
-	public List<Station> getStations() {
-		Set<Station> result = new LinkedHashSet<>();
-		for (Section section : this.sections) {
-			result.addAll(section.getStations());
-		}
-		return new ArrayList<>(result);
+	@Transient
+	private List<Station> stations;
+
+	public Sections(Section section) {
+		this.sections.add(section);
 	}
 
-	public void createSection(Line line, Station upStation, Station downStation, int distance) {
-		this.sections.add(new Section(line, upStation, downStation, distance));
+	public static Sections of(Line line, Station upStation, Station downStation, int distance) {
+		return new Sections(new Section(line, upStation, downStation, distance));
 	}
 
 	public void add(Section target) {
@@ -63,6 +66,14 @@ public class Sections {
 		return isContainStation(section.getDownStation());
 	}
 
+	public List<Station> getStations() {
+		Set<Station> result = new LinkedHashSet<>();
+		for (Section section : this.sections) {
+			result.addAll(section.getStations());
+		}
+		return new ArrayList<>(result);
+	}
+
 	private void validateSection(Section target) {
 		boolean upStationExist = isExistUpStation(target);
 		boolean downStationExist = isExistDownStation(target);
@@ -80,4 +91,5 @@ public class Sections {
 		return this.sections.stream()
 			.anyMatch(station -> station.contains(target));
 	}
+
 }
