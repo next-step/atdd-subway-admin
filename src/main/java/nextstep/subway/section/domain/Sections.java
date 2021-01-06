@@ -40,24 +40,26 @@ public class Sections {
             this.sections.add(newSection);
             return;
         }
+        insertWhenSameDownStation(newSection);
+        insertWhenSameUpStation(newSection);
+    }
 
+    private void insertWhenSameUpStation(Section newSection) {
         this.sections.stream()
-                .filter(orgSection -> orgSection.getDownStationId().equals(newSection.getDownStationId()))
+                .filter(newSection::sameUpStation)
                 .findFirst()
                 .ifPresent(orgSection -> {
-                    validateDistance(orgSection, newSection);
-                    this.sections.add(new Section(orgSection.getUpStationId(), orgSection.getDownStationId(), orgSection.getDistance() - newSection.getDistance()));
-                    this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
+                    this.sections.addAll(orgSection.splitWhenSameUpStation(newSection));
                     this.sections.remove(orgSection);
                 });
+    }
 
+    private void insertWhenSameDownStation(Section newSection) {
         this.sections.stream()
-                .filter(orgSection -> orgSection.getUpStationId().equals(newSection.getUpStationId()))
+                .filter(newSection::sameDownStation)
                 .findFirst()
                 .ifPresent(orgSection -> {
-                    validateDistance(orgSection, newSection);
-                    this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
-                    this.sections.add(new Section(newSection.getDownStationId(), orgSection.getDownStationId(), orgSection.getDistance() - newSection.getDistance()));
+                    this.sections.addAll(orgSection.splitWhenSameDownStation(newSection));
                     this.sections.remove(orgSection);
                 });
     }
