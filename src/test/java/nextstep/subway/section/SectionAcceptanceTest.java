@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
@@ -64,12 +65,50 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(노선_구간_등록_완료.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_구간_등록_요청(Long id, SectionRequest sectionRequest) {
+    @DisplayName("지하철 노선 구간을 삭제한다.")
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3})
+    void deleteSection(int index) {
+        StationResponse 상행역 = 지하철역.get(index).get(0);
+        StationResponse 하행역 = 지하철역.get(index).get(1);
+        StationResponse[] 삭제역 = new StationResponse[] {야탑역, 수서역, 선릉역, 청량리역};
+
+        ExtractableResponse<Response> 노선_구간_등록_완료 = 지하철_노선_구간_등록_요청(수인분당선.getId(), new SectionRequest(수인분당선.getId(), 상행역.getId(), 하행역.getId(), 4));
+
+        ExtractableResponse<Response> 노선_구간_삭제_완료 = 지하철_노선_구간_삭제_요청(수인분당선.getId(), 삭제역[index].getId());
+        assertThat(노선_구간_삭제_완료.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("지하철 노선 구간이 하나일 때 삭제한다.")
+    @Test
+    void deleteSection2() {
+        ExtractableResponse<Response> 노선_구간_삭제 = 지하철_노선_구간_삭제_요청(수인분당선.getId(), 모란역.getId());
+        assertThat(노선_구간_삭제.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("존재하지 않는 구간의 역을 삭제한다.")
+    @Test
+    void deleteSection3() {
+        ExtractableResponse<Response> 노선_구간_등록_완료 = 지하철_노선_구간_등록_요청(수인분당선.getId(), new SectionRequest(수인분당선.getId(), 모란역.getId(), 수서역.getId(), 4));
+
+        ExtractableResponse<Response> 노선_구간_삭제 = 지하철_노선_구간_삭제_요청(수인분당선.getId(), 선릉역.getId());
+        assertThat(노선_구간_삭제.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_구간_등록_요청(Long lineId, SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines/" + id + "/sections")
+                .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_구간_삭제_요청(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
                 .then().log().all()
                 .extract();
     }
