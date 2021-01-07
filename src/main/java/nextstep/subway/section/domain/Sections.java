@@ -8,26 +8,25 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nextstep.subway.common.exception.ExistException;
 import nextstep.subway.common.exception.NothingException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Embeddable
 public class Sections {
+	public static final int SECTION_DELETE_MINIMUM_COUNT = 1;
 
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL) //, orphanRemoval = true
+	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Section> sections = new ArrayList<>();
-
-	@Transient
-	private List<Station> stations;
 
 	public Sections(Section section) {
 		this.sections.add(section);
@@ -38,9 +37,9 @@ public class Sections {
 	}
 
 	public void add(Section target) {
-		validateSection(target);
+		validateAddSection(target);
 
-		if (isExistUpStation(target)) {
+		if (isExistStation(target.getUpStation())) {
 			this.sections.stream()
 				.filter(section -> section.isUpStation(target))
 				.findFirst()
@@ -49,7 +48,7 @@ public class Sections {
 			return;
 		}
 
-		if (isExistDownStation(target)) {
+		if (isExistStation(target.getDownStation())) {
 			this.sections.stream()
 				.filter(section -> section.isDownStation(target))
 				.findFirst()
@@ -58,25 +57,19 @@ public class Sections {
 		}
 	}
 
-	public boolean isExistUpStation(Section section) {
-		return isContainStation(section.getUpStation());
+	public void delete(Station target) {
+		validateDeleteSection(target);
+
 	}
 
-	public boolean isExistDownStation(Section section) {
-		return isContainStation(section.getDownStation());
+	public boolean isExistStation(Station station) {
+		return this.sections.stream()
+			.anyMatch(section -> section.contains(station));
 	}
 
-	public List<Station> getStations() {
-		Set<Station> result = new LinkedHashSet<>();
-		for (Section section : this.sections) {
-			result.addAll(section.getStations());
-		}
-		return new ArrayList<>(result);
-	}
-
-	private void validateSection(Section target) {
-		boolean upStationExist = isExistUpStation(target);
-		boolean downStationExist = isExistDownStation(target);
+	private void validateAddSection(Section target) {
+		boolean upStationExist = isExistStation(target.getUpStation());
+		boolean downStationExist = isExistStation(target.getDownStation());
 
 		if (upStationExist && downStationExist) {
 			throw new ExistException("이미 존재하는 구간입니다.");
@@ -87,9 +80,30 @@ public class Sections {
 		}
 	}
 
+	public List<Station> getStations() {
+		Set<Station> result = new LinkedHashSet<>();
+		for (Section section : this.sections) {
+			result.addAll(section.getStations());
+		}
+		return new ArrayList<>(result);
+	}
+
 	private boolean isContainStation(Station target) {
 		return this.sections.stream()
 			.anyMatch(station -> station.contains(target));
 	}
 
+	private Section findUpSection(Station target) {
+		return this.sections.stream()
+			.filter(section -> section.getUpStation().equals(target))
+			.findFirst()
+			.orElse(null);
+	}
+
+	private Section findDownSection(Station target) {
+		return this.sections.stream()
+			.filter(section -> section.getDownStation().equals(target))
+			.findFirst()
+			.orElse(null);
+	}
 }
