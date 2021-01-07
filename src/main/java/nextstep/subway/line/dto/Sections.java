@@ -135,11 +135,11 @@ public class Sections {
      * @return
      */
     public boolean canAddSection(Section section) {
-        return isFirstSection() ||
+        return isFirstAddSection() ||
                 this.isLastStopSection(section) || this.canPutInMiddleSection(section);
     }
 
-    private boolean isFirstSection() {
+    private boolean isFirstAddSection() {
         return this.getSections().size() == 0;
     }
 
@@ -167,7 +167,10 @@ public class Sections {
      * @return
      */
     private boolean isFirstUpStation(Long id) {
-        return this.getSortedStationIds().stream().findFirst().equals(id);
+        if(this.getSortedStationIds().size() < 1) {
+            return false;
+        }
+        return this.getSortedStationIds().get(0).equals(id);
     }
 
     /**
