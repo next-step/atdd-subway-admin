@@ -4,7 +4,10 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.Sections;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.Distance;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +47,6 @@ public class LineService {
     public void updateLine(Long id, LineRequest request) {
         Line line = findLineById(id);
         line.update(this.lineRequestToLine(request));
-//        this.lineRepository.save(line);
     }
 
     /**
@@ -96,5 +98,29 @@ public class LineService {
     private Line findLineById(Long id) {
         return this.lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("cannot find line."));
+    }
+
+    /**
+     * 해당 ID의 노선에 구간을 추가합니다.
+     * @param id
+     * @param sectionRequest
+     */
+    public void addSection(Long id, SectionRequest sectionRequest) {
+        Line line = findLineById(id);
+        line.addSections(this.stationService.findStation(sectionRequest.getUpStationId())
+                , this.stationService.findStation(sectionRequest.getDownStationId())
+                , sectionRequest.getDistance());
+    }
+
+    /**
+     * SectionRequest를 Section으로 변경
+     * @param sectionRequest 
+     * @return
+     */
+    private Section sectionRequestToSection(SectionRequest sectionRequest) {
+        Station upStation = this.stationService.findStation(sectionRequest.getUpStationId());
+        Station downStation = this.stationService.findStation(sectionRequest.getDownStationId());
+
+        return new Section(upStation, downStation, new Distance(sectionRequest.getDistance()));
     }
 }

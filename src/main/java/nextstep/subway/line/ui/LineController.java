@@ -3,6 +3,7 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -70,4 +71,15 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * 해당 ID의 노선에 구간을 추가합니다.
+     * @param id
+     * @param sectionRequest
+     * @return
+     */
+    @PostMapping(value = "/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        this.lineService.addSection(id, sectionRequest);
+        return ResponseEntity.ok().build();
+    }
 }
