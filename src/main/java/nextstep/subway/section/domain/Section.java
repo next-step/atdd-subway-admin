@@ -41,6 +41,13 @@ public class Section {
 
 	private int distance;
 
+	public static Section of(Section upSection, Section downSection) {
+		return new Section(upSection.getLine(),
+			downSection.getUpStation(),
+			upSection.getDownStation(),
+			upSection.getDistance() + downSection.getDistance());
+	}
+
 	public List<Station> getStations() {
 		return Arrays.asList(upStation, downStation);
 	}
