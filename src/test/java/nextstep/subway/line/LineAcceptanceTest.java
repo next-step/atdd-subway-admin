@@ -10,17 +10,13 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
+public class LineAcceptanceTest extends LineAcceptanceMethod {
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
@@ -199,119 +195,58 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		String 강남ID = createStationId("강남역");
 
 		// when
+		ExtractableResponse<Response> over = 지하철_노선_구간추가_요청(line.getId(), createSectionParam(홍대ID, 서초ID, "110"));
 		ExtractableResponse<Response> exist = 지하철_노선_구간추가_요청(line.getId(), createSectionParam(서초ID, 시청ID, "20"));
 		ExtractableResponse<Response> nothing = 지하철_노선_구간추가_요청(line.getId(), createSectionParam(홍대ID, 강남ID, "30"));
-		ExtractableResponse<Response> over = 지하철_노선_구간추가_요청(line.getId(), createSectionParam(홍대ID, 서초ID, "110"));
 		// then
 		assertAll(
+			() -> assertThat(over.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
 			() -> assertThat(exist.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-			() -> assertThat(nothing.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-			() -> assertThat(over.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+			() -> assertThat(nothing.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
 		);
 	}
 
-	private LineResponse 지하철_2호선_생성요청() {
-		return 지하철_노선_생성_요청(createLine2Params()).as(LineResponse.class);
-	}
-
-	private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
-		return RestAssured
-			.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when().post("/lines")
-			.then().log().all().extract();
-	}
-
-	private ExtractableResponse<Response> 지하철_노선_전체_조회_요청() {
-		return RestAssured
-			.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when().get("/lines")
-			.then().log().all().extract();
-	}
-
-	private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
-		return RestAssured
-			.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when().get("/lines/" + id)
-			.then().log().all().extract();
-	}
-
-	private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Map<String, String> params) {
-		return RestAssured
-			.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when().put("/lines/" + id)
-			.then().log().all()
-			.extract();
-	}
-
-	private ExtractableResponse<Response> 지하철_노선_삭제_요청(Long id) {
-		return RestAssured
-			.given().log().all()
-			.when().delete("/lines/" + id)
-			.then().log().all()
-			.extract();
-	}
-
-	private ExtractableResponse<Response> 지하철역_생성_요청(String station) {
+	@DisplayName("지하철 구간 삭제요청 했을때, 구간이 한개라면 삭제되지 않는다.")
+	@Test
+	void deleteOneSectionTest() {
 		// given
-		Map<String, String> params = new HashMap<>();
-		params.put("name", station);
+		LineResponse line = 지하철_2호선_생성요청();
 
 		// when
-		return RestAssured.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/stations")
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> response = 지하철_노선_구간삭제_요청(line.getId(), "1");
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	private ExtractableResponse<Response> 지하철_노선_구간추가_요청(long lineId, Map<String, String> params) {
-		return RestAssured
-			.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when().post("/lines/" + lineId + "/sections")
-			.then().log().all().extract();
+	@DisplayName("지하철 구간을 삭제한다.")
+	@Test
+	void deleteSection() {
+		// given
+		LineResponse line = 지하철_2호선_생성요청();
+		String 성수ID = createStationId("성수역");
+		지하철_구간_추가(line, 성수ID, "20");
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_구간삭제_요청(line.getId(), 성수ID);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
-	private Map<String, String> createLine1Params() {
-		return generateParam("1호선", "blue", "인천역", "소요산역", "350");
-	}
+	@DisplayName("지하철 구간 삭제요청 했을때, 없는 구간이라면 삭제되지 않는다.")
+	@Test
+	void deleteNoSectionTest() {
+		// given
+		LineResponse line = 지하철_2호선_생성요청();
+		String 홍대ID = createStationId("홍대역");
+		String 성수ID = createStationId("성수역");
+		지하철_구간_추가(line, 성수ID, "20");
 
-	private Map<String, String> createLine2Params() {
-		return generateParam("2호선", "green", "시청역", "서초역", "100");
-	}
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_구간삭제_요청(line.getId(), 홍대ID);
 
-	private Map<String, String> generateParam(String name, String color, String upStationName, String downStationName,
-		String distance) {
-
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
-		params.put("color", color);
-		params.put("upStationId", createStationId(upStationName));
-		params.put("downStationId", createStationId(downStationName));
-		params.put("distance", distance);
-		return params;
-	}
-
-	private Map<String, String> createSectionParam(String upStationId, String downStationId, String distance) {
-		Map<String, String> params = new HashMap<>();
-		params.put("upStationId", upStationId);
-		params.put("downStationId", downStationId);
-		params.put("distance", distance);
-
-		return params;
-	}
-
-	private String createStationId(String name) {
-		ExtractableResponse<Response> response = 지하철역_생성_요청(name);
-		return response.as(StationResponse.class).getId().toString();
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 }
