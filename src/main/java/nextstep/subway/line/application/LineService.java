@@ -64,6 +64,12 @@ public class LineService {
 		return LineResponse.of(persistLine);
 	}
 
+	public void deleteSection(Long id, Long stationId) {
+		Station station = findStationById(stationId);
+		Line line = findLineById(id);
+		line.deleteSection(station);
+	}
+
 	private Line findLineById(Long id) {
 		return lineRepository.findById(id).orElseThrow(NothingException::new);
 	}
@@ -71,5 +77,4 @@ public class LineService {
 	private Station findStationById(Long stationId) {
 		return stationRepository.findById(stationId).orElseThrow(NothingException::new);
 	}
-
 }

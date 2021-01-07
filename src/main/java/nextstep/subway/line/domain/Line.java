@@ -41,9 +41,8 @@ public class Line extends BaseEntity {
 	}
 
 	public Line(long id, String name, String color, Station upStation, Station downStation, int distance) {
-		this(name, color);
+		this(name, color, upStation, downStation, distance);
 		this.id = id;
-		this.sections = Sections.of(this, upStation, downStation, distance);
 	}
 
 	public void update(Line line) {
@@ -55,6 +54,10 @@ public class Line extends BaseEntity {
 		this.sections.add(new Section(this, upStation, downStation, distance));
 	}
 
+	public void deleteSection(Station deleteStation) {
+		this.sections.delete(deleteStation);
+	}
+
 	public List<Section> sections() {
 		return this.sections.getSections();
 	}
@@ -62,4 +65,5 @@ public class Line extends BaseEntity {
 	public List<Station> stations() {
 		return this.sections.getStations();
 	}
+
 }
