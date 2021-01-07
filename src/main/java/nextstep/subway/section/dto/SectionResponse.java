@@ -40,6 +40,10 @@ public class SectionResponse {
         return downStationName;
     }
 
+    public Integer getDistance() {
+        return distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -26,7 +26,7 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        sectionService.saveSection(SectionRequest.of(persistLine.getId(), request));
+        sectionService.saveSection(persistLine.getId(), SectionRequest.of(request));
         return LineResponse.of(persistLine);
     }
 

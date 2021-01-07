@@ -197,13 +197,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RequestTest.doPost(url, lineRequest);
     }
 
-    private ExtractableResponse<Response> selectAllRequest() {
-        final String url = "/lines";
+    public static ExtractableResponse<Response> selectRequestWithId(Long lineId) {
+        final String url = "/lines/" + lineId;
         return RequestTest.doGet(url);
     }
 
-    private ExtractableResponse<Response> selectRequestWithId(Long lineId) {
-        final String url = "/lines/" + lineId;
+    private ExtractableResponse<Response> selectAllRequest() {
+        final String url = "/lines";
         return RequestTest.doGet(url);
     }
 

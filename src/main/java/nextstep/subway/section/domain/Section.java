@@ -34,12 +34,6 @@ public class Section extends BaseEntity {
         this.sectionNumber = sectionNumber;
     }
 
-    public void validateDistance(Integer distance) {
-        if ( this.distance <= distance ) {
-            throw new BadRequestException("distance must be lower than " + this.distance);
-        }
-    }
-
     public Line getLine() {
         return line;
     }
@@ -80,10 +74,36 @@ public class Section extends BaseEntity {
         return sectionNumber;
     }
 
+    public boolean equalsUpStationId(Long stationId) {
+        return this.upStation.equalsId(stationId);
+    }
+
+    public boolean equalsDownStationId(Long stationId) {
+        return this.downStation.equalsId(stationId);
+    }
+
+    public boolean greaterThanSectionNumber(Integer sectionNumber) {
+        return this.sectionNumber > sectionNumber;
+    }
+
     public void incrementSectionNumber() {
         sectionNumber += SECTION_NUMBER_OFFSET;
     }
 
+    public void decreaseSectionNumber() {
+        sectionNumber -= SECTION_NUMBER_OFFSET;
+    }
+
+    public void addDistance(Integer distance) {
+        this.distance += distance;
+    }
+
+    public void subtractDistance(Integer distance) {
+        if ( this.distance <= distance ) {
+            throw new BadRequestException("distance must be lower than " + this.distance);
+        }
+        this.distance -= distance;
+    }
 
     @Override
     public String toString() {
