@@ -91,10 +91,7 @@ public class Section extends BaseEntity {
 	}
 
 	public boolean isUpStationInSection() {
-		if (this.upStation == null) {
-			return false;
-		}
-		return true;
+		return this.upStation != null
 	}
 
 	public boolean isUpStationInSection(Station newUpStation) {
