@@ -35,7 +35,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    private ExtractableResponse<Response> 지하철역_생성_요청(String stationName) {
+    public static ExtractableResponse<Response> 지하철역_생성_요청(String stationName) {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);

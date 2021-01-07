@@ -6,6 +6,8 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +24,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setRequest() {
-        request = new LineRequest("2호선", "green");
+        StationResponse upStation  = 지하철역_생성_요청("강남역");
+        StationResponse downStation = 지하철역_생성_요청("광교역");
+        request = new LineRequest("신분당선", "br-red-600", upStation.getId(), downStation.getId(), 10);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -73,8 +77,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철노선_응답됨(getResponse, HttpStatus.OK);
-        LineResponse lineResponse = getResponse.body().as(LineResponse.class);
-        assertThat(lineResponse.getName()).isEqualTo(request.getName());
+        LineResponse response = getResponse.as(LineResponse.class);
+        assertThat(response).isNotNull();
     }
 
     private ExtractableResponse<Response> 지하철노선_조회_요청(String url) {
@@ -113,6 +117,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철노선_응답됨(response, HttpStatus.NO_CONTENT);
         지하철노선_삭제_검증됨(url);
+    }
+
+    @DisplayName("노선생성시 종점역 상행, 하행을 함께 추가")
+    @Test
+    void createWithUpStationAndDownStation() {
+        ExtractableResponse<Response> response = 지하철노선_생성_요청(request);
+        지하철노선_응답됨(response, HttpStatus.CREATED);
+    }
+
+
+    private StationResponse 지하철역_생성_요청(String name) {
+        ExtractableResponse<Response> stationResponse = StationAcceptanceTest.지하철역_생성_요청(name);
+        return stationResponse.body().as(StationResponse.class);
     }
 
     private ExtractableResponse<Response> 지하철노선_생성_요청(LineRequest request) {

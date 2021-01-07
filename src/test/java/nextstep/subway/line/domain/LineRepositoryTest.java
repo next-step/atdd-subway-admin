@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 class LineRepositoryTest {
     @Autowired
     private LineRepository lineRepository;
+
+    @Autowired
+    private StationRepository stationRepository;
+
+    @Autowired
+    private SectionRepository sectionRepository;
 
     @Test
     void save() {
@@ -88,4 +96,29 @@ class LineRepositoryTest {
         assertThat(lineRepository.findById(line.getId())).isEqualTo(Optional.empty());
     }
 
+    @DisplayName("상행 종점과 하행 종점을 추가하여 노선을 생성한다.")
+    @Test
+    void createWithUpStationAndDownStation() {
+        // given
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 시청역 = stationRepository.save(new Station("시청역"));
+
+        Line line = new Line("2호선", "green");
+
+        Section section = Section.builder().upStation(시청역)
+                .downStation(강남역)
+                .line(line)
+                .distance(50)
+                .build();
+
+        line.add(section);
+
+        // when
+        Line savedLine = lineRepository.save(line);
+
+        // then
+        Line acutal = lineRepository.findById(savedLine.getId()).get();
+        Sections sections = acutal.getSections();
+        assertThat(sections.getSections().size()).isEqualTo(1);
+    }
 }
