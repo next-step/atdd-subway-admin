@@ -60,6 +60,15 @@ public class Sections {
 	public void delete(Station target) {
 		validateDeleteSection(target);
 
+		Section upSection = findUpSection(target);
+		Section downSection = findDownSection(target);
+
+		this.sections.remove(upSection);
+		this.sections.remove(downSection);
+
+		if (upSection != null && downSection != null) {
+			this.sections.add(Section.of(upSection, downSection));
+		}
 	}
 
 	public boolean isExistStation(Station station) {
@@ -88,9 +97,14 @@ public class Sections {
 		return new ArrayList<>(result);
 	}
 
-	private boolean isContainStation(Station target) {
-		return this.sections.stream()
-			.anyMatch(station -> station.contains(target));
+	private void validateDeleteSection(Station target) {
+		if (this.sections.size() <= SECTION_DELETE_MINIMUM_COUNT) {
+			throw new IllegalArgumentException("남은 구간 하나는 제거할 수 없습니다.");
+		}
+
+		if (!getStations().contains(target)) {
+			throw new IllegalArgumentException("노선에 등록되지 않은 전철역 입니다.");
+		}
 	}
 
 	private Section findUpSection(Station target) {
