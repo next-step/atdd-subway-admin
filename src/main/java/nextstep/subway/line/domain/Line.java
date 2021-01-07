@@ -1,18 +1,17 @@
 package nextstep.subway.line.domain;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.exception.NotFoundException;
@@ -27,8 +26,8 @@ public class Line extends BaseEntity {
 	private String name;
 	private String color;
 
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-	private List<Section> sections = new ArrayList<>();
+	@Embedded
+	private Sections sections = new Sections();
 
 	protected Line() {
 	}
@@ -41,7 +40,7 @@ public class Line extends BaseEntity {
 	public Line(String name, String color, Station upStation, Station downStation, int distance) {
 		this.name = name;
 		this.color = color;
-		sections.add(new Section(upStation, downStation, distance));
+		sections.addSection(new Section(upStation.getId(), downStation.getId(), distance));
 	}
 
 	public void update(Line line) {
@@ -67,10 +66,11 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public List<Station> getStations() {
-		return this.sections.stream()
-			.map(section -> section.getStations())
+	public List<Long> getStationsIds() {
+		return sections.getSections().stream()
+			.map(section -> section.getStationsIds())
 			.flatMap(Collection::stream)
+			.sorted(Comparator.comparingLong(Long::longValue))
 			.collect(Collectors.toList());
 	}
 
@@ -88,5 +88,9 @@ public class Line extends BaseEntity {
 	@Override
 	public int hashCode() {
 		return Objects.hash(getId(), getName(), getColor(), sections);
+	}
+
+	public void addSection(Section section) {
+		sections.addSection(section);
 	}
 }
