@@ -1,19 +1,21 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineNotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
+
     private final LineService lineService;
 
     public LineController(final LineService lineService) {
@@ -21,7 +23,7 @@ public class LineController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         try {
             LineResponse response = lineService.saveLine(lineRequest);
             return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
@@ -31,26 +33,33 @@ public class LineController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity showLines() {
-        return ResponseEntity.ok().body(Arrays.asList(
-                new Line("2호선", "bg-green-600"),
-                new Line("3호선", "bg-yellow-600")
-        ));
+    public ResponseEntity<List<LineResponse>> showLines() {
+        return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity findLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(new Line("2호선", "bg-red-600"));
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok().body(lineService.findLineById(id));
+        } catch (LineNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        return ResponseEntity.ok().body(LineResponse.of(lineRequest.toLine()));
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        return ResponseEntity.ok().body(lineService.updateLineById(id, lineRequest));
     }
 
     @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
+        lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest().build();
     }
 
 }
