@@ -76,6 +76,14 @@ public class Sections {
 			.anyMatch(section -> section.contains(station));
 	}
 
+	public List<Station> getStations() {
+		Set<Station> result = new LinkedHashSet<>();
+		for (Section section : this.sections) {
+			result.addAll(section.getStations());
+		}
+		return new ArrayList<>(result);
+	}
+
 	private void validateAddSection(Section target) {
 		boolean upStationExist = isExistStation(target.getUpStation());
 		boolean downStationExist = isExistStation(target.getDownStation());
@@ -87,14 +95,6 @@ public class Sections {
 		if (!upStationExist && !downStationExist) {
 			throw new NothingException("등록할 수 없는 구간입니다.");
 		}
-	}
-
-	public List<Station> getStations() {
-		Set<Station> result = new LinkedHashSet<>();
-		for (Section section : this.sections) {
-			result.addAll(section.getStations());
-		}
-		return new ArrayList<>(result);
 	}
 
 	private void validateDeleteSection(Station target) {

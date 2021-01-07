@@ -41,17 +41,6 @@ public class Section {
 
 	private int distance;
 
-	public static Section of(Section upSection, Section downSection) {
-		return new Section(upSection.getLine(),
-			downSection.getUpStation(),
-			upSection.getDownStation(),
-			upSection.getDistance() + downSection.getDistance());
-	}
-
-	public List<Station> getStations() {
-		return Arrays.asList(upStation, downStation);
-	}
-
 	public Section(Line line, Station upStation, Station downStation, int distance) {
 		if (upStation.equals(downStation)) {
 			throw new RuntimeException("중복된 Station 입니다.");
@@ -60,6 +49,13 @@ public class Section {
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
+	}
+
+	public static Section of(Section upSection, Section downSection) {
+		return new Section(upSection.getLine(),
+			downSection.getUpStation(),
+			upSection.getDownStation(),
+			upSection.getDistance() + downSection.getDistance());
 	}
 
 	public void updateUpStation(Section target) {
@@ -72,6 +68,10 @@ public class Section {
 		validateDistance(target.getDistance());
 		this.distance = distance - target.getDistance();
 		this.downStation = target.getUpStation();
+	}
+
+	public List<Station> getStations() {
+		return Arrays.asList(upStation, downStation);
 	}
 
 	public boolean isUpStation(Section target) {
