@@ -35,7 +35,7 @@ public class Section {
     public List<Section> splitWhenSameDownStation(Section newSection) {
         validateDistance(newSection);
         return Arrays.asList(
-                new Section(upStationId, downStationId, distance - newSection.getDistance()),
+                new Section(upStationId, newSection.getUpStationId(), distance - newSection.getDistance()),
                 new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance())
         );
     }

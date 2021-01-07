@@ -40,21 +40,28 @@ public class Sections {
             this.sections.add(newSection);
             return;
         }
-        insertWhenSameDownStation(newSection);
-        insertWhenSameUpStation(newSection);
+
+        if (WhenSameDownStation(newSection)) {
+            insertWhenSameDownStation(newSection);
+            return;
+        }
+
+        if (whenSameUpStation(newSection)) {
+            insertWhenSameUpStation(newSection);
+        }
     }
 
     public void removeSectionByStationId(Long stationId) {
-        if(sections.size() == 1) {
+        if (sections.size() == 1) {
             throw new CannotRemoveException("최종 구간의 역은 삭제할 수 없습니다.");
         }
 
-        if(firstStationId().equals(stationId)) {
+        if (firstStationId().equals(stationId)) {
             sections.remove(getFirstSection());
             return;
         }
 
-        if(lastStationId().equals(stationId)) {
+        if (lastStationId().equals(stationId)) {
             sections.remove(getLastSection());
             return;
         }
@@ -71,12 +78,6 @@ public class Sections {
         sections.removeAll(Arrays.asList(preSection, nextSection));
     }
 
-    private Optional<Section> getPreSection(Section section) {
-        return sections.stream()
-                .filter(it -> it.getDownStationId().equals(section.getUpStationId()))
-                .findFirst();
-    }
-
     private Section getNextSectionByStationId(Long stationId) {
         return sections.stream()
                 .filter(it -> it.getUpStationId().equals(stationId))
@@ -91,9 +92,19 @@ public class Sections {
                 .get();
     }
 
+    private boolean whenSameUpStation(Section newSection) {
+        return sections.stream()
+                .anyMatch(it -> it.sameUpStation(newSection));
+    }
+
+    private boolean WhenSameDownStation(Section newSection) {
+        return sections.stream()
+                .anyMatch(it -> it.sameDownStation(newSection));
+    }
+
     private void insertWhenSameUpStation(Section newSection) {
         this.sections.stream()
-                .filter(newSection::sameUpStation)
+                .filter(it -> it.sameUpStation(newSection))
                 .findFirst()
                 .ifPresent(orgSection -> {
                     this.sections.addAll(orgSection.splitWhenSameUpStation(newSection));
@@ -103,7 +114,7 @@ public class Sections {
 
     private void insertWhenSameDownStation(Section newSection) {
         this.sections.stream()
-                .filter(newSection::sameDownStation)
+                .filter(it -> it.sameDownStation(newSection))
                 .findFirst()
                 .ifPresent(orgSection -> {
                     this.sections.addAll(orgSection.splitWhenSameDownStation(newSection));
@@ -128,12 +139,17 @@ public class Sections {
             throw new NoStationIdException("하행역을 입력해 주세요.");
         }
 
-        if (sections.contains(newSection)) {
+        if (checkAlreadyExists(newSection)) {
             throw new AlreadyExistsException(newSection);
         }
+
         if (noMatchExistsStation(newSection)) {
             throw new NoMatchStationException(newSection);
         }
+    }
+
+    private boolean checkAlreadyExists(Section newSection) {
+        return sections.stream().anyMatch(it -> it.sameUpStation(newSection) && it.sameDownStation(newSection));
     }
 
     private boolean noMatchExistsStation(Section newSection) {

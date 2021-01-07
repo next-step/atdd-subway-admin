@@ -70,4 +70,34 @@ class SectionsTest {
         assertThat(results.contains(new Section(1L, 4L, 20)));
         assertThat(results.contains(new Section(4L, 6L, 10)));
     }
+
+    @Test
+    @DisplayName("사이 구간 등록 - 상행역이 같은 구간을 등록시")
+    void addSection_whenSameUpStation() {
+        Section firsSection = new Section(1L, 6L, 10);
+        Section secondSection = new Section(1L, 4L, 5);
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(firsSection)));
+
+        sections.addSection(secondSection);
+
+        List<Section> results = sections.getSections();
+        assertThat(results.size()).isEqualTo(2);
+        assertThat(results.contains(new Section(1L, 4L, 5)));
+        assertThat(results.contains(new Section(4L, 6L, 5)));
+    }
+
+    @Test
+    @DisplayName("사이 구간 등록 - 하행역이 같은 구간을 등록시")
+    void addSection_whenSameDownStation() {
+        Section firsSection = new Section(1L, 6L, 10);
+        Section secondSection = new Section(4L, 6L, 5);
+        Sections sections = new Sections(new ArrayList<>(Arrays.asList(firsSection)));
+
+        sections.addSection(secondSection);
+
+        List<Section> results = sections.getSections();
+        assertThat(results.size()).isEqualTo(2);
+        assertThat(results.contains(new Section(1L, 4L, 5)));
+        assertThat(results.contains(new Section(4L, 6L, 5)));
+    }
 }
