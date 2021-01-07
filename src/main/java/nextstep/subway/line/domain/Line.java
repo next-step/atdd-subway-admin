@@ -19,14 +19,14 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-	private final Set<LineStation> lineStations = new HashSet<>();
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@Column(unique = true)
 	private String name;
 	private String color;
+	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
+	private final Set<LineStation> lineStations = new HashSet<>();
 
 	public Line() {
 	}
@@ -36,9 +36,11 @@ public class Line extends BaseEntity {
 		this.color = color;
 	}
 
-	public void update(Line line) {
-		this.name = line.getName();
-		this.color = line.getColor();
+	public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+		Line line = new Line(name, color);
+		line.addOrUpdateStation(upStation, downStation, distance);
+		line.addOrUpdateStation(downStation);
+		return line;
 	}
 
 	public Long getId() {
@@ -49,15 +51,38 @@ public class Line extends BaseEntity {
 		return name;
 	}
 
+	public void changeName(String name) {
+		if(name == null) {
+			return;
+		}
+		this.name = name;
+	}
+
 	public String getColor() {
 		return color;
 	}
 
+	public void changeColor(String color) {
+		if(color == null) {
+			return;
+		}
+		this.color = color;
+	}
+
 	public void addOrUpdateStation(Station station) {
+		if(station == null) {
+			return;
+		}
 		addOrUpdateStation(station, null, 0);
 	}
 
 	public void addOrUpdateStation(Station station, Station downStation, int distance) {
+		if(station == null) {
+			return;
+		}
+		if(downStation == null) {
+			distance = 0;
+		}
 		LineStation lineStation = new LineStation.Builder()
 			.line(this)
 			.station(station)
@@ -72,6 +97,10 @@ public class Line extends BaseEntity {
 
 	public void removeStation(Station station) {
 		lineStations.remove(LineStation.of(this, station));
+	}
+
+	public void removeAll() {
+		lineStations.clear();
 	}
 
 	public List<Station> getStations() {
