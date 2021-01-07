@@ -2,8 +2,10 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,6 +31,16 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    private Line(String name, String color, List<Section> sections) {
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
+    }
+
+    public static Line of(String name, String color) {
+        return new Line(name, color);
+    }
+
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
@@ -50,4 +62,18 @@ public class Line extends BaseEntity {
         return this.sections;
     }
 
+    public List<Section> getOrderedSections() {
+        List<Section> result = new ArrayList<>();
+        Section nextSection = sections.stream().filter(Section::getStart)
+                .findFirst()
+                .get();
+        while (nextSection != null) {
+            result.add(nextSection);
+            Station down = nextSection.getDown();
+            nextSection = sections.stream()
+                    .filter(item -> item.getUp() == down)
+                    .findFirst().orElse(null);
+        }
+        return result;
+    }
 }

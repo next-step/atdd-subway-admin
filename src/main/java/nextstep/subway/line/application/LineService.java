@@ -11,6 +11,7 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.line.dto.LineSectionCreateRequest;
 import nextstep.subway.section.dto.SectionAddRequest;
 import nextstep.subway.section.dto.SectionAddResponse;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,22 +25,23 @@ import java.util.stream.Collectors;
 public class LineService {
     private LineRepository lineRepository;
     private SectionService sectionService;
+    private StationService stationService;
 
     public LineService(LineRepository lineRepository,
-                       SectionService sectionService) {
+                       SectionService sectionService,
+                       StationService stationService) {
         this.sectionService = sectionService;
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse saveLine(LineCreateRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        sectionService.saveSection(
-                new LineSectionCreateRequest(persistLine,
-                        request.getUpStationId(),
-                        request.getDownStationId(),
-                        request.getDistance(),
-                        true));
-        return LineResponse.of(persistLine);
+        Station upStation = stationService.findByStationId(request.getUpStationId());
+        Station downStation = stationService.findByStationId(request.getDownStationId());
+        Line savedLine = lineRepository.save(Line.of(request.getName(), request.getColor()));
+        Section newSection = new Section(savedLine, upStation, downStation, request.getDistance(), true);
+        sectionService.save(newSection);
+        return LineResponse.of(savedLine);
     }
 
     public List<LineResponse> getLines() {
@@ -51,7 +53,7 @@ public class LineService {
 
     public LineStationResponse getOne(Long id) {
         Line line = lineRepository.getWithStations(id);
-        return LineStationResponse.of(lineRepository.getOne(id), sectionService.getOrderedSections(line));
+        return LineStationResponse.of(line, line.getOrderedSections());
     }
 
 

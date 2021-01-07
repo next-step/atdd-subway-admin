@@ -69,10 +69,10 @@ public class Section extends BaseEntity {
     }
 
     public Section createAndChange(Station up, Station down, int distance) {
-        if (this.down.equals(down)) {
+        if (this.down == (down)) {
             return getMiddleToDownSection(up, down, distance);
         }
-        if (this.up.equals(up)) {
+        if (this.up == (up)) {
             checkDistance(distance);
             if (this.start) {
                 return getNewStartSection(up, down, distance);
@@ -105,11 +105,14 @@ public class Section extends BaseEntity {
         return result;
     }
 
-    private void checkDistance(int distance){
-        if(this.distance <= distance){
+    private void checkDistance(int distance) {
+        if (this.distance <= distance) {
             throw new IllegalArgumentException("distance is invalid");
         }
     }
 
 
+    public boolean getStart() {
+        return this.start;
+    }
 }

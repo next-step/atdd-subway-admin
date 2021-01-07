@@ -29,10 +29,8 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
-    public void saveSection(LineSectionCreateRequest request) {
-        Station up = stationService.getOne(request.getUpStationId());
-        Station down = stationService.getOne(request.getDownStationId());
-        sectionRepository.save(new Section(request.getLine(), up, down, request.getDistance(), request.isStart()));
+    public void save(Section newSection) {
+        sectionRepository.save(newSection);
     }
 
     public void delete(List<Section> sections) {
@@ -68,7 +66,8 @@ public class SectionService {
         if (isBottomEndSection(up, down, distance, sections)) {
             return SectionAddResponse.of(sectionRepository.save(new Section(addingLine, up, down, distance)));
         }
-        return sections.stream()
+        return sections
+                .stream()
                 .map(item -> item.createAndChange(up, down, distance))
                 .filter(Objects::nonNull)
                 .findFirst()
@@ -79,14 +78,14 @@ public class SectionService {
     }
 
     private boolean isBottomEndSection(Station up, Station down, int distance, List<Section> sections) {
-        if (sections.get(sections.size() - 1).getDown().equals(up)) {
+        if (sections.get(sections.size() - 1).getDown() == (up)) {
             return true;
         }
         return false;
     }
 
     private boolean isTopEndSection(Station up, Station down, int distance, List<Section> sections) {
-        if (sections.get(0).getUp().equals(down)) {
+        if (sections.get(0).getUp() == (down)) {
             sections.forEach(Section::setNotStart);
             return true;
         }
