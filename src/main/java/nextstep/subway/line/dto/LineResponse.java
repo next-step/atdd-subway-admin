@@ -20,7 +20,7 @@ public class LineResponse {
 	private LocalDateTime modifiedDate;
 
 	public static LineResponse of(Line line) {
-		List<StationResponse> stationResponses = line.getStations().stream()
+		List<StationResponse> stationResponses = line.stations().stream()
 			.map(StationResponse::of)
 			.collect(Collectors.toList());
 
