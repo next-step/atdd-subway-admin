@@ -1,56 +1,34 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-class LineServiceTest {
-    @Mock
-    private LineRepository lineRepository;
+
+class LineServiceTest extends AcceptanceTest {
+
+    @Autowired
     private LineService lineService;
 
-    @BeforeEach
-    void setUp() {
-        lineService = new LineService((lineRepository));
-    }
-
-    @Test
-    void save() {
-        // given
-        LineRequest lineRequest = new LineRequest("2호선", "green");
-
-        when(lineRepository.save(any())).thenReturn(new Line("5호선", "purple"));
-
-        // when
-        LineResponse lineResponse = lineService.save(lineRequest);
-
-        // then
-        assertThat(lineResponse).isNotNull();
-        assertThat(lineResponse.getName()).isEqualTo("5호선");
-    }
+    @Autowired
+    private StationRepository stationRepository;
 
     @Test
     void findAll() {
         // given
-        when(lineRepository.findAll()).thenReturn(Arrays.asList(new Line("2호선", "green"), new Line("5호선", "purple")));
+        saveLine("강남역", "잠실역", "2호선", "green", 3);
+        saveLine("천호역", "방화", "5호선", "purple", 5);
 
         // when
         List<LineResponse> lineResponses = lineService.findAll();
@@ -62,12 +40,14 @@ class LineServiceTest {
     @Test
     void findById() {
         // given
-        when(lineRepository.findById(any())).thenReturn(Optional.of(new Line("2호선", "green")));
+        saveLine("강남역", "잠실역", "2호선", "green", 3);
+
         // when
         LineResponse lineResponse = lineService.findById(1L);
         // then
         assertThat(lineResponse.getName()).isEqualTo("2호선");
     }
+
 
     @DisplayName("노선이 없는 경우 조회하면 예외 발생")
     @Test
@@ -91,5 +71,21 @@ class LineServiceTest {
         assertThatThrownBy(() -> {
             lineService.delete(1L);
         }).isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @DisplayName("노선 생성시, 종점 추가")
+    @Test
+    void newSave() {
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 잠실역 = stationRepository.save(new Station("잠실역"));
+
+        LineResponse lineResponse = lineService.save(new LineRequest("2호선", "green", 강남역.getId(), 잠실역.getId(), 3));
+        assertThat(lineResponse.getStationsResponses().size()).isEqualTo(2);
+    }
+
+    private void saveLine(String upStation, String downStation, String name, String color, int distance) {
+        Station 상행역 = stationRepository.save(new Station(upStation));
+        Station 하행역 = stationRepository.save(new Station(downStation));
+        lineService.save(new LineRequest(name, color, 상행역.getId(), 하행역.getId(), distance));
     }
 }

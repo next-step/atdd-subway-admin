@@ -47,14 +47,4 @@ public class LineController {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity handleEntityNotFoundException(EntityNotFoundException e) {
-        return ResponseEntity.badRequest().build();
-    }
 }
