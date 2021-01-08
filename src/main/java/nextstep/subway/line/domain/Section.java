@@ -28,16 +28,11 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation) {
-        validate(line, upStation, downStation);
-        this.line = line;
-        this.upStation = upStation;
-    }
-
     @Builder
     private Section(Line line, Station upStation, Station downStation, int distance) {
-        this(line, upStation, downStation);
-        validate(distance);
+        validate(line, upStation, downStation, distance);
+        this.line = line;
+        this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
@@ -47,18 +42,23 @@ public class Section {
     }
 
     public void update(int distance) {
-        validate(distance);
+        validateRanged(distance);
         this.distance = distance;
     }
 
-    private void validate(Line line, Station upStation, Station downStation) {
+    private void validate(Line line, Station upStation, Station downStation, int distance) {
+        validateRequired(line, upStation, downStation);
+        validateRanged(distance);
+    }
+
+    private void validateRequired(Line line, Station upStation, Station downStation) {
         if (line == null || upStation == null || downStation == null) {
             throw new IllegalArgumentException("필수값 누락입니다.");
         }
     }
 
-    private void validate(int distance) {
-        if (distance < 0) {
+    private void validateRanged(int distance) {
+        if (distance <= 0) {
             throw new IllegalArgumentException("거리는 0보다 커야합니다.");
         }
     }

@@ -20,23 +20,17 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, Sections sections) {
+    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stationResponses) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.stationResponses = stationResponsesOf(sections);
-    }
-
-    private List<StationResponse> stationResponsesOf(Sections sections) {
-        return sections.getStations().stream()
-                .map(StationResponse::of)
-                .collect(Collectors.toList());
+        this.stationResponses = stationResponses;
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), line.getSections());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), line.getStationResponses());
     }
 
     public Long getId() {

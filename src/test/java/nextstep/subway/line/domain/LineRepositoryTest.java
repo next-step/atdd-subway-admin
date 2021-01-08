@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -93,7 +92,7 @@ class LineRepositoryTest {
         lineRepository.delete(line);
         lineRepository.flush();
 
-        assertThat(lineRepository.findById(line.getId())).isEqualTo(Optional.empty());
+        assertThat(lineRepository.findById(line.getId())).isNotPresent();
     }
 
     @DisplayName("상행 종점과 하행 종점을 추가하여 노선을 생성한다.")
