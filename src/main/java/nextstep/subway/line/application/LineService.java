@@ -5,12 +5,14 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +38,11 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("`Line` " + id + " 는 존재하지 않습니다."));
+    }
+
     public LineResponse findById(long id) {
         return lineRepository.findById(id)
                 .map(LineResponse::of)
@@ -51,5 +58,11 @@ public class LineService {
 
     public void deleteById(long id) {
         lineRepository.deleteById(id);
+    }
+
+    public void addSection(long id, SectionRequest request) {
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        findLineById(id).addSection(upStation, downStation, request.getDistance());
     }
 }

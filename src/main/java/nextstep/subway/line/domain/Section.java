@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -38,11 +39,27 @@ public class Section extends BaseEntity {
 
     private void validate(Line line, Station upStation, Station downStation) {
         if (line == null) {
-            throw new IllegalArgumentException("구간의 노선 정보가 포함되어야합니다.");
+            throw new CustomException("구간의 노선 정보가 포함되어야합니다.");
         }
         if (upStation == null && downStation == null) {
-            throw new IllegalArgumentException("구간의 상행 또는 하행역 정보는 추가되어야합니다.");
+            throw new CustomException("구간의 상행 또는 하행역 정보는 추가되어야합니다.");
         }
+    }
+
+    public void updateUpStation(Section section) {
+        if (this.distance.isLessThanEqual(section.distance)) {
+            throw new CustomException("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
+        }
+        this.upStation = section.downStation;
+        this.distance = new Distance(this.distance.minus(section.distance));
+    }
+
+    public void updateDownStation(Section section) {
+        if (this.distance.isLessThanEqual(section.distance)) {
+            throw new CustomException("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
+        }
+        this.downStation = section.upStation;
+        this.distance = new Distance(this.distance.minus(section.distance));
     }
 
     public Long getId() {
@@ -59,17 +76,5 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public Distance getDistance() {
-        return distance;
-    }
-
-    public boolean isFirstSection() {
-        return distance.isZero();
-    }
-
-    public boolean matchNextSection(Section preSection) {
-        return preSection.downStation == upStation;
     }
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -17,6 +18,23 @@ public class Sections {
     }
 
     protected Sections() {
+    }
+
+    public void add(Section section) {
+        validateSection(section);
+        updateSection(section);
+    }
+
+    public Optional<Section> findDownSectionBy(Station baseStation) {
+        return sections.stream()
+                .filter(it -> it.getUpStation() == baseStation)
+                .findFirst();
+    }
+
+    public Optional<Section> findUpSectionBy(Station baseStation) {
+        return sections.stream()
+                .filter(it -> it.getDownStation() == baseStation)
+                .findFirst();
     }
 
     public List<Station> getStations() {
@@ -48,5 +66,32 @@ public class Sections {
         return sections.stream()
                 .filter(s -> s.getUpStation() == station)
                 .findAny();
+    }
+
+    private void updateSection(Section section) {
+        findDownSectionBy(section.getUpStation())
+                .ifPresent(it -> it.updateUpStation(section));
+        findUpSectionBy(section.getDownStation())
+                .ifPresent(it -> it.updateDownStation(section));
+        sections.add(section);
+    }
+
+    private void validateSection(Section section) {
+        List<Station> stations = getStations();
+        if (isAlreadyRegistered(section, stations)) {
+            throw new CustomException("이미 등록된 구간 입니다.");
+        }
+        if (isNotRegistered(section)) {
+            throw new CustomException("등록할 수 없는 구간 입니다.");
+        }
+    }
+
+    private boolean isAlreadyRegistered(Section section, List<Station> stations) {
+        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
+    }
+
+    private boolean isNotRegistered(Section section) {
+        List<Station> stations = getStations();
+        return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
     }
 }
