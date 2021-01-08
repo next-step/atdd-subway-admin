@@ -10,7 +10,7 @@ public class LineRequest {
     private long downStationId;
     private int distance;
 
-    public LineRequest() {
+    private LineRequest() {
     }
 
     public LineRequest(String name, String color) {

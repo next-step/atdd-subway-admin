@@ -58,10 +58,7 @@ class LineRepositoryTest {
 
 		lineRepository
 			.findById(이호선.getId())
-			.ifPresent(line -> {
-				line.changeName("3호선");
-				line.changeColor("orange");
-			});
+			.ifPresent(line -> line.update(new Line("3호선", "orange")));
 
 		assertThat(lineRepository.findById(이호선.getId()))
 			.isPresent()

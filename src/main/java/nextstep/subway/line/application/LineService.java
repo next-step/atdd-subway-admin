@@ -1,7 +1,9 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -26,10 +28,14 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine(
-            stationRepository.findById(request.getUpStationId()).orElse(null),
-            stationRepository.findById(request.getDownStationId()).orElse(null)
-        ));
+        Map<Long, Station> stations = stationRepository
+            .findAllByIdIn(request.getUpStationId(), request.getDownStationId())
+            .collect(Collectors.toMap(Station::getId, Function.identity()));
+
+        Station upStation = stations.get(request.getUpStationId());
+        Station downStation = stations.get(request.getDownStationId());
+
+        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
@@ -43,20 +49,13 @@ public class LineService {
 	public LineResponse findOne(Long id) {
         return lineRepository.findById(id)
             .map(LineResponse::of)
-            .orElseThrow(NoSuchElementException::new);
+            .orElseThrow(() -> new NoSuchElementException("주어진 id를 가지는 Line을 찾을 수 없습니다."));
 	}
 
     public void update(Long id, LineRequest updated) {
-        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
-
-        line.changeName(updated.getName());
-        line.changeColor(updated.getColor());
-
-        Station upStation = stationRepository.findById(updated.getUpStationId()).orElse(null);
-        Station downStation = stationRepository.findById(updated.getDownStationId()).orElse(null);
-        line.removeAll();
-        line.addOrUpdateStation(upStation, downStation, updated.getDistance());
-        line.addOrUpdateStation(downStation);
+        lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("주어진 id를 가지는 Line을 찾을 수 없습니다."))
+            .update(updated.toLine());
     }
 
     public void deleteLineById(Long id) {

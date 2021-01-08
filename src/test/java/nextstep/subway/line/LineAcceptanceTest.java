@@ -209,7 +209,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all().extract();
 
 		// then : 지하철_노선_삭제됨
-		assertThat(지하철_노선_조회_요청(이호선_ID).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(지하철_노선_조회_요청(이호선_ID).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_조회_요청(long id) {

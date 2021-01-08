@@ -26,14 +26,12 @@ class LineStationRelationshipTest {
 		Station 강남역 = stationRepository.save(new Station("강남역"));
 		Station 역삼역 = stationRepository.save(new Station("역삼역"));
 		이호선.addOrUpdateStation(강남역, 역삼역, 10);
-		이호선.addOrUpdateStation(역삼역);
 		lineRepository.save(이호선);
 
 		Line 오호선 = new Line("5호선", "purple");
 		Station 천호역 = stationRepository.save(new Station("천호역"));
 		Station 군자역 = stationRepository.save(new Station("군자역"));
 		오호선.addOrUpdateStation(천호역, 군자역, 10);
-		오호선.addOrUpdateStation(군자역);
 		lineRepository.save(오호선);
 
 		System.out.println("\n>> saveBeforeEach 종료\n");

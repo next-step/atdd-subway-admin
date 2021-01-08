@@ -39,7 +39,6 @@ public class Line extends BaseEntity {
 	public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
 		Line line = new Line(name, color);
 		line.addOrUpdateStation(upStation, downStation, distance);
-		line.addOrUpdateStation(downStation);
 		return line;
 	}
 
@@ -51,37 +50,21 @@ public class Line extends BaseEntity {
 		return name;
 	}
 
-	public void changeName(String name) {
-		if(name == null) {
-			return;
-		}
-		this.name = name;
-	}
-
 	public String getColor() {
 		return color;
 	}
 
-	public void changeColor(String color) {
-		if(color == null) {
-			return;
-		}
-		this.color = color;
-	}
-
-	public void addOrUpdateStation(Station station) {
-		if(station == null) {
-			return;
-		}
-		addOrUpdateStation(station, null, 0);
+	public void update(Line line) {
+		this.name = line.getName();
+		this.color = line.getColor();
 	}
 
 	public void addOrUpdateStation(Station station, Station downStation, int distance) {
 		if(station == null) {
 			return;
 		}
-		if(downStation == null) {
-			distance = 0;
+		if(downStation != null) {
+			addOrUpdateStation(downStation, null, 0);
 		}
 		LineStation lineStation = new LineStation.Builder()
 			.line(this)
@@ -112,9 +95,8 @@ public class Line extends BaseEntity {
 	public int getDistance(Station station1, Station station2) {
 		return lineStations.stream()
 			.filter(lineStation ->
-				station1.equals(lineStation.getStation()) || station1.equals(lineStation.getDownStation()))
-			.filter(lineStation ->
-				station2.equals(lineStation.getStation()) || station2.equals(lineStation.getDownStation()))
+				station1.equals(lineStation.getStation()) && station2.equals(lineStation.getDownStation())
+				|| station2.equals(lineStation.getStation()) && station1.equals(lineStation.getDownStation()))
 			.max(Comparator.comparingInt(LineStation::getDistance))
 			.map(LineStation::getDistance)
 			.orElse(0);

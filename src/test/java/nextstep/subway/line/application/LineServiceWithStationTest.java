@@ -67,20 +67,4 @@ class LineServiceWithStationTest {
 			.map(StationResponse::getName)
 			.contains("강남역", "역삼역");
 	}
-
-	@Test
-	void update() {
-		LineResponse 저장해둔_이호선_응답 = savedlineResponses.get(0);
-		StationResponse 양재역 = stationService.saveStation(new StationRequest("양재역"));
-		StationResponse 신사역 = stationService.saveStation(new StationRequest("신사역"));
-		lineService.update(저장해둔_이호선_응답.getId(), new LineRequest("3호선", "orange", 양재역.getId(), 신사역.getId(), 5));
-
-		LineResponse updateResult = lineService.findOne(저장해둔_이호선_응답.getId());
-		assertThat(updateResult)
-			.hasFieldOrPropertyWithValue("name", "3호선")
-			.hasFieldOrPropertyWithValue("color", "orange");
-		assertThat(updateResult.getStations())
-			.map(StationResponse::getName)
-			.contains("양재역", "신사역");
-	}
 }
