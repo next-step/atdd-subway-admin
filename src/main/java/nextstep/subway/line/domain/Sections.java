@@ -18,6 +18,7 @@ import nextstep.subway.common.exception.DuplicateAllStationException;
 import nextstep.subway.common.exception.IllegalDistanceException;
 import nextstep.subway.common.exception.NotExistAllStationException;
 import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.common.exception.OneSectionCannotRemoveException;
 
 /**
  * @author : byungkyu
@@ -154,8 +155,12 @@ public class Sections {
 
 
 	public void removeSectionByStationId(Long stationId) {
+		if(sections.size() == 1) throw new OneSectionCannotRemoveException();
+
 		Section frontStationSection = getSectionContainDownStationId(stationId);
 		Section backStationSection = getSectionContainUpStationId(stationId);
+
+		if(frontStationSection == null && backStationSection == null) throw new NotFoundException();
 
 		sections.removeAll(Arrays.asList(frontStationSection,backStationSection));
 
