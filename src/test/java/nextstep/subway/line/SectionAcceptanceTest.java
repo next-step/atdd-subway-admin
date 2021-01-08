@@ -90,4 +90,44 @@ class SectionAcceptanceTest extends AcceptanceTest {
                         .containsExactly("강남역", "잠실역", "강변역")
         );
     }
+
+    @DisplayName("`Line`에 `Section` 추가 예외 - 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같으면 등록을 할 수 없음")
+    @Test
+    void exceptionToAddSectionWithSameDistance() {
+        // When
+        StationResponse 삼성역 = 지하철역_생성_요청("삼성역");
+        ExtractableResponse<Response> response = 지하철_노선_구간_등록_요청(_2호선.getId(), 강남역.getId(), 삼성역.getId(), 100);
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("`Line`에 `Section` 추가 예외 - 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크면 등록을 할 수 없음")
+    @Test
+    void exceptionToAddSectionGreaterThanExistingDistance() {
+        // When
+        StationResponse 삼성역 = 지하철역_생성_요청("삼성역");
+        ExtractableResponse<Response> response = 지하철_노선_구간_등록_요청(_2호선.getId(), 강남역.getId(), 삼성역.getId(), 200);
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("`Line`에 `Section` 추가 예외 - 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void exceptionToAddSection2() {
+        // When
+        ExtractableResponse<Response> response = 지하철_노선_구간_등록_요청(_2호선.getId(), 강남역.getId(), 잠실역.getId(), 100);
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("`Line`에 `Section` 추가 예외 - 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void exceptionToAddSection3() {
+        // When
+        StationResponse 건대입구역 = 지하철역_생성_요청("건대입구역");
+        StationResponse 구의역 = 지하철역_생성_요청("구의역");
+        ExtractableResponse<Response> response = 지하철_노선_구간_등록_요청(_2호선.getId(), 건대입구역.getId(), 구의역.getId(), 100);
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
