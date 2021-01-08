@@ -6,9 +6,9 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class Distance {
-    private int distance;
+    private static final int MIN_DISTANCE = 0;
 
-    public static final int MIN_DISTANCE = 0;
+    private int distance;
 
     protected Distance() {}
 
@@ -25,6 +25,12 @@ public class Distance {
 
     public boolean isDistanceGreaterThanEqual(Distance distance) {
         return this.getDistance() >= distance.getDistance();
+    }
+
+    public void checkZeroDistance() {
+        if (distance == MIN_DISTANCE) {
+            throw new IllegalArgumentException(MIN_DISTANCE + "보다 큰 거리만 가능합니다");
+        }
     }
 
     @Override

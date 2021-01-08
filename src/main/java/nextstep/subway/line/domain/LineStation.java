@@ -6,6 +6,8 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,8 +16,6 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import static nextstep.subway.section.domain.Distance.*;
 
 @Entity
 @Table(indexes = {@Index(columnList = "line_id, station_id", unique = true),
@@ -44,21 +44,20 @@ public class LineStation extends BaseEntity {
     @Embedded
     private Distance distanceForNextStation;
 
-    private LineStation() {}
+    @Enumerated(EnumType.STRING)
+    private PositionStatus status;
+
+    protected LineStation() {}
 
     public LineStation(Line line, Station station) {
         this.line = line;
         this.station = station;
     }
 
-    public static LineStation createLineStation(Station station,
-                                                Station previousStation,
-                                                Station nextStation,
-                                                Distance distanceForNextStation) {
+    public static LineStation createLineStation(Station station, PositionStatus status) {
         LineStation lineStation = new LineStation();
         lineStation.changeStation(station);
-        lineStation.applyPreviousStationAndNextStation(previousStation, nextStation);
-        lineStation.applyDistanceForNextStation(distanceForNextStation);
+        lineStation.changePositionStatus(status);
         return lineStation;
     }
 
@@ -82,6 +81,10 @@ public class LineStation extends BaseEntity {
         return distanceForNextStation;
     }
 
+    public PositionStatus getStatus() {
+        return status;
+    }
+
     public void changeLine(Line line) {
         this.line = line;
     }
@@ -90,43 +93,64 @@ public class LineStation extends BaseEntity {
         this.station = station;
     }
 
+    public void changePositionStatus(PositionStatus positionStatus) {
+        this.status = positionStatus;
+        if (isFirst()) {
+            applyEmptyPreviousStation();
+        }
+        if (isLast()) {
+            applyEmptyNextStation();
+            applyDistanceForNextStation(new Distance(0));
+        }
+    }
+
     public void applyPreviousStation(Station station) {
         this.previousStation = station;
     }
 
-    public void applyNextStation(Station station) {
-        this.nextStation = station;
-    }
-
-    public void applyPreviousStationAndNextStation(Station previousStation, Station nextStation) {
-        applyPreviousStation(previousStation);
-        applyNextStation(nextStation);
-    }
-
-    public void applyDistanceForNextStation(Distance distanceForNextStation) {
-        checkDistance(distanceForNextStation);
-        this.distanceForNextStation = distanceForNextStation;
-    }
-
-    public void changeDistanceForNextStation(Distance newDistance) {
-        Distance changedDistance = new Distance(distanceForNextStation.getDistance() - newDistance.getDistance());
-        applyDistanceForNextStation(changedDistance);
-    }
-
-    private void checkDistance(Distance distance) {
-        if (nextStation != null && distance.getDistance() == MIN_DISTANCE) {
-            throw new IllegalArgumentException(MIN_DISTANCE + "보다 큰 거리만 허용됩니다");
-        } else if (isLast() && distance.getDistance() > MIN_DISTANCE) {
-            throw new IllegalArgumentException("거리가 " + MIN_DISTANCE + "만 허용됩니다");
+    public void applyNextStation(LineStation lineStation) {
+        if (!isLast()) {
+            this.nextStation = lineStation.getStation();
+            lineStation.applyPreviousStation(this.getStation());
         }
     }
 
+    public void applyEmptyPreviousStation() {
+        this.previousStation = null;
+    }
+
+    public void applyEmptyNextStation() {
+        this.nextStation = null;
+    }
+
+    public void applyDistanceForNextStation(Distance distanceForNextStation) {
+        if (!isLast()) {
+            distanceForNextStation.checkZeroDistance();
+        }
+        this.distanceForNextStation = distanceForNextStation;
+    }
+
+    public void mergeDistanceForNextStation(Distance distance) {
+        applyDistanceForNextStation(new Distance(distanceForNextStation.getDistance() + distance.getDistance()));
+    }
+
+    public void changeDistanceForNextStation(Distance newDistance) {
+        if (newDistance.isDistanceGreaterThanEqual(distanceForNextStation)) {
+            throw new IllegalArgumentException("기존 구간의 길이보다 작아야 합니다");
+        }
+        applyDistanceForNextStation(new Distance(distanceForNextStation.getDistance() - newDistance.getDistance()));
+    }
+
     public boolean isFirst() {
-        return previousStation == null;
+        return status.isFirst();
+    }
+
+    public boolean isMiddle() {
+        return status.isMiddle();
     }
 
     public boolean isLast() {
-        return nextStation == null;
+        return status.isLast();
     }
 
     public boolean isNew() {
