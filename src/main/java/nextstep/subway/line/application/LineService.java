@@ -1,20 +1,22 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineNotFoundException;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+
+    private final LineRepository lineRepository;
+    public static final String COULD_NOT_FIND_LINE = "Could not find line ";
 
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
@@ -32,17 +34,19 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        return LineResponse.of(lineRepository.findById(id)
-                .orElseThrow(() -> new LineNotFoundException(id)));
+        Line findLine = lineRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
+        return LineResponse.of(findLine);
     }
 
     public LineResponse updateLineById(Long id, LineRequest request) {
-        return LineResponse.of(lineRepository.findById(id)
+        Line updateLine = lineRepository.findById(id)
                 .map(line -> {
                     line.update(request.toLine());
                     return lineRepository.save(line);
                 })
-                .orElseGet(() -> lineRepository.save(request.toLine())));
+                .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
+        return LineResponse.of(updateLine);
     }
 
     public void deleteLineById(Long id) {
