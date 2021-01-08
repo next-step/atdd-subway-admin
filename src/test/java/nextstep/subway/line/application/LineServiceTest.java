@@ -1,13 +1,16 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -15,8 +18,8 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-
-class LineServiceTest extends AcceptanceTest {
+@SpringBootTest
+class LineServiceTest{
 
     @Autowired
     private LineService lineService;
@@ -24,6 +27,19 @@ class LineServiceTest extends AcceptanceTest {
     @Autowired
     private StationRepository stationRepository;
 
+    @Autowired
+    private LineRepository lineRepository;
+
+    @Autowired
+    private SectionRepository sectionRepository;
+
+    @AfterEach
+    void cleanup() {
+        sectionRepository.deleteAllInBatch();
+        lineRepository.deleteAllInBatch();
+        stationRepository.deleteAllInBatch();
+    }
+    
     @Test
     void findAll() {
         // given
@@ -40,12 +56,12 @@ class LineServiceTest extends AcceptanceTest {
     @Test
     void findById() {
         // given
-        saveLine("강남역", "잠실역", "2호선", "green", 3);
+        LineResponse expected = saveLine("강남역", "잠실역", "2호선", "green", 3);
 
         // when
-        LineResponse lineResponse = lineService.findById(1L);
+        LineResponse lineResponse = lineService.findById(expected.getId());
         // then
-        assertThat(lineResponse.getName()).isEqualTo("2호선");
+        assertThat(lineResponse.getName()).isEqualTo(expected.getName());
     }
 
 
@@ -83,9 +99,9 @@ class LineServiceTest extends AcceptanceTest {
         assertThat(lineResponse.getStationsResponses().size()).isEqualTo(2);
     }
 
-    private void saveLine(String upStation, String downStation, String name, String color, int distance) {
+    private LineResponse saveLine(String upStation, String downStation, String name, String color, int distance) {
         Station 상행역 = stationRepository.save(new Station(upStation));
         Station 하행역 = stationRepository.save(new Station(downStation));
-        lineService.save(new LineRequest(name, color, 상행역.getId(), 하행역.getId(), distance));
+        return lineService.save(new LineRequest(name, color, 상행역.getId(), 하행역.getId(), distance));
     }
 }
