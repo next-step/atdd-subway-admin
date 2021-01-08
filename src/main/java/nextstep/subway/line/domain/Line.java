@@ -90,7 +90,7 @@ public class Line extends BaseEntity {
 		return Objects.hash(getId(), getName(), getColor(), sections);
 	}
 
-	public void addSection(Section section) {
-		sections.addSection(section);
+	public void addSection(Long upStationId, Long downStationId, int distance) {
+		sections.addSection(new Section(upStationId, downStationId, distance));
 	}
 }
