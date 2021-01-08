@@ -59,16 +59,22 @@ public class Line extends BaseEntity {
 		this.color = line.getColor();
 	}
 
-	public void addOrUpdateStation(Station station, Station downStation, int distance) {
-		if(station == null) {
+	public List<Station> getStations() {
+		return lineStations.stream()
+			.map(LineStation::getStation)
+			.collect(Collectors.toList());
+	}
+
+	public void addOrUpdateStation(Station upStation, Station downStation, int distance) {
+		if(upStation == null) {
 			return;
 		}
-		if(downStation != null) {
-			addOrUpdateStation(downStation, null, 0);
+		if(downStation != null && upStation.getId().equals(downStation.getId())) {
+			throw new IllegalArgumentException("upStation과 downStation은 동일할 수 없습니다.");
 		}
 		LineStation lineStation = new LineStation.Builder()
 			.line(this)
-			.station(station)
+			.station(upStation)
 			.downStation(downStation)
 			.distance(distance)
 			.build();
@@ -76,27 +82,19 @@ public class Line extends BaseEntity {
 			lineStations.remove(lineStation);
 			lineStations.add(lineStation);
 		}
+
+		addOrUpdateStation(downStation, null, 0);
 	}
 
 	public void removeStation(Station station) {
 		lineStations.remove(LineStation.of(this, station));
 	}
 
-	public void removeAll() {
-		lineStations.clear();
-	}
-
-	public List<Station> getStations() {
-		return lineStations.stream()
-			.map(LineStation::getStation)
-			.collect(Collectors.toList());
-	}
-
 	public int getDistance(Station station1, Station station2) {
 		return lineStations.stream()
 			.filter(lineStation ->
 				station1.equals(lineStation.getStation()) && station2.equals(lineStation.getDownStation())
-				|| station2.equals(lineStation.getStation()) && station1.equals(lineStation.getDownStation()))
+					|| station2.equals(lineStation.getStation()) && station1.equals(lineStation.getDownStation()))
 			.max(Comparator.comparingInt(LineStation::getDistance))
 			.map(LineStation::getDistance)
 			.orElse(0);

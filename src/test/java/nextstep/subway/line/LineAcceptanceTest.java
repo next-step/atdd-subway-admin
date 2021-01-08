@@ -21,42 +21,6 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.StationAcceptanceTest;
 
-/**
- * Feature: 지하철 노선 관련 기능
- *
- *   Scenario: 지하철 노선을 종점역(상행, 하행, 거리)을 포함하여 생성한다.
- *     When 지하철 노선을 생성 요청한다.
- *     Then 지하철 노선이 생성된다.
- *
- *   Scenario: 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.
- *     Given 지하철 노선이 등록되어 있다
- *     When 지하철 노선을 생성 요청한다.
- *     Then 지하철 노선 생성이 실패된다.
- *
- *   Scenario: 종점역을 포함하는 지하철 노선 목록을 조회한다.
- *     Given 지하철 노선이 등록되어 있다
- *     When 지하철 노선 목록을 조회 요청한다.
- *     Then 지하철 노선 목록이 응답된다.
- *     AND  지하철 노선 목록이 포함되어 있다.
- *     AND  지하철 노선에 역 목록이 포함되어 있다.
- *
- *   Scenario: 종점역을 포함하는 지하철 노선을 조회한다.
- *     Given 지하철 노선이 등록되어 있다
- *     When 지하철 노선을 조회 요청한다.
- *     Then 지하철 노선이 응답된다.
- *     AND  지하철 노선에 역 목록이 포함되어 있다.
- *
- *   Scenario: 지하철 노선을 수정한다.
- *     Given 지하철 노선이 등록되어 있다
- *     When 지하철 노선을 수정 요청한다.
- *     Then 지하철 노선이 수정된다.
- *
- *   Scenario: 지하철 노선을 제거한다.
- *     Given 지하철 노선이 등록되어 있다
- *     When 지하철 노선을 제거 요청한다.
- *     Then 지하철 노선 삭제된다.
- *
- */
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
@@ -89,6 +53,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// when : 지하철_노선_생성_요청
 		ExtractableResponse<Response> response = 지하철노선_생성_요청("2호선", "green");
+
+		// then : 지하철_노선_생성_실패됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@DisplayName("상행과 하행역을 동일하게 설정하여 지하철 노선을 생성한다.")
+	@Test
+	void createLineWithSameUpDownStation() {
+		// given : 지하철_역_등록되어_있음
+		long 강남역_ID = location_header에서_ID_추출(StationAcceptanceTest.지하철_생성_요청("강남역"));
+
+		// when : 지하철_노선_생성_요청 && 상행_하행역_동일
+		ExtractableResponse<Response> response =
+			지하철노선_생성_요청("2호선", "green", 강남역_ID, 강남역_ID, 10);
 
 		// then : 지하철_노선_생성_실패됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -171,8 +149,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(response.jsonPath().getList("stations.name", String.class))
-				.containsAll(Arrays.asList("강남역","역삼역"))
+				.containsAll(Arrays.asList("강남역", "역삼역"))
 		);
+	}
+
+	@DisplayName("존재하지 않는 지하철 노선을 조회한다.")
+	@Test
+	void getNotExistLine() {
+		// when : 지하철_노선_조회_요청
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(999);
+
+		// then : 지하철_노선_조회_실패됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@DisplayName("지하철 노선을 수정한다.")
@@ -194,6 +182,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// then : 지하철_노선_수정됨
 		assertThat(지하철_노선_조회_요청(이호선_ID).jsonPath().<String>get("name")).isEqualTo("구분당선");
+	}
+
+	@DisplayName("존재하지 않는 지하철 노선을 수정한다.")
+	@Test
+	void updateNotExistLine() {
+		// when : 지하철_노선_수정_요청
+		Map<String, String> params = new HashMap<>();
+		params.put("name", "구분당선");
+		params.put("color", "bg-blue-600");
+		ExtractableResponse<Response> response = RestAssured
+			.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().put("/lines/999")
+			.then().log().all().extract();
+
+		// then : 지하철_노선_수정_실패됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@DisplayName("지하철 노선을 제거한다.")
@@ -233,11 +239,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	private ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color,
 		String upStationName, String downStationName, int distance) {
+
+		long upStationId = location_header에서_ID_추출(StationAcceptanceTest.지하철_생성_요청(upStationName));
+		long downStationId = location_header에서_ID_추출(StationAcceptanceTest.지하철_생성_요청(downStationName));
+		return 지하철노선_생성_요청(name, color, upStationId, downStationId, distance);
+	}
+
+	private ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color,
+		long upStationId, long downStationId, int distance) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", name);
 		params.put("color", color);
-		params.put("upStationId", location_header에서_ID_추출(StationAcceptanceTest.지하철_생성_요청(upStationName)));
-		params.put("downStationId", location_header에서_ID_추출(StationAcceptanceTest.지하철_생성_요청(downStationName)));
+		params.put("upStationId", upStationId);
+		params.put("downStationId", downStationId);
 		params.put("distance", distance);
 
 		return 지하철노선_생성_요청(params);
