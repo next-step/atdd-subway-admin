@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 
 /**
  * @author : byungkyu
@@ -30,5 +31,10 @@ public class SectionService {
 		Line line = lineService.getLineById(lineId);
 		line.addSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
 			sectionRequest.getDistance());
+	}
+
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		Line line = lineService.getLineById(lineId);
+		line.removeSectionByStationId(stationId);
 	}
 }

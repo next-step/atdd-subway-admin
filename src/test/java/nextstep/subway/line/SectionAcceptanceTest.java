@@ -140,6 +140,45 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선_구간_상행선_하행선_없음_오류(response);
 	}
 
+	@DisplayName("노선의 구간 제거(종점 제거시 다음으로 오던 역이 종점이 됨)")
+	@Test
+	void removeDownStationOnSection(){
+		// given
+		// 지하철_노선에_지하철역_등록_요청
+		StationResponse 판교역 = StationAcceptanceTest.지하철역_생성("판교역").as(StationResponse.class);
+		int distance = 4;
+		지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 판교역.getId(), distance);
+
+		//when
+		지하철_노선의_지하철역_삭제_요청(신분당선.getId(), 광교역.getId());
+
+		//then
+		ExtractableResponse<Response> response = LineAcceptanceTest.지하철_노선_조회_요청(신분당선.getId());
+		지하철_노선의_상행선_하행선_조회(response, 강남역.getId(), 판교역.getId());
+	}
+
+	private void 지하철_노선의_상행선_하행선_조회(ExtractableResponse<Response> response, Long... stationIds) {
+		List<Long> actualStationIds = response.jsonPath().getList("stations", StationResponse.class).stream()
+			.map(StationResponse::getId)
+			.collect(Collectors.toList());
+
+		// then
+		assertThat(actualStationIds).containsAll(Arrays.asList(stationIds));
+	}
+
+	private void 지하철_노선의_지하철역_삭제_요청(Long lineId, Long stationId) {
+		// when
+		ExtractableResponse<Response> response = RestAssured
+		        .given().log().all()
+		        .contentType(MediaType.APPLICATION_JSON_VALUE)
+		        .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+		        .then().log().all().extract();
+		
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		
+	}
+
 	private void 지하철_노선_구간_상행선_하행선_없음_오류(ExtractableResponse<Response> response) {
 		String errorCode = response.jsonPath().getObject(".", ErrorResponse.class).getErrorCode();
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

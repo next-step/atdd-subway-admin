@@ -74,6 +74,10 @@ public class Line extends BaseEntity {
 			.collect(Collectors.toList());
 	}
 
+	public Sections getSections() {
+		return sections;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -93,4 +97,13 @@ public class Line extends BaseEntity {
 	public void addSection(Long upStationId, Long downStationId, int distance) {
 		sections.addSection(new Section(upStationId, downStationId, distance));
 	}
+
+	public void removeSection(Section section) {
+		sections.removeSection(section);
+	}
+
+	public void removeSectionByStationId(Long stationId) {
+		sections.removeSectionByStationId(stationId);
+	}
+
 }

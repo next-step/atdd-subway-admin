@@ -1,17 +1,23 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.NotFound;
+
 import nextstep.subway.common.exception.DuplicateAllStationException;
 import nextstep.subway.common.exception.IllegalDistanceException;
 import nextstep.subway.common.exception.NotExistAllStationException;
+import nextstep.subway.common.exception.NotFoundException;
 
 /**
  * @author : byungkyu
@@ -141,4 +147,36 @@ public class Sections {
 	public int hashCode() {
 		return Objects.hash(getSections());
 	}
+
+	public void removeSection(Section section) {
+		sections.remove(section);
+	}
+
+
+	public void removeSectionByStationId(Long stationId) {
+		Section frontStationSection = getSectionContainDownStationId(stationId);
+		Section backStationSection = getSectionContainUpStationId(stationId);
+
+		sections.removeAll(Arrays.asList(frontStationSection,backStationSection));
+
+		if(frontStationSection != null && backStationSection != null){
+			sections.add(new Section(frontStationSection.getUpStationId(), backStationSection.getDownStationId(),
+				frontStationSection.getDistance() + backStationSection.getDistance()));
+		}
+	}
+
+	private Section getSectionContainUpStationId(Long stationId) {
+		return sections.stream()
+			.filter(section -> section.getUpStationId().equals(stationId))
+			.findFirst()
+			.orElse(null);
+	}
+
+	private Section getSectionContainDownStationId(Long stationId) {
+		return sections.stream()
+			.filter(section -> section.getDownStationId().equals(stationId))
+			.findFirst()
+			.orElse(null);
+	}
+
 }
