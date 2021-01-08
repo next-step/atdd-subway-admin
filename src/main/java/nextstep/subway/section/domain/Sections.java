@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.section.application.AlreadyExistsException;
-import nextstep.subway.section.application.ExceedDistanceException;
+import nextstep.subway.section.application.CannotRemoveException;
 import nextstep.subway.section.application.NoMatchStationException;
 
 import javax.persistence.*;
@@ -41,30 +41,90 @@ public class Sections {
             return;
         }
 
-        this.sections.stream()
-                .filter(orgSection -> orgSection.getDownStationId().equals(newSection.getDownStationId()))
-                .findFirst()
-                .ifPresent(orgSection -> {
-                    validateDistance(orgSection, newSection);
-                    this.sections.add(new Section(orgSection.getUpStationId(), orgSection.getDownStationId(), orgSection.getDistance() - newSection.getDistance()));
-                    this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
-                    this.sections.remove(orgSection);
-                });
+        if (WhenSameDownStation(newSection)) {
+            insertWhenSameDownStation(newSection);
+            return;
+        }
 
+        if (whenSameUpStation(newSection)) {
+            insertWhenSameUpStation(newSection);
+        }
+    }
+
+    public void removeSectionByStationId(Long stationId) {
+        if (sections.size() == 1) {
+            throw new CannotRemoveException("최종 구간의 역은 삭제할 수 없습니다.");
+        }
+
+        if (firstStationId().equals(stationId)) {
+            sections.remove(getFirstSection());
+            return;
+        }
+
+        if (lastStationId().equals(stationId)) {
+            sections.remove(getLastSection());
+            return;
+        }
+
+        Section preSection = getPreSectionByStationId(stationId);
+        Section nextSection = getNextSectionByStationId(stationId);
+        Section newSection = Section.builder()
+                .upStationId(preSection.getUpStationId())
+                .downStationId(nextSection.getDownStationId())
+                .distance(preSection.getDistance() + nextSection.getDistance())
+                .build();
+
+        sections.add(newSection);
+        sections.removeAll(Arrays.asList(preSection, nextSection));
+    }
+
+    private Section getNextSectionByStationId(Long stationId) {
+        return sections.stream()
+                .filter(it -> it.getUpStationId().equals(stationId))
+                .findFirst()
+                .get();
+    }
+
+    private Section getPreSectionByStationId(Long stationId) {
+        return sections.stream()
+                .filter(it -> it.getDownStationId().equals(stationId))
+                .findFirst()
+                .get();
+    }
+
+    private boolean whenSameUpStation(Section newSection) {
+        return sections.stream()
+                .anyMatch(it -> it.sameUpStation(newSection));
+    }
+
+    private boolean WhenSameDownStation(Section newSection) {
+        return sections.stream()
+                .anyMatch(it -> it.sameDownStation(newSection));
+    }
+
+    private void insertWhenSameUpStation(Section newSection) {
         this.sections.stream()
-                .filter(orgSection -> orgSection.getUpStationId().equals(newSection.getUpStationId()))
+                .filter(it -> it.sameUpStation(newSection))
                 .findFirst()
                 .ifPresent(orgSection -> {
-                    validateDistance(orgSection, newSection);
-                    this.sections.add(new Section(newSection.getUpStationId(), newSection.getDownStationId(), newSection.getDistance()));
-                    this.sections.add(new Section(newSection.getDownStationId(), orgSection.getDownStationId(), orgSection.getDistance() - newSection.getDistance()));
+                    this.sections.addAll(orgSection.splitWhenSameUpStation(newSection));
                     this.sections.remove(orgSection);
                 });
     }
 
-    private boolean isFirstOrLastSection(Section newSection) {
-        return firstStationId().equals(newSection.getDownStationId())
-                || lastStationId().equals(newSection.getUpStationId());
+    private void insertWhenSameDownStation(Section newSection) {
+        this.sections.stream()
+                .filter(it -> it.sameDownStation(newSection))
+                .findFirst()
+                .ifPresent(orgSection -> {
+                    this.sections.addAll(orgSection.splitWhenSameDownStation(newSection));
+                    this.sections.remove(orgSection);
+                });
+    }
+
+    private boolean isFirstOrLastSection(Section section) {
+        return firstStationId().equals(section.getDownStationId())
+                || lastStationId().equals(section.getUpStationId());
     }
 
     private void validate(Section newSection) {
@@ -79,12 +139,17 @@ public class Sections {
             throw new NoStationIdException("하행역을 입력해 주세요.");
         }
 
-        if (sections.contains(newSection)) {
+        if (checkAlreadyExists(newSection)) {
             throw new AlreadyExistsException(newSection);
         }
+
         if (noMatchExistsStation(newSection)) {
             throw new NoMatchStationException(newSection);
         }
+    }
+
+    private boolean checkAlreadyExists(Section newSection) {
+        return sections.stream().anyMatch(it -> it.sameUpStation(newSection) && it.sameDownStation(newSection));
     }
 
     private boolean noMatchExistsStation(Section newSection) {
@@ -100,12 +165,6 @@ public class Sections {
             ids.add(section.getDownStationId());
         }
         return ids;
-    }
-
-    private void validateDistance(Section orgSection, Section newSection) {
-        if (newSection.longer(orgSection)) {
-            throw new ExceedDistanceException(orgSection.getDistance(), newSection.getDistance());
-        }
     }
 
     private Sections orderedSections() {
@@ -124,6 +183,13 @@ public class Sections {
     private Section getFirstSection() {
         return sections.stream()
                 .filter(this::isFirstSection)
+                .findAny()
+                .get();
+    }
+
+    private Section getLastSection() {
+        return sections.stream()
+                .filter(this::isLastSection)
                 .findAny()
                 .get();
     }

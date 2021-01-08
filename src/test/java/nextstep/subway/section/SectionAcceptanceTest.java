@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -27,7 +28,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     StationDataHelper stationDataHelper;
     @Autowired
     LineDataHelper lineDataHelper;
-    
+
     @DisplayName("노선에 구간을 등록한다.")
     @Test
     void saveSection() {
@@ -164,6 +165,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("구간(역)을 삭제")
+    void removeSection() {
+        // given
+        Long 강남Id = stationDataHelper.역추가("강남역");
+        Long 광교Id = stationDataHelper.역추가("광교역");
+        Long 오리Id = stationDataHelper.역추가("오리역");
+        Section first = new Section(강남Id, 광교Id, 10);
+        Section second = new Section(광교Id, 오리Id, 10);
+        Line savedLine = lineDataHelper.지하철_노선_추가(new Line("신분당선", "red", new Sections(Arrays.asList(first, second))));
+
+        // when
+        ExtractableResponse<Response> response =  RestAssured.given().log().all()
+                .params("stationId", 광교Id)
+                .when().delete("/lines/" + savedLine.getId() + "/sections")
+                .then().log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private Map<String, String> createParam(String upStationId, String downStationId, String distance) {
