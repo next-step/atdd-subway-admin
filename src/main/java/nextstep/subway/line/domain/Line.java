@@ -28,7 +28,7 @@ public class Line extends BaseEntity {
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final Set<LineStation> lineStations = new HashSet<>();
 
-	public Line() {
+	protected Line() {
 	}
 
 	public Line(String name, String color) {
