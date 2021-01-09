@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.advice.exception.SectionBadRequestException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
@@ -20,6 +22,7 @@ public class Section {
     private Station downStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     private Line line;
 
     private int distance;
@@ -35,16 +38,16 @@ public class Section {
         this.distance = distance;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public int getDistance() {

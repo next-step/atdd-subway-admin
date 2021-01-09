@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.advice.exception.SectionBadRequestException;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
@@ -7,7 +9,10 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -21,6 +26,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Section> sections = new ArrayList<>();
 
     public Line() {
@@ -43,6 +49,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
+
     public List<Section> getSections() {
         return sections;
     }
@@ -52,8 +59,8 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void createSection(Station upStation, Station downStation, int distance) {
-        sections.add(new Section(upStation, downStation, this, distance));
+    public void createSection(Section section) {
+        sections.add(section);
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
