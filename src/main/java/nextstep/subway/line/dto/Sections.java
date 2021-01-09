@@ -70,6 +70,7 @@ public class Sections {
         if(this.notExistStation(stationId)) {
             throw new IllegalArgumentException("존재하지 않는 역입니다.");
         }
+        validateSectionSize();
 
         List<Section> findSectionsByStationId = findSectionsByStationId(stationId);
         int size = findSectionsByStationId.size();
@@ -77,6 +78,16 @@ public class Sections {
         Section deletedSection = deleteSection(findSectionsByStationId, size);
 
         combineExistingSections(findSectionsByStationId, size, deletedSection);
+    }
+
+    /**
+     * 구간이 하나 남은 경우 삭제 할 수 없다는 예외를 던져줌.
+     */
+    private void validateSectionSize() {
+        if(this.sections.size() <= 1) {
+            throw new IllegalArgumentException("최소한 하나의 구간은 존재해야합니다" +
+                    ". 구간이 한개인 경우 삭제 할 수 없습니다.");
+        }
     }
 
     /**
