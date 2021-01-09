@@ -35,12 +35,12 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NullPointerException());
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
         return LineResponse.of(line);
     }
 
     public LineResponse updateLineById(Long id, LineRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NullPointerException());
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
         line.changeLine(request.getName(), request.getColor());
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);

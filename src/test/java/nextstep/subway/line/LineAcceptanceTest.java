@@ -36,17 +36,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateName() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green darken-1");
-        RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        지하철_노선_생성_요청("2호선", "green darken-1");
 
         // when
         // 지하철_노선_생성_요청
