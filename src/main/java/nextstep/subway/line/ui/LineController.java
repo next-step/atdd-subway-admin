@@ -32,6 +32,16 @@ public class LineController {
         }
     }
 
+    @PostMapping(value = "/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> addSection(@RequestBody LineRequest lineRequest) {
+        try {
+            LineResponse response = lineService.addSection(lineRequest);
+            return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());

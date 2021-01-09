@@ -36,11 +36,20 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    private void addStationById(Line persistLine, Long stationId) {
+    @Transactional
+    public LineResponse addSection(LineRequest request) {
+        Line findLine = lineRepository.findByName(request.getName())
+                .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + request.getName()));
+        addStationById(findLine, request.getUpStationId());
+        addStationById(findLine, request.getDownStationId());
+        return LineResponse.of(findLine);
+    }
+
+    private void addStationById(Line line, Long stationId) {
         if (stationId != null) {
-            Station upStation = stationRepository.findById(stationId)
+            Station station = stationRepository.findById(stationId)
                     .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_STATION + stationId));
-            upStation.setLine(persistLine);
+            station.setLine(line);
         }
     }
 
