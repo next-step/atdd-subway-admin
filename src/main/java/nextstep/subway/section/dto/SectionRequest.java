@@ -8,8 +8,10 @@ public class SectionRequest {
     private Long downStationId;
     private int distance;
 
+    public SectionRequest() {
+    }
+
     public SectionRequest(Long upStationId, Long downStationId, int distance) {
-        checkDuplicationId(upStationId, downStationId);
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
@@ -33,12 +35,6 @@ public class SectionRequest {
                 ", downStationId=" + downStationId +
                 ", distance=" + distance +
                 '}';
-    }
-
-    private void checkDuplicationId(Long upStationId, Long downStationId) {
-        if (upStationId == downStationId) {
-            throw new SectionBadRequestException(upStationId, downStationId);
-        }
     }
 
 }

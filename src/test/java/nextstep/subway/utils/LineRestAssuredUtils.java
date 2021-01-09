@@ -5,9 +5,20 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.MediaType;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class LineRestAssuredUtils {
+
+    public static Map<String, String> 노선_요청_파라미터_생성(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
+        return params;
+    }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
         return RestAssured.given().log().all()
