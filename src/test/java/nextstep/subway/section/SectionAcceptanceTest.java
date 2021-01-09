@@ -163,4 +163,35 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 지하철 노선 추가 시 오류 발생
         assertThat(sectionAddResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
+
+    @Test
+    @DisplayName("노선에 등록 된 구간을 삭제")
+    void deleteSection() {
+        // given
+        Long addStationId = StationAcceptanceTestSupport.지하철_역_생성_요청(new StationRequest(판교역))
+                .as(StationResponse.class).getId();
+
+        SectionRequest sectionRequest
+                = new SectionRequest(LineAcceptanceTestSupport.getUpStationId(), addStationId, 5);
+
+        ExtractableResponse<Response> sectionAddResponse
+                = SectionAcceptanceTestSupport.지하철_노선에_지하철역_등록_요청(
+                this.lineResponse.getId(), sectionRequest);
+
+        // when
+        // 지하철_노선에_지하철역_삭제_요청
+        ExtractableResponse<Response> sectionRemoveResponse
+                = SectionAcceptanceTestSupport.지하철_노선에_지하철역_삭제_요청(
+                this.lineResponse.getId(), addStationId);
+
+        LineResponse findUpdateLineResponse
+                = LineAcceptanceTestSupport.지하철_노선_조회_요청("/lines/" + this.lineResponse.getId())
+                .as(LineResponse.class);
+
+        // then
+        // 지하철 구간 삭제 됨
+        assertThat(sectionRemoveResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findUpdateLineResponse.getStations().size()).isEqualTo(2);
+        assertThat(findUpdateLineResponse.getStations().stream().map(StationResponse::getName)).doesNotContain(판교역);
+    }
 }
