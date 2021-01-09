@@ -75,7 +75,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         LineResponse lineResponse = 지하철_노선_생성_요청("2호선", "green", "1", "2", "10").as(LineResponse.class);
 
-        지하철_역_생성_요청("사당역");
+        지하철_역_생성_요청("교대역");
         ExtractableResponse<Response> response = 구간_등록_요청(lineResponse.getId(), "3", "3", "10");
 
         // then
@@ -83,13 +83,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("구간 등록시, distance가 기존보다 큰 경우 400 익셉션 발생")
+    @DisplayName("구간 등록시, distance가 기존보다 크거나 같은 경우 400 익셉션 발생")
     void addOverLengthDistanceSection() {
         // when
         LineResponse lineResponse = 지하철_노선_생성_요청("2호선", "green", "1", "2", "10").as(LineResponse.class);
 
-        지하철_역_생성_요청("사당역");
-        ExtractableResponse<Response> response = 구간_등록_요청(lineResponse.getId(), "3", "2", "10");
+        지하철_역_생성_요청("강변");
+        ExtractableResponse<Response> response = 구간_등록_요청(lineResponse.getId(), "1", "3", "10");
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
