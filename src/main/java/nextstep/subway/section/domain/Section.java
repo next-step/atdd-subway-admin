@@ -34,11 +34,6 @@ public class Section extends BaseEntity {
 	public Section() {
 	}
 
-//	public Section(int distanceMeter) {
-//		this.distanceMeter = distanceMeter;
-//	}
-
-
 	public Section(Station upStation, int distance, Line line, Station mainStation) {
 		this.upStation = upStation;
 		this.downStation = null;
@@ -91,7 +86,7 @@ public class Section extends BaseEntity {
 	}
 
 	public boolean isUpStationInSection() {
-		return this.upStation != null
+		return this.upStation != null;
 	}
 
 	public boolean isUpStationInSection(Station newUpStation) {
@@ -130,10 +125,6 @@ public class Section extends BaseEntity {
 		return this.distanceMeter;
 	}
 
-	private int plusDistance(int newDistanceMeter) {
-		return this.distanceMeter += newDistanceMeter;
-	}
-
 	public void updateDownStation(Station staion, int newDistanceMeter) {
 		this.downStation = staion;
 		this.distanceMeter = minusDistance(newDistanceMeter);
@@ -142,8 +133,8 @@ public class Section extends BaseEntity {
 	public void updateDownStation(Station staion) {
 		this.downStation = staion;
 	}
-	public void updateDownStation(int newDistanceMeter) {
-		this.distanceMeter = plusDistance(newDistanceMeter);
+	public int plusDistance(int newDistanceMeter) {
+		return this.distanceMeter += newDistanceMeter;
 	}
 
 	public boolean isTerminal() {

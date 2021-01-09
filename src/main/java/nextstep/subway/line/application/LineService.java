@@ -52,8 +52,8 @@ public class LineService {
 
 	@Transactional
 	public LineResponse saveLine(LineRequest lineRequest) {
-		Station upStation = stationRepository.findById(lineRequest.getUpStationId()).get();
-		Station downStation = stationRepository.findById(lineRequest.getDownStationId()).get();
+		Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + lineRequest.getUpStationId()));
+		Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + lineRequest.getDownStationId()));
 
 		Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
 		lineRepository.save(line);
@@ -61,8 +61,8 @@ public class LineService {
 	}
 
 	@Transactional
-	public LineResponse new_addSection(Long lineId, SectionRequest sectionRequest) {
-		Line line = lineRepository.findById(lineId).get();
+	public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+		Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + lineId));
 		Section newSection = toSection(line, sectionRequest);
 		line.addSection(newSection, line);
 		return LineResponse.of(lineRepository.save(line));
@@ -79,9 +79,11 @@ public class LineService {
 		Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다 id=" + lineId));
 		Optional<Section> sectionOptional = line.getLineSections().stream().filter(sec -> (sec.getUpStation() == null && sec.getDownStation().getId() == stationId) ||
 				(sec.getDownStation() == null && sec.getUpStation().getId() == stationId)).findAny();
+
 		validate(sectionOptional, line);
 
-		Section section = sectionOptional.get();
+		//todo 아래 코드들 도메인 로직으로 옮기기
+		Section section = sectionOptional.orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + stationId));
 		if(section.isTerminal()){
 			//상행 종점역이 삭제되는 경우
 			Station newTerminal = section.getNetTerminal();

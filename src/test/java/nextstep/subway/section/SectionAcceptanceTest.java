@@ -9,6 +9,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -52,18 +57,77 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// when
 		StationResponse 새로운역 = StationAcceptanceTest.지하철역_등록되어_있음("새로운역");
 		SectionRequest sectionRequest = new SectionRequest(광교역.getId(), 새로운역.getId(), 3);
+		ExtractableResponse<Response> response = 구간등록하기(sectionRequest);
 
+		// then
+		// 지하철_노선에_지하철역_등록됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+		String lineId = response.header("Location").split("/")[2];
+
+		ExtractableResponse<Response> linesResponse = ID로_노선을_조회한다(Long.valueOf(lineId));
+
+		LineResponse lineResponse = linesResponse.jsonPath().getObject(".", LineResponse.class);
+		assertThat(lineResponse.getName()).isEqualTo(신분당선.getName());
+
+		//등록한 역 검증
+		List<SectionResponse> sections = lineResponse.getStations().stream().collect(Collectors.toList());
+		assertThat(sections.size()).isEqualTo(3);
+		List<Long> expectedStationId = Arrays.asList(광교역.getId(), 강남역.getId(), 새로운역.getId());
+		List<Long> resultLineIds = sections.stream()
+				.map(it -> it.getId())
+				.collect(Collectors.toList());
+		assertThat(resultLineIds).containsAll(expectedStationId);
+	}
+
+	ExtractableResponse<Response> 구간등록하기(SectionRequest section) {
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
-				.body(sectionRequest)
+				.body(section)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when()
 				.post(String.format("/lines/%s/sections", String.valueOf(신분당선.getId())))
 				.then().log().all()
 				.extract();
 
-		// then
-		// 지하철_노선에_지하철역_등록됨
+		return response;
+	}
+
+	@DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+	@Test
+	void addNewStationForUpTerminal() {
+		StationResponse 새로운상행역 = StationAcceptanceTest.지하철역_등록되어_있음("새로운상행역");
+		SectionRequest sectionRequest = new SectionRequest(새로운상행역.getId(), 강남역.getId(), 3);
+
+		ExtractableResponse<Response> response = 구간등록하기(sectionRequest);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		ExtractableResponse<Response> linesResponse = ID로_노선을_조회한다(신분당선.getId());
+
+		LineResponse lineResponse = linesResponse.jsonPath().getObject(".", LineResponse.class);
+		assertThat(lineResponse.getName()).isEqualTo(신분당선.getName());
+
+		List<SectionResponse> sections = lineResponse.getStations().stream().collect(Collectors.toList());
+		assertThat(sections.size()).isEqualTo(3);
+		SectionResponse section = sections.stream().filter(s -> s.getName().equalsIgnoreCase(새로운상행역.getName())).findAny().get();
+		assertThat(section.getDistance()).isEqualTo(0);
+	}
+
+	@DisplayName("새로운 역을 행 종점으로 등록할 경우")
+	@Test
+	void addNewStationForDownTerminal() {
+		StationResponse 새로운하행역 = StationAcceptanceTest.지하철역_등록되어_있음("새로운하행역");
+		SectionRequest sectionRequest = new SectionRequest(광교역.getId(), 새로운하행역.getId(), 3);
+
+		ExtractableResponse<Response> response = 구간등록하기(sectionRequest);
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		ExtractableResponse<Response> linesResponse = ID로_노선을_조회한다(신분당선.getId());
+
+		LineResponse lineResponse = linesResponse.jsonPath().getObject(".", LineResponse.class);
+		assertThat(lineResponse.getName()).isEqualTo(신분당선.getName());
+
+		List<SectionResponse> sections = lineResponse.getStations().stream().collect(Collectors.toList());
+		assertThat(sections.size()).isEqualTo(3);
+		SectionResponse section = sections.stream().filter(s -> s.getName().equalsIgnoreCase(새로운하행역.getName())).findAny().get();
+		assertThat(section.getDistance()).isEqualTo(3);
 	}
 
 	@DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
@@ -148,7 +212,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
-
 
 
 }

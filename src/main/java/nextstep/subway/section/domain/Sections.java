@@ -101,7 +101,7 @@ public class Sections {
 		this.sections.stream()
 				.filter(oldSection -> oldSection.isUpStationInSection())
 				.findFirst()
-				.ifPresent(section -> section.updateDownStation(newSection.getDistanceMeter()));
+				.ifPresent(section -> section.plusDistance(newSection.getDistanceMeter()));
 
 		Section upSection = new Section(newSection.getDownStation(), line, newSection.getUpStation());
 		this.sections.add(upSection);
