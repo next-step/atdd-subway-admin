@@ -11,6 +11,7 @@ public class Line extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
+    @Column(unique = true)
     private String color;
 
     public Line() {
@@ -26,6 +27,10 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }
@@ -37,4 +42,6 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
+
+
 }

@@ -52,3 +52,8 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+## step1
+* 1.LineAcceptanceTest 완성
+* 2.Linecontroller 완성
+* 3.인수 테스트 리팩토링
