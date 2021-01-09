@@ -30,21 +30,19 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
-
     public LineResponse findById(Long id) {
-        Optional<Line> line = lineRepository.findById(id);
-        return LineResponse.of(line.get());
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NullPointerException());
+        return LineResponse.of(line);
     }
 
     public LineResponse updateLineById(Long id, LineRequest request) {
-        Optional<Line> line = lineRepository.findById(id);
-        line.get().setName(request.getName());
-        line.get().setColor(request.getColor());
-        Line persistLine = lineRepository.save(line.get());
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NullPointerException());
+        line.changeLine(request.getName(), request.getColor());
+        Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
 
