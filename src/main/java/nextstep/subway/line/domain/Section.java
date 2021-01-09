@@ -6,6 +6,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -37,7 +38,11 @@ public class Section {
         this.distance = distance;
     }
 
-    public void update(Station downStation) {
+    public void updateUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void updateDownStation(Station downStation) {
         this.downStation = downStation;
     }
 
@@ -63,7 +68,44 @@ public class Section {
         }
     }
 
+    public boolean isSameDownStation(Section section) {
+        return this.downStation == section.downStation;
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return this.upStation == section.upStation;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    public void replaceDownStation(Section section) {
+        validateReplace(section);
+        updateDownStation(section.getUpStation());
+    }
+
+    private void validateReplace(Section section) {
+        Objects.requireNonNull(section);
+        if (this.getDistance() <= section.getDistance()) {
+            new IllegalArgumentException(String.format("거리가 %dm보다 짧아야합니다.", this.getDistance()));
+        }
+    }
+
+    public void replaceUpStation(Section section) {
+        validateReplace(section);
+        updateUpStation(section.getDownStation());
     }
 }

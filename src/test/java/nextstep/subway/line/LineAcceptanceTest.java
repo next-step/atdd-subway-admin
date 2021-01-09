@@ -132,7 +132,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return stationResponse.body().as(StationResponse.class);
     }
 
-    private ExtractableResponse<Response> 지하철노선_생성_요청(LineRequest request) {
+    public static ExtractableResponse<Response> 지하철노선_생성_요청(LineRequest request) {
         return RestAssured
                 .given().log().all()
                 .body(request)

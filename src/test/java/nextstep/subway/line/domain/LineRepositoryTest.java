@@ -7,10 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 class LineRepositoryTest {
@@ -98,26 +99,48 @@ class LineRepositoryTest {
     @DisplayName("상행 종점과 하행 종점을 추가하여 노선을 생성한다.")
     @Test
     void createWithUpStationAndDownStation() {
-        // given
         Station 강남역 = stationRepository.save(new Station("강남역"));
         Station 시청역 = stationRepository.save(new Station("시청역"));
-
-        Line line = new Line("2호선", "green");
-
-        Section section = Section.builder().upStation(시청역)
-                .downStation(강남역)
-                .line(line)
-                .distance(50)
-                .build();
-
-        line.add(section);
-
         // when
-        Line savedLine = lineRepository.save(line);
+        Line savedLine = createLineWithUpStationAndDownStation(시청역, 강남역);
 
         // then
         Line acutal = lineRepository.findById(savedLine.getId()).get();
         Sections sections = acutal.getSections();
         assertThat(sections.getSections().size()).isEqualTo(1);
     }
+
+
+    private Line createLineWithUpStationAndDownStation(Station upStation, Station downStation) {
+        Line line = new Line("2호선", "green");
+
+        Section section = Section.builder().upStation(upStation)
+                .downStation(downStation)
+                .line(line)
+                .distance(50)
+                .build();
+
+        line.add(section);
+
+        return lineRepository.save(line);
+    }
+
+    @DisplayName("[구간 추가 등록] 역 사이에 새로운 역을 등록할 경")
+    @Test
+    void addSectionBetweenUpStationAndDownStation() {
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 시청역 = stationRepository.save(new Station("시청역"));
+        Line line = createLineWithUpStationAndDownStation(시청역, 강남역);
+        Station 잠실역 = stationRepository.save(new Station("잠실역"));
+        Section section = Section.builder().upStation(잠실역)
+                .downStation(강남역)
+                .line(line)
+                .distance(50)
+                .build();
+
+        line.add(section);
+        lineRepository.flush();
+
+        assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(시청역, 잠실역, 강남역));
+   }
 }

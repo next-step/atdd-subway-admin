@@ -6,10 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -18,6 +15,16 @@ public class Sections {
     private final List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
+        sections.stream()
+                .filter(existSection -> existSection.isSameDownStation(section))
+                .findFirst()
+                .ifPresent(existSection -> existSection.replaceDownStation(section));
+
+        sections.stream()
+                .filter(existSection -> existSection.isSameUpStation(section))
+                .findFirst()
+                .ifPresent(existSection -> existSection.replaceUpStation(section));
+
         sections.add(section);
     }
 
@@ -32,4 +39,15 @@ public class Sections {
                 .distinct()
                 .collect(Collectors.toList());
     }
+    /*
+    public List<Station> getStationsOrder() {
+        Optional<Section> section = sections.stream()
+                .findFirst();
+        
+        findUpToDownStation(section);
+        
+    }
+
+    private List<Station> findUpToDownStation(Optional<Section> section) {
+    }*/
 }
