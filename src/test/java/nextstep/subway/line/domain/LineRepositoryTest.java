@@ -125,7 +125,7 @@ class LineRepositoryTest {
         return lineRepository.save(line);
     }
 
-    @DisplayName("[구간 추가 등록] 역 사이에 새로운 역을 등록할 경")
+    @DisplayName("[구간 추가 등록] 역 사이에 새로운 역을 등록할 경우")
     @Test
     void addSectionBetweenUpStationAndDownStation() {
         Station C역 = stationRepository.save(new Station("C역"));
@@ -144,7 +144,7 @@ class LineRepositoryTest {
         assertThat(line.getSections().getStationsInOrder()).containsExactlyElementsOf(Arrays.asList(A역, B역, C역));
    }
 
-    @DisplayName("[구간 추가 등록] 새로운 역을 상행 종점으로 등록할 경")
+    @DisplayName("[구간 추가 등록] 새로운 역을 상행 종점으로 등록할 경우")
     @Test
     void addSectionNewUpStation() {
         Station C역 = stationRepository.save(new Station("C역"));
@@ -161,6 +161,25 @@ class LineRepositoryTest {
         lineRepository.flush();
 
         assertThat(line.getSections().getStationsInOrder()).containsExactlyElementsOf(Arrays.asList(B역, A역, C역));
+    }
+
+    @DisplayName("[구간 추가 등록] 새로운 역을 행 종점으로 등록할 경우")
+    @Test
+    void addSectionNewDownStation() {
+        Station C역 = stationRepository.save(new Station("C역"));
+        Station A역 = stationRepository.save(new Station("A역"));
+        Line line = createLineWithUpStationAndDownStation(A역, C역);
+        Station B역 = stationRepository.save(new Station("B역"));
+        Section section = Section.builder().upStation(C역)
+                .downStation(B역)
+                .line(line)
+                .distance(42)
+                .build();
+
+        line.add(section);
+        lineRepository.flush();
+
+        assertThat(line.getSections().getStationsInOrder()).containsExactlyElementsOf(Arrays.asList(A역, C역, B역));
     }
 
 }
