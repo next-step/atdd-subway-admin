@@ -71,7 +71,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("구간 등록시, 상행과 하행이 동일한 경우 400 익셉션 발생")
-    void addDuplicationSection() {
+    void addDuplicationStationsSection() {
         // when
         LineResponse lineResponse = 지하철_노선_생성_요청("2호선", "green", "1", "2", "10").as(LineResponse.class);
 
@@ -90,6 +90,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         지하철_역_생성_요청("강변");
         ExtractableResponse<Response> response = 구간_등록_요청(lineResponse.getId(), "1", "3", "10");
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("구간 등록시, 이미 존재하는 구간이면 400 익셉션 발생")
+    void addDuplicationSection() {
+        // when
+        LineResponse lineResponse = 지하철_노선_생성_요청("2호선", "green", "1", "2", "10").as(LineResponse.class);
+        ExtractableResponse<Response> response = 구간_등록_요청(lineResponse.getId(), "1", "2", "10");
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

@@ -1,7 +1,6 @@
 package nextstep.subway.section.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.advice.exception.SectionBadRequestException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
@@ -70,6 +69,26 @@ public class Section {
         if (upStation.getId() == downStation.getId()) {
             throw new SectionBadRequestException(upStation.getId(), downStation.getId());
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Section section = (Section) o;
+
+        if (upStation != null ? !upStation.equals(section.upStation) : section.upStation != null) return false;
+        if (downStation != null ? !downStation.equals(section.downStation) : section.downStation != null) return false;
+        return line != null ? line.equals(section.line) : section.line == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = upStation != null ? upStation.hashCode() : 0;
+        result = 31 * result + (downStation != null ? downStation.hashCode() : 0);
+        result = 31 * result + (line != null ? line.hashCode() : 0);
+        return result;
     }
 
     @Override

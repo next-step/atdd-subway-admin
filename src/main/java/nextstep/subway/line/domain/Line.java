@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.advice.exception.SectionBadRequestException;
 import nextstep.subway.common.BaseEntity;
@@ -9,10 +8,7 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -63,51 +59,59 @@ public class Line extends BaseEntity {
         sections.add(section);
     }
 
-    public void addSection(Station upStation, Station downStation, int distance) {
-        addMiddleStation(upStation, downStation, distance); // 가운데에 역을 추가
-        addTerminalStation(upStation, downStation, distance); // 종점에 역을 추가
-    }
-
-    private void addTerminalStation(Station upStation, Station downStation, int distance) {
-        if (isTerminalStation(upStation, downStation, distance)) {
-            sections.add(new Section(upStation, downStation, this, distance));
+    public void addSection(Section newSection) {
+        if (isUpStation(newSection)) {
+            addMiddleDownStation(newSection);
+            sections.add(newSection);
+            return;
+        }
+        if (isDownStation(newSection)) {
+            addMiddleUpStation(newSection);
+            sections.add(newSection);
+            return;
+        }
+        if (isTerminalStation(newSection)) {
+            sections.add(newSection);
         }
     }
 
-    private void addMiddleStation(Station upStation, Station downStation, int distance) {
-        addMiddleDownStation(upStation, downStation, distance); // 가운데 하행 추가
-        addMiddleUpStation(upStation, downStation, distance); // 가운데 상행 추가
-        sections.add(new Section(upStation, downStation, this, distance));
-    }
-
-
-    private void addMiddleDownStation(Station upStation, Station downStation, int distance) {
-        sections.stream()
-                .filter(section -> !isDuplicateStations(section, upStation, downStation))
-                .filter(section -> section.getUpStation().equals(upStation))
-                .filter(section -> validateDistance(section, distance))
-                .findFirst().ifPresent(section -> {
-            section.updateUpStation(downStation);
-            section.updateDistance(section.getDistance() - distance);
-        });
-    }
-
-    private void addMiddleUpStation(Station upStation, Station downStation, int distance) {
-        sections.stream()
-                .filter(section -> !isDuplicateStations(section, upStation, downStation))
-                .filter(section -> section.getDownStation().equals(downStation))
-                .filter(section -> validateDistance(section, distance))
-                .findFirst().ifPresent(section -> {
-            section.updateDownStation(upStation);
-            section.updateDistance(section.getDistance() - distance);
-        });
-    }
-
-    private boolean isTerminalStation(Station upStation, Station downStation, int distance) {
+    private boolean isUpStation(Section newSection) {
         return sections.stream()
-                .filter(section -> !isDuplicateStations(section, upStation, downStation))
-                .filter(section -> section.getDownStation().equals(upStation))
-                .anyMatch(section -> section.getUpStation().equals(downStation));
+                .anyMatch(section -> section.getUpStation().equals(newSection.getUpStation()));
+    }
+
+    private boolean isDownStation(Section newSection) {
+        return sections.stream()
+                .anyMatch(section -> section.getDownStation().equals(newSection.getDownStation()));
+    }
+
+    private void addMiddleDownStation(Section newSection) {
+        sections.stream()
+                .filter(section -> isNotDuplicateStations(section, newSection))
+                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .filter(section -> validateDistance(section, newSection.getDistance()))
+                .findFirst().ifPresent(section -> {
+            section.updateUpStation(newSection.getDownStation());
+            section.updateDistance(section.getDistance() - newSection.getDistance());
+        });
+    }
+
+    private void addMiddleUpStation(Section newSection) {
+        sections.stream()
+                .filter(section -> isNotDuplicateStations(section, newSection))
+                .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+                .filter(section -> validateDistance(section, newSection.getDistance()))
+                .findFirst().ifPresent(section -> {
+            section.updateDownStation(newSection.getUpStation());
+            section.updateDistance(section.getDistance() - newSection.getDistance());
+        });
+    }
+
+    private boolean isTerminalStation(Section newSection) {
+        return sections.stream()
+                .filter(section -> isNotDuplicateStations(section, newSection))
+                .filter(section -> section.getDownStation().equals(newSection.getUpStation()))
+                .anyMatch(section -> section.getUpStation().equals(newSection.getDownStation()));
     }
 
     private boolean validateDistance(Section section, int distance) {
@@ -117,8 +121,12 @@ public class Line extends BaseEntity {
         throw new SectionBadRequestException(section.getDistance(), distance);
     }
 
-    private boolean isDuplicateStations(Section section, Station upStation, Station downStation) {
-        return section.getUpStation().equals(upStation) && section.getDownStation().equals(downStation);
+    private boolean isNotDuplicateStations(Section section, Section newSection) {
+        if (!(section.getUpStation().equals(newSection.getUpStation())
+                && section.getDownStation().equals(newSection.getDownStation()))) {
+            return true;
+        }
+        throw new SectionBadRequestException(section);
     }
 
     @Override
@@ -128,5 +136,20 @@ public class Line extends BaseEntity {
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Line line = (Line) o;
+
+        return id != null ? id.equals(line.id) : line.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }
