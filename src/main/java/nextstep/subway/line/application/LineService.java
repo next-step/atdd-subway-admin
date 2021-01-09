@@ -41,9 +41,10 @@ public class LineService {
     }
 
     public LineResponse updateLineById(Long id, LineRequest request) {
-        Line update = new Line(request.getName(), request.getColor());
-        update.setId(id);
-        Line persistLine = lineRepository.save(update);
+        Optional<Line> line = lineRepository.findById(id);
+        line.get().setName(request.getName());
+        line.get().setColor(request.getColor());
+        Line persistLine = lineRepository.save(line.get());
         return LineResponse.of(persistLine);
     }
 
