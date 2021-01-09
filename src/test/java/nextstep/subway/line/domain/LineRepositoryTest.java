@@ -10,8 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 class LineRepositoryTest {
@@ -141,7 +140,7 @@ class LineRepositoryTest {
         line.add(section);
         lineRepository.flush();
 
-        assertThat(line.getSections().getStationsInOrder()).containsExactlyElementsOf(Arrays.asList(A역, B역, C역));
+        assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(A역, B역, C역));
    }
 
     @DisplayName("[구간 추가 등록] 새로운 역을 상행 종점으로 등록할 경우")
@@ -160,7 +159,7 @@ class LineRepositoryTest {
         line.add(section);
         lineRepository.flush();
 
-        assertThat(line.getSections().getStationsInOrder()).containsExactlyElementsOf(Arrays.asList(B역, A역, C역));
+        assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(B역, A역, C역));
     }
 
     @DisplayName("[구간 추가 등록] 새로운 역을 행 종점으로 등록할 경우")
@@ -179,7 +178,25 @@ class LineRepositoryTest {
         line.add(section);
         lineRepository.flush();
 
-        assertThat(line.getSections().getStationsInOrder()).containsExactlyElementsOf(Arrays.asList(A역, C역, B역));
+        assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(A역, C역, B역));
+    }
+
+    @DisplayName("[구간 추가 예외] 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void validateDistance() {
+        Station C역 = stationRepository.save(new Station("C역"));
+        Station A역 = stationRepository.save(new Station("A역"));
+        Line line = createLineWithUpStationAndDownStation(A역, C역);
+        Station B역 = stationRepository.save(new Station("B역"));
+        Section section = Section.builder().upStation(B역)
+                .downStation(C역)
+                .line(line)
+                .distance(55)
+                .build();
+
+        assertThatThrownBy(() -> {
+            line.add(section);
+        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("짧아야합니다.");
     }
 
 }
