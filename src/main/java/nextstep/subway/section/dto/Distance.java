@@ -15,6 +15,22 @@ public class Distance {
         this.distance = distance;
     }
 
+    /**
+     * 두 거리를 비교하여 새로운 거리를 반환합니다.
+     * 앞의 거리 값을 기준으로 두 거리의 차이가 없거나 0보다 작으면 오류를 발생합니다.
+     * @param distance1
+     * @param distance2
+     * @return 두거리의 차이
+     * @throws IllegalArgumentException
+     */
+    public static Distance difference(Distance distance1, Distance distance2) {
+        int difference = distance1.getDistance() - distance2.distance;
+        if(difference <= 0) {
+            throw new IllegalArgumentException("두 거리의 차이가 너무 작습니다.");
+        }
+        return new Distance(difference);
+    }
+
     public int getDistance() {
         return distance;
     }
