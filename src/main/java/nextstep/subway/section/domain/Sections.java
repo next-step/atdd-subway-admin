@@ -49,16 +49,16 @@ public class Sections {
 		}
 
 		if (isExistsUpStation) {
-			addBetweenSectionExistsUpStation(newSection, line);
+			addBetweenSectionExistsUpStation(newSection);
 		}
 		if (isExistsDownStation) {
-			addBetweenSectionExistsDownStation(newSection, line);
+			addBetweenSectionExistsDownStation(newSection);
 		}
 
 		this.sections.add(newSection);
 	}
 
-	private void addBetweenSectionExistsDownStation(Section newSection, Line line) {
+	private void addBetweenSectionExistsDownStation(Section newSection) {
 		this.sections.stream()
 				.filter(oldSection -> oldSection.isUpStationInSection())
 				.findFirst()
@@ -70,7 +70,7 @@ public class Sections {
 				.ifPresent(section -> section.updateDownStation(newSection.getUpStation(), newSection.getDistanceMeter()));
 	}
 
-	private void addBetweenSectionExistsUpStation(Section newSection, Line line) {
+	private void addBetweenSectionExistsUpStation(Section newSection) {
 		this.sections.stream()
 				.filter(oldSection -> oldSection.isDownStationInSection())
 				.findFirst()
