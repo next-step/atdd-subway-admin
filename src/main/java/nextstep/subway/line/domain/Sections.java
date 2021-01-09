@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-
-import org.hibernate.annotations.NotFound;
 
 import nextstep.subway.common.exception.DuplicateAllStationException;
 import nextstep.subway.common.exception.IllegalDistanceException;
@@ -132,33 +129,37 @@ public class Sections {
 	}
 
 	public void removeSectionByStationId(Long stationId) {
-		if(sections.size() == 1) throw new OneSectionCannotRemoveException();
+		if (sections.size() == 1) {
+			throw new OneSectionCannotRemoveException();
+		}
 
-		Section frontStationSection = getSectionContainDownStationId(stationId);
-		Section backStationSection = getSectionContainUpStationId(stationId);
+		Section frontStationSection = getSectionContainByStationId(filterEqualDownStationIdPredicate(stationId));
+		Section backStationSection = getSectionContainByStationId(filterEqualUpStationIdPredicate(stationId));
 
-		if(frontStationSection == null && backStationSection == null) throw new NotFoundException();
+		if (frontStationSection == null && backStationSection == null)
+			throw new NotFoundException();
 
-		sections.removeAll(Arrays.asList(frontStationSection,backStationSection));
+		sections.removeAll(Arrays.asList(frontStationSection, backStationSection));
 
-		if(frontStationSection != null && backStationSection != null){
+		if (frontStationSection != null && backStationSection != null) {
 			sections.add(new Section(frontStationSection.getUpStationId(), backStationSection.getDownStationId(),
 				frontStationSection.getDistance() + backStationSection.getDistance()));
 		}
 	}
 
-	private Section getSectionContainUpStationId(Long stationId) {
+	private Section getSectionContainByStationId(Predicate<Section> filterEqualStationIdPredicate) {
 		return sections.stream()
-			.filter(section -> section.getUpStationId().equals(stationId))
+			.filter(filterEqualStationIdPredicate)
 			.findFirst()
 			.orElse(null);
 	}
 
-	private Section getSectionContainDownStationId(Long stationId) {
-		return sections.stream()
-			.filter(section -> section.getDownStationId().equals(stationId))
-			.findFirst()
-			.orElse(null);
+	private Predicate<Section> filterEqualDownStationIdPredicate(Long stationId) {
+		return section -> section.getDownStationId().equals(stationId);
+	}
+
+	private Predicate<Section> filterEqualUpStationIdPredicate(Long stationId) {
+		return section -> section.getUpStationId().equals(stationId);
 	}
 
 	protected Sections() {
