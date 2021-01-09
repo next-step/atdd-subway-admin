@@ -10,17 +10,9 @@ import java.util.Map;
 
 public class LineRestAssuredUtils {
 
-    public static Map<String, String> 노선_요청_파라미터_생성(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "10");
-        return params;
-    }
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
+        Map<String, String> params = getLineParams(name, color);
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -44,7 +36,9 @@ public class LineRestAssuredUtils {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long lineId, Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long lineId, String name, String color) {
+        Map<String, String> params = getLineParams(name, color);
+
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -59,4 +53,15 @@ public class LineRestAssuredUtils {
                 .then().log().all()
                 .extract();
     }
+
+    private static Map<String, String> getLineParams(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
+        return params;
+    }
+
 }

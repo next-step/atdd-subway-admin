@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.LineRestAssuredUtils.*;
-import static nextstep.subway.utils.StationRestAssuredUtils.지하철_역_여러개_생성_요청;
+import static nextstep.subway.utils.StationRestAssuredUtils.지하철_역_생성_요청;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -23,10 +23,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        지하철_역_여러개_생성_요청();
+        지하철_역_생성_요청("강남역");
+        지하철_역_생성_요청("역삼역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_요청_파라미터_생성("신분당선", "bg-red-600"));
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -36,12 +37,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        지하철_역_여러개_생성_요청();
-        지하철_노선_생성_요청(노선_요청_파라미터_생성("신분당선", "bg-red-600"));
+        지하철_역_생성_요청("강남역");
+        지하철_역_생성_요청("역삼역");
+        지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_요청_파라미터_생성("신분당선", "bg-red-600"));
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -52,9 +54,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_역_여러개_생성_요청();
-        지하철_노선_생성_요청(노선_요청_파라미터_생성("2호선", "green"));
-        지하철_노선_생성_요청(노선_요청_파라미터_생성("4호선", "blue"));
+        지하철_역_생성_요청("강남역");
+        지하철_역_생성_요청("역삼역");
+        지하철_노선_생성_요청("2호선", "green");
+        지하철_노선_생성_요청("4호선", "blue");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -74,8 +77,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        지하철_역_여러개_생성_요청();
-        ExtractableResponse<Response> request = 지하철_노선_생성_요청(노선_요청_파라미터_생성("신분당선", "bg-red-600"));
+        지하철_역_생성_요청("강남역");
+        지하철_역_생성_요청("역삼역");
+        ExtractableResponse<Response> request = 지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // when
         // 지하철_노선_조회_요청
@@ -103,13 +107,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        지하철_역_여러개_생성_요청();
-        ExtractableResponse<Response> request = 지하철_노선_생성_요청(노선_요청_파라미터_생성("4호선", "blue"));
+        지하철_역_생성_요청("강남역");
+        지하철_역_생성_요청("역삼역");
+        ExtractableResponse<Response> request = 지하철_노선_생성_요청("4호선", "blue");
 
         // when
         // 지하철_노선_수정_요청
         LineResponse lineResponse = request.jsonPath().getObject(".", LineResponse.class);
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineResponse.getId(), 노선_요청_파라미터_생성("2호선", "green"));
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineResponse.getId(), "2호선", "green");
 
         // then
         // 지하철_노선_수정됨
@@ -123,8 +128,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        지하철_역_여러개_생성_요청();
-        ExtractableResponse<Response> request = 지하철_노선_생성_요청(노선_요청_파라미터_생성("4호선", "blue"));
+        지하철_역_생성_요청("강남역");
+        지하철_역_생성_요청("역삼역");
+        ExtractableResponse<Response> request = 지하철_노선_생성_요청("4호선", "blue");
 
         // when
         // 지하철_노선_제거_요청
