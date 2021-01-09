@@ -66,6 +66,10 @@ public class Section extends BaseEntity {
         return this.downStation == upStation;
     }
 
+    public boolean hasDownSection(Station downStation) {
+        return this.upStation == downStation;
+    }
+
     public Long getId() {
         return id;
     }

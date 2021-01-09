@@ -27,24 +27,24 @@ public class Sections {
 
     public Optional<Section> findDownSectionBy(Station baseStation) {
         return sections.stream()
-                .filter(it -> it.getUpStation() == baseStation)
+                .filter(it -> it.hasDownSection(baseStation))
                 .findFirst();
     }
 
     public Optional<Section> findUpSectionBy(Station baseStation) {
         return sections.stream()
-                .filter(it -> it.getDownStation() == baseStation)
+                .filter(it -> it.hasUpSection(baseStation))
                 .findFirst();
     }
 
     public List<Station> getStations() {
         Station station = findFirstUpStation();
         List<Station> result = new ArrayList<>(Collections.singletonList(station));
-        Optional<Section> nextSection = findNextSection(station);
+        Optional<Section> nextSection = findDownSectionBy(station);
         while (nextSection.isPresent()) {
             Station nextStation = nextSection.get().getDownStation();
             result.add(nextStation);
-            nextSection = findNextSection(nextStation);
+            nextSection = findDownSectionBy(nextStation);
         }
         return result;
     }
@@ -60,12 +60,6 @@ public class Sections {
     private boolean matchUpStation(Station upStation) {
         return sections.stream()
                 .noneMatch(section -> section.hasUpSection(upStation));
-    }
-
-    private Optional<Section> findNextSection(Station station) {
-        return sections.stream()
-                .filter(s -> s.getUpStation() == station)
-                .findAny();
     }
 
     private void updateSection(Section section) {
