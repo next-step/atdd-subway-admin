@@ -59,7 +59,7 @@ public class Sections {
 
     private boolean matchUpStation(Station upStation) {
         return sections.stream()
-                .noneMatch(section -> section.getDownStation() == upStation);
+                .noneMatch(section -> section.hasUpSection(upStation));
     }
 
     private Optional<Section> findNextSection(Station station) {
