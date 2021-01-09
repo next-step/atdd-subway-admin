@@ -10,6 +10,9 @@ import java.util.Objects;
 
 
 @Entity
+@Table(indexes = {
+        @Index(unique = true, columnList = "up_station_id,down_station_id")
+})
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

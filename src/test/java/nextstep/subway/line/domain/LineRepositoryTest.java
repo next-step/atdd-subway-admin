@@ -2,10 +2,12 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -198,5 +200,45 @@ class LineRepositoryTest {
             line.add(section);
         }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("짧아야합니다.");
     }
+
+    @DisplayName("[구간 추가 예외] 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void validateAlready() {
+        Station C역 = stationRepository.save(new Station("C역"));
+        Station A역 = stationRepository.save(new Station("A역"));
+        Line line = createLineWithUpStationAndDownStation(A역, C역);
+        Section section = Section.builder().upStation(A역)
+                .downStation(C역)
+                .line(line)
+                .distance(50)
+                .build();
+
+
+        assertThatThrownBy(() -> {
+            sectionRepository.save(section);
+        }).isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @DisplayName("[구간 추가 예외] 상행역과 하행역 둘중 하나도 포함되어 있지 않으면 추가할 수 없")
+    @Test
+    void validateContation() {
+        Station C역 = stationRepository.save(new Station("C역"));
+        Station A역 = stationRepository.save(new Station("A역"));
+        Station B역 = stationRepository.save(new Station("B역"));
+        Station D역 = stationRepository.save(new Station("D역"));
+        Line line = createLineWithUpStationAndDownStation(A역, C역);
+        Section section = Section.builder().upStation(B역)
+                .downStation(D역)
+                .line(line)
+                .distance(48)
+                .build();
+
+
+        assertThatThrownBy(() -> {
+            line.add(section);
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+
 
 }
