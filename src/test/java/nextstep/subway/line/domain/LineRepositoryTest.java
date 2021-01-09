@@ -128,19 +128,39 @@ class LineRepositoryTest {
     @DisplayName("[구간 추가 등록] 역 사이에 새로운 역을 등록할 경")
     @Test
     void addSectionBetweenUpStationAndDownStation() {
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 시청역 = stationRepository.save(new Station("시청역"));
-        Line line = createLineWithUpStationAndDownStation(시청역, 강남역);
-        Station 잠실역 = stationRepository.save(new Station("잠실역"));
-        Section section = Section.builder().upStation(잠실역)
-                .downStation(강남역)
+        Station C역 = stationRepository.save(new Station("C역"));
+        Station A역 = stationRepository.save(new Station("A역"));
+        Line line = createLineWithUpStationAndDownStation(A역, C역);
+        Station B역 = stationRepository.save(new Station("B역"));
+        Section section = Section.builder().upStation(B역)
+                .downStation(C역)
                 .line(line)
-                .distance(50)
+                .distance(42)
                 .build();
 
         line.add(section);
         lineRepository.flush();
 
-        assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(시청역, 잠실역, 강남역));
+        assertThat(line.getSections().getStationsInOrder()).containsExactlyElementsOf(Arrays.asList(A역, B역, C역));
    }
+
+    @DisplayName("[구간 추가 등록] 새로운 역을 상행 종점으로 등록할 경")
+    @Test
+    void addSectionNewUpStation() {
+        Station C역 = stationRepository.save(new Station("C역"));
+        Station A역 = stationRepository.save(new Station("A역"));
+        Line line = createLineWithUpStationAndDownStation(A역, C역);
+        Station B역 = stationRepository.save(new Station("B역"));
+        Section section = Section.builder().upStation(B역)
+                .downStation(A역)
+                .line(line)
+                .distance(42)
+                .build();
+
+        line.add(section);
+        lineRepository.flush();
+
+        assertThat(line.getSections().getStationsInOrder()).containsExactlyElementsOf(Arrays.asList(B역, A역, C역));
+    }
+
 }

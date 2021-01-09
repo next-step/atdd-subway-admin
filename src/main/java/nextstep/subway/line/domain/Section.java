@@ -95,12 +95,17 @@ public class Section {
     public void replaceDownStation(Section section) {
         validateReplace(section);
         updateDownStation(section.getUpStation());
+        update(getReplaceDistance(section.getDistance()));
+    }
+
+    private int getReplaceDistance(int distance) {
+        return this.getDistance() - distance;
     }
 
     private void validateReplace(Section section) {
         Objects.requireNonNull(section);
         if (this.getDistance() <= section.getDistance()) {
-            new IllegalArgumentException(String.format("거리가 %dm보다 짧아야합니다.", this.getDistance()));
+            throw new IllegalArgumentException(String.format("거리가 %dm보다 짧아야합니다.", this.getDistance()));
         }
     }
 

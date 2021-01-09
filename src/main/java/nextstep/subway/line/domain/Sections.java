@@ -39,15 +39,39 @@ public class Sections {
                 .distinct()
                 .collect(Collectors.toList());
     }
-    /*
-    public List<Station> getStationsOrder() {
+
+    public List<Station> getStationsInOrder() {
         Optional<Section> section = sections.stream()
                 .findFirst();
         
-        findUpToDownStation(section);
-        
+        List<Station> result = findDownToUpStation(section);
+        result.addAll(findUpToDownStation(section));
+        return result;
     }
 
     private List<Station> findUpToDownStation(Optional<Section> section) {
-    }*/
+        List<Station> result = new ArrayList<>();
+        while (section.isPresent()) {
+            Station downStation = section.get().getDownStation();
+            result.add(downStation);
+            section = sections.stream()
+                    .filter(existSection -> existSection.getUpStation() == downStation)
+                    .findFirst();
+        }
+
+        return result;
+    }
+
+    private List<Station> findDownToUpStation(Optional<Section> section) {
+        List<Station> result = new ArrayList<>();
+        while (section.isPresent()) {
+            Station upStation = section.get().getUpStation();
+            result.add(upStation);
+            section = sections.stream()
+                    .filter(existSection -> existSection.getDownStation() == upStation)
+                    .findFirst();
+        }
+        Collections.reverse(result);
+        return result;
+    }
 }
