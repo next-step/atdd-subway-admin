@@ -19,7 +19,7 @@ module.exports = {
         target: 'http://127.0.0.1:8081',
         pathRewrite: {'/resources/\\d*' : ''}
       },
-      '**': 'http://127.0.0.1:8080'
+      '**': 'http://127.0.0.1:7777'
     },
     inline: true,
     hot: false
