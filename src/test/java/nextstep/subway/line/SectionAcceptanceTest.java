@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,43 +23,66 @@ import nextstep.subway.station.dto.StationResponse;
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-	private StationResponse 양재역;
-	private StationResponse 정자역;
-	private LineResponse 신분당선;
+	private long 강남역_ID;
+	private long 양재역_ID;
+	private long 청계산입구역_ID;
+	private long 판교역_ID;
+	private long 정자역_ID;
+	private long 광교역_ID;
+	private long 신분당선_ID;
 
 	@BeforeEach
 	public void setUp() {
 		super.setUp();
 
 		// given
-		양재역 = StationAcceptanceTest.지하철_생성_요청("양재역").as(StationResponse.class);
-		정자역 = StationAcceptanceTest.지하철_생성_요청("정자역").as(StationResponse.class);
+		강남역_ID = StationAcceptanceTest.지하철_생성_요청("강남역").as(StationResponse.class).getId();
+		양재역_ID = StationAcceptanceTest.지하철_생성_요청("양재역").as(StationResponse.class).getId();
+		청계산입구역_ID = StationAcceptanceTest.지하철_생성_요청("청계산입구역").as(StationResponse.class).getId();
+		판교역_ID = StationAcceptanceTest.지하철_생성_요청("판교역").as(StationResponse.class).getId();
+		정자역_ID = StationAcceptanceTest.지하철_생성_요청("정자역").as(StationResponse.class).getId();
+		광교역_ID = StationAcceptanceTest.지하철_생성_요청("광교역").as(StationResponse.class).getId();
 
 		HashMap<String, Object> createParams = new HashMap<>();
 		createParams.put("name", "신분당선");
 		createParams.put("color", "bg-red-600");
-		createParams.put("upStation", 양재역.getId());
-		createParams.put("downStation", 정자역.getId());
+		createParams.put("upStation", 양재역_ID);
+		createParams.put("downStation", 정자역_ID);
 		createParams.put("distance", 10);
-		신분당선 = LineAcceptanceTest.지하철노선_생성_요청(createParams).as(LineResponse.class);
+
+		신분당선_ID = LineAcceptanceTest.지하철노선_생성_요청(createParams).as(LineResponse.class).getId();
 	}
 
 	@DisplayName("역 사이에 새로운 역을 등록한다.")
 	@Test
 	void addSection_happyPath() {
 		// when : 지하철_구간_등록_요청
-		StationResponse 판교역 = StationAcceptanceTest.지하철_생성_요청("판교역").as(StationResponse.class);
-		ExtractableResponse response = 지하철_구간_등록_요청(신분당선.getId(), 양재역.getId(), 판교역.getId(), 5);
+		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 양재역_ID, 판교역_ID, 5);
 
 		// then : 지하철_구간_등록됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 	}
 
+	@DisplayName("역 사이에 새로운 역을 여러 개 등록한다")
+	@Test
+	void addSection_happyPath2() {
+		// when : 지하철_구간_등록_요청 & 한번 더 요청
+		ExtractableResponse response1 = 지하철_구간_등록_요청(신분당선_ID, 양재역_ID, 청계산입구역_ID, 5);
+		ExtractableResponse response2 = 지하철_구간_등록_요청(신분당선_ID, 청계산입구역_ID, 판교역_ID, 4);
+
+		// then : 지하철_구간_등록됨 & 두번째도 등록됨
+		assertAll(
+			() -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+			() -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value())
+		);
+	}
+
+
 	@DisplayName("이미 등록된 구간을 등록한다.")
 	@Test
 	void addSection_exceptionCase1() {
 		// when : 지하철_구간_등록_요청
-		ExtractableResponse response = 지하철_구간_등록_요청(신분당선.getId(), 정자역.getId(), 양재역.getId(), 8);
+		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 정자역_ID, 양재역_ID, 8);
 
 		// then : 지하철_구간_등록_실패됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -68,9 +92,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSection_exceptionCase2() {
 		// when : 지하철_구간_등록_요청
-		StationResponse 강남역 = StationAcceptanceTest.지하철_생성_요청("강남역").as(StationResponse.class);
-		StationResponse 광교역 = StationAcceptanceTest.지하철_생성_요청("광교역").as(StationResponse.class);
-		ExtractableResponse response = 지하철_구간_등록_요청(신분당선.getId(), 강남역.getId(), 광교역.getId(), 20);
+		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 강남역_ID, 광교역_ID, 20);
 
 		// then : 지하철_구간_등록_실패됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -80,8 +102,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSection_exceptionCase3() {
 		// when : 지하철_구간_등록_요청
-		StationResponse 판교역 = StationAcceptanceTest.지하철_생성_요청("판교역").as(StationResponse.class);
-		ExtractableResponse response = 지하철_구간_등록_요청(신분당선.getId(), 양재역.getId(), 판교역.getId(), 15);
+		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 양재역_ID, 판교역_ID, 15);
 
 		// then : 지하철_구간_등록_실패됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -91,19 +112,45 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSection_exceptionCase4() {
 		// when : 지하철_구간_등록_요청
-		StationResponse 판교역 = StationAcceptanceTest.지하철_생성_요청("판교역").as(StationResponse.class);
-		ExtractableResponse response = 지하철_구간_등록_요청(신분당선.getId(), 양재역.getId(), 판교역.getId(), 10);
+		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 양재역_ID, 판교역_ID, 10);
 
 		// then : 지하철_구간_등록_실패됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@DisplayName("역 사이에 새로운 역을 여러 개 등록할 때, 기존 역 사이 길이보다 크게 등록한다.")
+	@Test
+	void addSection_exceptionCase5() {
+		// when : 지하철_구간_등록_요청 & 한번 더 요청
+		ExtractableResponse response1 = 지하철_구간_등록_요청(신분당선_ID, 양재역_ID, 청계산입구역_ID, 5);
+		ExtractableResponse response2 = 지하철_구간_등록_요청(신분당선_ID, 청계산입구역_ID, 판교역_ID, 6);
+
+		// then : 지하철_구간_등록됨 & 지하철_구간_등록_실패됨
+		assertAll(
+			() -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+			() -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+		);
+	}
+
+	@DisplayName("역 사이에 새로운 역을 여러 개 등록할 때, 기존 역 사이 길이와 같게 등록한다.")
+	@Test
+	void addSection_exceptionCase6() {
+		// when : 지하철_구간_등록_요청 & 한번 더 요청
+		ExtractableResponse response1 = 지하철_구간_등록_요청(신분당선_ID, 양재역_ID, 청계산입구역_ID, 4);
+		ExtractableResponse response2 = 지하철_구간_등록_요청(신분당선_ID, 청계산입구역_ID, 판교역_ID, 6);
+
+		// then : 지하철_구간_등록됨 & 지하철_구간_등록_실패됨
+		assertAll(
+			() -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+			() -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+		);
 	}
 
 	@DisplayName("새로운 역을 상행 종점으로 등록한다.")
 	@Test
 	void addSection_newUpStation() {
 		// when : 지하철_구간_등록_요청
-		StationResponse 강남역 = StationAcceptanceTest.지하철_생성_요청("강남역").as(StationResponse.class);
-		ExtractableResponse response = 지하철_구간_등록_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), 3);
+		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 강남역_ID, 양재역_ID, 3);
 
 		// then : 지하철_구간_등록됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -113,8 +160,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSection_newDownStation() {
 		// when : 지하철_구간_등록_요청
-		StationResponse 광교역 = StationAcceptanceTest.지하철_생성_요청("광교역").as(StationResponse.class);
-		ExtractableResponse response = 지하철_구간_등록_요청(신분당선.getId(), 정자역.getId(), 광교역.getId(), 4);
+		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 정자역_ID, 광교역_ID, 4);
 
 		// then : 지하철_구간_등록됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
