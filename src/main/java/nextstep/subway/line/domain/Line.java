@@ -29,18 +29,9 @@ public class Line extends BaseEntity {
 	@Embedded
 	private Sections sections = new Sections();
 
-	protected Line() {
-	}
-
 	public Line(String name, String color) {
 		this.name = name;
 		this.color = color;
-	}
-
-	public Line(String name, String color, Station upStation, Station downStation, int distance) {
-		this.name = name;
-		this.color = color;
-		sections.addSection(new Section(upStation.getId(), downStation.getId(), distance));
 	}
 
 	public void update(Line line) {
@@ -52,6 +43,31 @@ public class Line extends BaseEntity {
 	private void validate(Line line) {
 		if (line == null)
 			throw new NotFoundException();
+	}
+
+	public List<Long> getStationsIds() {
+		return sections.getSections().stream()
+			.map(section -> section.getStationsIds())
+			.flatMap(Collection::stream)
+			.sorted(Comparator.comparingLong(Long::longValue))
+			.collect(Collectors.toList());
+	}
+
+	public void addSection(Long upStationId, Long downStationId, int distance) {
+		sections.addSection(new Section(upStationId, downStationId, distance));
+	}
+
+	public void removeSectionByStationId(Long stationId) {
+		sections.removeSectionByStationId(stationId);
+	}
+
+	protected Line() {
+	}
+
+	public Line(String name, String color, Station upStation, Station downStation, int distance) {
+		this.name = name;
+		this.color = color;
+		sections.addSection(new Section(upStation.getId(), downStation.getId(), distance));
 	}
 
 	public Long getId() {
@@ -66,14 +82,6 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public List<Long> getStationsIds() {
-		return sections.getSections().stream()
-			.map(section -> section.getStationsIds())
-			.flatMap(Collection::stream)
-			.sorted(Comparator.comparingLong(Long::longValue))
-			.collect(Collectors.toList());
-	}
-
 	public Sections getSections() {
 		return sections;
 	}
@@ -86,24 +94,12 @@ public class Line extends BaseEntity {
 			return false;
 		Line line = (Line)o;
 		return Objects.equals(getId(), line.getId()) && Objects.equals(getName(), line.getName())
-			&& Objects.equals(getColor(), line.getColor()) && Objects.equals(sections, line.sections);
+			&& Objects.equals(getColor(), line.getColor()) && Objects.equals(getSections(),
+			line.getSections());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getId(), getName(), getColor(), sections);
+		return Objects.hash(getId(), getName(), getColor(), getSections());
 	}
-
-	public void addSection(Long upStationId, Long downStationId, int distance) {
-		sections.addSection(new Section(upStationId, downStationId, distance));
-	}
-
-	public void removeSection(Section section) {
-		sections.removeSection(section);
-	}
-
-	public void removeSectionByStationId(Long stationId) {
-		sections.removeSectionByStationId(stationId);
-	}
-
 }

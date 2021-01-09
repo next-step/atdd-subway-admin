@@ -32,9 +32,6 @@ public class Sections {
 	@JoinColumn(name = "line_id")
 	private List<Section> sections = new ArrayList<>();
 
-	protected Sections() {
-	}
-
 	public List<Section> getSections() {
 		return sections;
 	}
@@ -134,26 +131,6 @@ public class Sections {
 			.anyMatch(originSection -> originSection.getUpStationId().equals(stationId));
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		Sections sections1 = (Sections)o;
-		return Objects.equals(getSections(), sections1.getSections());
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(getSections());
-	}
-
-	public void removeSection(Section section) {
-		sections.remove(section);
-	}
-
-
 	public void removeSectionByStationId(Long stationId) {
 		if(sections.size() == 1) throw new OneSectionCannotRemoveException();
 
@@ -184,4 +161,21 @@ public class Sections {
 			.orElse(null);
 	}
 
+	protected Sections() {
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Sections sections1 = (Sections)o;
+		return Objects.equals(getSections(), sections1.getSections());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getSections());
+	}
 }
