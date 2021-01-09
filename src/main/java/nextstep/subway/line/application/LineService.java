@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -30,7 +31,8 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Station upStation = getStationById(request.getUpStationId());
         Station downStation = getStationById(request.getDownStationId());
-        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
+        Line persistLine = lineRepository.save(request.toLine());
+        persistLine.createSection(upStation, downStation, request.getDistance());
         return LineResponse.of(persistLine);
     }
 
@@ -57,10 +59,9 @@ public class LineService {
 
     public LineResponse addSections(Long id, SectionRequest sectionRequest) {
         Line line = getLindById(id);
-        System.out.println(line);
         Station upStation = getStationById(sectionRequest.getUpStationId());
         Station downStation = getStationById(sectionRequest.getDownStationId());
-        line.addSection(sectionRequest.getDistance(), upStation, downStation);
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
         return LineResponse.of(lineRepository.save(line));
     }
 

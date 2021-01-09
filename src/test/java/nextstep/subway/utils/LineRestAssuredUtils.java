@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class LineRestAssuredUtils {
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-        Map<String, String> params = getLineParams(name, color);
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, String upStationId, String downStationId, String distance) {
+        Map<String, String> params = getLineParams(name, color, upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()
                 .body(params)
@@ -54,13 +54,21 @@ public class LineRestAssuredUtils {
                 .extract();
     }
 
+
+    private static Map<String, String> getLineParams(String name, String color, String upStationId, String downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        return params;
+    }
+
     private static Map<String, String> getLineParams(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "10");
         return params;
     }
 

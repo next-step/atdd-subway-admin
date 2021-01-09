@@ -27,7 +27,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_역_생성_요청("역삼역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600", "1","2","10");
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -39,11 +39,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         지하철_역_생성_요청("강남역");
         지하철_역_생성_요청("역삼역");
-        지하철_노선_생성_요청("신분당선", "bg-red-600");
+        지하철_노선_생성_요청("신분당선", "bg-red-600", "1","2","10");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600", "1","2","10");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -56,8 +56,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         지하철_역_생성_요청("강남역");
         지하철_역_생성_요청("역삼역");
-        지하철_노선_생성_요청("2호선", "green");
-        지하철_노선_생성_요청("4호선", "blue");
+        지하철_노선_생성_요청("2호선", "green", "1","2","10");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -70,7 +69,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<String> lineNames = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(lineResponse -> lineResponse.getName())
                 .collect(Collectors.toList());
-        Assertions.assertThat(lineNames).contains("2호선", "4호선");
+        Assertions.assertThat(lineNames).contains("2호선");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -79,7 +78,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         지하철_역_생성_요청("강남역");
         지하철_역_생성_요청("역삼역");
-        ExtractableResponse<Response> request = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> request = 지하철_노선_생성_요청("신분당선", "bg-red-600", "1","2","10");
 
         // when
         // 지하철_노선_조회_요청
@@ -109,7 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         지하철_역_생성_요청("강남역");
         지하철_역_생성_요청("역삼역");
-        ExtractableResponse<Response> request = 지하철_노선_생성_요청("4호선", "blue");
+        ExtractableResponse<Response> request = 지하철_노선_생성_요청("4호선", "blue","1","2","10");
 
         // when
         // 지하철_노선_수정_요청
@@ -130,7 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         지하철_역_생성_요청("강남역");
         지하철_역_생성_요청("역삼역");
-        ExtractableResponse<Response> request = 지하철_노선_생성_요청("4호선", "blue");
+        ExtractableResponse<Response> request = 지하철_노선_생성_요청("4호선", "blue", "1","2","10");
 
         // when
         // 지하철_노선_제거_요청
