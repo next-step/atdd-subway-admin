@@ -90,7 +90,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		return Long.parseLong(extractableResponse.header("Location").split("/")[2]);
 	}
 
-	private ExtractableResponse<Response> 지하철_생성_요청(String name) {
+	public static ExtractableResponse<Response> 지하철_생성_요청(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 
