@@ -31,19 +31,17 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        /*
-        Long upStationId = request.getUpStationId();
-        Station upStation = stationRepository.findById(upStationId)
-                .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_STATION + upStationId));
+        addStationById(persistLine, request.getUpStationId());
+        addStationById(persistLine, request.getDownStationId());
+        return LineResponse.of(persistLine);
+    }
 
-        Long downStationId = request.getDownStationId();
-        Station downStation = stationRepository.findById(downStationId)
-                .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_STATION + downStationId));
-
-        List<Station> stations = Arrays.asList(upStation, downStation);
-         */
-        List<Station> stations = Arrays.asList(new Station("강남역"), new Station("역삼역"));
-        return LineResponse.of(persistLine, stations);
+    private void addStationById(Line persistLine, Long stationId) {
+        if (stationId != null) {
+            Station upStation = stationRepository.findById(stationId)
+                    .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_STATION + stationId));
+            upStation.setLine(persistLine);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -57,8 +55,7 @@ public class LineService {
     public LineResponse findLineById(Long id) {
         Line findLine = lineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
-        List<Station> stations = Arrays.asList(new Station("강남역"), new Station("역삼역"));
-        return LineResponse.of(findLine, stations);
+        return LineResponse.of(findLine);
     }
 
     @Transactional

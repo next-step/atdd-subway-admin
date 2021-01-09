@@ -5,7 +5,9 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceUtil;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,11 +26,13 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void init() {
+        StationAcceptanceUtil.지하철_역_생성_요청(new StationRequest("강남역"));
+        StationAcceptanceUtil.지하철_역_생성_요청(new StationRequest("역삼역"));
         params = LineRequest.builder()
                 .name("2호선")
                 .color("bg-red-600")
                 .upStationId(1L)
-                .downStationId(1L)
+                .downStationId(2L)
                 .distance(10)
                 .build();
     }
@@ -45,17 +48,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-
-        // 지하철_역_목록_포함됨
-        List<String> expectedStationNames = Arrays.asList("강남역", "역삼역");
-        List<String> resultStationNames = response.jsonPath()
-                .getObject(".", LineResponse.class)
-                .getStations()
-                .stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
-        assertThat(resultStationNames).containsAll(expectedStationNames);
-
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -83,7 +75,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 .map(Station::getName)
                 .collect(Collectors.toList());
         assertThat(resultStationNames).containsAll(expectedStationNames);
-
     }
 
 }
