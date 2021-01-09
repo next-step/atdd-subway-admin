@@ -80,3 +80,19 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     
   - 지하철 노선 조회 응답 결과에 등록된 구간을 참고하여 역 목록 응답 추가
     - 상행 종점 부터 하행 종점까지 목록을 응답
+    
+# 3단계
+
+- 지하철 구간 등록 인수테스트 작성
+    - 지하철 구간 등록 기능 구현
+      ( URL PATTERN : /lines/{id}/sections
+       PARAMETER_KEY : downStationId, upStationId, distance)
+    - 역 사이에 새로운 역을 등록할 경우
+    - 새로운 역을 상행 종점으로 등록할 경우
+    - 새로운 역을 하행 종점으로 등록할 경우
+- 구간 등록 예외 케이스 인수테스트 작성
+    - 구간 등록 예외 케이스 처리 기능 구현
+        - 상행 하행이 동일한 구간이 있을 경우, 이미 등록된 구간입니다.
+        - 거리가 {기존역거리}m 보다 짧아야합니다.
+        - 상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.
+    
