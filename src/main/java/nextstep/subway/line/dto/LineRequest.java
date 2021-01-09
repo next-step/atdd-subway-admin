@@ -1,8 +1,12 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 public class LineRequest {
+    private static final int MINIMUM_DISTANCE = 1;
+
     private String name;
     private String color;
     private Long upStationId;
@@ -17,8 +21,10 @@ public class LineRequest {
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
+        validateDistance(distance);
         this.distance = distance;
     }
+
 
     public String getName() {
         return name;
@@ -40,7 +46,15 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toLine() {
-        return new Line(name, color);
+    public Line toLine(Station upStation, Station downStation) {
+        Line line = new Line(name, color);
+        line.addSection(new Section(line, upStation, downStation, this.distance));
+        return line;
+    }
+
+    private void validateDistance(int distance) {
+        if (distance < MINIMUM_DISTANCE) {
+            throw new IllegalArgumentException("거리는 1 이상만 가능합니다.");
+        }
     }
 }

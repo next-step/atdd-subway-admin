@@ -31,12 +31,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine() {
 		// given
-		Station gangNamStation = stationRepository.save(new Station("강남역"));
-		Station seoChoStation = stationRepository.save(new Station("서초역"));
-		Map<String, String> params = getParams("2호선", "green", gangNamStation.getId(), seoChoStation.getId(), 10);
+		Map<String, String> createParams = insertStationAndGetParams("2호선", "green", "강남역", "서초역", 10);
 
 		// when
-		ExtractableResponse<Response> response = createLine(params);
+		ExtractableResponse<Response> response = createLine(createParams);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -47,13 +45,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineWithDuplicatedName() {
 		// given
-		Station gangNamStation = stationRepository.save(new Station("강남역"));
-		Station seoChoStation = stationRepository.save(new Station("서초역"));
-		Map<String, String> params = getParams("2호선", "green", gangNamStation.getId(), seoChoStation.getId(), 10);
-		createLine(params);
+		Map<String, String> createParams = insertStationAndGetParams("2호선", "green", "강남역", "서초역", 10);
+		createLine(createParams);
 
 		// when
-		ExtractableResponse<Response> response = createLine(params);
+		ExtractableResponse<Response> response = createLine(createParams);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -62,18 +58,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("지하철 노선 목록을 조회한다.")
 	@Test
 	void getLines() {
-		Station gangNamStation = stationRepository.save(new Station("강남역"));
-		Station seoChoStation = stationRepository.save(new Station("서초역"));
-		Station yeouidoStation = stationRepository.save(new Station("여의도역"));
-		Station mokDongStation = stationRepository.save(new Station("목동역"));
-
 		// given
 		// param1 등록
-		Map<String, String> params1 = getParams("2호선", "green", gangNamStation.getId(), seoChoStation.getId(), 10);
+		Map<String, String> params1 = insertStationAndGetParams("2호선", "green", "강남역", "서초역", 10);
 		ExtractableResponse<Response> createResponse1 = createLine(params1);
-
 		// param2 등록
-		Map<String, String> params2 = getParams("5호선", "purple", yeouidoStation.getId(), mokDongStation.getId(), 20);
+		Map<String, String> params2 = insertStationAndGetParams("5호선", "purple", "여의도역", "목동역", 20);
 		ExtractableResponse<Response> createResponse2 = createLine(params2);
 
 		// when
@@ -94,14 +84,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("지하철 노선을 조회한다.")
 	@Test
 	void getLine() {
-		Station gangNamStation = stationRepository.save(new Station("강남역"));
-		Station seoChoStation = stationRepository.save(new Station("서초역"));
+		// given
 		String expectedName = "2호선";
 		String expectedColor = "green";
-		// given
-		// 지하철_노선_등록되어_있음
-		Map<String, String> params = getParams(expectedName, expectedColor, gangNamStation.getId(), seoChoStation.getId(), 10);
-		ExtractableResponse<Response> createResponse = createLine(params);
+		Map<String, String> createParams = insertStationAndGetParams(expectedName, expectedColor, "강남역", "서초역", 10);
+		ExtractableResponse<Response> createResponse = createLine(createParams);
 
 		String id = createResponse.header("Location").split("/")[2];
 
@@ -121,17 +108,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
-		Station gangNamStation = stationRepository.save(new Station("강남역"));
-		Station seoChoStation = stationRepository.save(new Station("서초역"));
 		String expectedName = "5호선";
 		String expectedColor = "purple";
-		Map<String, String> createParams = getParams("2호선", "green", gangNamStation.getId(), seoChoStation.getId(), 10);
+		Map<String, String> createParams = insertStationAndGetParams("2호선", "green", "강남역", "서초역", 10);
 		ExtractableResponse<Response> createResponse = createLine(createParams);
 
 		String id = createResponse.header("Location").split("/")[2];
 
 		// when
-		Map<String, String> updateParams = getParams(expectedName, expectedColor, gangNamStation.getId(), seoChoStation.getId(), 10);
+		Map<String, String> updateParams = getParams(expectedName, expectedColor, Long.parseLong(createParams.get("upStationId")), Long.parseLong(createParams.get("downStationId")), 10);
 		updateLine(id, updateParams);
 
 		// then
@@ -147,9 +132,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
-		Station gangNamStation = stationRepository.save(new Station("강남역"));
-		Station seoChoStation = stationRepository.save(new Station("서초역"));
-		Map<String, String> createParams = getParams("2호선", "green", gangNamStation.getId(), seoChoStation.getId(), 10);
+		Map<String, String> createParams = insertStationAndGetParams("2호선", "green", "강남역", "서초역", 10);
 		ExtractableResponse<Response> createResponse = createLine(createParams);
 
 		String id = createResponse.header("Location").split("/")[2];
@@ -171,6 +154,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		params.put("downStationId", Long.toString(downStationId));
 		params.put("distance", Integer.toString(distance));
 		return params;
+	}
+
+	private Map<String, String> insertStationAndGetParams(String lineName, String lineColor, String upStationName, String downStationName, int distance) {
+		Station upStation = stationRepository.save(new Station(upStationName));
+		Station downStation = stationRepository.save(new Station(downStationName));
+		return getParams(lineName, lineColor, upStation.getId(), downStation.getId(), distance);
 	}
 
 	private ExtractableResponse<Response> createLine(Map<String, String> params) {

@@ -1,6 +1,5 @@
 package nextstep.subway.section.domain;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -46,35 +45,15 @@ public class Section {
 		return line;
 	}
 
-	public void setLine(Line line) {
-		this.line = line;
-	}
-
 	public Station getUpStation() {
 		return upStation;
-	}
-
-	public void setUpStation(Station upStation) {
-		this.upStation = upStation;
 	}
 
 	public Station getDownStation() {
 		return downStation;
 	}
 
-	public void setDownStation(Station downStation) {
-		this.downStation = downStation;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public int getDistance() {
 		return distance;
-	}
-
-	public void setDistance(int distance) {
-		this.distance = distance;
 	}
 }
