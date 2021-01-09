@@ -48,7 +48,7 @@ class LineStationRelationshipTest {
 		assertThat(lineRepository.findAll())
 			.map(Line::getStations)
 			.anySatisfy(stations -> assertThat(stations).contains(강남역, 역삼역))
-			.anySatisfy(lineStations -> assertThat(lineStations).contains(천호역, 군자역));
+			.anySatisfy(stations -> assertThat(stations).contains(천호역, 군자역));
 	}
 
 	@DisplayName("Line 단건 조회 시 Station 목록이 올바르게 포함되어 있는지 테스트")

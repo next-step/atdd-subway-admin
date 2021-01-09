@@ -52,7 +52,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		List<Long> 등록된역_ID_목록 = Stream.of(
 			지하철_생성_요청("강남역"),
 			지하철_생성_요청("역삼역")
-		).map(this::location_header에서_ID_추출)
+		).map(AcceptanceTest::location_header에서_ID_추출)
 			.collect(Collectors.toList());
 
 		// when
@@ -84,10 +84,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-	}
-
-	private long location_header에서_ID_추출(ExtractableResponse<Response> extractableResponse) {
-		return Long.parseLong(extractableResponse.header("Location").split("/")[2]);
 	}
 
 	public static ExtractableResponse<Response> 지하철_생성_요청(String name) {
