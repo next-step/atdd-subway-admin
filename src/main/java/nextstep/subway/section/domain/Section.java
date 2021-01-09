@@ -138,10 +138,7 @@ public class Section extends BaseEntity {
 	}
 
 	public boolean isTerminal() {
-		if(Objects.isNull(this.upStation) || Objects.isNull(this.downStation)){
-			return true;
-		}
-		return false;
+		return Objects.isNull(this.upStation) || Objects.isNull(this.downStation);
 	}
 
 	public Station getNetTerminal() {

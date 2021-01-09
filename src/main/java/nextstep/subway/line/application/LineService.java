@@ -69,9 +69,9 @@ public class LineService {
 	}
 
 	private Section toSection(Line line, SectionRequest sectionRequest) {
-		Optional<Station> upStation = stationRepository.findById(sectionRequest.getUpStationId());
-		Optional<Station> downStation = stationRepository.findById(sectionRequest.getDownStationId());
-		return new Section(line, upStation.get(), downStation.get(), sectionRequest.getDistance(), upStation.get());
+		Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + sectionRequest.getUpStationId()));
+		Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + sectionRequest.getDownStationId()));
+		return new Section(line, upStation, downStation, sectionRequest.getDistance(), upStation);
 	}
 
 	@Transactional
@@ -100,7 +100,7 @@ public class LineService {
 
 	private void validate(Optional<Section> section, Line line) {
 		if(!section.isPresent()){
-			throw new RuntimeException("등록되어있지 않은 역입니다.");
+			throw new IllegalArgumentException("등록되어있지 않은 역입니다.");
 		}
 
 		if(line.isImpossibleRemoveSection()){

@@ -30,32 +30,43 @@ public class Sections {
 	}
 
 	public void addSection(Section newSection, Line line) {
-		boolean isExistsUpStation = isExistsUpStationInSection(newSection.getUpStation());
-		boolean isExistsDownStation = isExistsDownStationInSection(newSection.getDownStation());
+		if (haveToUpdateExistsStationInSection(newSection.getDownStation(), newSection.getUpStation())) {
+			boolean haveToUpdateUpStation = isExistsUpStationInSection(newSection.getUpStation(), newSection.getDownStation());
+			updateExistsStationInSection(haveToUpdateUpStation, newSection);
+			this.sections.add(newSection);
+			return;
+		}
 
-		boolean isNewUpStation = isNewUpStationInSection(newSection.getDownStation());
-		boolean isNewDownStation = isNewDownStationInSection(newSection.getUpStation());
-
-		validateAddSection(isExistsUpStation, isExistsDownStation, isNewUpStation, isNewDownStation);
-
-		if (isNewUpStation) {
+		if (isNewUpStationInSection(newSection.getDownStation())) {
 			addNewUpStation(newSection, line);
 			return;
 		}
+		addNewDownStation(newSection, line);
+	}
 
-		if (isNewDownStation) {
-			addNewDownStation(newSection, line);
-			return;
-		}
-
-		if (isExistsUpStation) {
+	private void updateExistsStationInSection(boolean haveToUpdateUpStation, Section newSection) {
+		if (haveToUpdateUpStation) {
 			addBetweenSectionExistsUpStation(newSection);
 		}
-		if (isExistsDownStation) {
-			addBetweenSectionExistsDownStation(newSection);
-		}
+		addBetweenSectionExistsDownStation(newSection);
+	}
 
-		this.sections.add(newSection);
+	private boolean haveToUpdateExistsStationInSection(Station downStation, Station upStation) {
+		//하행, 상행  새로운 종점을 만들지 않아도 된다. 기존 역 업데이트 여부
+		return !this.sections.stream()
+				.anyMatch(section -> section.isUpStationInSection(downStation)) && !this.sections.stream()
+				.anyMatch(section -> section.isDownStationInSection(upStation));
+	}
+
+	private boolean isExistsUpStationInSection(Station upStation, Station downStation) {
+		boolean isExistsUpStation = this.sections.stream()
+				.anyMatch(section -> section.isUpStationInSection(upStation));
+		boolean isExistsDownStation = this.sections.stream()
+				.anyMatch(section -> section.isDownStationInSection(downStation));
+
+		validateExistsStation(isExistsUpStation, isExistsDownStation);
+
+		return isExistsUpStation;
 	}
 
 	private void addBetweenSectionExistsDownStation(Section newSection) {
@@ -107,31 +118,13 @@ public class Sections {
 		this.sections.add(upSection);
 	}
 
-	private boolean isNewDownStationInSection(Station upStation) {
-		return this.sections.stream()
-				.anyMatch(section -> section.isDownStationInSection(upStation));
-
-	}
-
 	private boolean isNewUpStationInSection(Station downStation) {
 		return this.sections.stream()
 				.anyMatch(section -> section.isUpStationInSection(downStation));
 	}
 
-	private boolean isExistsDownStationInSection(Station downStation) {
-		return this.sections.stream()
-				.anyMatch(section -> section.isDownStationInSection(downStation));
-	}
 
-	private boolean isExistsUpStationInSection(Station upStation) {
-		return this.sections.stream()
-				.anyMatch(section -> section.isUpStationInSection(upStation));
-	}
-
-	private void validateAddSection(boolean isExistsUpStation, boolean isExistsDownStation, boolean isNewUpStation, boolean isNewDownStation) {
-		if (isNewUpStation || isNewDownStation) {
-			return;
-		}
+	private void validateExistsStation(boolean isExistsUpStation, boolean isExistsDownStation) {
 		if (isExistsUpStation && isExistsDownStation) {
 			throw new AlreadyExistsStationException();
 		}
