@@ -55,6 +55,33 @@ public class Sections {
 		addStationBottomOfSection(section);
 	}
 
+	private void validateSection(Section section) {
+		validateSectionAllStation(section);
+		validateSectionDistance(section);
+		validateNotExistAllStation(section);
+	}
+
+	private void validateSectionAllStation(Section section) {
+		sections.forEach(originSection -> {
+			if (originSection.isDuplicateAllStation(section.getUpStationId(), section.getDownStationId()))
+				throw new DuplicateAllStationException();
+		});
+	}
+
+	private void validateSectionDistance(Section section) {
+		sections.forEach(originSection -> {
+			if (originSection.isInValidDistance(section.getDistance()))
+				throw new IllegalDistanceException();
+		});
+	}
+
+	private void validateNotExistAllStation(Section section) {
+		sections.forEach(originSection -> {
+			if (originSection.isNotExistAllStation(section.getUpStationId(), section.getDownStationId()))
+				throw new NotExistAllStationException();
+		});
+	}
+
 	private void addStationBottomOfSection(Section section) {
 		Predicate<Section> downStationEqualDownStationSectionPredicate = equalDownStationIdPredicate(
 			section.getUpStationId());
@@ -125,35 +152,6 @@ public class Sections {
 	private boolean isEqualToSectionsInStation(Predicate<Section> equalStationIdPredicate) {
 		return sections.stream()
 			.anyMatch(equalStationIdPredicate);
-	}
-
-
-	private void validateSection(Section section) {
-		validateSectionAllStation(section);
-		validateSectionDistance(section);
-		validateNotExistAllStation(section);
-	}
-
-	private void validateNotExistAllStation(Section section) {
-		sections.forEach(originSection -> {
-			if (originSection.isNotExistAllStation(section.getUpStationId(), section.getDownStationId()))
-				throw new NotExistAllStationException();
-		});
-
-	}
-
-	private void validateSectionAllStation(Section section) {
-		sections.forEach(originSection -> {
-			if (originSection.isDuplicateAllStation(section.getUpStationId(), section.getDownStationId()))
-				throw new DuplicateAllStationException();
-		});
-	}
-
-	private void validateSectionDistance(Section section) {
-		sections.forEach(originSection -> {
-			if (originSection.isInValidDistance(section.getDistance()))
-				throw new IllegalDistanceException();
-		});
 	}
 
 	public void removeSectionByStationId(Long stationId) {

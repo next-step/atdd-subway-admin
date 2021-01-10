@@ -32,7 +32,6 @@ public class Section extends BaseEntity {
 	private Long downStationId;
 	private int distance;
 
-
 	public Section(Long upStationId, Long downStationId, int distance) {
 		this.upStationId = upStationId;
 		this.downStationId = downStationId;
@@ -61,7 +60,6 @@ public class Section extends BaseEntity {
 	public boolean isDistanceGreaterThan(int distance) {
 		return this.distance > distance;
 	}
-
 
 	public boolean isInValidDistance(int distance) {
 		return (this.getDistance() == distance || this.getDistance() < distance);

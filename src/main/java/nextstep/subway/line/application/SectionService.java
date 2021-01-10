@@ -5,10 +5,8 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.domain.Station;
 
 /**
  * @author : byungkyu
