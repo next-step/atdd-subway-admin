@@ -60,9 +60,6 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section newSection) {
-        System.out.println(">>>>>>>>>");
-        System.out.println(isTerminalStation(newSection));
-        System.out.println(isUpStation(newSection));
         if (isTerminalStation(newSection)) {
             sections.add(newSection);
             return;
