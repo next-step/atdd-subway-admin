@@ -20,16 +20,18 @@ import org.springframework.http.MediaType;
 public class SectionAcceptanceTest extends AcceptanceTest {
     private static final String ADD_SECTION_URL_FORMAT = "/lines/%d/sections";
 
-    private StationResponse upStation;
-    private StationResponse downStation;
+    private StationResponse A역;
+    private StationResponse B역;
+    private StationResponse C역;
     private LineResponse lineResponse;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        upStation  = 지하철역_등록되어_있음("강남역");
-        downStation = 지하철역_등록되어_있음("광교역");
-        LineRequest lineRequest = new LineRequest("신분당선", "br-red-600", upStation.getId(), downStation.getId(), 10);
+        A역 = 지하철역_등록되어_있음("A역");
+        B역 = 지하철역_등록되어_있음("B역");
+        C역 = 지하철역_등록되어_있음("C역");
+        LineRequest lineRequest = new LineRequest("신분당선", "br-red-600", A역.getId(), C역.getId(), 10);
         lineResponse =  지하철_노선_등록되어_있음(lineRequest);
     }
 
@@ -45,9 +47,56 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(new SectionRequest(upStation.getId(), downStation.getId(), 10));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(new SectionRequest(A역.getId(), B역.getId(), 8));
         // then
         지하철_노선에_지하철역_응답됨(response, HttpStatus.CREATED);
+    }
+
+    @DisplayName("[노선에 구간을 등록] 새로운 상행 종점")
+    @Test
+    void addSection2() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(new SectionRequest(B역.getId(), A역.getId(), 8));
+        // then
+        지하철_노선에_지하철역_응답됨(response, HttpStatus.CREATED);
+    }
+
+    @DisplayName("[노선에 구간을 등록] 새로운 하행 종")
+    @Test
+    void addSection3() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(new SectionRequest(C역.getId(), B역.getId(), 8));
+        // then
+        지하철_노선에_지하철역_응답됨(response, HttpStatus.CREATED);
+    }
+
+    @DisplayName("[노선에 구간을 등록 예외] 기존역 사이 거리보다 크거나 같으면 등록 불가")
+    @Test
+    void validateDistance() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(new SectionRequest(A역.getId(), B역.getId(), 12));
+        // then
+        지하철_노선에_지하철역_응답됨(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @DisplayName("[노선에 구간을 등록 예외] 이미 노선에 모두 등록되어 있다면 등록 불가")
+    @Test
+    void validateExist() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(new SectionRequest(A역.getId(), C역.getId(), 8));
+        // then
+        지하철_노선에_지하철역_응답됨(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @DisplayName("[노선에 구간을 등록 예외] 상행 하행 둘 중 하나도 포함되어있지 않으면 추가 불가")
+    @Test
+    void validateContain() {
+        // given
+        StationResponse D역 = 지하철역_등록되어_있음("D역");
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(new SectionRequest(B역.getId(), D역.getId(), 8));
+        // then
+        지하철_노선에_지하철역_응답됨(response, HttpStatus.BAD_REQUEST);
     }
 
     private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(SectionRequest request) {

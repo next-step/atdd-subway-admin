@@ -145,7 +145,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(response.statusCode()).isEqualTo(badRequest.value());
     }
 
-    private ExtractableResponse<Response> 지하철노선_목록_조회_요청() {
+    public static ExtractableResponse<Response> 지하철노선_목록_조회_요청() {
         return RestAssured
                 .given().log().all()
                 .when().get("/lines")

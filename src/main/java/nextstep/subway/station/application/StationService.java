@@ -45,6 +45,8 @@ public class StationService {
         Station station = findStation(id);
         return StationResponse.of(station);
     }
+
+    @Transactional(readOnly = true)
     public Station findStation(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);

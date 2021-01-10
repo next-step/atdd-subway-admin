@@ -17,7 +17,7 @@ public class SectionController {
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity createLine(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        //sectionService.addSection(lineId, sectionRequest);
+        sectionService.addSection(lineId, sectionRequest);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 }
