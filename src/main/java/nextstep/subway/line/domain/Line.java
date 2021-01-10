@@ -63,34 +63,6 @@ public class Line extends BaseEntity {
         updateSections(newSections);
     }
 
-    private List<Section> addNewSections(Station upStation) {
-        List<Section> newSections = new ArrayList<>();
-        Section firtSection = sections.stream()
-                .filter(section -> section.getUpStation() == upStation)
-                .findFirst().get();
-
-        newSections.add(firtSection);
-
-        Station downStation = firtSection.getDownStation();
-
-        while (!(sections.size() == newSections.size())) {
-            Station finalDownStation = downStation;
-            Optional<Section> optionalSection = sections.stream()
-                    .filter(section -> section.getUpStation() == finalDownStation)
-                    .findFirst();
-
-            if (optionalSection.isPresent()) {
-                newSections.add(optionalSection.get());
-                downStation = optionalSection.get().getUpStation();
-            }
-        }
-        return newSections;
-    }
-
-    private void updateSections(List<Section> newSections) {
-        this.sections = newSections;
-    }
-
     public void updateLine(String name, String color) {
         this.name = name;
         this.color = color;
@@ -185,6 +157,33 @@ public class Line extends BaseEntity {
         return upStations;
     }
 
+    private List<Section> addNewSections(Station upStation) {
+        List<Section> newSections = new ArrayList<>();
+        Section firtSection = sections.stream()
+                .filter(section -> section.getUpStation() == upStation)
+                .findFirst().get();
+
+        newSections.add(firtSection);
+
+        Station downStation = firtSection.getDownStation();
+
+        while (!(sections.size() == newSections.size())) {
+            Station finalDownStation = downStation;
+            Optional<Section> optionalSection = sections.stream()
+                    .filter(section -> section.getUpStation() == finalDownStation)
+                    .findFirst();
+
+            if (optionalSection.isPresent()) {
+                newSections.add(optionalSection.get());
+                downStation = optionalSection.get().getUpStation();
+            }
+        }
+        return newSections;
+    }
+
+    private void updateSections(List<Section> newSections) {
+        this.sections = newSections;
+    }
 
     @Override
     public String toString() {
