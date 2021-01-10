@@ -2,12 +2,12 @@ package nextstep.subway.line.dto;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.dto.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    @Transient private static int DELETE_AND_COMBINE_SECTION_SIZE = 2;
+    @Transient private static int DELETE_SECTION_SIZE = 1;
 
     @JsonBackReference
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
@@ -56,8 +58,77 @@ public class Sections {
             existingPutInSection.setDownStation(newSection.getUpStation());
         }
 
-        existingPutInSection.setDistance(Distance.difference(existingPutInSection.getDistance(), newSection.getDistance()));
+        existingPutInSection.differenceDistance(newSection.getDistance());
         this.sections.add(existingPutInSection);
+    }
+
+    /**
+     * 주어진역을 기준으로 구간을 삭제합니다.
+     * @param stationId
+     */
+    public void removeSectionByStation(Long stationId) {
+        if(this.notExistStation(stationId)) {
+            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+        }
+        validateSectionSize();
+
+        List<Section> findSectionsByStationId = findSectionsByStationId(stationId);
+        int size = findSectionsByStationId.size();
+
+        Section deletedSection = deleteSection(findSectionsByStationId, size);
+
+        combineExistingSections(findSectionsByStationId, size, deletedSection);
+    }
+
+    /**
+     * 구간이 하나 남은 경우 삭제 할 수 없다는 예외를 던져줌.
+     */
+    private void validateSectionSize() {
+        if(this.sections.size() <= 1) {
+            throw new IllegalArgumentException("최소한 하나의 구간은 존재해야합니다" +
+                    ". 구간이 한개인 경우 삭제 할 수 없습니다.");
+        }
+    }
+
+    /**
+     * 주어진 역을 포함한 구간의 수가 1 또는 2개인 경우 구간을 삭제합니다.
+     * @param findSectionsByStationId
+     * @param size
+     * @return 지워진 구간
+     */
+    private Section deleteSection(List<Section> findSectionsByStationId, int size) {
+        if(!(size == Sections.DELETE_SECTION_SIZE || size == Sections.DELETE_AND_COMBINE_SECTION_SIZE)) {
+            throw new RuntimeException("삭제 할 수 없는 구간입니다.");
+        }
+        Section deletedSection = findSectionsByStationId.get(0);
+        this.sections.remove(deletedSection);
+        return deletedSection;
+    }
+
+    /**
+     * 주어진 역을 포함한 구간의 수가 1개인 경우 삭제한 구간과 기존 구간을 합칩니다.
+     * @param findSectionsByStationId
+     * @param size
+     * @param deletedSection
+     */
+    private void combineExistingSections(List<Section> findSectionsByStationId, int size, Section deletedSection) {
+        if(size == Sections.DELETE_AND_COMBINE_SECTION_SIZE) {
+            Section toBeCombinedSection = findSectionsByStationId.get(1);
+            toBeCombinedSection.setUpStation(deletedSection.getUpStation());
+            toBeCombinedSection.addDistance(deletedSection.getDistance());
+        }
+    }
+
+    /**
+     * 주어진 역을 포함하는 구간을 찾습니다.
+     * @param stationId
+     * @return 주어진 역을 포함하는 구간
+     */
+    private List<Section> findSectionsByStationId(Long stationId) {
+        return this.sections.stream().filter(section
+                -> section.getUpStationId().equals(stationId)
+                || section.getDownStationId().equals(stationId))
+                .collect(Collectors.toList());
     }
 
     /**

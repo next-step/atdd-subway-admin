@@ -82,4 +82,17 @@ public class LineController {
         this.lineService.addSection(id, sectionRequest);
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * 해당 ID의 노선에 구간을 삭제합니다.
+     * @param lineId
+     * @param stationId
+     * @return
+     */
+    @DeleteMapping(value = "/{lineId}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity addSection(@PathVariable(value = "lineId") Long lineId
+            , @RequestParam(value = "stationId") Long stationId) {
+        this.lineService.removeSectionByStation(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
 }

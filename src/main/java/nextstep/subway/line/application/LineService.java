@@ -106,7 +106,7 @@ public class LineService {
      * @param sectionRequest
      */
     public void addSection(Long id, SectionRequest sectionRequest) {
-        Line line = findLineById(id);
+        Line line = this.findLineById(id);
         line.addSections(this.stationService.findStation(sectionRequest.getUpStationId())
                 , this.stationService.findStation(sectionRequest.getDownStationId())
                 , sectionRequest.getDistance());
@@ -122,5 +122,14 @@ public class LineService {
         Station downStation = this.stationService.findStation(sectionRequest.getDownStationId());
 
         return new Section(upStation, downStation, new Distance(sectionRequest.getDistance()));
+    }
+
+    /**
+     * 주어진 역이 포함 된 구간을 제거
+     * @param lineId
+     * @param stationId
+     */
+    public void removeSectionByStation(Long lineId, Long stationId) {
+        this.findLineById(lineId).removeSectionsByStation(stationId);
     }
 }

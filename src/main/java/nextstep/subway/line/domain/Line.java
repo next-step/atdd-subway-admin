@@ -1,7 +1,5 @@
 package nextstep.subway.line.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.dto.Sections;
 import nextstep.subway.section.domain.Section;
@@ -9,11 +7,8 @@ import nextstep.subway.section.dto.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -76,6 +71,14 @@ public class Line extends BaseEntity {
     public void addSections(Section section) {
         this.sections.addSection(section);
         section.setLine(this);
+    }
+
+    /**
+     * 주어진 지하철역으로 구간을 제거합니다.
+     * @param stationId
+     */
+    public void removeSectionsByStation(Long stationId) {
+        this.sections.removeSectionByStation(stationId);
     }
 
     @Override

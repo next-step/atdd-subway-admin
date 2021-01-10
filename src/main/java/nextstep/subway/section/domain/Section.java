@@ -78,6 +78,22 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    /**
+     * 기존의 거리와 주어진 거리의 차이를 distance로 세팅합니다.
+     * @param distance
+     */
+    public void differenceDistance(Distance distance) {
+        this.distance = this.distance.difference(distance);
+    }
+
+    /**
+     * 기존의 거리와 주어진 거리의 합을 distance로 세팅합니다.
+     * @param distance
+     */
+    public void addDistance(Distance distance) {
+        this.distance = this.distance.add(distance);
+    }
+
     public Long getUpStationId() {
         return this.getUpStation().getId();
     }
