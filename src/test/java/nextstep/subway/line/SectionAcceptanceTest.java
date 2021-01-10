@@ -10,9 +10,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static nextstep.subway.line.LineAcceptanceTestRequest.지하철_노선_생성_요청;
 import static nextstep.subway.line.LineAcceptanceTestRequest.지하철_노선_조회;
 import static nextstep.subway.line.SectionAcceptanceTestRequest.지하철_노선_구간_등록_요청;
+import static nextstep.subway.line.SectionAcceptanceTestRequest.지하철_노선에_지하철역_제외_요청;
 import static nextstep.subway.station.StationAcceptanceTestRequest.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -129,5 +134,37 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_구간_등록_요청(_2호선.getId(), 건대입구역.getId(), 구의역.getId(), 100);
         // Then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("`Line`에 등록된 `Station` 삭제")
+    @Test
+    void removeSectionInLine() {
+        // Given
+        StationResponse 삼성역 = 지하철역_생성_요청("삼성역");
+        지하철_노선_구간_등록_요청(_2호선.getId(), 삼성역.getId(), 잠실역.getId(), 50);
+        // When
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제외_요청(_2호선.getId(), 잠실역.getId());
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        지하철_노선의_지하철역_동일_확인(LineAcceptanceTestRequest.지하철_노선_조회(_2호선.getId()), Arrays.asList(강남역, 삼성역));
+    }
+
+    @DisplayName("`Line`에 등록된 `Station`이 2개일때 `Station` 삭제")
+    @Test
+    void exceptionToRemoveSectionInLine() {
+        // When
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제외_요청(_2호선.getId(), 강남역.getId());
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private static void 지하철_노선의_지하철역_동일_확인(LineResponse line, List<StationResponse> stations) {
+        List<Long> stationIds = line.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        List<Long> expectedStationIds = stations.stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
     }
 }
