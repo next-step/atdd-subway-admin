@@ -36,12 +36,12 @@ public class Station extends BaseEntity {
 
         Station station = (Station) o;
 
-        return id != null ? id.equals(station.id) : station.id == null;
+        return name != null ? name.equals(station.name) : station.name == null;
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return name != null ? name.hashCode() : 0;
     }
 
     @Override

@@ -63,6 +63,7 @@ public class LineService {
         Station downStation = getStationById(sectionRequest.getDownStationId());
         Section section = new Section(upStation, downStation, line, sectionRequest.getDistance());
         line.addSection(section);
+        line.sortSections();
         return LineResponse.of(lineRepository.save(line));
     }
 

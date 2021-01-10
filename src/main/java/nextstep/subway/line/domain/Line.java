@@ -9,6 +9,8 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -45,9 +47,48 @@ public class Line extends BaseEntity {
         return color;
     }
 
-
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void sortSections() {
+        List<Station> upStations = getUpStations();
+        List<Station> downStations = getDownStations();
+
+        Station upStation = upStations.stream()
+                .filter(station -> !downStations.contains(station))
+                .findFirst().get();
+
+        List<Section> newSections = addNewSections(upStation);
+        updateSections(newSections);
+    }
+
+    private List<Section> addNewSections(Station upStation) {
+        List<Section> newSections = new ArrayList<>();
+        Section firtSection = sections.stream()
+                .filter(section -> section.getUpStation() == upStation)
+                .findFirst().get();
+
+        newSections.add(firtSection);
+
+        Station downStation = firtSection.getDownStation();
+
+        while (!(sections.size() == newSections.size())) {
+            Station finalDownStation = downStation;
+            Optional<Section> optionalSection = sections.stream()
+                    .filter(section -> section.getUpStation() == finalDownStation)
+                    .findFirst();
+
+            if (optionalSection.isPresent()) {
+                newSections.add(optionalSection.get());
+                downStation = optionalSection.get().getUpStation();
+            }
+        }
+        return newSections;
+    }
+
+    private void updateSections(List<Section> newSections) {
+        this.sections = newSections;
     }
 
     public void updateLine(String name, String color) {
@@ -109,7 +150,6 @@ public class Line extends BaseEntity {
     }
 
     private boolean isTerminalStation(Section newSection) {
-        System.out.println(newSection);
         return sections.stream()
                 .filter(section -> isNotDuplicateStations(section, newSection))
                 .anyMatch(section -> section.getUpStation().equals(newSection.getDownStation()) ||
@@ -130,6 +170,21 @@ public class Line extends BaseEntity {
         }
         throw new SectionBadRequestException(section);
     }
+
+    private List<Station> getDownStations() {
+        List<Station> downStations = sections.stream()
+                .map(section -> section.getDownStation())
+                .collect(Collectors.toList());
+        return downStations;
+    }
+
+    private List<Station> getUpStations() {
+        List<Station> upStations = sections.stream()
+                .map(section -> section.getUpStation())
+                .collect(Collectors.toList());
+        return upStations;
+    }
+
 
     @Override
     public String toString() {
