@@ -1,54 +1,91 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Embeddable
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
-    public Sections(Section upSection, Section downSection) {
-        this.sections.addAll(Arrays.asList(upSection, downSection));
+    public Sections(Section section) {
+        sections.add(section);
     }
 
     protected Sections() {
     }
 
-    public List<Station> getStations() {
-        return this.getOrderedSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
+    public void add(Section section) {
+        validateSection(section);
+        updateSection(section);
     }
 
-    public List<Section> getOrderedSections() {
-        Optional<Section> preSection = findFirstSection();
-        List<Section> result = new ArrayList<>();
-        while (preSection.isPresent()) {
-            Section currentSection = preSection.get();
-            result.add(currentSection);
-            preSection = getNextPreSection(currentSection);
+    public Optional<Section> findDownSectionBy(Station baseStation) {
+        return sections.stream()
+                .filter(it -> it.hasDownSection(baseStation))
+                .findFirst();
+    }
+
+    public Optional<Section> findUpSectionBy(Station baseStation) {
+        return sections.stream()
+                .filter(it -> it.hasUpSection(baseStation))
+                .findFirst();
+    }
+
+    public List<Station> getStations() {
+        Station station = findFirstUpStation();
+        List<Station> result = new ArrayList<>(Collections.singletonList(station));
+        Optional<Section> nextSection = findDownSectionBy(station);
+        while (nextSection.isPresent()) {
+            Station nextStation = nextSection.get().getDownStation();
+            result.add(nextStation);
+            nextSection = findDownSectionBy(nextStation);
         }
         return result;
     }
 
-    private Optional<Section> findFirstSection() {
+    private Station findFirstUpStation() {
         return sections.stream()
-                .filter(Section::isFirstSection)
-                .findFirst();
+                .map(Section::getUpStation)
+                .filter(this::matchUpStation)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("상행역이 존재하지 않습니다."));
     }
 
-    private Optional<Section> getNextPreSection(Section currentSection) {
+    private boolean matchUpStation(Station upStation) {
         return sections.stream()
-                .filter(section -> section.matchNextSection(currentSection))
-                .findFirst();
+                .noneMatch(section -> section.hasUpSection(upStation));
+    }
+
+    private void updateSection(Section section) {
+        findDownSectionBy(section.getUpStation())
+                .ifPresent(it -> it.updateUpStation(section));
+        findUpSectionBy(section.getDownStation())
+                .ifPresent(it -> it.updateDownStation(section));
+        sections.add(section);
+    }
+
+    private void validateSection(Section section) {
+        List<Station> stations = getStations();
+        if (isAlreadyRegistered(section, stations)) {
+            throw new CustomException("이미 등록된 구간 입니다.");
+        }
+        if (isNotRegistered(section)) {
+            throw new CustomException("등록할 수 없는 구간 입니다.");
+        }
+    }
+
+    private boolean isAlreadyRegistered(Section section, List<Station> stations) {
+        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
+    }
+
+    private boolean isNotRegistered(Section section) {
+        List<Station> stations = getStations();
+        return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
     }
 }

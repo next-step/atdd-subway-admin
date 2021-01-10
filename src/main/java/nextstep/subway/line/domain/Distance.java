@@ -18,7 +18,11 @@ public class Distance {
         this.distance = distance;
     }
 
-    public boolean isZero() {
-        return distance == 0L;
+    public boolean isLessThanEqual(Distance distance) {
+        return this.distance <= distance.distance;
+    }
+
+    public long minus(Distance distance) {
+        return this.distance - distance.distance;
     }
 }

@@ -23,9 +23,7 @@ public class Line extends BaseEntity {
 
     public Line(String name, String color, Station upStation, Station downStation, long distance) {
         this(name, color);
-        this.sections = new Sections(
-                new Section(this, null, upStation, 0),
-                new Section(this, upStation, downStation, distance));
+        sections = new Sections(createSection(upStation, downStation, distance));
     }
 
     private Line(String name, String color) {
@@ -36,6 +34,10 @@ public class Line extends BaseEntity {
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addSection(Station upStation, Station downStation, long distance) {
+        sections.add(createSection(upStation, downStation, distance));
     }
 
     public Long getId() {
@@ -52,5 +54,9 @@ public class Line extends BaseEntity {
 
     public List<Station> getUpToDownSortedStations() {
         return sections.getStations();
+    }
+
+    private Section createSection(Station upStation, Station downStation, long distance) {
+        return new Section(this, upStation, downStation, distance);
     }
 }
