@@ -17,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -183,7 +184,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		StationResponse 새로운역 = StationAcceptanceTest.지하철역_등록되어_있음("새로운역");
 		ExtractableResponse<Response> response = 구간등록하기(new SectionRequest(광교역.getId(), 새로운역.getId(), 3));
 
-		해당역의_구간을_삭제한다(lineId, 새로운역.getId());
+		ExtractableResponse<Response> deleteResponse = 해당역의_구간을_삭제한다(lineId, 새로운역.getId());
+		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
 		ExtractableResponse<Response> linesResponse = ID로_노선을_조회한다(Long.valueOf(response.header("Location").split("/")[2]));
 
@@ -201,7 +203,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		StationResponse 새로운역 = StationAcceptanceTest.지하철역_등록되어_있음("새로운역");
 		ExtractableResponse<Response> response = 구간등록하기(new SectionRequest(광교역.getId(), 새로운역.getId(), 3));
 
-		해당역의_구간을_삭제한다(lineId, 광교역.getId());
+		ExtractableResponse<Response> deleteResponse = 해당역의_구간을_삭제한다(lineId, 광교역.getId());
+		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
 		ExtractableResponse<Response> linesResponse = ID로_노선을_조회한다(Long.valueOf(response.header("Location").split("/")[2]));
 
@@ -212,13 +215,31 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 				.containsExactly(강남역.getId(), 새로운역.getId());
 	}
 
-	private ExtractableResponse<Response> 해당역의_구간을_삭제한다(Long lineId, Long statinoId) {
+	@DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 때")
+	@Test
+	void deleteOneSection() {
+		Long lineId = 신분당선.getId();
+		ExtractableResponse<Response> deleteResponse = 해당역의_구간을_삭제한다(lineId, 강남역.getId());
+		//에러 발생
+		assertThat(deleteResponse.jsonPath().getObject(".", ErrorResponse.class).getCode()).isEqualTo(703);
+	}
+
+	@DisplayName("구노선에 등록되어있지 않은 역을 제거하려 한다.")
+	@Test
+	void deleteSectionForNotIncludeStation() {
+		Long lineId = 신분당선.getId();
+		StationResponse 새로운역 = StationAcceptanceTest.지하철역_등록되어_있음("새로운역");
+		ExtractableResponse<Response> deleteResponse = 해당역의_구간을_삭제한다(lineId, 새로운역.getId());
+		//에러 발생
+		assertThat(deleteResponse.jsonPath().getObject(".", ErrorResponse.class).getCode()).isEqualTo(704);
+	}
+
+	private ExtractableResponse<Response> 해당역의_구간을_삭제한다(Long lineId, Long stationId) {
 		ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
 				.when()
-				.delete(String.format("/%d/sections?stationId=%d", lineId, statinoId))
+				.delete(String.format("/%d/sections?stationId=%d", lineId, stationId))
 				.then().log().all()
 				.extract();
-		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 		return deleteResponse;
 	}
 

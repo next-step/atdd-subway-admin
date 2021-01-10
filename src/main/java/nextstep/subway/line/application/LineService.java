@@ -1,5 +1,7 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.exception.MinSectionDeleteException;
+import nextstep.subway.common.exception.NotIncludeStationInSection;
 import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -86,7 +88,6 @@ public class LineService {
 		Section section = sectionOptional.orElseThrow(() -> new IllegalArgumentException("해당 구간이 없습니다 id=" + stationId));
 		if(section.isTerminal()){
 			line.removeTerminal(section);
-
 		}
 		//중간역이 삭제되는 경우
 
@@ -95,11 +96,11 @@ public class LineService {
 
 	private void validate(Optional<Section> section, Line line) {
 		if(!section.isPresent()){
-			throw new IllegalArgumentException("등록되어있지 않은 역입니다.");
+			throw new NotIncludeStationInSection();
 		}
 
 		if(line.isImpossibleRemoveSection()){
-			throw new RuntimeException("구간이 1개인 경우, 삭제할 수 없습니다");
+			throw new MinSectionDeleteException();
 		}
 	}
 }

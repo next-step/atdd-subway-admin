@@ -74,7 +74,6 @@ public class Line extends BaseEntity {
 	}
 
 	public void removeTerminal(Section removedSection) {
-		System.out.println(removedSection);
 		boolean isUpTerminal = isUpTerminal(removedSection);
 		Section updatedSection = getUpdateSection(removedSection, isUpTerminal);
 		updatedSection.updateToTerminal(isUpTerminal);
