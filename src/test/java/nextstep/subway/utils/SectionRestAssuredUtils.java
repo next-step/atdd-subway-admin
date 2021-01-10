@@ -8,16 +8,18 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StationRestAssuredUtils {
+public class SectionRestAssuredUtils {
 
-    public static ExtractableResponse<Response> 지하철_역_생성_요청(String name) {
+    public static ExtractableResponse<Response> 구간_등록_요청(Long lineId, String upStationId, String downStationId, String distance) {
         Map<String,String> params = new HashMap<>();
-        params.put("name", name);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
 
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
+                .when().post("/lines/" + lineId + "/sections")
                 .then().log().all().extract();
     }
 }

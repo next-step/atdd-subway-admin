@@ -1,6 +1,7 @@
 package nextstep.subway.advice;
 
 import nextstep.subway.advice.exception.LineNotFoundException;
+import nextstep.subway.advice.exception.SectionBadRequestException;
 import nextstep.subway.advice.exception.StationNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,4 +25,9 @@ public class SubwayExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
+    @ExceptionHandler(SectionBadRequestException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    ResponseEntity check(SectionBadRequestException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 }

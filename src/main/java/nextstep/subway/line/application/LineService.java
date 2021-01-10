@@ -6,6 +6,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,8 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Station upStation = getStationById(request.getUpStationId());
         Station downStation = getStationById(request.getDownStationId());
-        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
+        Line persistLine = lineRepository.save(request.toLine());
+        persistLine.createSection(new Section(upStation, downStation, persistLine, request.getDistance()));
         return LineResponse.of(persistLine);
     }
 
@@ -52,6 +55,16 @@ public class LineService {
         return lines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse addSections(Long id, SectionRequest sectionRequest) {
+        Line line = getLindById(id);
+        Station upStation = getStationById(sectionRequest.getUpStationId());
+        Station downStation = getStationById(sectionRequest.getDownStationId());
+        Section section = new Section(upStation, downStation, line, sectionRequest.getDistance());
+        line.addSection(section);
+        line.sortSections();
+        return LineResponse.of(lineRepository.save(line));
     }
 
     private Line getLindById(Long id) {
