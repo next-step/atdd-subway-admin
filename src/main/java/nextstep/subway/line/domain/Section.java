@@ -24,6 +24,7 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
+    @Embedded
     private Distance distance;
 
     protected Section() {
