@@ -60,6 +60,13 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section newSection) {
+        System.out.println(">>>>>>>>>");
+        System.out.println(isTerminalStation(newSection));
+        System.out.println(isUpStation(newSection));
+        if (isTerminalStation(newSection)) {
+            sections.add(newSection);
+            return;
+        }
         if (isUpStation(newSection)) {
             addMiddleDownStation(newSection);
             sections.add(newSection);
@@ -69,9 +76,6 @@ public class Line extends BaseEntity {
             addMiddleUpStation(newSection);
             sections.add(newSection);
             return;
-        }
-        if (isTerminalStation(newSection)) {
-            sections.add(newSection);
         }
     }
 
@@ -108,10 +112,11 @@ public class Line extends BaseEntity {
     }
 
     private boolean isTerminalStation(Section newSection) {
+        System.out.println(newSection);
         return sections.stream()
                 .filter(section -> isNotDuplicateStations(section, newSection))
-                .filter(section -> section.getDownStation().equals(newSection.getUpStation()))
-                .anyMatch(section -> section.getUpStation().equals(newSection.getDownStation()));
+                .anyMatch(section -> section.getUpStation().equals(newSection.getDownStation()) ||
+                        section.getDownStation().equals(newSection.getUpStation()));
     }
 
     private boolean validateDistance(Section section, int distance) {
