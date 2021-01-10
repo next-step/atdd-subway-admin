@@ -30,12 +30,6 @@ public class LineService {
         return LineResponse.of(lineRepository.save(createLineOf(request)));
     }
 
-    private Line createLineOf(LineRequest request) {
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
-        return new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
-    }
-
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
                 .map(LineResponse::of)
@@ -44,7 +38,7 @@ public class LineService {
 
     public Line findLineById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("`Line` " + id + " 는 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException("`Line` " + id + " 는 존재하지 않습니다."));
     }
 
     public LineResponse findById(long id) {
@@ -54,8 +48,7 @@ public class LineService {
     }
 
     public LineResponse updateLine(long id, LineRequest request) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new CustomException("`Line`의 엔티티가 존재하지 않습니다."));
+        Line line = findLineById(id);
         line.update(request.getName(), request.getColor());
         return LineResponse.of(line);
     }
@@ -73,5 +66,11 @@ public class LineService {
     public void removeStationInLine(long lineId, long stationId) {
         Station station = stationService.findById(stationId);
         findLineById(lineId).deleteStation(station);
+    }
+
+    private Line createLineOf(LineRequest request) {
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        return new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
     }
 }
