@@ -26,14 +26,6 @@ public class Sections {
         updateSection(section);
     }
 
-    public Optional<Section> findDownSectionBy(Station baseStation) {
-        return findSectionBy(s -> s.hasDownSection(baseStation));
-    }
-
-    public Optional<Section> findUpSectionBy(Station baseStation) {
-        return findSectionBy(s -> s.hasUpSection(baseStation));
-    }
-
     public List<Station> getStations() {
         Station station = findFirstUpStation();
         List<Station> result = new ArrayList<>(Collections.singletonList(station));
@@ -44,6 +36,14 @@ public class Sections {
             nextSection = findDownSectionBy(nextStation);
         }
         return result;
+    }
+
+    private Optional<Section> findDownSectionBy(Station baseStation) {
+        return findSectionBy(s -> s.hasDownSection(baseStation));
+    }
+
+    private Optional<Section> findUpSectionBy(Station baseStation) {
+        return findSectionBy(s -> s.hasUpSection(baseStation));
     }
 
     private Optional<Section> findSectionBy(Predicate<Section> predicate) {
