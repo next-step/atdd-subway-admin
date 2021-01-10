@@ -80,26 +80,28 @@ public class LineService {
 	public void removeSectionByStationId(Long lineId, Long stationId) {
 		Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다 id=" + lineId));
 		Optional<Section> sectionOptional = line.getLineSections().stream().filter(sec -> (sec.getUpStation() == null && sec.getMainStation().getId() == stationId) ||
-				(sec.getDownStation() == null && sec.getMainStation().getId() == stationId)).findAny();
+				(sec.getDownStation() == null && sec.getMainStation().getId() == stationId) || (sec.getMainStation().getId() == stationId)).findAny();
 
 		validate(sectionOptional, line);
 
 		//todo 아래 코드들 도메인 로직으로 옮기기
 		Section section = sectionOptional.orElseThrow(() -> new IllegalArgumentException("해당 구간이 없습니다 id=" + stationId));
-		if(section.isTerminal()){
+		if (section.isTerminal()) {
 			line.removeTerminal(section);
+			lineRepository.save(line);
+			return;
 		}
 		//중간역이 삭제되는 경우
-
+		line.removeBetweenSection(section);
 		lineRepository.save(line);
 	}
 
 	private void validate(Optional<Section> section, Line line) {
-		if(!section.isPresent()){
+		if (!section.isPresent()) {
 			throw new NotIncludeStationInSection();
 		}
 
-		if(line.isImpossibleRemoveSection()){
+		if (line.isImpossibleRemoveSection()) {
 			throw new MinSectionDeleteException();
 		}
 	}

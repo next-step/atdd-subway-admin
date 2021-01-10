@@ -224,7 +224,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(deleteResponse.jsonPath().getObject(".", ErrorResponse.class).getCode()).isEqualTo(703);
 	}
 
-	@DisplayName("구노선에 등록되어있지 않은 역을 제거하려 한다.")
+	@DisplayName("노선에 등록되어있지 않은 역을 제거할 때")
 	@Test
 	void deleteSectionForNotIncludeStation() {
 		Long lineId = 신분당선.getId();
