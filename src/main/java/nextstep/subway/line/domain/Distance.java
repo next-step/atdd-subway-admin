@@ -25,4 +25,12 @@ public class Distance {
     public long minus(Distance distance) {
         return this.distance - distance.distance;
     }
+
+    public long plus(Distance distance) {
+        return this.distance + distance.distance;
+    }
+
+    public long getDistance() {
+        return distance;
+    }
 }

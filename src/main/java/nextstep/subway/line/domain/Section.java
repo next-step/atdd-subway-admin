@@ -71,6 +71,14 @@ public class Section extends BaseEntity {
         return this.upStation == station;
     }
 
+    public Section merge(Section section) {
+        return new Section(this.line, this.upStation, section.downStation, this.distance.plus(section.distance));
+    }
+
+    public long getDistance() {
+        return distance.getDistance();
+    }
+
     public Long getId() {
         return id;
     }

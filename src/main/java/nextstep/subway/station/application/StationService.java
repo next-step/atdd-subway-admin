@@ -33,7 +33,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public Station findById(long id) {
+    public Station findById(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new CustomException("역의 정보가 존재하지 않습니다."));
     }

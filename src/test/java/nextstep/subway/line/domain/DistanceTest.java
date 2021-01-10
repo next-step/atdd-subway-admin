@@ -2,12 +2,8 @@ package nextstep.subway.line.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -51,7 +47,7 @@ class DistanceTest {
 
     @DisplayName("`Distance`의 거리 값 뺄셈")
     @ParameterizedTest
-    @MethodSource("provideExpressionValues")
+    @CsvSource({"1,1,0", "2,1,1"})
     void minus(long actualValue, long minusValue, long result) {
         // Given
         Distance compared = new Distance(minusValue);
@@ -61,7 +57,15 @@ class DistanceTest {
         assertThat(actual.minus(compared)).isEqualTo(result);
     }
 
-    private static Stream<Arguments> provideExpressionValues() {
-        return Stream.of(Arguments.of(1, 1, 0), Arguments.of(2, 1, 1));
+    @DisplayName("`Distance`의 거리 값 덧셈")
+    @ParameterizedTest
+    @CsvSource({"1,2,3", "0,1,1"})
+    void plus(long actualValue, long plusValue, long result) {
+        // Given
+        Distance compared = new Distance(plusValue);
+        // When
+        Distance actual = new Distance(actualValue);
+        // Then
+        assertThat(actual.plus(compared)).isEqualTo(result);
     }
 }

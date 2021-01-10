@@ -117,4 +117,21 @@ class SectionTest {
         ).isInstanceOf(CustomException.class)
                 .hasMessage("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
     }
+
+    @DisplayName("2개의 `Section`을 하나의 `Section`으로 병합")
+    @Test
+    void merge() {
+        // Given
+        Station 강남역 = new Station("강남역");
+        Section section1 = new Section(_2호선, 강남역, 삼성역, 1000L);
+        Section section2 = new Section(_2호선, 삼성역, 잠실역, 1000L);
+        // When
+        Section actual = section1.merge(section2);
+        // Then
+        assertAll(
+                () -> assertThat(actual.getUpStation()).isEqualTo(강남역),
+                () -> assertThat(actual.getDownStation()).isEqualTo(잠실역),
+                () -> assertThat(actual.getDistance()).isEqualTo(section1.getDistance() + section2.getDistance())
+        );
+    }
 }

@@ -93,4 +93,27 @@ class SectionsTest {
                 .extracting(Station::getName)
                 .containsExactly("삼성역", "종합운동장역", "잠실역");
     }
+
+    @DisplayName("`Sections`에 속한 `Station` 삭제")
+    @Test
+    void deleteStation() {
+        // Given
+        sections.add(new Section(_2호선, 삼성역, new Station("종합운동장역"), 500L));
+        // When
+        sections.deleteStation(삼성역);
+        // Then
+        assertThat(sections.getStations())
+                .extracting(Station::getName)
+                .containsExactly("종합운동장역", "잠실역");
+    }
+
+    @DisplayName("`Sections`에 속한 `Station` 삭제시 예외 확인 - 구간이 1개이면 역을 삭제할 수 없습니다.")
+    @Test
+    void exceptionToDeleteStation() {
+        // When & Then
+        assertThatThrownBy(
+                () -> sections.deleteStation(삼성역)
+        ).isInstanceOf(CustomException.class)
+                .hasMessage("구간이 1개이면 역을 삭제할 수 없습니다.");
+    }
 }

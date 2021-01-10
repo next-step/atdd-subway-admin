@@ -38,6 +38,27 @@ public class Sections {
         return result;
     }
 
+    public void deleteStation(Station station) {
+        if (isDeletable()) {
+            throw new CustomException("구간이 1개이면 역을 삭제할 수 없습니다.");
+        }
+        Optional<Section> upSection = findUpSectionBy(station);
+        Optional<Section> downSection = findDownSectionBy(station);
+        if (upSection.isPresent() && downSection.isPresent()) {
+            sections.add(upSection.get().merge(downSection.get()));
+        }
+        upSection.ifPresent(this::remove);
+        downSection.ifPresent(this::remove);
+    }
+
+    private boolean isDeletable() {
+        return sections.size() <= 1;
+    }
+
+    private void remove(Section section) {
+        sections.remove(section);
+    }
+
     private Optional<Section> findDownSectionBy(Station baseStation) {
         return findSectionBy(s -> s.hasDownSection(baseStation));
     }
