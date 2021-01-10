@@ -53,6 +53,16 @@ public class Section extends BaseEntity {
 		this.distance = distance;
 	}
 
+	public void changeUpStationWithDistance(Section originSection, Section section) {
+		this.upStationId = originSection.getDownStationId();
+		this.distance = originSection.getDistance() - section.getDistance();
+	}
+
+	public boolean isDistanceGreaterThan(int distance) {
+		return this.distance > distance;
+	}
+
+
 	public boolean isInValidDistance(int distance) {
 		return (this.getDistance() == distance || this.getDistance() < distance);
 	}
@@ -104,4 +114,5 @@ public class Section extends BaseEntity {
 	public int hashCode() {
 		return Objects.hash(getId(), getLine(), getUpStationId(), getDownStationId(), getDistance());
 	}
+
 }

@@ -42,12 +42,12 @@ public class Sections {
 
 		validateSection(section);
 		//역 사이에 새로운 역 등록
-		if (addStationMiddleOfSection(section)){
+		if (addStationMiddleOfSection(section)) {
 			return;
 		}
 
 		// 새로운 역을 상행 종점으로 등록할 경우
-		if (addStationTopOfSection(section)){
+		if (addStationTopOfSection(section)) {
 			return;
 		}
 
@@ -84,10 +84,20 @@ public class Sections {
 			section.getUpStationId());
 
 		if (isEqualToSectionsInStation(upStationEqualUpStationSectionPredicate)) {
-			addSectionSameUpStation(section);
+			addSectionSameUpStation(upStationEqualUpStationSectionPredicate, section);
 			return true;
 		}
 		return false;
+	}
+
+	private void addSectionSameUpStation(Predicate<Section> upStationEqualUpStationSectionPredicate, Section section) {
+		sections.stream()
+			.filter(upStationEqualUpStationSectionPredicate)
+			.filter(originSection -> originSection.isDistanceGreaterThan(section.getDistance()))
+			.findFirst()
+			.ifPresent(originSection -> originSection.changeUpStationWithDistance(originSection, section));
+
+		sections.add(section);
 	}
 
 	private Consumer<Section> downStationToUpStationConsumer(Section section) {
@@ -107,8 +117,7 @@ public class Sections {
 		sections.stream()
 			.filter(predicateFilter)
 			.findFirst()
-			.ifPresent(
-				sectionConsumer);
+			.ifPresent(sectionConsumer);
 
 		sections.add(section);
 	}
@@ -118,17 +127,6 @@ public class Sections {
 			.anyMatch(equalStationIdPredicate);
 	}
 
-	private void addSectionSameUpStation(Section section) {
-		sections.stream()
-			.filter(originSection -> originSection.getUpStationId().equals(section.getUpStationId())
-				&& originSection.getDistance() > section
-				.getDistance())
-			.findFirst()
-			.ifPresent(originSection -> originSection.changeUpStation(section.getDownStationId(),
-				originSection.getDistance() - section.getDistance()));
-
-		sections.add(section);
-	}
 
 	private void validateSection(Section section) {
 		validateSectionAllStation(section);
