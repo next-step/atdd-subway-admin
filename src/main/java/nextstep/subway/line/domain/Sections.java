@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.function.Predicate;
 
 @Embeddable
 public class Sections {
@@ -26,15 +27,11 @@ public class Sections {
     }
 
     public Optional<Section> findDownSectionBy(Station baseStation) {
-        return sections.stream()
-                .filter(it -> it.hasDownSection(baseStation))
-                .findFirst();
+        return findSectionBy(s -> s.hasDownSection(baseStation));
     }
 
     public Optional<Section> findUpSectionBy(Station baseStation) {
-        return sections.stream()
-                .filter(it -> it.hasUpSection(baseStation))
-                .findFirst();
+        return findSectionBy(s -> s.hasUpSection(baseStation));
     }
 
     public List<Station> getStations() {
@@ -47,6 +44,12 @@ public class Sections {
             nextSection = findDownSectionBy(nextStation);
         }
         return result;
+    }
+
+    private Optional<Section> findSectionBy(Predicate<Section> predicate) {
+        return sections.stream()
+                .filter(predicate)
+                .findFirst();
     }
 
     private Station findFirstUpStation() {
