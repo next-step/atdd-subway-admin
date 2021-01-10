@@ -58,7 +58,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		StationResponse 새로운역 = StationAcceptanceTest.지하철역_등록되어_있음("새로운역");
 		//새로운역을 구간에 추가한다.
 		ExtractableResponse<Response> response = 구간등록하기(new SectionRequest(광교역.getId(), 새로운역.getId(), 3));
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
 		//저장된 내용을 확인한다.
 		String lineId = response.header("Location").split("/")[2];
@@ -84,6 +83,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 				.then().log().all()
 				.extract();
 
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		return response;
 	}
 
@@ -112,7 +112,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		//새로운 역을 등록한다.
 		StationResponse 새로운하행역 = StationAcceptanceTest.지하철역_등록되어_있음("새로운하행역");
 		//새로운 역이 하행 종점이 되도록 구간을 등록한다.
-		ExtractableResponse<Response> response = 구간등록하기( new SectionRequest(광교역.getId(), 새로운하행역.getId(), 3));
+		ExtractableResponse<Response> response = 구간등록하기(new SectionRequest(광교역.getId(), 새로운하행역.getId(), 3));
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
 		ExtractableResponse<Response> linesResponse = ID로_노선을_조회한다(신분당선.getId());
@@ -156,27 +156,70 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(response.jsonPath().getObject(".", ErrorResponse.class).getCode()).isEqualTo(702);
 	}
 
-	@DisplayName("노선의 구간을 제거하는 기능, 종점 제거")
+	@DisplayName("노선의 구간을 제거하는 기능,상행 종점 제거")
 	@Test
-	void deleteSections() {
+	void deleteUpTerminal() {
 		Long lineId = 신분당선.getId();
 		StationResponse 새로운역 = StationAcceptanceTest.지하철역_등록되어_있음("새로운역");
-		ExtractableResponse<Response> response = 구간등록하기( new SectionRequest(광교역.getId(), 새로운역.getId(), 3));
+		ExtractableResponse<Response> response = 구간등록하기(new SectionRequest(광교역.getId(), 새로운역.getId(), 3));
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
+		해당역의_구간을_삭제한다(lineId, 강남역.getId());
+
 		ExtractableResponse<Response> linesResponse = ID로_노선을_조회한다(Long.valueOf(response.header("Location").split("/")[2]));
+
 		LineResponse lineResponse = linesResponse.jsonPath().getObject(".", LineResponse.class);
-		lineResponse.getStations().size();
-
-		ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
-				.when()
-				.delete(String.format("/%d/sections?stationId=%d", lineId, 강남역.getId()))
-				.then().log().all()
-				.extract();
-
-		// then
-		assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(lineResponse.getStations().size()).isEqualTo(2);
+		assertThat(lineResponse.getStations())
+				.extracting(SectionResponse::getId)
+				.containsExactly(광교역.getId(), 새로운역.getId());
 	}
 
+
+	@DisplayName("노선의 구간을 제거하는 기능,하행 종점 제거")
+	@Test
+	void deleteDownTerminal() {
+		Long lineId = 신분당선.getId();
+		StationResponse 새로운역 = StationAcceptanceTest.지하철역_등록되어_있음("새로운역");
+		ExtractableResponse<Response> response = 구간등록하기(new SectionRequest(광교역.getId(), 새로운역.getId(), 3));
+
+		해당역의_구간을_삭제한다(lineId, 새로운역.getId());
+
+		ExtractableResponse<Response> linesResponse = ID로_노선을_조회한다(Long.valueOf(response.header("Location").split("/")[2]));
+
+		LineResponse lineResponse = linesResponse.jsonPath().getObject(".", LineResponse.class);
+		assertThat(lineResponse.getStations().size()).isEqualTo(2);
+		assertThat(lineResponse.getStations())
+				.extracting(SectionResponse::getId)
+				.containsExactly(강남역.getId(), 광교역.getId());
+	}
+
+	@DisplayName("노선의 구간을 제거하는 기능, 중간역 제거")
+	@Test
+	void deleteSectionIncludeBetweenStation() {
+		Long lineId = 신분당선.getId();
+		StationResponse 새로운역 = StationAcceptanceTest.지하철역_등록되어_있음("새로운역");
+		ExtractableResponse<Response> response = 구간등록하기(new SectionRequest(광교역.getId(), 새로운역.getId(), 3));
+
+		해당역의_구간을_삭제한다(lineId, 광교역.getId());
+
+		ExtractableResponse<Response> linesResponse = ID로_노선을_조회한다(Long.valueOf(response.header("Location").split("/")[2]));
+
+		LineResponse lineResponse = linesResponse.jsonPath().getObject(".", LineResponse.class);
+		assertThat(lineResponse.getStations().size()).isEqualTo(2);
+		assertThat(lineResponse.getStations())
+				.extracting(SectionResponse::getId)
+				.containsExactly(강남역.getId(), 새로운역.getId());
+	}
+
+	private ExtractableResponse<Response> 해당역의_구간을_삭제한다(Long lineId, Long statinoId) {
+		ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+				.when()
+				.delete(String.format("/%d/sections?stationId=%d", lineId, statinoId))
+				.then().log().all()
+				.extract();
+		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		return deleteResponse;
+	}
 
 }

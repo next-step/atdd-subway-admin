@@ -147,4 +147,32 @@ public class Section extends BaseEntity {
 
 		return this.downStation;
 	}
+
+	public void removeTerminal() {
+		//상행 종점역이 삭제되는 경우
+		Station newTerminal = this.getNetTerminal();
+//		line.getLineSections().remove();
+
+
+
+		//하행 종점역이 삭제되는 경우
+
+
+	}
+
+	public void updateToTerminal(boolean upTerminal) {
+		if(upTerminal){
+			this.upStation = null;
+			this.distanceMeter = 0;
+			return;
+		}
+		this.downStation = null;
+	}
+
+	public Station getUpdateSection(boolean isUpTerminal) {
+		if (isUpTerminal) {
+			return this.downStation;
+		}
+		return this.upStation;
+	}
 }

@@ -77,21 +77,16 @@ public class LineService {
 	@Transactional
 	public void removeSectionByStationId(Long lineId, Long stationId) {
 		Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다 id=" + lineId));
-		Optional<Section> sectionOptional = line.getLineSections().stream().filter(sec -> (sec.getUpStation() == null && sec.getDownStation().getId() == stationId) ||
-				(sec.getDownStation() == null && sec.getUpStation().getId() == stationId)).findAny();
+		Optional<Section> sectionOptional = line.getLineSections().stream().filter(sec -> (sec.getUpStation() == null && sec.getMainStation().getId() == stationId) ||
+				(sec.getDownStation() == null && sec.getMainStation().getId() == stationId)).findAny();
 
 		validate(sectionOptional, line);
 
 		//todo 아래 코드들 도메인 로직으로 옮기기
-		Section section = sectionOptional.orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + stationId));
+		Section section = sectionOptional.orElseThrow(() -> new IllegalArgumentException("해당 구간이 없습니다 id=" + stationId));
 		if(section.isTerminal()){
-			//상행 종점역이 삭제되는 경우
-			Station newTerminal = section.getNetTerminal();
-			line.getLineSections().remove(section);
+			line.removeTerminal(section);
 
-
-
-			//하행 종점역이 삭제되는 경우
 		}
 		//중간역이 삭제되는 경우
 

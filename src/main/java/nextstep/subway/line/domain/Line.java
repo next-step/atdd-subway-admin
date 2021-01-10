@@ -7,6 +7,8 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -68,9 +70,24 @@ public class Line extends BaseEntity {
 	}
 
 	public boolean isImpossibleRemoveSection() {
-		if(this.sections.getSections().size() == MIN_SECTION_COUNT){
-			return true;
-		}
-		return false;
+		return this.sections.getSections().size() == MIN_SECTION_COUNT;
+	}
+
+	public void removeTerminal(Section removedSection) {
+		System.out.println(removedSection);
+		boolean isUpTerminal = isUpTerminal(removedSection);
+		Section updatedSection = getUpdateSection(removedSection, isUpTerminal);
+		updatedSection.updateToTerminal(isUpTerminal);
+		this.getLineSections().remove(removedSection);
+	}
+
+	private boolean isUpTerminal(Section removedSection) {
+		return Objects.isNull(removedSection.getUpStation());
+	}
+
+	private Section getUpdateSection(Section removedSection, boolean isUpTerminal) {
+		Station linkedStation =	removedSection.getUpdateSection(isUpTerminal);
+		Optional<Section> stationOptional = this.getLineSections().stream().filter(section -> section.getMainStation().getId() == linkedStation.getId()).findAny();
+		return stationOptional.orElseThrow(() -> new IllegalArgumentException("해당 구간이 없습니다 id=" + linkedStation.getId()));
 	}
 }
