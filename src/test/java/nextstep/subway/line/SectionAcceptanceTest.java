@@ -23,6 +23,8 @@ import nextstep.subway.common.dto.ErrorResponse;
 import nextstep.subway.common.exception.DuplicateAllStationException;
 import nextstep.subway.common.exception.IllegalDistanceException;
 import nextstep.subway.common.exception.NotExistAllStationException;
+import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.common.exception.OneSectionCannotRemoveException;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
@@ -138,6 +140,80 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		지하철_노선_구간_상행선_하행선_없음_오류(response);
+	}
+
+	@DisplayName("노선의 구간 제거(종점 제거시 다음으로 오던 역이 종점이 됨)")
+	@Test
+	void removeDownStationOnSection(){
+		// given
+		// 지하철_노선에_지하철역_등록_요청
+		StationResponse 판교역 = StationAcceptanceTest.지하철역_생성("판교역").as(StationResponse.class);
+		int distance = 4;
+		지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 판교역.getId(), distance);
+
+		//when
+		지하철_노선의_지하철역_삭제_요청(신분당선.getId(), 광교역.getId());
+
+		//then
+		ExtractableResponse<Response> response = LineAcceptanceTest.지하철_노선_조회_요청(신분당선.getId());
+		지하철_노선의_상행선_하행선_조회(response, 강남역.getId(), 판교역.getId());
+	}
+
+	@DisplayName("구간 삭제시 에러(구간이 하나인 노선에서 마지막 구간을 제거할 때")
+	@Test
+	void removeSectionWhenOneSectionCannotExistException() {
+		//when
+		ExtractableResponse<Response> response = 지하철_노선의_지하철역_삭제_요청(신분당선.getId(), 광교역.getId());
+
+		//then
+		지하철_노선_삭제_에러_하나의_노선이_존재할_때는_삭제_불가(response);
+	}
+
+	@DisplayName("구간 삭제시 에러(노선에 등록되어 있지 않은 역을 제거할 때")
+	@Test
+	void removeSectionWhenStationNotExist() {
+		// given
+		// 지하철_노선에_지하철역_등록_요청
+		StationResponse 판교역 = StationAcceptanceTest.지하철역_생성("판교역").as(StationResponse.class);
+		StationResponse 사당역 = StationAcceptanceTest.지하철역_생성("사당역").as(StationResponse.class);
+		int distance = 4;
+		지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 판교역.getId(), distance);
+
+		//when
+		ExtractableResponse<Response> response = 지하철_노선의_지하철역_삭제_요청(신분당선.getId(), 사당역.getId());
+
+		//then
+		지하철역_없음_에러(response);
+	}
+
+	private void 지하철역_없음_에러(ExtractableResponse<Response> response) {
+		String errorCode = response.jsonPath().getObject(".", ErrorResponse.class).getErrorCode();
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(errorCode).isEqualTo(NotFoundException.ERROR_CODE);
+	}
+
+	private void 지하철_노선_삭제_에러_하나의_노선이_존재할_때는_삭제_불가(ExtractableResponse<Response> response) {
+		String errorCode = response.jsonPath().getObject(".", ErrorResponse.class).getErrorCode();
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(errorCode).isEqualTo(OneSectionCannotRemoveException.ERROR_CODE);
+	}
+
+	private void 지하철_노선의_상행선_하행선_조회(ExtractableResponse<Response> response, Long... stationIds) {
+		List<Long> actualStationIds = response.jsonPath().getList("stations", StationResponse.class).stream()
+			.map(StationResponse::getId)
+			.collect(Collectors.toList());
+
+		// then
+		assertThat(actualStationIds).containsAll(Arrays.asList(stationIds));
+	}
+
+	private ExtractableResponse<Response> 지하철_노선의_지하철역_삭제_요청(Long lineId, Long stationId) {
+		// when
+		return RestAssured
+		        .given().log().all()
+		        .contentType(MediaType.APPLICATION_JSON_VALUE)
+		        .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+		        .then().log().all().extract();
 	}
 
 	private void 지하철_노선_구간_상행선_하행선_없음_오류(ExtractableResponse<Response> response) {

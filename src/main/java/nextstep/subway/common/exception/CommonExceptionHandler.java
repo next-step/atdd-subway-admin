@@ -33,4 +33,9 @@ public class CommonExceptionHandler {
 		return ResponseEntity.badRequest().body(new ErrorResponse(exception));
 	}
 
+	@ExceptionHandler(OneSectionCannotRemoveException.class)
+	protected ResponseEntity oneSectionCannotRemoveException(OneSectionCannotRemoveException exception) {
+		return ResponseEntity.badRequest().body(new ErrorResponse(exception));
+	}
+
 }

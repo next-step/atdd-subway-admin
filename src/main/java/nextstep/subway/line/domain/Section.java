@@ -32,9 +32,6 @@ public class Section extends BaseEntity {
 	private Long downStationId;
 	private int distance;
 
-	protected Section() {
-	}
-
 	public Section(Long upStationId, Long downStationId, int distance) {
 		this.upStationId = upStationId;
 		this.downStationId = downStationId;
@@ -43,6 +40,40 @@ public class Section extends BaseEntity {
 
 	public List<Long> getStationsIds() {
 		return Arrays.asList(upStationId, downStationId);
+	}
+
+	public void changeUpStation(Long id, int distance) {
+		this.upStationId = id;
+		this.distance = distance;
+	}
+
+	public void changeDownStation(Long id, int distance) {
+		this.downStationId = id;
+		this.distance = distance;
+	}
+
+	public void changeUpStationWithDistance(Section originSection, Section section) {
+		this.upStationId = originSection.getDownStationId();
+		this.distance = originSection.getDistance() - section.getDistance();
+	}
+
+	public boolean isDistanceGreaterThan(int distance) {
+		return this.distance > distance;
+	}
+
+	public boolean isInValidDistance(int distance) {
+		return (this.getDistance() == distance || this.getDistance() < distance);
+	}
+
+	public boolean isDuplicateAllStation(Long upStationId, Long downStationId) {
+		return (this.upStationId == upStationId && this.downStationId == downStationId);
+	}
+
+	public boolean isNotExistAllStation(Long upStationId, Long downStationId) {
+		return (!getStationsIds().contains(upStationId) && !getStationsIds().contains(downStationId));
+	}
+
+	protected Section() {
 	}
 
 	public Long getId() {
@@ -82,36 +113,4 @@ public class Section extends BaseEntity {
 		return Objects.hash(getId(), getLine(), getUpStationId(), getDownStationId(), getDistance());
 	}
 
-	@Override
-	public String toString() {
-		return "Section{" +
-			"id=" + id +
-			", line=" + line +
-			", upStationId=" + upStationId +
-			", downStationId=" + downStationId +
-			", distance=" + distance +
-			'}';
-	}
-
-	public void changeUpStation(Long id, int distance) {
-		this.upStationId = id;
-		this.distance = distance;
-	}
-
-	public void changeDownStation(Long id, int distance) {
-		this.downStationId = id;
-		this.distance = distance;
-	}
-
-	public boolean isInValidDistance(int distance) {
-		return (this.getDistance() == distance || this.getDistance() < distance);
-	}
-
-	public boolean isDuplicateAllStation(Long upStationId, Long downStationId) {
-		return (this.upStationId == upStationId && this.downStationId == downStationId);
-	}
-
-	public boolean isNotExistAllStation(Long upStationId, Long downStationId) {
-		return (!getStationsIds().contains(upStationId) && !getStationsIds().contains(downStationId));
-	}
 }
