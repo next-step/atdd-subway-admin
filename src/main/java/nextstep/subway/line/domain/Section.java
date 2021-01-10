@@ -63,12 +63,12 @@ public class Section extends BaseEntity {
         this.distance = new Distance(this.distance.minus(section.distance));
     }
 
-    public boolean hasUpSection(Station upStation) {
-        return this.downStation == upStation;
+    public boolean hasUpSection(Station station) {
+        return this.downStation == station;
     }
 
-    public boolean hasDownSection(Station downStation) {
-        return this.upStation == downStation;
+    public boolean hasDownSection(Station station) {
+        return this.upStation == station;
     }
 
     public Long getId() {
