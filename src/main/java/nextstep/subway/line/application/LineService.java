@@ -54,7 +54,8 @@ public class LineService {
         line.update(lineRequest.toLine());
     }
 
-    private Line find(long id) {
+    @Transactional(readOnly = true)
+    public Line find(long id) {
         return lineRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
     }

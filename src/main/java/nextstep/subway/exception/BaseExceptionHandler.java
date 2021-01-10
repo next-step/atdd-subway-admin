@@ -20,4 +20,9 @@ public class BaseExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity handleEntityNotFoundException(EntityNotFoundException e) {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleEntityNotFoundException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }
