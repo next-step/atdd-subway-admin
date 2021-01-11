@@ -7,11 +7,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -57,7 +58,13 @@ public class Section {
 		return distance;
 	}
 
-	public void updateUpStation(Station upStation) {
-		this.upStation = upStation;
+	public void updateUpStation(Station station, int distance) {
+		this.upStation = station;
+		this.distance -= distance;
+	}
+
+	public void updateDownStation(Station station, int distance) {
+		this.downStation = station;
+		this.distance -= distance;
 	}
 }

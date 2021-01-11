@@ -22,7 +22,11 @@ public class Sections {
 		sections.stream()
 			.filter(s -> s.getUpStation().getId() == section.getUpStation().getId())
 			.findFirst()
-			.ifPresent(s -> s.updateUpStation(s.getUpStation()));
+			.ifPresent(s -> s.updateUpStation(section.getDownStation(), section.getDistance()));
+		sections.stream()
+			.filter(s -> s.getDownStation().getId() == section.getDownStation().getId())
+			.findFirst()
+			.ifPresent(s -> s.updateDownStation(section.getUpStation(), section.getDistance()));
 		sections.add(section);
 	}
 }
