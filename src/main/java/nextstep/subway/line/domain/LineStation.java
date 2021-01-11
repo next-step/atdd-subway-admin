@@ -53,8 +53,16 @@ public class LineStation {
 		return downStation;
 	}
 
+	public void changeDownStation(Station downStation) {
+		this.downStation = downStation;
+	}
+
 	public int getDistance() {
 		return distance;
+	}
+
+	public void changeDistance(int distance) {
+		this.distance = distance;
 	}
 
 	@Override
