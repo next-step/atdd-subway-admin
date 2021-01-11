@@ -41,8 +41,14 @@ public class SectionService {
 		List<Long> stationIds = stations.stream()
 			.map(s -> s.getId())
 			.collect(Collectors.toList());
+		if (stationIds.contains(sectionRequest.getUpStationId()) && stationIds.contains(sectionRequest.getDownStationId())) {
+			throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+		}
 		if (!stationIds.contains(sectionRequest.getUpStationId()) || !stationIds.contains(sectionRequest.getDownStationId())) {
 			throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않습니다.");
+		}
+		if (!stationIds.contains(sectionRequest.getUpStationId()) && !stationIds.contains(sectionRequest.getDownStationId())) {
+			throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
 		}
 	}
 }
