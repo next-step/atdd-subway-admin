@@ -2,14 +2,10 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -22,7 +18,7 @@ public class Sections {
             return;
         }
 
-        validateAdd(section);
+        validateSections(section);
         replaceDownStation(section);
         replaceUpStation(section);
         sections.add(section);
@@ -42,7 +38,7 @@ public class Sections {
                 .ifPresent(existSection -> existSection.replaceDownStation(section));
     }
 
-    private void validateAdd(Section section) {
+    private void validateSections(Section section) {
         if (isNotContainUpStationAndDownStation(section, getStations())) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
         }
@@ -57,35 +53,35 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        Optional<Section> section = sections.stream()
-                .findFirst();
+        Section section = sections.stream()
+                .findFirst().orElseThrow(EntityNotFoundException::new);
 
         List<Station> result = findDownToUpStation(section);
         result.addAll(findUpToDownStation(section));
         return result;
     }
 
-    private List<Station> findUpToDownStation(Optional<Section> section) {
+    private List<Station> findUpToDownStation(Section section) {
         List<Station> result = new ArrayList<>();
-        while (section.isPresent()) {
-            Station downStation = section.get().getDownStation();
+        while (section != null) {
+            Station downStation = section.getDownStation();
             result.add(downStation);
             section = sections.stream()
                     .filter(existSection -> existSection.getUpStation() == downStation)
-                    .findFirst();
+                    .findFirst().orElse(null);
         }
 
         return result;
     }
 
-    private List<Station> findDownToUpStation(Optional<Section> section) {
+    private List<Station> findDownToUpStation(Section section) {
         List<Station> result = new ArrayList<>();
-        while (section.isPresent()) {
-            Station upStation = section.get().getUpStation();
+        while (section != null) {
+            Station upStation = section.getUpStation();
             result.add(upStation);
             section = sections.stream()
                     .filter(existSection -> existSection.getDownStation() == upStation)
-                    .findFirst();
+                    .findFirst().orElse(null);
         }
         Collections.reverse(result);
         return result;

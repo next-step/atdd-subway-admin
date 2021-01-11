@@ -121,7 +121,7 @@ class LineRepositoryTest {
                 .distance(50)
                 .build();
 
-        line.add(section);
+        line.addSection(section);
 
         return lineRepository.save(line);
     }
@@ -139,7 +139,7 @@ class LineRepositoryTest {
                 .distance(42)
                 .build();
 
-        line.add(section);
+        line.addSection(section);
         lineRepository.flush();
 
         assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(A역, B역, C역));
@@ -158,7 +158,7 @@ class LineRepositoryTest {
                 .distance(42)
                 .build();
 
-        line.add(section);
+        line.addSection(section);
         lineRepository.flush();
 
         assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(B역, A역, C역));
@@ -177,7 +177,7 @@ class LineRepositoryTest {
                 .distance(42)
                 .build();
 
-        line.add(section);
+        line.addSection(section);
         lineRepository.flush();
 
         assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(A역, C역, B역));
@@ -197,7 +197,7 @@ class LineRepositoryTest {
                 .build();
 
         assertThatThrownBy(() -> {
-            line.add(section);
+            line.addSection(section);
         }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("짧아야합니다.");
     }
 
@@ -235,7 +235,7 @@ class LineRepositoryTest {
 
 
         assertThatThrownBy(() -> {
-            line.add(section);
+            line.addSection(section);
         }).isInstanceOf(IllegalArgumentException.class);
     }
 

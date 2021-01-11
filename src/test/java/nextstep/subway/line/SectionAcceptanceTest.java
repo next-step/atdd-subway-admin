@@ -9,16 +9,22 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @DisplayName("지하철 노션 구간 관련 기능 인수테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
     private static final String ADD_SECTION_URL_FORMAT = "/lines/%d/sections";
+    private static final String SHOW_LINE_URL_FORMAT = "/lines/%d";
 
     private StationResponse A역;
     private StationResponse B역;
@@ -32,7 +38,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         B역 = 지하철역_등록되어_있음("B역");
         C역 = 지하철역_등록되어_있음("C역");
         LineRequest lineRequest = new LineRequest("신분당선", "br-red-600", A역.getId(), C역.getId(), 10);
-        lineResponse =  지하철_노선_등록되어_있음(lineRequest);
+        lineResponse = 지하철_노선_등록되어_있음(lineRequest);
     }
 
     private StationResponse 지하철역_등록되어_있음(String name) {
@@ -43,13 +49,34 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return LineAcceptanceTest.지하철노선_생성_요청(lineRequest).as(LineResponse.class);
     }
 
-    @DisplayName("[노선에 구간을 등록] 역 사이에 새로운 역을 등록")
+    @DisplayName("[노선에 구간을 등록] 기존 상행역 기준으로 역 사이에 새로운 역을 등록")
     @Test
     void addSection() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(new SectionRequest(A역.getId(), B역.getId(), 8));
         // then
         지하철_노선에_지하철역_응답됨(response, HttpStatus.CREATED);
+        지하철_노선_전체_구간_검증됨(Arrays.asList(A역.getId(), B역.getId(), C역.getId()));
+    }
+
+    private void 지하철_노선_전체_구간_검증됨(List<Long> expectedIds) {
+        String url = String.format(SHOW_LINE_URL_FORMAT, lineResponse.getId());
+        ExtractableResponse<Response> response = LineAcceptanceTest.지하철노선_조회_요청(url);
+        LineResponse line = response.body().as(LineResponse.class);
+        List<Long> actualIds = line.getStationsResponses().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(actualIds).containsAll(expectedIds);
+    }
+
+    @DisplayName("[노선에 구간을 등록] 기존 하행역 기준으로 역 사이에 새로운 역을 등록")
+    @Test
+    void addSection1() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(new SectionRequest(B역.getId(), C역.getId(), 8));
+        // then
+        지하철_노선에_지하철역_응답됨(response, HttpStatus.CREATED);
+        지하철_노선_전체_구간_검증됨(Arrays.asList(A역.getId(), B역.getId(), C역.getId()));
     }
 
     @DisplayName("[노선에 구간을 등록] 새로운 상행 종점")
@@ -59,15 +86,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(new SectionRequest(B역.getId(), A역.getId(), 8));
         // then
         지하철_노선에_지하철역_응답됨(response, HttpStatus.CREATED);
+        지하철_노선_전체_구간_검증됨(Arrays.asList(B역.getId(), A역.getId(), C역.getId()));
     }
 
-    @DisplayName("[노선에 구간을 등록] 새로운 하행 종")
+    @DisplayName("[노선에 구간을 등록] 새로운 하행 종점")
     @Test
     void addSection3() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(new SectionRequest(C역.getId(), B역.getId(), 8));
         // then
         지하철_노선에_지하철역_응답됨(response, HttpStatus.CREATED);
+        지하철_노선_전체_구간_검증됨(Arrays.asList(A역.getId(), C역.getId(), B역.getId()));
     }
 
     @DisplayName("[노선에 구간을 등록 예외] 기존역 사이 거리보다 크거나 같으면 등록 불가")
@@ -113,6 +142,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선에_지하철역_응답됨(ExtractableResponse<Response> response, HttpStatus badRequest) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(badRequest.value());
+        assertThat(response.statusCode()).isEqualTo(badRequest.value());
     }
 }

@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.application.SectionService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.Test;
@@ -24,12 +25,15 @@ class LineControllerTest {
     @Mock
     private LineService lineService;
 
+    @Mock
+    private SectionService sectionService;
+
     @Test
     void createLineWithBadRequest() {
         // given
         LineResponse response = new LineResponse(1L, "신분당선", "red", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>());
         when(lineService.save(any())).thenReturn(response);
-        LineController controller = new LineController(lineService);
+        LineController controller = new LineController(lineService, sectionService);
 
         // when
         ResponseEntity responseEntity = controller.createLine(new LineRequest("신분당선", "red", 1L, 2L, 10));

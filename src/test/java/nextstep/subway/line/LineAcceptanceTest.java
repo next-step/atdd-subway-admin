@@ -81,7 +81,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response).isNotNull();
     }
 
-    private ExtractableResponse<Response> 지하철노선_조회_요청(String url) {
+    public static ExtractableResponse<Response> 지하철노선_조회_요청(String url) {
         return RestAssured
                 .given().log().all()
                 .when().get(url)

@@ -15,15 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SectionService {
     private final SectionRepository sectionRepository;
+    private final LineService lineService;
+    private final StationService stationService;
 
     @Autowired
-    private LineService lineService;
-
-    @Autowired
-    private StationService stationService;
-
-    public SectionService(SectionRepository sectionRepository) {
+    public SectionService(SectionRepository sectionRepository, LineService lineService, StationService stationService) {
         this.sectionRepository = sectionRepository;
+        this.lineService = lineService;
+        this.stationService = stationService;
     }
 
 
@@ -31,7 +30,7 @@ public class SectionService {
         Line line = lineService.find(lineId);
         Station upStation = stationService.findStation(sectionRequest.getUpStationId());
         Station downStation = stationService.findStation(sectionRequest.getDownStationId());
-        line.add(toSection(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(toSection(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     private Section toSection(Line line, Station upStaion, Station downStation, int distance) {
