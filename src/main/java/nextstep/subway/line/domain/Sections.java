@@ -39,7 +39,7 @@ public class Sections {
     }
 
     public void deleteStation(Station station) {
-        if (isDeletable()) {
+        if (hasOneOrEmptySection()) {
             throw new CustomException("구간이 1개이면 역을 삭제할 수 없습니다.");
         }
         Optional<Section> upSection = findUpSectionBy(station);
@@ -51,7 +51,7 @@ public class Sections {
         downSection.ifPresent(this::remove);
     }
 
-    private boolean isDeletable() {
+    private boolean hasOneOrEmptySection() {
         return sections.size() <= 1;
     }
 
