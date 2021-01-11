@@ -73,7 +73,7 @@ public class Sections {
 		this.sections.stream()
 				.filter(oldSection -> oldSection.isUpStationInSection())
 				.findFirst()
-				.ifPresent(section -> section.updateUpStation(newSection.getUpStation(), newSection.getDistanceMeter(), false));
+				.ifPresent(section -> section.updateUpStationWhenAddSection(newSection.getUpStation(), newSection.getDistanceMeter()));
 
 		this.sections.stream()
 				.filter(oldSection -> oldSection.isDownStationInSection(newSection.getDownStation()))
@@ -90,7 +90,7 @@ public class Sections {
 		this.sections.stream()
 				.filter(oldSection -> oldSection.isUpStationInSection(newSection.getUpStation()))
 				.findFirst()
-				.ifPresent(section -> section.updateUpStation(newSection.getDownStation(), newSection.getDistanceMeter(), false));
+				.ifPresent(section -> section.updateUpStationWhenAddSection(newSection.getDownStation(), newSection.getDistanceMeter()));
 	}
 
 	private void addNewDownStation(Section newSection, Line line) {
@@ -107,7 +107,7 @@ public class Sections {
 		this.sections.stream()
 				.filter(oldSection -> oldSection.isDownStationInSection())
 				.findFirst()
-				.ifPresent(section -> section.updateUpStation(newSection.getUpStation(), newSection.getDistanceMeter(), false));
+				.ifPresent(section -> section.updateUpStationWhenAddSection(newSection.getUpStation(), newSection.getDistanceMeter()));
 
 		this.sections.stream()
 				.filter(oldSection -> oldSection.isUpStationInSection())

@@ -1,6 +1,9 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.exception.MinSectionDeleteException;
+import nextstep.subway.common.exception.NotFoundSectionException;
+import nextstep.subway.common.exception.NotIncludeStationInSection;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -74,34 +77,56 @@ public class Line extends BaseEntity {
 	}
 
 	public void removeTerminal(Section removedSection) {
-		boolean isUpTerminal = isUpTerminal(removedSection);
+		boolean isUpTerminal = removedSection.isUpTerminal();
 		Section updatedSection = getUpdateSection(removedSection, isUpTerminal);
 		updatedSection.updateToTerminal(isUpTerminal);
 		this.getLineSections().remove(removedSection);
 	}
 
-	private boolean isUpTerminal(Section removedSection) {
-		return Objects.isNull(removedSection.getUpStation());
-	}
-
 	private Section getUpdateSection(Section removedSection, boolean isUpTerminal) {
 		Station linkedStation =	removedSection.getUpdateSection(isUpTerminal);
 		Optional<Section> stationOptional = this.getLineSections().stream().filter(section -> section.getMainStation().getId() == linkedStation.getId()).findAny();
-		return stationOptional.orElseThrow(() -> new IllegalArgumentException("해당 구간이 없습니다 id=" + linkedStation.getId()));
+		return stationOptional.orElseThrow(() -> new NotFoundSectionException(linkedStation.getId()));
 	}
 
 	public void removeBetweenSection(Section removedSection) {
 		Section upSection = this.getLineSections().stream()
 				.filter(section -> section.getMainStation().getId() == removedSection.getUpStation().getId())
 				.findAny()
-				.orElseThrow(() -> new IllegalArgumentException("해당 구간이 없습니다 id=" + removedSection.getUpStation().getId()));
+				.orElseThrow(() -> new NotFoundSectionException(removedSection.getUpStation().getId()));
 		Section downSection = this.getLineSections().stream()
 				.filter(section -> section.getMainStation().getId() == removedSection.getDownStation().getId())
 				.findAny()
-				.orElseThrow(() -> new IllegalArgumentException("해당 구간이 없습니다 id=" + removedSection.getDownStation().getId()));
+				.orElseThrow(() -> new NotFoundSectionException(removedSection.getDownStation().getId()));
 
 		upSection.updateDownStation(removedSection.getDownStation());
-		downSection.updateUpStation(removedSection.getUpStation(), removedSection.getDistanceMeter(), true);
+		downSection.updateUpStationWhenDeleteSection(removedSection.getUpStation(), removedSection.getDistanceMeter());
 		this.getLineSections().remove(removedSection);
+	}
+
+	public void removeSectionByStationId(Long stationId) {
+		Optional<Section> sectionOptional = this.getLineSections().stream().filter
+				(sec -> (sec.getUpStation() == null && sec.getMainStation().getId() == stationId) ||
+				(sec.getDownStation() == null && sec.getMainStation().getId() == stationId) || (sec.getMainStation().getId() == stationId))
+				.findAny();
+
+		validate(sectionOptional);
+
+		if (sectionOptional.get().isTerminal()) {
+			this.removeTerminal(sectionOptional.get());
+			return;
+		}
+		//중간역이 삭제되는 경우
+		this.removeBetweenSection(sectionOptional.get());
+	}
+
+	private void validate(Optional<Section> section) {
+		if (!section.isPresent()) {
+			throw new NotIncludeStationInSection();
+		}
+
+		if (this.isImpossibleRemoveSection()) {
+			throw new MinSectionDeleteException();
+		}
 	}
 }

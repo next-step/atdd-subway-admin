@@ -108,6 +108,16 @@ public class Section extends BaseEntity {
 		this.distanceMeter = isDeleted == true ? plusDistance(newDistanceMeter) : minusDistance(newDistanceMeter);
 	}
 
+	public void updateUpStationWhenAddSection(Station station, int newDistanceMeter) {
+		this.upStation = station;
+		this.distanceMeter = minusDistance(newDistanceMeter);
+	}
+
+	public void updateUpStationWhenDeleteSection(Station station, int newDistanceMeter) {
+		this.upStation = station;
+		this.distanceMeter = plusDistance(newDistanceMeter);
+	}
+
 	private int minusDistance(int newDistanceMeter) {
 		if (this.distanceMeter != 0 && this.distanceMeter <= newDistanceMeter) {
 			throw new DistanceException();
@@ -134,32 +144,6 @@ public class Section extends BaseEntity {
 		return Objects.isNull(this.upStation) || Objects.isNull(this.downStation);
 	}
 
-	public Station getNetTerminal() {
-		Station updateStation;
-		if(Objects.isNull(this.upStation)){
-			updateStation = this.downStation;
-
-		}
-		if(Objects.isNull(this.downStation)){
-			updateStation =  this.upStation;
-		}
-
-
-		return this.downStation;
-	}
-
-	public void removeTerminal() {
-		//상행 종점역이 삭제되는 경우
-		Station newTerminal = this.getNetTerminal();
-//		line.getLineSections().remove();
-
-
-
-		//하행 종점역이 삭제되는 경우
-
-
-	}
-
 	public void updateToTerminal(boolean upTerminal) {
 		if(upTerminal){
 			this.upStation = null;
@@ -174,5 +158,9 @@ public class Section extends BaseEntity {
 			return this.downStation;
 		}
 		return this.upStation;
+	}
+
+	public boolean isUpTerminal() {
+		return Objects.isNull(this.getUpStation());
 	}
 }

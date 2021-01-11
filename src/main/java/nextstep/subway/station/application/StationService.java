@@ -1,5 +1,6 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.common.exception.NotFoundStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
@@ -46,7 +47,7 @@ public class StationService {
 	}
 
 	public StationResponse findStationById(Long id) {
-		Station station = stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + id));
+		Station station = stationRepository.findById(id).orElseThrow(() -> new NotFoundStationException(id));
 		return StationResponse.of(station);
 	}
 
