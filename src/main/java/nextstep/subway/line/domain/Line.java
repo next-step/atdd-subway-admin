@@ -91,8 +91,14 @@ public class Line extends BaseEntity {
 	}
 
 	public void removeBetweenSection(Section removedSection) {
-		Section upSection = this.getLineSections().stream().filter(section -> section.getMainStation().getId() == removedSection.getUpStation().getId()).findAny().orElseThrow(() -> new IllegalArgumentException("해당 구간이 없습니다 id=" + removedSection.getUpStation().getId()));
-		Section downSection = this.getLineSections().stream().filter(section -> section.getMainStation().getId() == removedSection.getDownStation().getId()).findAny().orElseThrow(() -> new IllegalArgumentException("해당 구간이 없습니다 id=" + removedSection.getDownStation().getId()));
+		Section upSection = this.getLineSections().stream()
+				.filter(section -> section.getMainStation().getId() == removedSection.getUpStation().getId())
+				.findAny()
+				.orElseThrow(() -> new IllegalArgumentException("해당 구간이 없습니다 id=" + removedSection.getUpStation().getId()));
+		Section downSection = this.getLineSections().stream()
+				.filter(section -> section.getMainStation().getId() == removedSection.getDownStation().getId())
+				.findAny()
+				.orElseThrow(() -> new IllegalArgumentException("해당 구간이 없습니다 id=" + removedSection.getDownStation().getId()));
 
 		upSection.updateDownStation(removedSection.getDownStation());
 		downSection.updateUpStation(removedSection.getUpStation(), removedSection.getDistanceMeter(), true);
