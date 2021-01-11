@@ -53,22 +53,21 @@ public class Sections {
     public void deleteSection(Station station) {
         if (!containStation(station)) throw new StationNotFoundException(station.getId());
 
-        System.out.println(">>>>>> station" + station);
         Section upStationSection = getUpStationSection(station);
         Section downStationSection = getDownStationSection(station);
 
-        for (Section section : sections) {
-            if (section == upStationSection) {
-                System.out.println("upStationSection + " + upStationSection);
-                section.updateDistance(upStationSection.getDistance() + downStationSection.getDistance());
-                section.updateDownStation(downStationSection.getDownStation());
-                System.out.println("update =" + section);
-            }
-            if (section == downStationSection) {
-                System.out.println("downStationSection  + " + downStationSection);
-                sections.remove(section);
-            }
-        }
+        sections.stream()
+                .filter(section -> section == upStationSection)
+                .forEachOrdered(section -> {
+                    section.updateDistance(upStationSection.getDistance() + downStationSection.getDistance());
+                    section.updateDownStation(downStationSection.getDownStation());
+                });
+
+        Section deleteSection = sections.stream()
+                .filter(section -> section == downStationSection)
+                .findFirst().get();
+
+        sections.remove(deleteSection);
     }
 
     private Section getDownStationSection(Station station) {

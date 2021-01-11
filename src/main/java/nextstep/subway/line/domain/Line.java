@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
@@ -75,6 +74,9 @@ public class Line extends BaseEntity {
         this.sections.addSection(newSection);
     }
 
+    public void deleteSection(Station station) {
+        sections.deleteSection(station);
+    }
 
     private List<Station> getDownStations() {
         List<Station> downStations = sections.getSections().stream()
