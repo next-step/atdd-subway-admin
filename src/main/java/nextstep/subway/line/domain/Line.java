@@ -54,7 +54,10 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
+    public void addInitSection(Section section) {
+        sections.addInitSection(section);
+    }
+    public void addNewSection(Section section) {
+        sections.addNewSection(section);
     }
 }

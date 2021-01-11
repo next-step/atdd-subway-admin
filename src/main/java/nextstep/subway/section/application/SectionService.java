@@ -28,11 +28,20 @@ public class SectionService {
 
 	public void saveSection(Long lineId, SectionRequest sectionRequest) {
 		validateSection(sectionRequest);
-		Line line = lineRepository.findById(lineId)
+		Line line = getLine(lineId);
+ 		Station upStation = getStation(sectionRequest.getUpStationId());
+		Station downStation = getStation(sectionRequest.getDownStationId());
+		line.addNewSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+	}
+
+	private Line getLine(Long lineId) {
+		return lineRepository.findById(lineId)
 			.orElseThrow(() -> new IllegalArgumentException("아이디에 해당하는 데이터가 없습니다."));
- 		Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("아이디에 해당하는 데이터가 없습니다."));
-		Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("아이디에 해당하는 데이터가 없습니다."));
-		line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+	}
+
+	private Station getStation(Long stationId) {
+		return stationRepository.findById(stationId)
+			.orElseThrow(() -> new IllegalArgumentException("아이디에 해당하는 데이터가 없습니다."));
 	}
 
 	private void validateSection(SectionRequest sectionRequest) {
@@ -41,14 +50,8 @@ public class SectionService {
 		List<Long> stationIds = stations.stream()
 			.map(s -> s.getId())
 			.collect(Collectors.toList());
-		if (stationIds.contains(sectionRequest.getUpStationId()) && stationIds.contains(sectionRequest.getDownStationId())) {
-			throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
-		}
 		if (!stationIds.contains(sectionRequest.getUpStationId()) || !stationIds.contains(sectionRequest.getDownStationId())) {
-			throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않습니다.");
-		}
-		if (!stationIds.contains(sectionRequest.getUpStationId()) && !stationIds.contains(sectionRequest.getDownStationId())) {
-			throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
+			throw new IllegalArgumentException("등록되어 있지 않은 역입니다.");
 		}
 	}
 }
