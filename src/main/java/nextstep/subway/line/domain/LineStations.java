@@ -26,17 +26,10 @@ public class LineStations {
 		if (station == null || downStation == null) {
 			return;
 		}
-		LineStation upLineStation = new LineStation.Builder()
-			.line(line)
-			.station(station)
-			.downStation(downStation)
-			.distance(distance)
-			.build();
-		LineStation downLineStation = new LineStation.Builder()
-			.line(line)
-			.station(downStation)
-			.build();
-		addStation(upLineStation, downLineStation);
+		addStation(
+			LineStation.up(line, station, downStation, distance),
+			LineStation.down(line, downStation)
+		);
 	}
 
 	private void addStation(LineStation upLineStation, LineStation downLineStation) {

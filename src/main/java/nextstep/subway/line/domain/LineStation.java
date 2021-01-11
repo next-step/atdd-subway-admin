@@ -38,11 +38,24 @@ public class LineStation {
 		this.distance = builder.distance;
 	}
 
+	public static LineStation up(Line line, Station station, Station downStation, int distance) {
+		return new LineStation.Builder()
+			.line(line)
+			.station(station)
+			.downStation(downStation)
+			.distance(distance)
+			.build();
+	}
+
 	public static LineStation of(Line line, Station station) {
 		return new Builder()
 			.line(line)
 			.station(station)
 			.build();
+	}
+
+	public static LineStation down(Line line, Station station) {
+		return of(line, station);
 	}
 
 	public Station getStation() {
