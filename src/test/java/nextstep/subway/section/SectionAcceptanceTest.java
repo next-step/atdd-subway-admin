@@ -130,18 +130,54 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @Test
     void addSectionInTheMiddleOfException() {
+        params = new HashMap<>();
+        params.put("upStationId", Long.toString(교대역.getId()));
+        params.put("downStationId", Long.toString(강남역.getId()));
+        params.put("distance", Integer.toString(10));
 
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/" + line.getId() + "/sections")
+            .then().log().all()
+            .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
     void addSectionAlreadyExistException() {
+        params = new HashMap<>();
+        params.put("upStationId", Long.toString(교대역.getId()));
+        params.put("downStationId", Long.toString(삼성역.getId()));
+        params.put("distance", Integer.toString(10));
 
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/" + line.getId() + "/sections")
+            .then().log().all()
+            .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
     void addSectionNotIncludeException() {
+        params = new HashMap<>();
+        params.put("upStationId", Long.toString(강남역.getId()));
+        params.put("downStationId", Long.toString(선릉역.getId()));
+        params.put("distance", Integer.toString(2));
 
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/" + line.getId() + "/sections")
+            .then().log().all()
+            .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
