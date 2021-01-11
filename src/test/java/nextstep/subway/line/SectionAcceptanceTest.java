@@ -46,8 +46,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		HashMap<String, Object> createParams = new HashMap<>();
 		createParams.put("name", "신분당선");
 		createParams.put("color", "bg-red-600");
-		createParams.put("upStation", 양재역_ID);
-		createParams.put("downStation", 정자역_ID);
+		createParams.put("upStationId", 양재역_ID);
+		createParams.put("downStationId", 정자역_ID);
 		createParams.put("distance", 10);
 
 		신분당선_ID = LineAcceptanceTest.지하철노선_생성_요청(createParams).as(LineResponse.class).getId();
@@ -60,7 +60,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 양재역_ID, 판교역_ID, 5);
 
 		// then : 지하철_구간_등록됨
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	@DisplayName("역 사이에 새로운 역을 여러 개 등록한다")
@@ -72,8 +72,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then : 지하철_구간_등록됨 & 두번째도 등록됨
 		assertAll(
-			() -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-			() -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value())
+			() -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value())
 		);
 	}
 
@@ -127,7 +127,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then : 지하철_구간_등록됨 & 지하철_구간_등록_실패됨
 		assertAll(
-			() -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+			() -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
 		);
 	}
@@ -141,7 +141,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then : 지하철_구간_등록됨 & 지하철_구간_등록_실패됨
 		assertAll(
-			() -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+			() -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
 		);
 	}
@@ -153,7 +153,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 강남역_ID, 양재역_ID, 3);
 
 		// then : 지하철_구간_등록됨
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	@DisplayName("새로운 역을 하행 종점으로 등록한다.")
@@ -163,14 +163,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 정자역_ID, 광교역_ID, 4);
 
 		// then : 지하철_구간_등록됨
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	public static ExtractableResponse<Response> 지하철_구간_등록_요청(
 		long lineId, long upStationId, long downStationId, int distance) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("downStationId", upStationId);
-		params.put("upStationId", downStationId);
+		params.put("upStationId", upStationId);
+		params.put("downStationId", downStationId);
 		params.put("distance", distance);
 
 		return RestAssured
