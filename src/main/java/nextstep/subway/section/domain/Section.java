@@ -37,8 +37,19 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Section section) {
+        this.upStation = section.getUpStation();
+        this.downStation = section.getDownStation();
+        this.line = section.getLine();
+        this.distance = section.getDistance();
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public Line getLine() {
+        return line;
     }
 
     public Station getUpStation() {

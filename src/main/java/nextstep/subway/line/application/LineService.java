@@ -57,6 +57,12 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = getLindById(lineId);
+        Station station = getStationById(stationId);
+        line.deleteSection(station);
+    }
+
     public LineResponse addSections(Long id, SectionRequest sectionRequest) {
         Line line = getLindById(id);
         Station upStation = getStationById(sectionRequest.getUpStationId());
