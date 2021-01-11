@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.utils.LineRestAssuredUtils.지하철_노선_생성_요청;
+import static nextstep.subway.utils.LineRestAssuredUtils.지하철_노선_조회_요청;
 import static nextstep.subway.utils.SectionRestAssuredUtils.구간_등록_요청;
+import static nextstep.subway.utils.SectionRestAssuredUtils.구간_삭제_요청;
 import static nextstep.subway.utils.StationRestAssuredUtils.지하철_역_생성_요청;
 
 @DisplayName("노선 구간 관련 기능")
@@ -56,6 +58,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 구간_등록_요청(lineResponse.getId(), "3", "1", "3");
 
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        ExtractableResponse<Response> searchResponse = 지하철_노선_조회_요청(lineResponse.getId());
     }
 
     @Test
@@ -67,6 +70,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 구간_등록_요청(lineResponse.getId(), "2", "3", "3");
 
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        ExtractableResponse<Response> searchResponse = 지하철_노선_조회_요청(lineResponse.getId());
     }
 
     @Test
@@ -98,12 +102,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("구간 등록시, 이미 존재하는 구간이면 400 익셉션 발생")
     void addDuplicationSection() {
-        // when
         LineResponse lineResponse = 지하철_노선_생성_요청("2호선", "green", "1", "2", "10").as(LineResponse.class);
+
         ExtractableResponse<Response> response = 구간_등록_요청(lineResponse.getId(), "1", "2", "10");
 
-        // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("구간을 삭제한다 (서울대입구-사당역-잠실역)에서 사당역을 삭제하는 테스트")
+    void deleteSection() {
+        LineResponse lineResponse = 지하철_노선_생성_요청("2호선", "green","1","2","10").as(LineResponse.class);
+        지하철_역_생성_요청("서울대입구역");
+        구간_등록_요청(lineResponse.getId(), "3", "1", "3");
+
+
+        ExtractableResponse<Response> searchResponse = 지하철_노선_조회_요청(lineResponse.getId());
     }
 
 

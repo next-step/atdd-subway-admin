@@ -3,6 +3,8 @@ package nextstep.subway.section.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.advice.exception.SectionBadRequestException;
+import nextstep.subway.advice.exception.SectionNotFoundException;
+import nextstep.subway.advice.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -10,29 +12,19 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<Section> sections;
-
-    public Sections() {
-        sections = new ArrayList<>();
-    }
-
-    public Sections(Section section) {
-        sections = new ArrayList<>();
-        sections.add(section);
-    }
+    private List<Section> sections = new ArrayList<>();
 
     public List<Section> getSections() {
         return sections;
     }
 
-    public void addInitSection(Section newSection) {
+    public void createSection(Section newSection) {
         sections.add(newSection);
     }
 
@@ -53,22 +45,52 @@ public class Sections {
         }
     }
 
-    public List<Station> getDownStations() {
-        List<Station> downStations = sections.stream()
-                .map(section -> section.getDownStation())
-                .collect(Collectors.toList());
-        return downStations;
-    }
-
-    public List<Station> getUpStations() {
-        List<Station> upStations = sections.stream()
-                .map(section -> section.getUpStation())
-                .collect(Collectors.toList());
-        return upStations;
-    }
-
     public void updateSections(List<Section> newSections) {
-        this.sections = newSections;
+        this.sections.removeAll(this.sections);
+        this.sections.addAll(newSections);
+    }
+
+    public void deleteSection(Station station) {
+        if (!containStation(station)) throw new StationNotFoundException(station.getId());
+
+        System.out.println(">>>>>> station" + station);
+        Section upStationSection = getUpStationSection(station);
+        Section downStationSection = getDownStationSection(station);
+
+        for (Section section : sections) {
+            if (section == upStationSection) {
+                System.out.println("upStationSection + " + upStationSection);
+                section.updateDistance(upStationSection.getDistance() + downStationSection.getDistance());
+                section.updateDownStation(downStationSection.getDownStation());
+                System.out.println("update =" + section);
+            }
+            if (section == downStationSection) {
+                System.out.println("downStationSection  + " + downStationSection);
+                sections.remove(section);
+            }
+        }
+    }
+
+    private Section getDownStationSection(Station station) {
+        Section downStationSection = sections.stream()
+                .filter(section -> section.getUpStation() == station)
+                .findFirst().orElseThrow(() -> new SectionNotFoundException(station));
+        return downStationSection;
+    }
+
+    private Section getUpStationSection(Station station) {
+        Section upStationSection = sections.stream()
+                .filter(section -> section.getDownStation() == station)
+                .findFirst().orElseThrow(() -> new SectionNotFoundException(station));
+
+
+        return upStationSection;
+    }
+
+    private boolean containStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.getDownStation() == station
+                        || section.getUpStation() == station);
     }
 
     private boolean isUpStation(Section newSection) {
@@ -124,5 +146,6 @@ public class Sections {
         }
         throw new SectionBadRequestException(section);
     }
+
 
 }

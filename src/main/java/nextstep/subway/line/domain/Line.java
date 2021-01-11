@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
@@ -9,6 +10,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -22,7 +24,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections;
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -30,7 +32,6 @@ public class Line extends BaseEntity {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        sections = new Sections();
     }
 
     public Long getId() {
@@ -50,15 +51,15 @@ public class Line extends BaseEntity {
     }
 
     public void sortSections() {
-        List<Station> upStations = sections.getUpStations();
-        List<Station> downStations = sections.getDownStations();
+        List<Station> upStations = getUpStations();
+        List<Station> downStations = getDownStations();
 
         Station upStation = upStations.stream()
                 .filter(station -> !downStations.contains(station))
                 .findFirst().get();
 
         List<Section> newSections = addNewSections(upStation);
-        sections.updateSections(newSections);
+        updateSections(newSections);
     }
 
     public void updateLine(String name, String color) {
@@ -67,11 +68,26 @@ public class Line extends BaseEntity {
     }
 
     public void createSection(Section section) {
-        sections.addInitSection(section);
+        this.sections.createSection(section);
     }
 
-    public void addSection(Section section) {
-        sections.addSection(section);
+    public void addSection(Section newSection) {
+        this.sections.addSection(newSection);
+    }
+
+
+    private List<Station> getDownStations() {
+        List<Station> downStations = sections.getSections().stream()
+                .map(section -> section.getDownStation())
+                .collect(Collectors.toList());
+        return downStations;
+    }
+
+    private List<Station> getUpStations() {
+        List<Station> upStations = sections.getSections().stream()
+                .map(section -> section.getUpStation())
+                .collect(Collectors.toList());
+        return upStations;
     }
 
     private List<Section> addNewSections(Station upStation) {
@@ -80,22 +96,27 @@ public class Line extends BaseEntity {
                 .filter(section -> section.getUpStation() == upStation)
                 .findFirst().get();
 
-        newSections.add(firtSection);
+        newSections.add(new Section(firtSection));
 
         Station downStation = firtSection.getDownStation();
+        int size = sections.getSections().size();
 
-        while (!(sections.getSections().size() == newSections.size())) {
+        while (newSections.size() != size) {
             Station finalDownStation = downStation;
             Optional<Section> optionalSection = sections.getSections().stream()
                     .filter(section -> section.getUpStation() == finalDownStation)
                     .findFirst();
 
             if (optionalSection.isPresent()) {
-                newSections.add(optionalSection.get());
+                newSections.add(new Section(optionalSection.get()));
                 downStation = optionalSection.get().getUpStation();
             }
         }
         return newSections;
+    }
+
+    private void updateSections(List<Section> newSections) {
+        this.sections.updateSections(newSections);
     }
 
     @Override
