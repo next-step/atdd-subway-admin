@@ -17,21 +17,25 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
-    @Autowired
-    private LineRepository lineRepository;
-    @Autowired
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
+    private final StationRepository stationRepository;
+
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        Station station1 = stationRepository.findById(persistLine.getUpStationId()).orElseThrow(() -> new IllegalArgumentException());
-        Station station2 = stationRepository.findById(persistLine.getDownStationId()).orElseThrow(() -> new IllegalArgumentException());
-        persistLine.addStation(station1);
-        persistLine.addStation(station2);
+        if (!persistLine.getUpStationId().equals(null)) {
+            Station upStation = stationRepository.findById(persistLine.getUpStationId()).orElseThrow(() -> new IllegalArgumentException());
+            persistLine.addStation(upStation);
+        }
+        if (!persistLine.getDownStationId().equals(null)) {
+            Station downStation = stationRepository.findById(persistLine.getDownStationId()).orElseThrow(() -> new IllegalArgumentException());
+            persistLine.addStation(downStation);
+        }
         return LineResponse.of(lineRepository.save(persistLine));
     }
 

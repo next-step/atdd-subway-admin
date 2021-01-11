@@ -21,11 +21,18 @@ public class Line extends BaseEntity {
 
     private Long downStationId;
 
+    private List<Section> sections;
+
     @OneToMany
     List<Station> stations = new ArrayList<>();
 
 
     public Line() {
+    }
+
+    public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public Line(String name, String color, Long upStationId, Long downStationId) {
