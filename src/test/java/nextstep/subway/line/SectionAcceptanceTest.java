@@ -17,6 +17,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -57,10 +58,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSection_happyPath() {
 		// when : 지하철_구간_등록_요청
-		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 양재역_ID, 판교역_ID, 5);
+		ExtractableResponse<Response> response = 지하철_구간_등록_요청(신분당선_ID, 양재역_ID, 판교역_ID, 5);
 
 		// then : 지하철_구간_등록됨
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response.as(SectionResponse.class).getAddedStationId()).isEqualTo(판교역_ID)
+		);
 	}
 
 	@DisplayName("역 사이에 새로운 역을 여러 개 등록한다")
@@ -73,7 +77,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// then : 지하철_구간_등록됨 & 두번째도 등록됨
 		assertAll(
 			() -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.OK.value()),
-			() -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value())
+			() -> assertThat(response1.as(SectionResponse.class).getAddedStationId()).isEqualTo(청계산입구역_ID),
+			() -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response2.as(SectionResponse.class).getAddedStationId()).isEqualTo(판교역_ID)
 		);
 	}
 
@@ -128,6 +134,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// then : 지하철_구간_등록됨 & 지하철_구간_등록_실패됨
 		assertAll(
 			() -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response1.as(SectionResponse.class).getAddedStationId()).isEqualTo(청계산입구역_ID),
 			() -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
 		);
 	}
@@ -142,6 +149,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// then : 지하철_구간_등록됨 & 지하철_구간_등록_실패됨
 		assertAll(
 			() -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response1.as(SectionResponse.class).getAddedStationId()).isEqualTo(청계산입구역_ID),
 			() -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
 		);
 	}
@@ -153,7 +161,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 강남역_ID, 양재역_ID, 3);
 
 		// then : 지하철_구간_등록됨
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response.as(SectionResponse.class).getAddedStationId()).isEqualTo(강남역_ID)
+		);
 	}
 
 	@DisplayName("새로운 역을 하행 종점으로 등록한다.")
@@ -163,7 +174,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse response = 지하철_구간_등록_요청(신분당선_ID, 정자역_ID, 광교역_ID, 4);
 
 		// then : 지하철_구간_등록됨
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response.as(SectionResponse.class).getAddedStationId()).isEqualTo(광교역_ID)
+		);
 	}
 
 	public static ExtractableResponse<Response> 지하철_구간_등록_요청(

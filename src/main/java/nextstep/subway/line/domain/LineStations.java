@@ -22,29 +22,24 @@ public class LineStations {
 			.collect(Collectors.toList());
 	}
 
-	public void addStation(Line line, Station station, Station downStation, int distance) {
-		if (station == null || downStation == null) {
-			return;
-		}
-		addStation(
+	public long addStation(Line line, Station station, Station downStation, int distance) {
+		return addStation(
 			LineStation.up(line, station, downStation, distance),
 			LineStation.down(line, downStation)
 		);
 	}
 
-	private void addStation(LineStation upLineStation, LineStation downLineStation) {
+	private long addStation(LineStation upLineStation, LineStation downLineStation) {
 		checkValidation(upLineStation, downLineStation);
 		int upStationIndex = lineStations.indexOf(upLineStation);
 		int downStationIndex = lineStations.indexOf(downLineStation);
 		if (upStationIndex != -1 && lineStations.get(upStationIndex).getDownStation() != null) {
-			addBetweenTwoOnLeftSide(lineStations.get(upStationIndex), upLineStation, downLineStation);
-			return;
+			return addBetweenTwoOnLeftSide(lineStations.get(upStationIndex), upLineStation, downLineStation);
 		}
 		if (downStationIndex != -1 && lineStations.get(downStationIndex).getDownStation() == null) {
-			addBetweenTwoOnRightSide(upLineStation, downLineStation);
-			return;
+			return addBetweenTwoOnRightSide(upLineStation, downLineStation);
 		}
-		add(upLineStation, downLineStation);
+		return add(upLineStation, downLineStation);
 	}
 
 	private void checkValidation(LineStation upLineStation, LineStation downLineStation) {
@@ -61,7 +56,7 @@ public class LineStations {
 		}
 	}
 
-	private void addBetweenTwoOnRightSide(LineStation center, LineStation right) {
+	private long addBetweenTwoOnRightSide(LineStation center, LineStation right) {
 		LineStation left = searchUpLineStation(right);
 		if (left.getDistance() <= center.getDistance()) {
 			throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같을 수 없습니다.");
@@ -69,7 +64,7 @@ public class LineStations {
 		left.changeDownStation(center.getStation());
 		left.changeDistance(left.getDistance() - center.getDistance());
 		overwrite(left);
-		add(center, right);
+		return add(center, right);
 	}
 
 	private LineStation searchUpLineStation(LineStation downLineStation) {
@@ -79,34 +74,35 @@ public class LineStations {
 			.orElseThrow(() -> new RuntimeException("노선에 속해있지만 어느 구간에도 포함되어있지 않은 지하철역이 존재합니다."));
 	}
 
-	private void addBetweenTwoOnLeftSide(LineStation oldLeft, LineStation newLeft, LineStation center) {
+	private long addBetweenTwoOnLeftSide(LineStation oldLeft, LineStation newLeft, LineStation center) {
 		if (oldLeft.getDistance() <= newLeft.getDistance()) {
 			throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같을 수 없습니다.");
 		}
 		center.changeDownStation(oldLeft.getDownStation());
 		center.changeDistance(oldLeft.getDistance() - newLeft.getDistance());
-		add(newLeft, center);
+		return add(newLeft, center);
 	}
 
-	private void add(LineStation upLineStation, LineStation downLineStation) {
-		overwrite(upLineStation);
-		addIfNotExist(downLineStation);
+	private long add(LineStation upLineStation, LineStation downLineStation) {
+		return Math.max(overwrite(upLineStation), addIfNotExist(downLineStation));
 	}
 
-	private void overwrite(LineStation lineStation) {
+	private long overwrite(LineStation lineStation) {
 		int index = lineStations.indexOf(lineStation);
 		if (index == -1) {
 			lineStations.add(lineStation);
-			return;
+			return lineStation.getStationId();
 		}
 		lineStations.set(index, lineStation);
+		return 0;
 	}
 
-	private void addIfNotExist(LineStation lineStation) {
+	private long addIfNotExist(LineStation lineStation) {
 		if (lineStations.contains(lineStation)) {
-			return;
+			return 0L;
 		}
 		lineStations.add(lineStation);
+		return lineStation.getStationId();
 	}
 
 	public void removeStation(Line line, Station station) {

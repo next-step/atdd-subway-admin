@@ -14,6 +14,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -63,7 +64,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void saveSection(Long lineId, SectionRequest request) {
+    public SectionResponse saveSection(Long lineId, SectionRequest request) {
         Line line = lineRepository.findById(lineId)
             .orElseThrow(() -> new NoSuchElementException("주어진 id를 가지는 Line을 찾을 수 없습니다."));
         Map<Long, Station> stations = stationRepository
@@ -72,6 +73,6 @@ public class LineService {
         Station upStation = stations.get(request.getUpStationId());
         Station downStation = stations.get(request.getDownStationId());
 
-        line.addOrUpdateStation(upStation, downStation, request.getDistance());
+        return new SectionResponse(line.addOrUpdateStation(upStation, downStation, request.getDistance()));
     }
 }

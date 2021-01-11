@@ -58,8 +58,11 @@ public class Line extends BaseEntity {
 		return lineStations.getStations();
 	}
 
-	public void addOrUpdateStation(Station station, Station downStation, int distance) {
-		lineStations.addStation(this, station, downStation, distance);
+	public Long addOrUpdateStation(Station station, Station downStation, int distance) {
+		if (station == null || downStation == null) {
+			return null;
+		}
+		return lineStations.addStation(this, station, downStation, distance);
 	}
 
 	public int getDistance(Station station1, Station station2) {
