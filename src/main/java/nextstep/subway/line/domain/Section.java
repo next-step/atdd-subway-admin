@@ -64,11 +64,11 @@ public class Section extends BaseEntity {
     }
 
     public boolean hasUpSection(Station station) {
-        return this.downStation == station;
+        return this.downStation.equals(station);
     }
 
     public boolean hasDownSection(Station station) {
-        return this.upStation == station;
+        return this.upStation.equals(station);
     }
 
     public Section merge(Section section) {
