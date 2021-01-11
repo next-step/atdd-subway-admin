@@ -40,6 +40,10 @@ public class Line extends BaseEntity {
         sections.add(createSection(upStation, downStation, distance));
     }
 
+    public void deleteStation(Station station) {
+        sections.deleteStation(station);
+    }
+
     public Long getId() {
         return id;
     }
@@ -52,7 +56,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getUpToDownSortedStations() {
+    public List<Station> getStations() {
         return sections.getStations();
     }
 

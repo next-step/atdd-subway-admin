@@ -24,6 +24,7 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
+    @Embedded
     private Distance distance;
 
     protected Section() {
@@ -62,12 +63,20 @@ public class Section extends BaseEntity {
         this.distance = new Distance(this.distance.minus(section.distance));
     }
 
-    public boolean hasUpSection(Station upStation) {
-        return this.downStation == upStation;
+    public boolean hasUpSection(Station station) {
+        return this.downStation.equals(station);
     }
 
-    public boolean hasDownSection(Station downStation) {
-        return this.upStation == downStation;
+    public boolean hasDownSection(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public Section merge(Section section) {
+        return new Section(this.line, this.upStation, section.downStation, this.distance.plus(section.distance));
+    }
+
+    public long getDistance() {
+        return distance.getDistance();
     }
 
     public Long getId() {

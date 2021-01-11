@@ -12,6 +12,16 @@ public class SectionAcceptanceTestRequest {
         return 지하철_노선_구간_등록_요청(lineId, request);
     }
 
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_제외_요청(long lineId, long stationId) {
+        return RestAssured
+                .given().log().all()
+                .pathParam("lineId", lineId)
+                .pathParam("stationId", stationId)
+                .when().delete("/lines/{lineId}/sections?stationId={stationId}")
+                .then().log().all()
+                .extract();
+    }
+
     private static ExtractableResponse<Response> 지하철_노선_구간_등록_요청(long lineId, SectionRequest request) {
         return RestAssured
                 .given().log().all()

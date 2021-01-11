@@ -65,6 +65,10 @@ Backend 구동 -> Front 구동 -> Front 접근
 - 구간 등록 예외 케이스 인수 테스트 작성
 - 구간 등록 예외 케이스 처리 기능 구현
 
+### "Step 4"
+- 노선의 구간을 제거하는 기능을 구현하기
+- 구간 삭제 시 예외 케이스를 고려하기
+
 ## 🐞 Bug Report
 
 버그를 발견한다면, [Issues](https://github.com/next-step/atdd-subway-admin/issues) 에 등록해주세요 :)

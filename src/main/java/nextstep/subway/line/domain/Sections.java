@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.function.Predicate;
 
 @Embeddable
 public class Sections {
@@ -25,18 +26,6 @@ public class Sections {
         updateSection(section);
     }
 
-    public Optional<Section> findDownSectionBy(Station baseStation) {
-        return sections.stream()
-                .filter(it -> it.hasDownSection(baseStation))
-                .findFirst();
-    }
-
-    public Optional<Section> findUpSectionBy(Station baseStation) {
-        return sections.stream()
-                .filter(it -> it.hasUpSection(baseStation))
-                .findFirst();
-    }
-
     public List<Station> getStations() {
         Station station = findFirstUpStation();
         List<Station> result = new ArrayList<>(Collections.singletonList(station));
@@ -47,6 +36,41 @@ public class Sections {
             nextSection = findDownSectionBy(nextStation);
         }
         return result;
+    }
+
+    public void deleteStation(Station station) {
+        if (hasOneOrEmptySection()) {
+            throw new CustomException("구간이 1개이면 역을 삭제할 수 없습니다.");
+        }
+        Optional<Section> upSection = findUpSectionBy(station);
+        Optional<Section> downSection = findDownSectionBy(station);
+        if (upSection.isPresent() && downSection.isPresent()) {
+            sections.add(upSection.get().merge(downSection.get()));
+        }
+        upSection.ifPresent(this::remove);
+        downSection.ifPresent(this::remove);
+    }
+
+    private boolean hasOneOrEmptySection() {
+        return sections.size() <= 1;
+    }
+
+    private void remove(Section section) {
+        sections.remove(section);
+    }
+
+    private Optional<Section> findDownSectionBy(Station baseStation) {
+        return findSectionBy(s -> s.hasDownSection(baseStation));
+    }
+
+    private Optional<Section> findUpSectionBy(Station baseStation) {
+        return findSectionBy(s -> s.hasUpSection(baseStation));
+    }
+
+    private Optional<Section> findSectionBy(Predicate<Section> predicate) {
+        return sections.stream()
+                .filter(predicate)
+                .findFirst();
     }
 
     private Station findFirstUpStation() {
