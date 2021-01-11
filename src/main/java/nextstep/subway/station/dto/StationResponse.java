@@ -9,21 +9,22 @@ public class StationResponse {
     private String name;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private Long lineId;
+//    private Long lineId;
 
     public static StationResponse of(Station station) {
-        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate(), station.getLine().getId());
+//        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate(), station.getLine().getId());
+        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
     }
 
     public StationResponse() {
     }
 
-    public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate, Long lineId) {
+    public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.lineId = lineId;
+//        this.lineId = lineId;
     }
 
     public Long getId() {
@@ -42,7 +43,9 @@ public class StationResponse {
         return modifiedDate;
     }
 
+/*
     public Long getLineId() {
         return lineId;
     }
+*/
 }

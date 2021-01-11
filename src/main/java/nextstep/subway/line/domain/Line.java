@@ -17,15 +17,22 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String color;
 
-    @OneToMany(mappedBy = "line")
+    private Long upStationId;
+
+    private Long downStationId;
+
+    @OneToMany
     List<Station> stations = new ArrayList<>();
+
 
     public Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(String name, String color, Long upStationId, Long downStationId) {
         this.name = name;
         this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
     }
 
     public void update(Line line) {
@@ -41,7 +48,7 @@ public class Line extends BaseEntity {
 
     public void addStation(Station station) {
         stations.add(station);
-        station.setLine(this);
+        //station.setLine(this);
     }
 
     public Long getId() {
@@ -58,6 +65,14 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
     }
 }
 

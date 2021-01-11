@@ -4,6 +4,9 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +17,10 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
+    @Autowired
     private LineRepository lineRepository;
+    @Autowired
+    private StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
@@ -22,7 +28,11 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        Station station1 = stationRepository.findById(persistLine.getUpStationId()).orElseThrow(() -> new IllegalArgumentException());
+        Station station2 = stationRepository.findById(persistLine.getDownStationId()).orElseThrow(() -> new IllegalArgumentException());
+        persistLine.addStation(station1);
+        persistLine.addStation(station2);
+        return LineResponse.of(lineRepository.save(persistLine));
     }
 
     @Transactional(readOnly = true)

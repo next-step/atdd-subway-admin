@@ -157,8 +157,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선의 역 목록 조회")
     void selectLineGetStations() {
         //given
-        ExtractableResponse<Response> createResponse1 = CommonMethod.지하철_노선_생성_요청("2호선", "green darken-1");
-        CommonMethod.지하철역_생성_요청("강남역");
-        CommonMethod.지하철역_생성_요청("역삼역");
+        ExtractableResponse<Response> createResponse1 = CommonMethod.지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> createResponse2 = CommonMethod.지하철역_생성_요청("선릉역");
+
+        //when
+        //노선 요청
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "green darken-1");
+        params.put("upStationId", createResponse1.header("Location").split("/")[2]);
+        params.put("downStationId", createResponse2.header("Location").split("/")[2]);
+        params.put("distance", "10");
+
+        // when
+        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        //then
+        //노선 응답
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 }

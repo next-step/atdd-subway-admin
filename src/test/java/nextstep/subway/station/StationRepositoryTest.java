@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @DataJpaTest
 public class StationRepositoryTest {
     @Autowired
@@ -20,12 +22,12 @@ public class StationRepositoryTest {
     @Test
     @DisplayName("저장 조회")
     void saveSubwaysWithLine() {
-        final Line line = lineRepository.save(new Line("2호선", "green darken-1"));
+//        final Line line = lineRepository.save(new Line("2호선", "green darken-1"));
         final Station station1 = new Station("강남역");
-        station1.setLine(line);
+//        station1.setLine(line);
         stationRepository.save(station1);
         final Station station2 = new Station("역삼역");
-        station2.setLine(line);
+//        station2.setLine(line);
         stationRepository.save(station2);
 
     }

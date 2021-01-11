@@ -13,8 +13,10 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
+/*
     @ManyToOne
     private Line line;
+*/
 
     public Station() {
     }
@@ -22,11 +24,11 @@ public class Station extends BaseEntity {
     public Station(String name) {
         this.name = name;
     }
-
+/*
     public void setLine(Line line) {
         this.line = line;
     }
-
+*/
     public Long getId() {
         return id;
     }
@@ -34,8 +36,9 @@ public class Station extends BaseEntity {
     public String getName() {
         return name;
     }
-
+/*
     public Line getLine() {
         return line;
     }
+*/
 }
