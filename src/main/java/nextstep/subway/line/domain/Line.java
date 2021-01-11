@@ -21,7 +21,7 @@ public class Line extends BaseEntity {
 	private String name;
 	private String color;
 	@Embedded
-	private LineStations lineStations = new LineStations();
+	private Sections sections = new Sections();
 
 	protected Line() {
 	}
@@ -33,7 +33,9 @@ public class Line extends BaseEntity {
 
 	public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
 		Line line = new Line(name, color);
-		line.addOrUpdateStation(upStation, downStation, distance);
+		if(upStation != null && downStation != null) {
+			line.addSection(upStation, downStation, distance);
+		}
 		return line;
 	}
 
@@ -55,21 +57,10 @@ public class Line extends BaseEntity {
 	}
 
 	public List<Station> getStations() {
-		return lineStations.getStations();
+		return sections.getStations();
 	}
 
-	public Long addOrUpdateStation(Station station, Station downStation, int distance) {
-		if (station == null || downStation == null) {
-			return null;
-		}
-		return lineStations.addStation(this, station, downStation, distance);
-	}
-
-	public int getDistance(Station station1, Station station2) {
-		return lineStations.getDistance(station1, station2);
-	}
-
-	public void removeStation(Station station) {
-		lineStations.removeStation(this, station);
+	public long addSection(Station upStation, Station downStation, int distance) {
+		return sections.add(this, upStation, downStation, distance);
 	}
 }

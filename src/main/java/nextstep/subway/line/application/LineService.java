@@ -67,12 +67,14 @@ public class LineService {
     public SectionResponse saveSection(Long lineId, SectionRequest request) {
         Line line = lineRepository.findById(lineId)
             .orElseThrow(() -> new NoSuchElementException("주어진 id를 가지는 Line을 찾을 수 없습니다."));
+
         Map<Long, Station> stations = stationRepository
             .findAllByIdIn(request.getUpStationId(), request.getDownStationId())
             .collect(Collectors.toMap(Station::getId, Function.identity()));
+
         Station upStation = stations.get(request.getUpStationId());
         Station downStation = stations.get(request.getDownStationId());
 
-        return new SectionResponse(line.addOrUpdateStation(upStation, downStation, request.getDistance()));
+        return new SectionResponse(line.addSection(upStation, downStation, request.getDistance()));
     }
 }
