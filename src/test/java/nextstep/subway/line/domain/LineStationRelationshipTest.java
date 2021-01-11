@@ -116,7 +116,7 @@ class LineStationRelationshipTest {
 		assertThatThrownBy(() -> 이호선.addSection(강남역, 삼성역, 7))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
-	
+
 	@DisplayName("LineStation 저장 테스트 (예외 케이스 : 상행역과 하행역 둘 중 하나도 포함되어있지 않음)")
 	@Test
 	void saveLineStation_shouldException4() {
@@ -130,5 +130,4 @@ class LineStationRelationshipTest {
 		assertThatThrownBy(() -> 이호선.addSection(강남역, 강남역, 7))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
-
 }

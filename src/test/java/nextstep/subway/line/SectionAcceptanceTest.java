@@ -83,7 +83,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		);
 	}
 
-
 	@DisplayName("이미 등록된 구간을 등록한다.")
 	@Test
 	void addSection_exceptionCase1() {

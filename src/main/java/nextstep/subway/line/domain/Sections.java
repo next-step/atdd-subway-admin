@@ -27,15 +27,15 @@ public class Sections {
 		List<Station> stations = getStations();
 		throwExceptionIfNotValid(stations, upStation, downStation);
 		long addStationId = 0L;
-		if(stations.contains(upStation)) {
+		if (stations.contains(upStation)) {
 			addStationId = downStation.getId();
 			findByUpStation(upStation).ifPresent(section ->
-					section.update(downStation, section.getDownStation(), section.getDistance() - distance));
+				section.update(downStation, section.getDownStation(), section.getDistance() - distance));
 		}
-		if(stations.contains(downStation)) {
+		if (stations.contains(downStation)) {
 			addStationId = upStation.getId();
 			findByDownStation(downStation).ifPresent(section ->
-					section.update(section.getUpStation(), upStation, section.getDistance() - distance));
+				section.update(section.getUpStation(), upStation, section.getDistance() - distance));
 		}
 		sections.add(Section.of(line, upStation, downStation, distance));
 		return addStationId;

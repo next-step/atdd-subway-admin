@@ -63,11 +63,11 @@ class LineServiceWithStationTest {
 		List<LineResponse> lineResponses = lineService.findAllLines();
 		assertThat(lineResponses).map(LineResponse::getStations)
 			.anySatisfy(stationResponses -> assertThat(stationResponses)
-													.map(StationResponse::getName)
-													.contains("강남역", "삼성역"))
+				.map(StationResponse::getName)
+				.contains("강남역", "삼성역"))
 			.anySatisfy(stationResponses -> assertThat(stationResponses)
-													.map(StationResponse::getName)
-													.contains("천호역", "군자역"));
+				.map(StationResponse::getName)
+				.contains("천호역", "군자역"));
 	}
 
 	@Test
@@ -95,7 +95,6 @@ class LineServiceWithStationTest {
 			.contains("강남역", "역삼역", "선릉역", "삼성역");
 	}
 
-
 	@DisplayName("Section 저장 테스트 (happy path : 상행 확장)")
 	@Test
 	void saveSection_shouldSuccess2() {
@@ -104,7 +103,6 @@ class LineServiceWithStationTest {
 		assertThat(lineService.findOne(이호선_응답.getId()).getStations())
 			.map(StationResponse::getName)
 			.contains("교대역", "강남역", "삼성역");
-
 
 	}
 
