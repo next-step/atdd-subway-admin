@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -7,10 +8,18 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Getter
 @Entity
 public class Section extends BaseEntity {
 	@Id
@@ -26,53 +35,31 @@ public class Section extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Station downStation;
 
-	private int distance;
+	@Embedded
+	private Distance distance = new Distance();
 
-	protected Section() {
-	}
-
-	public Section(Line line, Station upStation, Station downStation, int distance) {
+	public Section(Line line, Station upStation, Station downStation, Distance distance) {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public Line getLine() {
-		return line;
-	}
-
-	public Station getUpStation() {
-		return upStation;
-	}
-
-	public Station getDownStation() {
-		return downStation;
-	}
-
-	public int getDistance() {
-		return distance;
-	}
-
-	public void updateUpStation(Station station, int distance) {
-		validateDistance(distance);
+	public void updateUpStation(Station station, Distance distance) {
 		this.upStation = station;
-		this.distance -= distance;
+		this.distance = this.distance.calculateDistance(distance);
 	}
 
-	public void updateDownStation(Station station, int distance) {
-		validateDistance(distance);
+	public void updateDownStation(Station station, Distance distance) {
 		this.downStation = station;
-		this.distance -= distance;
+		this.distance = this.distance.calculateDistance(distance);
 	}
 
-	private void validateDistance(int distance) {
-		if (distance >= this.distance) {
-			throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
-		}
+	public boolean isSameUpStationId(Station station) {
+		return this.upStation.getId().equals(station.getId());
+	}
+
+	public boolean isSameDownStationId(Station station) {
+		return this.downStation.getId().equals(station.getId());
 	}
 }

@@ -18,6 +18,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -48,7 +49,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         선릉역 = stationRepository.save(new Station("선릉역"));
         삼성역 = stationRepository.save(new Station("삼성역"));
         잠실역 = stationRepository.save(new Station("잠실역"));
-        line.addInitSection(new Section(line, 교대역, 삼성역, 10));
+        line.addInitSection(new Section(line, 교대역, 삼성역, new Distance(10)));
         lineRepository.save(line);
     }
 

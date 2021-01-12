@@ -8,6 +8,9 @@ import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
+import lombok.Getter;
+
+@Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
@@ -16,12 +19,4 @@ public class BaseEntity {
 
     @LastModifiedDate
     private LocalDateTime modifiedDate;
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
 }

@@ -31,7 +31,13 @@ public class SectionService {
 		Line line = getLine(lineId);
  		Station upStation = getStation(sectionRequest.getUpStationId());
 		Station downStation = getStation(sectionRequest.getDownStationId());
-		line.addNewSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+		Section section = Section.builder()
+			.line(line)
+			.upStation(upStation)
+			.downStation(downStation)
+			.distance(sectionRequest.getDistance())
+			.build();
+		line.addNewSection(section);
 	}
 
 	private Line getLine(Long lineId) {
