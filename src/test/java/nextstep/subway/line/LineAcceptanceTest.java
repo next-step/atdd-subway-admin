@@ -172,7 +172,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured
+        ExtractableResponse<Response> createResponse = RestAssured
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -182,7 +182,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         //then
-        //노선 응답
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        //노선_생성_응답
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        String uri = createResponse.header("Location");
+
+        // when
+        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when()
+                .get(uri)
+                .then().log().all()
+                .extract();
+
+        // then
+        // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

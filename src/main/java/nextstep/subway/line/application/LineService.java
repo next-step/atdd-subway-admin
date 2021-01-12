@@ -28,14 +28,14 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        if (!persistLine.getUpStationId().equals(null)) {
-            Station upStation = stationRepository.findById(persistLine.getUpStationId()).orElseThrow(() -> new IllegalArgumentException());
+
+        if (request.getUpStationId() != null) {
+            Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(() -> new IllegalArgumentException());
             persistLine.addStation(upStation);
-        }
-        if (!persistLine.getDownStationId().equals(null)) {
-            Station downStation = stationRepository.findById(persistLine.getDownStationId()).orElseThrow(() -> new IllegalArgumentException());
+            Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new IllegalArgumentException());
             persistLine.addStation(downStation);
         }
+
         return LineResponse.of(lineRepository.save(persistLine));
     }
 
