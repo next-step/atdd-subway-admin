@@ -86,18 +86,18 @@ public class Line extends BaseEntity {
 	private Section getUpdateSection(Section removedSection, boolean isUpTerminal) {
 		Station linkedStation = removedSection.getUpdateSection(isUpTerminal);
 		return this.getLineSections().stream()
-				.filter(section -> section.getMainStation().getId() == linkedStation.getId())
+				.filter(section -> section.getMainStation().getId().equals(linkedStation.getId()))
 				.findAny()
 				.orElseThrow(() -> new NotFoundSectionException(linkedStation.getId()));
 	}
 
 	private void removeBetweenSection(Section removedSection) {
 		Section upSection = this.getLineSections().stream()
-				.filter(section -> section.getMainStation().getId() == removedSection.getUpStation().getId())
+				.filter(section -> section.getMainStation().getId().equals(removedSection.getUpStation().getId()))
 				.findAny()
 				.orElseThrow(() -> new NotFoundSectionException(removedSection.getUpStation().getId()));
 		Section downSection = this.getLineSections().stream()
-				.filter(section -> section.getMainStation().getId() == removedSection.getDownStation().getId())
+				.filter(section -> section.getMainStation().getId().equals(removedSection.getDownStation().getId()))
 				.findAny()
 				.orElseThrow(() -> new NotFoundSectionException(removedSection.getDownStation().getId()));
 
@@ -108,7 +108,7 @@ public class Line extends BaseEntity {
 
 	public void removeSectionByStationId(Long stationId) {
 		Section section = this.getLineSections().stream().filter
-				(sec -> sec.getMainStation().getId() == stationId).findAny().orElseThrow(() -> new NotIncludeStationInSection());
+				(sec -> sec.getMainStation().getId().equals(stationId)).findAny().orElseThrow(() -> new NotIncludeStationInSection());
 		validate(section);
 
 		if (section.isTerminal()) {
