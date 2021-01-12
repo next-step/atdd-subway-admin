@@ -79,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		List<Long> 지하철노선_ID_목록 = Stream.of(
 			지하철노선_생성_요청("2호선", "green"),
 			지하철노선_생성_요청("5호선", "purple")
-		).map(this::location_header에서_ID_추출)
+		).map(AcceptanceTest::location_header에서_ID_추출)
 			.collect(Collectors.toList());
 
 		// when : 지하철_노선_목록_조회_요청
@@ -102,7 +102,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		List<Long> 지하철노선_ID_목록 = Stream.of(
 			지하철노선_생성_요청("2호선", "green", "강남역", "역삼역", 10),
 			지하철노선_생성_요청("5호선", "purple", "천호역", "군자역", 15)
-		).map(this::location_header에서_ID_추출)
+		).map(AcceptanceTest::location_header에서_ID_추출)
 			.collect(Collectors.toList());
 
 		// when : 지하철_노선_목록_조회_요청
@@ -225,11 +225,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all().extract();
 	}
 
-	private long location_header에서_ID_추출(ExtractableResponse<Response> extractableResponse) {
-		return Long.parseLong(extractableResponse.header("Location").split("/")[2]);
-	}
-
-	private ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color) {
+	public static ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", name);
 		params.put("color", color);
@@ -237,7 +233,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return 지하철노선_생성_요청(params);
 	}
 
-	private ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color,
+	public static ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color,
 		String upStationName, String downStationName, int distance) {
 
 		long upStationId = location_header에서_ID_추출(StationAcceptanceTest.지하철_생성_요청(upStationName));
@@ -245,7 +241,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return 지하철노선_생성_요청(name, color, upStationId, downStationId, distance);
 	}
 
-	private ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color,
+	public static ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color,
 		long upStationId, long downStationId, int distance) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", name);
@@ -257,7 +253,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return 지하철노선_생성_요청(params);
 	}
 
-	private ExtractableResponse<Response> 지하철노선_생성_요청(Map<String, Object> params) {
+	public static ExtractableResponse<Response> 지하철노선_생성_요청(Map<String, Object> params) {
 		return RestAssured
 			.given().log().all()
 			.body(params)
