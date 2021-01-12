@@ -1,5 +1,9 @@
 package nextstep.subway.line.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.dto.StationResponse;
@@ -11,6 +15,10 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Builder
 public class LineResponse {
     private Long id;
     private String name;
@@ -18,18 +26,6 @@ public class LineResponse {
     private List<StationResponse> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-
-    public LineResponse() {
-    }
-
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.stations = stations;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-    }
 
     public static LineResponse of(Line line) {
         Set<StationResponse> stationSet = new TreeSet<>();
@@ -44,29 +40,5 @@ public class LineResponse {
         return lines.stream()
             .map(line -> LineResponse.of(line))
             .collect(Collectors.toList());
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public List<StationResponse> getStations() {
-        return stations;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
     }
 }

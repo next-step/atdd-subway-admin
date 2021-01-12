@@ -31,7 +31,13 @@ public class SectionService {
 		Line line = getLine(lineId);
  		Station upStation = getStation(sectionRequest.getUpStationId());
 		Station downStation = getStation(sectionRequest.getDownStationId());
-		line.addNewSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+		Section section = Section.builder()
+			.line(line)
+			.upStation(upStation)
+			.downStation(downStation)
+			.distance(sectionRequest.getDistance())
+			.build();
+		line.addNewSection(section);
 	}
 
 	private Line getLine(Long lineId) {
@@ -53,5 +59,11 @@ public class SectionService {
 		if (!stationIds.contains(sectionRequest.getUpStationId()) || !stationIds.contains(sectionRequest.getDownStationId())) {
 			throw new IllegalArgumentException("등록되어 있지 않은 역입니다.");
 		}
+	}
+
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		Line line = getLine(lineId);
+		Station station = getStation(stationId);
+		line.removeSection(station);
 	}
 }
