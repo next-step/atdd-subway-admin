@@ -42,6 +42,10 @@ public class LineRequest {
         return downStationId;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     public Line toLine() {
         return new Line(name, color);
     }

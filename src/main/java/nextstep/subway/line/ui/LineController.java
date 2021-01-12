@@ -32,11 +32,11 @@ public class LineController {
         }
     }
 
-    @PostMapping(value = "/sections", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> addSection(@RequestBody LineRequest lineRequest) {
+    @PostMapping(value = "{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         try {
-            LineResponse response = lineService.addSection(lineRequest);
-            return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
+            LineResponse response = lineService.addSection(id, lineRequest);
+            return ResponseEntity.created(URI.create("/lines/" + id)).body(response);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }

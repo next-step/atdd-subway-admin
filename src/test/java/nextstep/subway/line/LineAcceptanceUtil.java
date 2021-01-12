@@ -65,7 +65,7 @@ public class LineAcceptanceUtil {
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("lines/sections")
+                .when().post("lines/1/sections")
                 .then().log().all().extract();
     }
 

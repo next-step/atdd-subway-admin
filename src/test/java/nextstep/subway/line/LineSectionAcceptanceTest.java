@@ -86,7 +86,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         params = LineRequest.builder()
                 .name("2호선")
                 .color("bg-red-600")
-                .upStationId(4L)
+                .upStationId(2L)
                 .downStationId(3L)
                 .distance(10)
                 .build();
@@ -94,8 +94,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         params = LineRequest.builder()
                 .name("2호선")
                 .color("bg-red-600")
-                .upStationId(2L)
-                .downStationId(1L)
+                .upStationId(4L)
+                .downStationId(2L)
                 .distance(10)
                 .build();
         ExtractableResponse<Response> createResponse2 = LineAcceptanceUtil.지하철_구간_등록_요청(params);
@@ -109,14 +109,13 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // 상행역_하행역까지_목록_응답됨
-        List<Long> expectedStationIds = Arrays.asList(1L, 2L, 3L, 4L);
         List<Long> resultStationIds = response.jsonPath()
                 .getObject(".", LineResponse.class)
                 .getStations()
                 .stream()
                 .map(Station::getId)
                 .collect(Collectors.toList());
-        assertThat(resultStationIds).hasSameElementsAs(expectedStationIds);
+        assertThat(resultStationIds).containsExactly(4L, 2L, 3L);
     }
 
 }

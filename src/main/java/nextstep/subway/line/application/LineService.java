@@ -4,13 +4,14 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,37 +21,46 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
     public static final String COULD_NOT_FIND_LINE = "Could not find line ";
     public static final String COULD_NOT_FIND_STATION = "Could not find station ";
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        addStationById(persistLine, request.getUpStationId());
-        addStationById(persistLine, request.getDownStationId());
-        return LineResponse.of(persistLine);
+        return getLineResponse(request, persistLine);
     }
 
     @Transactional
-    public LineResponse addSection(LineRequest request) {
-        Line findLine = lineRepository.findByName(request.getName())
-                .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + request.getName()));
-        addStationById(findLine, request.getUpStationId());
-        addStationById(findLine, request.getDownStationId());
-        return LineResponse.of(findLine);
+    public LineResponse addSection(Long id, LineRequest request) {
+        Line findLine = lineRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
+        return getLineResponse(request, findLine);
     }
 
-    private void addStationById(Line line, Long stationId) {
+    private LineResponse getLineResponse(LineRequest request, Line line) {
+        Station upStation = getStationById(request.getUpStationId());
+        Station downStation = getStationById(request.getDownStationId());
+        Section section = new Section(upStation, downStation, request.getDistance());
+        section.setLine(line);
+        sectionRepository.save(section);
+        lineRepository.flush();
+        return LineResponse.of(line);
+    }
+
+    private Station getStationById(Long stationId) {
+        Station station = null;
         if (stationId != null) {
-            Station station = stationRepository.findById(stationId)
+            station = stationRepository.findById(stationId)
                     .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_STATION + stationId));
-            station.setLine(line);
         }
+        return station;
     }
 
     @Transactional(readOnly = true)
@@ -64,6 +74,7 @@ public class LineService {
     public LineResponse findLineById(Long id) {
         Line findLine = lineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
+        findLine.sortBy();
         return LineResponse.of(findLine);
     }
 
