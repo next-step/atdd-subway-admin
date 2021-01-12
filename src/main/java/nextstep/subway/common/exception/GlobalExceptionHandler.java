@@ -21,4 +21,14 @@ public class GlobalExceptionHandler {
 	protected ResponseEntity<ErrorResponse> handleException(NotIncludeLineBothStationException e) {
 		return new ResponseEntity<ErrorResponse>(new ErrorResponse(ErrorCode.NOT_INCLUDE_LINE_BOTH_STATION_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+
+	@ExceptionHandler(MinSectionDeleteException.class)
+	protected ResponseEntity<ErrorResponse> handleException(MinSectionDeleteException e) {
+		return new ResponseEntity<ErrorResponse>(new ErrorResponse(ErrorCode.MIN_SECTION_DELETE_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@ExceptionHandler(NotIncludeStationInSection.class)
+	protected ResponseEntity<ErrorResponse> handleException(NotIncludeStationInSection e) {
+		return new ResponseEntity<ErrorResponse>(new ErrorResponse(ErrorCode.NOT_INCLUDE_STATION_IN_SECTION_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 }

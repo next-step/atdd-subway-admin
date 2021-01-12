@@ -1,12 +1,17 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.exception.MinSectionDeleteException;
+import nextstep.subway.common.exception.NotFoundSectionException;
+import nextstep.subway.common.exception.NotIncludeStationInSection;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -67,10 +72,56 @@ public class Line extends BaseEntity {
 		section.addLine(this);
 	}
 
-	public boolean isImpossibleRemoveSection() {
-		if(this.sections.getSections().size() == MIN_SECTION_COUNT){
-			return true;
+	private boolean isImpossibleRemoveSection() {
+		return this.sections.getSections().size() == MIN_SECTION_COUNT;
+	}
+
+	private void removeTerminal(Section removedSection) {
+		boolean isUpTerminal = removedSection.isUpTerminal();
+		Section updatedSection = getUpdateSection(removedSection, isUpTerminal);
+		updatedSection.updateToTerminal(isUpTerminal);
+		this.getLineSections().remove(removedSection);
+	}
+
+	private Section getUpdateSection(Section removedSection, boolean isUpTerminal) {
+		Station linkedStation = removedSection.getUpdateSection(isUpTerminal);
+		return this.getLineSections().stream()
+				.filter(section -> section.getMainStation().getId().equals(linkedStation.getId()))
+				.findAny()
+				.orElseThrow(() -> new NotFoundSectionException(linkedStation.getId()));
+	}
+
+	private void removeBetweenSection(Section removedSection) {
+		Section upSection = this.getLineSections().stream()
+				.filter(section -> section.getMainStation().getId().equals(removedSection.getUpStation().getId()))
+				.findAny()
+				.orElseThrow(() -> new NotFoundSectionException(removedSection.getUpStation().getId()));
+		Section downSection = this.getLineSections().stream()
+				.filter(section -> section.getMainStation().getId().equals(removedSection.getDownStation().getId()))
+				.findAny()
+				.orElseThrow(() -> new NotFoundSectionException(removedSection.getDownStation().getId()));
+
+		upSection.updateDownStation(removedSection.getDownStation());
+		downSection.updateUpStationWhenDeleteSection(removedSection.getUpStation(), removedSection.getDistanceMeter());
+		this.getLineSections().remove(removedSection);
+	}
+
+	public void removeSectionByStationId(Long stationId) {
+		Section section = this.getLineSections().stream().filter
+				(sec -> sec.getMainStation().getId().equals(stationId)).findAny().orElseThrow(() -> new NotIncludeStationInSection());
+		validate(section);
+
+		if (section.isTerminal()) {
+			this.removeTerminal(section);
+			return;
 		}
-		return false;
+		//중간역이 삭제되는 경우
+		this.removeBetweenSection(section);
+	}
+
+	private void validate(Section section) {
+		if (this.isImpossibleRemoveSection()) {
+			throw new MinSectionDeleteException();
+		}
 	}
 }

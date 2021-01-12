@@ -63,7 +63,7 @@ public class LineController {
             @PathVariable Long lineId,
             @RequestParam Long stationId) {
         lineService.removeSectionByStationId(lineId, stationId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 

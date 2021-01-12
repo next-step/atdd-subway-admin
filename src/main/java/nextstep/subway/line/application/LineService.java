@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.exception.*;
 import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -33,27 +34,27 @@ public class LineService {
 	}
 
 	public LineResponse findLineById(Long id) {
-		Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다 id=" + id));
+		Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(id));
 		return LineResponse.of(line);
 	}
 
 	@Transactional
 	public void update(LineRequest lineRequest) {
-		Line line = lineRepository.findById(lineRequest.getId()).orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다 id=" + lineRequest.getId()));
+		Line line = lineRepository.findById(lineRequest.getId()).orElseThrow(() -> new NotFoundLineException(lineRequest.getId()));
 		line.update(lineRequest.toLine());
 		lineRepository.save(line);
 	}
 
 	@Transactional
 	public void delete(Long id) {
-		Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다 id=" + id));
+		Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(id));
 		lineRepository.delete(line);
 	}
 
 	@Transactional
 	public LineResponse saveLine(LineRequest lineRequest) {
-		Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + lineRequest.getUpStationId()));
-		Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + lineRequest.getDownStationId()));
+		Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new NotFoundStationException(lineRequest.getUpStationId()));
+		Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new NotFoundStationException(lineRequest.getDownStationId()));
 
 		Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
 		lineRepository.save(line);
@@ -62,49 +63,22 @@ public class LineService {
 
 	@Transactional
 	public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
-		Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + lineId));
+		Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundStationException(lineId));
 		Section newSection = toSection(line, sectionRequest);
 		line.addSection(newSection, line);
 		return LineResponse.of(lineRepository.save(line));
 	}
 
 	private Section toSection(Line line, SectionRequest sectionRequest) {
-		Optional<Station> upStation = stationRepository.findById(sectionRequest.getUpStationId());
-		Optional<Station> downStation = stationRepository.findById(sectionRequest.getDownStationId());
-		return new Section(line, upStation.get(), downStation.get(), sectionRequest.getDistance(), upStation.get());
+		Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new NotFoundStationException(sectionRequest.getUpStationId()));
+		Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new NotFoundStationException(sectionRequest.getDownStationId()));
+		return new Section(line, upStation, downStation, sectionRequest.getDistance(), upStation);
 	}
 
 	@Transactional
 	public void removeSectionByStationId(Long lineId, Long stationId) {
-		Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("해당 노선이 없습니다 id=" + lineId));
-		Optional<Section> sectionOptional = line.getLineSections().stream().filter(sec -> (sec.getUpStation() == null && sec.getDownStation().getId() == stationId) ||
-				(sec.getDownStation() == null && sec.getUpStation().getId() == stationId)).findAny();
-
-		validate(sectionOptional, line);
-
-		//todo 아래 코드들 도메인 로직으로 옮기기
-		Section section = sectionOptional.orElseThrow(() -> new IllegalArgumentException("해당 역이 없습니다 id=" + stationId));
-		if(section.isTerminal()){
-			//상행 종점역이 삭제되는 경우
-			Station newTerminal = section.getNetTerminal();
-			line.getLineSections().remove(section);
-
-
-
-			//하행 종점역이 삭제되는 경우
-		}
-		//중간역이 삭제되는 경우
-
+		Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundLineException(lineId));
+		line.removeSectionByStationId(stationId);
 		lineRepository.save(line);
-	}
-
-	private void validate(Optional<Section> section, Line line) {
-		if(!section.isPresent()){
-			throw new RuntimeException("등록되어있지 않은 역입니다.");
-		}
-
-		if(line.isImpossibleRemoveSection()){
-			throw new RuntimeException("구간이 1개인 경우, 삭제할 수 없습니다");
-		}
 	}
 }

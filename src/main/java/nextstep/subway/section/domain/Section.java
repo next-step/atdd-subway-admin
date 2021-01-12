@@ -34,27 +34,20 @@ public class Section extends BaseEntity {
 	public Section() {
 	}
 
-	public Section(Station upStation, int distance, Line line, Station mainStation) {
-		this.upStation = upStation;
-		this.downStation = null;
-		this.distanceMeter = distance;
-		this.line = line;
-		this.mainStation = mainStation;
-	}
-	public Section(Station downStation, Line line, Station mainStation) {
-		this.upStation = null;
-		this.downStation = downStation;
-		this.distanceMeter = 0;
-		this.line = line;
-		this.mainStation = mainStation;
-	}
-
 	public Section(Line line, Station upStation, Station downStation, int distance, Station mainStation) {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distanceMeter = distance;
 		this.mainStation = mainStation;
+	}
+
+	public Section(Station upStation, int distance, Line line, Station mainStation) {
+		this(line, upStation, null, distance, mainStation);
+	}
+
+	public Section(Station downStation, Line line, Station mainStation) {
+		this(line, null, downStation, 0, mainStation);
 	}
 
 	public Long getId() {
@@ -110,9 +103,14 @@ public class Section extends BaseEntity {
 		return this.downStation.equals(downStation);
 	}
 
-	public void updateUpStation(Station station, int newDistanceMeter) {
+	public void updateUpStationWhenAddSection(Station station, int newDistanceMeter) {
 		this.upStation = station;
 		this.distanceMeter = minusDistance(newDistanceMeter);
+	}
+
+	public void updateUpStationWhenDeleteSection(Station station, int newDistanceMeter) {
+		this.upStation = station;
+		this.distanceMeter = plusDistance(newDistanceMeter);
 	}
 
 	private int minusDistance(int newDistanceMeter) {
@@ -130,31 +128,35 @@ public class Section extends BaseEntity {
 		this.distanceMeter = minusDistance(newDistanceMeter);
 	}
 
-	public void updateDownStation(Station staion) {
-		this.downStation = staion;
+	public void updateDownStation(Station station) {
+		this.downStation = station;
 	}
+
 	public int plusDistance(int newDistanceMeter) {
 		return this.distanceMeter += newDistanceMeter;
 	}
 
 	public boolean isTerminal() {
-		if(Objects.isNull(this.upStation) || Objects.isNull(this.downStation)){
-			return true;
-		}
-		return false;
+		return Objects.isNull(this.upStation) || Objects.isNull(this.downStation);
 	}
 
-	public Station getNetTerminal() {
-		Station updateStation;
-		if(Objects.isNull(this.upStation)){
-			updateStation = this.downStation;
-
+	public void updateToTerminal(boolean upTerminal) {
+		if(upTerminal){
+			this.upStation = null;
+			this.distanceMeter = 0;
+			return;
 		}
-		if(Objects.isNull(this.downStation)){
-			updateStation =  this.upStation;
+		this.downStation = null;
+	}
+
+	public Station getUpdateSection(boolean isUpTerminal) {
+		if (isUpTerminal) {
+			return this.downStation;
 		}
+		return this.upStation;
+	}
 
-
-		return this.downStation;
+	public boolean isUpTerminal() {
+		return Objects.isNull(this.getUpStation());
 	}
 }
