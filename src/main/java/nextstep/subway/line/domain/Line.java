@@ -1,12 +1,15 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -20,7 +23,7 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
     private List<Section> sections;
 
     public Line() {
@@ -31,10 +34,15 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    private Line(String name, String color, List<Section> sections) {
+    private Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.sections = sections;
+        this.sections = new ArrayList<>();
+        this.sections.add(Section.of(this, upStation, downStation, distance, true));
+    }
+
+    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+        return new Line(name, color, upStation, downStation, distance);
     }
 
     public static Line of(String name, String color) {
@@ -60,6 +68,16 @@ public class Line extends BaseEntity {
 
     public List<Section> getSections() {
         return this.sections;
+    }
+
+    public List<Station> getStations() {
+        List<Section> orderedSections = getOrderedSections();
+        List<Station> stations = new ArrayList<>();
+        for (int i = 0; i < orderedSections.size(); i++) {
+            stations.add(orderedSections.get(i).getUp());
+        }
+        stations.add(orderedSections.get(orderedSections.size() - 1).getDown());
+        return stations;
     }
 
     public List<Section> getOrderedSections() {

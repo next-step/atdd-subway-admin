@@ -29,41 +29,19 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
-    public void save(Section newSection) {
-        sectionRepository.save(newSection);
-    }
-
     public void delete(List<Section> sections) {
         sectionRepository.deleteAll(sections);
-    }
-
-    public Section getStart(Line line) {
-        return sectionRepository.getStart(line);
-    }
-
-    public Section getByStartStation(Line line, Station station) {
-        return sectionRepository.getByStation(line, station);
-    }
-
-    public List<Section> getOrderedSections(Line line) {
-        List<Section> sections = new ArrayList<>();
-        Section section = getStart(line);
-        while (section != null) {
-            sections.add(section);
-            section = getByStartStation(line, section.getDown());
-        }
-        return sections;
     }
 
     public SectionAddResponse addSection(Line addingLine, SectionAddRequest sectionAddRequest) {
         Station up = stationService.getOne(sectionAddRequest.getUpStationId());
         Station down = stationService.getOne(sectionAddRequest.getDownStationId());
         int distance = sectionAddRequest.getDistance();
-        List<Section> sections = getOrderedSections(addingLine);
-        if (isTopEndSection(up, down, distance, sections)) {
+        List<Section> sections = addingLine.getOrderedSections();
+        if (down.isTopEnd(sections)) {
             return SectionAddResponse.of(sectionRepository.save(new Section(addingLine, up, down, distance, true)));
         }
-        if (isBottomEndSection(up, down, distance, sections)) {
+        if (up.isBottomEnd(sections)) {
             return SectionAddResponse.of(sectionRepository.save(new Section(addingLine, up, down, distance)));
         }
         return sections
@@ -75,21 +53,6 @@ public class SectionService {
                 .orElseGet(() -> {
                     throw new IllegalArgumentException("Station is invalid");
                 });
-    }
-
-    private boolean isBottomEndSection(Station up, Station down, int distance, List<Section> sections) {
-        if (sections.get(sections.size() - 1).getDown() == (up)) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isTopEndSection(Station up, Station down, int distance, List<Section> sections) {
-        if (sections.get(0).getUp() == (down)) {
-            sections.forEach(Section::setNotStart);
-            return true;
-        }
-        return false;
     }
 
 

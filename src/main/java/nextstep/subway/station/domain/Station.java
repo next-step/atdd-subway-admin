@@ -1,8 +1,10 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -31,6 +33,21 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isBottomEnd(List<Section> sections) {
+        if (sections.get(sections.size() - 1).getDown().equals(this)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isTopEnd(List<Section> sections) {
+        if (sections.get(0).getUp().equals(this)) {
+            sections.forEach(Section::setNotStart);
+            return true;
+        }
+        return false;
     }
 
     @Override
