@@ -67,6 +67,21 @@ public class Section {
         return this.upStation == section.upStation;
     }
 
+    public void replaceDownStation(Section section) {
+        this.distance.calculateMinus(section.getDistance());
+        updateDownStation(section.getUpStation());
+    }
+
+    public void replaceUpStation(Section section) {
+        this.distance.calculateMinus(section.getDistance());
+        updateUpStation(section.getDownStation());
+    }
+
+    public void replaceSection(Station upStation, Distance distance) {
+        this.distance.calculatePlus(distance);
+        updateUpStation(upStation);
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -81,17 +96,5 @@ public class Section {
 
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
-    }
-
-    public void replaceDownStation(Section section) {
-        distance.validateLongerAndEqualsThan(section);
-        updateDownStation(section.getUpStation());
-        distance.calculateMinus(section.getDistance());
-
-    }
-
-    public void replaceUpStation(Section section) {
-        distance.validateLongerAndEqualsThan(section);
-        updateUpStation(section.getDownStation());
     }
 }

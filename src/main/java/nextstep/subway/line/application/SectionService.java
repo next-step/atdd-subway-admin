@@ -40,4 +40,10 @@ public class SectionService {
                 .downStation(downStation)
                 .distance(distance).build();
     }
+
+    public void removeSection(Long lineId, Long stationId) {
+        Line line = lineService.find(lineId);
+        Station station = stationService.findStation(stationId);
+        sectionRepository.delete(line.removeSection(station));
+    }
 }

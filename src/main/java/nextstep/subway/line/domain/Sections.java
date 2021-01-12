@@ -6,6 +6,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -85,5 +87,56 @@ public class Sections {
         }
         Collections.reverse(result);
         return result;
+    }
+
+    public Section remove(Station station) {
+        validateContainStation(station);
+        validateMinSection(station);
+        List<Section> targetSections = findSectionsByStation(station);
+        if (isNotOneSection(targetSections)) {
+            return removeStationBetweenSections(station);
+        }
+
+        sections.remove(targetSections.get(0));
+        return targetSections.get(0);
+    }
+
+    private void validateMinSection(Station station) {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("구간이 하나인 노선에서는 제거할 수 없다.");
+        }
+    }
+
+    private boolean isNotOneSection(List<Section> sections) {
+        return sections.size() > 1;
+    }
+
+    private List<Section> findSectionsByStation(Station station) {
+        return sections.stream()
+                .filter(existSection -> existSection.getDownStation() == station || existSection.getUpStation() == station)
+                .collect(Collectors.toList());
+    }
+
+    private Section removeStationBetweenSections(Station station) {
+        Section removeSection = sections.stream()
+                .filter(existSection -> existSection.getDownStation() == station)
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("삭제할 역이 해당 노선에 없습니다."));
+
+        replaceSectionByStation(station, removeSection);
+        sections.remove(removeSection);
+        return removeSection;
+    }
+
+    private void replaceSectionByStation(Station station, Section targetSection) {
+        sections.stream()
+                .filter(existSection -> existSection.getUpStation() == station)
+                .findFirst()
+                .ifPresent(existSection -> existSection.replaceSection(targetSection.getUpStation(), targetSection.getDistance()));
+    }
+
+    private void validateContainStation(Station station) {
+        if(!getStations().contains(station)) {
+            throw new IllegalArgumentException("삭제할 역이 해당 노선에 없습니다.");
+        }
     }
 }

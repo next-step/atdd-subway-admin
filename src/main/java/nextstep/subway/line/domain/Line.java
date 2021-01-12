@@ -48,7 +48,7 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         sections.add(section);
     }
-
+    public Section removeSection(Station station) { return sections.remove(station);}
     public Long getId() {
         return id;
     }

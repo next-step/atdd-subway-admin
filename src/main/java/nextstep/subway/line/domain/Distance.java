@@ -21,16 +21,21 @@ public class Distance {
     }
 
     public void calculateMinus(Distance distance) {
-        this.distance =-distance.distance();
+        validateLongerAndEqualsThan(distance);
+        this.distance -= distance.distance();
     }
 
-    public void validateLongerAndEqualsThan(Section section) {
-        if (this.distance <= section.getDistance().distance()) {
-            throw new IllegalArgumentException(String.format("거리가 %dm보다 짧아야합니다.", this.distance()));
+    private void validateLongerAndEqualsThan(Distance target) {
+        if (this.distance <= target.distance()) {
+            throw new IllegalArgumentException(String.format("거리가 %dm보다 짧아야합니다.", this.distance));
         }
     }
 
     public int distance() {
         return this.distance;
+    }
+
+    public void calculatePlus(Distance target) {
+        this.distance += target.distance();
     }
 }

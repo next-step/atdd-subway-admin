@@ -111,4 +111,19 @@ class SectionServiceTest {
             System.out.println(stationResponse.getName());
         }
     }
+
+    @DisplayName("[구간삭제] 역사이 구간 역 삭제")
+    @Test
+    void remove() {
+        // given
+        sectionService.addSection(line.getId(),new SectionRequest(C역.getId(), B역.getId(), 10));
+
+        // when
+        sectionService.removeSection(line.getId(),C역.getId());
+
+        // then
+        LineResponse actual = lineService.findById(line.getId());
+        outputStationName(actual.getStationsResponses());
+        assertThat(actual.getStationsResponses().size()).isEqualTo(2);
+    }
 }
