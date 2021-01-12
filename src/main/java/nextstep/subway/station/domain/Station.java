@@ -1,17 +1,13 @@
 package nextstep.subway.station.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import nextstep.subway.common.BaseEntity;
 
-import javax.persistence.*;
-
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Getter
 @Entity
 public class Station extends BaseEntity {
     @Id
@@ -20,7 +16,18 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
+    protected Station() {
+    }
+
     public Station(String name) {
         this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 }
