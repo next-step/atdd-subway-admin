@@ -108,8 +108,7 @@ public class Line extends BaseEntity {
 
 	public void removeSectionByStationId(Long stationId) {
 		Optional<Section> sectionOptional = this.getLineSections().stream().filter
-				(sec -> (sec.getUpStation() == null && sec.getMainStation().getId() == stationId) ||
-				(sec.getDownStation() == null && sec.getMainStation().getId() == stationId) || (sec.getMainStation().getId() == stationId))
+				(sec -> sec.getMainStation().getId() == stationId))
 				.findAny();
 
 		validate(sectionOptional);
