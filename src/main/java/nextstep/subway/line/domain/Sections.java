@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,5 +64,41 @@ public class Sections {
 		return sections.stream()
 			.filter(section -> section.getDownStation().equals(downStation))
 			.findAny();
+	}
+
+	public void remove(Station station) {
+		Section removeTarget = findByUpStation(station).orElseGet(() -> findByDownStation(station)
+				.orElseThrow(() -> new IllegalArgumentException("line에 속해있지 않은 구간은 삭제할 수 없습니다.")));
+		List<Station> lastStations = findLastStations();
+		if (lastStations.containsAll(Arrays.asList(removeTarget.getUpStation(), removeTarget.getDownStation()))) {
+			throw new IllegalArgumentException("마지막 구간은 삭제할 수 없습니다.");
+		}
+		if (!lastStations.contains(station)) {
+			findByDownStation(station)
+				.ifPresent(section -> section.update(
+					section.getUpStation(),
+					removeTarget.getDownStation(),
+					section.getDistance() + removeTarget.getDistance()));
+		}
+		sections.remove(removeTarget);
+	}
+
+	private List<Station> findLastStations() {
+		return sections.stream()
+			.flatMap(Section::getStations)
+			.collect(Collectors.groupingBy(Station::getId))
+			.values()
+			.stream()
+			.filter(stations -> stations.size() == 1)
+			.map(stations -> stations.get(0))
+			.collect(Collectors.toList());
+	}
+
+	public int getDistance(Station upStation, Station downStation) {
+		return sections.stream()
+			.filter(section -> section.getUpStation().equals(upStation) && section.getDownStation().equals(downStation))
+			.findAny()
+			.map(Section::getDistance)
+			.orElse(-1);
 	}
 }

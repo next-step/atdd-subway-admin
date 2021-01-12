@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -128,6 +129,74 @@ class LineStationRelationshipTest {
 	@Test
 	void saveLineStation_shouldException5() {
 		assertThatThrownBy(() -> 이호선.addSection(강남역, 강남역, 7))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@DisplayName("역 제거 성공 케이스 : 종점 미포함1")
+	@Test
+	void removeSection_happyPath1() {
+		// 강남역 -(4)- 역삼역 -(5)- 선릉역 -(1)- 삼성역
+		이호선.addSection(강남역, 역삼역, 4);
+		이호선.addSection(역삼역, 선릉역, 5);
+
+		이호선.removeStation(역삼역);
+
+		// 강남역 -(9)- 선릉역 -(1)- 삼성역
+		assertThat(이호선.getStations()).contains(강남역, 선릉역, 삼성역);
+		assertAll(
+			() -> assertThat(이호선.getDistance(강남역, 선릉역)).isEqualTo(9),
+			() -> assertThat(이호선.getDistance(선릉역, 삼성역)).isEqualTo(1)
+		);
+	}
+
+	@DisplayName("역 제거 성공 케이스 : 종점 미포함2")
+	@Test
+	void removeSection_happyPath2() {
+		// 강남역 -(4)- 역삼역 -(6)- 삼성역
+		이호선.addSection(강남역, 역삼역, 4);
+
+		이호선.removeStation(역삼역);
+
+		// 강남역 -(10)- 삼성역
+		assertThat(이호선.getStations()).contains(강남역, 삼성역);
+		assertThat(이호선.getDistance(강남역, 삼성역)).isEqualTo(10);
+	}
+
+	@DisplayName("역 제거 성공 케이스 : 상행 종점 포함")
+	@Test
+	void removeSection_happyPath3() {
+		// 강남역 -(4)- 역삼역 -(6)- 삼성역
+		이호선.addSection(강남역, 역삼역, 4);
+
+		이호선.removeStation(강남역);
+
+		assertThat(이호선.getStations()).contains(역삼역, 삼성역);
+		assertThat(이호선.getDistance(역삼역, 삼성역)).isEqualTo(6);
+	}
+
+	@DisplayName("역 제거 성공 케이스 : 하행구간 포함")
+	@Test
+	void removeSection_happyPath4() {
+		// 강남역 -(4)- 역삼역 -(6)- 삼성역
+		이호선.addSection(강남역, 역삼역, 4);
+
+		이호선.removeStation(삼성역);
+
+		assertThat(이호선.getStations()).contains(강남역, 역삼역);
+		assertThat(이호선.getDistance(강남역, 역삼역)).isEqualTo(4);
+	}
+
+	@DisplayName("역 제거 예외 케이스 : 마지막 구간 제거.")
+	@Test
+	void removeSection_exceptionCase1() {
+		assertThatThrownBy(() -> 이호선.removeStation(삼성역))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@DisplayName("역 제거 예외 케이스 : 미포함 역 제거.")
+	@Test
+	void removeSection_exceptionCase2() {
+		assertThatThrownBy(() -> 이호선.removeStation(잠실역))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
 }
