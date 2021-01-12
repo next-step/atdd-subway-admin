@@ -1,5 +1,7 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class StationService {
     private StationRepository stationRepository;
+    private LineRepository lineRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;

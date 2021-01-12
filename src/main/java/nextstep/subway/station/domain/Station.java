@@ -1,6 +1,7 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.domain.Line;
 
 import javax.persistence.*;
 
@@ -12,13 +13,22 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
+/*
+    @ManyToOne
+    private Line line;
+*/
+
     public Station() {
     }
 
     public Station(String name) {
         this.name = name;
     }
-
+/*
+    public void setLine(Line line) {
+        this.line = line;
+    }
+*/
     public Long getId() {
         return id;
     }
@@ -26,4 +36,9 @@ public class Station extends BaseEntity {
     public String getName() {
         return name;
     }
+/*
+    public Line getLine() {
+        return line;
+    }
+*/
 }

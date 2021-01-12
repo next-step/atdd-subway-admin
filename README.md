@@ -57,3 +57,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 * 1.LineAcceptanceTest 완성
 * 2.Linecontroller 완성
 * 3.인수 테스트 리팩토링
+
+## step2
+* 1.LineAcceptanceTest 완성
+* 2.LineService 완성
