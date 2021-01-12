@@ -32,12 +32,7 @@ public class LineStationResponse {
         this.stations = stations;
     }
 
-    public static LineStationResponse of(Line line, List<Section> sections) {
-        List<Station> stations = new ArrayList<>();
-        for (int i = 0; i < sections.size(); i++) {
-            stations.add(sections.get(i).getUp());
-        }
-        stations.add(sections.get(sections.size() - 1).getDown());
+    public static LineStationResponse of(Line line, List<Station> stations) {
         return new LineStationResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(),
                 stations.stream().map(StationResponse::of)
                         .collect(Collectors.toList()));

@@ -1,10 +1,10 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
-import io.restassured.parsing.Parser;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+
 
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -14,9 +14,9 @@ import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,23 +35,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     public void setUpTest() {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "삼성역");
 
-        StationResponse response1 = StationAcceptanceTest.지하철_역_생성_요청(params1).as(StationResponse.class);
-        StationResponse response2 = StationAcceptanceTest.지하철_역_생성_요청(params2).as(StationResponse.class);
+        StationResponse response1 = StationAcceptanceTest.지하철_역_등록되어_있음("강남역").as(StationResponse.class);
+        StationResponse response2 = StationAcceptanceTest.지하철_역_등록되어_있음("삼성역").as(StationResponse.class);
 
         lineTwoCreateRequest = new LineCreateRequest("2호선", "green", response1.getId(), response2.getId(), 10);
 
-        Map<String, String> params3 = new HashMap<>();
-        params3.put("name", "잠원역");
-        Map<String, String> params4 = new HashMap<>();
-        params4.put("name", "신사역");
-
-        StationResponse response3 = StationAcceptanceTest.지하철_역_생성_요청(params3).as(StationResponse.class);
-        StationResponse response4 = StationAcceptanceTest.지하철_역_생성_요청(params4).as(StationResponse.class);
+        StationResponse response3 = StationAcceptanceTest.지하철_역_등록되어_있음("잠원역").as(StationResponse.class);
+        StationResponse response4 = StationAcceptanceTest.지하철_역_등록되어_있음("신사역").as(StationResponse.class);
 
         lineThreeCreateRequest = new LineCreateRequest("3호선", "orange", response3.getId(), response4.getId(), 10);
     }
@@ -177,6 +168,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회(Long lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineCreateRequest request) {
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
     }
 
     static ExtractableResponse<Response> 지하철_노선_생성_요청(LineCreateRequest request) {

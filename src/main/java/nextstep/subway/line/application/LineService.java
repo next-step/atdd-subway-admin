@@ -8,10 +8,11 @@ import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
-import nextstep.subway.section.dto.SectionCreateRequest;
+import nextstep.subway.line.dto.LineSectionCreateRequest;
+import nextstep.subway.section.dto.SectionAddRequest;
+import nextstep.subway.section.dto.SectionAddResponse;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,21 +25,21 @@ import java.util.stream.Collectors;
 public class LineService {
     private LineRepository lineRepository;
     private SectionService sectionService;
+    private StationService stationService;
 
     public LineService(LineRepository lineRepository,
-                       SectionService sectionService) {
+                       SectionService sectionService,
+                       StationService stationService) {
         this.sectionService = sectionService;
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse saveLine(LineCreateRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        sectionService.saveSection(
-                new SectionCreateRequest(persistLine,
-                        request.getUpStationId(),
-                        request.getDownStationId(),
-                        request.getDistance()));
-        return LineResponse.of(persistLine);
+        Station upStation = stationService.findByStationId(request.getUpStationId());
+        Station downStation = stationService.findByStationId(request.getDownStationId());
+        Line savedLine = lineRepository.save(Line.of(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
+        return LineResponse.of(savedLine);
     }
 
     public List<LineResponse> getLines() {
@@ -50,8 +51,7 @@ public class LineService {
 
     public LineStationResponse getOne(Long id) {
         Line line = lineRepository.getWithStations(id);
-        List<Section> sections = line.getSections();
-        return LineStationResponse.of(lineRepository.getOne(id), sections);
+        return LineStationResponse.of(line, line.getStations());
     }
 
 
@@ -65,6 +65,12 @@ public class LineService {
         Line deletingItem = lineRepository.getOne(id);
         sectionService.delete(deletingItem.getSections());
         lineRepository.delete(lineRepository.getOne(id));
+    }
+
+    public SectionAddResponse addSection(Long lineId, SectionAddRequest sectionAddRequest) {
+        Line addingLine = lineRepository.getOne(lineId);
+        SectionAddResponse response = sectionService.addSection(addingLine, sectionAddRequest);
+        return response;
     }
 
 }
