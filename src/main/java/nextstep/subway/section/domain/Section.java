@@ -36,7 +36,7 @@ public class Section extends BaseEntity {
 	private Station downStation;
 
 	@Embedded
-	private Distance distance = new Distance();
+	private Distance distance;
 
 	public Section(Line line, Station upStation, Station downStation, Distance distance) {
 		this.line = line;
@@ -45,14 +45,19 @@ public class Section extends BaseEntity {
 		this.distance = distance;
 	}
 
-	public void updateUpStation(Station station, Distance distance) {
+	public void addUpStation(Station station, Distance distance) {
 		this.upStation = station;
-		this.distance = this.distance.calculateDistance(distance);
+		this.distance.subtractDistance(distance);
 	}
 
-	public void updateDownStation(Station station, Distance distance) {
+	public void addDownStation(Station station, Distance distance) {
 		this.downStation = station;
-		this.distance = this.distance.calculateDistance(distance);
+		this.distance.subtractDistance(distance);
+	}
+
+	public void removeDownStation(Station station, Distance distance) {
+		this.downStation = station;
+		this.distance.addDistance(distance);
 	}
 
 	public boolean isSameUpStationId(Station station) {

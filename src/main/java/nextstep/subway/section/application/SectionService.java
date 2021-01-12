@@ -60,4 +60,10 @@ public class SectionService {
 			throw new IllegalArgumentException("등록되어 있지 않은 역입니다.");
 		}
 	}
+
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		Line line = getLine(lineId);
+		Station station = getStation(stationId);
+		line.removeSection(station);
+	}
 }
