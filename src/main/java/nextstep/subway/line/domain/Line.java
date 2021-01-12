@@ -72,11 +72,11 @@ public class Line extends BaseEntity {
 		section.addLine(this);
 	}
 
-	public boolean isImpossibleRemoveSection() {
+	private boolean isImpossibleRemoveSection() {
 		return this.sections.getSections().size() == MIN_SECTION_COUNT;
 	}
 
-	public void removeTerminal(Section removedSection) {
+	private void removeTerminal(Section removedSection) {
 		boolean isUpTerminal = removedSection.isUpTerminal();
 		Section updatedSection = getUpdateSection(removedSection, isUpTerminal);
 		updatedSection.updateToTerminal(isUpTerminal);
@@ -84,14 +84,14 @@ public class Line extends BaseEntity {
 	}
 
 	private Section getUpdateSection(Section removedSection, boolean isUpTerminal) {
-		Station linkedStation =	removedSection.getUpdateSection(isUpTerminal);
+		Station linkedStation = removedSection.getUpdateSection(isUpTerminal);
 		return this.getLineSections().stream()
-		.filter(section -> section.getMainStation().getId() == linkedStation.getId())
-		.findAny()
-		.orElseThrow(() -> new NotFoundSectionException(linkedStation.getId()));
+				.filter(section -> section.getMainStation().getId() == linkedStation.getId())
+				.findAny()
+				.orElseThrow(() -> new NotFoundSectionException(linkedStation.getId()));
 	}
 
-	public void removeBetweenSection(Section removedSection) {
+	private void removeBetweenSection(Section removedSection) {
 		Section upSection = this.getLineSections().stream()
 				.filter(section -> section.getMainStation().getId() == removedSection.getUpStation().getId())
 				.findAny()
@@ -107,25 +107,19 @@ public class Line extends BaseEntity {
 	}
 
 	public void removeSectionByStationId(Long stationId) {
-		Optional<Section> sectionOptional = this.getLineSections().stream().filter
-				(sec -> sec.getMainStation().getId() == stationId))
-				.findAny();
+		Section section = this.getLineSections().stream().filter
+				(sec -> sec.getMainStation().getId() == stationId).findAny().orElseThrow(() -> new NotIncludeStationInSection());
+		validate(section);
 
-		validate(sectionOptional);
-
-		if (sectionOptional.get().isTerminal()) {
-			this.removeTerminal(sectionOptional.get());
+		if (section.isTerminal()) {
+			this.removeTerminal(section);
 			return;
 		}
 		//중간역이 삭제되는 경우
-		this.removeBetweenSection(sectionOptional.get());
+		this.removeBetweenSection(section);
 	}
 
-	private void validate(Optional<Section> section) {
-		if (!section.isPresent()) {
-			throw new NotIncludeStationInSection();
-		}
-
+	private void validate(Section section) {
 		if (this.isImpossibleRemoveSection()) {
 			throw new MinSectionDeleteException();
 		}

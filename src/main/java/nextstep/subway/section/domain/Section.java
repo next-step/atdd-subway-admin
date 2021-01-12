@@ -103,11 +103,6 @@ public class Section extends BaseEntity {
 		return this.downStation.equals(downStation);
 	}
 
-	public void updateUpStation(Station station, int newDistanceMeter, boolean isDeleted) {
-		this.upStation = station;
-		this.distanceMeter = isDeleted == true ? plusDistance(newDistanceMeter) : minusDistance(newDistanceMeter);
-	}
-
 	public void updateUpStationWhenAddSection(Station station, int newDistanceMeter) {
 		this.upStation = station;
 		this.distanceMeter = minusDistance(newDistanceMeter);
@@ -136,6 +131,7 @@ public class Section extends BaseEntity {
 	public void updateDownStation(Station station) {
 		this.downStation = station;
 	}
+
 	public int plusDistance(int newDistanceMeter) {
 		return this.distanceMeter += newDistanceMeter;
 	}
