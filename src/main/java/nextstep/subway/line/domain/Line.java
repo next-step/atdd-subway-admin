@@ -85,8 +85,10 @@ public class Line extends BaseEntity {
 
 	private Section getUpdateSection(Section removedSection, boolean isUpTerminal) {
 		Station linkedStation =	removedSection.getUpdateSection(isUpTerminal);
-		Optional<Section> stationOptional = this.getLineSections().stream().filter(section -> section.getMainStation().getId() == linkedStation.getId()).findAny();
-		return stationOptional.orElseThrow(() -> new NotFoundSectionException(linkedStation.getId()));
+		return this.getLineSections().stream()
+		.filter(section -> section.getMainStation().getId() == linkedStation.getId())
+		.findAny()
+		.orElseThrow(() -> new NotFoundSectionException(linkedStation.getId()));
 	}
 
 	public void removeBetweenSection(Section removedSection) {
