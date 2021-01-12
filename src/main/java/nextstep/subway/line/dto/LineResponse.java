@@ -7,6 +7,8 @@ import nextstep.subway.station.dto.StationResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public class LineResponse {
@@ -30,12 +32,12 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stations = new ArrayList<>();
-        for (Section section : line.getSections()) {
-            stations.add(StationResponse.of(section.getUpStation()));
-            stations.add(StationResponse.of(section.getDownStation()));
+        Set<StationResponse> stationSet = new TreeSet<>();
+        for (Section section : line.getSections().getSections()) {
+            stationSet.add(StationResponse.of(section.getUpStation()));
+            stationSet.add(StationResponse.of(section.getDownStation()));
         }
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>(stationSet), line.getCreatedDate(), line.getModifiedDate());
     }
 
     public static List<LineResponse> ofList(List<Line> lines) {

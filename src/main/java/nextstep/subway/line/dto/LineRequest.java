@@ -25,7 +25,6 @@ public class LineRequest {
         this.distance = distance;
     }
 
-
     public String getName() {
         return name;
     }
@@ -48,7 +47,7 @@ public class LineRequest {
 
     public Line toLine(Station upStation, Station downStation) {
         Line line = new Line(name, color);
-        line.addSection(new Section(line, upStation, downStation, this.distance));
+        line.addInitSection(new Section(line, upStation, downStation, this.distance));
         return line;
     }
 
