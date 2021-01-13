@@ -5,9 +5,14 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.http.MediaType;
 
+import java.util.List;
+import java.util.Map;
+
+@SuppressWarnings("NonAsciiCharacters")
 @DisplayName("노선 요청 메소드 모음")
 public class LineAcceptanceUtil extends AcceptanceTest {
 
@@ -53,5 +58,13 @@ public class LineAcceptanceUtil extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/lines/" + id)
                 .then().log().all().extract();
+    }
+
+    public static List<LineResponse> 지하철_노선_전체_응답(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(".", LineResponse.class);
+    }
+
+    public static Long 지하철_노선_생성_아이디_조회(ExtractableResponse<Response> response) {
+        return Long.parseLong(response.header("Location").split("/")[2]);
     }
 }
