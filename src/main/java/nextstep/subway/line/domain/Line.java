@@ -17,12 +17,11 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String color;
 
-    //@OneToMany
-    //private List<Section> sections = new ArrayList<>();
-
-    @OneToMany
+    @OneToMany(mappedBy = "lineStation")
     private List<Station> stations = new ArrayList<>();
 
+    @OneToMany
+    private List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
@@ -30,12 +29,6 @@ public class Line extends BaseEntity {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public Line(String name, String color, Long upStationId, Long downStationId) {
-        this.name = name;
-        this.color = color;
-    //    addSection(upStationId, downStationId);
     }
 
     public void update(Line line) {
@@ -48,18 +41,14 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-
     public void addStation(Station station) {
         stations.add(station);
-        //station.setLine(this);
+        //station.setLineStation(this);
     }
 
-/*
-    private void addSection(Long upStationId, Long downStationId) {
-        Section section = new Section(upStationId, downStationId);
-        //sections.add(section);
+    public void addSection(Section section) {
+        sections.add(section);
     }
-*/
 
     public Long getId() {
         return id;
@@ -77,10 +66,8 @@ public class Line extends BaseEntity {
         return stations;
     }
 
-    /*
-    public List<Section> getSection() {
+    public List<Section> getSections() {
         return sections;
     }
-    */
 }
 

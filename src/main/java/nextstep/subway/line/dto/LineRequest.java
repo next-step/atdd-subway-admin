@@ -46,6 +46,6 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color, upStationId, downStationId);
+        return new Line(name, color);
     }
 }

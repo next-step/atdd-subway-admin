@@ -5,17 +5,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-//@Entity
+@Entity
 public class Section {
-    /*
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-     */
-   //@Id
     private Long upStation;
-   //@Id
     private Long downStation;
     private int distance;
 

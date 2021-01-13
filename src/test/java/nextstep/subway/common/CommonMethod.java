@@ -41,4 +41,17 @@ public class CommonMethod {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> createParams) {
+        // when
+        // 지하철_노선_생성_요청
+        return RestAssured
+                .given().log().all()
+                .body(createParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+    }
 }
