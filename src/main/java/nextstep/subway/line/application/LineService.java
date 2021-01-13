@@ -73,11 +73,19 @@ public class LineService {
                     newSection.add(sectionRepository.save(section1));
                     newSection.add(sectionRepository.save(section2));
                 }
-                //새로운 역을 상행 종점으로 등록
+                //새로운 역의 하행을 기존 노선 상행 종점으로 등록
                 if (sectionValue.getUpStation() == sectionRequest.getDownStation()) {
                     newDistance = sectionRequest.getDistance();
                     Section section1 = new Section(sectionRequest.getUpStation(), sectionRequest.getDownStation(), newDistance);
                     Section section2 = new Section(sectionValue.getUpStation(), sectionValue.getDownStation(), sectionValue.getDistance());
+                    newSection.add(sectionRepository.save(section1));
+                    newSection.add(sectionRepository.save(section2));
+                }
+                //새로운 역의 상행을 기존 노선 하행 종점으로 등록
+                if (sectionValue.getDownStation() == sectionRequest.getUpStation()) {
+                    newDistance = sectionRequest.getDistance();
+                    Section section1 = new Section(sectionValue.getUpStation(), sectionValue.getDownStation(), sectionValue.getDistance());
+                    Section section2 = new Section(sectionRequest.getUpStation(), sectionRequest.getDownStation(), newDistance);
                     newSection.add(sectionRepository.save(section1));
                     newSection.add(sectionRepository.save(section2));
                 }
