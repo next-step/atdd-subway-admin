@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,7 +66,7 @@ class SectionServiceTest {
                 .distance(50)
                 .build();
 
-        line.add(section);
+        line.addSection(section);
         return lineRepository.save(line);
     }
 
@@ -111,5 +110,20 @@ class SectionServiceTest {
         for (StationResponse stationResponse : stationResponses) {
             System.out.println(stationResponse.getName());
         }
+    }
+
+    @DisplayName("[구간삭제] 역사이 구간 역 삭제")
+    @Test
+    void remove() {
+        // given
+        sectionService.addSection(line.getId(),new SectionRequest(C역.getId(), B역.getId(), 10));
+
+        // when
+        sectionService.removeSection(line.getId(),C역.getId());
+
+        // then
+        LineResponse actual = lineService.findById(line.getId());
+        outputStationName(actual.getStationsResponses());
+        assertThat(actual.getStationsResponses().size()).isEqualTo(2);
     }
 }

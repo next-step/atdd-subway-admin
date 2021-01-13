@@ -2,14 +2,12 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -22,7 +20,7 @@ public class Sections {
             return;
         }
 
-        validateAdd(section);
+        validateSections(section);
         replaceDownStation(section);
         replaceUpStation(section);
         sections.add(section);
@@ -30,19 +28,19 @@ public class Sections {
 
     private void replaceUpStation(Section section) {
         sections.stream()
-                .filter(existSection -> existSection.isSameUpStation(section))
+                .filter(existSection -> existSection.isSameUpStation(section.getUpStation()))
                 .findFirst()
                 .ifPresent(existSection -> existSection.replaceUpStation(section));
     }
 
     private void replaceDownStation(Section section) {
         sections.stream()
-                .filter(existSection -> existSection.isSameDownStation(section))
+                .filter(existSection -> existSection.isSameDownStation(section.getDownStation()))
                 .findFirst()
                 .ifPresent(existSection -> existSection.replaceDownStation(section));
     }
 
-    private void validateAdd(Section section) {
+    private void validateSections(Section section) {
         if (isNotContainUpStationAndDownStation(section, getStations())) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
         }
@@ -57,37 +55,88 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        Optional<Section> section = sections.stream()
-                .findFirst();
+        Section section = sections.stream()
+                .findFirst().orElseThrow(EntityNotFoundException::new);
 
         List<Station> result = findDownToUpStation(section);
         result.addAll(findUpToDownStation(section));
         return result;
     }
 
-    private List<Station> findUpToDownStation(Optional<Section> section) {
+    private List<Station> findUpToDownStation(Section section) {
         List<Station> result = new ArrayList<>();
-        while (section.isPresent()) {
-            Station downStation = section.get().getDownStation();
+        while (section != null) {
+            Station downStation = section.getDownStation();
             result.add(downStation);
             section = sections.stream()
                     .filter(existSection -> existSection.getUpStation() == downStation)
-                    .findFirst();
+                    .findFirst().orElse(null);
         }
 
         return result;
     }
 
-    private List<Station> findDownToUpStation(Optional<Section> section) {
+    private List<Station> findDownToUpStation(Section section) {
         List<Station> result = new ArrayList<>();
-        while (section.isPresent()) {
-            Station upStation = section.get().getUpStation();
+        while (section != null) {
+            Station upStation = section.getUpStation();
             result.add(upStation);
             section = sections.stream()
                     .filter(existSection -> existSection.getDownStation() == upStation)
-                    .findFirst();
+                    .findFirst().orElse(null);
         }
         Collections.reverse(result);
         return result;
+    }
+
+    public Section remove(Station station) {
+        validateContainStation(station);
+        validateMinSection();
+        List<Section> targetSections = findSectionsByStation(station);
+        if (isNotOneSection(targetSections)) {
+            return removeStationBetweenSections(station);
+        }
+
+        sections.remove(targetSections.get(0));
+        return targetSections.get(0);
+    }
+
+    private void validateMinSection() {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("구간이 하나인 노선에서는 제거할 수 없다.");
+        }
+    }
+
+    private boolean isNotOneSection(List<Section> sections) {
+        return sections.size() > 1;
+    }
+
+    private List<Section> findSectionsByStation(Station station) {
+        return sections.stream()
+                .filter(existSection -> existSection.isSameDownStation(station) || existSection.isSameUpStation(station))
+                .collect(Collectors.toList());
+    }
+
+    private Section removeStationBetweenSections(Station station) {
+        Section removeSection = sections.stream()
+                .filter(existSection -> existSection.isSameDownStation(station))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("삭제할 역이 해당 노선에 없습니다."));
+
+        replaceSectionByStation(station, removeSection);
+        sections.remove(removeSection);
+        return removeSection;
+    }
+
+    private void replaceSectionByStation(Station station, Section targetSection) {
+        sections.stream()
+                .filter(existSection -> existSection.isSameUpStation(station))
+                .findFirst()
+                .ifPresent(existSection -> existSection.replaceSection(targetSection));
+    }
+
+    private void validateContainStation(Station station) {
+        if(!getStations().contains(station)) {
+            throw new IllegalArgumentException("삭제할 역이 해당 노선에 없습니다.");
+        }
     }
 }

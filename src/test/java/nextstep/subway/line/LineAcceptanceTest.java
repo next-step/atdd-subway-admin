@@ -81,7 +81,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response).isNotNull();
     }
 
-    private ExtractableResponse<Response> 지하철노선_조회_요청(String url) {
+    public static ExtractableResponse<Response> 지하철노선_조회_요청(String url) {
         return RestAssured
                 .given().log().all()
                 .when().get(url)
@@ -127,11 +127,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private StationResponse 지하철역_생성_요청(String name) {
-        ExtractableResponse<Response> stationResponse = StationAcceptanceTest.지하철역_생성_요청(name);
-        return stationResponse.body().as(StationResponse.class);
-    }
-
     public static ExtractableResponse<Response> 지하철노선_생성_요청(LineRequest request) {
         return RestAssured
                 .given().log().all()
@@ -141,15 +136,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private void 지하철노선_응답됨(ExtractableResponse<Response> response, HttpStatus badRequest) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(badRequest.value());
-    }
-
     public static ExtractableResponse<Response> 지하철노선_목록_조회_요청() {
         return RestAssured
                 .given().log().all()
                 .when().get("/lines")
                 .then().log().all().extract();
+    }
+
+    private StationResponse 지하철역_생성_요청(String name) {
+        ExtractableResponse<Response> stationResponse = StationAcceptanceTest.지하철역_생성_요청(name);
+        return stationResponse.body().as(StationResponse.class);
+    }
+
+    private void 지하철노선_응답됨(ExtractableResponse<Response> response, HttpStatus badRequest) {
+        Assertions.assertThat(response.statusCode()).isEqualTo(badRequest.value());
     }
 
     private ExtractableResponse<Response> 지하철노선_수정_요청(String url, LineRequest updateRequest) {

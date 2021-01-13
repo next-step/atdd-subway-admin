@@ -6,7 +6,6 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 
 @Entity
@@ -27,18 +26,19 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
     @Builder
     private Section(Line line, Station upStation, Station downStation, int distance) {
-        validate(line, upStation, downStation, distance);
+        validate(line, upStation, downStation);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public void updateUpStation(Station upStation) {
@@ -49,14 +49,8 @@ public class Section {
         this.downStation = downStation;
     }
 
-    public void update(int distance) {
-        validateRanged(distance);
-        this.distance = distance;
-    }
-
-    private void validate(Line line, Station upStation, Station downStation, int distance) {
+    private void validate(Line line, Station upStation, Station downStation) {
         validateRequired(line, upStation, downStation);
-        validateRanged(distance);
     }
 
     private void validateRequired(Line line, Station upStation, Station downStation) {
@@ -65,18 +59,27 @@ public class Section {
         }
     }
 
-    private void validateRanged(int distance) {
-        if (distance <= 0) {
-            throw new IllegalArgumentException("거리는 0보다 커야합니다.");
-        }
+    public void replaceDownStation(Section section) {
+        this.distance.calculateMinus(section.getDistance());
+        updateDownStation(section.getUpStation());
     }
 
-    public boolean isSameDownStation(Section section) {
-        return this.downStation == section.downStation;
+    public void replaceUpStation(Section section) {
+        this.distance.calculateMinus(section.getDistance());
+        updateUpStation(section.getDownStation());
     }
 
-    public boolean isSameUpStation(Section section) {
-        return this.upStation == section.upStation;
+    public void replaceSection(Section targetSection) {
+        this.distance.calculatePlus(targetSection.getDistance());
+        updateUpStation(targetSection.getUpStation());
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return this.downStation == station;
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return this.upStation == station;
     }
 
     public Station getUpStation() {
@@ -87,33 +90,11 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
-    }
-
-    public void replaceDownStation(Section section) {
-        validateReplace(section);
-        updateDownStation(section.getUpStation());
-        update(getReplaceDistance(section.getDistance()));
-    }
-
-    private int getReplaceDistance(int distance) {
-        return this.getDistance() - distance;
-    }
-
-    private void validateReplace(Section section) {
-        Objects.requireNonNull(section);
-        if (this.getDistance() <= section.getDistance()) {
-            throw new IllegalArgumentException(String.format("거리가 %dm보다 짧아야합니다.", this.getDistance()));
-        }
-    }
-
-    public void replaceUpStation(Section section) {
-        validateReplace(section);
-        updateUpStation(section.getDownStation());
     }
 }
