@@ -179,6 +179,93 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		);
 	}
 
+	@DisplayName("노선에서 종점이 포함되지 않은 구간을 제거한다")
+	@Test
+	void removeSection_happyPath1() {
+		// given : 지하철_구간_등록_요청
+		지하철_구간_등록_요청(신분당선_ID, 강남역_ID, 양재역_ID, 4);
+		assertThat(LineAcceptanceTest.지하철_노선_역_이름_목록_조회_요청(신분당선_ID)).contains("강남역", "양재역", "정자역");
+
+		// when : 지하철_구간_제거_요청
+		ExtractableResponse<Response> response = 지하철_구간_제거_요청(신분당선_ID, 양재역_ID);
+
+		// then : 지하철_노선_제거_응답됨 & 지하철_노선_역_이름_목록에서_제거됨
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+			() -> assertThat(LineAcceptanceTest.지하철_노선_역_이름_목록_조회_요청(신분당선_ID)).contains("강남역", "정자역")
+		);
+	}
+
+	@DisplayName("노선에서 상행 종점이 포함된 구간을 제거한다")
+	@Test
+	void removeSection_happyPath2() {
+		// given : 지하철_구간_등록_요청
+		지하철_구간_등록_요청(신분당선_ID, 강남역_ID, 양재역_ID, 4);
+		assertThat(LineAcceptanceTest.지하철_노선_역_이름_목록_조회_요청(신분당선_ID)).contains("강남역", "양재역", "정자역");
+
+		// when : 지하철_구간_제거_요청
+		ExtractableResponse<Response> response = 지하철_구간_제거_요청(신분당선_ID, 강남역_ID);
+
+		// then : 지하철_노선_제거_응답됨 & 지하철_노선_역_이름_목록에서_제거됨
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+			() -> assertThat(LineAcceptanceTest.지하철_노선_역_이름_목록_조회_요청(신분당선_ID)).contains("양재역", "정자역")
+		);
+	}
+
+	@DisplayName("노선에서 하행 종점이 포함된 구간을 제거한다")
+	@Test
+	void removeSection_happyPath3() {
+		// given : 지하철_구간_등록_요청
+		지하철_구간_등록_요청(신분당선_ID, 강남역_ID, 양재역_ID, 4);
+		assertThat(LineAcceptanceTest.지하철_노선_역_이름_목록_조회_요청(신분당선_ID)).contains("강남역", "양재역", "정자역");
+
+		// when : 지하철_구간_제거_요청
+		ExtractableResponse<Response> response = 지하철_구간_제거_요청(신분당선_ID, 정자역_ID);
+
+		// then : 지하철_노선_제거_응답됨 & 지하철_노선_역_이름_목록에서_제거됨
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+			() -> assertThat(LineAcceptanceTest.지하철_노선_역_이름_목록_조회_요청(신분당선_ID)).contains("강남역", "양재역")
+		);
+	}
+
+	@DisplayName("구간이 하나인 노선에서 마지막 구간을 제거한다")
+	@Test
+	void removeSection_exceptionCase1() {
+		// when : 지하철_구간_제거_요청
+		ExtractableResponse<Response> response = 지하철_구간_제거_요청(신분당선_ID, 양재역_ID);
+
+		// then : 지하철_노선_제거_실패됨 & 지하철_노선_역_이름_목록이_요청_전과_동일
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+			() -> assertThat(LineAcceptanceTest.지하철_노선_역_이름_목록_조회_요청(신분당선_ID)).contains("양재역", "정자역")
+		);
+	}
+
+	@DisplayName("노선에 포함되어 있지 않은 구간을 제거한다")
+	@Test
+	void removeSection_exceptionCase2() {
+		// when : 지하철_구간_제거_요청
+		ExtractableResponse<Response> response = 지하철_구간_제거_요청(신분당선_ID, 청계산입구역_ID);
+
+		// then : 지하철_노선_제거_실패됨 & 지하철_노선_역_이름_목록이_요청_전과_동일
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+			() -> assertThat(LineAcceptanceTest.지하철_노선_역_이름_목록_조회_요청(신분당선_ID)).contains("양재역", "정자역")
+		);
+	}
+
+	@DisplayName("존재하지 않는 노선에서 구간을 제거한다")
+	@Test
+	void removeSection_exceptionCase3() {
+		// when : 지하철_구간_제거_요청
+		ExtractableResponse<Response> response = 지하철_구간_제거_요청(999, 양재역_ID);
+
+		// then : 지하철_노선_제거_실패됨 & 지하철_노선_역_이름_목록이_요청_전과_동일
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+	}
+
 	public static ExtractableResponse<Response> 지하철_구간_등록_요청(
 		long lineId, long upStationId, long downStationId, int distance) {
 		Map<String, Object> params = new HashMap<>();
@@ -191,6 +278,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when().post("/lines/" + lineId + "/sections")
+			.then().log().all().extract();
+	}
+
+	private ExtractableResponse<Response> 지하철_구간_제거_요청(long lineId, long stationId) {
+		return RestAssured
+			.given().log().all()
+			.when().delete("/lines/" + lineId + "/sections?stationId=" + stationId)
 			.then().log().all().extract();
 	}
 }

@@ -19,7 +19,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -218,7 +220,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(지하철_노선_조회_요청(이호선_ID).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
-	private ExtractableResponse<Response> 지하철_노선_조회_요청(long id) {
+	public static List<String> 지하철_노선_역_이름_목록_조회_요청(long id) {
+		return RestAssured
+			.given().log().all()
+			.when().get("/lines/" + id)
+			.then().log().all().extract()
+			.as(LineResponse.class)
+			.getStations()
+			.stream()
+			.map(StationResponse::getName)
+			.collect(Collectors.toList());
+	}
+
+	public static ExtractableResponse<Response> 지하철_노선_조회_요청(long id) {
 		return RestAssured
 			.given().log().all()
 			.when().get("/lines/" + id)
