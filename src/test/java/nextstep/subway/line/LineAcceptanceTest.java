@@ -102,13 +102,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        LineResponse createdResponse = 지하철_노선_등록되어_있음(request);
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(createdResponse.getId());
 
         // then
-        // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response, createdResponse.getId());
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(final LineRequest lineRequest) {
@@ -200,6 +201,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
             () -> assertThat(modifiedResponse.getName()).isEqualTo(modifyRequest.getName()),
             () -> assertThat(modifiedResponse.getColor()).isEqualTo(modifyRequest.getColor())
         );
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(final Long id) {
+        return given().log().all()
+            .accept(MediaType.ALL_VALUE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete("/lines/" + id)
+            .then().log().all()
+            .extract();
+    }
+
+    private void 지하철_노선_삭제됨(final ExtractableResponse<Response> response, final Long id) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        final ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청(id);
+        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private void 지하철_노선_중복_생성_실패됨(final ExtractableResponse<Response> response) {
