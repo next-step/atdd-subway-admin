@@ -26,7 +26,7 @@ public class Station extends BaseEntity {
     public void setLineStation(Line lineStation) {
         this.lineStation = lineStation;
         //메모리상에도 일치
-        lineStation.getStations().add(this);
+        //lineStation.getStations().add(this);
     }
 
     public Long getId() {
