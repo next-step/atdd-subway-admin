@@ -7,19 +7,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Builder
 @Entity
 public class Line extends BaseEntity {
     @Id
@@ -34,9 +26,28 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
+    protected Line() {
+    }
+
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 
     public void update(Line line) {

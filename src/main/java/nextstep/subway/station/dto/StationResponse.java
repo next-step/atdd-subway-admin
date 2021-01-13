@@ -1,25 +1,41 @@
 package nextstep.subway.station.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import nextstep.subway.station.domain.Station;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Getter
-@EqualsAndHashCode
+import nextstep.subway.station.domain.Station;
+
 public class StationResponse implements Comparable<StationResponse> {
     private Long id;
     private String name;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+
+    public StationResponse() {
+    }
+
+    public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+        this.id = id;
+        this.name = name;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
+    }
 
     public static StationResponse of(Station station) {
         return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
@@ -28,5 +44,23 @@ public class StationResponse implements Comparable<StationResponse> {
     @Override
     public int compareTo(StationResponse stationResponse) {
         return Long.compare(this.id, stationResponse.id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        StationResponse that = (StationResponse)o;
+        return Objects.equals(id, that.id)
+            && Objects.equals(name, that.name)
+            && Objects.equals(createdDate, that.createdDate)
+            && Objects.equals(modifiedDate, that.modifiedDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, createdDate, modifiedDate);
     }
 }

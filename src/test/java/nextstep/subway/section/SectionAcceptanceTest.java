@@ -49,7 +49,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         선릉역 = stationRepository.save(new Station("선릉역"));
         삼성역 = stationRepository.save(new Station("삼성역"));
         잠실역 = stationRepository.save(new Station("잠실역"));
-        line.addInitSection(new Section(line, 교대역, 삼성역, new Distance(10)));
+        line.addInitSection(
+            new Section.SectionBuilder()
+            .line(line)
+            .upStation(교대역)
+            .downStation(삼성역)
+            .distance(new Distance(10))
+            .build()
+        );
         lineRepository.save(line);
     }
 

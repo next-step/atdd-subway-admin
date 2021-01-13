@@ -40,8 +40,22 @@ public class SectionRemoveTest extends AcceptanceTest {
 		강남역 = stationRepository.save(new Station("강남역"));
 		선릉역 = stationRepository.save(new Station("선릉역"));
 		삼성역 = stationRepository.save(new Station("삼성역"));
-		line.addInitSection(new Section(line, 교대역, 강남역, new Distance(4)));
-		line.addInitSection(new Section(line, 강남역, 선릉역, new Distance(6)));
+		line.addInitSection(
+			new Section.SectionBuilder()
+				.line(line)
+				.upStation(교대역)
+				.downStation(강남역)
+				.distance(new Distance(4))
+				.build()
+		);
+		line.addInitSection(
+			new Section.SectionBuilder()
+				.line(line)
+				.upStation(강남역)
+				.downStation(선릉역)
+				.distance(new Distance(6))
+				.build()
+		);
 		lineRepository.save(line);
 	}
 
