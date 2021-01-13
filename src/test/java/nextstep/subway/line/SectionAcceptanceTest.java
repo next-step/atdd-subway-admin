@@ -49,18 +49,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 구간을 등록한다.")
     void addSection() {
         //given
-        StationResponse 양재역 = StationAcceptanceTest.지하철역_생성_요청("양재역").as(StationResponse.class);
+        StationResponse 양재역 = StationAcceptanceTest.지하철역_생성_요청("양재").as(StationResponse.class);
 
-        Map<String, String> params = new HashMap<>();
-        params.put("upStation", 양재역.getId().toString());
-        params.put("downStation", station1.getId().toString());
-        params.put("distance", "3");
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("upStation", 양재역.getId().toString());
+        params1.put("downStation", station1.getId().toString());
+        params1.put("distance", "3");
 
         // when
         // 지하철_노선에_지하철역 등록_요청
-        ExtractableResponse<Response> createResponse = RestAssured
+        ExtractableResponse<Response> createResponse1 = RestAssured
                 .given().log().all()
-                .body(params)
+                .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/" + 신분당선.getId() + "/sections")
@@ -68,7 +68,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        Assertions.assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(createResponse1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        //given
+        StationResponse 판교역 = StationAcceptanceTest.지하철역_생성_요청("판교").as(StationResponse.class);
+
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("upStation", 판교역.getId().toString());
+        params2.put("downStation", station2.getId().toString());
+        params2.put("distance", "15");
+
+        // when
+        // 지하철_노선에_지하철역 등록_요청
+        ExtractableResponse<Response> createResponse2 = RestAssured
+                .given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/" + 신분당선.getId() + "/sections")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(createResponse2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         String uri = "/lines/" + 신분당선.getId();
         // then
@@ -82,6 +104,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract()
                 .as(LineResponse.class);
 
-        Assertions.assertThat(response.getSections()).hasSize(2);
+        assertThat(response.getSections()).hasSize(3);
     }
 }
