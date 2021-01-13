@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -20,10 +21,13 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
 
+    private final SectionRepository sectionRepository;
+
     private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
     }
 
@@ -35,6 +39,9 @@ public class LineService {
             persistLine.addStation(upStation);
             Station downStation = stationRepository.findById(request.getDownStation()).orElseThrow(() -> new IllegalArgumentException());
             persistLine.addStation(downStation);
+            //세션정보 입력
+            Section section = new Section(request.getUpStation(), request.getDownStation(), request.getDistance());
+            persistLine.addSection(sectionRepository.save(section));
         }
         final Line result = lineRepository.save(persistLine);
         return LineResponse.of(result);
@@ -49,8 +56,11 @@ public class LineService {
 
         Line targetLine = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
 
+        //새로 생길 구간 추가
         if (targetLine.getSections().size() == 0) {
-            targetLine.addSection(sectionRequest.toSection());
+            targetLine.addSection(sectionRepository.save(sectionRequest.toSection()));
+            //final Line line = lineRepository.save(targetLine);
+            return LineResponse.of(lineRepository.save(targetLine));
         }
 
         if (targetLine.getSections().size() >= 1) {
@@ -61,8 +71,8 @@ public class LineService {
                     newDistance = sectionValue.getDistance() - sectionRequest.getDistance();
                     Section section1 = new Section(sectionValue.getUpStation(), sectionRequest.getDownStation(), sectionRequest.getDistance());
                     Section section2 = new Section(sectionRequest.getDownStation(), sectionValue.getDownStation(), newDistance);
-                    newSection.add(section1);
-                    newSection.add(section2);
+                    newSection.add(sectionRepository.save(section1));
+                    newSection.add(sectionRepository.save(section2));
                 }
             }
         }

@@ -35,10 +35,10 @@ public class LineServiceTest {
     @BeforeEach
     void setUp() {
         final Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
-        final Station station1 = new Station("강남역");
+        final Station station1 = new Station("청계산 입구");
         station1.setLineStation(line);
         stationRepository.save(station1);
-        final Station station2 = new Station("청계산 입구");
+        final Station station2 = new Station("상현");
         station2.setLineStation(line);
         stationRepository.save(station2);
         Section section = new Section(station1.getId(), station2.getId(), 15);
@@ -55,11 +55,23 @@ public class LineServiceTest {
     void saveSection1() {
 
         Long lineId = lineRepository.findByName("신분당선").getId();
-        Station station1 = stationRepository.save(new Station("양재역"));
-        SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("강남역").getId(), station1.getId(), 3);
-        final LineService lineService = new LineService(lineRepository, stationRepository);
+        Station station1 = stationRepository.save(new Station("판교"));
+        SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("청계산 입구").getId(), station1.getId(), 3);
+        final LineService lineService = new LineService(lineRepository, sectionRepository, stationRepository);
         LineResponse response = lineService.saveSection(lineId, sectionRequest);
 
         assertThat(response.getSections()).hasSize(2);
+        assertThat(stationRepository.findById(response.getSections().get(0).getUpStation()).get().getName()).isEqualTo("청계산 입구");
+        assertThat(stationRepository.findById(response.getSections().get(1).getUpStation()).get().getName()).isEqualTo("판교");
+    }
+
+    @Test
+    @DisplayName("새로운 역을 상행 종점으로 등록")
+    void saveSection2() {
+        Long lineId = lineRepository.findByName("신분당선").getId();
+        Station station1 = stationRepository.save(new Station("양재역"));
+        SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("청계산 입구").getId(), station1.getId(), 3);
+        final LineService lineService = new LineService(lineRepository, sectionRepository, stationRepository);
+        LineResponse response = lineService.saveSection(lineId, sectionRequest);
     }
 }

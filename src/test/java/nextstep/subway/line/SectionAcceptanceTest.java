@@ -9,6 +9,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,24 +43,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("노선에 구간을 등록한다.")
     void addSection() {
+        //given
+        StationResponse 양재역 = StationAcceptanceTest.지하철역_생성_요청("양재역").as(StationResponse.class);
         // when
         // 지하철_노선에_지하철역 등록_요청
         Map<String, String> params = new HashMap<>();
         params.put("upStation", 강남역.getId().toString());
-        params.put("downStation", 광교역.getId().toString());
-        params.put("distance", "10");
+        params.put("downStation", 양재역.getId().toString());
+        params.put("distance", "3");
 
-        ExtractableResponse<Response> response = RestAssured
+        LineResponse response = RestAssured
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/" + 신분당선.getId() + "/sections")
                 .then().log().all()
-                .extract();
+                .extract()
+                .as(LineResponse.class);
 
         // then
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        //Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getSections()).hasSize(2);
 
         // then
         // 지하철_노선에_지하철역 등록됨
