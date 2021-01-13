@@ -37,4 +37,13 @@ public class LineService {
         return LineResponse.of(lineRepository.findById(id)
             .orElseThrow(() -> new LineNotFoundException(String.format("%d로 요청한 지하철 노선 정보가 없습니다.", id))));
     }
+
+    public LineResponse updateLine(final Long id, final LineRequest lineRequest) {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new LineNotFoundException(String.format("%d로 요청한 지하철 노선 정보가 없습니다.", id)));
+
+        line.update(lineRequest.toLine());
+
+        return LineResponse.of(line);
+    }
 }
