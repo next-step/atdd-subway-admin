@@ -28,8 +28,8 @@ public class LineController {
 
     @PostMapping(value = "/lines/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        lineService.saveSection(id, sectionRequest);
-        return ResponseEntity.created(URI.create("/lines/1")).build();
+        LineResponse line = lineService.saveSection(id, sectionRequest);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)

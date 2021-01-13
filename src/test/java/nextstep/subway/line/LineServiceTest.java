@@ -1,9 +1,12 @@
 package nextstep.subway.line;
 
+import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.SectionRepository;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,40 +47,19 @@ public class LineServiceTest {
         //line.addStation(station2);
         //lineRepository.save(line);
 
-        assertThat(lineRepository.findByName("신분당선").getStations()).hasSize(2);
+        assertThat(lineRepository.findByName("신분당선").getSections()).hasSize(1);
     }
 
     @Test
     @DisplayName("기존 역사이에 새로운 역을 등록")
     void saveSection1() {
-        int newDistance = 0;
-        int count = 0;
-        List<Section> newSection = new ArrayList<>();
 
+        Long lineId = lineRepository.findByName("신분당선").getId();
         Station station1 = stationRepository.save(new Station("양재역"));
+        SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("강남역").getId(), station1.getId(), 3);
+        final LineService lineService = new LineService(lineRepository, stationRepository);
+        LineResponse response = lineService.saveSection(lineId, sectionRequest);
 
-        Section sectionRequest = new Section(1l, station1.getId(), 3);
-
-        Line line = lineRepository.findByName("신분당선");
-        if (line.getSections().size() == 0) {
-            line.addSection(sectionRequest);
-        }
-
-        if (line.getSections().size() >= 1) {
-            for (Section sectionValue: line.getSections()) {
-                if (sectionValue.getUpStation() == sectionRequest.getUpStation() && sectionValue.getDownStation() != sectionRequest.getDownStation() && sectionValue.getDistance() > sectionRequest.getDistance()) {
-                    newDistance = sectionValue.getDistance() - sectionRequest.getDistance();
-                    Section section1 = new Section(sectionValue.getUpStation(), sectionRequest.getDownStation(), sectionRequest.getDistance());
-                    Section section2 = new Section(sectionRequest.getDownStation(), sectionValue.getDownStation(), newDistance);
-                    newSection.add(section1);
-                    newSection.add(section2);
-                }
-            }
-
-        }
-
-        lineRepository.save(line);
-
-        assertThat(lineRepository.findByName("신분당선").getSections()).hasSize(1);
+        assertThat(response.getSections()).hasSize(2);
     }
 }

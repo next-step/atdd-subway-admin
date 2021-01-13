@@ -50,6 +50,10 @@ public class Line extends BaseEntity {
         sections.add(section);
     }
 
+    public void changeSection(List<Section> newSection) {
+        sections = newSection;
+    }
+
     public Long getId() {
         return id;
     }
