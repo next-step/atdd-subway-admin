@@ -167,4 +167,75 @@ class LineServiceWithStationTest {
 			new SectionRequest(강남역_응답.getId(), 강남역_응답.getId(), 7)))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
+
+	@DisplayName("역 제거 성공 케이스 : 종점 미포함1")
+	@Test
+	void deleteSection_happyPath1() {
+		// 강남역 - 역삼역 - 선릉역 - 삼성역
+		lineService.saveSection(이호선_응답.getId(), new SectionRequest(강남역_응답.getId(), 역삼역_응답.getId(), 4));
+		lineService.saveSection(이호선_응답.getId(), new SectionRequest(역삼역_응답.getId(), 선릉역_응답.getId(), 5));
+
+		lineService.deleteStation(이호선_응답.getId(), 역삼역_응답.getId());
+
+		// 강남역 - 선릉역 - 삼성역
+		assertThat(lineService.findOne(이호선_응답.getId()).getStations())
+			.map(StationResponse::getName)
+			.contains("강남역", "선릉역", "삼성역");
+	}
+
+	@DisplayName("역 제거 성공 케이스 : 종점 미포함2")
+	@Test
+	void deleteSection_happyPath2() {
+		// 강남역 - 역삼역 - 삼성역
+		lineService.saveSection(이호선_응답.getId(), new SectionRequest(강남역_응답.getId(), 역삼역_응답.getId(), 4));
+
+		lineService.deleteStation(이호선_응답.getId(), 역삼역_응답.getId());
+
+		// 강남역 - 삼성역
+		assertThat(lineService.findOne(이호선_응답.getId()).getStations())
+			.map(StationResponse::getName)
+			.contains("강남역", "삼성역");
+	}
+
+	@DisplayName("역 제거 성공 케이스 : 상행 종점 포함")
+	@Test
+	void deleteSection_happyPath3() {
+		// 강남역 - 역삼역 - 삼성역
+		lineService.saveSection(이호선_응답.getId(), new SectionRequest(강남역_응답.getId(), 역삼역_응답.getId(), 4));
+
+		lineService.deleteStation(이호선_응답.getId(), 강남역_응답.getId());
+
+		// 역삼역 - 삼성역
+		assertThat(lineService.findOne(이호선_응답.getId()).getStations())
+			.map(StationResponse::getName)
+			.contains("역삼역", "삼성역");
+	}
+
+	@DisplayName("역 제거 성공 케이스 : 하행구간 포함")
+	@Test
+	void deleteSection_happyPath4() {
+		// 강남역 -(4)- 역삼역 -(6)- 삼성역
+		lineService.saveSection(이호선_응답.getId(), new SectionRequest(강남역_응답.getId(), 역삼역_응답.getId(), 4));
+
+		lineService.deleteStation(이호선_응답.getId(), 삼성역_응답.getId());
+
+		// 역삼역 - 삼성역
+		assertThat(lineService.findOne(이호선_응답.getId()).getStations())
+			.map(StationResponse::getName)
+			.contains("강남역", "역삼역");
+	}
+
+	@DisplayName("역 제거 예외 케이스 : 마지막 구간 제거.")
+	@Test
+	void deleteSection_exceptionCase1() {
+		assertThatThrownBy(() -> lineService.deleteStation(이호선_응답.getId(), 삼성역_응답.getId()))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@DisplayName("역 제거 예외 케이스 : 미포함 역 제거.")
+	@Test
+	void deleteSection_exceptionCase2() {
+		assertThatThrownBy(() -> lineService.deleteStation(이호선_응답.getId(), 잠실역_응답.getId()))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
 }

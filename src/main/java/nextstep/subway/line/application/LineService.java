@@ -64,6 +64,14 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    public void deleteStation(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(() -> new NoSuchElementException("주어진 id를 가지는 Line을 찾을 수 없습니다."));
+        Station station = stationRepository.findById(stationId)
+            .orElseThrow(() -> new NoSuchElementException("주어진 id를 가지는 Station을 찾을 수 없습니다."));
+        line.removeStation(station);
+    }
+
     public SectionResponse saveSection(Long lineId, SectionRequest request) {
         Line line = lineRepository.findById(lineId)
             .orElseThrow(() -> new NoSuchElementException("주어진 id를 가지는 Line을 찾을 수 없습니다."));
