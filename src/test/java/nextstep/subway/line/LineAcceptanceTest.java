@@ -90,13 +90,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        LineResponse createdResponse = 지하철_노선_등록되어_있음(request);
+        LineRequest modifyRequest = new LineRequest("2호선", "bg-green-600");
 
         // when
-        // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdResponse.getId(), modifyRequest);
 
         // then
-        // 지하철_노선_수정됨
+        지하철_노선_수정됨(response, createdResponse.getId(), modifyRequest);
+    }
+
+    private void 지하철_노선_수정됨(final ExtractableResponse<Response> response, final Long id,
+        final LineRequest modifyRequest) {
+        LineResponse modifiedResponse = response.as(LineResponse.class);
+        assertAll(
+            () -> assertThat(modifiedResponse.getId()).isEqualTo(id),
+            () -> assertThat(modifiedResponse.getName()).isEqualTo(modifyRequest.getName()),
+            () -> assertThat(modifiedResponse.getColor()).isEqualTo(modifyRequest.getColor())
+        );
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(final Long id, final LineRequest modifyRequest) {
+        return given().log().all()
+            .body(modifyRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .patch("/lines/" + id)
+            .then().log().all()
+            .extract()
+            ;
     }
 
     @DisplayName("지하철 노선을 제거한다.")
