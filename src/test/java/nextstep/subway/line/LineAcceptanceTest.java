@@ -7,6 +7,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.CommonMethod;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -190,16 +191,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = RestAssured
+        LineResponse response = RestAssured
                 .given().log().all()
                 .when()
                 .get(uri)
                 .then().log().all()
-                .extract();
+                .extract()
+                .as(LineResponse.class);
 
         // then
         // 지하철_노선_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        //assertThat(response.jsonPath().getList("name")).containsExactly("강남역", "선릉역");
+        //assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getStations()).hasSize(2);
+        assertThat(response.getStations().get(0).getName()).contains("강남역");
+        assertThat(response.getStations().get(1).getName()).contains("선릉역");
     }
 }
