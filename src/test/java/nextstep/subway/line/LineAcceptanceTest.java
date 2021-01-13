@@ -167,8 +167,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green darken-1");
-        params.put("upStationId", createResponse1.header("Location").split("/")[2]);
-        params.put("downStationId", createResponse2.header("Location").split("/")[2]);
+        params.put("upStation", createResponse1.header("Location").split("/")[2]);
+        params.put("downStation", createResponse2.header("Location").split("/")[2]);
         params.put("distance", "10");
 
         // when

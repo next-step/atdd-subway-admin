@@ -34,7 +34,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("color", "bg-red-600");
         createParams.put("upStation", 강남역.getId() + "");
         createParams.put("downStation", 광교역.getId() + "");
-        createParams.put("distance", 10 + "");
+        createParams.put("distance", 15 + "");
         신분당선 = CommonMethod.지하철_노선_생성_요청(createParams).as(LineResponse.class);
 
     }
