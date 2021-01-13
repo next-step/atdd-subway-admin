@@ -12,6 +12,11 @@ public class ErrorResponse {
 		this.path = path;
 	}
 
+	public ErrorResponse(final String message, final String path) {
+		this.message = message;
+		this.path = path;
+	}
+
 	public String getMessage() {
 		return message;
 	}
