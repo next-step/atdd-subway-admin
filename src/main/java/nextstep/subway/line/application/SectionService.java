@@ -18,13 +18,11 @@ public class SectionService {
     private final LineService lineService;
     private final StationService stationService;
 
-    @Autowired
     public SectionService(SectionRepository sectionRepository, LineService lineService, StationService stationService) {
         this.sectionRepository = sectionRepository;
         this.lineService = lineService;
         this.stationService = stationService;
     }
-
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineService.find(lineId);
@@ -44,6 +42,6 @@ public class SectionService {
     public void removeSection(Long lineId, Long stationId) {
         Line line = lineService.find(lineId);
         Station station = stationService.findStation(stationId);
-        sectionRepository.delete(line.removeSection(station));
+        line.removeSection(station);
     }
 }

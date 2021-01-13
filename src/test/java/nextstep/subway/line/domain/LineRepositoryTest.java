@@ -2,17 +2,16 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 class LineRepositoryTest {
@@ -135,7 +134,7 @@ class LineRepositoryTest {
         Station B역 = stationRepository.save(new Station("B역"));
         addSection(C역, line, B역);
 
-        assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(A역, B역, C역));
+        assertThat(line.getSections().getStations()).containsExactly(A역, B역, C역);
    }
 
     @DisplayName("[구간 추가 등록] 새로운 역을 상행 종점으로 등록할 경우")
@@ -147,7 +146,7 @@ class LineRepositoryTest {
         Station B역 = stationRepository.save(new Station("B역"));
         addSection(A역, line, B역);
 
-        assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(B역, A역, C역));
+        assertThat(line.getSections().getStations()).containsExactly(B역, A역, C역);
     }
 
     @DisplayName("[구간 추가 등록] 새로운 역을 행 종점으로 등록할 경우")
@@ -159,7 +158,7 @@ class LineRepositoryTest {
         Station B역 = stationRepository.save(new Station("B역"));
         addSection(B역, line, C역);
 
-        assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(A역, C역, B역));
+        assertThat(line.getSections().getStations()).containsExactly(A역, C역, B역);
     }
 
     @DisplayName("[구간 추가 예외] 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
@@ -230,7 +229,7 @@ class LineRepositoryTest {
 
         line.removeSection(C역);
 
-        assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(B역, A역));
+        assertThat(line.getSections().getStations()).containsExactly(B역, A역);
     }
 
     @DisplayName("[구간 삭제] 역 사이 삭제")
@@ -245,7 +244,7 @@ class LineRepositoryTest {
 
         line.removeSection(A역);
 
-        assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(B역, C역));
+        assertThat(line.getSections().getStations()).containsExactly(B역, C역);
     }
 
     @DisplayName("[구간 삭제] 상행 종점역 삭제")
@@ -260,7 +259,7 @@ class LineRepositoryTest {
         // when
         line.removeSection(B역);
         // then
-        assertThat(line.getSections().getStations()).containsExactlyElementsOf(Arrays.asList(A역, C역));
+        assertThat(line.getSections().getStations()).containsExactly(A역, C역);
     }
 
     private void addSection(Station downStation, Line line, Station upStation) {

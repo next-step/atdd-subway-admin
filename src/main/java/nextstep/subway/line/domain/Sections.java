@@ -28,14 +28,14 @@ public class Sections {
 
     private void replaceUpStation(Section section) {
         sections.stream()
-                .filter(existSection -> existSection.isSameUpStation(section))
+                .filter(existSection -> existSection.isSameUpStation(section.getUpStation()))
                 .findFirst()
                 .ifPresent(existSection -> existSection.replaceUpStation(section));
     }
 
     private void replaceDownStation(Section section) {
         sections.stream()
-                .filter(existSection -> existSection.isSameDownStation(section))
+                .filter(existSection -> existSection.isSameDownStation(section.getDownStation()))
                 .findFirst()
                 .ifPresent(existSection -> existSection.replaceDownStation(section));
     }
@@ -91,7 +91,7 @@ public class Sections {
 
     public Section remove(Station station) {
         validateContainStation(station);
-        validateMinSection(station);
+        validateMinSection();
         List<Section> targetSections = findSectionsByStation(station);
         if (isNotOneSection(targetSections)) {
             return removeStationBetweenSections(station);
@@ -101,7 +101,7 @@ public class Sections {
         return targetSections.get(0);
     }
 
-    private void validateMinSection(Station station) {
+    private void validateMinSection() {
         if (sections.size() == 1) {
             throw new IllegalArgumentException("구간이 하나인 노선에서는 제거할 수 없다.");
         }
@@ -113,13 +113,13 @@ public class Sections {
 
     private List<Section> findSectionsByStation(Station station) {
         return sections.stream()
-                .filter(existSection -> existSection.getDownStation() == station || existSection.getUpStation() == station)
+                .filter(existSection -> existSection.isSameDownStation(station) || existSection.isSameUpStation(station))
                 .collect(Collectors.toList());
     }
 
     private Section removeStationBetweenSections(Station station) {
         Section removeSection = sections.stream()
-                .filter(existSection -> existSection.getDownStation() == station)
+                .filter(existSection -> existSection.isSameDownStation(station))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("삭제할 역이 해당 노선에 없습니다."));
 
         replaceSectionByStation(station, removeSection);
@@ -129,9 +129,9 @@ public class Sections {
 
     private void replaceSectionByStation(Station station, Section targetSection) {
         sections.stream()
-                .filter(existSection -> existSection.getUpStation() == station)
+                .filter(existSection -> existSection.isSameUpStation(station))
                 .findFirst()
-                .ifPresent(existSection -> existSection.replaceSection(targetSection.getUpStation(), targetSection.getDistance()));
+                .ifPresent(existSection -> existSection.replaceSection(targetSection));
     }
 
     private void validateContainStation(Station station) {

@@ -34,7 +34,7 @@ public class Section {
 
     @Builder
     private Section(Line line, Station upStation, Station downStation, int distance) {
-        validate(line, upStation, downStation, distance);
+        validate(line, upStation, downStation);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -49,7 +49,7 @@ public class Section {
         this.downStation = downStation;
     }
 
-    private void validate(Line line, Station upStation, Station downStation, int distance) {
+    private void validate(Line line, Station upStation, Station downStation) {
         validateRequired(line, upStation, downStation);
     }
 
@@ -57,14 +57,6 @@ public class Section {
         if (line == null || upStation == null || downStation == null) {
             throw new IllegalArgumentException("필수값 누락입니다.");
         }
-    }
-
-    public boolean isSameDownStation(Section section) {
-        return this.downStation == section.downStation;
-    }
-
-    public boolean isSameUpStation(Section section) {
-        return this.upStation == section.upStation;
     }
 
     public void replaceDownStation(Section section) {
@@ -77,9 +69,17 @@ public class Section {
         updateUpStation(section.getDownStation());
     }
 
-    public void replaceSection(Station upStation, Distance distance) {
-        this.distance.calculatePlus(distance);
-        updateUpStation(upStation);
+    public void replaceSection(Section targetSection) {
+        this.distance.calculatePlus(targetSection.getDistance());
+        updateUpStation(targetSection.getUpStation());
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return this.downStation == station;
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return this.upStation == station;
     }
 
     public Station getUpStation() {
