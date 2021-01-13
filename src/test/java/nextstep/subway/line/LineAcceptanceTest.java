@@ -4,6 +4,10 @@ import static io.restassured.RestAssured.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -38,7 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineDuplicated() {
         // given
         LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        지하철_노선_등록되어_있음(request);
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(request);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(request);
@@ -51,15 +55,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+        LineRequest requestNewBoonDangLine = new LineRequest("신분당선", "bg-red-600");
+        LineRequest requestLine2 = new LineRequest("2호선", "bg-green-600");
+        LineResponse responseNewBoonDangLine = 지하철_노선_등록되어_있음(requestNewBoonDangLine);
+        LineResponse responseLine2 = 지하철_노선_등록되어_있음(requestLine2);
 
         // when
-        // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
+        지하철_노선_목록_응답됨(response);
+        지하철_노선_목록_포함됨(response, responseNewBoonDangLine, responseLine2);
+    }
+
+    private void 지하철_노선_목록_응답됨(final ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선_목록_포함됨(final ExtractableResponse<Response> response,
+        final LineResponse... lineResponses) {
+        List<LineResponse> responses = response.body()
+            .jsonPath()
+            .getList(".", LineResponse.class);
+
+        List<String> createLineNames = Arrays.stream(lineResponses)
+            .map(LineResponse::getName)
+            .collect(Collectors.toList());
+
+        assertThat(responses.stream().map(LineResponse::getName)
+            .collect(Collectors.toList())).containsAll(createLineNames);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -112,6 +136,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return given().log().all()
+            .accept(MediaType.ALL_VALUE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
+    }
+
     private void 지하철_노선_생성됨(final ExtractableResponse<Response> response, final LineRequest request) {
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
@@ -121,11 +155,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    public Long 지하철_노선_등록되어_있음(final LineRequest request) {
+    private LineResponse 지하철_노선_등록되어_있음(final LineRequest request) {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(request);
-        final String URL_PATH_SEPARATOR = "/";
-        String[] locationParts = response.header(HttpHeaders.LOCATION).split(URL_PATH_SEPARATOR);
-        return Long.parseLong(locationParts[locationParts.length - 1]);
+        return response.as(LineResponse.class);
     }
 
     private void 지하철_노선_중복_생성_실패됨(final ExtractableResponse<Response> response) {
