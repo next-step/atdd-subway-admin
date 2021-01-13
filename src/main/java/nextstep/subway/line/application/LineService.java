@@ -10,6 +10,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.LineNotFoundException;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,4 +33,8 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public LineResponse findOne(final Long id) {
+        return LineResponse.of(lineRepository.findById(id)
+            .orElseThrow(() -> new LineNotFoundException(String.format("%d로 요청한 지하철 노선 정보가 없습니다.", id))));
+    }
 }
