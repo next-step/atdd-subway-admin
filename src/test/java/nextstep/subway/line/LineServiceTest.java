@@ -96,7 +96,5 @@ public class LineServiceTest {
         assertThat(stationRepository.findById(response.getSections().get(1).getUpStation()).get().getName()).isEqualTo("상현");
         assertThat(stationRepository.findById(response.getSections().get(1).getDownStation()).get().getName()).isEqualTo("광교");
         assertThat(response.getSections().get(1).getDistance()).isEqualTo(5);
-
-
     }
 }

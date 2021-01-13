@@ -48,12 +48,7 @@ public class LineService {
     }
 
     public LineResponse saveSection(Long id, SectionRequest sectionRequest) {
-        /*
-        int count = 0;
-        */
-
         List<Section> newSection = new ArrayList<>();
-
         Line targetLine = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
 
         //새로 생길 구간 추가
