@@ -4,9 +4,6 @@ import static io.restassured.RestAssured.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -101,27 +98,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정됨(response, createdResponse.getId(), modifyRequest);
     }
 
-    private void 지하철_노선_수정됨(final ExtractableResponse<Response> response, final Long id,
-        final LineRequest modifyRequest) {
-        LineResponse modifiedResponse = response.as(LineResponse.class);
-        assertAll(
-            () -> assertThat(modifiedResponse.getId()).isEqualTo(id),
-            () -> assertThat(modifiedResponse.getName()).isEqualTo(modifyRequest.getName()),
-            () -> assertThat(modifiedResponse.getColor()).isEqualTo(modifyRequest.getColor())
-        );
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(final Long id, final LineRequest modifyRequest) {
-        return given().log().all()
-            .body(modifyRequest)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .patch("/lines/" + id)
-            .then().log().all()
-            .extract()
-            ;
-    }
-
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
@@ -203,6 +179,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
             () -> assertThat(response.as(LineResponse.class).getId()).isEqualTo(lineResponse.getId()),
             () -> assertThat(response.as(LineResponse.class).getName()).isEqualTo(lineResponse.getName()),
             () -> assertThat(response.as(LineResponse.class).getColor()).isEqualTo(lineResponse.getColor())
+        );
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(final Long id, final LineRequest modifyRequest) {
+        return given().log().all()
+            .body(modifyRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .patch("/lines/" + id)
+            .then().log().all()
+            .extract();
+    }
+
+    private void 지하철_노선_수정됨(final ExtractableResponse<Response> response, final Long id,
+        final LineRequest modifyRequest) {
+        LineResponse modifiedResponse = response.as(LineResponse.class);
+        assertAll(
+            () -> assertThat(modifiedResponse.getId()).isEqualTo(id),
+            () -> assertThat(modifiedResponse.getName()).isEqualTo(modifyRequest.getName()),
+            () -> assertThat(modifiedResponse.getColor()).isEqualTo(modifyRequest.getColor())
         );
     }
 
