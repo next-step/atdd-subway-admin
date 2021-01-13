@@ -59,7 +59,6 @@ public class LineService {
         //새로 생길 구간 추가
         if (targetLine.getSections().size() == 0) {
             targetLine.addSection(sectionRepository.save(sectionRequest.toSection()));
-            //final Line line = lineRepository.save(targetLine);
             return LineResponse.of(lineRepository.save(targetLine));
         }
 
@@ -71,6 +70,14 @@ public class LineService {
                     newDistance = sectionValue.getDistance() - sectionRequest.getDistance();
                     Section section1 = new Section(sectionValue.getUpStation(), sectionRequest.getDownStation(), sectionRequest.getDistance());
                     Section section2 = new Section(sectionRequest.getDownStation(), sectionValue.getDownStation(), newDistance);
+                    newSection.add(sectionRepository.save(section1));
+                    newSection.add(sectionRepository.save(section2));
+                }
+                //새로운 역을 상행 종점으로 등록
+                if (sectionValue.getUpStation() == sectionRequest.getDownStation()) {
+                    newDistance = sectionRequest.getDistance();
+                    Section section1 = new Section(sectionRequest.getUpStation(), sectionRequest.getDownStation(), newDistance);
+                    Section section2 = new Section(sectionValue.getUpStation(), sectionValue.getDownStation(), sectionValue.getDistance());
                     newSection.add(sectionRepository.save(section1));
                     newSection.add(sectionRepository.save(section2));
                 }

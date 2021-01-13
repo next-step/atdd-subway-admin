@@ -66,12 +66,20 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("새로운 역을 상행 종점으로 등록")
+    @DisplayName("새로운 역의 하행을 기존 노선 상행역으로 등록")
     void saveSection2() {
         Long lineId = lineRepository.findByName("신분당선").getId();
         Station station1 = stationRepository.save(new Station("양재역"));
-        SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("청계산 입구").getId(), station1.getId(), 3);
+        SectionRequest sectionRequest = new SectionRequest(station1.getId(), stationRepository.findByName("청계산 입구").getId(), 3);
         final LineService lineService = new LineService(lineRepository, sectionRepository, stationRepository);
         LineResponse response = lineService.saveSection(lineId, sectionRequest);
+
+        assertThat(response.getSections()).hasSize(2);
+        assertThat(stationRepository.findById(response.getSections().get(0).getUpStation()).get().getName()).isEqualTo("양재역");
+        assertThat(stationRepository.findById(response.getSections().get(0).getDownStation()).get().getName()).isEqualTo("청계산 입구");
+        assertThat(response.getSections().get(0).getDistance()).isEqualTo(3);
+        assertThat(stationRepository.findById(response.getSections().get(1).getUpStation()).get().getName()).isEqualTo("청계산 입구");
+        assertThat(stationRepository.findById(response.getSections().get(1).getDownStation()).get().getName()).isEqualTo("상현");
+        assertThat(response.getSections().get(1).getDistance()).isEqualTo(15);
     }
 }
