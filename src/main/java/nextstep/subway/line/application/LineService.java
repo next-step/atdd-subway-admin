@@ -4,8 +4,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.Section;
+import nextstep.subway.section.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -74,7 +74,7 @@ public class LineService {
     public LineResponse findLineById(Long id) {
         Line findLine = lineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
-        findLine.sortBy();
+        findLine.getSections().sortBy();
         return LineResponse.of(findLine);
     }
 

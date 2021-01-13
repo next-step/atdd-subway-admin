@@ -1,10 +1,9 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.section;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 public class Section {
@@ -55,10 +54,10 @@ public class Section {
     public void setLine(Line line) {
         // 기존 지하철 노선 관계를 제거
         if (this.line != null) {
-            this.line.getSections().remove(this);
+            this.line.getSections().removeSection(this);
         }
         this.line = line;
-        line.getSections().add(this);
+        line.getSections().addSection(this);
     }
 
 }
