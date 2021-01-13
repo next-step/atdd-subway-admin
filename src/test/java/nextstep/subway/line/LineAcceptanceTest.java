@@ -143,11 +143,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_생성됨(final ExtractableResponse<Response> response, final LineRequest request) {
+        LineResponse lineTestResponse = response.as(LineResponse.class);
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
             () -> assertThat(response.header(HttpHeaders.LOCATION)).isNotBlank(),
-            () -> assertThat(response.as(LineResponse.class).getName()).isEqualTo(request.getName()),
-            () -> assertThat(response.as(LineResponse.class).getColor()).isEqualTo(request.getColor())
+            () -> assertThat(lineTestResponse.getName()).isEqualTo(request.getName()),
+            () -> assertThat(lineTestResponse.getColor()).isEqualTo(request.getColor())
         );
     }
 
@@ -175,11 +176,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .collect(Collectors.toList())).containsAll(createLineNames);
     }
 
-    private void 지하철_노선_응답됨(final ExtractableResponse<Response> response, final LineResponse lineResponse) {
+    private void 지하철_노선_응답됨(final ExtractableResponse<Response> response, final LineResponse createdLineResponse) {
+        LineResponse lineTestResponse = response.as(LineResponse.class);
         assertAll(
-            () -> assertThat(response.as(LineResponse.class).getId()).isEqualTo(lineResponse.getId()),
-            () -> assertThat(response.as(LineResponse.class).getName()).isEqualTo(lineResponse.getName()),
-            () -> assertThat(response.as(LineResponse.class).getColor()).isEqualTo(lineResponse.getColor())
+            () -> assertThat(lineTestResponse.getId()).isEqualTo(createdLineResponse.getId()),
+            () -> assertThat(lineTestResponse.getName()).isEqualTo(createdLineResponse.getName()),
+            () -> assertThat(lineTestResponse.getColor()).isEqualTo(createdLineResponse.getColor())
         );
     }
 
