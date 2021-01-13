@@ -71,12 +71,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(createResponse1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         //given
-        StationResponse 판교역 = StationAcceptanceTest.지하철역_생성_요청("판교").as(StationResponse.class);
+        StationResponse 광교역 = StationAcceptanceTest.지하철역_생성_요청("광교").as(StationResponse.class);
 
         Map<String, String> params2 = new HashMap<>();
-        params2.put("upStation", 판교역.getId().toString());
-        params2.put("downStation", station2.getId().toString());
-        params2.put("distance", "15");
+        params2.put("upStation", station2.getId().toString());
+        params2.put("downStation", 광교역.getId().toString());
+        params2.put("distance", "5");
 
         // when
         // 지하철_노선에_지하철역 등록_요청

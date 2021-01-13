@@ -58,42 +58,71 @@ public class LineService {
         }
 
         if (targetLine.getSections().size() >= 1) {
-            for (Section sectionValue: targetLine.getSections()) {
-
-                int newDistance = 0;
-                //역사이에 새로운 역을 등록
-                if (sectionValue.getUpStation() == sectionRequest.getUpStation() && sectionValue.getDownStation() != sectionRequest.getDownStation() && sectionValue.getDistance() > sectionRequest.getDistance()) {
-                    newDistance = sectionValue.getDistance() - sectionRequest.getDistance();
-                    Section section1 = new Section(sectionValue.getUpStation(), sectionRequest.getDownStation(), sectionRequest.getDistance());
-                    Section section2 = new Section(sectionRequest.getDownStation(), sectionValue.getDownStation(), newDistance);
-                    newSection.add(sectionRepository.save(section1));
-                    newSection.add(sectionRepository.save(section2));
-                    continue;
-                }
-                //새로운 역의 하행을 기존 노선 상행 종점으로 등록
-                if (sectionValue.getUpStation() == sectionRequest.getDownStation()) {
-                    newDistance = sectionRequest.getDistance();
-                    Section section1 = new Section(sectionRequest.getUpStation(), sectionRequest.getDownStation(), newDistance);
-                    Section section2 = new Section(sectionValue.getUpStation(), sectionValue.getDownStation(), sectionValue.getDistance());
-                    newSection.add(sectionRepository.save(section1));
-                    newSection.add(sectionRepository.save(section2));
-                    continue;
-                }
-                //새로운 역의 상행을 기존 노선 하행 종점으로 등록
-                if (sectionValue.getDownStation() == sectionRequest.getUpStation()) {
-                    newDistance = sectionRequest.getDistance();
-                    Section section1 = new Section(sectionValue.getUpStation(), sectionValue.getDownStation(), sectionValue.getDistance());
-                    Section section2 = new Section(sectionRequest.getUpStation(), sectionRequest.getDownStation(), newDistance);
-                    newSection.add(sectionRepository.save(section1));
-                    newSection.add(sectionRepository.save(section2));
-                    continue;
-                }
-                newSection.add(sectionValue);
-            }
+            extractSection(sectionRequest, newSection, targetLine);
         }
+
         targetLine.changeSection(newSection);
         final Line line = lineRepository.save(targetLine);
         return LineResponse.of(line);
+    }
+
+    private void extractSection(SectionRequest sectionRequest, List<Section> newSection, Line targetLine) {
+        for (Section sectionValue: targetLine.getSections()) {
+            int newDistance = 0;
+            if (betweenStations(sectionRequest, newSection, sectionValue)) continue;
+            if (baseUpStation(sectionRequest, newSection, sectionValue)) continue;
+            if (baseDownStation(sectionRequest, newSection, sectionValue)) continue;
+            newSection.add(sectionValue);
+        }
+    }
+
+    private boolean baseDownStation(SectionRequest sectionRequest, List<Section> newSection, Section sectionValue) {
+        int newDistance;//새로운 역의 상행을 기존 노선 하행 종점으로 등록
+        if (sectionValue.getDownStation() == sectionRequest.getUpStation()) {
+            newDistance = sectionRequest.getDistance();
+            Section section1 = new Section(sectionValue.getUpStation(), sectionValue.getDownStation(), sectionValue.getDistance());
+            Section section2 = new Section(sectionRequest.getUpStation(), sectionRequest.getDownStation(), newDistance);
+            newSection.add(sectionRepository.save(section1));
+            newSection.add(sectionRepository.save(section2));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean baseUpStation(SectionRequest sectionRequest, List<Section> newSection, Section sectionValue) {
+        int newDistance;//새로운 역의 하행을 기존 노선 상행 종점으로 등록
+        if (sectionValue.getUpStation() == sectionRequest.getDownStation()) {
+            newDistance = sectionRequest.getDistance();
+            Section section1 = new Section(sectionRequest.getUpStation(), sectionRequest.getDownStation(), newDistance);
+            Section section2 = new Section(sectionValue.getUpStation(), sectionValue.getDownStation(), sectionValue.getDistance());
+            newSection.add(sectionRepository.save(section1));
+            newSection.add(sectionRepository.save(section2));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean betweenStations(SectionRequest sectionRequest, List<Section> newSection, Section sectionValue) {
+        int newDistance;//역사이에 새로운 역을 등록 기존의 상행역과 같음
+        if (sectionValue.getUpStation() == sectionRequest.getUpStation() && sectionValue.getDownStation() != sectionRequest.getDownStation() && sectionValue.getDistance() > sectionRequest.getDistance()) {
+            newDistance = sectionValue.getDistance() - sectionRequest.getDistance();
+            Section section1 = new Section(sectionValue.getUpStation(), sectionRequest.getDownStation(), sectionRequest.getDistance());
+            Section section2 = new Section(sectionRequest.getDownStation(), sectionValue.getDownStation(), newDistance);
+            newSection.add(sectionRepository.save(section1));
+            newSection.add(sectionRepository.save(section2));
+            return true;
+        }
+
+        //역사이에 새로운 역을 등록 기존의 하행역과 같음
+        if (sectionValue.getDownStation() == sectionRequest.getDownStation() && sectionValue.getUpStation() != sectionRequest.getUpStation() && sectionValue.getDistance() > sectionRequest.getDistance()) {
+            newDistance = sectionValue.getDistance() - sectionRequest.getDistance();
+            Section section1 = new Section(sectionValue.getUpStation(), sectionRequest.getUpStation(), newDistance);
+            Section section2 = new Section(sectionRequest.getUpStation(), sectionRequest.getDownStation(), sectionRequest.getDistance());
+            newSection.add(sectionRepository.save(section1));
+            newSection.add(sectionRepository.save(section2));
+            return true;
+        }
+        return false;
     }
 
     @Transactional(readOnly = true)
