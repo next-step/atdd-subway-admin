@@ -2,9 +2,12 @@ package nextstep.subway.common.exception.dto;
 
 public class ErrorResponse {
 
-	private final String message;
+	private String message;
 	private String debugMessage;
-	private final String path;
+	private String path;
+
+	public ErrorResponse() {
+	}
 
 	public ErrorResponse(final String message, final String debugMessage, final String path) {
 		this.message = message;
