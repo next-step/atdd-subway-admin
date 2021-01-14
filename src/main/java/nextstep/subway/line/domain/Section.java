@@ -11,10 +11,10 @@ public class Section {
     private Long upStation;
     private Long downStation;
     private int distance;
-/*
+
     @ManyToOne
     private Line line;
-*/
+
     public Section() {
 
     }
@@ -28,6 +28,11 @@ public class Section {
     public Section(Long upStation, Long downStation) {
         this.upStation = upStation;
         this.downStation = downStation;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+        line.getSections().add(this);
     }
 
     public Long getUpStation() {

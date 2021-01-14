@@ -16,7 +16,7 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String color;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
     private int count;
@@ -90,7 +90,7 @@ public class Line extends BaseEntity {
                     sections.add(section);
                 }
             }
-
+            section.setLine(this);
     }
 
     private boolean addNewSectionBased(Section section) {
