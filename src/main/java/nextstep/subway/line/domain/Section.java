@@ -11,7 +11,10 @@ public class Section {
     private Long upStation;
     private Long downStation;
     private int distance;
-
+/*
+    @ManyToOne
+    private Line line;
+*/
     public Section() {
 
     }

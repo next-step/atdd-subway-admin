@@ -38,6 +38,13 @@ public class LineService {
         return LineResponse.of(result);
     }
 
+    // 비즈니스 로직 도메인으로 이동 인자만 전달
+    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
+        Section newSection = sectionRequest.toSection();
+        line.addSection(newSection);
+        return LineResponse.of(line);
+    }
 
 
     public LineResponse saveSection(Long id, SectionRequest sectionRequest) {
