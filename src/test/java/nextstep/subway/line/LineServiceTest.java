@@ -4,7 +4,6 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
@@ -14,9 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,9 +25,6 @@ public class LineServiceTest {
     @Autowired
     private StationRepository stationRepository;
 
-    @Autowired
-    private SectionRepository sectionRepository;
-
     @BeforeEach
     void setUp() {
         final Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
@@ -42,7 +35,7 @@ public class LineServiceTest {
         station2.setLineStation(line);
         stationRepository.save(station2);
         Section section = new Section(station1.getId(), station2.getId(), 15);
-        line.addSection(sectionRepository.save(section));
+        line.addSection(section);
         //line.addStation(station1);
         //line.addStation(station2);
         //lineRepository.save(line);
@@ -57,7 +50,7 @@ public class LineServiceTest {
         Long lineId = lineRepository.findByName("신분당선").getId();
         Station station1 = stationRepository.save(new Station("판교"));
         SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("청계산 입구").getId(), station1.getId(), 3);
-        final LineService lineService = new LineService(lineRepository, sectionRepository, stationRepository);
+        final LineService lineService = new LineService(lineRepository, stationRepository);
         LineResponse response = lineService.saveSection(lineId, sectionRequest);
 
         assertThat(response.getSections()).hasSize(2);
@@ -71,7 +64,7 @@ public class LineServiceTest {
         Long lineId = lineRepository.findByName("신분당선").getId();
         Station station1 = stationRepository.save(new Station("양재역"));
         SectionRequest sectionRequest = new SectionRequest(station1.getId(), stationRepository.findByName("청계산 입구").getId(), 3);
-        final LineService lineService = new LineService(lineRepository, sectionRepository, stationRepository);
+        final LineService lineService = new LineService(lineRepository, stationRepository);
         LineResponse response = lineService.saveSection(lineId, sectionRequest);
 
         assertThat(response.getSections()).hasSize(2);
@@ -89,7 +82,7 @@ public class LineServiceTest {
         Long lineId = lineRepository.findByName("신분당선").getId();
         Station station1 = stationRepository.save(new Station("광교"));
         SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("상현").getId(), station1.getId(), 5);
-        final LineService lineService = new LineService(lineRepository, sectionRepository, stationRepository);
+        final LineService lineService = new LineService(lineRepository, stationRepository);
         LineResponse response = lineService.saveSection(lineId, sectionRequest);
 
         assertThat(response.getSections()).hasSize(2);

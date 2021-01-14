@@ -17,10 +17,7 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String color;
 
-    @OneToMany(mappedBy = "lineStation")
-    private List<Station> stations = new ArrayList<>();
-
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
     public Line() {
@@ -41,11 +38,6 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addStation(Station station) {
-        stations.add(station);
-        station.setLineStation(this);
-    }
-
     public void addSection(Section section) {
         sections.add(section);
     }
@@ -64,10 +56,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public List<Station> getStations() {
-        return stations;
     }
 
     public List<Section> getSections() {

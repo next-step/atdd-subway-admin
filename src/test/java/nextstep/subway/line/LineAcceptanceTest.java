@@ -202,8 +202,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_응답됨
         //assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getStations()).hasSize(2);
-        assertThat(response.getStations().get(0).getName()).contains("강남역");
-        assertThat(response.getStations().get(1).getName()).contains("선릉역");
+        assertThat(response.getSections()).hasSize(1);
+        assertThat(response.getSections().get(0).getDistance()).isEqualTo(10);
     }
 }
