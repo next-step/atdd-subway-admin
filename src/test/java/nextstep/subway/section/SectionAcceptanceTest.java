@@ -186,6 +186,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+    @DisplayName("지하철 구간을 제거(가운데의 역을 제거)")
+    @Test
+    public void deleteTest1() {
+
+    }
+
+    @DisplayName("지하철 구간을 제거(상행 종점을 제거)")
+    @Test
+    public void deleteTest2() {
+
+    }
+
+    @DisplayName("지하철 구간을 제거(하행 종점을 제거)")
+    @Test
+    public void deleteTest3() {
+
+    }
+
+    @
+
     static ExtractableResponse<Response> 지하철_구간_등록_요청(Long lineId, SectionAddRequest sectionCreateRequest) {
         return RestAssured.given().log().all()
                 .body(sectionCreateRequest)
