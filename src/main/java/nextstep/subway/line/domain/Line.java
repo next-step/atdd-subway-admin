@@ -89,18 +89,28 @@ public class Line extends BaseEntity {
             }
             //*노선_구간_추가(새로운_구간_추가) // 새로운 구간 추가, 새로운 상행 종점역 추가, 새로운 하행 종점역 추가
             // 기존에 세션정보가 없을 경우
-            if (sectionBetweenUpstation == null && sectionBetweenDownstation == null) {
-                if (!addNewSectionBased(section)) {
-                    sections.add(section);
-                }
-            }
-            section.setLine(this);
-            count = 0;
+        addSectionRestCaes(section, sectionBetweenUpstation, sectionBetweenDownstation);
+        section.setLine(this);
+        count = 0;
+    }
+
+    private void addSectionRestCaes(Section section, Section sectionBetweenUpstation, Section sectionBetweenDownstation) {
+        if (sectionBetweenUpstation == null && sectionBetweenDownstation == null) {
+            addNewSectionBased(section);
+        }
+
+        if (sections.size() == 0) {
+            sections.add(section);
+        }
     }
 
     private boolean addNewSectionBased(Section section) {
         count = 0;
         for (Section sectionValue: sections) {
+            if (sectionValue.getUpStation() == section.getUpStation() && sectionValue.getDownStation() == section.getDownStation()) {
+                throw new IllegalArgumentException("새로운 구간은 기존 구간과 같을 수 없습니다!");
+            }
+
             if (sectionValue.getUpStation() == section.getDownStation()) {
                 sections.add(count, new Section(section.getUpStation(), section.getDownStation(), section.getDistance()));
                 return true;
