@@ -111,7 +111,7 @@ public class LineServiceTest {
         lineStationRepository.save(lineStation);
         SectionRequest sectionRequest = new SectionRequest(station1.getId(), stationRepository.findByName("양재시민의 숲").getId(), 3);
         final LineService lineService = new LineService(lineRepository, stationRepository);
-        LineResponse response = lineService.saveSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
+        LineResponse response = lineService.addSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
 
         assertThat(response.getSections()).hasSize(2);
         assertThat(stationRepository.findById(response.getSections().get(0).getUpStation()).get().getName()).isEqualTo("양재역");
@@ -132,7 +132,7 @@ public class LineServiceTest {
         lineStationRepository.save(lineStation);
         SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("상현").getId(), station1.getId(), 5);
         final LineService lineService = new LineService(lineRepository, stationRepository);
-        LineResponse response = lineService.saveSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
+        LineResponse response = lineService.addSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
 
         assertThat(response.getSections()).hasSize(2);
         assertThat(stationRepository.findById(response.getSections().get(1).getUpStation()).get().getName()).isEqualTo("상현");

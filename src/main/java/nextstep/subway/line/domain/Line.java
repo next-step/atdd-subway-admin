@@ -64,12 +64,12 @@ public class Line extends BaseEntity {
             if (sectionBetweenUpstation != null) {
 
                 newDistance = sectionBetweenUpstation.getDistance() - section.getDistance();
+                //기존 구간 제거
+                sections.remove(count);
                 //새로 생길 구간 추가
                 sections.add(count, new Section(sectionBetweenUpstation.getUpStation(), section.getDownStation(), section.getDistance()));
-                //기존 구간 제거
-                sections.remove(count+1);
                 //새로 등록 요청한 구간 추가
-                sections.add(new Section(section.getDownStation(), sectionBetweenUpstation.getDownStation(), newDistance));
+                sections.add(count+1, new Section(section.getDownStation(), sectionBetweenUpstation.getDownStation(), newDistance));
             }
 
             //*if (하행역_선릉_구간_존재) {
@@ -79,12 +79,12 @@ public class Line extends BaseEntity {
             if (sectionBetweenDownstation != null) {
 
                 newDistance = sectionBetweenDownstation.getDistance() - section.getDistance();
+                //기존 구간 제거
+                sections.remove(count);
                 //새로 생길 구간 추가
                 sections.add(count, new Section(sectionBetweenDownstation.getUpStation(), section.getUpStation(), newDistance));
-                //기존 구간 제거
-                sections.remove(count+1);
                 //새로 등록 요청한 구간 추가
-                sections.add(new Section(section.getUpStation(), sectionBetweenDownstation.getDownStation(), section.getDistance()));
+                sections.add(count+1, new Section(section.getUpStation(), sectionBetweenDownstation.getDownStation(), section.getDistance()));
 
             }
             //*노선_구간_추가(새로운_구간_추가) // 새로운 구간 추가, 새로운 상행 종점역 추가, 새로운 하행 종점역 추가
