@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.LineStation;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -16,7 +17,10 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line")
+    private List<LineStation> lineStations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "lineSection", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     private int count;
@@ -63,7 +67,7 @@ public class Line extends BaseEntity {
                 //새로 생길 구간 추가
                 sections.add(count, new Section(sectionBetweenUpstation.getUpStation(), section.getDownStation(), section.getDistance()));
                 //기존 구간 제거
-                sections.remove(count);
+                sections.remove(count+1);
                 //새로 등록 요청한 구간 추가
                 sections.add(new Section(section.getDownStation(), sectionBetweenUpstation.getDownStation(), newDistance));
             }
@@ -91,6 +95,7 @@ public class Line extends BaseEntity {
                 }
             }
             section.setLine(this);
+            count = 0;
     }
 
     private boolean addNewSectionBased(Section section) {
@@ -107,6 +112,7 @@ public class Line extends BaseEntity {
             }
             count++;
         }
+        count = 0;
         return false;
     }
 
@@ -118,6 +124,7 @@ public class Line extends BaseEntity {
             }
             count++;
         }
+        count = 0;
         return null;
     }
 
@@ -129,6 +136,7 @@ public class Line extends BaseEntity {
             }
             count++;
         }
+        count = 0;
         return null;
     }
 

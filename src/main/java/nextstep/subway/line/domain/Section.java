@@ -1,9 +1,11 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.BaseEntity;
+
 import javax.persistence.*;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,7 +15,7 @@ public class Section {
     private int distance;
 
     @ManyToOne
-    private Line line;
+    private Line lineSection;
 
     public Section() {
 
@@ -31,8 +33,8 @@ public class Section {
     }
 
     public void setLine(Line line) {
-        this.line = line;
-        line.getSections().add(this);
+        this.lineSection = line;
+        //line.getSections().add(this);
     }
 
     public Long getUpStation() {

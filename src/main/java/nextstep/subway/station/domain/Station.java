@@ -4,6 +4,8 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Station extends BaseEntity {
@@ -13,20 +15,14 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @ManyToOne
-    private Line lineStation;
+    @OneToMany(mappedBy = "station")
+    private List<LineStation> lineStation = new ArrayList<>();
 
     public Station() {
     }
 
     public Station(String name) {
         this.name = name;
-    }
-
-    public void setLineStation(Line lineStation) {
-        this.lineStation = lineStation;
-        //메모리상에도 일치
-        //lineStation.getStations().add(this);
     }
 
     public Long getId() {
