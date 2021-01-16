@@ -106,6 +106,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_응답됨(response, createdLine);
     }
 
+    @DisplayName("지하철역 목록이 있는 지하철 노선을 조회한다.")
+    @Test
+    void getLineWithStations() {
+        // given
+        // given
+        StationResponse gangNam = 지하철역_생성_요청("강남역");
+        StationResponse jungJa = 지하철역_생성_요청("정자역");
+        LineRequest request = new LineRequest("신분당선", "bg-red-600",
+            gangNam.getId(),
+            jungJa.getId(),
+            10);
+        LineResponse createdLine = 지하철_노선_등록되어_있음(request);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdLine.getId());
+
+        // then
+        지하철_노선_응답됨(response, createdLine);
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
@@ -199,13 +219,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .collect(Collectors.toList())).containsAll(createLineNames);
     }
 
-    private void 지하철_노선_응답됨(final ExtractableResponse<Response> response, final LineResponse createdLineResponse) {
+    private void 지하철_노선_응답됨(final ExtractableResponse<Response> response,
+        final LineResponse createdLineResponse) {
+
         LineResponse lineTestResponse = response.as(LineResponse.class);
         assertAll(
             () -> assertThat(lineTestResponse.getId()).isEqualTo(createdLineResponse.getId()),
             () -> assertThat(lineTestResponse.getName()).isEqualTo(createdLineResponse.getName()),
-            () -> assertThat(lineTestResponse.getColor()).isEqualTo(createdLineResponse.getColor())
+            () -> assertThat(lineTestResponse.getColor()).isEqualTo(createdLineResponse.getColor()),
+            () -> assertThat(extractStationIds(lineTestResponse.getStations()))
+                    .containsAll(extractStationIds(createdLineResponse.getStations()))
         );
+    }
+
+    private List<Long> extractStationIds(List<StationResponse> stationResponses) {
+        return stationResponses.stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(final Long id, final LineRequest modifyRequest) {
