@@ -71,6 +71,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.getSections()).hasSize(4);
     }
 
+    @Test
+    @DisplayName("노선에 구간을 제거한다.")
+    void removeSection() {
+        //given
+        StationResponse 판교역 = StationAcceptanceTest.지하철역_생성_요청("판교").as(StationResponse.class);
+        노선_구간_생성_요청(판교역, station2, "20");
+
+        String uri = "/lines" + 신분당선.getId() + "/sections";
+        //when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .param("stationId", 판교역.getId().toString())
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+    }
+
     private void 노선_구간_생성_요청(StationResponse station1, StationResponse station2, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStation", station1.getId().toString());

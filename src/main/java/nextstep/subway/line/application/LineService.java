@@ -70,4 +70,9 @@ public class LineService {
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
+
+    public void deleteSectionById(Long id, Long stationId) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
+        line.deleteSection(stationId);
+    }
 }

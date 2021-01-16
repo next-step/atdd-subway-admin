@@ -67,3 +67,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 * 2.새로운 역을 상행 종점으로 등록
 * 3.새로운 역을 하행 종점으로 등록
 * 4.구간 등록 시 예외 케이스 만들기
+
+## step4
+* 1.노선 구간 제거하는 기능 구현
+* 2.예외케이스 추가
+* 3.인수테스트 추가
