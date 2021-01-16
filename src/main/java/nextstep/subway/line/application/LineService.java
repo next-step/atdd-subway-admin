@@ -1,6 +1,9 @@
 package nextstep.subway.line.application;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -11,14 +14,19 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationSearchRequest;
 
 @Service
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(final LineRepository lineRepository, final StationService stationService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
     @Transactional(readOnly = true)
@@ -34,8 +42,18 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+
+        Map<Long, Station> stations = stationService
+            .findAllById(new StationSearchRequest(request.getUpStationId(), request.getDownStationId()))
+            .stream()
+            .collect(Collectors.toMap(Station::getId, Function.identity()));
+
+        Station upStation = stations.get(request.getUpStationId());
+        Station downStation = stations.get(request.getDownStationId());
+
+        Line line = lineRepository.save(request.toLine(upStation, downStation));
+
+        return LineResponse.of(line);
     }
 
     public LineResponse updateLine(final Long id, final LineRequest lineRequest) {
@@ -55,4 +73,5 @@ public class LineService {
             .orElseThrow(() ->
                 new LineNotFoundException(String.format("[id=%d] 요청한 지하철 노선 정보가 없습니다.", id)));
     }
+
 }
