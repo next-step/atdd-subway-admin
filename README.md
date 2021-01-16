@@ -61,3 +61,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## step2
 * 1.LineAcceptanceTest 완성
 * 2.LineService 완성
+
+## step3
+* 1.역사이에 새로운 역을 등록(새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정)
+* 2.새로운 역을 상행 종점으로 등록
+* 3.새로운 역을 하행 종점으로 등록
+* 4.구간 등록 시 예외 케이스 만들기

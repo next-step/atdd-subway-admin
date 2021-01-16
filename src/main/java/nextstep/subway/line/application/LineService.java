@@ -2,16 +2,15 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import nextstep.subway.line.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,24 +18,32 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
 
-    private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
 
-        if (request.getUpStationId() != null) {
-            Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(() -> new IllegalArgumentException());
-            persistLine.addStation(upStation);
-            Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new IllegalArgumentException());
-            persistLine.addStation(downStation);
-        }
+        if (request.getUpStation() != null && request.getDownStation() != null) {
+            //세션정보 입력
+            //Section section = sectionRepository.save(new Section(request.getUpStation(), request.getDownStation(), request.getDistance()));
+            Section section = new Section(request.getUpStation(), request.getDownStation(), request.getDistance());
 
-        return LineResponse.of(lineRepository.save(persistLine));
+            persistLine.addSection(section);
+        }
+        return LineResponse.of(persistLine);
+    }
+
+    // 비즈니스 로직 도메인으로 이동 인자만 전달
+    public LineResponse saveSection(Long id, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
+        Section newSection = sectionRequest.toSection();
+        line.addSection(sectionRepository.save(newSection));
+        return LineResponse.of(line);
     }
 
     @Transactional(readOnly = true)
