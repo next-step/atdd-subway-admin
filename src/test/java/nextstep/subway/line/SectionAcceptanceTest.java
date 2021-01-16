@@ -78,7 +78,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract()
                 .as(LineResponse.class);
 
-        assertThat(response.getSections()).hasSize(0);
+        assertThat(response.getSections()).hasSize(2);
 
 
     }

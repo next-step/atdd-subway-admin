@@ -89,9 +89,9 @@ public class Line extends BaseEntity {
             }
             //*노선_구간_추가(새로운_구간_추가) // 새로운 구간 추가, 새로운 상행 종점역 추가, 새로운 하행 종점역 추가
             // 기존에 세션정보가 없을 경우
-        addSectionRestCaes(section, sectionBetweenUpstation, sectionBetweenDownstation);
-        section.setLine(this);
-        count = 0;
+            addSectionRestCaes(section, sectionBetweenUpstation, sectionBetweenDownstation);
+            section.setLine(this);
+            count = 0;
     }
 
     private void addSectionRestCaes(Section section, Section sectionBetweenUpstation, Section sectionBetweenDownstation) {
