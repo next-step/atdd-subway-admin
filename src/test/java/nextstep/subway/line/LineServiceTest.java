@@ -91,13 +91,13 @@ public class LineServiceTest {
         final LineService lineService = new LineService(lineRepository, sectionRepository);
         LineResponse response = lineService.saveSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
 
-        assertThat(response.getSections()).hasSize(2);
         assertThat(stationRepository.findById(response.getSections().get(0).getUpStation()).get().getName()).isEqualTo("양재역");
         assertThat(stationRepository.findById(response.getSections().get(0).getDownStation()).get().getName()).isEqualTo("양재시민의 숲");
         assertThat(response.getSections().get(0).getDistance()).isEqualTo(3);
         assertThat(stationRepository.findById(response.getSections().get(1).getUpStation()).get().getName()).isEqualTo("양재시민의 숲");
         assertThat(stationRepository.findById(response.getSections().get(1).getDownStation()).get().getName()).isEqualTo("상현");
-        assertThat(response.getSections().get(1).getDistance()).isEqualTo(15);
+        assertThat(response.getSections().get(1).getDistance()).isEqualTo(50);
+        assertThat(response.getSections()).hasSize(2);
     }
 
     @Test

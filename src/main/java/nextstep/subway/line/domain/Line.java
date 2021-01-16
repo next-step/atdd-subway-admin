@@ -19,8 +19,6 @@ public class Line extends BaseEntity {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Section> sections = new ArrayList<>();
 
-    private int count;
-
     public Line() {
     }
 
@@ -58,6 +56,7 @@ public class Line extends BaseEntity {
             //*    상행역_강남_구간의_거리 = 상행역_강남_구간의_거리 - 새로운_구간의_거리
             //*}
             if (sectionBetweenUpstation != null) {
+                int count = sections.indexOf(sectionBetweenUpstation);
 
                 newDistance = sectionBetweenUpstation.getDistance() - section.getDistance();
                 //기존 구간 제거
@@ -73,6 +72,7 @@ public class Line extends BaseEntity {
             //*    하행역_선릉_구간의_거리 = 하행역_선릉_구간의_거리 - 새로운_구간의_거리
             //*}
             if (sectionBetweenDownstation != null) {
+                int count = sections.indexOf(sectionBetweenDownstation);
 
                 newDistance = sectionBetweenDownstation.getDistance() - section.getDistance();
                 //기존 구간 제거
@@ -87,7 +87,6 @@ public class Line extends BaseEntity {
             // 기존에 세션정보가 없을 경우
             addSectionRestCaes(section, sectionBetweenUpstation, sectionBetweenDownstation);
             section.setLine(this);
-            count = 0;
     }
 
     private void addSectionRestCaes(Section section, Section sectionBetweenUpstation, Section sectionBetweenDownstation) {
@@ -101,48 +100,39 @@ public class Line extends BaseEntity {
     }
 
     private boolean addNewSectionBased(Section section) {
-        count = 0;
         for (Section sectionValue: sections) {
             if (sectionValue.getUpStation() == section.getUpStation() && sectionValue.getDownStation() == section.getDownStation()) {
                 throw new IllegalArgumentException("새로운 구간은 기존 구간과 같을 수 없습니다!");
             }
 
             if (sectionValue.getUpStation() == section.getDownStation()) {
-                sections.add(count, new Section(section.getUpStation(), section.getDownStation(), section.getDistance()));
+                sections.add(sections.indexOf(sectionValue), new Section(section.getUpStation(), section.getDownStation(), section.getDistance()));
                 return true;
             }
 
             if (sectionValue.getDownStation() == section.getUpStation()) {
-                sections.add(count+1, new Section(section.getUpStation(), section.getDownStation(), section.getDistance()));
+                sections.add(sections.indexOf(sectionValue)+1, new Section(section.getUpStation(), section.getDownStation(), section.getDistance()));
                 return true;
             }
-            count++;
         }
-        count = 0;
         return false;
     }
 
     private Section findIfSameUpstation(Section section) {
-        count = 0;
         for (Section sectionUpstation: sections) {
             if (sectionUpstation.getUpStation() == section.getUpStation() && sectionUpstation.getDownStation() != section.getDownStation() && sectionUpstation.getDistance() > section.getDistance()) {
                 return sectionUpstation;
             }
-            count++;
         }
-        count = 0;
         return null;
     }
 
     private Section findIfSameDownstation(Section section) {
-        count = 0;
         for (Section sectionDownstation: sections) {
             if (sectionDownstation.getDownStation() == section.getDownStation() && sectionDownstation.getUpStation() != section.getUpStation() && sectionDownstation.getDistance() > section.getDistance()) {
                 return sectionDownstation;
             }
-            count++;
         }
-        count = 0;
         return null;
     }
 
