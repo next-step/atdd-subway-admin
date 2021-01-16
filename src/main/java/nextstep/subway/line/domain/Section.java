@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
@@ -15,7 +16,10 @@ public class Section extends BaseEntity {
     private int distance;
 
     @ManyToOne
-    private Line lineSection;
+    private Line line;
+
+    @ManyToOne
+    private Station station;
 
     public Section() {
 
@@ -27,13 +31,8 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public Section(Long upStation, Long downStation) {
-        this.upStation = upStation;
-        this.downStation = downStation;
-    }
-
     public void setLine(Line line) {
-        this.lineSection = line;
+        this.line = line;
         //line.getSections().add(this);
     }
 

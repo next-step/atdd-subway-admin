@@ -4,10 +4,9 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.station.domain.LineStation;
-import nextstep.subway.station.domain.LineStationRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +30,7 @@ public class LineServiceTest {
     private LineRepository lineRepository;
 
     @Autowired
-    private LineStationRepository lineStationRepository;
+    private SectionRepository sectionRepository;
 
     @Autowired
     private StationRepository stationRepository;
@@ -40,16 +39,8 @@ public class LineServiceTest {
     void setUp() {
         final Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         final Station station1 = stationRepository.save(new Station("양재시민의 숲"));
-        final LineStation lineStation1 = new LineStation();
-//        lineStation1.setStation(stationRepository.save(station1));
-        lineStation1.setLine(line);
-        lineStationRepository.save(lineStation1);
         final Station station2 = stationRepository.save(new Station("상현"));
-        final LineStation lineStation2 = new LineStation();
-//        lineStation2.setStation(stationRepository.save(station2));
-        lineStation2.setLine(line);
-        lineStationRepository.save(lineStation2);
-        Section section = new Section(station1.getId(), station2.getId(), 15);
+        Section section = sectionRepository.save(new Section(station1.getId(), station2.getId(), 50));
         line.addSection(section);
 
         assertThat(lineRepository.findByName("신분당선").getSections()).hasSize(1);
@@ -68,35 +59,23 @@ public class LineServiceTest {
     void saveSection1() {
 
         Station station1 = stationRepository.save(new Station("판교"));
-        final LineStation lineStation = new LineStation();
-//        lineStation.setStation(stationRepository.save(station1));
-        lineStation.setLine(lineRepository.findByName("신분당선"));
-        lineStationRepository.save(lineStation);
 
-        SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("양재시민의 숲").getId(), station1.getId(), 3);
-        final LineService lineService = new LineService(lineRepository, stationRepository, lineStationRepository);
+        SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("양재시민의 숲").getId(), station1.getId(), 30);
+        final LineService lineService = new LineService(lineRepository, sectionRepository);
         LineResponse response = lineService.saveSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
 
-        final Line line = lineStationRepository.findByLine(lineRepository.findByName("신분당선")).getLine();
+        final Line line = lineRepository.findByName("신분당선");
         assertThat(line.getSections()).hasSize(2);
-
-        //assertThat(response.getSections()).hasSize(2);
-        //assertThat(stationRepository.findById(response.getSections().get(0).getUpStation()).get().getName()).isEqualTo("양재시민의 숲");
-        //assertThat(stationRepository.findById(response.getSections().get(1).getUpStation()).get().getName()).isEqualTo("판교");
-    }
+ }
 
     @Test
     @DisplayName("기존 역사이에 새로운 역을 등록(하행역기준")
     void saveSection2() {
 
         Station station1 = stationRepository.save(new Station("판교"));
-        final LineStation lineStation = new LineStation();
-//        lineStation.setStation(stationRepository.save(station1));
-        lineStation.setLine(lineRepository.findByName("신분당선"));
-        lineStationRepository.save(lineStation);
 
         SectionRequest sectionRequest = new SectionRequest(station1.getId(), stationRepository.findByName("상현").getId(),  3);
-        final LineService lineService = new LineService(lineRepository, stationRepository, lineStationRepository);
+        final LineService lineService = new LineService(lineRepository, sectionRepository);
         LineResponse response = lineService.saveSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
 
         assertThat(response.getSections()).hasSize(2);
@@ -108,12 +87,8 @@ public class LineServiceTest {
     @DisplayName("새로운 역의 하행을 기존 노선 상행역으로 등록")
     void saveSection3() {
         Station station1 = stationRepository.save(new Station("양재역"));
-        LineStation lineStation = new LineStation();
-        lineStation.setLine(lineRepository.findByName("신분당선"));
- //       lineStation.setStation(station1);
-        lineStationRepository.save(lineStation);
         SectionRequest sectionRequest = new SectionRequest(station1.getId(), stationRepository.findByName("양재시민의 숲").getId(), 3);
-        final LineService lineService = new LineService(lineRepository, stationRepository, lineStationRepository);
+        final LineService lineService = new LineService(lineRepository, sectionRepository);
         LineResponse response = lineService.saveSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
 
         assertThat(response.getSections()).hasSize(2);
@@ -129,12 +104,8 @@ public class LineServiceTest {
     @DisplayName("새로운 역의 상행을 기존 노선 하행역으로 등록")
     void saveSection4() {
         Station station1 = stationRepository.save(new Station("광교"));
-        LineStation lineStation = new LineStation();
-        lineStation.setLine(lineRepository.findByName("신분당선"));
-//        lineStation.setStation(station1);
-        lineStationRepository.save(lineStation);
         SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("상현").getId(), station1.getId(), 5);
-        final LineService lineService = new LineService(lineRepository, stationRepository, lineStationRepository);
+        final LineService lineService = new LineService(lineRepository, sectionRepository);
         LineResponse response = lineService.saveSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
 
         assertThat(response.getSections()).hasSize(2);

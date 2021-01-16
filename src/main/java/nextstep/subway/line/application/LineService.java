@@ -3,16 +3,13 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.station.domain.LineStation;
-import nextstep.subway.station.domain.LineStationRepository;
-import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,14 +18,11 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
 
-    private final LineStationRepository lineStationRepository;
+    private final SectionRepository sectionRepository;
 
-    private final StationRepository stationRepository;
-
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, LineStationRepository lineStationRepository) {
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
-        this.lineStationRepository = lineStationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -36,14 +30,11 @@ public class LineService {
 
         if (request.getUpStation() != null && request.getDownStation() != null) {
             //세션정보 입력
+            //Section section = sectionRepository.save(new Section(request.getUpStation(), request.getDownStation(), request.getDistance()));
             Section section = new Section(request.getUpStation(), request.getDownStation(), request.getDistance());
+
             persistLine.addSection(section);
         }
-        LineStation lineStation = new LineStation();
-        lineStation.setLine(persistLine);
-        lineStationRepository.save(lineStation);
-        //final Line result = lineRepository.save(persistLine);
-        //return LineResponse.of(result);
         return LineResponse.of(persistLine);
     }
 
@@ -51,11 +42,8 @@ public class LineService {
     public LineResponse saveSection(Long id, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
         Section newSection = sectionRequest.toSection();
-        line.addSection(newSection);
-        LineStation lineStation = new LineStation();
-        lineStation.setLine(line);
-        lineStationRepository.save(lineStation);
-        return LineResponse.of(lineStation.getLine());
+        line.addSection(sectionRepository.save(newSection));
+        return LineResponse.of(line);
     }
 
     @Transactional(readOnly = true)
@@ -69,8 +57,7 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
-        Line lineStation = lineStationRepository.findByLine(line).getLine();
-        return LineResponse.of(lineStation);
+        return LineResponse.of(line);
     }
 
     public LineResponse updateLineById(Long id, LineRequest request) {

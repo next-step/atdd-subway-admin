@@ -49,9 +49,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse 판교역 = StationAcceptanceTest.지하철역_생성_요청("판교").as(StationResponse.class);
 
         Map<String, String> params = new HashMap<>();
-        params.put("upStation", station1.getId().toString());
-        params.put("downStation", 판교역.getId().toString());
-        params.put("distance", "30");
+        params.put("upStation", 판교역.getId().toString());
+        params.put("downStation", station2.getId().toString());
+        params.put("distance", "20");
 
         // when
         // 지하철_노선에_지하철역 등록_요청
