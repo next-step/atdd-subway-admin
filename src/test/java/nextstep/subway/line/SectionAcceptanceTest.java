@@ -78,19 +78,33 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse 판교역 = StationAcceptanceTest.지하철역_생성_요청("판교").as(StationResponse.class);
         노선_구간_생성_요청(판교역, station2, "20");
 
-        String uri = "/lines" + 신분당선.getId() + "/sections";
+        String uri1 = "/lines/" + 신분당선.getId() + "/sections";
         //when
-        ExtractableResponse<Response> response = RestAssured
+        ExtractableResponse<Response> deleteResponse = RestAssured
                 .given().log().all()
                 .param("stationId", 판교역.getId().toString())
                 .when()
-                .delete(uri)
+                .delete(uri1)
                 .then().log().all()
                 .extract();
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+/*
+        String uri2 = "/lines/" + 신분당선.getId();
+        // then
+        // 지하철_노선에_지하철역 등록됨
+        // GET
+        LineResponse getResponse = RestAssured
+                .given().log().all()
+                .when()
+                .get(uri2)
+                .then().log().all()
+                .extract()
+                .as(LineResponse.class);
 
+        assertThat(getResponse.getSections()).hasSize(2);
+*/
     }
 
     private void 노선_구간_생성_요청(StationResponse station1, StationResponse station2, String distance) {
