@@ -15,7 +15,8 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "station")
+    //@OneToMany(mappedBy = "station")
+    @OneToMany
     private List<LineStation> lineStation = new ArrayList<>();
 
     public Station() {

@@ -20,7 +20,7 @@ public class Line extends BaseEntity {
     @OneToMany(mappedBy = "line")
     private List<LineStation> lineStations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "lineSection", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "lineSection", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Section> sections = new ArrayList<>();
 
     private int count;

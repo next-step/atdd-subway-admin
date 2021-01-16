@@ -55,7 +55,7 @@ public class LineService {
         LineStation lineStation = new LineStation();
         lineStation.setLine(line);
         lineStationRepository.save(lineStation);
-        return LineResponse.of(line);
+        return LineResponse.of(lineStation.getLine());
     }
 
     @Transactional(readOnly = true)

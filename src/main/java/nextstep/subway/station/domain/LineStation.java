@@ -11,17 +11,21 @@ public class LineStation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /*
     @ManyToOne
     @JoinColumn(name = "station_id")
     private Station station;
+    */
 
     @ManyToOne
     @JoinColumn(name = "line_id")
     private Line line;
 
+    /*
     public void setStation(Station station) {
         this.station = station;
     }
+    */
 
     public void setLine(Line line) {
         this.line = line;
@@ -31,9 +35,11 @@ public class LineStation {
         this.line = line;
     }
 
+    /*
     public Station getStation() {
         return station;
     }
+    */
 
     public Line getLine() {
         return line;
