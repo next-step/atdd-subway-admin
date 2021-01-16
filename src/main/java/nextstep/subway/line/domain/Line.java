@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -8,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import org.springframework.util.CollectionUtils;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
@@ -39,7 +42,9 @@ public class Line extends BaseEntity {
             final Station downStation, final Integer distance) {
         Line line = new Line(name, color);
 
-        line.addSection(upStation, downStation, distance);
+        if (upStation != null && downStation != null) {
+            line.addSection(upStation, downStation, distance);
+        }
 
         return line;
     }
@@ -61,8 +66,12 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Sections getSections() {
-        return sections;
+    public List<Station> getStations() {
+        return this.sections.getStations();
+    }
+
+    public boolean hasStations() {
+        return !CollectionUtils.isEmpty(this.getStations());
     }
 
     public void addSection(final Station up, final Station down, final Integer distance) {

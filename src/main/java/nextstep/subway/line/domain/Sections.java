@@ -2,11 +2,15 @@ package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+
+import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
@@ -29,4 +33,10 @@ public class Sections {
 		this.sections.add(section);
 	}
 
+	public List<Station> getStations() {
+		return this.sections.stream()
+			.flatMap(Section::getStations)
+			.distinct()
+			.collect(Collectors.toList());
+	}
 }
