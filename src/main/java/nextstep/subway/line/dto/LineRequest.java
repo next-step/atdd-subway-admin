@@ -49,7 +49,7 @@ public class LineRequest {
 
     public Line toLine(Station upStation, Station downStation) {
         Line line = new Line(name, color);
-        line.addSections(new Section(line, upStation, downStation, this.distance));
+        line.addSections(Section.of(line, upStation, downStation, this.distance));
         return line;
     }
 }
