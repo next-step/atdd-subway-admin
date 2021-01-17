@@ -13,9 +13,10 @@ import java.util.Map;
 @DisplayName("지하철 역 관련 Util")
 @SuppressWarnings("NonAsciiCharacters")
 public class StationAcceptanceUtil extends AcceptanceTest {
+    private static final long ZERO = 0L;
 
     @DisplayName("지하철 역 생성 요청")
-    public static Long 지하철_역_생성_요청(String station) {
+    public static long 지하철_역_생성_요청(String station) {
         Map<String, String> params = new HashMap<>();
         params.put("name", station);
 
@@ -26,6 +27,6 @@ public class StationAcceptanceUtil extends AcceptanceTest {
                 .when().post("/stations")
                 .then().log().all().extract();
 
-        return Long.parseLong(response.header("Location").split("/")[2]);
+        return response.header("Location") == null ? ZERO : Long.parseLong(response.header("Location").split("/")[2]);
     }
 }
