@@ -60,6 +60,15 @@ public class LineAcceptanceUtil {
                 .then().log().all().extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_구간_등록_요청(LineRequest params) {
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("lines/1/sections")
+                .then().log().all().extract();
+    }
+
     public static Long 지하철_노선_응답_아이디(ExtractableResponse<Response> response) {
         return response.jsonPath()
                 .getObject(".", LineResponse.class)
