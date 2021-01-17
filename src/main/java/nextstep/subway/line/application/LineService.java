@@ -74,7 +74,6 @@ public class LineService {
     public LineResponse findLineById(Long id) {
         Line findLine = lineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
-        findLine.getSections().sortBy();
         return LineResponse.of(findLine);
     }
 

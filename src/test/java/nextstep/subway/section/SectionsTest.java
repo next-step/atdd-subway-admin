@@ -4,6 +4,7 @@ import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,8 +23,8 @@ class SectionsTest {
                 new Section(선릉, 잠실, 5)
         ));
         // when
-        sections.sortBy();
+        List<Station> stations = sections.toStations();
         // then
-        assertThat(sections.toStations()).containsExactly(강남, 역삼, 선릉, 잠실);
+        assertThat(stations).containsExactly(강남, 역삼, 선릉, 잠실);
     }
 }

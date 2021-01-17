@@ -43,12 +43,10 @@ public class Section {
         return downStation;
     }
 
-    public int compareTo(Section section) {
-        if (section.upStation.equals(this.downStation)) {
-            return -1;
-        } else {
-            return 0;
-        }
+    public void update(Section section) {
+        this.upStation = section.upStation;
+        this.downStation = section.downStation;
+        this.distance = section.distance;
     }
 
     public void setLine(Line line) {

@@ -5,6 +5,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -28,22 +29,40 @@ public class Sections {
         element.remove(section);
     }
 
-    public void sortBy() {
-        element.sort(Section::compareTo);
-    }
-
     public List<Station> toStations() {
         List<Station> stations = new ArrayList<>();
-        for (Section section : this.element) {
-            addStation(stations, section.getUpStation());
-            addStation(stations, section.getDownStation());
-        }
+        Station upStation = findUpStation();
+        stations.add(upStation);
+        addSortByUpStation(upStation, stations);
         return stations;
     }
 
-    private void addStation(List<Station> stations, Station station) {
-        if (!stations.contains(station)) {
-            stations.add(station);
+    private Station findUpStation() {
+        Station downStation = this.element.get(0).getUpStation();
+        while (downStation != null) {
+            Station finalDownStation = downStation;
+            Optional<Section> findStation = element.stream()
+                    .filter(section -> section.getDownStation() == finalDownStation)
+                    .findFirst();
+            if (!findStation.isPresent()) {
+                break;
+            }
+            downStation = findStation.get().getUpStation();
+        }
+        return downStation;
+    }
+
+    private void addSortByUpStation(Station downStation, List<Station> stations) {
+        while (downStation != null) {
+            Station finalDownStation = downStation;
+            Optional<Section> findStation = this.element.stream()
+                    .filter(section -> section.getUpStation() == finalDownStation)
+                    .findFirst();
+            if (!findStation.isPresent()) {
+                break;
+            }
+            downStation = findStation.get().getDownStation();
+            stations.add(downStation);
         }
     }
 
