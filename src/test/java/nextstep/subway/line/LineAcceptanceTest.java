@@ -5,7 +5,9 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
@@ -20,15 +22,37 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.exception.dto.ErrorResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    private final StationAcceptanceTest stationAcceptanceTest = new StationAcceptanceTest();
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
         LineRequest request = new LineRequest("신분당선", "bg-red-600");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(request);
+
+        // then
+        지하철_노선_생성됨(response, request);
+    }
+
+    @DisplayName("지하철 노선을 종점과 함께 생성한다.")
+    @Test
+    void createLineWithSection() {
+        // given
+        StationResponse gangNam = 지하철역_생성_요청("강남역");
+        StationResponse jungJa = 지하철역_생성_요청("정자역");
+        LineRequest request = new LineRequest("신분당선", "bg-red-600",
+            gangNam.getId(),
+            jungJa.getId(),
+            10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(request);
@@ -82,6 +106,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_응답됨(response, createdLine);
     }
 
+    @DisplayName("지하철역 목록이 있는 지하철 노선을 조회한다.")
+    @Test
+    void getLineWithStations() {
+        // given
+        // given
+        StationResponse gangNam = 지하철역_생성_요청("강남역");
+        StationResponse jungJa = 지하철역_생성_요청("정자역");
+        LineRequest request = new LineRequest("신분당선", "bg-red-600",
+            gangNam.getId(),
+            jungJa.getId(),
+            10);
+        LineResponse createdLine = 지하철_노선_등록되어_있음(request);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdLine.getId());
+
+        // then
+        지하철_노선_응답됨(response, createdLine);
+    }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
@@ -176,13 +219,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .collect(Collectors.toList())).containsAll(createLineNames);
     }
 
-    private void 지하철_노선_응답됨(final ExtractableResponse<Response> response, final LineResponse createdLineResponse) {
+    private void 지하철_노선_응답됨(final ExtractableResponse<Response> response,
+        final LineResponse createdLineResponse) {
+
         LineResponse lineTestResponse = response.as(LineResponse.class);
         assertAll(
             () -> assertThat(lineTestResponse.getId()).isEqualTo(createdLineResponse.getId()),
             () -> assertThat(lineTestResponse.getName()).isEqualTo(createdLineResponse.getName()),
-            () -> assertThat(lineTestResponse.getColor()).isEqualTo(createdLineResponse.getColor())
+            () -> assertThat(lineTestResponse.getColor()).isEqualTo(createdLineResponse.getColor()),
+            () -> assertThat(extractStationIds(lineTestResponse.getStations()))
+                    .containsAll(extractStationIds(createdLineResponse.getStations()))
         );
+    }
+
+    private List<Long> extractStationIds(List<StationResponse> stationResponses) {
+        return stationResponses.stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(final Long id, final LineRequest modifyRequest) {
@@ -227,6 +280,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
             () -> assertThat(response.as(ErrorResponse.class).getMessage())
                 .isEqualTo("기본 키 또는 유니크 제약조건에 위배됩니다.")
         );
+    }
+
+    private StationResponse 지하철역_생성_요청(final String name) {
+        Map<String, String> param = new HashMap<>();
+        param.put("name", name);
+        return stationAcceptanceTest.지하철역_생성_요청(param).as(StationResponse.class);
     }
 
 }
