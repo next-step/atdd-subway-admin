@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,8 +26,12 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = getStation(request.getUpStationId());
-        Station downStation = getStation(request.getDownStationId());
+        Map<Long, Station> stations = stationRepository
+                .findAllByIdIn(request.getUpStationId(), request.getDownStationId())
+                .collect(Collectors.toMap(Station::getId, Function.identity()));
+
+        Station upStation = stations.get(request.getUpStationId());
+        Station downStation = stations.get(request.getDownStationId());
 
         Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
@@ -56,10 +62,5 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("데이터가 존재하지 않습니다."));
         lineRepository.delete(line);
-    }
-
-    public Station getStation(long id) {
-        return stationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("데이터가 존재하지 않습니다."));
     }
 }
