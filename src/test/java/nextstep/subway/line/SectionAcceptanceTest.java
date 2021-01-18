@@ -119,6 +119,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
     }
 
     private void 노선_구간_생성_요청(StationResponse station1, StationResponse station2, String distance) {
