@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -110,27 +111,27 @@ public class Line extends BaseEntity {
         return null;
     }
 
-    public void deleteSection(Long stationId) {
+    public void deleteSection(Station station) {
         if (sections.size() == 1) {
-            occureException(stationId);
+            occureException(station);
         }
 
         if (sections.size() > 1) {
-            deleteStation(stationId);
+            deleteStation(station);
         }
     }
 
-    private void deleteStation(Long stationId) {
+    private void deleteStation(Station station) {
         for (Section targetSection:sections) {
-            executeRestructorSection(stationId, targetSection);
+            executeRestructorSection(station, targetSection);
         }
     }
 
-    private void executeRestructorSection(Long stationId, Section targetSection) {
+    private void executeRestructorSection(Station station, Section targetSection) {
         int count;
         int addDistance;
-        Long downStation;
-        if (targetSection.getDownStation() == stationId) {
+        Station downStation;
+        if (targetSection.getDownStation() == station) {
             count = sections.indexOf(targetSection);
             addDistance = sections.get(count).getDistance() + sections.get(count+1).getDistance();
             downStation = sections.get(count+1).getDownStation();
@@ -139,8 +140,8 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void occureException(Long stationId) {
-        if (sections.get(0).getUpStation() == stationId || sections.get(0).getDownStation() == stationId) {
+    private void occureException(Station station) {
+        if (sections.get(0).getUpStation() == station || sections.get(0).getDownStation() == station) {
             throw new IllegalArgumentException("구간이 하나인 지하철역은 삭제할 수 없습니다!");
         }
     }

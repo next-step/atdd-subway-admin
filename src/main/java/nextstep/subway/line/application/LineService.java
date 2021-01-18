@@ -7,6 +7,8 @@ import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,18 +22,21 @@ public class LineService {
 
     private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, SectionRepository sectionRepository) {
+    private final StationRepository stationRepository;
+
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.sectionRepository = sectionRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
 
         if (request.getUpStation() != null && request.getDownStation() != null) {
-            //세션정보 입력
-            //Section section = sectionRepository.save(new Section(request.getUpStation(), request.getDownStation(), request.getDistance()));
-            Section section = new Section(request.getUpStation(), request.getDownStation(), request.getDistance());
+            Station station1 = stationRepository.findById(request.getUpStation()).orElseThrow(IllegalArgumentException::new);
+            Station station2 = stationRepository.findById(request.getDownStation()).orElseThrow(IllegalArgumentException::new);
+            Section section = new Section(station1, station2, request.getDistance());
 
             persistLine.addSection(section);
         }
@@ -40,8 +45,10 @@ public class LineService {
 
     // 비즈니스 로직 도메인으로 이동 인자만 전달
     public LineResponse saveSection(Long id, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
-        Section newSection = sectionRequest.toSection();
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Station station1 = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(IllegalArgumentException::new);
+        Station station2 = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(IllegalArgumentException::new);
+        Section newSection = new Section(station1, station2,sectionRequest.getDistance());
         line.addSection(sectionRepository.save(newSection));
         return LineResponse.of(line);
     }
@@ -71,8 +78,8 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void deleteSectionById(Long id, Long stationId) {
+    public void deleteSectionById(Long id, Station station) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
-        line.deleteSection(stationId);
+        line.deleteSection(station);
     }
 }

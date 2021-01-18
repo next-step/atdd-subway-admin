@@ -34,8 +34,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams = new HashMap<>();
         createParams.put("name", "신분당선");
         createParams.put("color", "bg-red-600");
-        createParams.put("upStation", station1.getId() + "");
-        createParams.put("downStation", station2.getId() + "");
+        createParams.put("upStationId", station1.getId() + "");
+        createParams.put("downStationId", station2.getId() + "");
         createParams.put("distance", 50 + "");
         신분당선 = CommonMethod.지하철_노선_생성_요청(createParams).as(LineResponse.class);
 
@@ -113,20 +113,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> deleteResponse = RestAssured
                 .given().log().all()
-                .param("stationId", station1.getId().toString())
+                .param("station", station1)
                 .when()
                 .delete(uri1)
                 .then().log().all()
                 .extract();
 
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
 
     private void 노선_구간_생성_요청(StationResponse station1, StationResponse station2, String distance) {
         Map<String, String> params = new HashMap<>();
-        params.put("upStation", station1.getId().toString());
-        params.put("downStation", station2.getId().toString());
+        params.put("upStationId", station1.getId().toString());
+        params.put("downStationId", station2.getId().toString());
         params.put("distance", distance);
 
         // when

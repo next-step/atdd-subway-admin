@@ -1,13 +1,12 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.CommonMethod;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -168,10 +167,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green darken-1");
-        params.put("upStation", createResponse1.header("Location").split("/")[2]);
-        params.put("downStation", createResponse2.header("Location").split("/")[2]);
+        params.put("upStationId", createResponse1.header("Location").split("/")[2]);
+        params.put("downStationId", createResponse2.header("Location").split("/")[2]);
         params.put("distance", "10");
-
+        /*
+        Long station1 = 1l;
+        Long station2 = 2l;
+        LineRequest params = new LineRequest("2호선", "green darken-1", station1, station2, 10);
+        */
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> createResponse = RestAssured

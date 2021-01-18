@@ -51,14 +51,14 @@ public class RelationMappingTest {
         final Station station1 = stationRepository.save(new Station("양재시민의 숲"));
         final Station station2 = stationRepository.save(new Station("상현"));
 
-        Section section1 = new Section(station1.getId(), station2.getId(), 50);
+        Section section1 = new Section(station1, station2, 50);
         line2.addSection(section1);
 
         Line actual = lineRepository.findByName("신분당선");
 
         assertThat(actual.getSections()).hasSize(1);
 
-        assertThat(actual.getSections().get(0).getUpStation()).isEqualTo(station1.getId());
+        assertThat(actual.getSections().get(0).getUpStation()).isEqualTo(station1);
     }
 
     @Test
@@ -68,34 +68,36 @@ public class RelationMappingTest {
         final Station station1 = stationRepository.save(new Station("양재시민의 숲"));
         final Station station2 = stationRepository.save(new Station("상현"));
 
-        Section section1 = new Section(station1.getId(), station2.getId(), 50);
+        Section section1 = new Section(station1, station2, 50);
         line2.addSection(section1);
 
         final Station station3 = stationRepository.save(new Station("판교"));
-        Section section2 = new Section(station1.getId(), station3.getId(), 30);
+        Section section2 = new Section(station1, station3, 30);
         line2.addSection(section2);
         lineRepository.flush();
 
         Line actual = lineRepository.findByName("신분당선");
-        assertThat(actual.getSections()).hasSize(2);
-        assertThat(actual.getSections().get(0).getUpStation()).isEqualTo(station1.getId());
-        assertThat(actual.getSections().get(0).getDownStation()).isEqualTo(3);
-        assertThat(actual.getSections().get(1).getUpStation()).isEqualTo(3);
-        assertThat(actual.getSections().get(1).getDownStation()).isEqualTo(2);
 
-        actual.deleteSection(station3.getId());
+
+        assertThat(actual.getSections()).hasSize(2);
+        assertThat(actual.getSections().get(0).getUpStation()).isEqualTo(station1);
+        assertThat(actual.getSections().get(0).getDownStation()).isEqualTo(station3);
+        assertThat(actual.getSections().get(1).getUpStation()).isEqualTo(station3);
+        assertThat(actual.getSections().get(1).getDownStation()).isEqualTo(station2);
+
+        actual.deleteSection(station3);
         assertThat(actual.getSections()).hasSize(1);
-        assertThat(actual.getSections().get(0).getUpStation()).isEqualTo(1);
-        assertThat(actual.getSections().get(0).getDownStation()).isEqualTo(2);
+        assertThat(actual.getSections().get(0).getUpStation()).isEqualTo(station1);
+        assertThat(actual.getSections().get(0).getDownStation()).isEqualTo(station2);
         assertThat(actual.getSections().get(0).getDistance()).isEqualTo(50);
 
         assertThatThrownBy(() -> {
-            actual.deleteSection(station2.getId());
+            actual.deleteSection(station2);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("구간이 하나인 지하철역은 삭제할 수 없습니다!");
 
         assertThatThrownBy(() -> {
-            actual.deleteSection(station1.getId());
+            actual.deleteSection(station1);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("구간이 하나인 지하철역은 삭제할 수 없습니다!");
     }

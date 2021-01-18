@@ -40,7 +40,7 @@ public class LineServiceTest {
         final Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
         final Station station1 = stationRepository.save(new Station("양재시민의 숲"));
         final Station station2 = stationRepository.save(new Station("상현"));
-        Section section = sectionRepository.save(new Section(station1.getId(), station2.getId(), 50));
+        Section section = sectionRepository.save(new Section(station1, station2, 50));
         line.addSection(section);
 
         assertThat(lineRepository.findByName("신분당선").getSections()).hasSize(1);
@@ -61,7 +61,7 @@ public class LineServiceTest {
         Station station1 = stationRepository.save(new Station("판교"));
 
         SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("양재시민의 숲").getId(), station1.getId(), 30);
-        final LineService lineService = new LineService(lineRepository, sectionRepository);
+        final LineService lineService = new LineService(lineRepository, sectionRepository, stationRepository);
         LineResponse response = lineService.saveSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
 
         final Line line = lineRepository.findByName("신분당선");
@@ -75,12 +75,12 @@ public class LineServiceTest {
         Station station1 = stationRepository.save(new Station("판교"));
 
         SectionRequest sectionRequest = new SectionRequest(station1.getId(), stationRepository.findByName("상현").getId(),  3);
-        final LineService lineService = new LineService(lineRepository, sectionRepository);
+        final LineService lineService = new LineService(lineRepository, sectionRepository, stationRepository);
         LineResponse response = lineService.saveSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
 
         assertThat(response.getSections()).hasSize(2);
-        assertThat(stationRepository.findById(response.getSections().get(0).getUpStation()).get().getName()).isEqualTo("양재시민의 숲");
-        assertThat(stationRepository.findById(response.getSections().get(1).getUpStation()).get().getName()).isEqualTo("판교");
+        assertThat(stationRepository.findById(response.getSections().get(0).getUpStation().getId()).get().getName()).isEqualTo("양재시민의 숲");
+        assertThat(stationRepository.findById(response.getSections().get(1).getUpStation().getId()).get().getName()).isEqualTo("판교");
     }
 
     @Test
@@ -88,14 +88,14 @@ public class LineServiceTest {
     void saveSection3() {
         Station station1 = stationRepository.save(new Station("양재역"));
         SectionRequest sectionRequest = new SectionRequest(station1.getId(), stationRepository.findByName("양재시민의 숲").getId(), 3);
-        final LineService lineService = new LineService(lineRepository, sectionRepository);
+        final LineService lineService = new LineService(lineRepository, sectionRepository, stationRepository);
         LineResponse response = lineService.saveSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
 
-        assertThat(stationRepository.findById(response.getSections().get(0).getUpStation()).get().getName()).isEqualTo("양재역");
-        assertThat(stationRepository.findById(response.getSections().get(0).getDownStation()).get().getName()).isEqualTo("양재시민의 숲");
+        assertThat(stationRepository.findById(response.getSections().get(0).getUpStation().getId()).get().getName()).isEqualTo("양재역");
+        assertThat(stationRepository.findById(response.getSections().get(0).getDownStation().getId()).get().getName()).isEqualTo("양재시민의 숲");
         assertThat(response.getSections().get(0).getDistance()).isEqualTo(3);
-        assertThat(stationRepository.findById(response.getSections().get(1).getUpStation()).get().getName()).isEqualTo("양재시민의 숲");
-        assertThat(stationRepository.findById(response.getSections().get(1).getDownStation()).get().getName()).isEqualTo("상현");
+        assertThat(stationRepository.findById(response.getSections().get(1).getUpStation().getId()).get().getName()).isEqualTo("양재시민의 숲");
+        assertThat(stationRepository.findById(response.getSections().get(1).getDownStation().getId()).get().getName()).isEqualTo("상현");
         assertThat(response.getSections().get(1).getDistance()).isEqualTo(50);
         assertThat(response.getSections()).hasSize(2);
     }
@@ -105,12 +105,12 @@ public class LineServiceTest {
     void saveSection4() {
         Station station1 = stationRepository.save(new Station("광교"));
         SectionRequest sectionRequest = new SectionRequest(stationRepository.findByName("상현").getId(), station1.getId(), 5);
-        final LineService lineService = new LineService(lineRepository, sectionRepository);
+        final LineService lineService = new LineService(lineRepository, sectionRepository, stationRepository);
         LineResponse response = lineService.saveSection(lineRepository.findByName("신분당선").getId(), sectionRequest);
 
         assertThat(response.getSections()).hasSize(2);
-        assertThat(stationRepository.findById(response.getSections().get(1).getUpStation()).get().getName()).isEqualTo("상현");
-        assertThat(stationRepository.findById(response.getSections().get(1).getDownStation()).get().getName()).isEqualTo("광교");
+        assertThat(stationRepository.findById(response.getSections().get(1).getUpStation().getId()).get().getName()).isEqualTo("상현");
+        assertThat(stationRepository.findById(response.getSections().get(1).getDownStation().getId()).get().getName()).isEqualTo("광교");
         assertThat(response.getSections().get(1).getDistance()).isEqualTo(5);
     }
 }
