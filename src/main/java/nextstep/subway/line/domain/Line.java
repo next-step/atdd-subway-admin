@@ -9,11 +9,13 @@ import nextstep.subway.station.dto.StationResponse;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
 
+    public static final int CANNOT_DELETE_SIZE = 1;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -93,5 +95,35 @@ public class Line extends BaseEntity {
                     .findFirst().orElse(null);
         }
         return result;
+    }
+
+    public void deleteStation(Station station){
+        checkDeletable(station);
+        Optional<Section> upSection = sections.stream()
+                .filter(item -> item.getDown() == (station))
+                .findFirst();
+        Optional<Section> downSection = sections.stream()
+                .filter(item -> item.getUp() == (station))
+                .findFirst();
+        if (upSection.isPresent() && downSection.isPresent()) {
+            downSection.get().mergeUp(upSection.get());
+            sections.remove(upSection.get());
+            return;
+        }
+        if (downSection.isPresent()) {
+            sections.remove(downSection.get());
+            sections.get(0).setStart();
+            return;
+        }
+        upSection.ifPresent(section -> sections.remove(section));
+    }
+
+    private void checkDeletable(Station station) {
+        if (this.getStations().stream().noneMatch(item -> item == station)) {
+            throw new RuntimeException();
+        }
+        if (sections.size() == CANNOT_DELETE_SIZE) {
+            throw new RuntimeException();
+        }
     }
 }

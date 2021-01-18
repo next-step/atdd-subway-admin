@@ -72,32 +72,6 @@ public class LineService {
     public void deleteStation(Long lineId, Long stationId) {
         Line deletingLine = lineRepository.getOne(lineId);
         Station deletingStation = stationService.getOne(stationId);
-        List<Section> sections = deletingLine.getSections();
-        if (deletingLine.getStations().stream().noneMatch(item -> item == deletingStation)) {
-            throw new RuntimeException();
-        }
-        if (deletingLine.getSections().size() == 1) {
-            throw new RuntimeException();
-        }
-        Optional<Section> upSection = sections.stream()
-                .filter(item -> item.getDown() == (deletingStation))
-                .findFirst();
-        Optional<Section> downSection = sections.stream()
-                .filter(item -> item.getUp() == (deletingStation))
-                .findFirst();
-        if (upSection.isPresent() && downSection.isPresent()) {
-            downSection.get().mergeUp(upSection.get());
-            deletingLine.getSections().remove(upSection.get());
-            return;
-        }
-        if (downSection.isPresent()) {
-            deletingLine.getSections().remove(downSection.get());
-            deletingLine.getSections().get(0).setStart();
-            return;
-        }
-        if (upSection.isPresent()) {
-            deletingLine.getSections().remove(upSection.get());
-            return;
-        }
+        deletingLine.deleteStation(deletingStation);
     }
 }
