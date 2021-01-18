@@ -141,25 +141,88 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> params = new HashMap<>();
+        params.put("name","1호선");
+        params.put("color","파란색");
+
+        RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all().extract();
 
         // when
         // 지하철_노선_조회_요청
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when()
+                .get("/lines/1")
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertAll(
+                () -> assertThat(response.jsonPath().getInt("id")).isEqualTo(1),
+                () -> assertThat(response.jsonPath().getString("name")).isEqualTo("1호선"),
+                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("파란색"),
+                () -> assertThat(response.jsonPath().getString("createdDate")).isNotNull(),
+                () -> assertThat(response.jsonPath().getString("modifiedDate")).isNotNull()
+        );
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
-    void updateLine() {
+    void patchLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> params = new HashMap<>();
+        params.put("name","1호선");
+        params.put("color","파란색");
+
+        ExtractableResponse<Response> responseLineInsert = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all().extract();
 
         // when
         // 지하철_노선_수정_요청
+        params.clear();
+        params.put("id", "1");
+        params.put("name","2호선");
+        params.put("color","초록색");
+
+        RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .patch("/lines/1")
+                .then().log().all().extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when()
+                .get("/lines/1")
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertAll(
+                () -> assertThat(response.jsonPath().getInt("id")).isEqualTo(1),
+                () -> assertThat(response.jsonPath().getString("name")).isEqualTo("2호선"),
+                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("초록색"),
+                () -> assertThat(response.jsonPath().getString("createdDate")).isNotNull(),
+                () -> assertThat(response.jsonPath().getString("modifiedDate")).isNotEqualTo(responseLineInsert.jsonPath().getString("modifiedDate"))
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")

@@ -31,6 +31,17 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findAllStations());
     }
 
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> selectLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findById(id));
+    }
+
+    @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> patchLine(@RequestBody LineRequest lineRequest, @PathVariable Long id) {
+        lineRequest.setId(id);
+        return ResponseEntity.ok().body(lineService.saveLine(lineRequest));
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
