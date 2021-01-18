@@ -23,7 +23,7 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections;
 
     public Line() {

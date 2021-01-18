@@ -33,6 +33,10 @@ public class SectionService {
         sectionRepository.deleteAll(sections);
     }
 
+    public void delete(Section section){
+        sectionRepository.delete(section);
+    }
+
     public SectionAddResponse addSection(Line addingLine, SectionAddRequest sectionAddRequest) {
         Station up = stationService.getOne(sectionAddRequest.getUpStationId());
         Station down = stationService.getOne(sectionAddRequest.getDownStationId());

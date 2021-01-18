@@ -7,6 +7,7 @@ import nextstep.subway.station.domain.Station;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
+import java.util.Optional;
 
 @Entity
 public class Section extends BaseEntity {
@@ -121,5 +122,17 @@ public class Section extends BaseEntity {
 
     public boolean getStart() {
         return this.start;
+    }
+
+    public void mergeUp(Section section) {
+        if (section.start) {
+            this.start = true;
+        }
+        this.distance = new SectionDistance(section.getDistance() + this.distance.getValue());
+        this.up = section.getUp();
+    }
+
+    public void setStart() {
+        this.start = true;
     }
 }
