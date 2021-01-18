@@ -90,7 +90,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-/*
+
         String uri2 = "/lines/" + 신분당선.getId();
         // then
         // 지하철_노선에_지하철역 등록됨
@@ -104,7 +104,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .as(LineResponse.class);
 
         assertThat(getResponse.getSections()).hasSize(2);
-*/
+    }
+
+    @Test
+    @DisplayName("노선이 하나일 때 삭제하면 예외케이스 발생")
+    void removeSectionCase() {
+        String uri1 = "/lines/" + 신분당선.getId() + "/sections";
+        //when
+        ExtractableResponse<Response> deleteResponse = RestAssured
+                .given().log().all()
+                .param("stationId", station1.getId().toString())
+                .when()
+                .delete(uri1)
+                .then().log().all()
+                .extract();
+
     }
 
     private void 노선_구간_생성_요청(StationResponse station1, StationResponse station2, String distance) {
