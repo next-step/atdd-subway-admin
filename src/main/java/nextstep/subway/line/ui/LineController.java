@@ -43,13 +43,13 @@ public class LineController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<?> deleteLine(@PathVariable Long id) {
         lineService.deleteLineId(id);
         return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity<?> handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }
 }

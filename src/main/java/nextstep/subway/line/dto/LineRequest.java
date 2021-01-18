@@ -17,6 +17,12 @@ public class LineRequest {
         this.color = color;
     }
 
+    public LineRequest(Long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
