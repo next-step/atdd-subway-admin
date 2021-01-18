@@ -6,20 +6,23 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.http.MediaType;
 
 import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("NonAsciiCharacters")
-@DisplayName("노선 요청 메소드 모음")
+@DisplayName("지하철 노선 관련 Util")
 public class LineAcceptanceUtil extends AcceptanceTest {
 
     private static LineRequest lineRequest;
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-        lineRequest = new LineRequest(name, color);
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, String upStation, String downStation, int distance) {
+        long upStationId = StationAcceptanceUtil.지하철_역_생성_요청(upStation);
+        long downStationId = StationAcceptanceUtil.지하철_역_생성_요청(downStation);
+
+        lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
         return RestAssured
                 .given().log().all()
                 .body(lineRequest)
