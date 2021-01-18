@@ -7,19 +7,28 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
+
+import nextstep.subway.line.dto.LineStationResponse;
+
 import nextstep.subway.line.dto.LineSectionCreateRequest;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.section.domain.Section;
+
 import nextstep.subway.section.dto.SectionAddRequest;
 import nextstep.subway.section.dto.SectionAddResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
+
 import org.assertj.core.api.ListAssert;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -186,6 +195,105 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+
+    @DisplayName("지하철 구간을 제거(가운데의 역을 제거)")
+    @Test
+    public void deleteTest1() {
+        강남_광교_정자_순으로_세팅();
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(신분당선.getId(), 광교역.getId());
+
+        // then
+        지하철역_삭제됨(response);
+
+        // when
+        LineStationResponse lineResponse2 = LineAcceptanceTest.지하철_노선_조회(신분당선.getId()).as(LineStationResponse.class);
+
+        // then
+        assertThat(lineResponse2.getStations().get(0)).isEqualTo(강남역);
+        assertThat(lineResponse2.getStations().get(1)).isEqualTo(정자역);
+    }
+
+
+
+    @DisplayName("지하철 구간을 제거(상행 종점을 제거)")
+    @Test
+    public void deleteTest2() {
+        강남_광교_정자_순으로_세팅();
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(신분당선.getId(), 강남역.getId());
+
+        // then
+        지하철역_삭제됨(response);
+
+        // when
+        LineStationResponse lineResponse2 = LineAcceptanceTest.지하철_노선_조회(신분당선.getId()).as(LineStationResponse.class);
+
+        // then
+        assertThat(lineResponse2.getStations().get(0)).isEqualTo(광교역);
+        assertThat(lineResponse2.getStations().get(1)).isEqualTo(정자역);
+
+    }
+
+    @DisplayName("지하철 구간을 제거(하행 종점을 제거)")
+    @Test
+    public void deleteTest3() {
+        강남_광교_정자_순으로_세팅();
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(신분당선.getId(), 정자역.getId());
+
+        // then
+        지하철역_삭제됨(response);
+
+        // when
+        LineStationResponse lineResponse2 = LineAcceptanceTest.지하철_노선_조회(신분당선.getId()).as(LineStationResponse.class);
+
+        // then
+        assertThat(lineResponse2.getStations().get(0)).isEqualTo(강남역);
+        assertThat(lineResponse2.getStations().get(1)).isEqualTo(광교역);
+    }
+
+    @DisplayName("지하철 구간 삭제 불가 테이스 - 노선에 없는 역")
+    @Test
+    public void invalidDeleteTest1() {
+        강남_광교_정자_순으로_세팅();
+
+        // when
+        StationResponse 새로운역1 = StationAcceptanceTest.지하철_역_등록되어_있음("새로운역1").as(StationResponse.class);
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(신분당선.getId(), 새로운역1.getId());
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("지하철 구간 삭제 불가 케이스 - 노선에 구간이 하나")
+    @Test
+    public void invalidDeleteTest2() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(신분당선.getId(), 정자역.getId());
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    static ExtractableResponse<Response> 지하철_구간_삭제_요청(Long lineId, Long stationId) {
+        Map<String, String> params = new HashMap();
+        params.put("stationId", stationId + "");
+        return RestAssured.given().log().all()
+                .params(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    static void 지하철역_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+
     static ExtractableResponse<Response> 지하철_구간_등록_요청(Long lineId, SectionAddRequest sectionCreateRequest) {
         return RestAssured.given().log().all()
                 .body(sectionCreateRequest)
@@ -195,4 +303,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+
+    private void 강남_광교_정자_순으로_세팅() {
+        // given
+        지하철_구간_등록_요청(신분당선.getId(), new SectionAddRequest(광교역.getId(), 정자역.getId(), 10));
+        LineStationResponse lineResponse = LineAcceptanceTest.지하철_노선_조회(신분당선.getId()).as(LineStationResponse.class);
+
+        // then
+        assertThat(lineResponse.getStations().get(0)).isEqualTo(강남역);
+        assertThat(lineResponse.getStations().get(1)).isEqualTo(광교역);
+        assertThat(lineResponse.getStations().get(2)).isEqualTo(정자역);
+    }
+
 }

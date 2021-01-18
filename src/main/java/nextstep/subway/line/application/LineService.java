@@ -2,13 +2,12 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.LineCreateRequest;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineStationResponse;
-import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.*;
 import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.domain.Section;
+
 import nextstep.subway.line.dto.LineSectionCreateRequest;
+
 import nextstep.subway.section.dto.SectionAddRequest;
 import nextstep.subway.section.dto.SectionAddResponse;
 import nextstep.subway.station.application.StationService;
@@ -16,8 +15,8 @@ import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,6 +70,13 @@ public class LineService {
         Line addingLine = lineRepository.getOne(lineId);
         SectionAddResponse response = sectionService.addSection(addingLine, sectionAddRequest);
         return response;
+    }
+
+
+    public void deleteStation(Long lineId, Long stationId) {
+        Line deletingLine = lineRepository.getOne(lineId);
+        Station deletingStation = stationService.getOne(stationId);
+        deletingLine.deleteStation(deletingStation);
     }
 
 }

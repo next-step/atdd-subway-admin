@@ -31,6 +31,12 @@ public class SectionService {
 
     public void delete(List<Section> sections) {
         sectionRepository.deleteAll(sections);
+
+    }
+
+    public void delete(Section section){
+        sectionRepository.delete(section);
+
     }
 
     public SectionAddResponse addSection(Line addingLine, SectionAddRequest sectionAddRequest) {
@@ -44,6 +50,7 @@ public class SectionService {
         if (up.isBottomEnd(sections)) {
             return SectionAddResponse.of(sectionRepository.save(new Section(addingLine, up, down, distance)));
         }
+
         return sections
                 .stream()
                 .map(item -> item.createAndChange(up, down, distance))
