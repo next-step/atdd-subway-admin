@@ -7,11 +7,20 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
+
 import nextstep.subway.line.dto.LineStationResponse;
+
+import nextstep.subway.line.dto.LineSectionCreateRequest;
+import nextstep.subway.line.dto.LineStationResponse;
+import nextstep.subway.section.domain.Section;
+
 import nextstep.subway.section.dto.SectionAddRequest;
 import nextstep.subway.section.dto.SectionAddResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
+
+import org.assertj.core.api.ListAssert;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -186,6 +195,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+
     @DisplayName("지하철 구간을 제거(가운데의 역을 제거)")
     @Test
     public void deleteTest1() {
@@ -283,6 +293,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+
     static ExtractableResponse<Response> 지하철_구간_등록_요청(Long lineId, SectionAddRequest sectionCreateRequest) {
         return RestAssured.given().log().all()
                 .body(sectionCreateRequest)
@@ -292,6 +303,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
 
     private void 강남_광교_정자_순으로_세팅() {
         // given
@@ -303,4 +315,5 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(lineResponse.getStations().get(1)).isEqualTo(광교역);
         assertThat(lineResponse.getStations().get(2)).isEqualTo(정자역);
     }
+
 }

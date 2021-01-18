@@ -9,7 +9,9 @@ import nextstep.subway.station.dto.StationResponse;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import java.util.Optional;
+
 import java.util.stream.Collectors;
 
 @Entity
@@ -25,7 +27,9 @@ public class Line extends BaseEntity {
 
     private String color;
 
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
+
     private List<Section> sections;
 
     public Line() {
@@ -97,6 +101,7 @@ public class Line extends BaseEntity {
         return result;
     }
 
+
     public void deleteStation(Station station){
         checkDeletable(station);
         Optional<Section> upSection = sections.stream()
@@ -126,4 +131,5 @@ public class Line extends BaseEntity {
             throw new RuntimeException();
         }
     }
+
 }
