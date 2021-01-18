@@ -40,4 +40,8 @@ public class LineService {
         Line line = lineRepository.getOne(id);
         return LineResponse.of(line);
     }
+
+    public void deleteLineId(Long id) {
+        lineRepository.deleteById(id);
+    }
 }

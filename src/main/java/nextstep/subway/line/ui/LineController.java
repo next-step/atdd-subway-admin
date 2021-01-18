@@ -42,6 +42,12 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.saveLine(lineRequest));
     }
 
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.deleteLineId(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
