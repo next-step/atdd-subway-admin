@@ -96,4 +96,9 @@ public class Section extends BaseEntity {
 			'}';
 	}
 
+	public void update(final Station up, final Station down, final Distance distance) {
+		this.up = up;
+		this.down = down;
+		this.distance = distance;
+	}
 }

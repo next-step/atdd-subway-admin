@@ -52,7 +52,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("노선에 구간을 등록한다.")
 	@Test
 	void addSection() {
-
 		final SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 양재역.getId(), 4);
 
 		// when
@@ -60,6 +59,30 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		지하철_노선에_지하철역_등록됨(response, 지하철_노선의_조회_요청(신분당선.getId()));
+	}
+
+	@DisplayName("구간 등록 예외 - 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같으면 등록을 할 수 없음")
+	@Test
+	void addSectionThrowDistanceEqual() {
+		final SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 양재역.getId(), 10);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
+
+		// then
+		지하철_노선에_지하철역_등록_예외_발생(response);
+	}
+
+	@DisplayName("구간 등록 예외 - 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이 보다 크면 등록을 할 수 없음")
+	@Test
+	void addSectionThrowDistanceGreaterThan() {
+		final SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 양재역.getId(), 11);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
+
+		// then
+		지하철_노선에_지하철역_등록_예외_발생(response);
 	}
 
 	public ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(final Long lineId,
@@ -95,5 +118,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		);
 	}
 
+	private void 지하철_노선에_지하철역_등록_예외_발생(final ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
 
 }
