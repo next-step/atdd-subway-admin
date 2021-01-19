@@ -9,6 +9,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +34,9 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
 
-        if (request.getUpStation() != null && request.getDownStation() != null) {
-            Station station1 = stationRepository.findById(request.getUpStation()).orElseThrow(IllegalArgumentException::new);
-            Station station2 = stationRepository.findById(request.getDownStation()).orElseThrow(IllegalArgumentException::new);
+        if (request.getUpStationId() != null && request.getDownStationId() != null) {
+            Station station1 = stationRepository.findById(request.getUpStationId()).orElseThrow(IllegalArgumentException::new);
+            Station station2 = stationRepository.findById(request.getDownStationId()).orElseThrow(IllegalArgumentException::new);
             Section section = new Section(station1, station2, request.getDistance());
 
             persistLine.addSection(section);
@@ -63,12 +64,12 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         return LineResponse.of(line);
     }
 
     public LineResponse updateLineById(Long id, LineRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         line.changeLine(request.getName(), request.getColor());
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
@@ -78,8 +79,10 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void deleteSectionById(Long id, Station station) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
+    public void deleteSectionById(Long id, Long stationId) {
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Station station = stationRepository.findById(stationId).orElseThrow(IllegalArgumentException::new);
         line.deleteSection(station);
+        lineRepository.save(line);
     }
 }

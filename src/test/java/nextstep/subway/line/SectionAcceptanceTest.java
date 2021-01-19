@@ -7,6 +7,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.CommonMethod;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,49 +79,50 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse 판교역 = StationAcceptanceTest.지하철역_생성_요청("판교").as(StationResponse.class);
         노선_구간_생성_요청(판교역, station2, "20");
 
-        String uri1 = "/lines/" + 신분당선.getId() + "/sections";
+        String uri = "/lines/" + 신분당선.getId() + "/sections";
         //when
-        ExtractableResponse<Response> deleteResponse = RestAssured
-                .given().log().all()
-                .param("stationId", 판교역.getId().toString())
-                .when()
-                .delete(uri1)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> deleteResponse = 노선_구간_지하철역삭제_요청(판교역, uri);
 
         //then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        String uri2 = "/lines/" + 신분당선.getId();
-        // then
-        // 지하철_노선에_지하철역 등록됨
-        // GET
-        LineResponse getResponse = RestAssured
-                .given().log().all()
-                .when()
-                .get(uri2)
-                .then().log().all()
-                .extract()
-                .as(LineResponse.class);
-
-        assertThat(getResponse.getSections()).hasSize(2);
     }
 
     @Test
     @DisplayName("노선이 하나일 때 삭제하면 예외케이스 발생")
     void removeSectionCase() {
-        String uri1 = "/lines/" + 신분당선.getId() + "/sections";
+        String uri = "/lines/" + 신분당선.getId() + "/sections";
         //when
-        ExtractableResponse<Response> deleteResponse = RestAssured
+        ExtractableResponse<Response> deleteResponse = 노선_구간_지하철역삭제_요청(station1, uri);
+
+        //then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+    }
+
+    @Test
+    @DisplayName("노선에 삭제할 지하철역이 없을 때에도 에러 발생")
+    void rmoveSectionNoRegisterStation() {
+        //given
+        StationResponse 판교역 = StationAcceptanceTest.지하철역_생성_요청("판교").as(StationResponse.class);
+        노선_구간_생성_요청(판교역, station2, "20");
+
+        //given
+        String uri = "/lines/" + 신분당선.getId() + "/sections";
+        StationResponse station = StationAcceptanceTest.지하철역_생성_요청("양재").as(StationResponse.class);
+        //when
+        ExtractableResponse<Response> response = 노선_구간_지하철역삭제_요청(station, uri);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private ExtractableResponse<Response> 노선_구간_지하철역삭제_요청(StationResponse station, String uri) {
+        return RestAssured
                 .given().log().all()
-                .param("station", station1)
                 .when()
-                .delete(uri1)
+                .delete(uri + "?stationId={stationId}", station.getId())
                 .then().log().all()
                 .extract();
-
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
     }
 
     private void 노선_구간_생성_요청(StationResponse station1, StationResponse station2, String distance) {

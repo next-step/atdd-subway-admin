@@ -33,11 +33,11 @@ public class LineRequest {
         return color;
     }
 
-    public Long getUpStation() {
+    public Long getUpStationId() {
         return upStationId;
     }
 
-    public Long getDownStation() {
+    public Long getDownStationId() {
         return downStationId;
     }
 

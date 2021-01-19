@@ -91,6 +91,20 @@ public class RelationMappingTest {
         assertThat(actual.getSections().get(0).getDownStation()).isEqualTo(station2);
         assertThat(actual.getSections().get(0).getDistance()).isEqualTo(50);
 
+    }
+
+    @Test
+    void 구간이_하나인_노선에서_마지막_구간을_제거할_수_없음() {
+        final Line line1 = new Line("신분당선", "pink");
+        final Line line2 = lineRepository.save(line1);
+        final Station station1 = stationRepository.save(new Station("양재시민의 숲"));
+        final Station station2 = stationRepository.save(new Station("상현"));
+
+        Section section1 = new Section(station1, station2, 50);
+        line2.addSection(section1);
+
+        Line actual = lineRepository.findByName("신분당선");
+
         assertThatThrownBy(() -> {
             actual.deleteSection(station2);
         }).isInstanceOf(IllegalArgumentException.class)
@@ -100,5 +114,6 @@ public class RelationMappingTest {
             actual.deleteSection(station1);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("구간이 하나인 지하철역은 삭제할 수 없습니다!");
+
     }
 }

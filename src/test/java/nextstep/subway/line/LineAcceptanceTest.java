@@ -170,11 +170,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", createResponse1.header("Location").split("/")[2]);
         params.put("downStationId", createResponse2.header("Location").split("/")[2]);
         params.put("distance", "10");
-        /*
-        Long station1 = 1l;
-        Long station2 = 2l;
-        LineRequest params = new LineRequest("2호선", "green darken-1", station1, station2, 10);
-        */
+ 
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> createResponse = RestAssured

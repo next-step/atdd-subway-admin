@@ -5,6 +5,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -57,8 +58,8 @@ public class LineController {
     }
 
     @DeleteMapping("/lines/{id}/sections")
-    public ResponseEntity removeLineSation(@PathVariable Long id, @RequestParam Station station) {
-        lineService.deleteSectionById(id, station);
+    public ResponseEntity removeLineSation(@PathVariable Long id, @RequestParam Long stationId) {
+        lineService.deleteSectionById(id, stationId);
         return ResponseEntity.ok().build();
     }
 
