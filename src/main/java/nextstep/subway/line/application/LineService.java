@@ -1,9 +1,6 @@
 package nextstep.subway.line.application;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -11,22 +8,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
+import nextstep.subway.line.exception.ResourceNotFoundException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationSearchRequest;
 
 @Service
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
+    private final SectionRepository sectionRepository;
 
-    public LineService(final LineRepository lineRepository, final StationService stationService) {
+    public LineService(final LineRepository lineRepository, final StationService stationService,
+        final SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.sectionRepository = sectionRepository;
     }
 
     @Transactional(readOnly = true)
@@ -42,14 +44,8 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-
-        Map<Long, Station> stations = stationService
-            .findAllById(new StationSearchRequest(request.getUpStationId(), request.getDownStationId()))
-            .stream()
-            .collect(Collectors.toMap(Station::getId, Function.identity()));
-
-        Station upStation = stations.get(request.getUpStationId());
-        Station downStation = stations.get(request.getDownStationId());
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
 
         Line line = lineRepository.save(request.toLine(upStation, downStation));
 
@@ -71,7 +67,17 @@ public class LineService {
     private Line findById(final Long id) {
         return lineRepository.findById(id)
             .orElseThrow(() ->
-                new LineNotFoundException(String.format("[id=%d] 요청한 지하철 노선 정보가 없습니다.", id)));
+                new ResourceNotFoundException(String.format("[id=%d] 요청한 지하철 노선 정보가 없습니다.", id)));
+    }
+
+    public SectionResponse saveSection(final Long id, final SectionRequest sectionRequest) {
+        Line line = findById(id);
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
+
+        return SectionResponse.of(sectionRepository.findByLineAndUpAndDown(line, upStation, downStation)
+            .orElseThrow(() -> new ResourceNotFoundException("구간 정보가 없습니다.")));
     }
 
 }
