@@ -173,7 +173,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(final Long id) {
+    public ExtractableResponse<Response> 지하철_노선_조회_요청(final Long id) {
         return given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
