@@ -70,6 +70,10 @@ public class Line extends BaseEntity {
         return this.sections.getStations();
     }
 
+    public List<Section> getSections() {
+        return this.sections.getSections();
+    }
+
     public boolean hasStations() {
         return !CollectionUtils.isEmpty(this.getStations());
     }
