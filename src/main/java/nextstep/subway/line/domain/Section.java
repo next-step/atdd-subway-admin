@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.persistence.Embedded;
@@ -65,8 +67,8 @@ public class Section extends BaseEntity {
 
 	public Distance getDistance() { return distance; }
 
-	public Stream<Station> getStations() {
-		return Stream.of(up, down);
+	public List<Station> getStations() {
+		return Stream.of(up, down).collect(Collectors.toList());
 	}
 
 	@Override
