@@ -85,6 +85,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철역_등록_예외_발생(response);
 	}
 
+	@DisplayName("구간 등록 예외 - 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+	@Test
+	void addSectionThrowUpAndDownAlreadyExists() {
+		final SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 광교역.getId(), 9);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
+
+		// then
+		지하철_노선에_지하철역_등록_예외_발생(response);
+	}
+
 	public ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(final Long lineId,
 			final SectionRequest sectionRequest) {
 		return given().log().all()

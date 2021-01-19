@@ -30,6 +30,7 @@ public class Sections {
 	}
 
 	public void addSection(final Section section) {
+		validate(section);
 		findByUpStation(section.getUp())
 			.ifPresent(existsSection ->
 				existsSection.update(section.getDown(), existsSection.getDown(),
@@ -38,9 +39,16 @@ public class Sections {
 		findByDownStation(section.getDown())
 			.ifPresent(existsSection ->
 				existsSection.update(section.getDown(), existsSection.getDown(),
-					existsSection.getDistance().minus(section.getDistance())));
+					section.getDistance().minus(existsSection.getDistance())));
 
 		this.sections.add(section);
+	}
+
+	private void validate(final Section section) {
+		List<Station> stations = this.getStations();
+		if (stations.contains(section.getUp()) && stations.contains(section.getDown())) {
+			throw new IllegalArgumentException("상행역과 하행역이 이미 존재합니다.");
+		}
 	}
 
 	public Optional<Section> findByUpStation(final Station up) {
