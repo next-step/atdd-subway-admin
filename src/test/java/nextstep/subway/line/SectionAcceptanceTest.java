@@ -28,6 +28,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	private StationResponse 강남역;
 	private StationResponse 광교역;
+	private StationResponse 서동탄역;
 	private StationResponse 양재역;
 	private StationResponse 양재시민의숲역;
 	private StationResponse 용산역;
@@ -40,6 +41,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// given
 		강남역 = stationAcceptanceTest.지하철역_생성_되어있음("강남역");
 		광교역 = stationAcceptanceTest.지하철역_생성_되어있음("광교역");
+		서동탄역 = stationAcceptanceTest.지하철역_생성_되어있음("서동탄역");
 		양재역 = stationAcceptanceTest.지하철역_생성_되어있음("양재역");
 		용산역 = stationAcceptanceTest.지하철역_생성_되어있음("용산역");
 		양재시민의숲역 = stationAcceptanceTest.지하철역_생성_되어있음("양재시민의숲역");
@@ -67,6 +69,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSectionToTopUp() {
 		final SectionRequest sectionRequest = new SectionRequest(용산역.getId(), 강남역.getId(), 4);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
+
+		// then
+		지하철_노선에_지하철역_등록됨(response, 지하철_노선의_조회_요청(신분당선.getId()));
+	}
+
+	@DisplayName("새로운 역을 하행 종점으로 등록한다.")
+	@Test
+	void addSectionToBottomDown() {
+		final SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 서동탄역.getId(), 4);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
