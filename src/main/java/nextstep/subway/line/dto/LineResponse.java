@@ -12,7 +12,6 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<Station> stations = new ArrayList<>();
     private List<Section> sections = new ArrayList<>();
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
@@ -51,10 +50,6 @@ public class LineResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
-    }
-
-    public List<Station> getStations() {
-        return stations;
     }
 
     public List<Section> getSections() {

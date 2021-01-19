@@ -11,24 +11,33 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long upStation;
-    private Long downStation;
-    private int distance;
-
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name= "line_id")
     private Line line;
 
-    @ManyToOne
-    private Station station;
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name= "upstation_id")
+    private Station upStation;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name= "downstation_id")
+    private Station downStation;
+
+    private int distance;
 
     public Section() {
 
     }
 
-    public Section(Long upStation, Long downStation, int distance) {
+    public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public void changeSection(Station downStation, int addDistance) {
+        this.downStation = downStation;
+        this.distance = addDistance;
     }
 
     public void setLine(Line line) {
@@ -36,15 +45,16 @@ public class Section extends BaseEntity {
         //line.getSections().add(this);
     }
 
-    public Long getUpStation() {
+    public Station getUpStation() {
         return upStation;
     }
 
-    public Long getDownStation() {
+    public Station getDownStation() {
         return downStation;
     }
 
     public int getDistance() {
         return distance;
     }
+
 }
