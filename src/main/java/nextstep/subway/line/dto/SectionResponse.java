@@ -2,31 +2,29 @@ package nextstep.subway.line.dto;
 
 import java.time.LocalDateTime;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.station.domain.Station;
 
 public class SectionResponse {
 
 	private Long id;
 
-	private Line line;
+	private Long lineId;
 
-	private Station up;
+	private Long upStationId;
 
-	private Station down;
+	private Long downStationId;
 
 	private LocalDateTime createdDate;
 
 	private LocalDateTime modifiedDate;
 
-	public SectionResponse(final Long id, final Line line, final Station up, final Station down,
+	public SectionResponse(final Long id, final Long lineId, final Long upStationId, final Long downStationId,
 		final LocalDateTime createdDate,
 		final LocalDateTime modifiedDate) {
 		this.id = id;
-		this.line = line;
-		this.up = up;
-		this.down = down;
+		this.lineId = lineId;
+		this.upStationId = upStationId;
+		this.downStationId = downStationId;
 		this.createdDate = createdDate;
 		this.modifiedDate = modifiedDate;
 	}
@@ -35,16 +33,16 @@ public class SectionResponse {
 		return id;
 	}
 
-	public Line getLine() {
-		return line;
+	public Long getLineId() {
+		return lineId;
 	}
 
-	public Station getUp() {
-		return up;
+	public Long getUpStationId() {
+		return upStationId;
 	}
 
-	public Station getDown() {
-		return down;
+	public Long getDownStationId() {
+		return downStationId;
 	}
 
 	public LocalDateTime getCreatedDate() {
@@ -56,10 +54,11 @@ public class SectionResponse {
 	}
 
 	public static SectionResponse of(final Section section) {
-		return Builder.builder()
+		return Builder.SectionResponse()
 			.id(section.getId())
-			.up(section.getUp())
-			.down(section.getDown())
+			.lineId(section.getLine().getId())
+			.upStationId(section.getUp().getId())
+			.downStationId(section.getDown().getId())
 			.createdDate(section.getCreatedDate())
 			.modifiedDate(section.getModifiedDate())
 			.build();
@@ -67,16 +66,16 @@ public class SectionResponse {
 
 	public static final class Builder {
 		private Long id;
-		private Line line;
-		private Station up;
-		private Station down;
+		private Long lineId;
+		private Long upStationId;
+		private Long downStationId;
 		private LocalDateTime createdDate;
 		private LocalDateTime modifiedDate;
 
 		private Builder() {
 		}
 
-		public static Builder builder() {
+		public static Builder SectionResponse() {
 			return new Builder();
 		}
 
@@ -85,18 +84,18 @@ public class SectionResponse {
 			return this;
 		}
 
-		public Builder line(Line line) {
-			this.line = line;
+		public Builder lineId(Long lineId) {
+			this.lineId = lineId;
 			return this;
 		}
 
-		public Builder up(Station up) {
-			this.up = up;
+		public Builder upStationId(Long upStationId) {
+			this.upStationId = upStationId;
 			return this;
 		}
 
-		public Builder down(Station down) {
-			this.down = down;
+		public Builder downStationId(Long downStationId) {
+			this.downStationId = downStationId;
 			return this;
 		}
 
@@ -111,7 +110,8 @@ public class SectionResponse {
 		}
 
 		public SectionResponse build() {
-			return new SectionResponse(id, line, up, down, createdDate, modifiedDate);
+			return new SectionResponse(id, lineId, upStationId, downStationId, createdDate, modifiedDate);
 		}
 	}
+
 }
