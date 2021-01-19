@@ -14,17 +14,19 @@ public class SectionResponse {
 
 	private Long downStationId;
 
+	private Integer distance;
+
 	private LocalDateTime createdDate;
 
 	private LocalDateTime modifiedDate;
 
 	public SectionResponse(final Long id, final Long lineId, final Long upStationId, final Long downStationId,
-		final LocalDateTime createdDate,
-		final LocalDateTime modifiedDate) {
+		final Integer distance, final LocalDateTime createdDate, final LocalDateTime modifiedDate) {
 		this.id = id;
 		this.lineId = lineId;
 		this.upStationId = upStationId;
 		this.downStationId = downStationId;
+		this.distance = distance;
 		this.createdDate = createdDate;
 		this.modifiedDate = modifiedDate;
 	}
@@ -45,6 +47,10 @@ public class SectionResponse {
 		return downStationId;
 	}
 
+	public Integer getDistance() {
+		return distance;
+	}
+
 	public LocalDateTime getCreatedDate() {
 		return createdDate;
 	}
@@ -59,6 +65,7 @@ public class SectionResponse {
 			.lineId(section.getLine().getId())
 			.upStationId(section.getUp().getId())
 			.downStationId(section.getDown().getId())
+			.distance(section.getDistance().getDistance())
 			.createdDate(section.getCreatedDate())
 			.modifiedDate(section.getModifiedDate())
 			.build();
@@ -69,6 +76,7 @@ public class SectionResponse {
 		private Long lineId;
 		private Long upStationId;
 		private Long downStationId;
+		private Integer distance;
 		private LocalDateTime createdDate;
 		private LocalDateTime modifiedDate;
 
@@ -99,6 +107,11 @@ public class SectionResponse {
 			return this;
 		}
 
+		public Builder distance(Integer distance) {
+			this.distance = distance;
+			return this;
+		}
+
 		public Builder createdDate(LocalDateTime createdDate) {
 			this.createdDate = createdDate;
 			return this;
@@ -110,7 +123,7 @@ public class SectionResponse {
 		}
 
 		public SectionResponse build() {
-			return new SectionResponse(id, lineId, upStationId, downStationId, createdDate, modifiedDate);
+			return new SectionResponse(id, lineId, upStationId, downStationId, distance, createdDate, modifiedDate);
 		}
 	}
 
