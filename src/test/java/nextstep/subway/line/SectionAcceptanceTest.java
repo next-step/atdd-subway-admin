@@ -28,6 +28,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	private StationResponse 강남역;
 	private StationResponse 광교역;
+	private StationResponse 양재역;
+	private StationResponse 양재시민의숲역;
 	private LineResponse 신분당선;
 
 	@BeforeEach
@@ -37,6 +39,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// given
 		강남역 = stationAcceptanceTest.지하철역_생성_되어있음("강남역");
 		광교역 = stationAcceptanceTest.지하철역_생성_되어있음("광교역");
+		양재역 = stationAcceptanceTest.지하철역_생성_되어있음("양재역");
+		양재시민의숲역 = stationAcceptanceTest.지하철역_생성_되어있음("양재시민의숲역");
 		LineRequest request = new LineRequest("신분당선", "bg-red-600",
 			강남역.getId(),
 			광교역.getId(),
@@ -49,32 +53,45 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSection() {
 
-		final StationResponse 양재역 = stationAcceptanceTest.지하철역_생성_되어있음("양재역");
-		final SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 양재역.getId(), 5);
+		final SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 양재역.getId(), 4);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(sectionRequest);
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
 
 		// then
-		지하철_노선에_지하철역_등록됨(response, 양재역.getId());
-
+		지하철_노선에_지하철역_등록됨(response, 지하철_노선의_조회_요청(신분당선.getId()));
 	}
 
-	public ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(final SectionRequest sectionRequest) {
+	public ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(final Long lineId,
+			final SectionRequest sectionRequest) {
 		return given().log().all()
 			.body(sectionRequest)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
-			.post("/lines/1/sections")
+			.post("/lines/" + lineId + "/sections")
 			.then().log().all()
-			.extract();
+			.extract()
+			;
 	}
 
-	private void 지하철_노선에_지하철역_등록됨(final ExtractableResponse<Response> response, final Long stationId) {
+	public LineResponse 지하철_노선의_조회_요청(final Long lineId) {
+		return lineAcceptanceTest.지하철_노선_조회_요청(lineId).as(LineResponse.class);
+	}
+
+	private void 지하철_노선에_지하철역_등록됨(final ExtractableResponse<Response> response,
+			final LineResponse lineResponse) {
 		SectionResponse sectionResponse = response.as(SectionResponse.class);
+		SectionResponse foundSection = lineResponse.getSections().stream()
+			.filter(section -> section.getId().equals(sectionResponse.getId()))
+			.findAny()
+			.orElseGet(null);
+
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-			() -> assertThat(sectionResponse.getId()).isNotNull()
+			() -> assertThat(sectionResponse.getId()).isNotNull(),
+			() -> assertThat(foundSection).isNotNull(),
+			() -> assertThat(sectionResponse.getUpStationId()).isEqualTo(foundSection.getUpStationId()),
+			() -> assertThat(sectionResponse.getDownStationId()).isEqualTo(foundSection.getDownStationId())
 		);
 	}
 
