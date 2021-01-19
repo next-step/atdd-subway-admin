@@ -27,12 +27,10 @@ public class LineService {
 	}
 
 	public LineResponse updateLine(Long id, LineRequest request) {
-		Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+		Line line = findById(id);
 		line.update(request.toLine());
 
-		Line persistLine = lineRepository.save(line);
-
-		return LineResponse.of(persistLine);
+		return LineResponse.of(line);
 	}
 
 	@Transactional(readOnly = true)
@@ -46,12 +44,16 @@ public class LineService {
 
 	@Transactional(readOnly = true)
 	public LineResponse findLineById(Long id) {
-		Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+		Line line = findById(id);
 
 		return LineResponse.of(line);
 	}
 
 	public void deleteLineById(Long id) {
 		lineRepository.deleteById(id);
+	}
+
+	private Line findById(Long id) {
+		return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
 	}
 }

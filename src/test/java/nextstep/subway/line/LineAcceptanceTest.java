@@ -157,7 +157,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return RestAssured.given().log().all()
 			.accept(MediaType.APPLICATION_JSON_VALUE)
 			.when()
-			.get(URI.create("/line/" + id))
+			.get(URI.create("/lines/" + id))
 			.then().log().all()
 			.extract();
 	}
@@ -173,14 +173,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		params2.put("name", updatedName);
 		params2.put("color", updatedColor);
 
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
+		return RestAssured.given().log().all()
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.body(params2)
 			.when()
-			.put(URI.create("/line/" + id))
+			.put(URI.create("/lines/" + id))
 			.then().log().all()
 			.extract();
-		return response;
 	}
 
 	private void 노선_수정_성공(String id, String updatedName, String updatedColor, ExtractableResponse<Response> response) {
@@ -194,7 +193,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	private ExtractableResponse<Response> 노선_제거_요청(String id) {
 		return RestAssured.given().log().all()
 			.when()
-			.delete(URI.create("/line/" + id))
+			.delete(URI.create("/lines/" + id))
 			.then().log().all()
 			.extract();
 	}
