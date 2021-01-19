@@ -21,6 +21,7 @@ import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
@@ -109,6 +110,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .post("/stations")
             .then().log().all()
             .extract();
+    }
+
+    public StationResponse 지하철역_생성_되어있음(final String name) {
+        Map<String, String> param = new HashMap<>();
+        param.put("name", name);
+        return this.지하철역_생성_요청(param).as(StationResponse.class);
     }
 
 }

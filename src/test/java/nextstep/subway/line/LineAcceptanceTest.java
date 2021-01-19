@@ -5,9 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
@@ -47,8 +45,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithSection() {
         // given
-        StationResponse gangNam = 지하철역_생성_요청("강남역");
-        StationResponse jungJa = 지하철역_생성_요청("정자역");
+        StationResponse gangNam = stationAcceptanceTest.지하철역_생성_되어있음("강남역");
+        StationResponse jungJa = stationAcceptanceTest.지하철역_생성_되어있음("정자역");
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             gangNam.getId(),
             jungJa.getId(),
@@ -110,9 +108,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineWithStations() {
         // given
-        // given
-        StationResponse gangNam = 지하철역_생성_요청("강남역");
-        StationResponse jungJa = 지하철역_생성_요청("정자역");
+        StationResponse gangNam = stationAcceptanceTest.지하철역_생성_되어있음("강남역");
+        StationResponse jungJa = stationAcceptanceTest.지하철역_생성_되어있음("정자역");
         LineRequest request = new LineRequest("신분당선", "bg-red-600",
             gangNam.getId(),
             jungJa.getId(),
@@ -282,10 +279,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private StationResponse 지하철역_생성_요청(final String name) {
-        Map<String, String> param = new HashMap<>();
-        param.put("name", name);
-        return stationAcceptanceTest.지하철역_생성_요청(param).as(StationResponse.class);
+    public LineResponse 지하철_노선_생성_되어있음(final LineRequest lineRequest) {
+        return 지하철_노선_생성_요청(lineRequest).as(LineResponse.class);
     }
 
 }
