@@ -97,6 +97,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철역_등록_예외_발생(response);
 	}
 
+	@DisplayName("구간 등록 예외 - 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+	@Test
+	void addSectionThrowUpOrDownNotExistsInLine() {
+		final SectionRequest sectionRequest = new SectionRequest(양재역.getId(), 양재시민의숲역.getId(), 9);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
+
+		// then
+		지하철_노선에_지하철역_등록_예외_발생(response);
+	}
+
 	public ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(final Long lineId,
 			final SectionRequest sectionRequest) {
 		return given().log().all()
