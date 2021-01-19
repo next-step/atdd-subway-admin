@@ -110,6 +110,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철역_등록됨(response, 지하철_노선의_조회_요청(신분당선.getId()));
 	}
 
+	@DisplayName("새로운 역을 상행 종점으로 등록한다.")
+	@Test
+	void addSectionToTopUp() {
+		final SectionRequest sectionRequest = new SectionRequest(용산역.getId(), 강남역.getId(), 4);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
+
+		// then
+		지하철_노선에_지하철역_등록됨(response, 지하철_노선의_조회_요청(신분당선.getId()));
+	}
+
 	@DisplayName("구간 등록 예외 - 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같으면 등록을 할 수 없음")
 	@Test
 	void addSectionThrowDistanceEqual() {
