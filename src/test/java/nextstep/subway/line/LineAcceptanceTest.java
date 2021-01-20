@@ -28,8 +28,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
-        // given, when
+        // given
         LineRequestTestModule.지하철_노선_생성_요청(new LineRequest("1호선", "파란색"));
+
+        // when
         ExtractableResponse<Response> response = 
                 LineRequestTestModule.지하철_노선_생성_요청(new LineRequest("1호선", "파란색"));
 
