@@ -37,7 +37,6 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-
     public static Line of(final String name, final String color, final Station upStation,
             final Station downStation, final Integer distance) {
         Line line = new Line(name, color);
@@ -70,6 +69,10 @@ public class Line extends BaseEntity {
         return this.sections.getStations();
     }
 
+    public List<Section> getSections() {
+        return this.sections.getSections();
+    }
+
     public boolean hasStations() {
         return !CollectionUtils.isEmpty(this.getStations());
     }
@@ -85,12 +88,12 @@ public class Line extends BaseEntity {
         if (o == null || getClass() != o.getClass())
             return false;
         final Line line = (Line)o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name);
+        return Objects.equals(id, line.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id);
     }
 
     @Override

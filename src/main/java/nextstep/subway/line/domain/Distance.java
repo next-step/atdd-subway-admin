@@ -15,13 +15,13 @@ public class Distance {
 	protected Distance() {
 	}
 
-	public Distance(Integer distance) {
+	public Distance(final Integer distance) {
 		validate(distance);
 		this.distance = distance;
 	}
 
 	private void validate(final Integer distance) {
-		if (distance != null && distance < 0) {
+		if (distance != null && distance <= 0) {
 			throw new IllegalArgumentException("구간 길이는 1 이상의 정수여야 합니다.");
 		}
 	}
@@ -50,4 +50,7 @@ public class Distance {
 		return String.valueOf(this.distance);
 	}
 
+	public Distance minus(final Distance distance) {
+		return new Distance(this.distance - distance.getDistance());
+	}
 }

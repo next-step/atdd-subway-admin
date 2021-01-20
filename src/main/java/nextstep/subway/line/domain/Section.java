@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.persistence.Embedded;
@@ -65,24 +66,8 @@ public class Section extends BaseEntity {
 
 	public Distance getDistance() { return distance; }
 
-	public Stream<Station> getStations() {
-		return Stream.of(up, down);
-	}
-
-	@Override
-	public boolean equals(final Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		final Section section = (Section)o;
-		return Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects
-			.equals(up, section.up) && Objects.equals(down, section.down);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, line, up, down);
+	public List<Station> getStations() {
+		return Stream.of(up, down).collect(Collectors.toList());
 	}
 
 	@Override
@@ -94,6 +79,24 @@ public class Section extends BaseEntity {
 			", down=" + down +
 			", distance=" + distance +
 			'}';
+	}
+
+	public void update(final Station up, final Station down, final Distance distance) {
+		this.up = up;
+		this.down = down;
+		this.distance = distance;
+	}
+
+	public Distance minusDistance(final Distance distance) {
+		return this.distance.minus(distance);
+	}
+
+	public boolean equalsUpStation(final Station up) {
+		return this.up.equals(up);
+	}
+
+	public boolean equalsDownStation(final Station down) {
+		return this.down.equals(down);
 	}
 
 }

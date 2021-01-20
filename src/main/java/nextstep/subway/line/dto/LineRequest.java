@@ -54,4 +54,8 @@ public class LineRequest {
     public Integer getDistance() {
         return distance;
     }
+
+    public boolean hasUpAndDownStation() {
+        return this.upStationId != null && this.downStationId != null;
+    }
 }

@@ -30,10 +30,20 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(),
-            line.getCreatedDate(), line.getModifiedDate(), line.getStations().stream()
+        return Builder.LineResponse()
+            .id(line.getId())
+            .name(line.getName())
+            .color(line.getColor())
+            .stations(getStationResponse(line))
+            .createdDate(line.getCreatedDate())
+            .modifiedDate(line.getModifiedDate())
+            .build();
+    }
+
+    private static List<StationResponse> getStationResponse(final Line line) {
+        return line.getStations().stream()
             .map(StationResponse::of)
-            .collect(Collectors.toList()));
+            .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -60,4 +70,53 @@ public class LineResponse {
         return stations;
     }
 
+    public static final class Builder {
+        private Long id;
+        private String name;
+        private String color;
+        private LocalDateTime createdDate;
+        private LocalDateTime modifiedDate;
+        private List<StationResponse> stations;
+
+        private Builder() {
+        }
+
+        public static Builder LineResponse() {
+            return new Builder();
+        }
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder color(String color) {
+            this.color = color;
+            return this;
+        }
+
+        public Builder createdDate(LocalDateTime createdDate) {
+            this.createdDate = createdDate;
+            return this;
+        }
+
+        public Builder modifiedDate(LocalDateTime modifiedDate) {
+            this.modifiedDate = modifiedDate;
+            return this;
+        }
+
+        public Builder stations(List<StationResponse> stations) {
+            this.stations = stations;
+            return this;
+        }
+
+        public LineResponse build() {
+            return new LineResponse(id, name, color, createdDate, modifiedDate, stations);
+        }
+    }
 }
