@@ -85,6 +85,7 @@ public class LineService {
     public List<SectionResponse> findAllSections(final Long id) {
         Line line = findById(id);
         return line.getSections().stream()
+            .sorted()
             .map(SectionResponse::of)
             .collect(Collectors.toList());
     }

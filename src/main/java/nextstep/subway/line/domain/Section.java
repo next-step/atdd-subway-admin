@@ -17,7 +17,7 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section extends BaseEntity implements Comparable<Section> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,12 +80,29 @@ public class Section extends BaseEntity {
 		return this.distance.minus(distance);
 	}
 
+	public Distance plusDistance(final Distance distance) {
+		return this.distance.plus(distance);
+	}
+
 	public boolean equalsUpStation(final Station up) {
 		return this.up.equals(up);
 	}
 
 	public boolean equalsDownStation(final Station down) {
 		return this.down.equals(down);
+	}
+
+	@Override
+	public int compareTo(final Section section) {
+		if (section.getDown().equals(this.down)) {
+			return 0;
+		}
+
+		if (section.getDown().equals(this.up)) {
+			return 1;
+		}
+
+		return -1;
 	}
 
 	@Override
