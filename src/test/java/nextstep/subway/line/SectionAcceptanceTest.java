@@ -110,30 +110,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철역_등록됨(response, 지하철_노선의_조회_요청(신분당선.getId()));
 	}
 
-	@DisplayName("새로운 역을 상행 종점으로 등록한다.")
-	@Test
-	void addSectionToTopUp() {
-		final SectionRequest sectionRequest = new SectionRequest(용산역.getId(), 강남역.getId(), 4);
-
-		// when
-		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
-
-		// then
-		지하철_노선에_지하철역_등록됨(response, 지하철_노선의_조회_요청(신분당선.getId()));
-	}
-
-	@DisplayName("새로운 역을 하행 종점으로 등록한다.")
-	@Test
-	void addSectionToBottomDown() {
-		final SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 서동탄역.getId(), 4);
-
-		// when
-		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
-
-		// then
-		지하철_노선에_지하철역_등록됨(response, 지하철_노선의_조회_요청(신분당선.getId()));
-	}
-
 	@DisplayName("구간 등록 예외 - 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같으면 등록을 할 수 없음")
 	@Test
 	void addSectionThrowDistanceEqual() {
@@ -182,6 +158,31 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철역_등록_예외_발생(response);
 	}
 
+	@DisplayName("노선 구간 제거")
+	@Test
+	void removeSection() {
+		final SectionRequest sectionRequest1 = new SectionRequest(강남역.getId(), 양재역.getId(), 4);
+		final SectionRequest sectionRequest2 = new SectionRequest(양재역.getId(), 양재시민의숲역.getId(), 3);
+		final Long deletedStationId = 양재역.getId();
+		지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest1);
+		지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest2);
+
+		ExtractableResponse<Response> response = 지하철_노선_역_제거_요청(신분당선.getId(), deletedStationId);
+
+		지하철_노선_역_제거됨(response, 지하철_노선의_조회_요청(신분당선.getId()), deletedStationId);
+	}
+
+	private void 지하철_노선_역_제거됨(final ExtractableResponse<Response> response,
+			final LineResponse lineResponse, final Long deletedStationId) {
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+			() -> assertThat(lineResponse.getStations().stream()
+				.map(StationResponse::getId)
+				.anyMatch(id -> id.equals(deletedStationId)))
+				.isTrue()
+		);
+	}
+
 	public ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(final Long lineId,
 			final SectionRequest sectionRequest) {
 		return given().log().all()
@@ -196,6 +197,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	public LineResponse 지하철_노선의_조회_요청(final Long lineId) {
 		return lineAcceptanceTest.지하철_노선_조회_요청(lineId).as(LineResponse.class);
+	}
+
+	private ExtractableResponse<Response> 지하철_노선_역_제거_요청(final Long lineId, final Long stationId) {
+		return given().log().all()
+			.accept(MediaType.ALL_VALUE)
+			.delete(String.format("/lines/%d/sections?stationId=%d", lineId, stationId))
+			.then().log().all()
+			.extract();
 	}
 
 	private void 지하철_노선에_지하철역_등록됨(final ExtractableResponse<Response> response,
