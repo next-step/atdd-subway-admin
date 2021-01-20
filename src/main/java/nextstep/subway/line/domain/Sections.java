@@ -46,13 +46,26 @@ public class Sections {
 
 	private void validate(final Section section) {
 		List<Station> stations = this.getStations();
-		if (stations.contains(section.getUp()) && stations.contains(section.getDown())) {
+
+		if (stations.isEmpty()) {
+			return;
+		}
+
+		if (isUpAndDownExists(stations, section)) {
 			throw new IllegalArgumentException("상행역과 하행역이 이미 존재합니다.");
 		}
 
-		if (!stations.isEmpty() && !stations.contains(section.getUp()) && !stations.contains(section.getDown())) {
+		if (isUpAndDownNotExists(stations, section)) {
 			throw new IllegalArgumentException("상행역과 하행역이 모두 노선에 포함되어 있지 않습니다.");
 		}
+	}
+
+	private boolean isUpAndDownExists(final List<Station> stations, final Section section) {
+		return stations.contains(section.getUp()) && stations.contains(section.getDown());
+	}
+
+	private boolean isUpAndDownNotExists(final List<Station> stations, final Section section) {
+		return !stations.contains(section.getUp()) && !stations.contains(section.getDown());
 	}
 
 	public Optional<Section> findByUpStation(final Station up) {
