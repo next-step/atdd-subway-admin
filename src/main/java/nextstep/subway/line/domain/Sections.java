@@ -94,7 +94,31 @@ public class Sections {
 
 		validateRemove(toRemove);
 
+		if (!isFinalStation(station)) {
+			findByDownStation(station)
+				.ifPresent(existsSection ->
+					existsSection.update(existsSection.getUp(), toRemove.getDown(),
+						existsSection.plusDistance(toRemove.getDistance())));
+		}
+
 		this.sections.remove(toRemove);
+	}
+
+	private boolean isFinalStation(final Station station) {
+		List<Station> finalStations = findFinalStations();
+		return finalStations.contains(station);
+	}
+
+	private List<Station> findFinalStations() {
+		return this.sections.stream()
+			.flatMap(section -> section.getStations().stream())
+			.collect(Collectors.groupingBy(Station::getId))
+			.values()
+			.stream()
+			.filter(stations -> stations.size() == 1)
+			.map(stations -> stations.get(0))
+			.collect(Collectors.toList());
+
 	}
 
 	private void validateRemove(final Section toRemove) {
