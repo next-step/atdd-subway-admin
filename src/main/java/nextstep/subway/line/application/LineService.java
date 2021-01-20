@@ -82,4 +82,10 @@ public class LineService {
             .orElseThrow(() -> new ResourceNotFoundException("구간 정보가 없습니다.")));
     }
 
+    public List<SectionResponse> findAllSections(final Long id) {
+        Line line = findById(id);
+        return line.getSections().stream()
+            .map(SectionResponse::of)
+            .collect(Collectors.toList());
+    }
 }

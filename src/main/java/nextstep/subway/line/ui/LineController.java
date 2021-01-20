@@ -44,6 +44,11 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
+    @GetMapping("/{id}/sections")
+    public ResponseEntity<List<SectionResponse>> findAllSections(@PathVariable Long id) {
+        return ResponseEntity.ok(lineService.findAllSections(id));
+    }
+
     @PostMapping("/{id}/sections")
     public ResponseEntity<SectionResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
         SectionResponse section = lineService.saveSection(id, sectionRequest);
