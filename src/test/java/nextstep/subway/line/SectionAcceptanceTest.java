@@ -200,6 +200,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선_제거실패(response);
 	}
 
+	@DisplayName("노선 구간 제거 예외 - 노선 구간 제거 요청시 지하철역이 구간에 없을 경우 예외")
+	@Test
+	void removeNotExistsSectionThrow() {
+		final Long deletedStationId = 용산역.getId();
+
+		ExtractableResponse<Response> response = 지하철_노선_역_제거_요청(신분당선.getId(), deletedStationId);
+
+		지하철_노선_제거실패(response);
+	}
+
 	private void 지하철_노선_제거실패(final ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
