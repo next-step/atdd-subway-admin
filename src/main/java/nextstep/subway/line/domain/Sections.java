@@ -86,4 +86,28 @@ public class Sections {
 			.distinct()
 			.collect(Collectors.toList());
 	}
+
+	public void removeStation(final Station station) {
+		Section toRemove = findByUpStation(station)
+			.orElseGet(() -> findByDownStation(station)
+				.orElseThrow(() -> new IllegalArgumentException("삭제 대상 역이 포함된 구간이 없습니다.")));
+
+		validateRemove(toRemove);
+
+		this.sections.remove(toRemove);
+	}
+
+	private void validateRemove(final Section toRemove) {
+		if (isSizeOne() && isLastSection(toRemove)) {
+			throw new IllegalArgumentException("구간이 하나인 노선의 마지막 구간은 삭제할 수 없습니다");
+		}
+	}
+
+	private boolean isSizeOne() {
+		return this.sections.size() == 1;
+	}
+
+	private boolean isLastSection(final Section section) {
+		return this.sections.get(this.sections.size() - 1).equals(section);
+	}
 }

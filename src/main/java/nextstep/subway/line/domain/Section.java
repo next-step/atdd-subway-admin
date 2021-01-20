@@ -70,17 +70,6 @@ public class Section extends BaseEntity {
 		return Stream.of(up, down).collect(Collectors.toList());
 	}
 
-	@Override
-	public String toString() {
-		return "Section{" +
-			"id=" + id +
-			", line=" + line +
-			", up=" + up +
-			", down=" + down +
-			", distance=" + distance +
-			'}';
-	}
-
 	public void update(final Station up, final Station down, final Distance distance) {
 		this.up = up;
 		this.down = down;
@@ -97,6 +86,17 @@ public class Section extends BaseEntity {
 
 	public boolean equalsDownStation(final Station down) {
 		return this.down.equals(down);
+	}
+
+	@Override
+	public String toString() {
+		return "Section{" +
+			"id=" + id +
+			", line=" + line +
+			", up=" + up +
+			", down=" + down +
+			", distance=" + distance +
+			'}';
 	}
 
 }

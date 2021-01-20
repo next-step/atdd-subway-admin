@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.line.application.LineService;
@@ -53,6 +54,12 @@ public class LineController {
     public ResponseEntity<SectionResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
         SectionResponse section = lineService.saveSection(id, sectionRequest);
         return ResponseEntity.ok(section);
+    }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity<SectionResponse> addSection(@PathVariable Long id, @RequestParam Long stationId) {
+        lineService.deleteStation(id, stationId);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}")
