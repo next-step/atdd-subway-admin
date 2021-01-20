@@ -70,13 +70,13 @@ public class Sections {
 
 	public Optional<Section> findByUpStation(final Station up) {
 		return this.sections.stream()
-			.filter(section -> section.getUp().equals(up))
+			.filter(section -> section.equalsUpStation(up))
 			.findFirst();
 	}
 
 	public Optional<Section> findByDownStation(final Station down) {
 		return this.sections.stream()
-			.filter(section -> section.getDown().equals(down))
+			.filter(section -> section.equalsDownStation(down))
 			.findFirst();
 	}
 

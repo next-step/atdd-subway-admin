@@ -90,4 +90,13 @@ public class Section extends BaseEntity {
 	public Distance minusDistance(final Distance distance) {
 		return this.distance.minus(distance);
 	}
+
+	public boolean equalsUpStation(final Station up) {
+		return this.up.equals(up);
+	}
+
+	public boolean equalsDownStation(final Station down) {
+		return this.down.equals(down);
+	}
+
 }
