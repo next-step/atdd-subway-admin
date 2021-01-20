@@ -154,4 +154,21 @@ public class LineRequest {
 * 노선에 등록된 구간을 순서대로 정렬하여 상행 종점부터 하행 종점까지 목록을 응답하기
 * 필요시 노선과 구간(혹은 역)의 관계를 새로 맺기
 
+## 3단계 요구사항
+- [ ] 지하철 구간 등록 인수 테스트 작성
+- [ ] 지하철 구간 등록 기능 구현
+- [ ] 구간 등록 예외 케이스 인수 테스트 작성
+- [ ] 구간 등록 예외 케이스 처리 기능 구현
 
+```
+POST /lines/1/sections HTTP/1.1
+accept: */*
+content-type: application/json; charset=UTF-8
+host: localhost:52165
+
+{
+    "downStationId": "4",
+    "upStationId": "2",
+    "distance": 10
+}
+```

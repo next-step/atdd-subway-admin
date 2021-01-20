@@ -39,4 +39,9 @@ public class StationResponse {
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
+
+    public Station toStation() {
+        return new Station(name);
+    }
+
 }

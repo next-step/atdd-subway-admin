@@ -4,8 +4,10 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.Section;
-import nextstep.subway.section.SectionRepository;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -34,24 +36,31 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        return getLineResponse(request, persistLine);
+        return LineResponse.of(getLine(request, persistLine));
     }
+
+//    @Transactional
+//    public LineResponse addSection(Long id, SectionRequest request) {
+//        Line findLine = lineRepository.findById(id)
+//                .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
+//        return LineResponse.of(getLine(request, findLine));
+//    }
 
     @Transactional
-    public LineResponse addSection(Long id, LineRequest request) {
+    public SectionResponse addSection(Long id, SectionRequest request) {
         Line findLine = lineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
-        return getLineResponse(request, findLine);
+        return SectionResponse.of(getLine(request, findLine));
     }
 
-    private LineResponse getLineResponse(LineRequest request, Line line) {
+    private Line getLine(SectionRequest request, Line line) {
         Station upStation = getStationById(request.getUpStationId());
         Station downStation = getStationById(request.getDownStationId());
         Section section = new Section(upStation, downStation, request.getDistance());
         section.setLine(line);
         sectionRepository.save(section);
         lineRepository.flush();
-        return LineResponse.of(line);
+        return line;
     }
 
     private Station getStationById(Long stationId) {
@@ -75,6 +84,13 @@ public class LineService {
         Line findLine = lineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
         return LineResponse.of(findLine);
+    }
+
+    @Transactional(readOnly = true)
+    public SectionResponse findLineSectionsById(Long id) {
+        Line findLine = lineRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
+        return SectionResponse.of(findLine);
     }
 
     @Transactional

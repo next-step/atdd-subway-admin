@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
@@ -41,6 +41,10 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     public void update(Section section) {
