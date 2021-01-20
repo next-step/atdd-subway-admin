@@ -190,6 +190,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_종점_변경됨(지하철_노선_구간_목록_조회(신분당선.getId()), deletedStationId);
 	}
 
+	@DisplayName("노선 구간 제거 예외 - 노선 구간 제거시 마지막 남은 1개의 구간 제거 할 수 없음")
+	@Test
+	void removeFinalLastSectionThrow() {
+		final Long deletedStationId = 강남역.getId();
+
+		ExtractableResponse<Response> response = 지하철_노선_역_제거_요청(신분당선.getId(), deletedStationId);
+
+		지하철_노선_제거실패(response);
+	}
+
+	private void 지하철_노선_제거실패(final ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
 	private void 지하철_종점_변경됨(final ExtractableResponse<Response> sectionResponse,
 		final Long deletedStationId) {
 
