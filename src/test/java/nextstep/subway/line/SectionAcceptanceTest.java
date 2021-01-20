@@ -53,16 +53,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	}
 
-	@DisplayName("노선에 구간을 등록한다.")
+	@DisplayName("노선 구간 사이에 새로운 구간을 등록한다. (상행이 같은 경우)")
 	@Test
-	void addSection() {
+	void addSectionSameUp() {
 		final SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 양재역.getId(), 4);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
 
 		// then
-		지하철_노선에_지하철역_등록됨(response, 지하철_노선의_조회_요청(신분당선.getId()));
+		지하철_노선에_지하철역_등록됨_상행동일(response, 지하철_노선의_조회_요청(신분당선.getId()));
+	}
+
+	@DisplayName("노선 구간 사이에 새로운 구간을 등록한다. (하행이 같은 경우)")
+	@Test
+	void addSectionSameDown() {
+		final SectionRequest sectionRequest = new SectionRequest(양재역.getId(), 광교역.getId(), 4);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
+
+		// then
+		지하철_노선에_지하철역_등록됨_하행동일(response, 지하철_노선의_조회_요청(신분당선.getId()));
 	}
 
 	@DisplayName("새로운 역을 상행 종점으로 등록한다.")
@@ -80,7 +92,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("새로운 역을 하행 종점으로 등록한다.")
 	@Test
 	void addSectionToBottomDown() {
-		final SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 서동탄역.getId(), 4);
+		final SectionRequest sectionRequest = new SectionRequest(광교역.getId(), 서동탄역.getId(), 4);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
@@ -161,6 +173,33 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.findAny()
 			.orElseGet(null);
 
+		지하철_노선에_지하철역_등록_검증(response, sectionResponse, foundSection);
+	}
+
+	public void 지하철_노선에_지하철역_등록됨_상행동일(final ExtractableResponse<Response> response,
+		final LineResponse lineResponse) {
+		SectionResponse sectionResponse = response.as(SectionResponse.class);
+		SectionResponse foundSection = lineResponse.getSections().stream()
+			.filter(section -> section.getUpStationId().equals(sectionResponse.getUpStationId()))
+			.findAny()
+			.orElseGet(null);
+
+		지하철_노선에_지하철역_등록_검증(response, sectionResponse, foundSection);
+	}
+
+	public void 지하철_노선에_지하철역_등록됨_하행동일(final ExtractableResponse<Response> response,
+		final LineResponse lineResponse) {
+		SectionResponse sectionResponse = response.as(SectionResponse.class);
+		SectionResponse foundSection = lineResponse.getSections().stream()
+			.filter(section -> section.getDownStationId().equals(sectionResponse.getDownStationId()))
+			.findAny()
+			.orElseGet(null);
+
+		지하철_노선에_지하철역_등록_검증(response, sectionResponse, foundSection);
+	}
+
+	private void 지하철_노선에_지하철역_등록_검증(final ExtractableResponse<Response> response,
+		final SectionResponse sectionResponse, final SectionResponse foundSection) {
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(sectionResponse.getId()).isNotNull(),
