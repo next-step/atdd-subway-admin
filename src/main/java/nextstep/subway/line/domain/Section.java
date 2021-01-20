@@ -86,4 +86,8 @@ public class Section extends BaseEntity {
 		this.down = down;
 		this.distance = distance;
 	}
+
+	public Distance minusDistance(final Distance distance) {
+		return this.distance.minus(distance);
+	}
 }

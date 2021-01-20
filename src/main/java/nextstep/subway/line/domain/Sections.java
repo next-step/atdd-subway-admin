@@ -34,12 +34,12 @@ public class Sections {
 		findByUpStation(section.getUp())
 			.ifPresent(existsSection ->
 				existsSection.update(section.getDown(), existsSection.getDown(),
-					existsSection.getDistance().minus(section.getDistance())));
+					existsSection.minusDistance(section.getDistance())));
 
 		findByDownStation(section.getDown())
 			.ifPresent(existsSection ->
-				existsSection.update(section.getDown(), existsSection.getDown(),
-					section.getDistance().minus(existsSection.getDistance())));
+				existsSection.update(existsSection.getUp(), section.getUp(),
+					existsSection.minusDistance(section.getDistance())));
 
 		this.sections.add(section);
 	}
