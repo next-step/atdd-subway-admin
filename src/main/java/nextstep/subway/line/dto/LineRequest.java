@@ -2,12 +2,15 @@ package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
 
-import java.util.Objects;
+
 
 public class LineRequest {
     private Long id;
     private String name;
     private String color;
+    private Long upStationId;
+    private Long downStationId;
+    private int distance;
 
     public LineRequest() {
     }
@@ -17,10 +20,30 @@ public class LineRequest {
         this.color = color;
     }
 
+    public static LineRequest of(String name, String color) {
+        return new LineRequest(name, color);
+    }
+
     public LineRequest(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    public static LineRequest of(Long id, String name, String color) {
+        return new LineRequest(id, name, color);
+    }
+
+    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+        this.name = name;
+        this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
+
+    public static LineRequest of(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 
     public void setId(Long id) {
@@ -35,10 +58,19 @@ public class LineRequest {
         return color;
     }
 
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
     public Line toLine() {
-        if(Objects.nonNull(id)) {
-            return new Line(id, name, color);
-        }
-        return new Line(name, color);
+        return new Line(id, name, color);
     }
 }
