@@ -15,12 +15,15 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 구간 등록")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -47,16 +50,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("지하철 노선의 구간들을 조회")
     void findLineSections() {
 
-        // when
-        // 지하철_노선_조회_요청
+        // when: 지하철_노선_구간_조회_요청
         String uri = "/lines/" + 신분당선.getId() + "/sections";
         ExtractableResponse<Response> response = LineAcceptanceUtil.지하철_노선_조회_요청(uri);
 
-        // then
-        // 지하철_노선_응답됨
+        // then : 지하철_노선_구간_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
     }
@@ -66,28 +67,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionEqualsUpStation() {
 
         // given
-        SectionRequest params = SectionRequest.builder()
-                .upStationId(강남역.getId())
-                .downStationId(선릉역.getId())
-                .distance(3)
-                .build();
+        SectionRequest params = 지하철_구간_요청_파라미터_생성(강남역, 선릉역, 3);
 
-        // when
+        // when : 지하철_구간_등록_요청
         ExtractableResponse<Response> createResponse = LineAcceptanceUtil.지하철_구간_등록_요청(params);
 
-        // then
-        // 지하철_노선_응답됨
+        // then : 지하철_구간_응답됨
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        // 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
-        List<Integer> resultStationIds = createResponse.jsonPath()
-                .getObject(".", SectionResponse.class)
-                .getSections()
-                .getElements()
-                .stream()
-                .map(Section::getDistance)
-                .collect(Collectors.toList());
-        assertThat(resultStationIds).containsExactly(3, 7);
+        // then : 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
+        List<Integer> resultStationDistances = 지하철_구간_응답_거리(createResponse);
+        assertThat(resultStationDistances).containsExactly(3, 7);
 
     }
 
@@ -96,85 +86,117 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionEqualsDownStation() {
 
         // given
-        SectionRequest params = SectionRequest.builder()
-                .upStationId(선릉역.getId())
-                .downStationId(역삼역.getId())
-                .distance(3)
-                .build();
+        SectionRequest params = 지하철_구간_요청_파라미터_생성(선릉역, 역삼역, 3);
 
-        // when
+        // when : 지하철_구간_등록_요청
         ExtractableResponse<Response> createResponse = LineAcceptanceUtil.지하철_구간_등록_요청(params);
 
-        // then
-        // 지하철_노선_응답됨
+        // then : 지하철_구간_응답됨
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        // 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
-        List<Integer> resultStationIds = createResponse.jsonPath()
-                .getObject(".", SectionResponse.class)
-                .getSections()
-                .getElements()
-                .stream()
-                .map(Section::getDistance)
-                .collect(Collectors.toList());
-        assertThat(resultStationIds).containsExactly(7, 3);
+        // then : 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
+        List<Integer> resultStationDistances = 지하철_구간_응답_거리(createResponse);
+        assertThat(resultStationDistances).containsExactly(7, 3);
 
     }
 
     @Test
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
     void addSectionFirstUpStation() {
-        // given
-        SectionRequest params = SectionRequest.builder()
-                .upStationId(선릉역.getId())
-                .downStationId(강남역.getId())
-                .distance(3)
-                .build();
 
-        // when
+        // given
+        SectionRequest params = 지하철_구간_요청_파라미터_생성(선릉역, 강남역, 3);
+
+        // when : 지하철_구간_등록_요청
         ExtractableResponse<Response> createResponse = LineAcceptanceUtil.지하철_구간_등록_요청(params);
 
-        // then
-        // 지하철_노선_응답됨
+        // then : 지하철_노선_응답됨
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        // 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
-        List<Integer> resultStationIds = createResponse.jsonPath()
-                .getObject(".", SectionResponse.class)
-                .getSections()
-                .getElements()
-                .stream()
-                .map(Section::getDistance)
-                .collect(Collectors.toList());
-        assertThat(resultStationIds).containsExactly(3 , 10);
+        // then : 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
+        List<Integer> resultStationDistances = 지하철_구간_응답_거리(createResponse);
+        assertThat(resultStationDistances).containsExactly(3 , 10);
     }
 
     @Test
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
     void addSectionLastDownStation() {
-        // given
-        SectionRequest params = SectionRequest.builder()
-                .upStationId(역삼역.getId())
-                .downStationId(선릉역.getId())
-                .distance(3)
-                .build();
 
-        // when
+        // given
+        SectionRequest params = 지하철_구간_요청_파라미터_생성(역삼역, 선릉역, 3);
+
+        // when : 지하철_구간_등록_요청
         ExtractableResponse<Response> createResponse = LineAcceptanceUtil.지하철_구간_등록_요청(params);
 
-        // then
-        // 지하철_노선_응답됨
+        // then : 지하철_노선_응답됨
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        // 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
-        List<Integer> resultStationIds = createResponse.jsonPath()
+        // then : 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
+        List<Integer> resultStationDistances = 지하철_구간_응답_거리(createResponse);
+        assertThat(resultStationDistances).containsExactly(10, 3);
+    }
+
+    @ParameterizedTest
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @ValueSource(ints = {10, 11})
+    void validDistance(int input) {
+
+        // given
+        SectionRequest params = 지하철_구간_요청_파라미터_생성(역삼역, 선릉역, input);
+
+        // when, then
+        ExtractableResponse<Response> response = LineAcceptanceUtil.지하철_구간_등록_요청(params);
+        지하철_구간_등록_실패됨(response);
+
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    void validDuplicate() {
+
+        // given
+        SectionRequest params = 지하철_구간_요청_파라미터_생성(역삼역, 선릉역, 3);
+
+        // when, then
+        ExtractableResponse<Response> response = LineAcceptanceUtil.지하철_구간_등록_요청(params);
+        지하철_구간_등록_실패됨(response);
+
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    void validNotFound() {
+
+        // given
+        StationResponse 삼성역 = StationAcceptanceUtil.지하철_역_생성_요청(new StationRequest("삼성역")).as(StationResponse.class);
+        SectionRequest params = 지하철_구간_요청_파라미터_생성(선릉역, 삼성역, 3);
+
+        // when, then
+        ExtractableResponse<Response> response = LineAcceptanceUtil.지하철_구간_등록_요청(params);
+        지하철_구간_등록_실패됨(response);
+
+    }
+
+    private void 지하철_구간_등록_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private SectionRequest 지하철_구간_요청_파라미터_생성(StationResponse upStation, StationResponse downStation, int distance) {
+        return SectionRequest.builder()
+                .upStationId(upStation.getId())
+                .downStationId(downStation.getId())
+                .distance(distance)
+                .build();
+    }
+
+    private List<Integer> 지하철_구간_응답_거리(ExtractableResponse<Response> createResponse) {
+        return createResponse.jsonPath()
                 .getObject(".", SectionResponse.class)
                 .getSections()
                 .getElements()
                 .stream()
                 .map(Section::getDistance)
                 .collect(Collectors.toList());
-        assertThat(resultStationIds).containsExactly(10, 3);
     }
 
 }
