@@ -28,7 +28,7 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> selectLines() {
-        return ResponseEntity.ok().body(lineService.findAllStations());
+        return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -39,7 +39,7 @@ public class LineController {
     @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> patchLine(@RequestBody LineRequest lineRequest, @PathVariable Long id) {
         lineRequest.setId(id);
-        return ResponseEntity.ok().body(lineService.saveLine(lineRequest));
+        return ResponseEntity.ok().body(lineService.updateLine(lineRequest));
     }
 
     @DeleteMapping(value = "/{id}")

@@ -32,7 +32,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public List<LineResponse> findAllStations() {
+    public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
@@ -43,6 +43,11 @@ public class LineService {
     public LineResponse findById(Long id) {
         Line line = lineRepository.getOne(id);
         return LineResponse.of(line);
+    }
+
+    public LineResponse updateLine(LineRequest lineRequest) {
+        Line persistLine = lineRepository.save(Line.of(lineRequest.getId(), lineRequest.getName(), lineRequest.getColor()));
+        return LineResponse.of(persistLine);
     }
 
     public void deleteLineId(Long id) {

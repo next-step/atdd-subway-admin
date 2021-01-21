@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
@@ -10,7 +12,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-
+@Getter
+@NoArgsConstructor
 @Entity
 public class Line extends BaseEntity {
     @Id
@@ -20,11 +23,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line" , cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "line" , cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Section> sections = new ArrayList<>();
-
-    public Line() {
-    }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
@@ -42,21 +42,8 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
+    public static Line of(Long id, String name, String color) {
+        return new Line(id, name, color);
     }
 
     public List<Station> getSections() {
@@ -66,3 +53,5 @@ public class Line extends BaseEntity {
                 .collect(toList());
     }
 }
+
+

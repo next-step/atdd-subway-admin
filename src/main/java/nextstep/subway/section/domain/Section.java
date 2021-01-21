@@ -10,9 +10,8 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
-@Getter
-@Entity
 @NoArgsConstructor
+@Entity
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +27,7 @@ public class Section {
     private Station downStation;
 
     private int distance;
+
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;

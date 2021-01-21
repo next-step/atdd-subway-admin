@@ -43,11 +43,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("1호선", "파란색"));
+        LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("1호선", "파란색", soyosan.getId(), incheon.getId(), 10));
 
         // when
-        ExtractableResponse<Response> response = 
-                LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("1호선", "파란색"));
+        ExtractableResponse<Response> response =
+                LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("1호선", "파란색", soyosan.getId(), incheon.getId(), 10));
 
         // then
         // 지하철_노선_생성_실패됨
@@ -58,8 +58,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("1호선", "파란색"));
-        LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("2호선", "초록색"));
+        LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("1호선", "파란색", soyosan.getId(), incheon.getId(), 10));
+        LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("2호선", "초록색", soyosan.getId(), incheon.getId(), 10));
         
         // when
         // 지하철_노선_목록_조회_요청
@@ -78,7 +78,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         ExtractableResponse<Response> createLineResponse =
-                LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("1호선", "파란색"));
+                LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("1호선", "파란색", soyosan.getId(), incheon.getId(), 10));
 
         // when
         ExtractableResponse<Response> response =
@@ -95,7 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void patchLine() {
         // given
         ExtractableResponse<Response> createLineResponse =
-                LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("1호선", "파란색"));
+                LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("1호선", "파란색", soyosan.getId(), incheon.getId(), 10));
 
         // when
         LineRequestTestModule.지하철_노선_수정_요청(LineRequest.of(
@@ -114,7 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         ExtractableResponse<Response> createLineResponse =
-                LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("1호선", "파란색"));
+                LineRequestTestModule.지하철_노선_생성_요청(LineRequest.of("1호선", "파란색", soyosan.getId(), incheon.getId(), 10));
 
         // when
         ExtractableResponse<Response> response =
