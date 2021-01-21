@@ -18,7 +18,7 @@ public class LineAcceptanceUtil extends AcceptanceTest {
 
     private static LineRequest lineRequest;
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, String upStation, String downStation, int distance) {
+    public static ExtractableResponse<Response> 지하철_노선_구간_생성_요청(String name, String color, String upStation, String downStation, int distance) {
         long upStationId = StationAcceptanceUtil.지하철_역_생성_요청(upStation);
         long downStationId = StationAcceptanceUtil.지하철_역_생성_요청(downStation);
 
