@@ -34,7 +34,7 @@ public class LineResponseTestModule {
         response.jsonPath().getList(".", LineResponse.class)
                 .forEach(line -> {
                     MatcherAssert.assertThat(line.getId(),
-                            anyOf(equalTo(response.jsonPath().getLong("$[0].id")), equalTo(response.jsonPath().getLong("$[1].id"))));
+                            anyOf(equalTo(1L), equalTo(2L)));
                     MatcherAssert.assertThat(line.getName(),
                             either(containsString("1호선")).or(containsString("2호선")));
                     MatcherAssert.assertThat(line.getColor(),
