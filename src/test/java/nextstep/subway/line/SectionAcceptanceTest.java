@@ -158,6 +158,100 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철역_등록_예외_발생(response);
 	}
 
+	@DisplayName("노선 구간 제거")
+	@Test
+	void removeSection() {
+		final SectionRequest sectionRequest1 = new SectionRequest(강남역.getId(), 양재역.getId(), 4);
+		final SectionRequest sectionRequest2 = new SectionRequest(양재역.getId(), 양재시민의숲역.getId(), 3);
+		final Long deletedStationId = 양재역.getId();
+		final Integer expectDistance = sectionRequest1.getDistance() + sectionRequest2.getDistance();
+		지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest1);
+		지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest2);
+
+		ExtractableResponse<Response> response = 지하철_노선_역_제거_요청(신분당선.getId(), deletedStationId);
+
+		지하철_노선_역_제거됨(response, 지하철_노선의_조회_요청(신분당선.getId()), deletedStationId);
+		지하철_노선_구간_변경됨(지하철_노선_구간_목록_조회(신분당선.getId()), sectionRequest1.getUpStationId(),
+			expectDistance);
+	}
+
+	@DisplayName("노선 구간 제거 - 종점")
+	@Test
+	void removeFinalSection() {
+		final SectionRequest sectionRequest1 = new SectionRequest(강남역.getId(), 양재역.getId(), 4);
+		final SectionRequest sectionRequest2 = new SectionRequest(양재역.getId(), 양재시민의숲역.getId(), 3);
+		final Long deletedStationId = 강남역.getId();
+		지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest1);
+		지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest2);
+
+		ExtractableResponse<Response> response = 지하철_노선_역_제거_요청(신분당선.getId(), deletedStationId);
+
+		지하철_노선_역_제거됨(response, 지하철_노선의_조회_요청(신분당선.getId()), deletedStationId);
+		지하철_종점_변경됨(지하철_노선_구간_목록_조회(신분당선.getId()), deletedStationId);
+	}
+
+	@DisplayName("노선 구간 제거 예외 - 노선 구간 제거시 마지막 남은 1개의 구간 제거 할 수 없음")
+	@Test
+	void removeFinalLastSectionThrow() {
+		final Long deletedStationId = 강남역.getId();
+
+		ExtractableResponse<Response> response = 지하철_노선_역_제거_요청(신분당선.getId(), deletedStationId);
+
+		지하철_노선_제거실패(response);
+	}
+
+	@DisplayName("노선 구간 제거 예외 - 노선 구간 제거 요청시 지하철역이 구간에 없을 경우 예외")
+	@Test
+	void removeNotExistsSectionThrow() {
+		final Long deletedStationId = 용산역.getId();
+
+		ExtractableResponse<Response> response = 지하철_노선_역_제거_요청(신분당선.getId(), deletedStationId);
+
+		지하철_노선_제거실패(response);
+	}
+
+	private void 지하철_노선_제거실패(final ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	private void 지하철_종점_변경됨(final ExtractableResponse<Response> sectionResponse,
+		final Long deletedStationId) {
+
+		List<SectionResponse> sectionResponses = sectionResponse.jsonPath()
+			.getList(".", SectionResponse.class);
+
+		assertThat(sectionResponses.get(0).getUpStationId()).isNotEqualTo(deletedStationId);
+	}
+
+	private void 지하철_노선_역_제거됨(final ExtractableResponse<Response> response,
+			final LineResponse lineResponse, final Long deletedStationId) {
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+			() -> assertThat(lineResponse.getStations().stream()
+				.map(StationResponse::getId)
+				.noneMatch(id -> id.equals(deletedStationId)))
+				.isTrue()
+		);
+	}
+
+	private void 지하철_노선_구간_변경됨(final ExtractableResponse<Response> sectionResponse,
+		final Long toUpStationId, final Integer expectDistance) {
+
+		List<SectionResponse> sectionResponses = sectionResponse.jsonPath()
+			.getList(".", SectionResponse.class);
+
+		SectionResponse toSection = sectionResponses.stream()
+			.filter(section -> section.getUpStationId().equals(toUpStationId))
+			.findFirst()
+			.orElseGet(null);
+
+		assertAll(
+			() -> assertThat(toSection).isNotNull(),
+			() -> assertThat(toSection.getDistance()).isEqualTo(expectDistance)
+		);
+
+	}
+
 	public ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(final Long lineId,
 			final SectionRequest sectionRequest) {
 		return given().log().all()
@@ -172,6 +266,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	public LineResponse 지하철_노선의_조회_요청(final Long lineId) {
 		return lineAcceptanceTest.지하철_노선_조회_요청(lineId).as(LineResponse.class);
+	}
+
+	private ExtractableResponse<Response> 지하철_노선_역_제거_요청(final Long lineId, final Long stationId) {
+		return given().log().all()
+			.accept(MediaType.ALL_VALUE)
+			.delete(String.format("/lines/%d/sections?stationId=%d", lineId, stationId))
+			.then().log().all()
+			.extract();
 	}
 
 	private void 지하철_노선에_지하철역_등록됨(final ExtractableResponse<Response> response,

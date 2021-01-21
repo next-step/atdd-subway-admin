@@ -86,4 +86,52 @@ public class Sections {
 			.distinct()
 			.collect(Collectors.toList());
 	}
+
+	public void removeStation(final Station station) {
+		Section toRemove = findByUpStation(station)
+			.orElseGet(() -> findByDownStation(station)
+				.orElseThrow(() -> new IllegalArgumentException("삭제 대상 역이 포함된 구간이 없습니다.")));
+
+		validateRemove(toRemove);
+
+		if (!isFinalStation(station)) {
+			findByDownStation(station)
+				.ifPresent(existsSection ->
+					existsSection.update(existsSection.getUp(), toRemove.getDown(),
+						existsSection.plusDistance(toRemove.getDistance())));
+		}
+
+		this.sections.remove(toRemove);
+	}
+
+	private boolean isFinalStation(final Station station) {
+		List<Station> finalStations = findFinalStations();
+		return finalStations.contains(station);
+	}
+
+	private List<Station> findFinalStations() {
+		return this.sections.stream()
+			.flatMap(section -> section.getStations().stream())
+			.collect(Collectors.groupingBy(Station::getId))
+			.values()
+			.stream()
+			.filter(stations -> stations.size() == 1)
+			.map(stations -> stations.get(0))
+			.collect(Collectors.toList());
+
+	}
+
+	private void validateRemove(final Section toRemove) {
+		if (isSizeOne() && isLastSection(toRemove)) {
+			throw new IllegalArgumentException("구간이 하나인 노선의 마지막 구간은 삭제할 수 없습니다");
+		}
+	}
+
+	private boolean isSizeOne() {
+		return this.sections.size() == 1;
+	}
+
+	private boolean isLastSection(final Section section) {
+		return this.sections.get(this.sections.size() - 1).equals(section);
+	}
 }

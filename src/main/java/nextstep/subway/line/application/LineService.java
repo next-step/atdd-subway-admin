@@ -85,7 +85,13 @@ public class LineService {
     public List<SectionResponse> findAllSections(final Long id) {
         Line line = findById(id);
         return line.getSections().stream()
+            .sorted()
             .map(SectionResponse::of)
             .collect(Collectors.toList());
+    }
+    public void deleteStation(final Long id, final Long stationId) {
+        Line line = findById(id);
+        Station station = stationService.findById(stationId);
+        line.removeStation(station);
     }
 }
