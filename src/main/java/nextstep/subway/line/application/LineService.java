@@ -36,31 +36,31 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(getLine(request, persistLine));
+        Section section = createSectionByRequest(request);
+        return LineResponse.of(getLine(section, persistLine));
     }
-
-//    @Transactional
-//    public LineResponse addSection(Long id, SectionRequest request) {
-//        Line findLine = lineRepository.findById(id)
-//                .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
-//        return LineResponse.of(getLine(request, findLine));
-//    }
 
     @Transactional
     public SectionResponse addSection(Long id, SectionRequest request) {
         Line findLine = lineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(COULD_NOT_FIND_LINE + id));
-        return SectionResponse.of(getLine(request, findLine));
+        Section section = createSectionByRequest(request);
+        section.validDuplicate(findLine);
+        section.validNotFound(findLine);
+        return SectionResponse.of(getLine(section, findLine));
     }
 
-    private Line getLine(SectionRequest request, Line line) {
-        Station upStation = getStationById(request.getUpStationId());
-        Station downStation = getStationById(request.getDownStationId());
-        Section section = new Section(upStation, downStation, request.getDistance());
+    private Line getLine(Section section, Line line) {
         section.setLine(line);
         sectionRepository.save(section);
         lineRepository.flush();
         return line;
+    }
+
+    private Section createSectionByRequest(SectionRequest request) {
+        Station upStation = getStationById(request.getUpStationId());
+        Station downStation = getStationById(request.getDownStationId());
+        return new Section(upStation, downStation, request.getDistance());
     }
 
     private Station getStationById(Long stationId) {

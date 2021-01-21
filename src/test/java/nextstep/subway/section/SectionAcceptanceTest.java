@@ -31,6 +31,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private StationResponse 강남역;
     private StationResponse 역삼역;
     private StationResponse 선릉역;
+    private StationResponse 삼성역;
 
     private LineResponse 신분당선;
 
@@ -39,6 +40,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         강남역 = StationAcceptanceUtil.지하철_역_생성_요청(new StationRequest("강남역")).as(StationResponse.class);
         역삼역 = StationAcceptanceUtil.지하철_역_생성_요청(new StationRequest("역삼역")).as(StationResponse.class);
         선릉역 = StationAcceptanceUtil.지하철_역_생성_요청(new StationRequest("선릉역")).as(StationResponse.class);
+        삼성역 = StationAcceptanceUtil.지하철_역_생성_요청(new StationRequest("삼성역")).as(StationResponse.class);
         LineRequest params = LineRequest.builder()
                 .name("2호선")
                 .color("bg-red-600")
@@ -142,7 +144,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void validDistance(int input) {
 
         // given
-        SectionRequest params = 지하철_구간_요청_파라미터_생성(역삼역, 선릉역, input);
+        SectionRequest params = 지하철_구간_요청_파라미터_생성(강남역, 선릉역, input);
 
         // when, then
         ExtractableResponse<Response> response = LineAcceptanceUtil.지하철_구간_등록_요청(params);
@@ -155,7 +157,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void validDuplicate() {
 
         // given
-        SectionRequest params = 지하철_구간_요청_파라미터_생성(역삼역, 선릉역, 3);
+        SectionRequest params = 지하철_구간_요청_파라미터_생성(강남역, 역삼역, 3);
 
         // when, then
         ExtractableResponse<Response> response = LineAcceptanceUtil.지하철_구간_등록_요청(params);
@@ -168,7 +170,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void validNotFound() {
 
         // given
-        StationResponse 삼성역 = StationAcceptanceUtil.지하철_역_생성_요청(new StationRequest("삼성역")).as(StationResponse.class);
         SectionRequest params = 지하철_구간_요청_파라미터_생성(선릉역, 삼성역, 3);
 
         // when, then

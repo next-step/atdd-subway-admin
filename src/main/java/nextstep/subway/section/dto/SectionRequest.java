@@ -1,5 +1,7 @@
 package nextstep.subway.section.dto;
 
+import nextstep.subway.section.domain.Section;
+
 public class SectionRequest {
 
     private Long upStationId;       // 상행역 아이디

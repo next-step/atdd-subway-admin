@@ -27,50 +27,49 @@ public class Sections {
 
     public void addSection(Section section) {
 
-        int addIndex = 0;
-        for (int i = 0; i < elements.size(); i++) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
 
-            Section original = elements.get(i);
-            int distance = original.getDistance() - section.getDistance();
-
+        int index = 0;
+        for (Section original : elements) {
             Station orgUpStation = original.getUpStation();
             Station orgDownStation = original.getDownStation();
-            Station upStation = section.getUpStation();
-            Station downStation = section.getDownStation();
-
+            int distance = original.getDistance() - section.getDistance();
             // 기존 구간의 상행역과 새로운 구간의 하행역이 일치하는 경우
             // A - B, C - A => C - A - B
             if (orgUpStation.equals(downStation)) {
-                addIndex = i;
                 break;
             }
-
             // 기존 구간의 상행역과 새로운 구간의 상행역이 일치하는 경우
             // A - B, A - C => A - C - B
             if (orgUpStation.equals(upStation)) {
+                validDistance(distance);
                 original.update(new Section(downStation, orgDownStation, distance));
-                addIndex = i;
                 break;
             }
-
             // 기존 구간의 하행역과 새로운 구간의 하행역이 일치하는 경우
             // A - B, C - B => A - C - B
             if (orgDownStation.equals(downStation)) {
+                validDistance(distance);
                 original.update(new Section(orgUpStation, upStation, distance));
-                addIndex = i + 1;
+                index++;
                 break;
             }
-
             // 기존 구간의 하행역과 새로운 구간의 상행역이 일치하는 경우
             // A - B, B - C => A - B - C
             if (orgDownStation.equals(upStation)) {
-                addIndex = i + 1;
+                index++;
                 break;
             }
-
+            index++;
         }
+        elements.add(index, section);
+    }
 
-        elements.add(addIndex, section);
+    private void validDistance(int distance) {
+        if (distance <= 0) {
+            throw new RuntimeException("기존 역 사이 길이보다 크거나 같습니다.");
+        }
     }
 
     public void removeSection(Section section) {
