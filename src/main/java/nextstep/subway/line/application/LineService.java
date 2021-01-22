@@ -1,6 +1,9 @@
 package nextstep.subway.line.application;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -10,20 +13,36 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 
 @Service
 @Transactional
 public class LineService {
 	private final LineRepository lineRepository;
+	private final StationService stationService;
 
-	public LineService(LineRepository lineRepository) {
+	public LineService(LineRepository lineRepository, StationService stationService) {
 		this.lineRepository = lineRepository;
+		this.stationService = stationService;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		Line persistLine = lineRepository.save(request.toLine());
+		Map<Long, Station> stations = findStations(request);
+		Station upStation = stations.get(request.getUpStationId());
+		Station downStation = stations.get(request.getDownStationId());
 
-		return LineResponse.of(persistLine);
+		Line line = request.toLine();
+		line.addStation(upStation, downStation, request.getDistance());
+
+		return LineResponse.of(lineRepository.save(line));
+	}
+
+	private Map<Long, Station> findStations(LineRequest request){
+		return stationService.findStationsByIds(Arrays.asList(request.getUpStationId(), request.getDownStationId()))
+			.stream()
+			.collect(Collectors.toMap(Station::getId, Function.identity()));
 	}
 
 	public LineResponse updateLine(Long id, LineRequest request) {

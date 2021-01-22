@@ -1,14 +1,14 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.station.StationAcceptanceTestHelper.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -19,15 +19,27 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+	private LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+	private LineRequest 일호선 = new LineRequest("1호선", "bg-blue-600", 3L, 4L, 10);
+
+	@BeforeEach
+	void setup() {
+		지하철역_생성_요청("강남역");
+		지하철역_생성_요청("판교역");
+		지하철역_생성_요청("온수역");
+		지하철역_생성_요청("오류역");
+	}
+
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
 		// when
-		ExtractableResponse<Response> response = 노선_생성_요청("신분당선", "bg-red-600");
+		ExtractableResponse<Response> response = 노선_생성_요청(신분당선);
 
 		// then
 		노선_생성_성공(response);
@@ -37,10 +49,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineWithDuplicateName() {
 		// given
-		노선_생성_요청("신분당선", "bg-red-600");
+		노선_생성_요청(신분당선);
 
 		// when
-		ExtractableResponse<Response> response = 노선_생성_요청("신분당선", "bg-red-600");
+		ExtractableResponse<Response> response = 노선_생성_요청(신분당선);
 
 		// then
 		노선_생성_실패(response);
@@ -50,8 +62,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
-		ExtractableResponse<Response> createResponse1 = 노선_생성_요청("신분당선", "bg-red-600");
-		ExtractableResponse<Response> createResponse2 = 노선_생성_요청("1호선", "bg-blue-600");
+		ExtractableResponse<Response> createResponse1 = 노선_생성_요청(신분당선);
+		ExtractableResponse<Response> createResponse2 = 노선_생성_요청(일호선);
 
 		// when
 		ExtractableResponse<Response> response = 노선_목록_조회_요청();
@@ -64,7 +76,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
-		ExtractableResponse<Response> createResponse = 노선_생성_요청("신분당선", "bg-red-600");
+		ExtractableResponse<Response> createResponse = 노선_생성_요청(신분당선);
 		String id = getIdByLocation(createResponse);
 
 		// when
@@ -78,24 +90,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
-		ExtractableResponse<Response> createResponse = 노선_생성_요청("신분당선", "bg-red-600");
+		ExtractableResponse<Response> createResponse = 노선_생성_요청(신분당선);
 		String id = getIdByLocation(createResponse);
 
 		// when
-		String updatedName = "1호선";
-		String updatedColor = "bg-blue-600";
-
-		ExtractableResponse<Response> response = 노선_수정_요청(id, updatedName, updatedColor);
+		ExtractableResponse<Response> response = 노선_수정_요청(id, 일호선);
 
 		// then
-		노선_수정_성공(id, updatedName, updatedColor, response);
+		노선_수정_성공(id, 일호선.getName(), 일호선.getColor(), response);
 	}
 
 	@DisplayName("지하철 노선을 제거한다.")
 	@Test
 	void deleteLine() {
 		// given
-		ExtractableResponse<Response> createResponse = 노선_생성_요청("신분당선", "bg-red-600");
+		ExtractableResponse<Response> createResponse = 노선_생성_요청(신분당선);
 		String id = getIdByLocation(createResponse);
 
 		// when
@@ -109,13 +118,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return createResponse.header(HttpHeaders.LOCATION).split("/")[2];
 	}
 
-	private ExtractableResponse<Response> 노선_생성_요청(String name, String color) {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
-		params.put("color", color);
-
+	private ExtractableResponse<Response> 노선_생성_요청(LineRequest lineRequest) {
 		return RestAssured.given().log().all()
-			.body(params)
+			.body(lineRequest)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
 			.post("/lines")
@@ -164,18 +169,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	private void 노선_조회_성공(String id, ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		Long resultId = response.jsonPath().getObject(".", LineResponse.class).getId();
-		assertThat(resultId).isEqualTo(Long.parseLong(id));
+
+		LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+		assertThat(lineResponse.getId()).isEqualTo(Long.parseLong(id));
+		assertThat(lineResponse.getStations()).hasSize(2);
 	}
 
-	private ExtractableResponse<Response> 노선_수정_요청(String id, String updatedName, String updatedColor) {
-		Map<String, String> params2 = new HashMap<>();
-		params2.put("name", updatedName);
-		params2.put("color", updatedColor);
-
+	private ExtractableResponse<Response> 노선_수정_요청(String id, LineRequest lineRequest) {
 		return RestAssured.given().log().all()
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.body(params2)
+			.body(lineRequest)
 			.when()
 			.put(URI.create("/lines/" + id))
 			.then().log().all()
