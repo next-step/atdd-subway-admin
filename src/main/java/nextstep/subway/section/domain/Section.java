@@ -91,12 +91,11 @@ public class Section extends BaseEntity {
         this.distance = new Distance(this.distance.minus(section.distance));
     }
 
-    public boolean hasUpStation(Station downStation) {
-        return this.downStation == downStation;
+    public boolean equalUpStation(Station upStation) {
+        return this.upStation == upStation;
     }
 
-    public boolean hasDownStation(Station upStation) {
-        System.out.println("33:"+ this.upStation.getName());
-        return this.upStation == upStation;
+    public boolean equalDownStation(Station downStation) {
+        return this.downStation == downStation;
     }
 }

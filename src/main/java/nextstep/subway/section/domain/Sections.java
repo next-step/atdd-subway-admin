@@ -27,24 +27,22 @@ public class Sections {
     }
 
     public void add(Section section) {
-        findDownSection(section.getUpStation())
+        findUpSection(section.getUpStation())
                 .ifPresent(station -> station.updateUpStation(section));
-        findUpSection(section.getDownStation())
+        findDownSection(section.getDownStation())
                 .ifPresent(station -> station.updateDownStation(section));
         sections.add(section);
     }
 
-    public Optional<Section> findDownSection(Station upStation) {
-        System.out.println("11:"+upStation.getName());
+    public Optional<Section> findUpSection(Station upStation) {
         return sections.stream()
-                .filter(section -> section.hasDownStation(upStation))
+                .filter(section -> section.equalUpStation(upStation))
                 .findFirst();
     }
 
-    public Optional<Section> findUpSection(Station downStation) {
-        System.out.println("22:"+downStation.getName());
+    public Optional<Section> findDownSection(Station downStation) {
         return sections.stream()
-                .filter(section -> section.hasUpStation(downStation))
+                .filter(section -> section.equalDownStation(downStation))
                 .findFirst();
     }
 }
