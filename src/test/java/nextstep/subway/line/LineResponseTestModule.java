@@ -46,9 +46,9 @@ public class LineResponseTestModule {
 
     public static void 지하철_노선_수정_검증(ExtractableResponse<Response> response,ExtractableResponse<Response> createLineResponse) {
         assertAll(
-                () -> assertThat(response.jsonPath().getLong("id")).isEqualTo(Long.parseLong(response.jsonPath().getString("id"))),
-                () -> assertThat(response.jsonPath().getString("name")).isEqualTo(response.jsonPath().getString("name")),
-                () -> assertThat(response.jsonPath().getString("color")).isEqualTo(response.jsonPath().getString("color")),
+                () -> assertThat(response.jsonPath().getLong("id")).isEqualTo(Long.parseLong(createLineResponse.jsonPath().getString("id"))),
+                () -> assertThat(response.jsonPath().getString("name")).isNotEqualTo(createLineResponse.jsonPath().getString("name")),
+                () -> assertThat(response.jsonPath().getString("color")).isNotEqualTo(createLineResponse.jsonPath().getString("color")),
                 () -> assertThat(response.jsonPath().getString("createdDate")).isNotNull(),
                 () -> assertThat(response.jsonPath().getString("modifiedDate")).isNotEqualTo(createLineResponse.jsonPath().getString("modifiedDate"))
         );

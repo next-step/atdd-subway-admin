@@ -1,9 +1,14 @@
 package nextstep.subway.station.dto;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 
+@Getter
+@NoArgsConstructor
 public class StationResponse {
     private Long id;
     private String name;
@@ -14,29 +19,10 @@ public class StationResponse {
         return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
     }
 
-    public StationResponse() {
-    }
-
     public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
     }
 }
