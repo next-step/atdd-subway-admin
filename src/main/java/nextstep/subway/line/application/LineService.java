@@ -55,7 +55,7 @@ public class LineService {
     public LineResponse updateLine(long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("데이터가 존재하지 않습니다."));
-        line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
+        line.update(lineRequest.getName(), lineRequest.getColor());
 
         return LineResponse.of(line);
     }

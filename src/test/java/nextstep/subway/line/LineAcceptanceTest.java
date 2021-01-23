@@ -47,7 +47,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성_실패됨
-        지하철_노선_응답_결과(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        지하철_노선_응답_결과(response, HttpStatus.BAD_REQUEST);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -84,7 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(result.get(1).getStations().get(0).getName()).isEqualTo("당산역");
         assertThat(result.get(1).getStations().get(1).getName()).isEqualTo("판교역");
     }
-//
+
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
