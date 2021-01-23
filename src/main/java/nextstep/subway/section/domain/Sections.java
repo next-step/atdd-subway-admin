@@ -1,22 +1,46 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.exception.MyException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
-    public Sections() {
+    protected Sections() {
+    }
+
+    public Sections(Section section) {
+        sections.add(section);
+    }
+
+    public void add(Section section) {
+        validateSection(section);
+
+        findUpStation(section.getUpStation())
+                .ifPresent(it -> it.updateUpStation(section));
+        findDownStation(section.getDownStation())
+                .ifPresent(it -> it.updateDownStation(section));
+        sections.add(section);
+    }
+
+    public Optional<Section> findDownStation(Station downStation) {
+        return sections.stream()
+                .filter(it -> it.equalDownStation(downStation))
+                .findFirst();
+    }
+
+    public Optional<Section> findUpStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.equalUpStation(upStation))
+                .findFirst();
     }
 
     public List<Station> getStations() {
@@ -26,23 +50,14 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void add(Section section) {
-        findUpSection(section.getUpStation())
-                .ifPresent(station -> station.updateUpStation(section));
-        findDownSection(section.getDownStation())
-                .ifPresent(station -> station.updateDownStation(section));
-        sections.add(section);
-    }
+    private void validateSection(Section section) {
+        List<Station> stations = getStations();
+        if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
+            throw new MyException("이미 등록된 구간 입니다.");
+        }
 
-    public Optional<Section> findUpSection(Station upStation) {
-        return sections.stream()
-                .filter(section -> section.equalUpStation(upStation))
-                .findFirst();
-    }
-
-    public Optional<Section> findDownSection(Station downStation) {
-        return sections.stream()
-                .filter(section -> section.equalDownStation(downStation))
-                .findFirst();
+        if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
+            throw new MyException("등록할 수 없는 구간입니다.");
+        }
     }
 }
