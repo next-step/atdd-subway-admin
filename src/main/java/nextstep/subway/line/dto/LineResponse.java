@@ -3,14 +3,11 @@ package nextstep.subway.line.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
 @Getter
@@ -33,7 +30,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stationResponses = line.getSections().stream()
+        List<StationResponse> stationResponses = line.getStations().stream()
                 .map(StationResponse::of)
                 .collect(toList());
 

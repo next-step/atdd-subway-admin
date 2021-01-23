@@ -57,7 +57,7 @@ public class Line extends BaseEntity {
         return this;
     }
 
-    public List<Station> getSections() {
+    public List<Station> getStations() {
         return sections.stream()
                 .map(Section::getStations)
                 .flatMap(Collection::stream)
