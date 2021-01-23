@@ -20,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("노선 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-    long 광교역_id;
-    long 강남역_id;
-    ExtractableResponse<Response> 신분당선;
+    private long 광교역_id;
+    private long 강남역_id;
+    private ExtractableResponse<Response> 신분당선;
 
     @BeforeEach
     public void setUp() {
