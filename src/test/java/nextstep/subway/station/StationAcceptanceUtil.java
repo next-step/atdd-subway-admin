@@ -4,7 +4,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -28,5 +31,13 @@ public class StationAcceptanceUtil extends AcceptanceTest {
                 .then().log().all().extract();
 
         return response.header("Location") == null ? ZERO : Long.parseLong(response.header("Location").split("/")[2]);
+    }
+
+    @DisplayName("지하철 역 조회")
+    public static ExtractableResponse<Response> 지하철_역_조회(String station) {
+        return RestAssured
+                .given().log().all()
+                .when().get("/stations/"+station)
+                .then().log().all().extract();
     }
 }

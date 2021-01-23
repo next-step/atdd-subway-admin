@@ -23,7 +23,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = LineAcceptanceUtil.지하철_노선_생성_요청("신분당선", "bg-red-600"
+        ExtractableResponse<Response> response = LineAcceptanceUtil.지하철_노선_구간_생성_요청("신분당선", "bg-red-600"
                                                                             , "당산역", "잠실역", 10);
 
         // then
@@ -37,17 +37,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        LineAcceptanceUtil.지하철_노선_생성_요청("신분당선", "bg-red-600",
+        LineAcceptanceUtil.지하철_노선_구간_생성_요청("신분당선", "bg-red-600",
                                                 "잠실역", "판교역", 2);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = LineAcceptanceUtil.지하철_노선_생성_요청("신분당선", "bg-red-600",
+        ExtractableResponse<Response> response = LineAcceptanceUtil.지하철_노선_구간_생성_요청("신분당선", "bg-red-600",
                                                                               "잠실역", "판교역", 2);
 
         // then
         // 지하철_노선_생성_실패됨
-        지하철_노선_응답_결과(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        지하철_노선_응답_결과(response, HttpStatus.BAD_REQUEST);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -57,8 +57,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> response1 = LineAcceptanceUtil.지하철_노선_생성_요청("신분당선", "bg-red-600", "잠실역", "교대역", 10);
-        ExtractableResponse<Response> response2 = LineAcceptanceUtil.지하철_노선_생성_요청("2호선", "bg-green-600", "당산역", "판교역", 10);
+        ExtractableResponse<Response> response1 = LineAcceptanceUtil.지하철_노선_구간_생성_요청("신분당선", "bg-red-600", "잠실역", "교대역", 10);
+        ExtractableResponse<Response> response2 = LineAcceptanceUtil.지하철_노선_구간_생성_요청("2호선", "bg-green-600", "당산역", "판교역", 10);
         expected.add(LineAcceptanceUtil.지하철_노선_생성_아이디_조회(response1));
         expected.add(LineAcceptanceUtil.지하철_노선_생성_아이디_조회(response2));
 
@@ -84,13 +84,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(result.get(1).getStations().get(0).getName()).isEqualTo("당산역");
         assertThat(result.get(1).getStations().get(1).getName()).isEqualTo("판교역");
     }
-//
+
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineAcceptanceUtil.지하철_노선_생성_요청("신분당선", "bg-red-600", "잠실역", "판교역", 10);
+        LineAcceptanceUtil.지하철_노선_구간_생성_요청("신분당선", "bg-red-600", "잠실역", "판교역", 10);
 
         // when
         // 지하철_노선_조회_요청
@@ -109,7 +109,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineAcceptanceUtil.지하철_노선_생성_요청("신분당선", "bg-red-600", "잠실역", "판교역", 10);
+        LineAcceptanceUtil.지하철_노선_구간_생성_요청("신분당선", "bg-red-600", "잠실역", "판교역", 10);
 
         // when
         // 지하철_노선_수정_요청
@@ -128,7 +128,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineAcceptanceUtil.지하철_노선_생성_요청("신분당선", "bg-red-600", "잠실역", "판교역", 10);
+        LineAcceptanceUtil.지하철_노선_구간_생성_요청("신분당선", "bg-red-600", "잠실역", "판교역", 10);
 
         // when
         // 지하철_노선_제거_요청

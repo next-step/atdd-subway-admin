@@ -37,6 +37,11 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/stations/{name}")
+    public ResponseEntity findByStation(@PathVariable String name) {
+        return ResponseEntity.ok().body(stationService.findByName(name));
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();

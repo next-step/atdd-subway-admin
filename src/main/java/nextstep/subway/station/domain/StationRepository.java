@@ -10,4 +10,6 @@ public interface StationRepository extends JpaRepository<Station, Long> {
     List<Station> findAll();
 
     Stream<Station> findAllByIdIn(Long... ids);
+
+    Station findByName(String name);
 }
