@@ -6,19 +6,19 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Distance {
     @Column(nullable = false)
-    int distance;
+    private long distance;
 
-    public Distance() {
+    protected Distance() {
     }
 
-    public Distance(int distance) {
-        if(distance < 1) {
+    public Distance(long distance) {
+        if (distance < 0) {
             throw new IllegalArgumentException("거리는 0보다 이상이어야 합니다.");
         }
         this.distance = distance;
     }
 
-    public int minus(Distance distance) {
+    public long minus(Distance distance) {
         return this.distance - distance.distance;
     }
 
