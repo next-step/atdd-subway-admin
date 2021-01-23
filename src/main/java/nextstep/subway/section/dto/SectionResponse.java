@@ -22,4 +22,20 @@ public class SectionResponse {
     public static SectionResponse of(Line line, Station upStation, Station downStation, int distance) {
         return new SectionResponse(line, upStation, downStation, distance);
     }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
 }
