@@ -1,6 +1,6 @@
 package nextstep.subway.section.domain;
 
-import lombok.Getter;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
@@ -10,7 +10,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Section {
     @Id

@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
@@ -13,7 +14,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Line extends BaseEntity {
     @Id
