@@ -21,8 +21,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void BeforeEach() {
-        soyosan = StationAcceptanceTest.지하철역_생성_요청(StationRequest.of("소요산역")).as(StationResponse.class);
-        incheon = StationAcceptanceTest.지하철역_생성_요청(StationRequest.of("인천역")).as(StationResponse.class);
+        soyosan = StationAcceptanceTest.지하철역_생성_요청(new StationRequest("소요산역")).as(StationResponse.class);
+        incheon = StationAcceptanceTest.지하철역_생성_요청(new StationRequest("인천역")).as(StationResponse.class);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -59,8 +59,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         LineRequestTestModule.지하철_노선_생성_요청(LineRequest.builder().name("1호선").color("파란색").upStationId(soyosan.getId()).downStationId(incheon.getId()).distance(10).build());
-        LineRequestTestModule.지하철_노선_생성_요청(LineRequest.builder().name("2호선").color("초록").upStation색Id(soyosan.getId()).downStationId(incheon.getId()).distance(10).build());
-        
+        LineRequestTestModule.지하철_노선_생성_요청(LineRequest.builder().name("2호선").color("초록색").upStationId(soyosan.getId()).downStationId(incheon.getId()).distance(10).build());
+
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response =

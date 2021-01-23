@@ -30,7 +30,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        sections.add(Section.of(this, upStation, downStation, distance));
+        sections.add(Section.builder().line(this).upStation(upStation).downStation(downStation).distance(distance).build());
     }
 
     public Line(String name, String color) {

@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
@@ -28,16 +29,12 @@ public class Section {
 
     private int distance;
 
-
+    @Builder
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public static Section of(Line line, Station upStation, Station downStation, int distance) {
-        return new Section(line, upStation, downStation, distance);
     }
 
     public List<Station> getStations() {
