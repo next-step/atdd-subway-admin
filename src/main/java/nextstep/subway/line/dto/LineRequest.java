@@ -3,6 +3,7 @@ package nextstep.subway.line.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import nextstep.subway.line.domain.Line;
 
 @Getter
 @Setter
@@ -17,6 +18,11 @@ public class LineRequest {
 
     public LineRequest(Long id, String name, String color) {
         this.id = id;
+        this.name = name;
+        this.color = color;
+    }
+
+    public LineRequest(String name, String color) {
         this.name = name;
         this.color = color;
     }
@@ -36,4 +42,13 @@ public class LineRequest {
     public static LineRequest of(String name, String color, Long upStationId, Long downStationId, int distance) {
         return new LineRequest(name, color, upStationId, downStationId, distance);
     }
+
+    public static LineRequest of(String name, String color) {
+        return new LineRequest(name, color);
+    }
+
+    public Line toLine() {
+        return new Line(name, color);
+    }
+
 }
