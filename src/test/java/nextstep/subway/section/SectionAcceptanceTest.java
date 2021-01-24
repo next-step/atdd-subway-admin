@@ -87,4 +87,44 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> response1 = LineRequestTestModule.지하철_노선_조회_요청(response);
     }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void addSection3() {
+        SectionRequest sectionRequest = new SectionRequest(서울역.getId(), 소요산역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{id}/sections", 일호선.getId())
+                .then().log().all().extract();
+
+        // then
+        // 정상적으로 등록 되었는지 확인
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response1 = LineRequestTestModule.지하철_노선_조회_요청(response);
+    }
+
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void addSection4() {
+        SectionRequest sectionRequest = new SectionRequest(인천역.getId(), 서울역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{id}/sections", 일호선.getId())
+                .then().log().all().extract();
+
+        // then
+        // 정상적으로 등록 되었는지 확인
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response1 = LineRequestTestModule.지하철_노선_조회_요청(response);
+    }
 }
