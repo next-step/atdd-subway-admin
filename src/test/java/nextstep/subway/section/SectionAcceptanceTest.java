@@ -62,4 +62,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 정상적으로 등록 되었는지 확인
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @DisplayName("역과 역사이에 새로운 역을 등록할 경우 : 기존 하행역 - 새로운 상행역 관계")
+    @Test
+    void addSection2() {
+        // 라인 및 지하철역 3개 생성 (beforeEach)
+        // 상행 하행역 등록 (beforeEach)
+        // 소요산역 다음에 서울역 등록 요청 (새로운 Section 생성)
+        // given
+        SectionRequest sectionRequest = new SectionRequest(서울역.getId(), 인천역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{id}/sections", 일호선.getId())
+                .then().log().all().extract();
+
+        // then
+        // 정상적으로 등록 되었는지 확인
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }
