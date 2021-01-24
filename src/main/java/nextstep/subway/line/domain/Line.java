@@ -5,14 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -24,13 +21,13 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line" , cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        sections.add(Section.builder().line(this).upStation(upStation).downStation(downStation).distance(distance).build());
+        sections = new Sections(this, upStation, downStation, distance);
     }
 
     public Line(String name, String color) {
@@ -38,18 +35,12 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
         return new Line(name, color, upStation, downStation, distance);
-    }
-
-    public Line(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-    }
-
-    public static Line of(Long id, String name, String color) {
-        return new Line(id, name, color);
     }
 
     public Line update(Line line) {
@@ -59,10 +50,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.stream()
-                .map(Section::getStations)
-                .flatMap(Collection::stream)
-                .collect(toList());
+        return sections.getStations();
     }
 }
 

@@ -48,17 +48,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // 소요산역 다음에 서울역 등록 요청 (새로운 Section 생성)
         // given
         SectionRequest sectionRequest = new SectionRequest(소요산역.getId(), 서울역.getId(), 5);
-        // when
+
         // when
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/{id}/sections", 일호선.getId())
+                .post("/lines/{id}/sections", 일호선.getId())
                 .then().log().all().extract();
+
         // then
         // 정상적으로 등록 되었는지 확인
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
