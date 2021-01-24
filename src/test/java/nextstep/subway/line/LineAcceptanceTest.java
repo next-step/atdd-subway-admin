@@ -8,7 +8,6 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
 import nextstep.subway.AcceptanceTest;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -34,12 +33,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_생성_요청("신분당선", "red");
 
         // when
         // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "red");
 
         // then
         // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
