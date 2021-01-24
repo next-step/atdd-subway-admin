@@ -61,7 +61,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void addSection(Long lineId, SectionRequest sectionRequest) {
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineFindById(lineId);
 
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
@@ -73,5 +73,7 @@ public class LineService {
                 .downStation(downStation)
                 .distance(sectionRequest.getDistance())
                 .build());
+
+        return LineResponse.of(line);
     }
 }

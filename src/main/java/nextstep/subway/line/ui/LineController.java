@@ -50,9 +50,8 @@ public class LineController {
     }
 
     @PostMapping(value = "/{id}/sections")
-    public ResponseEntity<?> createSection(@RequestBody SectionRequest sectionRequest, @PathVariable Long id) {
-        lineService.addSection(id, sectionRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<LineResponse> createSection(@RequestBody SectionRequest sectionRequest, @PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.addSection(id, sectionRequest));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

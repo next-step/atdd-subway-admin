@@ -30,7 +30,7 @@ public class LineRequestTestModule {
         return RestAssured
                 .given().log().all()
                 .when()
-                .get("/lines/1")
+                .get(headerLocation(response))
                 .then().log().all().extract();
     }
 
