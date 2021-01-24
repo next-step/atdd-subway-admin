@@ -42,7 +42,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("역 사이에 새로운 역을 등록 한다.")
 	@Test
-	void addSection1() {
+	void addSectionBetweenStations() {
 		ExtractableResponse<Response> response = 구간_등록_요청(신분당선, 양재역, 청계산입구역, 3);
 
 		구간_등록_성공(response);
@@ -50,7 +50,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("새로운 역을 상행 종점으로 등록 한다.")
 	@Test
-	void addSection2() {
+	void addSectionWithNewUpStation() {
 		ExtractableResponse<Response> response = 구간_등록_요청(신분당선, 강남역, 양재역, 3);
 
 		구간_등록_성공(response);
@@ -58,7 +58,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("새로운 역을 하행 종점으로 등록 한다.")
 	@Test
-	void addSection3() {
+	void addSectionWithNewDownStation() {
 		ExtractableResponse<Response> response = 구간_등록_요청(신분당선, 판교역, 광교역, 3);
 
 		구간_등록_성공(response);
@@ -106,6 +106,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	}
 
 	public static void 구간_등록_실패(ExtractableResponse<Response> response) {
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 }

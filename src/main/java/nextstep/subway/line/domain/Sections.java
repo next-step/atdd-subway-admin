@@ -14,11 +14,17 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+	public static final String ALREADY_REGISTERED_STATIONS = "이미 등록된 지하철역 입니다.";
+	public static final String NO_CONNECTABLE_SECTION = "연결 할 수 있는 구간이 없습니다.";
+
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Section> sections = new ArrayList<>();
 
 	public void add(Section section) {
-		updateSection(section);
+		List<Station> stations = getStations();
+		validateAddableSection(stations, section);
+		updateSection(stations, section);
+
 		sections.add(section);
 	}
 
@@ -37,9 +43,7 @@ public class Sections {
 		);
 	}
 
-	private void updateSection(Section section) {
-		List<Station> stations = getStations();
-
+	private void updateSection(List<Station> stations, Section section) {
 		if (stations.contains(section.getUpStation())) {
 			updateUpStation(section);
 			return;
@@ -62,5 +66,18 @@ public class Sections {
 			.filter(it -> it.isDownStation(section.getDownStation()))
 			.findFirst()
 			.ifPresent(it -> it.updateDownStation(section.getUpStation(), section.getDistance()));
+	}
+
+	private void validateAddableSection(List<Station> stations, Section section) {
+		Station upStation = section.getUpStation();
+		Station downStation = section.getDownStation();
+
+		if (stations.contains(upStation) && stations.contains(downStation)) {
+			throw new IllegalArgumentException(ALREADY_REGISTERED_STATIONS);
+		}
+
+		if (!stations.isEmpty() && !stations.contains(upStation) && !stations.contains(downStation)) {
+			throw new IllegalArgumentException(NO_CONNECTABLE_SECTION);
+		}
 	}
 }

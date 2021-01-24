@@ -15,6 +15,8 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section implements Comparable<Section> {
+	public static final String PLEASE_ENTER_SHORT_DISTANCE = "기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -55,7 +57,11 @@ public class Section implements Comparable<Section> {
 	}
 
 	public void updateUpStation(Station station, int distance) {
-		upStation = station;
+		if (this.distance <= distance) {
+			throw new IllegalArgumentException(PLEASE_ENTER_SHORT_DISTANCE);
+		}
+
+		this.upStation = station;
 		this.distance -= distance;
 	}
 
@@ -68,7 +74,11 @@ public class Section implements Comparable<Section> {
 	}
 
 	public void updateDownStation(Station station, int distance) {
-		downStation = station;
+		if (this.distance <= distance) {
+			throw new IllegalArgumentException(PLEASE_ENTER_SHORT_DISTANCE);
+		}
+
+		this.downStation = station;
 		this.distance -= distance;
 	}
 
