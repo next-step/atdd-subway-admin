@@ -64,6 +64,9 @@ public class Sections {
                 .filter(oldSection -> section.getUpStation() == oldSection.getUpStation())
                 .findFirst()
                 .ifPresent(oldSection -> {
+                    if (oldSection.getDistance() <= section.getDistance()) {
+                        throw new IllegalArgumentException();
+                    }
                     sections.add(new Section(oldSection.getLine(), section.getDownStation(), oldSection.getDownStation(), oldSection.getDistance() - section.getDistance()));
                     sections.remove(oldSection);
                 });
@@ -72,6 +75,9 @@ public class Sections {
                 .filter(oldSection -> section.getDownStation() == oldSection.getDownStation())
                 .findFirst()
                 .ifPresent(oldSection -> {
+                    if (oldSection.getDistance() <= section.getDistance()) {
+                        throw new IllegalArgumentException();
+                    }
                     sections.add(new Section(oldSection.getLine(), oldSection.getUpStation(), section.getUpStation(), oldSection.getDistance() - section.getDistance()));
                     sections.remove(oldSection);
                 });

@@ -127,4 +127,44 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> response1 = LineRequestTestModule.지하철_노선_조회_요청(response);
     }
+
+    @DisplayName("상행역 아래에 새로운 역을 등록할 경우 기존 길이보다 같거나 크면 등록이 안됨")
+    @Test
+    void addInvalidDistanceUpStation() {
+        SectionRequest sectionRequest = new SectionRequest(소요산역.getId(), 서울역.getId(), 10);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{id}/sections", 일호선.getId())
+                .then().log().all().extract();
+
+        // then
+        // 정상적으로 등록 되었는지 확인
+        ExtractableResponse<Response> response1 = LineRequestTestModule.지하철_노선_조회_요청(response);
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("하행역 위에 새로운 역을 등록할 경우 기존 길이보다 같거나 크면 등록이 안됨")
+    @Test
+    void addInvalidDistanceDownStation() {
+        SectionRequest sectionRequest = new SectionRequest(서울역.getId(), 인천역.getId(), 10);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{id}/sections", 일호선.getId())
+                .then().log().all().extract();
+
+        // then
+        // 정상적으로 등록 되었는지 확인
+        ExtractableResponse<Response> response1 = LineRequestTestModule.지하철_노선_조회_요청(response);
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }
