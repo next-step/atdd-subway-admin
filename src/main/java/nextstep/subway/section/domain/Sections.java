@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,6 +61,14 @@ public class Sections {
     }
 
     public void add(Section section) {
+        // 역이 둘다 존재
+        List<Station> stations = getStations();
+        if(stations.containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()))) {
+            throw new IllegalArgumentException();
+        }
+
+
+
         sections.stream()
                 .filter(oldSection -> section.getUpStation() == oldSection.getUpStation())
                 .findFirst()
