@@ -14,7 +14,7 @@ import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.line.domain.Section;
 
 @Entity
 public class Station extends BaseEntity {

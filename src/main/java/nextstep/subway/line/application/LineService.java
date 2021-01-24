@@ -13,7 +13,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -39,7 +38,7 @@ public class LineService {
 		return LineResponse.of(lineRepository.save(line));
 	}
 
-	private Map<Long, Station> findStations(LineRequest request){
+	private Map<Long, Station> findStations(LineRequest request) {
 		return stationService.findStationsByIds(Arrays.asList(request.getUpStationId(), request.getDownStationId()))
 			.stream()
 			.collect(Collectors.toMap(Station::getId, Function.identity()));
