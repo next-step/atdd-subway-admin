@@ -187,4 +187,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response1 = LineRequestTestModule.지하철_노선_조회_요청(response);
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
+
+    @DisplayName("상하행역 중 하나라도 포함되어있지 않을 경우")
+    @Test
+    void notExistStations() {
+        StationResponse 창동역 = StationAcceptanceTest.지하철역_생성_요청(new StationRequest("창동역")).as(StationResponse.class);
+        StationResponse 용산역 = StationAcceptanceTest.지하철역_생성_요청(new StationRequest("용산역")).as(StationResponse.class);
+        SectionRequest sectionRequest = new SectionRequest(창동역.getId(), 용산역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{id}/sections", 일호선.getId())
+                .then().log().all().extract();
+
+        // then
+        // 정상적으로 등록 되었는지 확인
+        ExtractableResponse<Response> response1 = LineRequestTestModule.지하철_노선_조회_요청(response);
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }

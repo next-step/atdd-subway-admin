@@ -61,13 +61,16 @@ public class Sections {
     }
 
     public void add(Section section) {
-        // 역이 둘다 존재
+        // 역이 둘다 존재 시
         List<Station> stations = getStations();
         if(stations.containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()))) {
             throw new IllegalArgumentException();
         }
 
-
+        // 둘다 존재 하지 않을
+       if(!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
+            throw new IllegalArgumentException();
+        }
 
         sections.stream()
                 .filter(oldSection -> section.getUpStation() == oldSection.getUpStation())
