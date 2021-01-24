@@ -6,10 +6,12 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -30,10 +32,31 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        return sections.stream()
-                .map(Section::getStations)
-                .flatMap(Collection::stream)
+        List<Station> stations = new ArrayList<>();
+        Section upEndSection = findUpEndSection();
+        stations.add(upEndSection.getUpStation());
+        Section nextSection = upEndSection;
+        while (nextSection != null) {
+            stations.add(nextSection.getDownStation());
+            nextSection = findSectionByNextUpStation(nextSection.getDownStation());
+        }
+        return stations;
+    }
+    private Section findUpEndSection() {
+        List<Station> downStations = this.sections.stream()
+                .map(Section::getDownStation)
                 .collect(toList());
+        return this.sections.stream()
+                .filter(section -> !downStations.contains(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    private Section findSectionByNextUpStation(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation() == station)
+                .findFirst()
+                .orElse(null);
     }
 
     public void add(Section section) {
