@@ -3,6 +3,8 @@ package nextstep.subway.section.domain;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.util.CommonException;
+import nextstep.subway.util.Message;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -41,6 +43,7 @@ public class Sections {
         }
         return stations;
     }
+
     private Section findUpEndSection() {
         List<Station> downStations = this.sections.stream()
                 .map(Section::getDownStation)
@@ -59,38 +62,50 @@ public class Sections {
     }
 
     public void add(Section section) {
-        // 역이 둘다 존재 시
-        List<Station> stations = getStations();
-        if(stations.containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()))) {
-            throw new IllegalArgumentException();
-        }
+        validateNotExistStation(section);
+        alreadyExistStation(section);
 
-        // 둘다 존재 하지 않을
-       if(!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
-            throw new IllegalArgumentException();
-        }
+        addUpStation(section);
+        addDownStation(section);
 
-        sections.stream()
-                .filter(oldSection -> section.getUpStation() == oldSection.getUpStation())
-                .findFirst()
-                .ifPresent(oldSection -> {
-                    if (oldSection.getDistance() <= section.getDistance()) {
-                        throw new IllegalArgumentException();
-                    }
-                    sections.add(new Section(oldSection.getLine(), section.getDownStation(), oldSection.getDownStation(), oldSection.getDistance() - section.getDistance()));
-                    sections.remove(oldSection);
-                });
+        this.sections.add(section);
+    }
 
+    private void addDownStation(Section section) {
         sections.stream()
                 .filter(oldSection -> section.getDownStation() == oldSection.getDownStation())
                 .findFirst()
                 .ifPresent(oldSection -> {
-                    if (oldSection.getDistance() <= section.getDistance()) {
-                        throw new IllegalArgumentException();
-                    }
-                    sections.add(new Section(oldSection.getLine(), oldSection.getUpStation(), section.getUpStation(), oldSection.getDistance() - section.getDistance()));
-                    sections.remove(oldSection);
+                    selectWithStation(section, oldSection, oldSection.getUpStation(), section.getUpStation());
                 });
-        this.sections.add(section);
+    }
+
+    private void addUpStation(Section section) {
+        sections.stream()
+                .filter(oldSection -> section.getUpStation() == oldSection.getUpStation())
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    selectWithStation(section, oldSection, section.getDownStation(), oldSection.getDownStation());
+                });
+    }
+
+    private void selectWithStation(Section section, Section oldSection, Station upStation, Station upStation2) {
+        if (oldSection.getDistance() <= section.getDistance()) {
+            CommonException.IllegalArgumentException(Message.DISTANCE_EXCESS_MESSAGE);
+        }
+        sections.add(new Section(oldSection.getLine(), upStation, upStation2, oldSection.getDistance() - section.getDistance()));
+        sections.remove(oldSection);
+    }
+
+    private void validateNotExistStation(Section section) {
+        if(!getStations().contains(section.getUpStation()) && !getStations().contains(section.getDownStation())) {
+            CommonException.IllegalArgumentException(Message.NOT_EXIST_STATION_MESSAGE);
+         }
+    }
+
+    private void alreadyExistStation(Section section) {
+        if(getStations().containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()))) {
+            CommonException.IllegalArgumentException(Message.ALREADY_EXIST_STATION_MESSAGE);
+        }
     }
 }

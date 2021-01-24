@@ -37,7 +37,6 @@ public class LineService {
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-
         return lines.stream()
                 .map(LineResponse::of)
                 .collect(toList());
@@ -63,7 +62,6 @@ public class LineService {
 
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineFindById(lineId);
-
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
 

@@ -172,5 +172,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void 노선에_구간_등록_확인(ExtractableResponse<Response> response, HttpStatus httpStatus) {
         assertThat(response.statusCode()).isEqualTo(httpStatus.value());
+        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
     }
 }

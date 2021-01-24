@@ -49,7 +49,7 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(value = "/{id}/sections")
+    @PostMapping(value = "/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createSection(@RequestBody SectionRequest sectionRequest, @PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.addSection(id, sectionRequest));
     }
