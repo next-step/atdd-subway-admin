@@ -10,24 +10,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-@Table(
-	uniqueConstraints = {
-		@UniqueConstraint(
-			columnNames = {"line_id", "up_station_id"}
-		),
-		@UniqueConstraint(
-			columnNames = {"line_id", "down_station_id"}
-		)
-	}
-)
-public class Section {
+public class Section implements Comparable<Section> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -57,5 +44,48 @@ public class Section {
 
 	public List<Station> getStations() {
 		return Collections.unmodifiableList(Arrays.asList(upStation, downStation));
+	}
+
+	public Station getUpStation() {
+		return upStation;
+	}
+
+	public boolean isUpStation(Station station) {
+		return upStation.equals(station);
+	}
+
+	public void updateUpStation(Station station, int distance) {
+		upStation = station;
+		this.distance -= distance;
+	}
+
+	public Station getDownStation() {
+		return downStation;
+	}
+
+	public boolean isDownStation(Station station) {
+		return downStation.equals(station);
+	}
+
+	public void updateDownStation(Station station, int distance) {
+		downStation = station;
+		this.distance -= distance;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+
+	@Override
+	public int compareTo(Section section) {
+		if (isDownStation(section.downStation)) {
+			return 0;
+		}
+
+		if (isUpStation(section.downStation)) {
+			return 1;
+		}
+
+		return -1;
 	}
 }

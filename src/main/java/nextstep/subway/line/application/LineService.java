@@ -13,6 +13,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -28,18 +29,18 @@ public class LineService {
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		Map<Long, Station> stations = findStations(request);
+		Map<Long, Station> stations = findStations(request.getUpStationId(), request.getDownStationId());
 		Station upStation = stations.get(request.getUpStationId());
 		Station downStation = stations.get(request.getDownStationId());
 
 		Line line = request.toLine();
-		line.addStation(upStation, downStation, request.getDistance());
+		line.addSection(upStation, downStation, request.getDistance());
 
 		return LineResponse.of(lineRepository.save(line));
 	}
 
-	private Map<Long, Station> findStations(LineRequest request) {
-		return stationService.findStationsByIds(Arrays.asList(request.getUpStationId(), request.getDownStationId()))
+	private Map<Long, Station> findStations(Long... ids) {
+		return stationService.findStationsByIds(Arrays.asList(ids))
 			.stream()
 			.collect(Collectors.toMap(Station::getId, Function.identity()));
 	}
@@ -64,6 +65,17 @@ public class LineService {
 	public LineResponse findLineById(Long id) {
 		Line line = findById(id);
 
+		return LineResponse.of(line);
+	}
+
+	public LineResponse addSection(Long lineId, SectionRequest request) {
+		Line line = findById(lineId);
+
+		Map<Long, Station> stations = findStations(request.getUpStationId(), request.getDownStationId());
+		Station upStation = stations.get(request.getUpStationId());
+		Station downStation = stations.get(request.getDownStationId());
+
+		line.addSection(upStation, downStation, request.getDistance());
 		return LineResponse.of(line);
 	}
 
