@@ -60,4 +60,20 @@ public class Sections {
             throw new MyException("등록할 수 없는 구간입니다.");
         }
     }
+
+    public void removeSection(Long stationId) {
+        List<Section> sectionList = findSectionByStationId(stationId);
+        if(sectionList.size() > 1) {
+            Section upSection = sectionList.get(0);
+            Section downSection = sectionList.get(1);
+            sections.add(upSection.merge(downSection));
+        }
+        sectionList.forEach(sections::remove);
+    }
+
+    private List<Section> findSectionByStationId(Long stationId) {
+        return this.sections.stream()
+                .filter(section -> section.isEqualsUpStation(stationId) || section.isEqualsDownStation(stationId))
+                .collect(Collectors.toList());
+    }
 }

@@ -25,4 +25,8 @@ public class Distance {
     public boolean isLessThanEqual(Distance distance) {
         return this.distance <= distance.distance;
     }
+
+    public long plus(Distance distance) {
+        return this.distance + distance.distance;
+    }
 }
