@@ -102,7 +102,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         // 노선 조회 후 구간 등록
         LineResponse 신분당선_조회 = 신분당선.body().as(LineResponse.class);
-        SectionRequest sectionRequest = new SectionRequest(강남역_id, 광교역_id, 10);
+        SectionRequest sectionRequest = new SectionRequest(강남역_id, 광교역_id, 5);
 
         // when
         // 지하철_노선에_지하철역_등록_요청
@@ -111,6 +111,46 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_지하철역_등록됨
         지하철_노선_응답_결과(지하철_노선_구간_등록, HttpStatus.BAD_REQUEST);
+    }
+
+    @DisplayName("구간에 등록된 역 삭제")
+    @Test
+    void delete_section_station() {
+        // given
+        long 잠실역_id = StationAcceptanceUtil.지하철_역_생성_요청("잠실역");
+        SectionRequest sectionRequest = new SectionRequest(잠실역_id, 광교역_id, 5);
+        LineResponse 신분당선_조회 = 신분당선.body().as(LineResponse.class);
+        SectionAcceptanceUtil.지하철_노선_구간_등록_요청(신분당선_조회.getId(), sectionRequest);
+
+        // when
+        // 노선에 등록된 역 삭제
+        ExtractableResponse<Response> 지하철_노선_삭제 = SectionAcceptanceUtil.지하철_노선_삭제_요청(신분당선_조회.getId(), 잠실역_id);
+
+        // then
+        // 지하철 노선 삭제됨
+        assertAll(
+                () -> 지하철_노선_응답_결과(지하철_노선_삭제, HttpStatus.OK),
+                () -> assertThat(LineAcceptanceUtil.지하철_노선_조회(신분당선_조회.getId()).body().as(LineResponse.class).getStations())
+                        .extracting(StationResponse::getName)
+                        .containsExactly("강남역", "광교역")
+        );
+    }
+
+    @DisplayName("지하철 노선에 등록된 구간이 1개이면 삭제 불가능")
+    @Test
+    void delete_section_station_failed() {
+        // given
+        LineResponse 신분당선_조회 = 신분당선.body().as(LineResponse.class);
+
+        // when
+        // 노선에 등록된 역 삭제
+        ExtractableResponse<Response> 지하철_노선_삭제 = SectionAcceptanceUtil.지하철_노선_삭제_요청(신분당선_조회.getId(), 강남역_id);
+
+        // then
+        // 지하철 노선 삭제됨
+        assertAll(
+                () -> 지하철_노선_응답_결과(지하철_노선_삭제, HttpStatus.BAD_REQUEST)
+        );
     }
 
     private void 지하철_노선_응답_결과(ExtractableResponse<Response> response, HttpStatus status) {
