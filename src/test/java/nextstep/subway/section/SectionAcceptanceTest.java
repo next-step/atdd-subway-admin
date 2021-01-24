@@ -61,6 +61,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 정상적으로 등록 되었는지 확인
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response1 = LineRequestTestModule.지하철_노선_조회_요청(response);
     }
 
     @DisplayName("역과 역사이에 새로운 역을 등록할 경우 : 기존 하행역 - 새로운 상행역 관계")
@@ -84,5 +85,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 정상적으로 등록 되었는지 확인
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response1 = LineRequestTestModule.지하철_노선_조회_요청(response);
     }
 }

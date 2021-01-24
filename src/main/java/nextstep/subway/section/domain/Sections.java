@@ -44,6 +44,14 @@ public class Sections {
                     sections.add(new Section(oldSection.getLine(), section.getDownStation(), oldSection.getDownStation(), oldSection.getDistance() - section.getDistance()));
                     sections.remove(oldSection);
                 });
+
+        sections.stream()
+                .filter(oldSection -> section.getDownStation() == oldSection.getDownStation())
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    sections.add(new Section(oldSection.getLine(), oldSection.getUpStation(), section.getUpStation(), oldSection.getDistance() - section.getDistance()));
+                    sections.remove(oldSection);
+                });
         this.sections.add(section);
     }
 }
