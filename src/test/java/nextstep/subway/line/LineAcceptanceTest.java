@@ -56,8 +56,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        List<LineResponse> lineResponses = Arrays.asList(지하철_노선_생성_요청_응답_객체("신분당선", "red"),
-            지하철_노선_생성_요청_응답_객체("2호선", "green"));
+        List<LineResponse> lineResponses = Arrays.asList(지하철_노선_응답_객체_추출(지하철_노선_생성_요청("신분당선", "red")),
+            지하철_노선_응답_객체_추출(지하철_노선_생성_요청("2호선", "green")));
         List<Long> expectedIds = 지하철_노선_응답_객체_아이디_추출(lineResponses);
 
         // when
@@ -79,14 +79,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     }
 
-    private List<Long> 지하철_노선_응답_객체_아이디_추출(List<LineResponse> lineResponses) {
-        return lineResponses.stream().map(LineResponse::getId).collect(Collectors.toList());
-    }
-
-    private LineResponse 지하철_노선_생성_요청_응답_객체(String name, String color) {
-        return 지하철_노선_생성_요청(name, color).as(LineResponse.class);
-    }
-
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return RestAssured.given().log().all().
             contentType(MediaType.APPLICATION_JSON_VALUE).
@@ -102,12 +94,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청("신분당선", "red");
+        LineResponse createdLineResponse = 지하철_노선_응답_객체_추출(createdResponse);
+        String locationHeader = 지하철_노선_생성_요청_LOCATION_헤더_추출(createdResponse);
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all().
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            get(locationHeader).
+            then().
+            log().all().
+            extract();
 
         // then
         // 지하철_노선_응답됨
+
+        Assertions.assertAll(() -> {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+            assertThat(response.as(LineResponse.class).getId())
+                .isEqualTo(createdLineResponse.getId());
+        });
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -136,6 +145,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_삭제됨
     }
 
+    private List<Long> 지하철_노선_응답_객체_아이디_추출(List<LineResponse> lineResponses) {
+        return lineResponses.stream().map(LineResponse::getId).collect(Collectors.toList());
+    }
+
+    private LineResponse 지하철_노선_응답_객체_추출(ExtractableResponse<Response> response) {
+        return response.as(LineResponse.class);
+    }
+
+
+    private String 지하철_노선_생성_요청_LOCATION_헤더_추출(ExtractableResponse<Response> response) {
+        return response.header("Location");
+    }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
         Map<String, Object> params = new HashMap<>();
