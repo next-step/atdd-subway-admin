@@ -42,7 +42,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("역 사이에 새로운 역을 등록 한다.")
 	@Test
-	void create1() {
+	void addSection1() {
 		ExtractableResponse<Response> response = 구간_등록_요청(신분당선, 양재역, 청계산입구역, 3);
 
 		구간_등록_성공(response);
@@ -50,7 +50,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("새로운 역을 상행 종점으로 등록 한다.")
 	@Test
-	void create2() {
+	void addSection2() {
 		ExtractableResponse<Response> response = 구간_등록_요청(신분당선, 강남역, 양재역, 3);
 
 		구간_등록_성공(response);
@@ -58,10 +58,34 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("새로운 역을 하행 종점으로 등록 한다.")
 	@Test
-	void create3() {
+	void addSection3() {
 		ExtractableResponse<Response> response = 구간_등록_요청(신분당선, 판교역, 광교역, 3);
 
 		구간_등록_성공(response);
+	}
+
+	@DisplayName("기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.")
+	@Test
+	void addSectionWhitLongDistance() {
+		ExtractableResponse<Response> response = 구간_등록_요청(신분당선, 양재역, 청계산입구역, 15);
+
+		구간_등록_실패(response);
+	}
+
+	@DisplayName("상행역, 하행역이 모두 등록되어 있으면 등록할 수 없다.")
+	@Test
+	void addSectionWhitContainsStations() {
+		ExtractableResponse<Response> response = 구간_등록_요청(신분당선, 판교역, 양재역, 3);
+
+		구간_등록_실패(response);
+	}
+
+	@DisplayName("상행역, 하행역이 모두 등록되어 있지 않으면 등록할 수 없다.")
+	@Test
+	void addSectionWhitNotContainsStations() {
+		ExtractableResponse<Response> response = 구간_등록_요청(신분당선, 강남역, 광교역, 5);
+
+		구간_등록_실패(response);
 	}
 
 	public static ExtractableResponse<Response> 구간_등록_요청(LineResponse line, StationResponse upStation,
@@ -79,5 +103,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	public static void 구간_등록_성공(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(response.header("Location")).isNotNull();
+	}
+
+	public static void 구간_등록_실패(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 }
