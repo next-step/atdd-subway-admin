@@ -56,34 +56,45 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> redLine = 지하철_노선_생성_요청("신분당선", "red");
-        ExtractableResponse<Response> greenLine = 지하철_노선_생성_요청("2호선", "green");
-        LineResponse redLineResponse = redLine.as(LineResponse.class);
-        LineResponse greenLineResponse = greenLine.as(LineResponse.class);
-        List<LineResponse> lineResponses = Arrays.asList(redLineResponse, greenLineResponse);
+        List<LineResponse> lineResponses = Arrays.asList(지하철_노선_생성_요청_응답_객체("신분당선", "red"),
+            지하철_노선_생성_요청_응답_객체("2호선", "green"));
+        List<Long> expectedIds = 지하철_노선_응답_객체_아이디_추출(lineResponses);
+
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all().
-            contentType(MediaType.APPLICATION_JSON_VALUE).
-            when().
-            get("/lines").
-            then().
-            log().all().
-            extract();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
         Assertions.assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            LineResponse[] as = response.as(LineResponse[].class);
-            List<Long> expectedIds = lineResponses.stream().map(LineResponse::getId).collect(Collectors.toList());
-            List<Long> resultIds = Arrays.stream(as).map(LineResponse::getId).collect(Collectors.toList());
+            List<Long> resultIds = Arrays.stream(response.as(LineResponse[].class))
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
 
             assertThat(resultIds)
                 .containsAll(expectedIds);
         });
 
+    }
+
+    private List<Long> 지하철_노선_응답_객체_아이디_추출(List<LineResponse> lineResponses) {
+        return lineResponses.stream().map(LineResponse::getId).collect(Collectors.toList());
+    }
+
+    private LineResponse 지하철_노선_생성_요청_응답_객체(String name, String color) {
+        return 지하철_노선_생성_요청(name, color).as(LineResponse.class);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return RestAssured.given().log().all().
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            get("/lines").
+            then().
+            log().all().
+            extract();
     }
 
     @DisplayName("지하철 노선을 조회한다.")
