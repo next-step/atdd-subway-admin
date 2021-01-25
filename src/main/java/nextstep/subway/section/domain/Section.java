@@ -95,4 +95,16 @@ public class Section extends BaseEntity {
     public Station getDownStation() {
         return downStation;
     }
+
+    public boolean isEqualsUpStation(Long stationId) {
+        return this.upStation.getId() == stationId;
+    }
+
+    public boolean isEqualsDownStation(Long stationId) {
+        return this.downStation.getId() == stationId;
+    }
+
+    public Section merge(Section downSection) {
+        return Section.of(this.line, this.upStation, downSection.getDownStation(), this.distance.plus(downSection.distance));
+    }
 }

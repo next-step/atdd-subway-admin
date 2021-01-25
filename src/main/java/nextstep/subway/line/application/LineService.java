@@ -78,4 +78,11 @@ public class LineService {
         Station downStation = stations.get(request.getDownStationId());
         line.addSection(upStation, downStation, request.getDistance());
     }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
+
+        line.removeSection(stationId);
+    }
 }
