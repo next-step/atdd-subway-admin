@@ -4,11 +4,14 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -34,23 +37,41 @@ public class LineService {
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-
         return lines.stream()
                 .map(LineResponse::of)
                 .collect(toList());
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineRepository.getOne(id);
+        Line line = lineFindById(id);
         return LineResponse.of(line);
     }
 
     public LineResponse updateLine(LineRequest lineRequest) {
-        Line persistLine = lineRepository.save(Line.of(lineRequest.getId(), lineRequest.getName(), lineRequest.getColor()));
-        return LineResponse.of(persistLine);
+        Line persistLine = lineFindById(lineRequest.getId());
+        return LineResponse.of(persistLine.update(lineRequest.toLine()));
+    }
+
+    private Line lineFindById(Long id) {
+        return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     public void deleteLineId(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineFindById(lineId);
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+
+        line.addSection(Section.builder()
+                .line(line)
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(sectionRequest.getDistance())
+                .build());
+
+        return LineResponse.of(line);
     }
 }

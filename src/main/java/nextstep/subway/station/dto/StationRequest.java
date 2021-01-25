@@ -1,16 +1,13 @@
 package nextstep.subway.station.dto;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.station.domain.Station;
 
+@NoArgsConstructor
+@Getter
 public class StationRequest {
     private String name;
-
-    public String getName() {
-        return name;
-    }
-
-    public StationRequest() {
-    }
 
     public Station toStation() {
         return new Station(name);
@@ -18,9 +15,5 @@ public class StationRequest {
 
     public StationRequest(String name) {
         this.name = name;
-    }
-
-    public static StationRequest of(String name) {
-        return new StationRequest(name);
     }
 }
