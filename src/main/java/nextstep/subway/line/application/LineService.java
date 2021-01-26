@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,5 +48,11 @@ public class LineService {
     private Line findLineById(Long lineId) {
         return lineRepository.findById(lineId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 LINE 입니다."));
+    }
+
+    public Long delete(Long lineId) {
+        Line lineById = findLineById(lineId);
+        lineRepository.delete(lineById);
+        return lineById.getId();
     }
 }
