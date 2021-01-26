@@ -76,7 +76,7 @@ public class Sections {
                 .filter(oldSection -> section.getDownStation() == oldSection.getDownStation())
                 .findFirst()
                 .ifPresent(oldSection -> {
-                    selectWithStation(section, oldSection, oldSection.getUpStation(), section.getUpStation());
+                    changeUpOrDownStation(section, oldSection, oldSection.getUpStation(), section.getUpStation());
                 });
     }
 
@@ -85,15 +85,15 @@ public class Sections {
                 .filter(oldSection -> section.getUpStation() == oldSection.getUpStation())
                 .findFirst()
                 .ifPresent(oldSection -> {
-                    selectWithStation(section, oldSection, section.getDownStation(), oldSection.getDownStation());
+                    changeUpOrDownStation(section, oldSection, section.getDownStation(), oldSection.getDownStation());
                 });
     }
 
-    private void selectWithStation(Section section, Section oldSection, Station upStation, Station upStation2) {
+    private void changeUpOrDownStation(Section section, Section oldSection, Station upOrDownStation, Station secondUpOrDownStation) {
         if (oldSection.getDistance() <= section.getDistance()) {
             CommonException.IllegalArgumentException(Message.DISTANCE_EXCESS_MESSAGE);
         }
-        sections.add(new Section(oldSection.getLine(), upStation, upStation2, oldSection.getDistance() - section.getDistance()));
+        sections.add(new Section(oldSection.getLine(), upOrDownStation, secondUpOrDownStation, oldSection.getDistance() - section.getDistance()));
         sections.remove(oldSection);
     }
 
