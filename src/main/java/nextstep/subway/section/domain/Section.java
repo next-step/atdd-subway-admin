@@ -39,7 +39,9 @@ public class Section {
         this.distance = distance;
     }
 
-    public List<Station> getStations() {
-        return asList(upStation,downStation);
+    public void update(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 }

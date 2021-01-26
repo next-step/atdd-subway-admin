@@ -28,4 +28,8 @@ public class Station extends BaseEntity {
     public void updateDistance(int distance) {
         this.distance = distance;
     }
+
+    public void sumDistance(Station station) {
+        this.distance += station.getDistance();
+    }
 }

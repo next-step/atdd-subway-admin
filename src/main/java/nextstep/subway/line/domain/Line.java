@@ -49,12 +49,12 @@ public class Line extends BaseEntity {
         return this;
     }
 
-    public List<Station> getStations() {
-        return sections.getStations();
-    }
-
     public List<Section> getAllSection() {
         return sections.getSections();
+    }
+
+    public void removeSection(Station targetStation) {
+        this.sections.removeSection(this, targetStation);
     }
 }
 
