@@ -113,7 +113,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         Assertions.assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
             assertThat(response.as(LineResponse.class).getId())
                 .isEqualTo(createdLineResponse.getId());
         });
@@ -124,12 +123,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청("신분당선", "red");
+        LineResponse createdLineResponse = 지하철_노선_응답_객체_추출(createdResponse);
+        String locationHeader = 지하철_노선_생성_요청_LOCATION_헤더_추출(createdResponse);
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> green = 지하철_노선_수정_요청(locationHeader, "2호선", "green");
+        LineResponse updatedLineResponse = 지하철_노선_응답_객체_추출(green);
 
         // then
         // 지하철_노선_수정됨
+        Assertions.assertAll(()->{
+            assertThat(updatedLineResponse.getId()).isEqualTo(createdLineResponse.getId());
+            assertThat(updatedLineResponse.getName()).isEqualTo("2호선");
+            assertThat(updatedLineResponse.getColor()).isEqualTo("green");
+        });
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -172,6 +181,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
             contentType(MediaType.APPLICATION_JSON_VALUE).
             when().
             post("/lines").
+            then().
+            log().all().
+            extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(String location, String name, String color) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return 지하철_노선_수정_요청(location, params);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(String location, Map<String, Object> params) {
+        return RestAssured.given().log().all().
+            body(params).
+            contentType(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            put(location).
             then().
             log().all().
             extract();

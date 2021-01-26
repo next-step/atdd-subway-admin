@@ -32,4 +32,20 @@ public class LineService {
             .map(LineResponse::of)
             .collect(Collectors.toList());
     }
+
+    public LineResponse findById(Long lineId) {
+        Line line = findLineById(lineId);
+        return LineResponse.of(line);
+    }
+
+    public LineResponse update(Long lineId, LineRequest lineRequest) {
+        Line lineById = findLineById(lineId);
+        lineById.update(lineRequest.toLine());
+        return LineResponse.of(lineById);
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 LINE 입니다."));
+    }
 }
