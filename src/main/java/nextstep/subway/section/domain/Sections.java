@@ -91,7 +91,7 @@ public class Sections {
 
     private void changeUpOrDownStation(Section section, Section oldSection, Station upOrDownStation, Station secondUpOrDownStation) {
         if (oldSection.getDistance() <= section.getDistance()) {
-            CommonException.IllegalArgumentException(Message.DISTANCE_EXCESS_MESSAGE);
+            CommonException.throwIllegalArgumentException(Message.DISTANCE_EXCESS_MESSAGE);
         }
         sections.add(new Section(oldSection.getLine(), upOrDownStation, secondUpOrDownStation, oldSection.getDistance() - section.getDistance()));
         sections.remove(oldSection);
@@ -100,13 +100,13 @@ public class Sections {
     private void validateNotExistStation(Section section) {
         List<Station> stations = getStations();
         if(!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
-            CommonException.IllegalArgumentException(Message.NOT_EXIST_STATION_MESSAGE);
+            CommonException.throwIllegalArgumentException(Message.NOT_EXIST_STATION_MESSAGE);
          }
     }
 
     private void alreadyExistStation(Section section) {
         if(getStations().containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()))) {
-            CommonException.IllegalArgumentException(Message.ALREADY_EXIST_STATION_MESSAGE);
+            CommonException.throwIllegalArgumentException(Message.ALREADY_EXIST_STATION_MESSAGE);
         }
     }
 }
