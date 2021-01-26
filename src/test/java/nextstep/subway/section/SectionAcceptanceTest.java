@@ -14,6 +14,8 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -101,10 +103,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("상행역 아래에 새로운 역을 등록할 경우 기존 길이보다 같거나 크면 등록이 안됨")
-    @Test
-    void addInvalidDistanceUpStation() {
+    @ParameterizedTest
+    @ValueSource(ints = {10,20})
+    void addInvalidDistanceUpStation(int distance) {
         // given
-        SectionRequest sectionRequest = new SectionRequest(소요산역.getId(), 서울역.getId(), 10);
+        SectionRequest sectionRequest = new SectionRequest(소요산역.getId(), 서울역.getId(), distance);
 
         // when
         ExtractableResponse<Response> response = 지하철_구간_등록_요청(sectionRequest);
@@ -114,10 +117,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("하행역 위에 새로운 역을 등록할 경우 기존 길이보다 같거나 크면 등록이 안됨")
-    @Test
-    void addInvalidDistanceDownStation() {
+    @ParameterizedTest
+    @ValueSource(ints = {10,20})
+    void addInvalidDistanceDownStation(int distance) {
         // given
-        SectionRequest sectionRequest = new SectionRequest(서울역.getId(), 인천역.getId(), 10);
+        SectionRequest sectionRequest = new SectionRequest(서울역.getId(), 인천역.getId(), distance);
 
         // when
         ExtractableResponse<Response> response = 지하철_구간_등록_요청(sectionRequest);
