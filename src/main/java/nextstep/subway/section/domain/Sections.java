@@ -98,7 +98,8 @@ public class Sections {
     }
 
     private void validateNotExistStation(Section section) {
-        if(!getStations().contains(section.getUpStation()) && !getStations().contains(section.getDownStation())) {
+        List<Station> stations = getStations();
+        if(!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
             CommonException.IllegalArgumentException(Message.NOT_EXIST_STATION_MESSAGE);
          }
     }
