@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
@@ -18,6 +19,7 @@ import static java.util.stream.Collectors.toList;
 
 @Embeddable
 @NoArgsConstructor
+@Getter
 public class Sections {
 
     @OneToMany(mappedBy = "line" , cascade = CascadeType.ALL, orphanRemoval = true)

@@ -18,8 +18,14 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
+    @Transient
+    private int distance;
+
     public Station(String name) {
         this.name = name;
     }
 
+    public void updateDistance(int distance) {
+        this.distance = distance;
+    }
 }

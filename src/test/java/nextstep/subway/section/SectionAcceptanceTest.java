@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,7 +58,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         노선에_구간_등록_확인(response, HttpStatus.OK);
-        노선에_포함된_지하철_확인(response,"소요산역", "서울역", "인천역");
+        노선에_포함된_지하철_확인(response, asList("소요산역", "서울역", "인천역"));
     }
 
     @DisplayName("역과 역사이에 새로운 역을 등록할 경우 : 기존 하행역 - 새로운 상행역 관계")
@@ -71,7 +72,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         노선에_구간_등록_확인(response, HttpStatus.OK);
-        노선에_포함된_지하철_확인(response,"소요산역", "서울역", "인천역");
+        노선에_포함된_지하철_확인(response,asList("소요산역", "서울역", "인천역"));
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
@@ -85,7 +86,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         노선에_구간_등록_확인(response, HttpStatus.OK);
-        노선에_포함된_지하철_확인(response,"서울역", "소요산역", "인천역");
+        노선에_포함된_지하철_확인(response,asList("서울역", "소요산역", "인천역"));
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
@@ -99,7 +100,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         노선에_구간_등록_확인(response, HttpStatus.OK);
-        노선에_포함된_지하철_확인(response,"소요산역", "인천역", "서울역");
+        노선에_포함된_지하철_확인(response,asList("소요산역", "인천역", "서울역"));
     }
 
     @DisplayName("상행역 아래에 새로운 역을 등록할 경우 기존 길이보다 같거나 크면 등록이 안됨")
@@ -168,10 +169,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private void 노선에_포함된_지하철_확인(ExtractableResponse<Response> response, String...expectedStations) {
+    private void 노선에_포함된_지하철_확인(ExtractableResponse<Response> response, List<String> expectedStations) {
         List<String> stations = response.jsonPath().getList("stations", StationResponse.class)
                 .stream().map(StationResponse::getName).collect(toList());
-        assertThat(stations).containsExactly(expectedStations);
+        assertThat(stations).containsAll(expectedStations);
     }
 
     private void 노선에_구간_등록_확인(ExtractableResponse<Response> response, HttpStatus httpStatus) {
