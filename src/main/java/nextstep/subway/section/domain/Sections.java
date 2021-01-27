@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 @Getter
 public class Sections {
 
-    private static final int MINUS_ONE = -1;
-    private static final int ZERO = 0;
-    private static final int ONE = 1;
+    private static final int STATION_EXISTENCE_CHECK = -1;
+    private static final int LAST_STATION_DISTANCE = 1;
+    private static final int MIN_SECTION_SIZE = 1;
 
     @OneToMany(mappedBy = "line" , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -39,8 +39,8 @@ public class Sections {
     }
 
     public void add(Section section) {
-        validateNotExistStation(section);
-        alreadyExistStation(section);
+//        validateNotExistStation(section);
+//        alreadyExistStation(section);
 
         addUpStation(section);
         addDownStation(section);
@@ -66,11 +66,11 @@ public class Sections {
                 });
     }
 
-    private void changeUpOrDownStation(Section section, Section oldSection, Station upOrDownStation, Station secondUpOrDownStation) {
+    private void changeUpOrDownStation(Section section, Section oldSection, Station upStation, Station downStation) {
         if (oldSection.getDistance() <= section.getDistance()) {
             CommonException.throwIllegalArgumentException(Message.DISTANCE_EXCESS_MESSAGE);
         }
-        sections.add(new Section(oldSection.getLine(), upOrDownStation, secondUpOrDownStation, oldSection.getDistance() - section.getDistance()));
+        sections.add(new Section(oldSection.getLine(), upStation, downStation, oldSection.getDistance() - section.getDistance()));
         sections.remove(oldSection);
     }
 
@@ -91,31 +91,29 @@ public class Sections {
         List<Station> stations = convertSectionToStation();
         int index = stations.indexOf(station);
         validateBeforeRemove(index);
-        if (index == ZERO) {
-            stations.remove(ZERO);
-        }
-        if (index > ZERO) {
+        if (index > 0) {
             Station preStation = stations.get(index - 1);
             preStation.sumDistance(station);
             stations.remove(index);
         }
+        stations.remove(index);
         updateLastStationDistanceZero(stations);
         removeLastSection();
         convertStationToSection(line, stations);
     }
 
     private void validateBeforeRemove(int index) {
-        if (index == MINUS_ONE) {
+        if (index == STATION_EXISTENCE_CHECK) {
             CommonException.throwIllegalArgumentException(Message.NOT_FOUND_STATION_MESSAGE);
         }
-        if (sections.size() <= ONE) {
+        if (sections.size() <= MIN_SECTION_SIZE) {
             CommonException.throwIllegalArgumentException(Message.ESSENTIAL_ONE_SECTION_MESSAGE);
         }
     }
 
     private void updateLastStationDistanceZero(List<Station> stations) {
         Station lastStation = stations.get(stations.size() - 1);
-        lastStation.updateDistance(ONE);
+        lastStation.updateDistance(LAST_STATION_DISTANCE);
     }
 
     private void removeLastSection() {
@@ -136,22 +134,24 @@ public class Sections {
     }
 
     private void convertStationToSection(Line line, List<Station> stations) {
-        for (int i = ZERO; i < stations.size() - 1; i++) {
-            Station upstation = stations.get(i);
-            Station downStation = stations.get(i + ONE);
-            int distance = upstation.getDistance();
+        for (int i = 0; i < stations.size() - 1; i++) {
+            Station upStationAddConvertSection = stations.get(i);
+            Station downStationAddConvertSection = stations.get(i + 1);
+            int distanceAddSection = upStationAddConvertSection.getDistance();
             if (sections.size() > i) {
                 Section targetSection = sections.get(i);
-                targetSection.update(upstation, downStation, distance);
+                targetSection.update(upStationAddConvertSection, downStationAddConvertSection, distanceAddSection);
                 continue;
             }
 
             sections.add(Section.builder()
                     .line(line)
-                    .upStation(upstation)
-                    .downStation(downStation)
-                    .distance(distance)
+                    .upStation(upStationAddConvertSection)
+                    .downStation(downStationAddConvertSection)
+                    .distance(distanceAddSection)
                     .build());
         }
     }
+
+
 }
