@@ -17,6 +17,7 @@ import nextstep.subway.station.domain.Station;
 public class Sections {
 	public static final String ALREADY_REGISTERED_STATIONS = "이미 등록된 지하철역 입니다.";
 	public static final String NO_CONNECTABLE_SECTION = "연결 할 수 있는 구간이 없습니다.";
+	public static final String LAST_SECTION = "마지막 구간 입니다.";
 
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Section> sections = new ArrayList<>();
@@ -43,6 +44,8 @@ public class Sections {
 	}
 
 	public void remove(Station station) {
+		validateRemovableSection();
+
 		Optional<Section> upLineSection = findSectionByUpStation(station);
 		Optional<Section> downLineSection = findSectionByDownStation(station);
 
@@ -117,6 +120,12 @@ public class Sections {
 
 		if (!stations.isEmpty() && !stations.contains(upStation) && !stations.contains(downStation)) {
 			throw new IllegalArgumentException(NO_CONNECTABLE_SECTION);
+		}
+	}
+
+	private void validateRemovableSection() {
+		if (sections.size() <= 1) {
+			throw new IllegalArgumentException(LAST_SECTION);
 		}
 	}
 }

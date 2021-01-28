@@ -129,6 +129,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		구간_삭제_성공(response);
 	}
 
+	@DisplayName("구간이 하나인 노선은 삭제할 수 없다.")
+	@Test
+	void deleteSectionWhenOneSection() {
+		ExtractableResponse<Response> response = 구간_삭제_요청(신분당선, 양재역);
+
+		구간_삭제_실패(response);
+	}
+
 	public static ExtractableResponse<Response> 구간_등록_요청(LineResponse line, StationResponse upStation,
 		StationResponse downStation, int distance) {
 		SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(),
