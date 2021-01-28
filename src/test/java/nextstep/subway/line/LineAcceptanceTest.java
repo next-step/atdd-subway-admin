@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.*;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,18 +22,26 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-	private LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-	private LineRequest 일호선 = new LineRequest("1호선", "bg-blue-600", 3L, 4L, 10);
+	private LineRequest 신분당선;
+	private LineRequest 일호선;
+	private StationResponse 강남역;
+	private StationResponse 판교역;
+	private StationResponse 온수역;
+	private StationResponse 오류역;
 
 	@BeforeEach
 	void setup() {
-		StationAcceptanceTest.지하철역_생성_요청("강남역");
-		StationAcceptanceTest.지하철역_생성_요청("판교역");
-		StationAcceptanceTest.지하철역_생성_요청("온수역");
-		StationAcceptanceTest.지하철역_생성_요청("오류역");
+		강남역 = StationAcceptanceTest.지하철역_생성_요청("강남역").as(StationResponse.class);
+		판교역 = StationAcceptanceTest.지하철역_생성_요청("판교역").as(StationResponse.class);
+		온수역 = StationAcceptanceTest.지하철역_생성_요청("온수역").as(StationResponse.class);
+		오류역 = StationAcceptanceTest.지하철역_생성_요청("오류역").as(StationResponse.class);
+
+		신분당선 = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 판교역.getId(), 10);
+		일호선 = new LineRequest("1호선", "bg-blue-600", 온수역.getId(), 오류역.getId(), 10);
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
@@ -77,13 +86,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLine() {
 		// given
 		ExtractableResponse<Response> createResponse = 노선_생성_요청(신분당선);
-		String id = getIdByLocation(createResponse);
 
 		// when
-		ExtractableResponse<Response> response = 노선_조회_요청(id);
+		ExtractableResponse<Response> response = 노선_조회_요청(createResponse);
 
 		// then
-		노선_조회_성공(id, response);
+		노선_조회_성공(response, Arrays.asList(강남역, 판교역));
 	}
 
 	@DisplayName("지하철 노선을 수정한다.")
@@ -158,21 +166,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(resultLineIds).containsAll(expectedLineIds);
 	}
 
-	private ExtractableResponse<Response> 노선_조회_요청(String id) {
+	public static ExtractableResponse<Response> 노선_조회_요청(ExtractableResponse<Response> response) {
 		return RestAssured.given().log().all()
 			.accept(MediaType.APPLICATION_JSON_VALUE)
 			.when()
-			.get(URI.create("/lines/" + id))
+			.get(response.header("Location"))
 			.then().log().all()
 			.extract();
 	}
 
-	private void 노선_조회_성공(String id, ExtractableResponse<Response> response) {
+	public static ExtractableResponse<Response> 노선_조회_요청(LineResponse line) {
+		return RestAssured.given().log().all()
+			.accept(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.get(URI.create("/lines/" + line.getId()))
+			.then().log().all()
+			.extract();
+	}
+
+	public static void 노선_조회_성공(ExtractableResponse<Response> response, List<StationResponse> stations) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-		LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
-		assertThat(lineResponse.getId()).isEqualTo(Long.parseLong(id));
-		assertThat(lineResponse.getStations()).hasSize(2);
+		LineResponse line = response.as(LineResponse.class);
+		assertThat(line.getId()).isNotNull();
+
+		List<Long> stationIds = line.getStations().stream()
+			.map(StationResponse::getId)
+			.collect(Collectors.toList());
+
+		List<Long> expectedStationIds = stations.stream()
+			.map(StationResponse::getId)
+			.collect(Collectors.toList());
+
+		assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
 	}
 
 	private ExtractableResponse<Response> 노선_수정_요청(String id, LineRequest lineRequest) {

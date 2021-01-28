@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -16,6 +17,7 @@ import nextstep.subway.station.domain.Station;
 public class Sections {
 	public static final String ALREADY_REGISTERED_STATIONS = "이미 등록된 지하철역 입니다.";
 	public static final String NO_CONNECTABLE_SECTION = "연결 할 수 있는 구간이 없습니다.";
+	public static final String LAST_SECTION = "마지막 구간 입니다.";
 
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Section> sections = new ArrayList<>();
@@ -33,13 +35,53 @@ public class Sections {
 	}
 
 	public List<Station> getStations() {
-		return Collections.unmodifiableList(
-			sections.stream()
-				.sorted()
-				.map(Section::getStations)
-				.flatMap(Collection::stream)
-				.distinct()
-				.collect(Collectors.toList())
+		return sections.stream()
+			.sorted()
+			.map(Section::getStations)
+			.flatMap(Collection::stream)
+			.distinct()
+			.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+	}
+
+	public void remove(Station station) {
+		validateRemovableSection();
+
+		Optional<Section> upLineSection = findSectionByUpStation(station);
+		Optional<Section> downLineSection = findSectionByDownStation(station);
+
+		upLineSection.ifPresent(sections::remove);
+		downLineSection.ifPresent(sections::remove);
+
+		if (upLineSection.isPresent() && downLineSection.isPresent()) {
+			connectSections(upLineSection.get(), downLineSection.get());
+		}
+	}
+
+	private Optional<Section> findSectionByUpStation(Station station) {
+		return sections.stream()
+			.filter(section -> section.isUpStation(station))
+			.findFirst();
+	}
+
+	private Optional<Section> findSectionByDownStation(Station station) {
+		return sections.stream()
+			.filter(section -> section.isDownStation(station))
+			.findFirst();
+	}
+
+	private void connectSections(Section upSection, Section downSection) {
+		Line line = upSection.getLine();
+		Station newUpStation = downSection.getUpStation();
+		Station newDownStation = upSection.getDownStation();
+		int newDistance = upSection.plusDistance(downSection);
+
+		add(
+			Section.builder()
+				.line(line)
+				.upStation(newUpStation)
+				.downStation(newDownStation)
+				.distance(newDistance)
+				.build()
 		);
 	}
 
@@ -56,16 +98,16 @@ public class Sections {
 
 	private void updateUpStation(Section section) {
 		sections.stream()
-			.filter(it -> it.isUpStation(section.getUpStation()))
+			.filter(it -> it.isSameUpStation(section))
 			.findFirst()
-			.ifPresent(it -> it.updateUpStation(section.getDownStation(), section.getDistance()));
+			.ifPresent(it -> it.updateUpStation(section));
 	}
 
 	private void updateDownStation(Section section) {
 		sections.stream()
-			.filter(it -> it.isDownStation(section.getDownStation()))
+			.filter(it -> it.isSameDownStation(section))
 			.findFirst()
-			.ifPresent(it -> it.updateDownStation(section.getUpStation(), section.getDistance()));
+			.ifPresent(it -> it.updateDownStation(section));
 	}
 
 	private void validateAddableSection(List<Station> stations, Section section) {
@@ -78,6 +120,12 @@ public class Sections {
 
 		if (!stations.isEmpty() && !stations.contains(upStation) && !stations.contains(downStation)) {
 			throw new IllegalArgumentException(NO_CONNECTABLE_SECTION);
+		}
+	}
+
+	private void validateRemovableSection() {
+		if (sections.size() <= 1) {
+			throw new IllegalArgumentException(LAST_SECTION);
 		}
 	}
 }

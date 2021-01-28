@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -29,14 +30,9 @@ public class LineService {
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		Map<Long, Station> stations = findStations(request.getUpStationId(), request.getDownStationId());
-		Station upStation = stations.get(request.getUpStationId());
-		Station downStation = stations.get(request.getDownStationId());
+		Line line = lineRepository.save(request.toLine());
 
-		Line line = request.toLine();
-		line.addSection(upStation, downStation, request.getDistance());
-
-		return LineResponse.of(lineRepository.save(line));
+		return addSection(line, request.getUpStationId(), request.getDownStationId(), request.getDistance());
 	}
 
 	private Map<Long, Station> findStations(Long... ids) {
@@ -71,11 +67,23 @@ public class LineService {
 	public LineResponse addSection(Long lineId, SectionRequest request) {
 		Line line = findById(lineId);
 
-		Map<Long, Station> stations = findStations(request.getUpStationId(), request.getDownStationId());
-		Station upStation = stations.get(request.getUpStationId());
-		Station downStation = stations.get(request.getDownStationId());
+		return addSection(line, request.getUpStationId(), request.getDownStationId(), request.getDistance());
+	}
 
-		line.addSection(upStation, downStation, request.getDistance());
+	public LineResponse addSection(Line line, Long upStationId, Long downStationId, int distance) {
+		Map<Long, Station> stations = findStations(upStationId, downStationId);
+		Station upStation = stations.get(upStationId);
+		Station downStation = stations.get(downStationId);
+
+		line.addSection(
+			Section.builder()
+				.line(line)
+				.upStation(upStation)
+				.downStation(downStation)
+				.distance(distance)
+				.build()
+		);
+
 		return LineResponse.of(line);
 	}
 
@@ -85,5 +93,12 @@ public class LineService {
 
 	private Line findById(Long id) {
 		return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+	}
+
+	public void deleteSection(Long lineId, Long stationId) {
+		Line line = findById(lineId);
+		Station station = stationService.findStationById(stationId);
+
+		line.removeStation(station);
 	}
 }

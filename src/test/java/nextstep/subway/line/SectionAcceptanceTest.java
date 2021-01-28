@@ -2,6 +2,8 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,25 +45,54 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("역 사이에 새로운 역을 등록 한다.")
 	@Test
 	void addSectionBetweenStations() {
-		ExtractableResponse<Response> response = 구간_등록_요청(신분당선, 양재역, 청계산입구역, 3);
+		ExtractableResponse<Response> createResponse = 구간_등록_요청(신분당선, 양재역, 청계산입구역, 3);
 
-		구간_등록_성공(response);
+		구간_등록_성공(createResponse);
+		ExtractableResponse<Response> response = LineAcceptanceTest.노선_조회_요청(신분당선);
+		LineAcceptanceTest.노선_조회_성공(response, Arrays.asList(양재역, 청계산입구역, 판교역));
 	}
 
 	@DisplayName("새로운 역을 상행 종점으로 등록 한다.")
 	@Test
 	void addSectionWithNewUpStation() {
-		ExtractableResponse<Response> response = 구간_등록_요청(신분당선, 강남역, 양재역, 3);
+		ExtractableResponse<Response> createResponse = 구간_등록_요청(신분당선, 강남역, 양재역, 3);
 
-		구간_등록_성공(response);
+		구간_등록_성공(createResponse);
+		ExtractableResponse<Response> response = LineAcceptanceTest.노선_조회_요청(신분당선);
+		LineAcceptanceTest.노선_조회_성공(response, Arrays.asList(강남역, 양재역, 판교역));
 	}
 
 	@DisplayName("새로운 역을 하행 종점으로 등록 한다.")
 	@Test
 	void addSectionWithNewDownStation() {
-		ExtractableResponse<Response> response = 구간_등록_요청(신분당선, 판교역, 광교역, 3);
+		ExtractableResponse<Response> createResponse = 구간_등록_요청(신분당선, 판교역, 광교역, 3);
 
-		구간_등록_성공(response);
+		구간_등록_성공(createResponse);
+		ExtractableResponse<Response> response = LineAcceptanceTest.노선_조회_요청(신분당선);
+		LineAcceptanceTest.노선_조회_성공(response, Arrays.asList(양재역, 판교역, 광교역));
+	}
+
+	@DisplayName("존재하지 않는 노선은 등록할 수 없다.")
+	@Test
+	void addSectionWithNoLine() {
+		ExtractableResponse<Response> response = 구간_등록_요청(new LineResponse(10L, null, null, null, null, null), 판교역, 광교역,
+			3);
+
+		구간_등록_실패(response);
+	}
+
+	@DisplayName("존재하지 않는 역은 등록할 수 없다.")
+	@Test
+	void addSectionWithNoStation() {
+		ExtractableResponse<Response> upStationResponse = 구간_등록_요청(신분당선, new StationResponse(20L, null, null, null),
+			광교역, 3);
+
+		구간_등록_실패(upStationResponse);
+
+		ExtractableResponse<Response> downStationResponse = 구간_등록_요청(신분당선, 판교역,
+			new StationResponse(21L, null, null, null), 3);
+
+		구간_등록_실패(downStationResponse);
 	}
 
 	@DisplayName("기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.")
@@ -88,9 +119,40 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		구간_등록_실패(response);
 	}
 
+	@DisplayName("노선의 구간을 제거한다.")
+	@Test
+	void deleteSection() {
+		구간_등록_되어있음(신분당선, 강남역, 양재역, 5);
+		ExtractableResponse<Response> deleteResponse = 구간_삭제_요청(신분당선, 강남역);
+
+		구간_삭제_성공(deleteResponse);
+		ExtractableResponse<Response> response = LineAcceptanceTest.노선_조회_요청(신분당선);
+		LineAcceptanceTest.노선_조회_성공(response, Arrays.asList(양재역, 판교역));
+	}
+
+	@DisplayName("중간역이 제거될 경우 재배치 한다.")
+	@Test
+	void deleteSectionWhenMiddleStation() {
+		구간_등록_되어있음(신분당선, 강남역, 양재역, 5);
+		ExtractableResponse<Response> deleteResponse = 구간_삭제_요청(신분당선, 양재역);
+
+		구간_삭제_성공(deleteResponse);
+		ExtractableResponse<Response> response = LineAcceptanceTest.노선_조회_요청(신분당선);
+		LineAcceptanceTest.노선_조회_성공(response, Arrays.asList(강남역, 판교역));
+	}
+
+	@DisplayName("구간이 하나인 노선은 삭제할 수 없다.")
+	@Test
+	void deleteSectionWhenOneSection() {
+		ExtractableResponse<Response> response = 구간_삭제_요청(신분당선, 양재역);
+
+		구간_삭제_실패(response);
+	}
+
 	public static ExtractableResponse<Response> 구간_등록_요청(LineResponse line, StationResponse upStation,
 		StationResponse downStation, int distance) {
-		SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), distance);
+		SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(),
+			distance);
 
 		return RestAssured.given().log().all()
 			.body(sectionRequest)
@@ -106,6 +168,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	}
 
 	public static void 구간_등록_실패(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+	}
+
+	public static void 구간_등록_되어있음(LineResponse line, StationResponse upStation, StationResponse downStation,
+		int distance) {
+		구간_등록_성공(구간_등록_요청(line, upStation, downStation, distance));
+	}
+
+	public static ExtractableResponse<Response> 구간_삭제_요청(LineResponse line, StationResponse station) {
+		return RestAssured.given().log().all()
+			.queryParam("stationId", station.getId())
+			.when().delete("/lines/{lineId}/sections", line.getId())
+			.then().log().all()
+			.extract();
+	}
+
+	public static void 구간_삭제_성공(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
+	public static void 구간_삭제_실패(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 }

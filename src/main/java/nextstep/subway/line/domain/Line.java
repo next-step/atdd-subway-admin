@@ -49,12 +49,15 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public void addSection(Station upStation, Station downStation, int distance) {
-		Section section = new Section(this, upStation, downStation, distance);
+	public void addSection(Section section) {
 		sections.add(section);
 	}
 
 	public List<Station> getStations() {
 		return sections.getStations();
+	}
+
+	public void removeStation(Station station) {
+		sections.remove(station);
 	}
 }
