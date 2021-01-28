@@ -25,4 +25,12 @@ public class Distance {
 	public Distance minus(Distance distance) {
 		return new Distance(this.distance - distance.distance);
 	}
+
+	public Distance plus(Distance distance) {
+		return new Distance(this.distance + distance.distance);
+	}
+
+	public int value() {
+		return distance;
+	}
 }

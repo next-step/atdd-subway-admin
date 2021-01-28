@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -39,6 +40,46 @@ public class Sections {
 			.flatMap(Collection::stream)
 			.distinct()
 			.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+	}
+
+	public void remove(Station station) {
+		Optional<Section> upLineSection = findSectionByUpStation(station);
+		Optional<Section> downLineSection = findSectionByDownStation(station);
+
+		upLineSection.ifPresent(sections::remove);
+		downLineSection.ifPresent(sections::remove);
+
+		if (upLineSection.isPresent() && downLineSection.isPresent()) {
+			connectSections(upLineSection.get(), downLineSection.get());
+		}
+	}
+
+	private Optional<Section> findSectionByUpStation(Station station) {
+		return sections.stream()
+			.filter(section -> section.isUpStation(station))
+			.findFirst();
+	}
+
+	private Optional<Section> findSectionByDownStation(Station station) {
+		return sections.stream()
+			.filter(section -> section.isDownStation(station))
+			.findFirst();
+	}
+
+	private void connectSections(Section upSection, Section downSection) {
+		Line line = upSection.getLine();
+		Station newUpStation = downSection.getUpStation();
+		Station newDownStation = upSection.getDownStation();
+		int newDistance = upSection.plusDistance(downSection);
+
+		add(
+			Section.builder()
+				.line(line)
+				.upStation(newUpStation)
+				.downStation(newDownStation)
+				.distance(newDistance)
+				.build()
+		);
 	}
 
 	private void updateSection(List<Station> stations, Section section) {

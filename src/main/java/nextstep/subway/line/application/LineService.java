@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -74,7 +75,15 @@ public class LineService {
 		Station upStation = stations.get(upStationId);
 		Station downStation = stations.get(downStationId);
 
-		line.addSection(upStation, downStation, distance);
+		line.addSection(
+			Section.builder()
+				.line(line)
+				.upStation(upStation)
+				.downStation(downStation)
+				.distance(distance)
+				.build()
+		);
+
 		return LineResponse.of(line);
 	}
 
@@ -84,5 +93,12 @@ public class LineService {
 
 	private Line findById(Long id) {
 		return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+	}
+
+	public void deleteSection(Long lineId, Long stationId) {
+		Line line = findById(lineId);
+		Station station = stationService.findStationById(stationId);
+
+		line.removeStation(station);
 	}
 }
