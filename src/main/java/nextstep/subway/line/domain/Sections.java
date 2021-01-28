@@ -33,14 +33,12 @@ public class Sections {
 	}
 
 	public List<Station> getStations() {
-		return Collections.unmodifiableList(
-			sections.stream()
-				.sorted()
-				.map(Section::getStations)
-				.flatMap(Collection::stream)
-				.distinct()
-				.collect(Collectors.toList())
-		);
+		return sections.stream()
+			.sorted()
+			.map(Section::getStations)
+			.flatMap(Collection::stream)
+			.distinct()
+			.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
 	}
 
 	private void updateSection(List<Station> stations, Section section) {
@@ -56,16 +54,16 @@ public class Sections {
 
 	private void updateUpStation(Section section) {
 		sections.stream()
-			.filter(it -> it.isUpStation(section.getUpStation()))
+			.filter(it -> it.isSameUpStation(section))
 			.findFirst()
-			.ifPresent(it -> it.updateUpStation(section.getDownStation(), section.getDistance()));
+			.ifPresent(it -> it.updateUpStation(section));
 	}
 
 	private void updateDownStation(Section section) {
 		sections.stream()
-			.filter(it -> it.isDownStation(section.getDownStation()))
+			.filter(it -> it.isSameDownStation(section))
 			.findFirst()
-			.ifPresent(it -> it.updateDownStation(section.getUpStation(), section.getDistance()));
+			.ifPresent(it -> it.updateDownStation(section));
 	}
 
 	private void validateAddableSection(List<Station> stations, Section section) {

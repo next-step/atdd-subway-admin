@@ -64,6 +64,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		구간_등록_성공(response);
 	}
 
+	@DisplayName("존재하지 않는 노선은 등록할 수 없다.")
+	@Test
+	void addSectionWithNoLine() {
+		ExtractableResponse<Response> response = 구간_등록_요청(new LineResponse(10L, null, null, null, null, null), 판교역, 광교역,
+			3);
+
+		구간_등록_실패(response);
+	}
+
+	@DisplayName("존재하지 않는 역은 등록할 수 없다.")
+	@Test
+	void addSectionWithNoStation() {
+		ExtractableResponse<Response> upStationResponse = 구간_등록_요청(신분당선, new StationResponse(20L, null, null, null),
+			광교역, 3);
+
+		구간_등록_실패(upStationResponse);
+
+		ExtractableResponse<Response> downStationResponse = 구간_등록_요청(신분당선, 판교역,
+			new StationResponse(21L, null, null, null), 3);
+
+		구간_등록_실패(downStationResponse);
+	}
+
 	@DisplayName("기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.")
 	@Test
 	void addSectionWhitLongDistance() {

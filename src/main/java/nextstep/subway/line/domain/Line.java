@@ -50,8 +50,14 @@ public class Line extends BaseEntity {
 	}
 
 	public void addSection(Station upStation, Station downStation, int distance) {
-		Section section = new Section(this, upStation, downStation, distance);
-		sections.add(section);
+		sections.add(
+			Section.builder()
+				.line(this)
+				.upStation(upStation)
+				.downStation(downStation)
+				.distance(distance)
+				.build()
+		);
 	}
 
 	public List<Station> getStations() {

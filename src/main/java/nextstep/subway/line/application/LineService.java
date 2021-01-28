@@ -29,14 +29,9 @@ public class LineService {
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		Map<Long, Station> stations = findStations(request.getUpStationId(), request.getDownStationId());
-		Station upStation = stations.get(request.getUpStationId());
-		Station downStation = stations.get(request.getDownStationId());
+		Line line = lineRepository.save(request.toLine());
 
-		Line line = request.toLine();
-		line.addSection(upStation, downStation, request.getDistance());
-
-		return LineResponse.of(lineRepository.save(line));
+		return addSection(line, request.getUpStationId(), request.getDownStationId(), request.getDistance());
 	}
 
 	private Map<Long, Station> findStations(Long... ids) {
@@ -71,11 +66,15 @@ public class LineService {
 	public LineResponse addSection(Long lineId, SectionRequest request) {
 		Line line = findById(lineId);
 
-		Map<Long, Station> stations = findStations(request.getUpStationId(), request.getDownStationId());
-		Station upStation = stations.get(request.getUpStationId());
-		Station downStation = stations.get(request.getDownStationId());
+		return addSection(line, request.getUpStationId(), request.getDownStationId(), request.getDistance());
+	}
 
-		line.addSection(upStation, downStation, request.getDistance());
+	public LineResponse addSection(Line line, Long upStationId, Long downStationId, int distance) {
+		Map<Long, Station> stations = findStations(upStationId, downStationId);
+		Station upStation = stations.get(upStationId);
+		Station downStation = stations.get(downStationId);
+
+		line.addSection(upStation, downStation, distance);
 		return LineResponse.of(line);
 	}
 
