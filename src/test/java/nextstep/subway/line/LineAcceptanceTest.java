@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
@@ -76,9 +77,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        List<LineResponse> lineResponses = Arrays.asList(지하철_노선_응답_객체_추출(지하철_노선_생성_요청(line1)),
+        List<LineResponse> createdResponses = Arrays.asList(지하철_노선_응답_객체_추출(지하철_노선_생성_요청(line1)),
             지하철_노선_응답_객체_추출(지하철_노선_생성_요청(line7)));
-        List<Long> expectedIds = 지하철_노선_응답_객체_아이디_추출(lineResponses);
+        List<Long> expectedIds = 지하철_노선_응답_객체_아이디_추출(createdResponses);
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -87,10 +88,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_포함됨
         Assertions.assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            List<Long> resultIds = Arrays.stream(response.as(LineResponse[].class))
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
-            assertThat(resultIds).containsAll(expectedIds);
+            LineResponse[] lineResponses = response.as(LineResponse[].class);
+            for (LineResponse lineResponse : lineResponses) {
+                LineResponse createdResponse = createdResponses.stream()
+                    .filter(lineResponse1 -> lineResponse1.getId().equals(lineResponse.getId()))
+                    .findFirst().get();
+                List<Long> collect = lineResponse.getStations().stream()
+                    .map(StationResponse::getId)
+                    .collect(Collectors.toList());
+                List<Long> collect2 = createdResponse.getStations().stream()
+                    .map(StationResponse::getId)
+                    .collect(Collectors.toList());
+                assertThat(collect).containsAll(collect2);
+            }
+
         });
     }
 
