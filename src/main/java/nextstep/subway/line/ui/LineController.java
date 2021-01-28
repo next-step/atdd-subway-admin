@@ -50,4 +50,5 @@ public class LineController {
     public ResponseEntity deleteLine(@PathVariable Long lineId) {
         return ResponseEntity.ok().body(lineService.delete(lineId));
     }
+
 }

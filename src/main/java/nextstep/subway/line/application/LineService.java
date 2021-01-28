@@ -1,7 +1,6 @@
 package nextstep.subway.line.application;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +56,10 @@ public class LineService {
     }
 
     public LineResponse update(Long lineId, LineRequest lineRequest) {
+        Station upStation = stationService.findById(lineRequest.getUpStationId());
+        Station downStation = stationService.findById(lineRequest.getDownStationId());
         Line lineById = findLineById(lineId);
-        lineById.update(lineRequest.toLine());
+        lineById.update(lineRequest.toLine(), upStation, downStation, lineRequest.getDistance());
         List<StationResponse> stationResponses = getStationResponses(lineById);
         return LineResponse.of(lineById, stationResponses);
     }
@@ -99,7 +100,7 @@ public class LineService {
             .map(StationResponse::of)
             .collect(Collectors.toList());
     }
-  
+
     private Station findUpStation(Line line) {
         Station downStation = line.getSections().get(0).getUpStation();
         while (downStation != null) {
