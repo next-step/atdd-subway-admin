@@ -6,11 +6,12 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private final List<Section> elements;
 
     public Sections() {
@@ -30,40 +31,85 @@ public class Sections {
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
 
-        int index = 0;
-        for (Section original : elements) {
-            Station orgUpStation = original.getUpStation();
-            Station orgDownStation = original.getDownStation();
-            int distance = original.getDistance() - section.getDistance();
-            // 기존 구간의 상행역과 새로운 구간의 하행역이 일치하는 경우
-            // A - B, C - A => C - A - B
-            if (orgUpStation.equals(downStation)) {
-                break;
-            }
-            // 기존 구간의 상행역과 새로운 구간의 상행역이 일치하는 경우
-            // A - B, A - C => A - C - B
-            if (orgUpStation.equals(upStation)) {
-                validDistance(distance);
-                original.update(new Section(downStation, orgDownStation, distance));
-                break;
-            }
-            // 기존 구간의 하행역과 새로운 구간의 하행역이 일치하는 경우
-            // A - B, C - B => A - C - B
-            if (orgDownStation.equals(downStation)) {
-                validDistance(distance);
-                original.update(new Section(orgUpStation, upStation, distance));
-                index++;
-                break;
-            }
-            // 기존 구간의 하행역과 새로운 구간의 상행역이 일치하는 경우
-            // A - B, B - C => A - B - C
-            if (orgDownStation.equals(upStation)) {
-                index++;
-                break;
-            }
-            index++;
+        // 기존 구간의 상행역과 새로운 구간의 하행역이 일치하는 경우
+        // A - B, C - A => C - A - B
+        if (isMatchUpDown(downStation)) {
+            elements.add(getIndexByUpStation(downStation), section);
+            return;
         }
-        elements.add(index, section);
+
+        // 기존 구간의 상행역과 새로운 구간의 상행역이 일치하는 경우
+        // A - B, A - C => A - C - B
+        if (isPresentByUpStation(section, upStation, downStation)) {
+            elements.add(getIndexByUpStation(upStation), section);
+            return;
+        }
+
+        // 기존 구간의 하행역과 새로운 구간의 하행역이 일치하는 경우
+        // A - B, C - B => A - C - B
+        if (isPresentByDownStation(section, upStation, downStation)) {
+            int addIndex = getIndexByDownStation(downStation) + 1;
+            elements.add(addIndex, section);
+            return;
+        }
+
+        // 기존 구간의 하행역과 새로운 구간의 상행역이 일치하는 경우
+        // A - B, B - C => A - B - C
+        if (isMatchDownUp(upStation)) {
+            int addIndex = getIndexByDownStation(upStation) + 1;
+            elements.add(addIndex, section);
+            return;
+        }
+
+        elements.add(section);
+        
+    }
+
+    private boolean isMatchDownUp(Station station) {
+        return elements.stream()
+                .anyMatch(org -> org.getDownStation() == station);
+    }
+
+    private boolean isMatchUpDown(Station station) {
+        return elements.stream()
+                .anyMatch(org -> org.getUpStation() == station);
+    }
+
+    private boolean isPresentByDownStation(Section section, Station upStation, Station downStation) {
+        return elements.stream()
+                .filter(org -> org.getDownStation() == downStation)
+                .findFirst()
+                .map(org -> updateOriginalSection(section, org, org.getUpStation(), upStation))
+                .isPresent();
+    }
+
+    private boolean isPresentByUpStation(Section section, Station upStation, Station downStation) {
+        return elements.stream()
+                .filter(org -> org.getUpStation() == upStation)
+                .findFirst()
+                .map(org -> updateOriginalSection(section, org, downStation, org.getDownStation()))
+                .isPresent();
+    }
+
+    private int getIndexByDownStation(Station station) {
+        return IntStream.range(0, elements.size())
+                .filter(index -> elements.get(index).getDownStation() == station)
+                .findFirst()
+                .orElse(0);
+    }
+
+    private int getIndexByUpStation(Station station) {
+        return IntStream.range(0, elements.size())
+                .filter(index -> elements.get(index).getUpStation() == station)
+                .findFirst()
+                .orElse(0);
+    }
+
+    private Section updateOriginalSection(Section section, Section original, Station upStation, Station downStation) {
+        int distance = original.getDistance() - section.getDistance();
+        validDistance(distance);
+        original.update(new Section(upStation, downStation, distance));
+        return original;
     }
 
     private void validDistance(int distance) {

@@ -14,10 +14,6 @@ public class SectionResponse {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
-    public SectionResponse() {
-
-    }
-
     public SectionResponse(Long id, String name, String color, Sections sections, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;

@@ -60,7 +60,6 @@ public class Section {
             this.line.getSections().removeSection(this);
         }
         this.line = line;
-        line.getSections().addSection(this);
     }
 
     public void validDuplicate(Line line) {

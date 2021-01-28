@@ -37,7 +37,9 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         Section section = createSectionByRequest(request);
-        return LineResponse.of(getLine(section, persistLine));
+        persistLine.addSection(section);
+        lineRepository.save(persistLine);
+        return LineResponse.of(persistLine);
     }
 
     @Transactional
@@ -47,14 +49,9 @@ public class LineService {
         Section section = createSectionByRequest(request);
         section.validDuplicate(findLine);
         section.validNotFound(findLine);
-        return SectionResponse.of(getLine(section, findLine));
-    }
-
-    private Line getLine(Section section, Line line) {
-        section.setLine(line);
-        sectionRepository.save(section);
-        lineRepository.flush();
-        return line;
+        findLine.addSection(section);
+        lineRepository.save(findLine);
+        return SectionResponse.of(findLine);
     }
 
     private Section createSectionByRequest(SectionRequest request) {
