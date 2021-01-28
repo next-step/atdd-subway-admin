@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class LineStation {
+public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,10 +29,10 @@ public class LineStation {
 
     private int distance;
 
-    public LineStation() {
+    public Section() {
     }
 
-    public LineStation(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;

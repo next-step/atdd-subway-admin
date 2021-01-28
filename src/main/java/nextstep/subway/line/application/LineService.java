@@ -1,11 +1,14 @@
 package nextstep.subway.line.application;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.LineStation;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.StationService;
@@ -71,15 +74,45 @@ public class LineService {
         return lineById.getId();
     }
 
-    private List<StationResponse> getStationResponses(Line persistLine) {
-        List<LineStation> stations = persistLine.getStations();
-        List<StationResponse> collect = stations.stream()
-            .map(lineStation -> StationResponse.of(lineStation.getDownStation()))
-            .collect(Collectors.toList());
+    private List<StationResponse> getStationResponses(Line line) {
+        if (line.getSections().isEmpty()) {
+            return Collections.emptyList();
+        }
 
-        List<StationResponse> collect2 = stations.stream()
-            .map(lineStation -> StationResponse.of(lineStation.getUpStation()))
+        List<Station> stations = new ArrayList<>();
+        Station downStation = findUpStation(line);
+        stations.add(downStation);
+
+        while (downStation != null) {
+            Station finalDownStation = downStation;
+            Optional<Section> nextLineStation = line.getSections().stream()
+                .filter(it -> it.getUpStation() == finalDownStation)
+                .findFirst();
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            downStation = nextLineStation.get().getDownStation();
+            stations.add(downStation);
+        }
+
+        return stations.stream()
+            .map(StationResponse::of)
             .collect(Collectors.toList());
-        return Stream.concat(collect.stream(), collect2.stream()).distinct().collect(Collectors.toList());
+    }
+  
+    private Station findUpStation(Line line) {
+        Station downStation = line.getSections().get(0).getUpStation();
+        while (downStation != null) {
+            Station finalDownStation = downStation;
+            Optional<Section> nextLineStation = line.getSections().stream()
+                .filter(it -> it.getDownStation() == finalDownStation)
+                .findFirst();
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            downStation = nextLineStation.get().getUpStation();
+        }
+
+        return downStation;
     }
 }
