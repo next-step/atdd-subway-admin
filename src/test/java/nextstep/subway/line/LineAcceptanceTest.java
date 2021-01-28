@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.station.StationAcceptanceTestHelper.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.net.URI;
@@ -21,6 +20,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -29,10 +29,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	@BeforeEach
 	void setup() {
-		지하철역_생성_요청("강남역");
-		지하철역_생성_요청("판교역");
-		지하철역_생성_요청("온수역");
-		지하철역_생성_요청("오류역");
+		StationAcceptanceTest.지하철역_생성_요청("강남역");
+		StationAcceptanceTest.지하철역_생성_요청("판교역");
+		StationAcceptanceTest.지하철역_생성_요청("온수역");
+		StationAcceptanceTest.지하철역_생성_요청("오류역");
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
@@ -118,7 +118,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return createResponse.header(HttpHeaders.LOCATION).split("/")[2];
 	}
 
-	private ExtractableResponse<Response> 노선_생성_요청(LineRequest lineRequest) {
+	public static ExtractableResponse<Response> 노선_생성_요청(LineRequest lineRequest) {
 		return RestAssured.given().log().all()
 			.body(lineRequest)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)

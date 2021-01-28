@@ -14,7 +14,7 @@ import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.line.domain.Section;
 
 @Entity
 public class Station extends BaseEntity {
@@ -27,7 +27,7 @@ public class Station extends BaseEntity {
 	@OneToMany(mappedBy = "upStation", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Section> sections = new ArrayList<>();
 
-	public Station() {
+	protected Station() {
 	}
 
 	public Station(String name) {

@@ -1,20 +1,15 @@
 package nextstep.subway.line.domain;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -26,10 +21,10 @@ public class Line extends BaseEntity {
 	private String name;
 	private String color;
 
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-	private final List<Section> sections = new ArrayList<>();
+	@Embedded
+	private final Sections sections = new Sections();
 
-	public Line() {
+	protected Line() {
 	}
 
 	public Line(String name, String color) {
@@ -54,18 +49,12 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public void addStation(Station upStation, Station downStation, int distance) {
+	public void addSection(Station upStation, Station downStation, int distance) {
 		Section section = new Section(this, upStation, downStation, distance);
 		sections.add(section);
-		upStation.addLine(section);
-		downStation.addLine(section);
 	}
 
 	public List<Station> getStations() {
-		return sections.stream()
-			.map(Section::getStations)
-			.flatMap(Collection::stream)
-			.distinct()
-			.collect(Collectors.toList());
+		return sections.getStations();
 	}
 }
