@@ -18,18 +18,11 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @Transient
-    private int distance;
-
     public Station(String name) {
         this.name = name;
     }
 
-    public void updateDistance(int distance) {
-        this.distance = distance;
-    }
-
-    public void sumDistance(Station station) {
-        this.distance += station.getDistance();
+    public boolean isSameById(Long stationId) {
+        return this.id.equals(stationId);
     }
 }

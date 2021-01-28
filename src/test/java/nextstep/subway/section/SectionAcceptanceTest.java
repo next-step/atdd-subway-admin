@@ -8,6 +8,7 @@ import nextstep.subway.line.LineRequestTestModule;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
@@ -174,7 +175,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         노선에_구간_요청_확인(response, HttpStatus.OK);
         노선에_포함된_지하철_확인(response, Arrays.asList("소요산역", "인천역"));
-        노선에_구간_거리_확인(response, Arrays.asList(10, 0));
+        노선에_구간_거리_확인(response, Arrays.asList(0, 10));
     }
 
     @DisplayName("상행 종점 제거")
@@ -206,7 +207,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         노선에_구간_요청_확인(response, HttpStatus.OK);
         노선에_포함된_지하철_확인(response, Arrays.asList("소요산역", "서울역"));
-        노선에_구간_거리_확인(response, Arrays.asList(3, 0));
+        노선에_구간_거리_확인(response, Arrays.asList(0, 3));
     }
 
     @DisplayName("노선에 등록되지 않은 역은 제거 못함")
@@ -253,8 +254,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 노선에_포함된_지하철_확인(ExtractableResponse<Response> response, List<String> expectedStations) {
-        List<String> stations = response.jsonPath().getList("stations", StationResponse.class)
-                .stream().map(StationResponse::getName).collect(toList());
+        List<String> stations = response.jsonPath().getList("stations", SectionResponse.class)
+                .stream().map(SectionResponse::getName).collect(toList());
         assertThat(stations).containsAll(expectedStations);
     }
 
@@ -273,8 +274,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 노선에_구간_거리_확인(ExtractableResponse<Response> response, List<Integer> expectedDistances) {
-        List<Integer> resultStationDistances = response.jsonPath().getList("stations", StationResponse.class).stream()
-                .map(StationResponse::getDistance)
+        List<Integer> resultStationDistances = response.jsonPath().getList("stations", SectionResponse.class).stream()
+                .map(SectionResponse::getDistance)
                 .collect(Collectors.toList());
         assertThat(resultStationDistances).isEqualTo(expectedDistances);
     }

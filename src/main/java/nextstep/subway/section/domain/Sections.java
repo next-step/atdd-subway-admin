@@ -2,45 +2,66 @@ package nextstep.subway.section.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.util.CommonException;
 import nextstep.subway.util.Message;
-import org.apache.commons.collections4.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Embeddable
 @NoArgsConstructor
 @Getter
 public class Sections {
 
-    private static final int STATION_EXISTENCE_CHECK = -1;
-    private static final int LAST_STATION_DISTANCE = 1;
-    private static final int MIN_SECTION_SIZE = 1;
-
+    public static final int REMOVE_SECTION_SIZE = 3;
     @OneToMany(mappedBy = "line" , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public Sections(Line line, Station upStation, Station downStation, int distance) {
-        sections.add(Section.builder()
-                .line(line)
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(distance)
-                .build());
+    public Sections(Section upSection, Section downSection) {
+        this.sections = Arrays.asList(upSection, downSection);
     }
 
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        Section upEndSection = findUpEndSection();
+        stations.add(upEndSection.getUpStation());
+        Section nextSection = upEndSection;
+        while (nextSection != null) {
+            stations.add(nextSection.getDownStation());
+            nextSection = findSectionByNextUpStation(nextSection.getDownStation());
+        }
+        return stations;
+    }
+
+    private Section findUpEndSection() {
+        List<Station> downStations = this.sections.stream()
+                .map(Section::getDownStation)
+                .collect(toList());
+        return this.sections.stream()
+                .filter(section -> !downStations.contains(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    private Section findSectionByNextUpStation(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation() == station)
+                .findFirst()
+                .orElse(null);
+    }
+
+
     public void add(Section section) {
-//        validateNotExistStation(section);
-//        alreadyExistStation(section);
+        validateNotExistStation(section);
+        alreadyExistStation(section);
 
         addUpStation(section);
         addDownStation(section);
@@ -48,110 +69,61 @@ public class Sections {
         this.sections.add(section);
     }
 
-    private void addDownStation(Section section) {
-        sections.stream()
-                .filter(oldSection -> section.getDownStation() == oldSection.getDownStation())
-                .findFirst()
-                .ifPresent(oldSection -> {
-                    changeUpOrDownStation(section, oldSection, oldSection.getUpStation(), section.getUpStation());
-                });
-    }
-
     private void addUpStation(Section section) {
         sections.stream()
-                .filter(oldSection -> section.getUpStation() == oldSection.getUpStation())
+                .filter(oldSection -> oldSection.isUpStationInSection(section.getUpStation()))
                 .findFirst()
                 .ifPresent(oldSection -> {
-                    changeUpOrDownStation(section, oldSection, section.getDownStation(), oldSection.getDownStation());
+                    oldSection.updateUpStationToDownStation(section.getDownStation(), section.getDistance());
                 });
     }
 
-    private void changeUpOrDownStation(Section section, Section oldSection, Station upStation, Station downStation) {
-        if (oldSection.getDistance() <= section.getDistance()) {
-            CommonException.throwIllegalArgumentException(Message.DISTANCE_EXCESS_MESSAGE);
-        }
-        sections.add(new Section(oldSection.getLine(), upStation, downStation, oldSection.getDistance() - section.getDistance()));
-        sections.remove(oldSection);
+    private void addDownStation(Section section) {
+        sections.stream()
+                .filter(oldSection -> oldSection.isDownStationInSection(section.getDownStation()))
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    oldSection.updateDownStationToUpStation(section.getUpStation(), section.getDistance());
+                });
     }
 
     private void validateNotExistStation(Section section) {
-        List<Station> stations = convertSectionToStation();
+        List<Station> stations = getStations();
         if(!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
             CommonException.throwIllegalArgumentException(Message.NOT_EXIST_STATION_MESSAGE);
          }
     }
 
     private void alreadyExistStation(Section section) {
-        if(convertSectionToStation().containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()))) {
+        if(getStations().containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()))) {
             CommonException.throwIllegalArgumentException(Message.ALREADY_EXIST_STATION_MESSAGE);
         }
     }
 
-    public void removeSection(Line line, Station station) {
-        List<Station> stations = convertSectionToStation();
-        int index = stations.indexOf(station);
-        validateBeforeRemove(index);
-        if (index > 0) {
-            Station preStation = stations.get(index - 1);
-            preStation.sumDistance(station);
-            stations.remove(index);
-        }
-        stations.remove(index);
-        updateLastStationDistanceZero(stations);
-        removeLastSection();
-        convertStationToSection(line, stations);
+    public void removeSection(Station station) {
+        validateRemovableSection();
+        Section removeSection = findSection(station.getId());
+        updateSectionByRemove(removeSection);
+        this.sections.remove(removeSection);
     }
 
-    private void validateBeforeRemove(int index) {
-        if (index == STATION_EXISTENCE_CHECK) {
-            CommonException.throwIllegalArgumentException(Message.NOT_FOUND_STATION_MESSAGE);
-        }
-        if (sections.size() <= MIN_SECTION_SIZE) {
-            CommonException.throwIllegalArgumentException(Message.ESSENTIAL_ONE_SECTION_MESSAGE);
+    private void validateRemovableSection() {
+        if(this.sections.size() < REMOVE_SECTION_SIZE) {
+            throw new IllegalArgumentException(Message.ESSENTIAL_ONE_SECTION_MESSAGE);
         }
     }
 
-    private void updateLastStationDistanceZero(List<Station> stations) {
-        Station lastStation = stations.get(stations.size() - 1);
-        lastStation.updateDistance(LAST_STATION_DISTANCE);
+    private Section findSection(Long stationId) {
+        return this.sections.stream()
+                .filter(section -> section.isDownStationInSection(stationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(Message.NOT_FOUND_STATION_MESSAGE));
     }
 
-    private void removeLastSection() {
-        this.sections.remove(this.sections.size() - 1);
+    private void updateSectionByRemove(Section removeSection) {
+        this.sections.stream()
+                .filter(section -> section.isUpStationInSection(removeSection.getDownStation()))
+                .findFirst()
+                .ifPresent(section -> section.updateUpStationToRemove(removeSection.getUpStation(), removeSection.getDistance()));
     }
-
-    private List<Station> convertSectionToStation() {
-        return CollectionUtils.emptyIfNull(this.sections).stream()
-                .map(section -> {
-                    Station upstation = section.getUpStation();
-                    Station downStation = section.getDownStation();
-                    upstation.updateDistance(section.getDistance());
-                    return Arrays.asList(upstation, downStation);
-                })
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    private void convertStationToSection(Line line, List<Station> stations) {
-        for (int i = 0; i < stations.size() - 1; i++) {
-            Station upStationAddConvertSection = stations.get(i);
-            Station downStationAddConvertSection = stations.get(i + 1);
-            int distanceAddSection = upStationAddConvertSection.getDistance();
-            if (sections.size() > i) {
-                Section targetSection = sections.get(i);
-                targetSection.update(upStationAddConvertSection, downStationAddConvertSection, distanceAddSection);
-                continue;
-            }
-
-            sections.add(Section.builder()
-                    .line(line)
-                    .upStation(upStationAddConvertSection)
-                    .downStation(downStationAddConvertSection)
-                    .distance(distanceAddSection)
-                    .build());
-        }
-    }
-
-
 }
