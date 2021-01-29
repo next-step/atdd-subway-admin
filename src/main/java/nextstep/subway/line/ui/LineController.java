@@ -3,6 +3,8 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +35,9 @@ public class LineController {
     }
 
     @PostMapping(value = "{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        try {
-            LineResponse response = lineService.addSection(id, lineRequest);
-            return ResponseEntity.created(URI.create("/lines/" + id)).body(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<SectionResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        SectionResponse response = lineService.addSection(id, sectionRequest);
+        return ResponseEntity.created(URI.create("/lines/" + id + "/sections")).body(response);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -54,6 +52,11 @@ public class LineController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping(value = "{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SectionResponse> findLineSections(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLineSectionsById(id));
     }
 
     @PutMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)

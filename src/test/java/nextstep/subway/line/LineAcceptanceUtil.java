@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.http.MediaType;
 
 public class LineAcceptanceUtil {
@@ -60,7 +61,7 @@ public class LineAcceptanceUtil {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_구간_등록_요청(LineRequest params) {
+    public static ExtractableResponse<Response> 지하철_구간_등록_요청(SectionRequest params) {
         return RestAssured
                 .given().log().all()
                 .body(params)
