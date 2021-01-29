@@ -22,4 +22,7 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
+    public boolean isSameById(Long stationId) {
+        return this.id.equals(stationId);
+    }
 }

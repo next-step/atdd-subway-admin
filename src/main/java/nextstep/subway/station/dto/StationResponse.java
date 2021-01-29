@@ -2,12 +2,14 @@ package nextstep.subway.station.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class StationResponse {
     private Long id;
