@@ -25,12 +25,9 @@ public class Sections {
     }
 
 
-    public List<Section> getStations() {
-        return sections;
-    }
-
     public void add(Section newSection) {
         validateAlreadyUsedSection(newSection);
+        validateNotUsedStations(newSection);
         Station upStation = newSection.getUpStation();
         Station downStation = newSection.getDownStation();
         if (this.anyMatch(upStation)) {
@@ -45,6 +42,16 @@ public class Sections {
         }
 
         this.sections.add(newSection);
+    }
+
+    private void validateNotUsedStations(Section section) {
+        if (!this.hasStation(section.getUpStation()) && !this.hasStation(section.getDownStation())) {
+            throw new IllegalArgumentException("등록할 수 없는 구간 입니다.");
+        }
+    }
+
+    private boolean hasStation(Station station) {
+        return this.getSectionByUpStation(station).isPresent() || this.getSectionByDownStation(station).isPresent() ;
     }
 
     private void updateDownStation(Section newSection) {
@@ -79,5 +86,9 @@ public class Sections {
         return Stream
             .concat(sections.stream().map(Section::getUpStation), sections.stream().map(Section::getDownStation))
             .anyMatch(it -> it == station);
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

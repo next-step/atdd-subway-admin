@@ -143,15 +143,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void name7() {
         //given
         SectionRequest sectionRequest = new SectionRequest(교대역.getId(), 삼성역.getId(), 10);
-        지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
 
         //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
         //then
-        assertThatThrownBy(()->{
-            지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
-        }).isInstanceOf(IllegalArgumentException.class);
-
-
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(LineResponse lineResponse, SectionRequest sectionRequest) {
