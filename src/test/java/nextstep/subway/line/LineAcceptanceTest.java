@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
@@ -24,75 +25,12 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-  private Map<String, Object> line1;
-  private Map<String, Object> line7;
+  private LineRequest line1;
+  private LineRequest line7;
   private StationResponse station1;
   private StationResponse station2;
   private StationResponse station3;
   private StationResponse station4;
-
-  public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-    Map<String, Object> params = 지하철_노선_생성_파라미터(name, color);
-    return 지하철_노선_생성_요청(params);
-  }
-
-  private static Map<String, Object> 지하철_노선_생성_파라미터(String name, String color) {
-    Map<String, Object> params = new HashMap<>();
-    params.put("name", name);
-    params.put("color", color);
-    return params;
-  }
-
-  public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, Object> params) {
-    return RestAssured.given().log().all().
-        body(params).
-        contentType(MediaType.APPLICATION_JSON_VALUE).
-        when().
-        post("/lines").
-        then().
-        log().all().
-        extract();
-  }
-
-  public static ExtractableResponse<Response> 지하철_노선_수정_요청(String location, String name,
-      String color, Long upStationId, Long downStationId, int distance) {
-    Map<String, Object> params = 지하철_노선_생성_요청_파라미터(name, color, upStationId, downStationId,
-        distance);
-    return 지하철_노선_수정_요청(location, params);
-  }
-
-  private static Map<String, Object> 지하철_노선_생성_요청_파라미터(String name, String color, Long upStationId,
-      Long downStationId, int distance) {
-    Map<String, Object> params = new HashMap<>();
-    params.put("name", name);
-    params.put("color", color);
-    params.put("upStationId", upStationId);
-    params.put("downStationId", downStationId);
-    params.put("distance", distance);
-    return params;
-  }
-
-  public static ExtractableResponse<Response> 지하철_노선_수정_요청(String location,
-      Map<String, Object> params) {
-    return RestAssured.given().log().all().
-        body(params).
-        contentType(MediaType.APPLICATION_JSON_VALUE).
-        when().
-        put(location).
-        then().
-        log().all().
-        extract();
-  }
-
-  public static ExtractableResponse<Response> 지하철_노선_제거_요청(String location) {
-    return RestAssured.given().log().all().
-        contentType(MediaType.APPLICATION_JSON_VALUE).
-        when().
-        delete(location).
-        then().
-        log().all().
-        extract();
-  }
 
   @BeforeEach
   public void setUp() {
@@ -240,6 +178,57 @@ public class LineAcceptanceTest extends AcceptanceTest {
         extract();
   }
 
+  public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
+    return RestAssured.given().log().all().
+        body(lineRequest).
+        contentType(MediaType.APPLICATION_JSON_VALUE).
+        when().
+        post("/lines").
+        then().
+        log().all().
+        extract();
+  }
+
+  public static ExtractableResponse<Response> 지하철_노선_수정_요청(String location, String name,
+      String color, Long upStationId, Long downStationId, int distance) {
+    Map<String, Object> params = 지하철_노선_생성_요청_파라미터(name, color, upStationId, downStationId,
+        distance);
+    return 지하철_노선_수정_요청(location, params);
+  }
+
+  private static Map<String, Object> 지하철_노선_생성_요청_파라미터(String name, String color, Long upStationId,
+      Long downStationId, int distance) {
+    Map<String, Object> params = new HashMap<>();
+    params.put("name", name);
+    params.put("color", color);
+    params.put("upStationId", upStationId);
+    params.put("downStationId", downStationId);
+    params.put("distance", distance);
+    return params;
+  }
+
+  public static ExtractableResponse<Response> 지하철_노선_수정_요청(String location,
+      Map<String, Object> params) {
+    return RestAssured.given().log().all().
+        body(params).
+        contentType(MediaType.APPLICATION_JSON_VALUE).
+        when().
+        put(location).
+        then().
+        log().all().
+        extract();
+  }
+
+  public static ExtractableResponse<Response> 지하철_노선_제거_요청(String location) {
+    return RestAssured.given().log().all().
+        contentType(MediaType.APPLICATION_JSON_VALUE).
+        when().
+        delete(location).
+        then().
+        log().all().
+        extract();
+  }
+
   private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
     return 지하철_노선_조회_요청("/lines");
   }
@@ -256,15 +245,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     return response.header("Location");
   }
 
-  private Map<String, Object> 지하철_노선_생성_파라미터(String name, String color, Long upStationId,
+
+  private LineRequest 지하철_노선_생성_파라미터(String name, String color, Long upStationId,
       Long downStationId,
       int distance) {
-    Map<String, Object> params = new HashMap<>();
-    params.put("name", name);
-    params.put("color", color);
-    params.put("upStationId", upStationId);
-    params.put("downStationId", downStationId);
-    params.put("distance", distance);
-    return params;
+    return new LineRequest(name,        color,        upStationId,        downStationId,        distance);
   }
+
+
+
+
 }
