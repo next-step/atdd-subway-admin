@@ -167,7 +167,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     });
 
   }
-
+  public static ExtractableResponse<Response> 지하철_노선_조회_요청(LineResponse response) {
+    return RestAssured        .given().log().all()
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .when()
+        .get("/lines/{lineId}", response.getId())
+        .then()
+        .log().all()
+        .extract();
+  }
   private ExtractableResponse<Response> 지하철_노선_조회_요청(String locationHeader) {
     return RestAssured.given().log().all().
         contentType(MediaType.APPLICATION_JSON_VALUE).
