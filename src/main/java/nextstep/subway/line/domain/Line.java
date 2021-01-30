@@ -68,19 +68,31 @@ public class Line extends BaseEntity {
     }
 
     public Optional<Section> getSectionByDownStation(Station downStation) {
-        return this.getSections().stream()
-            .filter(it -> it.getDownStation() == downStation)
-            .findFirst();
+        return this.sections.getSectionByDownStation(downStation);
     }
 
-    public Station getFirstUpStation() {
+    public Station findAnyUpStation() {
         if (this.getSections() == null || this.getSections().isEmpty()) {
             return null;
         }
         return this.getSections().get(0).getUpStation();
     }
 
-    public void addSection(Section section) {
-        this.sections.add(section);
+    public void addSection(Section newSection) {
+        this.sections.add(newSection);
+    }
+
+
+    public Station findFirstStation() {
+        Station firstStation = this.findAnyUpStation();
+        while (firstStation != null) {
+            Optional<Section> nextLineStation = this.getSectionByDownStation(firstStation);
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            firstStation = nextLineStation.get().getUpStation();
+        }
+
+        return firstStation;
     }
 }

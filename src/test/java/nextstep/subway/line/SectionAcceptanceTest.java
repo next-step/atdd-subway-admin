@@ -49,13 +49,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void name1() {
         //given
         SectionRequest sectionRequest = new SectionRequest(교대역.getId(), 강남역.getId(), 10);
-        // when
-        // 지하철_노선에_지하철역_등록_요청
+        //when
+        //지하철_노선에_지하철역_등록_요청
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
         LineResponse lineResponse = LineAcceptanceTest.지하철_노선_조회_요청(line2Response).as(LineResponse.class);
 
-        // then
-        // 지하철_노선에_지하철역_등록됨역
+        //then
+        //지하철_노선에_지하철역_등록됨역
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.getStations())
             .extracting(StationResponse::getName)
@@ -67,13 +67,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void name2() {
         //given
         SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 삼성역.getId(), 10);
-        // when
-        // 지하철_노선에_지하철역_등록_요청
+        //when
+        //지하철_노선에_지하철역_등록_요청
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
         LineResponse lineResponse = LineAcceptanceTest.지하철_노선_조회_요청(line2Response).as(LineResponse.class);
 
-        // then
-        // 지하철_노선에_지하철역_등록됨역
+        //then
+        //지하철_노선에_지하철역_등록됨역
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponse.getStations())
             .extracting(StationResponse::getName)
@@ -81,34 +81,44 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @DisplayName("[상행역 기준 추가]역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    void name8() {
+        //given
+        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), DEFAULT_DISTANCE);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @Test
+    @DisplayName("[하행역 기준 추가]역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     void name3() {
         //given
-        SectionRequest sectionRequest = new SectionRequest(선릉역.getId(), 역삼역.getId(), DEFAULT_DISTANCE);
+        SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 선릉역.getId(), DEFAULT_DISTANCE);
 
-        // when
-        // then
-        assertThatThrownBy(()->{
-            지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
-        }).isInstanceOf(IllegalArgumentException.class);
-
-
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
+
+
 
     @Test
     @DisplayName("A-B, B-C 에서 B-C를 등록하는 경우")
     void name4() {
         //given
-        SectionRequest sectionRequest = new SectionRequest(선릉역.getId(), 역삼역.getId(), 10);
+        SectionRequest sectionRequest = new SectionRequest(선릉역.getId(), 삼성역.getId(), 10);
         지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
 
-        // when
-        // then
-        assertThatThrownBy(()->{
-            지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
-        }).isInstanceOf(IllegalArgumentException.class);
+        SectionRequest sectionRequest2 = new SectionRequest(선릉역.getId(), 삼성역.getId(), 5);
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest2);
 
-
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @Test
@@ -118,8 +128,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 선릉역.getId(), 10);
         지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
 
-        // when
-        // then
+        //when
+        //then
         assertThatThrownBy(()->{
             지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
         }).isInstanceOf(IllegalArgumentException.class);
@@ -134,8 +144,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(교대역.getId(), 삼성역.getId(), 10);
         지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
 
-        // when
-        // then
+        //when
+        //then
         assertThatThrownBy(()->{
             지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
         }).isInstanceOf(IllegalArgumentException.class);
