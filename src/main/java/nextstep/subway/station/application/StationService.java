@@ -1,5 +1,7 @@
 package nextstep.subway.station.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -7,12 +9,10 @@ import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @Transactional
 public class StationService {
+
     private StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -29,11 +29,16 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
-                .collect(Collectors.toList());
+            .map(station -> StationResponse.of(station))
+            .collect(Collectors.toList());
     }
 
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findById(Long stationId) {
+        return stationRepository.findById(stationId)
+            .orElseThrow(() -> new IllegalArgumentException("입력된 역이 존재하지 않습니다."));
     }
 }
