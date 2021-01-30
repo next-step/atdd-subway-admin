@@ -10,6 +10,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
@@ -112,4 +113,10 @@ public class LineService {
     return downStation;
   }
 
+  public void addSection(Long lineId, SectionRequest sectionRequest) {
+    Line line = findLineById(lineId);
+    Station upStation = stationService.findById(sectionRequest.getUpStationId());
+    Station downStation = stationService.findById(sectionRequest.getDownStationId());
+    line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+  }
 }

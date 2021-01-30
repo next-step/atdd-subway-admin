@@ -52,10 +52,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선에_지하철역_등록_요청
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
+        LineResponse lineResponse = LineAcceptanceTest.지하철_노선_조회_요청(line2Response).as(LineResponse.class);
 
         // then
         // 지하철_노선에_지하철역_등록됨역
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getStations())
+            .extracting(StationResponse::getName)
+            .contains(강남역.getName());
     }
 
     @Test
@@ -66,10 +70,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선에_지하철역_등록_요청
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(line2Response, sectionRequest);
+        LineResponse lineResponse = LineAcceptanceTest.지하철_노선_조회_요청(line2Response).as(LineResponse.class);
 
         // then
         // 지하철_노선에_지하철역_등록됨역
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponse.getStations())
+            .extracting(StationResponse::getName)
+            .contains(역삼역.getName());
     }
 
     @Test
