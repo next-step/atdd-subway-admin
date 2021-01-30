@@ -30,24 +30,48 @@ public class Sections {
     }
 
     public void add(Section newSection) {
+        validateAlreadyUsedSection(newSection);
+        Station upStation = newSection.getUpStation();
         Station downStation = newSection.getDownStation();
-
+        if (this.anyMatch(upStation)) {
+            this.updateDownStation(newSection);
+            this.sections.add(newSection);
+            return;
+        }
         if (this.anyMatch(downStation)) {
             this.updateUpStation(newSection);
             this.sections.add(newSection);
             return;
         }
+
         this.sections.add(newSection);
+    }
+
+    private void updateDownStation(Section newSection) {
+        getSectionByUpStation(newSection.getUpStation())
+            .ifPresent(it -> it.updateUpStation(newSection.getDownStation(), newSection.getDistance()));
     }
 
     private void updateUpStation(Section newSection) {
         getSectionByDownStation(newSection.getDownStation())
-            .ifPresent(it -> it.updateUpStation(newSection.getDownStation(), newSection.getDistance()));
+            .ifPresent(it -> it.updateDownStation(newSection.getUpStation(), newSection.getDistance()));
     }
 
-    public Optional<Section> getSectionByDownStation(Station downStation) {
+    private void validateAlreadyUsedSection(Section section) {
+        if (this.anyMatch(section.getUpStation()) && this.anyMatch(section.getDownStation())) {
+            throw new IllegalArgumentException("이미 등록된 구간 입니다.");
+        }
+    }
+
+    private Optional<Section> getSectionByUpStation(Station station) {
         return this.sections.stream()
-            .filter(it -> it.getDownStation() == downStation)
+            .filter(it -> it.getUpStation() == station)
+            .findFirst();
+    }
+
+    public Optional<Section> getSectionByDownStation(Station station) {
+        return this.sections.stream()
+            .filter(it -> it.getDownStation() == station)
             .findFirst();
     }
 

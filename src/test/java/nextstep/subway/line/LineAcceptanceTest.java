@@ -169,7 +169,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(LineResponse response) {
-        return RestAssured.given().log().all()
+        return RestAssured.given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get("/lines/{lineId}", response.getId())
@@ -179,7 +179,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회_요청(String locationHeader) {
-        return RestAssured.given().log().all().
+        return RestAssured.given().
             contentType(MediaType.APPLICATION_JSON_VALUE).
             when().
             get(locationHeader).
@@ -189,7 +189,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
-        return RestAssured.given().log().all().
+        return RestAssured.given().
             body(lineRequest).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             when().
@@ -219,7 +219,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     public static ExtractableResponse<Response> 지하철_노선_수정_요청(String location,
         Map<String, Object> params) {
-        return RestAssured.given().log().all().
+        return RestAssured.given().
             body(params).
             contentType(MediaType.APPLICATION_JSON_VALUE).
             when().
@@ -230,7 +230,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_제거_요청(String location) {
-        return RestAssured.given().log().all().
+        return RestAssured.given().
             contentType(MediaType.APPLICATION_JSON_VALUE).
             when().
             delete(location).
