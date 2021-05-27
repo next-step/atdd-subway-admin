@@ -4,13 +4,17 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,14 +78,49 @@ class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> lineNumberTwo = new HashMap<>();
+        lineNumberTwo.put("name", "2호선");
+        lineNumberTwo.put("color", "green");
+        ExtractableResponse<Response> createdLine1 = RestAssured.given().log().all()
+            .body(lineNumberTwo)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
         // 지하철_노선_등록되어_있음
+        Map<String, String> lineNumberThree = new HashMap<>();
+        lineNumberTwo.put("name", "3호선");
+        lineNumberTwo.put("color", "orange");
+        ExtractableResponse<Response> createdLine2 = RestAssured.given().log().all()
+            .body(lineNumberThree)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> result = RestAssured.given().log().all()
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("lines")
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_목록_응답됨
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
+        List<Long> expect = Stream.of(createdLine1, createdLine2)
+            .map(response -> Long.parseLong(response.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+        List<Long> actual = result.body().jsonPath().getList(".", LineResponse.class)
+            .stream()
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(actual).isEqualTo(expect);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
