@@ -191,6 +191,15 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_수정됨
         assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> updatedSearch = RestAssured.given().log().all()
+            .pathParam("id", savedId)
+            .when()
+            .get("/lines/{id}")
+            .then().log().all()
+            .extract();
+        LineResponse updatedLine = updatedSearch.jsonPath().getObject(".", LineResponse.class);
+        assertThat(updatedLine.getColor()).isEqualTo("lightGreen");
+        assertThat(updatedLine.getName()).isEqualTo("22호선");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
