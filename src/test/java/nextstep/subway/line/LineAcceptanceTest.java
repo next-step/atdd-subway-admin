@@ -222,5 +222,12 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(result.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> deletedSearch = RestAssured.given().log().all()
+            .pathParam("id", savedId)
+            .when()
+            .get("/lines/{id}")
+            .then().log().all()
+            .extract();
+        assertThat(deletedSearch.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }
