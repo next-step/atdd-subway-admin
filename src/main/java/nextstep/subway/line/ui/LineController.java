@@ -31,6 +31,11 @@ public class LineController {
         return ResponseEntity.ok(lineService.findAllLines());
     }
 
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> getLines(@PathVariable("id") String id) {
+        return ResponseEntity.ok(lineService.findLine(id));
+    }
+
     @ExceptionHandler(value = {DataIntegrityViolationException.class})
     public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();

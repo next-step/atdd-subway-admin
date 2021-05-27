@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,5 +30,15 @@ public class LineService {
             .stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(String id) {
+        return LineResponse.of(findLineById(Long.valueOf(id)));
+
+    }
+
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
     }
 }
