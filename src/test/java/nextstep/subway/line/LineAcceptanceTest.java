@@ -160,14 +160,41 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        // given
+        /// given
         // 지하철_노선_등록되어_있음
+        Map<String, String> lineNumberTwo = new HashMap<>();
+        lineNumberTwo.put("name", "2호선");
+        lineNumberTwo.put("color", "green");
+        ExtractableResponse<Response> createdResponse = RestAssured.given().log().all()
+            .body(lineNumberTwo)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
+        String savedId = createdResponse.header("Location").split("/")[2];
 
         // when
         // 지하철_노선_수정_요청
+        Map<String, String> lineNumberTwentyTwo = new HashMap<>();
+        lineNumberTwentyTwo.put("name", "22호선");
+        lineNumberTwentyTwo.put("color", "lightGreen");
+        ExtractableResponse<Response> result = RestAssured.given().log().all()
+            .pathParam("id", String.valueOf(savedId))
+            .body(lineNumberTwentyTwo)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/{id}")
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_수정됨
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse resultBody = result.jsonPath().getObject(".", LineResponse.class);
+        assertThat(resultBody.getColor()).isEqualTo("lightGreen");
+        assertThat(resultBody.getName()).isEqualTo("22호선");
+        assertThat(resultBody.getId()).isEqualTo(Long.valueOf(savedId));
     }
 
     @DisplayName("지하철 노선을 제거한다.")
