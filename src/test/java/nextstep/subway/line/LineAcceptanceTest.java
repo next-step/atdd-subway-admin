@@ -3,8 +3,10 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -61,13 +63,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
+        createdLine(INCHEON_SUBWAY_LINE_1);
+        createdLine(AIRPORT_EXPRESS);
 
         // when
         // 지하철_노선_목록_조회_요청
+        // when
+        ExtractableResponse<Response> response =
+            RestAssured.given().log().all()
+                       .when().get("/lines")
+                       .then().log().all()
+                       .extract();
 
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<LineResponse> lines = response.body().jsonPath().getList("$", LineResponse.class);
+        assertThat(lines.size()).isEqualTo(2);
+        assertThat(lines).extracting(LineResponse::getName)
+                         .contains(INCHEON_SUBWAY_LINE_1.getName(), AIRPORT_EXPRESS.getName());
+        assertThat(lines).extracting(LineResponse::getColor)
+                         .contains(INCHEON_SUBWAY_LINE_1.getColor(), AIRPORT_EXPRESS.getColor());
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -113,8 +131,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                           .body(lineRequest)
                           .contentType(MediaType.APPLICATION_JSON_VALUE)
-                          .when()
-                          .post("/lines")
+                          .when().post("/lines")
                           .then().log().all()
                           .extract();
     }
