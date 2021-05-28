@@ -153,12 +153,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        createdLine(INCHEON_SUBWAY_LINE_1);
 
         // when
         // 지하철_노선_제거_요청
+        // when
+        ExtractableResponse<Response> response = deleteLineRequest(1);
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> createLineRequest(LineRequest lineRequest) {
@@ -185,10 +189,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> updateLineRequest(long lineId, LineRequest lineRequest) {
         return RestAssured.given().log().all()
-                      .body(lineRequest)
-                      .contentType(MediaType.APPLICATION_JSON_VALUE)
-                      .when().put("/lines/" + lineId)
-                      .then().log().all()
-                      .extract();
+                          .body(lineRequest)
+                          .contentType(MediaType.APPLICATION_JSON_VALUE)
+                          .when().put("/lines/" + lineId)
+                          .then().log().all()
+                          .extract();
+    }
+
+    private ExtractableResponse<Response> deleteLineRequest(long lineId) {
+        return RestAssured.given().log().all()
+                          .when().delete("/lines/" + lineId)
+                          .then().log().all()
+                          .extract();
     }
 }

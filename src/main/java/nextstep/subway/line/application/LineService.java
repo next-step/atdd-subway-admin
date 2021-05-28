@@ -46,4 +46,11 @@ public class LineService {
         line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
         lineRepository.save(line);
     }
+
+    public void deleteLine(Long lineId) {
+        Line line = lineRepository.findById(lineId)
+                                  .orElseThrow(() -> new NotFoundLineException(lineId));
+
+        lineRepository.delete(line);
+    }
 }
