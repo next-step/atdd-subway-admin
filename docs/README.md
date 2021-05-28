@@ -136,7 +136,6 @@ Date: Fri, 13 Nov 2020 00:11:51 GMT
 - [ ] LineResponse의 List를 만드는 정적 팩토리 메서드 추가   
 - [ ] ```@RestControllerAdvice```를 사용한 전역적 Exception Handling
 - [ ] LineResponse의 ```equals() & hashcode()``` 재정의를 통해서 목록 조회 검증 코드 리팩토링
-- [ ] 생성한 노선에 대해 body가 비어있는지 뿐만아니라 값도 확인 
 - [ ] 생성한 노선에 대해 header값이 비어있는지 뿐만아니라 저장된 값도 확인
 - [ ] 테스트에 쓸 노선 생성할 때 Map 대신 LineRequest 사용
 - [ ] 테스트 메서드에서 중복부분을 분리해서 재사용 (한글 메서명 사용해보기)

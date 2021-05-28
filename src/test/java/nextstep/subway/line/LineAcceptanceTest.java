@@ -40,6 +40,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_생성됨
         assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(result.header("Location")).isNotBlank();
+        LineResponse resultBody = result.as(LineResponse.class);
+        assertThat(resultBody.getName()).isEqualTo(params.get("name"));
+        assertThat(resultBody.getColor()).isEqualTo(params.get("color"));
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
