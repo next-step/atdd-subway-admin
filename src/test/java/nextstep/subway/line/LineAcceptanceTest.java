@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private final LineRequest INCHEON_SUBWAY_LINE_1 = new LineRequest("인천 1호선", "#7CA8D5");
+    private final LineRequest INCHEON_SUBWAY_LINE_2 = new LineRequest("인천 2호선", "#ED8B00");
     private final LineRequest AIRPORT_EXPRESS = new LineRequest("공항철도", "#0065B3");
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -129,12 +130,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        createdLine(INCHEON_SUBWAY_LINE_1);
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = updateLineRequest(1, INCHEON_SUBWAY_LINE_2);
+        ExtractableResponse<Response> actual = getLineRequest(1);
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.body().jsonPath().getString("name"))
+            .isEqualTo(INCHEON_SUBWAY_LINE_2.getName());
+        assertThat(actual.body().jsonPath().getString("color"))
+            .isEqualTo(INCHEON_SUBWAY_LINE_2.getColor());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -170,5 +181,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                           .when().get("/lines/" + lineId)
                           .then().log().all()
                           .extract();
+    }
+
+    private ExtractableResponse<Response> updateLineRequest(long lineId, LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+                      .body(lineRequest)
+                      .contentType(MediaType.APPLICATION_JSON_VALUE)
+                      .when().put("/lines/" + lineId)
+                      .then().log().all()
+                      .extract();
     }
 }

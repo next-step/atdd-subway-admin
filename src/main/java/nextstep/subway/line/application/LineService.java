@@ -38,4 +38,12 @@ public class LineService {
                                   .orElseThrow(() -> new NotFoundLineException(lineId));
         return LineResponse.of(line);
     }
+
+    public void updateLine(Long lineId, LineRequest lineRequest) {
+        Line line = lineRepository.findById(lineId)
+                                  .orElseThrow(() -> new NotFoundLineException(lineId));
+
+        line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
+        lineRepository.save(line);
+    }
 }
