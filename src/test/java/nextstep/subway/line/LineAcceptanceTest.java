@@ -90,8 +90,8 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
         // 지하철_노선_등록되어_있음
         Map<String, String> lineNumberThree = new HashMap<>();
-        lineNumberTwo.put("name", "3호선");
-        lineNumberTwo.put("color", "orange");
+        lineNumberThree.put("name", "3호선");
+        lineNumberThree.put("color", "orange");
         ExtractableResponse<Response> createdLine2 = RestAssured.given().log().all()
             .body(lineNumberThree)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -113,13 +113,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_응답됨
         assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
-        List<Long> expect = Stream.of(createdLine1, createdLine2)
-            .map(response -> Long.parseLong(response.header("Location").split("/")[2]))
+        List<LineResponse> expect = Stream.of(createdLine1, createdLine2)
+            .map(response -> response.as(LineResponse.class))
             .collect(Collectors.toList());
-        List<Long> actual = result.body().jsonPath().getList(".", LineResponse.class)
-            .stream()
-            .map(LineResponse::getId)
-            .collect(Collectors.toList());
+        List<LineResponse> actual = result.body().jsonPath().getList(".", LineResponse.class);
         assertThat(actual).isEqualTo(expect);
     }
 
