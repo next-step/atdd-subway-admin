@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.NotFoundLineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,5 +31,11 @@ public class LineService {
                              .stream()
                              .map(LineResponse::of)
                              .collect(toList());
+    }
+
+    public LineResponse findLine(Long lineId) {
+        Line line = lineRepository.findById(lineId)
+                                  .orElseThrow(() -> new NotFoundLineException(lineId));
+        return LineResponse.of(line);
     }
 }

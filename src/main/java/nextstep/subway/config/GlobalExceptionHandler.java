@@ -1,6 +1,7 @@
 package nextstep.subway.config;
 
 import nextstep.subway.common.ErrorResponse;
+import nextstep.subway.line.exception.NotFoundLineException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,6 +20,13 @@ public class GlobalExceptionHandler {
     public ErrorResponse constraintViolationExceptionHandler(DataIntegrityViolationException e) {
         log.error(e.getMessage(), e);
         return ErrorResponse.of("이미 생성된 데이터입니다.");
+    }
+
+    @ExceptionHandler(NotFoundLineException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse constraintViolationExceptionHandler(NotFoundLineException e) {
+        log.error(e.getMessage(), e);
+        return ErrorResponse.of(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

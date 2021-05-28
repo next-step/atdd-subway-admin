@@ -93,12 +93,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        createdLine(INCHEON_SUBWAY_LINE_1);
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = getLineRequest(1);
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getString("name"))
+            .isEqualTo(INCHEON_SUBWAY_LINE_1.getName());
+        assertThat(response.body().jsonPath().getString("color"))
+            .isEqualTo(INCHEON_SUBWAY_LINE_1.getColor());
+    }
+
+    @DisplayName("존재하지 않는 노선 번호로 노선을 조회한다.")
+    @Test
+    void getLineFail() {
+        // given
+        // 지하철_노선_등록되어_있음
+        createdLine(INCHEON_SUBWAY_LINE_1);
+
+        // when
+        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = getLineRequest(100);
+
+        // then
+        // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -138,5 +161,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void createdLine(LineRequest lineRequest) {
         createLineRequest(lineRequest);
+    }
+
+    private ExtractableResponse<Response> getLineRequest(long lineId) {
+        return RestAssured.given().log().all()
+                          .body(INCHEON_SUBWAY_LINE_1)
+                          .contentType(MediaType.APPLICATION_JSON_VALUE)
+                          .when().get("/lines/" + lineId)
+                          .then().log().all()
+                          .extract();
     }
 }

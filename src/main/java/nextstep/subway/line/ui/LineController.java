@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,5 +33,11 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> getLines() {
         List<LineResponse> lines = lineService.findLines();
         return ResponseEntity.ok(lines);
+    }
+
+    @GetMapping(value = "/{lineId}")
+    public ResponseEntity<LineResponse> getLine(@PathVariable Long lineId) {
+        LineResponse line = lineService.findLine(lineId);
+        return ResponseEntity.ok(line);
     }
 }
