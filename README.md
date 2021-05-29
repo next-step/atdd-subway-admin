@@ -13,14 +13,25 @@
 <br>
 
 # 지하철 노선도 미션
+
 [ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션
+
+## 요구사항
+
+### step1
+
+- [ ] 기능 목록: 생성 / 목록 조회 / 조회 / 수정 / 삭제
+- [ ] 기능 구현 전 인수 테스트 작성
+- [ ] 기능 구현 후 인수 테스트 리팩터링
 
 <br>
 
 ## 🚀 Getting Started
 
 ### Install
+
 #### npm 설치
+
 ```
 cd frontend
 npm install
