@@ -52,3 +52,159 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+---
+
+# 요구사항 정리
+
+## Step 1
+
+### 기능 구현
+
+- [x] 기능 목록: 생성 / 목록 조회 / 조회 / 수정 / 삭제
+- [x] 기능 구현 전 인수 테스트 작성
+- [x] 기능 구현 후 인수 테스트 리팩터링
+
+#### 지하철 노선 생성
+
+- Request
+
+    ```text
+    POST /lines HTTP/1.1
+    accept: */*
+    content-type: application/json; charset=UTF-8
+    
+    {
+        "color": "bg-red-600",
+        "name": "신분당선"
+    }
+    ```
+
+- Response
+
+    ```text
+    HTTP/1.1 201
+    Location: /lines/1
+    Content-Type: application/json
+    Date: Fri, 13 Nov 2020 00:11:51 GMT
+    
+    {
+        "id": 1,
+        "name": "신분당선",
+        "color": "bg-red-600",
+        "createdDate": "2020-11-13T09:11:51.997",
+        "modifiedDate": "2020-11-13T09:11:51.997"
+    }
+    ```
+
+#### 지하철 노선 목록 조회
+
+- Request
+
+    ```text
+    GET /lines HTTP/1.1
+    accept: application/json
+    host: localhost:49468
+    ```
+
+- Response
+
+    ```text
+    HTTP/1.1 200 
+    Content-Type: application/json
+    Date: Fri, 13 Nov 2020 00:11:51 GMT
+    
+    [
+        {
+            "id": 1,
+            "name": "신분당선",
+            "color": "bg-red-600",
+            "stations": [
+                
+            ],
+            "createdDate": "2020-11-13T09:11:52.084",
+            "modifiedDate": "2020-11-13T09:11:52.084"
+        },
+        {
+            "id": 2,
+            "name": "2호선",
+            "color": "bg-green-600",
+            "stations": [
+                
+            ],
+            "createdDate": "2020-11-13T09:11:52.098",
+            "modifiedDate": "2020-11-13T09:11:52.098"
+        }
+    ]
+    ```
+
+#### 지하철 노선 조회
+
+- Request
+
+    ```text
+    GET /lines/1 HTTP/1.1
+    accept: application/json
+    host: localhost:49468
+    ```
+
+- Response
+
+    ```text
+    HTTP/1.1 200 
+    Content-Type: application/json
+    Date: Fri, 13 Nov 2020 00:11:51 GMT
+    
+    {
+        "id": 1,
+        "name": "신분당선",
+        "color": "bg-red-600",
+        "stations": [
+            
+        ],
+        "createdDate": "2020-11-13T09:11:51.866",
+        "modifiedDate": "2020-11-13T09:11:51.866"
+    }
+    ```
+
+#### 지하철 노선 수정
+
+- Request
+
+    ```text
+    PUT /lines/1 HTTP/1.1
+    accept: */*
+    content-type: application/json; charset=UTF-8
+    content-length: 45
+    host: localhost:49468
+    
+    {
+        "color": "bg-blue-600",
+        "name": "구분당선"
+    }
+    ```
+
+- Response
+
+    ```text
+    HTTP/1.1 200 
+    Date: Fri, 13 Nov 2020 00:11:51 GMT
+    ```
+
+#### 지하철 노선 삭제
+
+- Request
+
+    ```text
+    DELETE /lines/1 HTTP/1.1
+    accept: */*
+    host: localhost:49468
+    ```
+
+- Response
+
+    ```text
+    HTTP/1.1 204 
+    Date: Fri, 13 Nov 2020 00:11:51 GMT
+    ```
+
