@@ -27,7 +27,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         String toCreateColor = "green";
         ExtractableResponse<Response> result = 지하철_노선_등록되어_있음(toCreateName, toCreateColor);
         // then
-        // 지하철_노선_생성됨
         지하철_노선_생성됨(result, toCreateName, toCreateColor);
     }
 
@@ -35,17 +34,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        // 지하철_노선_등록되어_있음
         String toCreateName = "2호선";
         String toCreateColor = "green";
         지하철_노선_등록되어_있음(toCreateName, toCreateColor);
 
         // when
-        // 지하철_노선_생성_요청
         ExtractableResponse<Response> result = 지하철_노선_등록되어_있음(toCreateName, toCreateColor);
 
         // then
-        // 지하철_노선_생성_실패됨
         지하철_노선_생성_실패됨(result);
     }
 
@@ -53,19 +49,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> expect1 = 지하철_노선_등록되어_있음("2호선", "green");
-        // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> expect2 = 지하철_노선_등록되어_있음("3호선", "orange");
 
         // when
-        // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> result = 노선_목록을_조회한다();
 
         // then
-        // 지하철_노선_목록_응답됨
         지하철_노선_목록_응답됨(result);
-        // 지하철_노선_목록_포함됨
         지하철_노선_목록_포함됨(result, expect1, expect2);
     }
 
@@ -73,16 +64,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createdLine1 = 지하철_노선_등록되어_있음("2호선", "green");
         Long savedId = 등록된_노선_ID(createdLine1);
 
         // when
-        // 지하철_노선_조회_요청
         ExtractableResponse<Response> result = 노선_단건을_조회한다(savedId);
 
         // then
-        // 지하철_노선_응답됨
         지하철_노선_응답됨(result, savedId);
 
     }
@@ -91,17 +79,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         /// given
-        // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createdResponse = 지하철_노선_등록되어_있음("2호선", "green");
         Long savedId = 등록된_노선_ID(createdResponse);
 
         // when
-        // 지하철_노선_수정_요청
         LineRequest lineNumberTwentyTwo = new LineRequest("22호선", "lightGreen");
         ExtractableResponse<Response> result = 노선을_수정한다(savedId, lineNumberTwentyTwo);
 
         // then
-        // 지하철_노선_수정됨
         지하철_노선_수정됨(result, savedId);
     }
 
@@ -109,17 +94,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createdResponse = 지하철_노선_등록되어_있음("2호선", "green");
         Long savedId = 등록된_노선_ID(createdResponse);
 
         // when
-        // 지하철_노선_제거_요청
         ExtractableResponse<Response> result = 노선을_제거한다(savedId);
 
 
         // then
-        // 지하철_노선_삭제됨
         지하철_노선_삭제됨(result, savedId);
     }
 
