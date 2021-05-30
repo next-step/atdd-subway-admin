@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nextstep.subway.line.application.LineDuplicatedException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
@@ -42,8 +43,8 @@ class LineControllerTest {
     class Describe_create_line {
 
         @Nested
-        @DisplayName("노선이 주어지면")
-        class Context_with_line {
+        @DisplayName("유효한 노선이 주어지면")
+        class Context_with_valid_line {
             final LineRequest givenLineRequest = lineRequest;
 
             @BeforeEach
@@ -61,6 +62,29 @@ class LineControllerTest {
                                 .content(objectMapper.writeValueAsString(givenLineRequest))
                 )
                         .andExpect(status().isCreated());
+            }
+        }
+
+        @Nested
+        @DisplayName("이미 존재하는 노선이 주어지면")
+        class Context_with_existed_line {
+            final LineRequest givenLineRequest = lineRequest;
+
+            @BeforeEach
+            void setUp() {
+                when(lineService.saveLine(any(LineRequest.class)))
+                        .thenThrow(new LineDuplicatedException());
+            }
+
+            @DisplayName("409 conflict를 응답한다.")
+            @Test
+            void It_responds_conflict() throws Exception {
+                mockMvc.perform(
+                        post("/lines")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(givenLineRequest))
+                )
+                        .andExpect(status().isConflict());
             }
         }
     }

@@ -33,4 +33,12 @@ public class LineAcceptanceStep {
                 extract();
         return response;
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color) {
+        return 지하철_노선_생성_요청(name, color);
+    }
+
+    public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
 }

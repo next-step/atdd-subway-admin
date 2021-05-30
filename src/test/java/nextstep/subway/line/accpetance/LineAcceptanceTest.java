@@ -6,6 +6,8 @@ import nextstep.subway.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
+import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성_실패됨;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성_요청;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성됨;
 
@@ -20,19 +22,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_생성됨(response);
     }
-    
+
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
         // given
-        // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("2호선", "green");
 
         // when
-        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
 
         // then
-        // 지하철_노선_생성_실패됨
+        지하철_노선_생성_실패됨(response);
     }
+
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
