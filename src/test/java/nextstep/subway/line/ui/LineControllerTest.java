@@ -57,7 +57,6 @@ class LineControllerTest {
             void It_responds_create() throws Exception {
                 mockMvc.perform(
                         post("/lines")
-                                .accept(MediaType.APPLICATION_JSON_UTF8)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(givenLineRequest))
                 )
