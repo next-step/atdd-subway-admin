@@ -39,28 +39,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        String toCreateName = "강남역";
+        지하철_역_등록되어_있음(toCreateName);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> result = 지하철_역_등록되어_있음(toCreateName);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_역_생성_실패됨(result);
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -147,6 +133,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(result.header("Location")).isNotBlank();
         StationResponse resultBody = result.as(StationResponse.class);
         assertThat(resultBody.getName()).isEqualTo(toCreateName);
+    }
+
+    private void 지하철_역_생성_실패됨(ExtractableResponse<Response> result) {
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 }
