@@ -11,10 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -68,26 +65,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> createResponse = 지하철_역_등록되어_있음("강남역");
+        Long savedId = 등록된_역_ID(createResponse);
 
         // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철_역을_제거한다(savedId);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        지하철_노선_삭제됨(response);
     }
 
     private ExtractableResponse<Response> 지하철_역_등록되어_있음(String name) {
@@ -132,4 +117,20 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(actualResponses).isEqualTo(expectResponses);
     }
 
+    private Long 등록된_역_ID(ExtractableResponse<Response> createdResponse) {
+        return createdResponse.as(StationResponse.class).getId();
+    }
+
+    private ExtractableResponse<Response> 지하철_역을_제거한다(Long id) {
+        return RestAssured.given().log().all()
+            .pathParam("id", id)
+            .when()
+            .delete("/stations/{id}")
+            .then().log().all()
+            .extract();
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 }
