@@ -2,6 +2,7 @@ package nextstep.subway.line.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -36,7 +35,7 @@ class LineControllerTest {
     protected ObjectMapper objectMapper;
 
     private LineRequest lineRequest = new LineRequest("2호선", "green");
-    private LineResponse lineResponse = new LineResponse(1L, "3호선", "orange", LocalDateTime.now(), LocalDateTime.now());
+    private LineResponse lineResponse = LineResponse.of(new Line("2호선", "green"));
 
     @Nested
     @DisplayName("POST /lines는")
