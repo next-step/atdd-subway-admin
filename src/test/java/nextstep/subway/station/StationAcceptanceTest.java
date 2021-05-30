@@ -75,7 +75,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_역_등록되어_있음(String name) {
+    public static ExtractableResponse<Response> 지하철_역_등록되어_있음(String name) {
         StationRequest stationRequest = new StationRequest(name);
         return RestAssured.given().log().all()
             .body(stationRequest)
@@ -117,7 +117,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(actualResponses).isEqualTo(expectResponses);
     }
 
-    private Long 등록된_역_ID(ExtractableResponse<Response> createdResponse) {
+    public static Long 등록된_역_ID(ExtractableResponse<Response> createdResponse) {
         return createdResponse.as(StationResponse.class).getId();
     }
 
