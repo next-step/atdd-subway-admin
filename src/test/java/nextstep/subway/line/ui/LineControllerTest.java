@@ -17,9 +17,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -85,6 +91,47 @@ class LineControllerTest {
                                 .content(objectMapper.writeValueAsString(givenLineRequest))
                 )
                         .andExpect(status().isConflict());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /lines는")
+    class Describe_getLines {
+        @Nested
+        @DisplayName("등록된 노선이 있으면")
+        class Context_with_lines {
+            List<LineResponse> lines;
+
+            @BeforeEach
+            void setUp() {
+                lines = Collections.singletonList(lineResponse);
+                when(lineService.getLines())
+                        .thenReturn(lines);
+            }
+
+            @DisplayName("200 OK 상태와 노선 목록을 응답한다.")
+            @Test
+            void It_responds_ok_with_lines() throws Exception {
+                mockMvc.perform(
+                        get("/lines")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                        .andExpect(status().isOk())
+                        .andExpect(content().string(objectMapper.writeValueAsString(lines)));
+            }
+        }
+
+        @Nested
+        @DisplayName("등록된 노선이 없으면")
+        class Context_without_lines {
+
+            @DisplayName("200 OK 상태와 비어있는 노선 목록을 응답한다.")
+            @Test
+            void It_responds_ok_with_empty_lines() throws Exception {
+                mockMvc.perform(get("/lines"))
+                        .andExpect(status().isOk())
+                        .andExpect(content().string(containsString("[]")));
             }
         }
     }

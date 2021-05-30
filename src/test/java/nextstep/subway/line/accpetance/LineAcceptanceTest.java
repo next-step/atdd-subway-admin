@@ -7,6 +7,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
+import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_목록_응답됨;
+import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_목록_조회_요청;
+import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_목록_포함됨;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성_실패됨;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성_요청;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성됨;
@@ -41,15 +44,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음("2호선", "green");
+        ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음("3호선", "orange");
 
         // when
-        // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
+        지하철_노선_목록_응답됨(response);
+        지하철_노선_목록_포함됨(createResponse1, createResponse2, response);
+
     }
 
     @DisplayName("지하철 노선을 조회한다.")

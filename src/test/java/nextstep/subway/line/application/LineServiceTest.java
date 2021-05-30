@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,5 +64,16 @@ class LineServiceTest {
         // then
         assertThatThrownBy(() -> lineService.saveLine(lineRequest))
                 .isInstanceOf(LineDuplicatedException.class);
+    }
+
+    @DisplayName("모든 노선을 리턴한다.")
+    @Test
+    void getLines() {
+        when(lineRepository.findAll())
+                .thenReturn(Collections.singletonList(line));
+
+        List<LineResponse> lines = lineService.getLines();
+
+        assertThat(lines).containsExactly(LineResponse.of(line));
     }
 }
