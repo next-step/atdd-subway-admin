@@ -24,8 +24,8 @@ import static org.junit.jupiter.api.DynamicTest.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final LineRequest 분당_라인 = new LineRequest("분당라인", "노란색");
-    private static final LineRequest 신분당_라인 = new LineRequest("신분당라인", "빨간색");
+    private static final LineRequest 분당_라인 = new LineRequest("분당라인", "노란색", 1L, 2L, 10L);
+    private static final LineRequest 신분당_라인 = new LineRequest("신분당라인", "빨간색", 3L, 4L, 10L);
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -93,7 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @TestFactory
     Stream<DynamicTest> updateLine() {
-        LineRequest 구_분당선 = new LineRequest("구분당선", "bg-blue-600");
+        LineRequest 구_분당선 = new LineRequest("구분당선", "bg-blue-600", 1L, 2L, 10L);
 
         return Stream.of(
                 dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L)),
