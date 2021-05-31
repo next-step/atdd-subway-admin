@@ -92,6 +92,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                             .containsExactly(1L, 2L);
 
                     assertThat(lineResponses)
+                            .extracting(item -> item.getCreatedDate())
+                            .isNotEmpty();
+                    assertThat(lineResponses)
+                            .extracting(item -> item.getModifiedDate())
+                            .isNotEmpty();
+
+                    assertThat(lineResponses)
                             .extracting(item -> item.getName())
                             .containsExactlyInAnyOrder(
                                     분당_라인.getName(),
