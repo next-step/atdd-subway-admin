@@ -9,14 +9,19 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.DynamicTest.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -32,11 +37,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header(HttpHeaders.CONTENT_TYPE)).isIn(ContentType.JSON.getContentTypeStrings());
+        assertThat(response.header(HttpHeaders.LOCATION)).isNotBlank();
 
-        LineResponse lineResponse = response
-                .body()
-                .jsonPath()
-                .getObject(".", LineResponse.class);
+        LineResponse lineResponse = response.as(LineResponse.class);
 
         assertThat(lineResponse.getId()).isEqualTo(1L);
         assertThat(lineResponse.getName()).isEqualTo(분당_라인.getName());
@@ -46,60 +49,111 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
-    @Test
-    void createLine2() {
-        // given
-        createLineRequest(분당_라인);
+    @TestFactory
+    Stream<DynamicTest> createLine2() {
+        return Stream.of(
+                dynamicTest("새로운 지하철 노선을 추가한다", () -> {
+                    ExtractableResponse<Response> response = createLineRequest(분당_라인);
 
-        // when
-        ExtractableResponse<Response> response = createLineRequest(분당_라인);
+                    assertThat(response.statusCode())
+                            .isEqualTo(HttpStatus.CREATED.value());
+                }),
+                dynamicTest("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다", () -> {
+                    ExtractableResponse<Response> response = createLineRequest(분당_라인);
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        assertThat(response.header(HttpHeaders.CONTENT_TYPE)).isIn(ContentType.JSON.getContentTypeStrings());
-
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                })
+        );
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
-    @Test
-    void getLines() {
-        // given
-        List<LineResponse> lines = createLineRequests(분당_라인, 신분당_라인)
-                .stream()
-                .map(item -> item.body().jsonPath().getObject(".", LineResponse.class))
-                .collect(Collectors.toList());
+    @TestFactory
+    Stream<DynamicTest> getLines() {
+        return Stream.of(
+                dynamicTest("지하철 노선을 여러개 추가한다", () -> {
+                    List<ExtractableResponse<Response>> lineRequests = createLineRequests(분당_라인, 신분당_라인);
 
-        // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().get("/lines")
-                .then().log().all().extract();
+                    assertThat(lineRequests)
+                            .extracting(item -> item.statusCode())
+                            .containsOnly(HttpStatus.CREATED.value());
+                }),
+                dynamicTest("지하철 노석 목록을 조회한다", () -> {
+                    ExtractableResponse<Response> response = getLinesRequest();
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.header(HttpHeaders.CONTENT_TYPE)).isIn(ContentType.JSON.getContentTypeStrings());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                    assertThat(response.header(HttpHeaders.CONTENT_TYPE)).isIn(ContentType.JSON.getContentTypeStrings());
 
-        List<LineResponse> lineResponses = response
-                .body()
-                .jsonPath()
-                .getList(".", LineResponse.class);
+                    LineResponse[] lineResponses = response.body().as(LineResponse[].class);
 
-        assertThat(lineResponses).hasSize(2);
-        assertThat(lineResponses).containsExactlyInAnyOrderElementsOf(lines);
+                    assertThat(lineResponses).hasSize(2);
+
+                    assertThat(lineResponses)
+                            .extracting(item -> item.getId())
+                            .containsExactly(1L, 2L);
+
+                    assertThat(lineResponses)
+                            .extracting(item -> item.getName())
+                            .containsExactlyInAnyOrder(
+                                    분당_라인.getName(),
+                                    신분당_라인.getName()
+                            );
+                    assertThat(lineResponses)
+                            .extracting(item -> item.getColor())
+                            .containsExactlyInAnyOrder(
+                                    분당_라인.getColor(),
+                                    신분당_라인.getColor()
+                            );
+                })
+        );
     }
 
     @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void getLine() {
-        // given
-        // 지하철_노선_등록되어_있음
+    @TestFactory
+    Stream<DynamicTest> getLine() {
+        return Stream.of(
+                dynamicTest("존재하지 않는 노선을 조회한다", () -> {
+                    ExtractableResponse<Response> response = getLineRequest(1L);
 
-        // when
-        // 지하철_노선_조회_요청
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                }),
+                dynamicTest("노선을 생성한다", () -> {
+                    ExtractableResponse<Response> response = createLineRequest(분당_라인);
 
-        // then
-        // 지하철_노선_응답됨
+                    assertThat(response.statusCode())
+                            .isEqualTo(HttpStatus.CREATED.value());
+                }),
+                dynamicTest("노선을 목록을 조회한다", () -> {
+                    ExtractableResponse<Response> response = getLineRequest(1L);
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                    assertThat(response.header(HttpHeaders.CONTENT_TYPE))
+                            .isIn(ContentType.JSON.getContentTypeStrings());
+
+                    LineResponse lineResponse = response.as(LineResponse.class);
+
+                    assertThat(lineResponse.getName())
+                            .isEqualTo(분당_라인.getName());
+                    assertThat(lineResponse.getColor())
+                            .isEqualTo(분당_라인.getColor());
+                })
+        );
     }
+
+//        // given
+//
+//        // when
+//        // when
+//        ExtractableResponse<Response> response = RestAssured
+//                .given().log().all()
+//                .when(). ("")
+//                .then().log().all().extract();
+//
+//        // then
+//        assertThat(response.statusCode()).isEqualTo(HttpStatus..value());
+//
+//        // then
+//        // 지하철_노선_응답됨
+//    }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
@@ -143,6 +197,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> getLinesRequest() {
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines")
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> getLineRequest(Long id) {
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines/" + id)
                 .then().log().all().extract();
     }
 }
