@@ -14,10 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -129,7 +127,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     assertThat(response.statusCode())
                             .isEqualTo(HttpStatus.CREATED.value());
                 }),
-                dynamicTest("노선을 목록을 조회한다", () -> {
+                dynamicTest("노선을 노선을 조회한다", () -> {
                     ExtractableResponse<Response> response = getLineRequest(1L);
 
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -146,33 +144,45 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-//        // given
-//
-//        // when
-//        // when
-//        ExtractableResponse<Response> response = RestAssured
-//                .given().log().all()
-//                .when(). ("")
-//                .then().log().all().extract();
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus..value());
-//
-//        // then
-//        // 지하철_노선_응답됨
-//    }
-
     @DisplayName("지하철 노선을 수정한다.")
-    @Test
-    void updateLine() {
-        // given
-        // 지하철_노선_등록되어_있음
+    @TestFactory
+    Stream<DynamicTest> updateLine() {
+        LineRequest updateRequest = new LineRequest("구분당선", "bg-blue-600");
 
-        // when
-        // 지하철_노선_수정_요청
+        return Stream.of(
+                dynamicTest("노선을 생성한다", () -> {
+                    ExtractableResponse<Response> response = createLineRequest(분당_라인);
 
-        // then
-        // 지하철_노선_수정됨
+                    assertThat(response.statusCode())
+                            .isEqualTo(HttpStatus.CREATED.value());
+                }),
+                dynamicTest("노선을 수정을 요청한다", () -> {
+                    ExtractableResponse<Response> response = RestAssured
+                            .given().log().all()
+                            .body(updateRequest)
+                            .contentType(ContentType.JSON)
+                            .when().put("/lines/1")
+                            .then().log().all().extract();
+
+                    // then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+                dynamicTest("노선 수정을 확인한다", () -> {
+                    ExtractableResponse<Response> response = getLineRequest(1L);
+
+                    assertThat(response.statusCode())
+                            .isEqualTo(HttpStatus.OK.value());
+                    assertThat(response.header(HttpHeaders.CONTENT_TYPE))
+                            .isIn(ContentType.JSON.getContentTypeStrings());
+
+                    LineResponse lineResponse = response.as(LineResponse.class);
+
+                    assertThat(lineResponse.getName())
+                            .isEqualTo(updateRequest.getName());
+                    assertThat(lineResponse.getColor())
+                            .isEqualTo(updateRequest.getColor());
+                })
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")

@@ -25,6 +25,14 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public LineResponse update(Long id, LineRequest lineRequest) {
+        Line line = findEntityById(id);
+
+        line.update(lineRequest.toLine());
+
+        return LineResponse.of(line);
+    }
+
     public List<LineResponse> findAll() {
         return lineRepository.findAll()
                 .stream()
@@ -33,9 +41,11 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return LineResponse.of(
-                lineRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new)
-        );
+        return LineResponse.of(findEntityById(id));
+    }
+
+    private Line findEntityById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
     }
 }
