@@ -13,19 +13,16 @@ public class Section extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "up_station_id")
-  @Column(nullable = false)
   private Station upStation;
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "down_station_id")
-  @Column(nullable = false)
   private Station downStation;
   @Column(nullable = false)
   private Integer distance;
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "line_id")
-  @Column(nullable = false)
   private Line line;
 
   protected Section() {}
