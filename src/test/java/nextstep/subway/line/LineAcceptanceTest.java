@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -15,17 +16,31 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static nextstep.subway.station.StationAcceptanceTest.등록된_역_ID;
+import static nextstep.subway.station.StationAcceptanceTest.지하철_역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
+
+    private Long 강남역_ID;
+    private Long 광교역_ID;
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        강남역_ID = 등록된_역_ID(지하철_역_등록되어_있음("강남역"));
+        광교역_ID = 등록된_역_ID(지하철_역_등록되어_있음("광교역"));
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        String toCreateName = "2호선";
-        String toCreateColor = "green";
-        ExtractableResponse<Response> result = 지하철_노선_등록되어_있음(toCreateName, toCreateColor);
+        String toCreateName = "신분당선";
+        String toCreateColor = "red";
+        ExtractableResponse<Response> result = 지하철_노선_등록되어_있음(toCreateName, toCreateColor, 강남역_ID, 광교역_ID);
         // then
         지하철_노선_생성됨(result, toCreateName, toCreateColor);
     }
@@ -34,12 +49,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        String toCreateName = "2호선";
-        String toCreateColor = "green";
-        지하철_노선_등록되어_있음(toCreateName, toCreateColor);
+        String toCreateName = "신분당선";
+        String toCreateColor = "red";
+        지하철_노선_등록되어_있음(toCreateName, toCreateColor, 강남역_ID, 광교역_ID);
 
         // when
-        ExtractableResponse<Response> result = 지하철_노선_등록되어_있음(toCreateName, toCreateColor);
+        ExtractableResponse<Response> result = 지하철_노선_등록되어_있음(toCreateName, toCreateColor, 강남역_ID, 광교역_ID);
 
         // then
         지하철_노선_생성_실패됨(result);
@@ -49,8 +64,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        ExtractableResponse<Response> expect1 = 지하철_노선_등록되어_있음("2호선", "green");
-        ExtractableResponse<Response> expect2 = 지하철_노선_등록되어_있음("3호선", "orange");
+        Long 오금역_ID = 등록된_역_ID(지하철_역_등록되어_있음("오금역"));
+        Long 대화역_ID = 등록된_역_ID(지하철_역_등록되어_있음("대화역"));
+        ExtractableResponse<Response> expect1 = 지하철_노선_등록되어_있음("신분당선", "red", 강남역_ID, 광교역_ID);
+        ExtractableResponse<Response> expect2 = 지하철_노선_등록되어_있음("3호선", "orange", 오금역_ID, 대화역_ID);
 
         // when
         ExtractableResponse<Response> result = 노선_목록을_조회한다();
@@ -64,7 +81,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createdLine1 = 지하철_노선_등록되어_있음("2호선", "green");
+        ExtractableResponse<Response> createdLine1 = 지하철_노선_등록되어_있음("신분당선", "red", 강남역_ID, 광교역_ID);
         Long savedId = 등록된_노선_ID(createdLine1);
 
         // when
@@ -79,11 +96,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         /// given
-        ExtractableResponse<Response> createdResponse = 지하철_노선_등록되어_있음("2호선", "green");
+        ExtractableResponse<Response> createdResponse = 지하철_노선_등록되어_있음("신분당선", "red", 강남역_ID, 광교역_ID);
         Long savedId = 등록된_노선_ID(createdResponse);
 
         // when
-        LineRequest lineNumberTwentyTwo = new LineRequest("22호선", "lightGreen");
+        LineRequest lineNumberTwentyTwo = LineRequest.toUpdateRequestParameter("22호선", "lightGreen");
         ExtractableResponse<Response> result = 노선을_수정한다(savedId, lineNumberTwentyTwo);
 
         // then
@@ -94,7 +111,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createdResponse = 지하철_노선_등록되어_있음("2호선", "green");
+        ExtractableResponse<Response> createdResponse = 지하철_노선_등록되어_있음("신분당선", "red", 강남역_ID, 광교역_ID);
         Long savedId = 등록된_노선_ID(createdResponse);
 
         // when
@@ -105,8 +122,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(result, savedId);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color) {
-        LineRequest params = new LineRequest(name, color);
+    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color, Long upStationId, Long downStationId) {
+        LineRequest params = LineRequest.toCreateRequestParameter(name, color, upStationId, downStationId);
         return RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
