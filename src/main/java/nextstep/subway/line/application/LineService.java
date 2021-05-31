@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.exception.EntityNotExistException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -46,7 +47,7 @@ public class LineService {
 
     private Line findEntityById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(EntityNotExistException::new);
     }
 
     public void deleteById(Long id) {
