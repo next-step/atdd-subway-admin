@@ -208,11 +208,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             Long exceptId,
             LineRequest requestedLine
     ) {
-        assertThat(lineResponse.getId()).isEqualTo(exceptId);
-        assertThat(lineResponse.getName()).isEqualTo(requestedLine.getName());
-        assertThat(lineResponse.getColor()).isEqualTo(requestedLine.getColor());
-        assertThat(lineResponse.getCreatedDate()).isNotNull();
-        assertThat(lineResponse.getModifiedDate()).isNotNull();
+        노선_조회_본문_검증(lineResponse, exceptId, requestedLine);
     }
 
     private void 노선_생성_실패_검증(ExtractableResponse<Response> response) {
