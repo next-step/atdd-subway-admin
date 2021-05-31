@@ -26,8 +26,8 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-    private final static StationRequest 강남역 = new StationRequest("강남역");
-    private final static StationRequest 역삼역 = new StationRequest("역삼역");
+    public final static StationRequest 강남역 = new StationRequest("강남역");
+    public final static StationRequest 역삼역 = new StationRequest("역삼역");
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -35,6 +35,20 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성_요청(강남역);
 
         지하철역_생성_헤더_검증(response, 1L);
+
+        StationResponse stationResponse = response.as(StationResponse.class);
+        지하철역_생성_본문_검증(stationResponse, 1L, 강남역);
+    }
+
+    private void 지하철역_생성_본문_검증(StationResponse stationResponse, Long exceptedId, StationRequest request) {
+        assertThat(stationResponse.getId())
+                .isEqualTo(exceptedId);
+        assertThat(stationResponse.getName())
+                .isEqualTo(request.getName());
+        assertThat(stationResponse.getCreatedDate())
+                .isNotNull();
+        assertThat(stationResponse.getModifiedDate())
+                .isNotNull();
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")

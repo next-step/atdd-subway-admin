@@ -7,6 +7,9 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
@@ -17,28 +20,26 @@ import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.DynamicTest.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     private static final LineRequest 분당_라인 = new LineRequest("분당라인", "노란색", 1L, 2L, 10L);
-    private static final LineRequest 신분당_라인 = new LineRequest("신분당라인", "빨간색", 3L, 4L, 10L);
+    private static final LineRequest 신분당_라인 = new LineRequest("신분당라인", "빨간색", 1L, 2L, 10L);
 
     @DisplayName("지하철 노선을 생성한다.")
-    @Test
-    void createLine() {
-        // when
-        ExtractableResponse<Response> response = 노선_생성_요청(분당_라인);
-
-        // then
-        노선_생성_헤더_검증(response);
-
-        LineResponse lineResponse = response.as(LineResponse.class);
-
-        노선_생성_본문_검증(lineResponse, 1L, 분당_라인);
+    @TestFactory
+    Stream<DynamicTest> createLine() {
+        return Stream.of(
+                dynamicTest("강남역을 생성한다", 지하철역_생성_요청_및_체크(강남역, 1L)),
+                dynamicTest("역삼역을 생성한다", 지하철역_생성_요청_및_체크(역삼역, 2L)),
+                dynamicTest("지하철 노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L, new Long[]{1L, 2L}))
+        );
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -169,6 +170,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
+    private Executable 라인_생성_및_체크(LineRequest lineRequest, Long exceptId, Long[] stationIds) {
+        return () -> {
+            ExtractableResponse<Response> response = 노선_생성_요청(lineRequest);
+
+            노선_생성_헤더_검증(response);
+
+            LineResponse lineResponse = response.as(LineResponse.class);
+            노선_생성_본문_검증(lineResponse, exceptId, lineRequest, stationIds);
+        };
+    }
+
     private Executable 라인_생성_및_체크(LineRequest lineRequest, Long exceptId) {
         return () -> {
             ExtractableResponse<Response> response = 노선_생성_요청(lineRequest);
@@ -211,6 +223,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         노선_조회_본문_검증(lineResponse, exceptId, requestedLine);
     }
 
+    private void 노선_생성_본문_검증(
+            LineResponse lineResponse,
+            Long exceptId,
+            LineRequest requestedLine,
+            Long[] stationIds
+    ) {
+        노선_조회_본문_검증(lineResponse, exceptId, requestedLine, stationIds);
+    }
+
     private void 노선_생성_실패_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -249,6 +270,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .isNotNull();
         assertThat(lineResponse.getModifiedDate())
                 .isNotNull();
+    }
+
+    private void 노선_조회_본문_검증(
+            LineResponse lineResponse,
+            Long exceptedId,
+            LineRequest lineRequest,
+            Long[] stationIds
+    ) {
+        assertThat(lineResponse.getId())
+                .isEqualTo(exceptedId);
+
+        assertThat(lineResponse.getName())
+                .isEqualTo(lineRequest.getName());
+        assertThat(lineResponse.getColor())
+                .isEqualTo(lineRequest.getColor());
+
+        assertThat(lineResponse.getCreatedDate())
+                .isNotNull();
+        assertThat(lineResponse.getModifiedDate())
+                .isNotNull();
+
+        List<Long> stationIdsInLine = lineResponse.getStations()
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        assertThat(stationIdsInLine)
+                .containsExactlyInAnyOrder(stationIds);
     }
 
     private void 노선_데이터_없음_헤더_검증(ExtractableResponse<Response> response) {
