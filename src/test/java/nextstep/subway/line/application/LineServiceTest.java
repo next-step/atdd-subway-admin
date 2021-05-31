@@ -20,10 +20,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
+    private static final Long NOT_EXIST_ID = 0L;
+    public static final long EXIST_ID = 1L;
 
     @Mock
     private LineRepository lineRepository;
@@ -31,13 +36,18 @@ class LineServiceTest {
     private LineService lineService;
 
     private LineRequest lineRequest;
+    private LineRequest updateRequest;
     private Line line;
+
+    @Mock
+    private Line line2;
 
     @BeforeEach
     void setUp() {
         lineService = new LineService(lineRepository);
         line = new Line("2호선", "green");
         lineRequest = new LineRequest("2호선", "green");
+        updateRequest = new LineRequest("3호선", "orange");
     }
 
     @DisplayName("노선을 생성요청하면, 생성된 노선을 리턴한다.")
@@ -97,6 +107,27 @@ class LineServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> lineService.getLine(anyLong()))
+                .isInstanceOf(LineNotFoundException.class);
+    }
+
+    @DisplayName("유효한 노선 갱신시 노선 정보가 변경된다.")
+    @Test
+    void updateLineWithValidRequest() {
+        when(lineRepository.findById(EXIST_ID))
+                .thenReturn(Optional.of(line2));
+
+        lineService.updateLine(EXIST_ID, updateRequest);
+
+        verify(line2, times(1)).update(any(Line.class));
+    }
+
+    @DisplayName("존재하지않는 노선 갱신시 예외를 던짐.")
+    @Test
+    void updateLineWithNotExistedId() {
+        when(lineRepository.findById(eq(NOT_EXIST_ID)))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> lineService.updateLine(eq(NOT_EXIST_ID), lineRequest))
                 .isInstanceOf(LineNotFoundException.class);
     }
 }

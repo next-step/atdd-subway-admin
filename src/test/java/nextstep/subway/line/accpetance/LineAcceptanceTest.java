@@ -13,6 +13,8 @@ import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성_실패됨;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성_요청;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성됨;
+import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_수정_요청;
+import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_수정됨;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_응답됨;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_조회_요청;
 
@@ -74,14 +76,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("2호선", "green");
 
         // when
-        // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createResponse);
 
         // then
-        // 지하철_노선_수정됨
+        지하철_노선_수정됨(response);
     }
+
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test

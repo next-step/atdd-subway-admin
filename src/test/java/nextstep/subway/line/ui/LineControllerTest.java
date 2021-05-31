@@ -25,9 +25,11 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class LineControllerTest {
     private static final Long NOT_EXIST_ID = 0L;
+    private static final Long EXIST_LINE_ID = 1L;
     @Autowired
     private MockMvc mockMvc;
 
@@ -45,7 +48,9 @@ class LineControllerTest {
     protected ObjectMapper objectMapper;
 
     private LineRequest lineRequest = new LineRequest("2호선", "green");
+    private LineRequest updateRequest = new LineRequest("3호선", "orange");
     private LineResponse lineResponse = LineResponse.of(new Line("2호선", "green"));
+    private LineResponse updateResponse = LineResponse.of(new Line("3호선", "orange"));
 
     @Nested
     @DisplayName("POST /lines는")
@@ -185,4 +190,46 @@ class LineControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("PUT /lines/{id} 는")
+    class Describe_updateLine {
+
+        @Nested
+        @DisplayName("갱신대상인 노선이 없으면")
+        class Context_without_line {
+            final LineRequest givenRequest = updateRequest;
+
+            @BeforeEach
+            void setUp() {
+                doThrow(new LineNotFoundException())
+                        .when(lineService)
+                        .updateLine(eq(NOT_EXIST_ID), any(LineRequest.class));
+            }
+
+            @DisplayName("404 상태코드, Not Found 상태를 응답한다.")
+            @Test
+            void It_responds_not_found() throws Exception {
+                mockMvc.perform(put("/line/{id}", NOT_EXIST_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(givenRequest)))
+                        .andExpect(status().isNotFound());
+            }
+        }
+
+        @Nested
+        @DisplayName("갱신대상인 노선이 존재하면")
+        class Context_with_line {
+            final LineRequest givenRequest = updateRequest;
+
+            @DisplayName("200 OK 상태를 응답한다.")
+            @Test
+            void It_responds_ok() throws Exception {
+                mockMvc.perform(put("/lines/{id}", EXIST_LINE_ID)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(givenRequest)))
+                        .andExpect(status().isOk());
+            }
+        }
+    }
 }

@@ -45,4 +45,11 @@ public class LineService {
                 .orElseThrow(() -> new LineNotFoundException(LINE_NOT_EXISTED + lineId));
         return LineResponse.of(line);
     }
+
+    @Transactional
+    public void updateLine(Long lineId, LineRequest request) {
+        final Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException(LINE_NOT_EXISTED + lineId));
+        line.update(request.toLine());
+    }
 }
