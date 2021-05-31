@@ -29,13 +29,11 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, List<Section> sections) {
+    public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
 
-        for (Section section : sections) {
-            addSection(section);
-        }
+        addSection(section);
     }
 
     public void addSection(Section section) {

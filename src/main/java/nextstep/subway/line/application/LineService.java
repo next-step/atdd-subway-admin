@@ -11,7 +11,6 @@ import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,13 +26,10 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId())
-                .orElseThrow(EntityNotExistException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId())
-                .orElseThrow(EntityNotExistException::new);
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
 
-        Line line = request.toLine();
-        line.addSection(new Section(upStation, downStation));
+        Line line = request.toLine(new Section(upStation, downStation));
 
         return LineResponse.of(lineRepository.save(line));
     }
@@ -64,5 +60,10 @@ public class LineService {
 
     public void deleteById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Station findStationById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(EntityNotExistException::new);
     }
 }
