@@ -18,6 +18,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -75,5 +76,27 @@ class LineServiceTest {
         List<LineResponse> lines = lineService.getLines();
 
         assertThat(lines).containsExactly(LineResponse.of(line));
+    }
+
+    @DisplayName("노선 식별자에 해당하는 노선을 리턴한다.")
+    @Test
+    void getLineWithValidId() {
+        when(lineRepository.findById(anyLong()))
+                .thenReturn(Optional.of(line));
+
+        LineResponse line = lineService.getLine(anyLong());
+
+        assertThat(line).extracting("name").isEqualTo("2호선");
+        assertThat(line).extracting("color").isEqualTo("green");
+    }
+
+    @DisplayName("존재하지않는 노선 식별자 요청시 예외를 던짐.")
+    @Test
+    void getLineWithNotExistedId() {
+        when(lineRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> lineService.getLine(anyLong()))
+                .isInstanceOf(LineNotFoundException.class);
     }
 }

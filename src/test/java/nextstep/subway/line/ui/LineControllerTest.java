@@ -2,6 +2,7 @@ package nextstep.subway.line.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nextstep.subway.line.application.LineDuplicatedException;
+import nextstep.subway.line.application.LineNotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
@@ -22,6 +23,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class LineControllerTest {
-
+    private static final Long NOT_EXIST_ID = 0L;
     @Autowired
     private MockMvc mockMvc;
 
@@ -132,6 +135,52 @@ class LineControllerTest {
                 mockMvc.perform(get("/lines"))
                         .andExpect(status().isOk())
                         .andExpect(content().string(containsString("[]")));
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /lines/{id} 는")
+    class Describe_getLine {
+
+        @Nested
+        @DisplayName("등록된 노선이 없으면")
+        class Context_without_line {
+            @BeforeEach
+            void setUp() {
+                when(lineService.getLine(eq(NOT_EXIST_ID)))
+                        .thenThrow(new LineNotFoundException());
+            }
+
+            @DisplayName("404 Not Found 상태를 응답한다.")
+            @Test
+            void It_responds_not_found() throws Exception {
+                mockMvc.perform(get("/lines/{id}", NOT_EXIST_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isNotFound());
+            }
+        }
+
+        @Nested
+        @DisplayName("등록된 노선이 있으면")
+        class Context_with_line {
+            final LineResponse givenLine = lineResponse;
+
+            @BeforeEach
+            void setUp() {
+                when(lineService.getLine(anyLong()))
+                        .thenReturn(givenLine);
+            }
+
+            @DisplayName("200 OK 상태와 찾고자 하는 노선을 응답한다.")
+            @Test
+            void it_responds_ok_with_line() throws Exception {
+                mockMvc.perform(get("/lines/{id}", anyLong())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk())
+                        .andExpect(content().string(objectMapper.writeValueAsString(givenLine)));
             }
         }
     }

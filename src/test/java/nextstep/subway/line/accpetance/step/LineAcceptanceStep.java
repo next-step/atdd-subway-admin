@@ -17,9 +17,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceStep {
 
+    public static final String LOCATION = "Location";
+
     public static void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.header(LOCATION)).isNotBlank();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
@@ -69,5 +71,18 @@ public class LineAcceptanceStep {
                 .when().get("lines")
                 .then().log().all().extract();
         return response;
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().get(createResponse.header(LOCATION))
+                .then().log().all().extract();
+        return response;
+    }
+
+    public static void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getObject("", LineResponse.class)).isNotNull();
     }
 }
