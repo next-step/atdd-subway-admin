@@ -119,7 +119,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 dynamicTest("존재하지 않는 노선을 조회한다", () -> {
                     ExtractableResponse<Response> response = getLineRequest(1L);
 
-                    assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
                 }),
                 dynamicTest("노선을 생성한다", () -> {
                     ExtractableResponse<Response> response = createLineRequest(분당_라인);
@@ -185,18 +185,43 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("지하철 노선을 제거한다.")
-    @Test
-    void deleteLine() {
-        // given
-        // 지하철_노선_등록되어_있음
-
-        // when
-        // 지하철_노선_제거_요청
-
-        // then
-        // 지하철_노선_삭제됨
-    }
+//    @DisplayName("지하철 노선을 제거한다.")
+//    @Test
+//    void deleteLine() {
+//
+//        return Stream.of(
+//                dynamicTest("노선을 생성한다", () -> {
+//                    ExtractableResponse<Response> response = createLineRequest(분당_라인);
+//
+//                    assertThat(response.statusCode())
+//                            .isEqualTo(HttpStatus.CREATED.value());
+//                }),
+//                dynamicTest("노선을 삭제을 요청한다", () -> {
+//                    ExtractableResponse<Response> response = RestAssured
+//                            .given().log().all()
+//                            .when().delete("/lines/1")
+//                            .then().log().all().extract();
+//
+//                    // then
+//                    assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+//                }),
+//                dynamicTest("노선 수정을 확인한다", () -> {
+//                    ExtractableResponse<Response> response = getLineRequest(1L);
+//
+//                    assertThat(response.statusCode())
+//                            .isEqualTo(HttpStatus.OK.value());
+//                    assertThat(response.header(HttpHeaders.CONTENT_TYPE))
+//                            .isIn(ContentType.JSON.getContentTypeStrings());
+//
+//                    LineResponse lineResponse = response.as(LineResponse.class);
+//
+//                    assertThat(lineResponse.getName())
+//                            .isEqualTo(updateRequest.getName());
+//                    assertThat(lineResponse.getColor())
+//                            .isEqualTo(updateRequest.getColor());
+//                })
+//        );
+//    }
 
     private List<ExtractableResponse<Response>> createLineRequests(LineRequest ...requests) {
         List<ExtractableResponse<Response>> results = new ArrayList<>();
