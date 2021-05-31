@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -185,6 +186,15 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineResponse resultBody = result.as(LineResponse.class);
         assertThat(resultBody.getName()).isEqualTo(toCreateName);
         assertThat(resultBody.getColor()).isEqualTo(toCreateColor);
+        List<Long> upDownStationIds = 노선_응답에서_역_ID들을_얻는다(resultBody);
+        assertThat(upDownStationIds).isEqualTo(Stream.of(강남역_ID, 광교역_ID).collect(Collectors.toList()));
+    }
+
+    private List<Long> 노선_응답에서_역_ID들을_얻는다(LineResponse resultBody) {
+        return resultBody.getStations()
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
     }
 
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> result) {
@@ -207,6 +217,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         응답이_예상한_상태_코드를_갖는다(result, HttpStatus.OK);
         LineResponse resultBody = result.jsonPath().getObject(".", LineResponse.class);
         assertThat(resultBody.getId()).isEqualTo(expectId);
+        List<Long> upDownStationIds = 노선_응답에서_역_ID들을_얻는다(resultBody);
+        assertThat(upDownStationIds).isEqualTo(Stream.of(강남역_ID, 광교역_ID).collect(Collectors.toList()));
     }
 
     private void 지하철_노선_수정됨(ExtractableResponse<Response> result, Long savedId) {
