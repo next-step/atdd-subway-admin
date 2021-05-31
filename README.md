@@ -38,6 +38,11 @@ npm run dev
 ```
 <br>
 
+## 기능목록
+* step1
+  1. 생성 / 목록조회 / 조회 / 수정 / 삭제 에 대한 인수테스트 작성
+  2. 기능 구현 
+
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
