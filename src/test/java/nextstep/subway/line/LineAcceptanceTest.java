@@ -51,7 +51,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> createLine2() {
         return Stream.of(
-                dynamicTest("노선을 생성한다", 간단한_분당라인_생성_및_체크()),
+                dynamicTest("노선을 생성한다", 간단한_라인_생성_및_체크(분당_라인, 1L)),
                 dynamicTest("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다", () -> {
                     ExtractableResponse<Response> response = createLineRequest(분당_라인);
 
@@ -112,12 +112,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> getLine() {
         return Stream.of(
-                dynamicTest("존재하지 않는 노선을 조회한다", () -> {
-                    ExtractableResponse<Response> response = getLineRequest(1L);
-
-                    assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-                }),
-                dynamicTest("노선을 생성한다", 간단한_분당라인_생성_및_체크()),
+                dynamicTest("존재하지 않는 노선을 조회한다", 존재하지_않는_라인_확인(1L)),
+                dynamicTest("노선을 생성한다", 간단한_라인_생성_및_체크(분당_라인, 1L)),
                 dynamicTest("노선을 노선을 조회한다", () -> {
                     ExtractableResponse<Response> response = getLineRequest(1L);
 
@@ -141,7 +137,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest updateRequest = new LineRequest("구분당선", "bg-blue-600");
 
         return Stream.of(
-                dynamicTest("노선을 생성한다", 간단한_분당라인_생성_및_체크()),
+                dynamicTest("노선을 생성한다", 간단한_라인_생성_및_체크(분당_라인, 1L)),
                 dynamicTest("노선을 수정을 요청한다", () -> {
                     ExtractableResponse<Response> response = RestAssured
                             .given().log().all()
@@ -175,7 +171,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> deleteLine() {
         return Stream.of(
-                dynamicTest("노선을 생성한다", 간단한_분당라인_생성_및_체크()),
+                dynamicTest("노선을 생성한다", 간단한_라인_생성_및_체크(분당_라인, 1L)),
                 dynamicTest("노선을 삭제을 요청한다", () -> {
                     ExtractableResponse<Response> response = RestAssured
                             .given().log().all()
@@ -185,12 +181,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     // then
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
                 }),
-                dynamicTest("노선을 다시 조회한다", () -> {
-                    ExtractableResponse<Response> response = getLineRequest(1L);
-
-                    assertThat(response.statusCode())
-                            .isEqualTo(HttpStatus.NO_CONTENT.value());
-                })
+                dynamicTest("삭제된 노선을 다시 확인한다", 존재하지_않는_라인_확인(1L))
         );
     }
 
@@ -228,12 +219,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private Executable 간단한_분당라인_생성_및_체크() {
+    private Executable 간단한_라인_생성_및_체크(LineRequest lineRequest, Long exceptId) {
         return () -> {
-            ExtractableResponse<Response> response = createLineRequest(분당_라인);
+            ExtractableResponse<Response> response = createLineRequest(lineRequest);
 
             assertThat(response.statusCode())
                     .isEqualTo(HttpStatus.CREATED.value());
+
+            assertThat(response.as(LineResponse.class).getId())
+                    .isEqualTo(exceptId);
+
+        };
+    }
+
+    private Executable 존재하지_않는_라인_확인(Long id) {
+        return () -> {
+            ExtractableResponse<Response> response = getLineRequest(id);
+
+            assertThat(response.statusCode())
+                    .isEqualTo(HttpStatus.NO_CONTENT.value());
         };
     }
 }
