@@ -64,13 +64,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> getLines() {
         return Stream.of(
-                dynamicTest("지하철 노선을 여러개 추가한다", () -> {
-                    List<ExtractableResponse<Response>> lineRequests = createLineRequests(분당_라인, 신분당_라인);
-
-                    assertThat(lineRequests)
-                            .extracting(item -> item.statusCode())
-                            .containsOnly(HttpStatus.CREATED.value());
-                }),
+                dynamicTest("분당라인을 추가한다.", 간단한_라인_생성_및_체크(분당_라인, 1L)),
+                dynamicTest("신분당라인을 추가한다.", 간단한_라인_생성_및_체크(신분당_라인, 2L)),
                 dynamicTest("지하철 노석 목록을 조회한다", () -> {
                     ExtractableResponse<Response> response = getLinesRequest();
 
