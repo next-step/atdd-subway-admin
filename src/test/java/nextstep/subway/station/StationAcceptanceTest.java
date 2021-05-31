@@ -26,13 +26,15 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-    private final static StationRequest stationRequest = new StationRequest("강남역");
+    private final static StationRequest 강남역 = new StationRequest("강남역");
+    private final static StationRequest 역삼역 = new StationRequest("역삼역");
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
 
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청(stationRequest);
+        ExtractableResponse<Response> response = 지하철역_생성_요청(강남역);
 
         // then
         지하철역_생성_헤더_검증(response);
@@ -42,40 +44,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> createStationWithDuplicateName() {
         return Stream.of(
-                dynamicTest("지하철역 생성 요청", 지하철역_생성_요청_및_체크(stationRequest)),
+                dynamicTest("지하철역 생성 요청", 지하철역_생성_요청_및_체크(강남역)),
                 dynamicTest("기존에 존재하는 지하철역 이름으르 재생성시 요청", () -> {
-                    ExtractableResponse<Response> response = 지하철역_생성_요청(stationRequest);
+                    ExtractableResponse<Response> response = 지하철역_생성_요청(강남역);
 
                     생성_실패_검증(response);
                 })
         );
-    }
-
-    private void 생성_실패_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private Executable 지하철역_생성_요청_및_체크(StationRequest stationRequest) {
-        return () -> {
-            ExtractableResponse<Response> response = 지하철역_생성_요청(stationRequest);
-            지하철역_생성_헤더_검증(response);
-        };
-    }
-
-    private ExtractableResponse<Response> 지하철역_생성_요청(StationRequest stationRequest) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(stationRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-        return response;
-    }
-
-    private void 지하철역_생성_헤더_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -118,6 +93,35 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+
+
+    private void 생성_실패_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private Executable 지하철역_생성_요청_및_체크(StationRequest stationRequest) {
+        return () -> {
+            ExtractableResponse<Response> response = 지하철역_생성_요청(stationRequest);
+            지하철역_생성_헤더_검증(response);
+        };
+    }
+
+    private ExtractableResponse<Response> 지하철역_생성_요청(StationRequest stationRequest) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(stationRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+        return response;
+    }
+
+    private void 지하철역_생성_헤더_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
     }
 
     @DisplayName("지하철역을 제거한다.")
