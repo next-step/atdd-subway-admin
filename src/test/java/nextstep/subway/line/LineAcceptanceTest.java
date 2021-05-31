@@ -61,13 +61,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 dynamicTest("분당라인을 추가한다.", 간단한_라인_생성_및_체크(분당_라인, 1L)),
                 dynamicTest("신분당라인을 추가한다.", 간단한_라인_생성_및_체크(신분당_라인, 2L)),
                 dynamicTest("지하철 노석 목록을 조회한다", () -> {
-                    ExtractableResponse<Response> response = getLinesRequest();
+                    ExtractableResponse<Response> response = 노선_목록_조회_요청();
 
-                    정상_응답_헤더_검증(response);
+                    정상_응답_헤더_검증(response, true);
 
                     LineResponse[] lineResponses = response.body().as(LineResponse[].class);
 
-                    노선_조회_본문_검증(lineResponses, new Long[]{1L, 2L}, 분당_라인, 신분당_라인);
+                    노선_목록_조회_본문_검증(lineResponses, new Long[]{1L, 2L}, 분당_라인, 신분당_라인);
                 })
         );
     }
@@ -79,9 +79,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 dynamicTest("존재하지 않는 노선을 조회한다", 존재하지_않는_라인_확인(1L)),
                 dynamicTest("노선을 생성한다", 간단한_라인_생성_및_체크(분당_라인, 1L)),
                 dynamicTest("노선을 노선을 조회한다", () -> {
-                    ExtractableResponse<Response> response = getLineRequest(1L);
+                    ExtractableResponse<Response> response = 노선_조회_요청(1L);
 
-                    정상_응답_헤더_검증(response);
+                    정상_응답_헤더_검증(response, true);
 
                     LineResponse lineResponse = response.as(LineResponse.class);
 
@@ -93,35 +93,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @TestFactory
     Stream<DynamicTest> updateLine() {
-        LineRequest updateRequest = new LineRequest("구분당선", "bg-blue-600");
+        LineRequest 구_분당선 = new LineRequest("구분당선", "bg-blue-600");
 
         return Stream.of(
                 dynamicTest("노선을 생성한다", 간단한_라인_생성_및_체크(분당_라인, 1L)),
                 dynamicTest("노선을 수정을 요청한다", () -> {
-                    ExtractableResponse<Response> response = RestAssured
-                            .given().log().all()
-                            .body(updateRequest)
-                            .contentType(ContentType.JSON)
-                            .when().put("/lines/1")
-                            .then().log().all().extract();
+                    ExtractableResponse<Response> response = 노선_수정_요청(1L, 구_분당선);
 
-                    // then
-                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                    정상_응답_헤더_검증(response, false);
                 }),
                 dynamicTest("노선 수정을 확인한다", () -> {
-                    ExtractableResponse<Response> response = getLineRequest(1L);
+                    ExtractableResponse<Response> response = 노선_조회_요청(1L);
 
-                    assertThat(response.statusCode())
-                            .isEqualTo(HttpStatus.OK.value());
-                    assertThat(response.header(HttpHeaders.CONTENT_TYPE))
-                            .isIn(ContentType.JSON.getContentTypeStrings());
+                    정상_응답_헤더_검증(response, true);
 
                     LineResponse lineResponse = response.as(LineResponse.class);
 
-                    assertThat(lineResponse.getName())
-                            .isEqualTo(updateRequest.getName());
-                    assertThat(lineResponse.getColor())
-                            .isEqualTo(updateRequest.getColor());
+                    노선_조회_본문_검증(lineResponse, 1L, 구_분당선);
                 })
         );
     }
@@ -164,17 +152,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> getLinesRequest() {
+    private ExtractableResponse<Response> 노선_목록_조회_요청() {
         return RestAssured
                 .given().log().all()
                 .when().get("/lines")
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> getLineRequest(Long id) {
+    private ExtractableResponse<Response> 노선_조회_요청(Long id) {
         return RestAssured
                 .given().log().all()
                 .when().get("/lines/" + id)
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> 노선_수정_요청(Long id, LineRequest updateRequest) {
+        return RestAssured
+                .given().log().all()
+                .body(updateRequest)
+                .contentType(ContentType.JSON)
+                .when().put("/lines/" + id)
                 .then().log().all().extract();
     }
 
@@ -191,7 +188,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private Executable 존재하지_않는_라인_확인(Long id) {
         return () -> {
-            ExtractableResponse<Response> response = getLineRequest(id);
+            ExtractableResponse<Response> response = 노선_조회_요청(id);
 
             assertThat(response.statusCode())
                     .isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -205,9 +202,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header(HttpHeaders.LOCATION)).isNotBlank();
     }
 
-    private void 정상_응답_헤더_검증(ExtractableResponse<Response> response) {
+    private void 정상_응답_헤더_검증(ExtractableResponse<Response> response, boolean requireContentType) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.header(HttpHeaders.CONTENT_TYPE)).isIn(ContentType.JSON.getContentTypeStrings());
+
+        if (requireContentType) {
+            assertThat(response.header(HttpHeaders.CONTENT_TYPE)).isIn(ContentType.JSON.getContentTypeStrings());
+        }
     }
 
     private void 노선_생성_본문_검증(
@@ -227,7 +227,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private void 노선_조회_본문_검증(
+    private void 노선_목록_조회_본문_검증(
             LineResponse[] lineResponses,
             Long exceptedIds[],
             LineRequest... lineRequests
