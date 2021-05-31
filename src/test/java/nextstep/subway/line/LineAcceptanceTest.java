@@ -45,7 +45,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> createLine2() {
         return Stream.of(
-                dynamicTest("노선을 생성한다", 간단한_라인_생성_및_체크(분당_라인, 1L)),
+                dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L)),
                 dynamicTest("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다", () -> {
                     ExtractableResponse<Response> response = 노선_생성_요청(분당_라인);
 
@@ -58,8 +58,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> getLines() {
         return Stream.of(
-                dynamicTest("분당라인을 추가한다.", 간단한_라인_생성_및_체크(분당_라인, 1L)),
-                dynamicTest("신분당라인을 추가한다.", 간단한_라인_생성_및_체크(신분당_라인, 2L)),
+                dynamicTest("분당라인을 추가한다.", 라인_생성_및_체크(분당_라인, 1L)),
+                dynamicTest("신분당라인을 추가한다.", 라인_생성_및_체크(신분당_라인, 2L)),
                 dynamicTest("지하철 노석 목록을 조회한다", () -> {
                     ExtractableResponse<Response> response = 노선_목록_조회_요청();
 
@@ -77,7 +77,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> getLine() {
         return Stream.of(
                 dynamicTest("존재하지 않는 노선을 조회한다", 존재하지_않는_라인_확인(1L)),
-                dynamicTest("노선을 생성한다", 간단한_라인_생성_및_체크(분당_라인, 1L)),
+                dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L)),
                 dynamicTest("노선을 노선을 조회한다", () -> {
                     ExtractableResponse<Response> response = 노선_조회_요청(1L);
 
@@ -96,7 +96,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest 구_분당선 = new LineRequest("구분당선", "bg-blue-600");
 
         return Stream.of(
-                dynamicTest("노선을 생성한다", 간단한_라인_생성_및_체크(분당_라인, 1L)),
+                dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L)),
                 dynamicTest("노선을 수정을 요청한다", () -> {
                     ExtractableResponse<Response> response = 노선_수정_요청(1L, 구_분당선);
 
@@ -118,27 +118,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> deleteLine() {
         return Stream.of(
-                dynamicTest("노선을 생성한다", 간단한_라인_생성_및_체크(분당_라인, 1L)),
+                dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L)),
                 dynamicTest("노선을 삭제을 요청한다", () -> {
-                    ExtractableResponse<Response> response = RestAssured
-                            .given().log().all()
-                            .when().delete("/lines/1")
-                            .then().log().all().extract();
+                    ExtractableResponse<Response> response = 노선_삭제_요청(1L);
 
-                    // then
-                    assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+                    노선_데이터_없음_헤더_검증(response);
                 }),
                 dynamicTest("삭제된 노선을 다시 확인한다", 존재하지_않는_라인_확인(1L))
         );
-    }
-
-    private List<ExtractableResponse<Response>> createLineRequests(LineRequest... requests) {
-        List<ExtractableResponse<Response>> results = new ArrayList<>();
-        for (LineRequest request : requests) {
-            results.add(노선_생성_요청(request));
-        }
-
-        return results;
     }
 
     private ExtractableResponse<Response> 노선_생성_요청(LineRequest request) {
@@ -175,7 +162,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private Executable 간단한_라인_생성_및_체크(LineRequest lineRequest, Long exceptId) {
+    private ExtractableResponse<Response> 노선_삭제_요청(Long id) {
+        return RestAssured
+                .given().log().all()
+                .when().delete("/lines/" + id)
+                .then().log().all().extract();
+    }
+
+    private Executable 라인_생성_및_체크(LineRequest lineRequest, Long exceptId) {
         return () -> {
             ExtractableResponse<Response> response = 노선_생성_요청(lineRequest);
 
@@ -195,19 +189,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         };
     }
 
-
-    private void 노선_생성_헤더_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header(HttpHeaders.CONTENT_TYPE)).isIn(ContentType.JSON.getContentTypeStrings());
-        assertThat(response.header(HttpHeaders.LOCATION)).isNotBlank();
-    }
-
     private void 정상_응답_헤더_검증(ExtractableResponse<Response> response, boolean requireContentType) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         if (requireContentType) {
             assertThat(response.header(HttpHeaders.CONTENT_TYPE)).isIn(ContentType.JSON.getContentTypeStrings());
         }
+    }
+
+    private void 노선_생성_헤더_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header(HttpHeaders.CONTENT_TYPE)).isIn(ContentType.JSON.getContentTypeStrings());
+        assertThat(response.header(HttpHeaders.LOCATION)).isNotBlank();
     }
 
     private void 노선_생성_본문_검증(
@@ -260,5 +253,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .isNotNull();
         assertThat(lineResponse.getModifiedDate())
                 .isNotNull();
+    }
+
+    private void 노선_데이터_없음_헤더_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
