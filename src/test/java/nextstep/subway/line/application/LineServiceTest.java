@@ -130,4 +130,25 @@ class LineServiceTest {
         assertThatThrownBy(() -> lineService.updateLine(eq(NOT_EXIST_ID), lineRequest))
                 .isInstanceOf(LineNotFoundException.class);
     }
+
+    @DisplayName("유효한 노선 삭제시 노선이 삭제된다 .")
+    @Test
+    void deleteLineWithValidRequest() {
+        when(lineRepository.findById(EXIST_ID))
+                .thenReturn(Optional.of(line));
+
+        lineService.deleteLine(EXIST_ID);
+
+        verify(lineRepository).delete(any(Line.class));
+    }
+
+    @DisplayName("존재하지않는 노선 삭제시 예외를 던짐.")
+    @Test
+    void deleteLineWithNotExistedId() {
+        when(lineRepository.findById(eq(NOT_EXIST_ID)))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> lineService.deleteLine(anyLong()))
+                .isInstanceOf(LineNotFoundException.class);
+    }
 }

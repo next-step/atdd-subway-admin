@@ -101,4 +101,17 @@ public class LineAcceptanceStep {
     public static void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    public static void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> createResponse) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .delete(createResponse.header(LOCATION))
+                .then().log().all()
+                .extract();
+        return response;
+    }
 }

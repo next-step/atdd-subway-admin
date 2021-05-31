@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -229,6 +230,42 @@ class LineControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(givenRequest)))
                         .andExpect(status().isOk());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("DELETE /lines/{id} 는")
+    class Describe_deleteLine {
+
+        @Nested
+        @DisplayName("삭제 대상인 노선이 없으면")
+        class Context_without_line {
+            @BeforeEach
+            void setUp() {
+                doThrow(new LineNotFoundException())
+                        .when(lineService)
+                        .deleteLine(eq(NOT_EXIST_ID));
+            }
+
+            @DisplayName("404 Not Found 상태를 응답한다.")
+            @Test
+            void It_responds_not_found() throws Exception {
+                mockMvc.perform(delete("/lines/{id}", NOT_EXIST_ID))
+                        .andExpect(status().isNotFound());
+            }
+        }
+
+        @Nested
+        @DisplayName("삭제 대상인 노선이 존재하면")
+        class Context_with_line {
+
+            @DisplayName("204 NO CONTENT 상태를 응답한다.")
+            @Test
+            void It_responds_no_content() throws Exception {
+                mockMvc.perform(delete("/lines/{id}", anyLong())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                        .andExpect(status().isNoContent());
             }
         }
     }
