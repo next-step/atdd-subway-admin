@@ -185,43 +185,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-//    @DisplayName("지하철 노선을 제거한다.")
-//    @Test
-//    void deleteLine() {
-//
-//        return Stream.of(
-//                dynamicTest("노선을 생성한다", () -> {
-//                    ExtractableResponse<Response> response = createLineRequest(분당_라인);
-//
-//                    assertThat(response.statusCode())
-//                            .isEqualTo(HttpStatus.CREATED.value());
-//                }),
-//                dynamicTest("노선을 삭제을 요청한다", () -> {
-//                    ExtractableResponse<Response> response = RestAssured
-//                            .given().log().all()
-//                            .when().delete("/lines/1")
-//                            .then().log().all().extract();
-//
-//                    // then
-//                    assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-//                }),
-//                dynamicTest("노선 수정을 확인한다", () -> {
-//                    ExtractableResponse<Response> response = getLineRequest(1L);
-//
-//                    assertThat(response.statusCode())
-//                            .isEqualTo(HttpStatus.OK.value());
-//                    assertThat(response.header(HttpHeaders.CONTENT_TYPE))
-//                            .isIn(ContentType.JSON.getContentTypeStrings());
-//
-//                    LineResponse lineResponse = response.as(LineResponse.class);
-//
-//                    assertThat(lineResponse.getName())
-//                            .isEqualTo(updateRequest.getName());
-//                    assertThat(lineResponse.getColor())
-//                            .isEqualTo(updateRequest.getColor());
-//                })
-//        );
-//    }
+    @DisplayName("지하철 노선을 제거한다.")
+    @TestFactory
+    Stream<DynamicTest> deleteLine() {
+        return Stream.of(
+                dynamicTest("노선을 생성한다", () -> {
+                    ExtractableResponse<Response> response = createLineRequest(분당_라인);
+
+                    assertThat(response.statusCode())
+                            .isEqualTo(HttpStatus.CREATED.value());
+                }),
+                dynamicTest("노선을 삭제을 요청한다", () -> {
+                    ExtractableResponse<Response> response = RestAssured
+                            .given().log().all()
+                            .when().delete("/lines/1")
+                            .then().log().all().extract();
+
+                    // then
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+                }),
+                dynamicTest("노선을 다시 조회한다", () -> {
+                    ExtractableResponse<Response> response = getLineRequest(1L);
+
+                    assertThat(response.statusCode())
+                            .isEqualTo(HttpStatus.NO_CONTENT.value());
+                })
+        );
+    }
 
     private List<ExtractableResponse<Response>> createLineRequests(LineRequest ...requests) {
         List<ExtractableResponse<Response>> results = new ArrayList<>();

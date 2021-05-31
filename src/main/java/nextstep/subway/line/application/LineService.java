@@ -48,4 +48,8 @@ public class LineService {
         return lineRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
     }
+
+    public void deleteById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
