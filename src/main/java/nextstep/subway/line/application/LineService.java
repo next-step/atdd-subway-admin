@@ -32,7 +32,16 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        Line line = findById(id);
         return LineResponse.of(line);
+    }
+
+    public void editLine(Long id, LineRequest lineRequest) {
+        Line line = findById(id);
+        line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
     }
 }
