@@ -107,7 +107,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = RestAssured.given().log().all().
-                body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                 get("/lines").
@@ -145,7 +144,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_조회_요청
         String savedUri = response.header("Location");
         response = RestAssured.given().log().all().
-                body(params).
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                 get(savedUri).
