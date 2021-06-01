@@ -1,7 +1,7 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineQueryService;
-import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.application.LineCommandService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -15,17 +15,17 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    private final LineService lineService;
+    private final LineCommandService lineCommandService;
     private final LineQueryService lineQueryService;
 
-    public LineController(LineService lineService, LineQueryService lineQueryService) {
-        this.lineService = lineService;
+    public LineController(LineCommandService lineCommandService, LineQueryService lineQueryService) {
+        this.lineCommandService = lineCommandService;
         this.lineQueryService = lineQueryService;
     }
 
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        Long id = lineService.saveLine(lineRequest.toLine(),
+        Long id = lineCommandService.saveLine(lineRequest.toLine(),
                 lineRequest.getUpStationId(),
                 lineRequest.getDownStationId());
 
@@ -55,14 +55,14 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity getLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.update(id, lineRequest.toLine());
+        lineCommandService.update(id, lineRequest.toLine());
 
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
-        lineService.deleteById(id);
+        lineCommandService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }
