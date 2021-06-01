@@ -34,6 +34,7 @@ public class LineCommandService {
     }
 
     public void deleteById(Long id) {
+        sectionCommandService.deleteByLineId(id);
         lineRepository.deleteById(id);
     }
 

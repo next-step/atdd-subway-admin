@@ -14,7 +14,7 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
 
     @Column(unique = true)

@@ -29,6 +29,10 @@ public class SectionCommandService {
         return sectionRepository.save(section).getId();
     }
 
+    public void deleteByLineId(Long lineId) {
+        sectionRepository.deleteByLineId(lineId);
+    }
+
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(EntityNotExistException::new);
