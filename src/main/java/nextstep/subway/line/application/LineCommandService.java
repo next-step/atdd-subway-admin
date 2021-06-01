@@ -3,30 +3,24 @@ package nextstep.subway.line.application;
 import nextstep.subway.common.exception.EntityNotExistException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.section.application.SectionService;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
-import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.section.application.SectionCommandService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class LineCommandService {
     private LineRepository lineRepository;
-    private SectionService sectionService;
+    private SectionCommandService sectionCommandService;
 
-    public LineCommandService(LineRepository lineRepository, SectionService sectionService) {
+    public LineCommandService(LineRepository lineRepository, SectionCommandService sectionCommandService) {
         this.lineRepository = lineRepository;
-        this.sectionService = sectionService;
+        this.sectionCommandService = sectionCommandService;
     }
 
     public Long saveLine(Line line, long upStationId, long downStationId) {
         Line saved = lineRepository.save(line);
-        sectionService.save(saved, upStationId, downStationId);
+        sectionCommandService.save(saved, upStationId, downStationId);
 
         return saved.getId();
     }

@@ -11,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class SectionService {
+public class SectionCommandService {
     private SectionRepository sectionRepository;
     private StationRepository stationRepository;
 
-    public SectionService(SectionRepository sectionRepository, StationRepository stationRepository) {
+    public SectionCommandService(SectionRepository sectionRepository, StationRepository stationRepository) {
         this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
     }
