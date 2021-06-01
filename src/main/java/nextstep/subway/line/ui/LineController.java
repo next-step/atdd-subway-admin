@@ -35,4 +35,11 @@ public class LineController {
         LineResponse line = lineService.findLine(id);
         return ResponseEntity.ok().body(line);
     }
+
+    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity editLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.editLine(id, lineRequest);
+        LineResponse line = lineService.findLine(id);
+        return ResponseEntity.ok().body(line);
+    }
 }
