@@ -1,7 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -14,8 +14,7 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "line")
-    private List<Section> sections = new ArrayList<>();
+    private Sections sections;
 
     @Column(unique = true)
     private String name;
@@ -47,14 +46,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStationInSections() {
-        List<Station> stations = new ArrayList<>();
-
-         for (Section section : sections) {
-            stations.addAll(
-                    section.getStations()
-            );
-        }
-
-        return stations;
+        return sections.getAllStations();
     }
 }

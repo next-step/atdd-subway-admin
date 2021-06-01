@@ -21,7 +21,7 @@ public class Section extends BaseEntity {
     @ManyToOne
     private Station downStation;
 
-    public Section() {
+    protected Section() {
     }
 
     public Section(Line line, Station upStation, Station downStation) {
