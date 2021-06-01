@@ -41,7 +41,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         String toCreateName = "신분당선";
         String toCreateColor = "red";
-        LineRequest params = LineRequest.toCreateRequestParameter(toCreateName, toCreateColor, 강남역_ID, 광교역_ID);
+        LineRequest params = LineRequest.toCreateRequestParameter(toCreateName, toCreateColor, 강남역_ID, 광교역_ID, 10);
         ExtractableResponse<Response> result = 지하철_노선_등록되어_있음(params);
         // then
         지하철_노선_생성됨(result, toCreateName, toCreateColor);
@@ -53,7 +53,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         String toCreateName = "신분당선";
         String toCreateColor = "red";
-        LineRequest params = LineRequest.toCreateRequestParameter(toCreateName, toCreateColor, 강남역_ID, 광교역_ID);
+        LineRequest params = LineRequest.toCreateRequestParameter(toCreateName, toCreateColor, 강남역_ID, 광교역_ID, 10);
         지하철_노선_등록되어_있음(params);
 
         // when
@@ -69,8 +69,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         Long 오금역_ID = 등록된_역_ID(지하철_역_등록되어_있음("오금역"));
         Long 대화역_ID = 등록된_역_ID(지하철_역_등록되어_있음("대화역"));
-        LineRequest lineRedParam = LineRequest.toCreateRequestParameter("신분당선", "red", 강남역_ID, 광교역_ID);
-        LineRequest lineOrangeParam = LineRequest.toCreateRequestParameter("3호선", "orange", 오금역_ID, 대화역_ID);
+        LineRequest lineRedParam = LineRequest.toCreateRequestParameter("신분당선", "red", 강남역_ID, 광교역_ID, 10);
+        LineRequest lineOrangeParam = LineRequest.toCreateRequestParameter("3호선", "orange", 오금역_ID, 대화역_ID, 15);
         ExtractableResponse<Response> expect1 = 지하철_노선_등록되어_있음(lineRedParam);
         ExtractableResponse<Response> expect2 = 지하철_노선_등록되어_있음(lineOrangeParam);
 
@@ -86,7 +86,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineRequest params = LineRequest.toCreateRequestParameter("신분당선", "red", 강남역_ID, 광교역_ID);
+        LineRequest params = LineRequest.toCreateRequestParameter("신분당선", "red", 강남역_ID, 광교역_ID, 10);
         ExtractableResponse<Response> createdLine1 = 지하철_노선_등록되어_있음(params);
         Long savedId = 등록된_노선_ID(createdLine1);
 
@@ -102,7 +102,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         /// given
-        LineRequest params = LineRequest.toCreateRequestParameter("신분당선", "red", 강남역_ID, 광교역_ID);
+        LineRequest params = LineRequest.toCreateRequestParameter("신분당선", "red", 강남역_ID, 광교역_ID, 10);
         ExtractableResponse<Response> createdResponse = 지하철_노선_등록되어_있음(params);
         Long savedId = 등록된_노선_ID(createdResponse);
 
@@ -118,7 +118,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineRequest params = LineRequest.toCreateRequestParameter("신분당선", "red", 강남역_ID, 광교역_ID);
+        LineRequest params = LineRequest.toCreateRequestParameter("신분당선", "red", 강남역_ID, 광교역_ID, 10);
         ExtractableResponse<Response> createdResponse = 지하철_노선_등록되어_있음(params);
         Long savedId = 등록된_노선_ID(createdResponse);
 
