@@ -24,7 +24,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public List<LineResponse> findAllLine() {
+    public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
                 .map(LineResponse::of)
