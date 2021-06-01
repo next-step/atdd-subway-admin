@@ -36,8 +36,17 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse getLine(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(EntityNotFoundException::new);
+        Line line = findLineById(id);
         return LineResponse.of(line);
+    }
+
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = findLineById(id);
+        line.update(lineRequest.toLine());
+    }
+
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(EntityNotFoundException::new);
     }
 }
