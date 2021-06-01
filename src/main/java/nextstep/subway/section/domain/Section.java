@@ -48,16 +48,6 @@ public class Section extends BaseEntity {
         }
     }
 
-    public Line getLine() { return line;}
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public Long getId() {
         return id;
     }

@@ -46,14 +46,10 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
     public List<Station> getStationInSections() {
         List<Station> stations = new ArrayList<>();
 
-         for (Section section : getSections()) {
+         for (Section section : sections) {
             stations.addAll(
                     section.getStations()
             );
