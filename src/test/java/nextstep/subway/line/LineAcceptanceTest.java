@@ -4,6 +4,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.LineSeoul;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,11 +29,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = lineParams("2호선", "다크그린");
+        LineRequest lineRequest = LineSeoul.NUMBER_2.toRequest();
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = postUsingJsonBody(path, params);
+        ExtractableResponse<Response> response = postLineRequest(path, lineRequest);
 
         // then
         // 지하철_노선_생성됨
@@ -44,12 +46,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = lineParams("2호선", "다크그린");
-        postUsingJsonBody(path, params);
+        postLineRequest(path, LineSeoul.NUMBER_2.toRequest());
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = postUsingJsonBody(path, params);
+        ExtractableResponse<Response> response = postLineRequest(path, LineSeoul.NUMBER_2.toRequest());
 
         // then
         // 지하철_노선_생성_실패됨
@@ -61,15 +62,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params1 = lineParams("2호선", "다크그린");
-        ExtractableResponse createResponse1 = postUsingJsonBody(path, params1);
+        ExtractableResponse createResponse1 = postLineRequest(path, LineSeoul.NUMBER_2.toRequest());
         // 지하철_노선_등록되어_있음
-        Map<String, String> params2 = lineParams("6호선", "오렌지");
-        ExtractableResponse createResponse2 = postUsingJsonBody(path, params2);
+        ExtractableResponse createResponse2 = postLineRequest(path, LineSeoul.NUMBER_6.toRequest());
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = getFrom(path);
+        ExtractableResponse<Response> response = get(path);
 
         // then
         // 지하철_노선_목록_응답됨
@@ -89,13 +88,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = lineParams("2호선", "다크그린");
-        ExtractableResponse createResponse = postUsingJsonBody(path, params);
+        ExtractableResponse createResponse = postLineRequest(path, LineSeoul.NUMBER_2.toRequest());
 
         // when
         // 지하철_노선_조회_요청
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = getFrom(uri);
+        ExtractableResponse<Response> response = get(uri);
 
         // then
         // 지하철_노선_응답됨
@@ -107,14 +105,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params1 = lineParams("2호선", "다크그린");
-        ExtractableResponse createResponse = postUsingJsonBody(path, params1);
+        ExtractableResponse createResponse = postLineRequest(path, LineSeoul.NUMBER_2.toRequest());
 
         // when
         // 지하철_노선_수정_요청
         String uri = createResponse.header("Location");
-        Map<String, String> params2 = lineParams("6호선", "오렌지");
-        ExtractableResponse createResponse2 = putUsingJsonBody(uri, params2);
+        ExtractableResponse createResponse2 = putLineRequest(uri, LineSeoul.NUMBER_6.toRequest());
 
         // then
         // 지하철_노선_수정됨
@@ -123,11 +119,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // and
         // 지하철_노선_수정확인
         uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = getFrom(uri);
+        ExtractableResponse<Response> response = get(uri);
         LineResponse actualResponse = response.body().as(LineResponse.class);
 
-        assertThat(actualResponse.getName()).isEqualTo(params2.get("name"));
-        assertThat(actualResponse.getColor()).isEqualTo(params2.get("color"));
+        assertThat(actualResponse.getName()).isEqualTo(LineSeoul.NUMBER_6.lineName());
+        assertThat(actualResponse.getColor()).isEqualTo(LineSeoul.NUMBER_6.color());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -135,8 +131,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = lineParams("2호선", "다크그린");
-        ExtractableResponse createResponse = postUsingJsonBody(path, params);
+        ExtractableResponse createResponse = postLineRequest(path, LineSeoul.NUMBER_2.toRequest());
 
         // when
         // 지하철_노선_제거_요청
@@ -149,22 +144,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // and
         // 지하철_노선_삭제확인
-        ExtractableResponse<Response> checkResponse = getFrom(uri);
+        ExtractableResponse<Response> checkResponse = get(uri);
         assertThat(checkResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    private Map<String, String> lineParams(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-
-        params.put("name", name);
-        params.put("color", color);
-
-        return params;
-    }
-
-    private ExtractableResponse<Response> postUsingJsonBody(String path, Map<String, String> params) {
+    private ExtractableResponse<Response> postLineRequest(String path, LineRequest lineRequest) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(path)
@@ -172,7 +158,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> getFrom(String path) {
+    private ExtractableResponse<Response> get(String path) {
         return RestAssured.given().log().all()
                 .when()
                 .get(path)
@@ -180,9 +166,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> putUsingJsonBody(String path, Map<String, String> params) {
+    private ExtractableResponse<Response> putLineRequest(String path, LineRequest lineRequest) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(path)

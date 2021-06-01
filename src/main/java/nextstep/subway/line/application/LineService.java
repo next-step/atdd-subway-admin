@@ -28,21 +28,12 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-
-        return lines.stream()
-                .map(line -> LineResponse.of(line))
-                .collect(Collectors.toList());
+        return LineResponse.listOf(lines);
     }
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
-        return LineResponse.of(line);
-    }
-
-    @Transactional(readOnly = true)
-    public LineResponse findByName(String name) {
-        Line line = lineRepository.findByName(name).orElseThrow(NoSuchElementException::new);
         return LineResponse.of(line);
     }
 
