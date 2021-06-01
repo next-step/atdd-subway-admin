@@ -3,8 +3,6 @@ package nextstep.subway.line.application;
 import nextstep.subway.common.exception.EntityNotExistException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -25,33 +23,34 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
-        Station upStation = findStationById(request.getUpStationId());
-        Station downStation = findStationById(request.getDownStationId());
+    public Long saveLine(Line line, long upStationId, long downStationId) {
+        Station upStation = findStationById(upStationId);
+        Station downStation = findStationById(downStationId);
 
-        Line line = request.toLine();
         line.addSection(new Section(upStation, downStation));
 
-        return LineResponse.of(lineRepository.save(line));
+        Line saved = lineRepository.save(line);
+
+        return saved.getId();
     }
 
-    public LineResponse update(Long id, LineRequest lineRequest) {
-        Line line = findEntityById(id);
+    public Long update(Long id, Line updateLine) {
+        Line line = findById(id);
 
-        line.update(lineRequest.toLine());
+        line.update(updateLine);
 
-        return LineResponse.of(line);
+        return line.getId();
     }
 
-    public List<LineResponse> findAll() {
+    public List<Line> findAll() {
         return lineRepository.findAll()
                 .stream()
-                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long id) {
-        return LineResponse.of(findEntityById(id));
+    public Line findById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(EntityNotExistException::new);
     }
 
     public void deleteById(Long id) {
@@ -60,11 +59,6 @@ public class LineService {
 
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(EntityNotExistException::new);
-    }
-
-    private Line findEntityById(Long id) {
-        return lineRepository.findById(id)
                 .orElseThrow(EntityNotExistException::new);
     }
 }
