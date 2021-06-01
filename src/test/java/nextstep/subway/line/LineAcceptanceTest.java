@@ -12,6 +12,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -33,13 +34,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        // 지하철_노선_등록되어_있음
-
+        지하철_노선_등록되어_있음(신분당선);
         // when
-        // 지하철_노선_생성_요청
-
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);
         // then
-        // 지하철_노선_생성_실패됨
+        지하철_노선_생성_실패됨(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -106,7 +105,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
+    private Long 지하철_노선_등록되어_있음(LineRequest lineRequest) {
+        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청(lineRequest);
+        return createdResponse.as(LineResponse.class).getId();
+    }
+
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
