@@ -29,22 +29,6 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, Section section) {
-        this.name = name;
-        this.color = color;
-
-        addSection(section);
-    }
-
-    public void addSection(Section section) {
-        if (sections.contains(section)) {
-            return;
-        }
-
-        sections.add(section);
-        section.changeLine(this);
-    }
-
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
@@ -62,10 +46,14 @@ public class Line extends BaseEntity {
         return color;
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
     public List<Station> getStationInSections() {
         List<Station> stations = new ArrayList<>();
 
-        for (Section section : sections) {
+         for (Section section : getSections()) {
             stations.addAll(
                     section.getStations()
             );

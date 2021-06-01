@@ -21,14 +21,7 @@ public class Section extends BaseEntity {
     @ManyToOne
     private Station downStation;
 
-    protected Section() {
-    }
-
-    public Section(Station upStation, Station downStation) {
-        validateStation(upStation, downStation);
-
-        this.upStation = upStation;
-        this.downStation = downStation;
+    public Section() {
     }
 
     public Section(Line line, Station upStation, Station downStation) {
@@ -55,6 +48,8 @@ public class Section extends BaseEntity {
         }
     }
 
+    public Line getLine() { return line;}
+
     public Station getUpStation() {
         return upStation;
     }
@@ -63,10 +58,8 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public void changeLine(Line line) {
-        if (this.line != null) return;
-        this.line = line;
-        line.addSection(this);
+    public Long getId() {
+        return id;
     }
 
     public List<Station> getStations() {

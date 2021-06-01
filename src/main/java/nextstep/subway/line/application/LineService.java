@@ -3,8 +3,9 @@ package nextstep.subway.line.application;
 import nextstep.subway.common.exception.EntityNotExistException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,20 +17,16 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private SectionService sectionService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, SectionService sectionService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.sectionService = sectionService;
     }
 
     public Long saveLine(Line line, long upStationId, long downStationId) {
-        Station upStation = findStationById(upStationId);
-        Station downStation = findStationById(downStationId);
-
-        line.addSection(new Section(upStation, downStation));
-
         Line saved = lineRepository.save(line);
+        sectionService.save(saved, upStationId, downStationId);
 
         return saved.getId();
     }
@@ -48,6 +45,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+
     public Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(EntityNotExistException::new);
@@ -57,8 +55,4 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private Station findStationById(Long id) {
-        return stationRepository.findById(id)
-                .orElseThrow(EntityNotExistException::new);
-    }
 }
