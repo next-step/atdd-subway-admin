@@ -37,7 +37,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), fillStations(line.getEachEndStations()), line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), fillStations(line.getEndToEndStations()), line.getCreatedDate(), line.getModifiedDate());
     }
 
     public static List<LineResponse> ofList(List<Line> lines) {

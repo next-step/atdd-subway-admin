@@ -18,15 +18,20 @@ public class LineTest {
   void getEachEndStationsTest() {
     //given
     Line givenLine = new Line("신분당선", "red");
-    Station givenUpStation = Station.of(1L, "강남역");
-    Station givenDownStation = Station.of(2L, "광교역");
-    Section givenSection = new Section(givenUpStation, givenDownStation, 10);
-    givenLine.addSection(givenSection);
+    Station upStationGangNam = Station.of(1L, "강남역");
+    Station downStationPanGyo = Station.of(2L, "판교역");
+    Section firstSection = new Section(upStationGangNam, downStationPanGyo, 5);
+    givenLine.addSection(firstSection);
+
+    Station upStationPanGyo = Station.of(2L, "판교역");
+    Station downStationGwangGyo = Station.of(3L, "광교역");
+    Section secondSection = new Section(upStationPanGyo, downStationGwangGyo, 7);
+    givenLine.addSection(secondSection);
 
     //when
-    List<Station> actual = givenLine.getEachEndStations();
+    List<Station> actual = givenLine.getEndToEndStations();
 
     //then
-    assertThat(actual).isEqualTo(Lists.list(givenUpStation, givenDownStation));
+    assertThat(actual).isEqualTo(Lists.list(upStationGangNam, downStationPanGyo, downStationGwangGyo));
   }
 }

@@ -5,7 +5,10 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class Section extends BaseEntity {
@@ -60,6 +63,11 @@ public class Section extends BaseEntity {
 
   public void addLine(Line line) {
     this.line = line;
+  }
+
+  public List<Station> getUpAndDownStations() {
+    return Stream.of(upStation, downStation)
+            .collect(Collectors.toList());
   }
 
   @Override

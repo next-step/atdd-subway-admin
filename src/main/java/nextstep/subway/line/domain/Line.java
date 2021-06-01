@@ -41,30 +41,16 @@ public class Line extends BaseEntity {
         section.addLine(this);
     }
 
-    public List<Station> getEachEndStations() {
-        return getUpDirectionEndStation().flatMap(upStation ->
-            getDownDirectionEndStation().map(downStation ->
-                Stream.of(upStation, downStation)
-                    .collect(Collectors.toList())))
-            .orElseGet(Collections::emptyList);
+    public List<Station> getEndToEndStations() {
+        return new ArrayList<>(getDistinctStations());
+
     }
 
-    private Optional<Station> getUpDirectionEndStation() {
+    private Set<Station> getDistinctStations() {
         return sections.stream()
-            .findFirst()
-            .map(Section::getUpStation);
-    }
-
-    private Optional<Station> getDownDirectionEndStation() {
-        return getReverseOrderedSections().stream()
-            .findFirst()
-            .map(Section::getDownStation);
-    }
-
-    private List<Section> getReverseOrderedSections() {
-        List<Section> reversedSections = new ArrayList<>(sections);
-        Collections.reverse(reversedSections);
-        return reversedSections;
+            .flatMap(section -> section.getUpAndDownStations()
+                                        .stream())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public Long getId() {
