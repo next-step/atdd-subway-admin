@@ -39,20 +39,13 @@ public class LineService {
         return line.getId();
     }
 
-    public List<Line> findAll() {
-        return lineRepository.findAll()
-                .stream()
-                .collect(Collectors.toList());
-    }
-
-
-    public Line findById(Long id) {
-        return lineRepository.findById(id)
-                .orElseThrow(EntityNotExistException::new);
-    }
-
     public void deleteById(Long id) {
         lineRepository.deleteById(id);
     }
 
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(EntityNotExistException::new);
+    }
 }
