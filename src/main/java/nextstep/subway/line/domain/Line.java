@@ -19,7 +19,7 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
     public Line() {

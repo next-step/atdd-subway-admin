@@ -22,33 +22,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private StationResponse GYEYANG;
-    private StationResponse SONGDO_MOONLIGHT_FESTIVAL_PARK;
+    private StationResponse GYULHYEON;
     private LineRequest INCHEON_SUBWAY_LINE_1;
 
     private StationResponse GEOMDAN_ORYU;
-    private StationResponse UNYEON;
+    private StationResponse WANGGIL;
     private LineRequest INCHEON_SUBWAY_LINE_2;
 
     private StationResponse SEOUL;
-    private StationResponse INCHEON_AIRPORT_TERMINAL_2;
+    private StationResponse GONGDEOK;
     private LineRequest AIRPORT_EXPRESS;
 
     @BeforeEach
     void setUpField() {
         GYEYANG = new StationResponse(1L, "계양역", null, null);
-        SONGDO_MOONLIGHT_FESTIVAL_PARK = new StationResponse(2L, "송도달빛축제공원역", null, null);
+        GYULHYEON = new StationResponse(2L, "귤현역", null, null);
         INCHEON_SUBWAY_LINE_1 = new LineRequest("인천 1호선", "#7CA8D5",
-                                                GYEYANG.getId(), SONGDO_MOONLIGHT_FESTIVAL_PARK.getId(), 100);
+                                                GYEYANG.getId(), GYULHYEON.getId(), 100);
 
         GEOMDAN_ORYU = new StationResponse(3L, "검단오류역", null, null);
-        UNYEON = new StationResponse(4L, "운연역", null, null);
+        WANGGIL = new StationResponse(4L, "왕길역", null, null);
         INCHEON_SUBWAY_LINE_2 = new LineRequest("인천 2호선", "#ED8B00",
-                                                GEOMDAN_ORYU.getId(), UNYEON.getId(), 120);
+                                                GEOMDAN_ORYU.getId(), WANGGIL.getId(), 120);
 
         SEOUL = new StationResponse(5L, "서울역", null, null);
-        INCHEON_AIRPORT_TERMINAL_2 = new StationResponse(6L, "인천공항2터미널역", null, null);
+        GONGDEOK = new StationResponse(6L, "공덕역", null, null);
         AIRPORT_EXPRESS = new LineRequest("공항철도", "#0065B3",
-                                     SEOUL.getId(), INCHEON_AIRPORT_TERMINAL_2.getId(), 200);
+                                          SEOUL.getId(), GONGDEOK.getId(), 200);
 
         createAllStation();
     }
@@ -120,8 +120,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lines).extracting(LineResponse::getColor)
                          .contains(INCHEON_SUBWAY_LINE_1.getColor(), AIRPORT_EXPRESS.getColor());
         assertThat(lines).extracting(LineResponse::getStations)
-                         .contains(Arrays.asList(GYEYANG, SONGDO_MOONLIGHT_FESTIVAL_PARK),
-                                   Arrays.asList(SEOUL, INCHEON_AIRPORT_TERMINAL_2));
+                         .contains(Arrays.asList(GYEYANG, GYULHYEON),
+                                   Arrays.asList(SEOUL, GONGDEOK));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -188,7 +188,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        createAllStation();
         createdLine(INCHEON_SUBWAY_LINE_1);
 
         // when
@@ -241,11 +240,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void createAllStation() {
         createStation(GYEYANG);
-        createStation(SONGDO_MOONLIGHT_FESTIVAL_PARK);
+        createStation(GYULHYEON);
         createStation(GEOMDAN_ORYU);
-        createStation(UNYEON);
+        createStation(WANGGIL);
         createStation(SEOUL);
-        createStation(INCHEON_AIRPORT_TERMINAL_2);
+        createStation(GONGDEOK);
     }
 
     private void createStation(StationResponse stationResponse) {
