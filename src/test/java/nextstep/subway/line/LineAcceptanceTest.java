@@ -3,10 +3,14 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.List;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -17,9 +21,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private final LineRequest INCHEON_SUBWAY_LINE_1 = new LineRequest("인천 1호선", "#7CA8D5");
-    private final LineRequest INCHEON_SUBWAY_LINE_2 = new LineRequest("인천 2호선", "#ED8B00");
-    private final LineRequest AIRPORT_EXPRESS = new LineRequest("공항철도", "#0065B3");
+    private StationResponse GYEYANG;
+    private StationResponse SONGDO_MOONLIGHT_FESTIVAL_PARK;
+    private LineRequest INCHEON_SUBWAY_LINE_1;
+
+    private StationResponse GEOMDAN_ORYU;
+    private StationResponse UNYEON;
+    private LineRequest INCHEON_SUBWAY_LINE_2;
+
+    private StationResponse SEOUL;
+    private StationResponse INCHEON_AIRPORT_TERMINAL_2;
+    private LineRequest AIRPORT_EXPRESS;
+
+    @BeforeEach
+    void setUpField() {
+        GYEYANG = new StationResponse(1L, "계양역", null, null);
+        SONGDO_MOONLIGHT_FESTIVAL_PARK = new StationResponse(2L, "송도달빛축제공원역", null, null);
+        INCHEON_SUBWAY_LINE_1 = new LineRequest("인천 1호선", "#7CA8D5",
+                                                GYEYANG.getId(), SONGDO_MOONLIGHT_FESTIVAL_PARK.getId(), 100);
+
+        GEOMDAN_ORYU = new StationResponse(3L, "검단오류역", null, null);
+        UNYEON = new StationResponse(4L, "운연역", null, null);
+        INCHEON_SUBWAY_LINE_2 = new LineRequest("인천 2호선", "#ED8B00",
+                                                GEOMDAN_ORYU.getId(), UNYEON.getId(), 120);
+
+        SEOUL = new StationResponse(5L, "서울역", null, null);
+        INCHEON_AIRPORT_TERMINAL_2 = new StationResponse(6L, "인천공항2터미널역", null, null);
+        AIRPORT_EXPRESS = new LineRequest("공항철도", "#0065B3",
+                                     SEOUL.getId(), INCHEON_AIRPORT_TERMINAL_2.getId(), 200);
+
+        createAllStation();
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -87,6 +119,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                          .contains(INCHEON_SUBWAY_LINE_1.getName(), AIRPORT_EXPRESS.getName());
         assertThat(lines).extracting(LineResponse::getColor)
                          .contains(INCHEON_SUBWAY_LINE_1.getColor(), AIRPORT_EXPRESS.getColor());
+        assertThat(lines).extracting(LineResponse::getStations)
+                         .contains(Arrays.asList(GYEYANG, SONGDO_MOONLIGHT_FESTIVAL_PARK),
+                                   Arrays.asList(SEOUL, INCHEON_AIRPORT_TERMINAL_2));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -153,6 +188,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        createAllStation();
         createdLine(INCHEON_SUBWAY_LINE_1);
 
         // when
@@ -201,5 +237,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
                           .when().delete("/lines/" + lineId)
                           .then().log().all()
                           .extract();
+    }
+
+    private void createAllStation() {
+        createStation(GYEYANG);
+        createStation(SONGDO_MOONLIGHT_FESTIVAL_PARK);
+        createStation(GEOMDAN_ORYU);
+        createStation(UNYEON);
+        createStation(SEOUL);
+        createStation(INCHEON_AIRPORT_TERMINAL_2);
+    }
+
+    private void createStation(StationResponse stationResponse) {
+        RestAssured.given().log().all()
+                   .body(new StationRequest(stationResponse.getName()))
+                   .contentType(MediaType.APPLICATION_JSON_VALUE)
+                   .when().post("/stations")
+                   .then().log().all()
+                   .extract();
     }
 }
