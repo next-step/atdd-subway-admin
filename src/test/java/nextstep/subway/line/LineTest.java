@@ -18,8 +18,8 @@ public class LineTest {
   void getEachEndStationsTest() {
     //given
     Line givenLine = new Line("신분당선", "red");
-    Station givenUpStation = new Station("강남역");
-    Station givenDownStation = new Station("광교역");
+    Station givenUpStation = Station.of(1L, "강남역");
+    Station givenDownStation = Station.of(2L, "광교역");
     Section givenSection = new Section(givenUpStation, givenDownStation, 10);
     givenLine.addSection(givenSection);
 
