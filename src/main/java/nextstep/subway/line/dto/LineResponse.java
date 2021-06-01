@@ -11,11 +11,17 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class LineResponse {
+
     private Long id;
+
     private String name;
+
     private String color;
+
     private List<StationResponse> stations = new ArrayList<>();
+
     private LocalDateTime createdDate;
+
     private LocalDateTime modifiedDate;
 
     public LineResponse() {

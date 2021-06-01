@@ -6,9 +6,13 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class StationResponse {
+
     private Long id;
+
     private String name;
+
     private LocalDateTime createdDate;
+
     private LocalDateTime modifiedDate;
 
     public static StationResponse of(Station station) {

@@ -17,8 +17,11 @@ import java.util.List;
 @Service
 @Transactional
 public class LineService {
+
     private final LineRepository lineRepository;
+
     private final StationService stationService;
+
     private final SectionRepository sectionRepository;
 
     public LineService(LineRepository lineRepository, StationService stationService, SectionRepository sectionRepository) {

@@ -58,7 +58,7 @@ Content-Type: application/json
 * 노선 단건 조회 응답값 검증 시 응답값에 상행 종점, 하행 종점 id가 같이 오는지 확인하게 변경
 
 ### 코드리뷰 항목
-- [ ] Section 클래스 맴버변수 개행
+- [X] 클래스 맴버변수 개행
 - [ ] 지하철_노선_등록되어_있음 메서드의 인자를 LineRequest로 받게 변경
 - [ ] Distance 원시타입 포장 클래스
 - [ ] ManyToOne에 fetch Lazy 추가
