@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
     ExtractableResponse createResponse;
 
     @BeforeEach
@@ -62,10 +63,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse response = RestAssured.given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines")
-                .then().log().all().extract();
+        ExtractableResponse response = 노선_목록_조회();
 
         // then
         // 지하철_노선_목록_응답됨
@@ -81,13 +79,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Long id = createResponse.jsonPath().getObject(".", LineResponse.class).getId();
+        Long id = 생성_노선_아이디(createResponse);
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse response =
-                RestAssured.given().log().all()
-                .when().get("/lines/" + id)
-                .then().log().all().extract();
+        ExtractableResponse response = 노선_조회(id);
 
         // then
         // 지하철_노선_응답됨
@@ -100,16 +95,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Long id = createResponse.jsonPath().getObject(".", LineResponse.class).getId();
-        LineRequest fixedRequest = new LineRequest("분당선", "bg-red-600");
+        Long id = 생성_노선_아이디(createResponse);
+        LineRequest fixedRequest = 노선_요청_정보("분당선", "bg-red-600");
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse response =
-                RestAssured.given().log().all()
-                        .body(fixedRequest)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().put("/lines/" + id)
-                        .then().log().all().extract();
+        ExtractableResponse response = 노선_수정(id, fixedRequest);
         // then
         // 지하철_노선_수정됨
         assertThat(response.jsonPath().getObject(".", LineResponse.class).getName()).isEqualTo("분당선");
@@ -120,14 +110,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Long id = createResponse.jsonPath().getObject(".", LineResponse.class).getId();
+        Long id = 생성_노선_아이디(createResponse);
 
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse response =
-                RestAssured.given().log().all()
-                        .when().delete("/lines/" + id)
-                        .then().log().all().extract();
+        ExtractableResponse response = 노선_삭제(id);
 
         // then
         // 지하철_노선_삭제됨
