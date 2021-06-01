@@ -23,7 +23,8 @@ public class Section extends BaseEntity {
   private Station downStation;
 
   @Column(nullable = false)
-  private Integer distance;
+  @Embedded
+  private Distance distance;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "line_id")
@@ -34,7 +35,7 @@ public class Section extends BaseEntity {
   public Section(Station upStation, Station downStation, int distance) {
     this.upStation = upStation;
     this.downStation = downStation;
-    this.distance = distance;
+    this.distance = Distance.from(distance);
   }
 
   public Long getId() {
@@ -50,7 +51,7 @@ public class Section extends BaseEntity {
   }
 
   public Integer getDistance() {
-    return distance;
+    return distance.getNumber();
   }
 
   public Line getLine() {

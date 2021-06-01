@@ -60,7 +60,7 @@ Content-Type: application/json
 ### 코드리뷰 항목
 - [X] 클래스 맴버변수 개행
 - [X] 지하철_노선_등록되어_있음 메서드의 인자를 LineRequest로 받게 변경
-- [ ] Distance 원시타입 포장 클래스
+- [X] Distance 원시타입 포장 클래스
 - [ ] ManyToOne에 fetch Lazy 추가
 - [ ] Line 기본 생성자 protected로 변경
 - [ ] 잘 못 이해한 요구사항 구현 바로잡기 - 노선 응답에는 노선의 상행 종점, 하행 종점이 포함된다 -> 상행 종점부터 하행종점까지 역이 나열된다. 
