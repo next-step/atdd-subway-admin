@@ -214,9 +214,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### Request 변경 사항
 
-#### 지하철 노선 생성
+#### 지하철 노선 생성 요청
 
-- Request
+- 노선 생성 시 두 종점역의 ID가 필요
 
     ```text
     POST /lines HTTP/1.1
@@ -232,34 +232,33 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     }
     ```
 
-- Response
+#### 지하철 노선 조회 결과      
 
-    ```text
-    HTTP/1.1 200 
-    Content-Type: application/json
-    
-    [
-        {
-            "id": 1,
-            "name": "신분당선",
-            "color": "bg-red-600",
-            "stations": [
-                {
-                    "id": 1,
-                    "name": "강남역",
-                    "createdDate": "2020-11-13T12:17:03.075",
-                    "modifiedDate": "2020-11-13T12:17:03.075"
-                },
-                {
-                    "id": 2,
-                    "name": "역삼역",
-                    "createdDate": "2020-11-13T12:17:03.092",
-                    "modifiedDate": "2020-11-13T12:17:03.092"
-                }
-            ],
-            "createdDate": "2020-11-13T09:11:51.997",
-            "modifiedDate": "2020-11-13T09:11:51.997"
-        }
-    ]
-    ```
+```text
+HTTP/1.1 200 
+Content-Type: application/json
 
+[
+    {
+        "id": 1,
+        "name": "신분당선",
+        "color": "bg-red-600",
+        "stations": [
+            {
+                "id": 1,
+                "name": "강남역",
+                "createdDate": "2020-11-13T12:17:03.075",
+                "modifiedDate": "2020-11-13T12:17:03.075"
+            },
+            {
+                "id": 2,
+                "name": "역삼역",
+                "createdDate": "2020-11-13T12:17:03.092",
+                "modifiedDate": "2020-11-13T12:17:03.092"
+            }
+        ],
+        "createdDate": "2020-11-13T09:11:51.997",
+        "modifiedDate": "2020-11-13T09:11:51.997"
+    }
+]
+```
