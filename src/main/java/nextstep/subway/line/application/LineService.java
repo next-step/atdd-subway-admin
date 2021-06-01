@@ -29,7 +29,8 @@ public class LineService {
         Station upStation = findStationById(request.getUpStationId());
         Station downStation = findStationById(request.getDownStationId());
 
-        Line line = request.toLine(new Section(upStation, downStation));
+        Line line = request.toLine();
+        line.addSection(new Section(upStation, downStation));
 
         return LineResponse.of(lineRepository.save(line));
     }
@@ -53,17 +54,17 @@ public class LineService {
         return LineResponse.of(findEntityById(id));
     }
 
-    private Line findEntityById(Long id) {
-        return lineRepository.findById(id)
-                .orElseThrow(EntityNotExistException::new);
-    }
-
     public void deleteById(Long id) {
         lineRepository.deleteById(id);
     }
 
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
+                .orElseThrow(EntityNotExistException::new);
+    }
+
+    private Line findEntityById(Long id) {
+        return lineRepository.findById(id)
                 .orElseThrow(EntityNotExistException::new);
     }
 }
