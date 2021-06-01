@@ -59,7 +59,7 @@ Content-Type: application/json
 
 ### 코드리뷰 항목
 - [X] 클래스 맴버변수 개행
-- [ ] 지하철_노선_등록되어_있음 메서드의 인자를 LineRequest로 받게 변경
+- [X] 지하철_노선_등록되어_있음 메서드의 인자를 LineRequest로 받게 변경
 - [ ] Distance 원시타입 포장 클래스
 - [ ] ManyToOne에 fetch Lazy 추가
 - [ ] Line 기본 생성자 protected로 변경
