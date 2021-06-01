@@ -234,6 +234,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 #### 지하철 노선 조회 결과      
 
+- 노선 조회 시 역 목록을 함께 응답
+- 노선에 등록된 구간을 순서대로 정렬하여 상행 종점 ~ 하행 종점까지의 목록 응답
+- 필요시 노선과 구간 관계 새로 정립
+
 ```text
 HTTP/1.1 200 
 Content-Type: application/json
