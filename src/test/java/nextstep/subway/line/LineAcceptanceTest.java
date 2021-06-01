@@ -2,6 +2,10 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -45,15 +49,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+        Long createdLineId1 = 지하철_노선_등록되어_있음(신분당선);
+        Long createdLineId2 = 지하철_노선_등록되어_있음(구분당선);
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
+        지하철_노선_목록_응답됨(response);
+        지하철_노선_목록_포함됨(createdLineId1, createdLineId2, response);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -110,11 +115,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return createdResponse.as(LineResponse.class).getId();
     }
 
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return RestAssured.given().log().all()
+            .when()
+            .get(LINE_BASE_PATH)
+            .then().log().all()
+            .extract();
+    }
+
+
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선_목록_포함됨(Long lineId1,
+        Long lineId2,
+        ExtractableResponse<Response> response) {
+        List<Long> expectedLineIds = Arrays.asList(lineId1, lineId2);
+
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+            .map(it -> it.getId())
+            .collect(Collectors.toList());
+
+        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 }
