@@ -25,6 +25,15 @@ public class LineSteps {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> response) {
+        String uri = response.header("Location");
+        return RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return getLines("/lines");
     }
