@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,5 +37,11 @@ public class LineService {
     public LineResponse findLineById(Long id) {
         return LineResponse.of(lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 Line 정보를 찾을 수 없습니다.")));
+    }
+
+    public void updateLineById(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당 Line 정보를 찾을 수 없습니다."));
+        line.update(lineRequest.toLine());
     }
 }
