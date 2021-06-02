@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -78,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(생성된_분당선);
 
         // then
-        지하철_노선_응답됨(response);
+        지하철_노선_응답됨(response, 생성된_분당선);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -108,13 +109,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .when().post("/lines")
                 .then().log().all()
                 .extract();
-        return response;
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
@@ -159,7 +159,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    private void 지하철_노선_응답됨(ExtractableResponse<Response> response,
+                            ExtractableResponse<Response> createdResponse) {
+        LineResponse line = createdResponse.jsonPath().getObject(".", LineResponse.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath()
+                        .getObject(".", LineResponse.class)
+                        .getName()).isEqualTo(line.getName())
+        );
     }
 }
