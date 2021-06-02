@@ -19,10 +19,11 @@ public class LineCommandService {
     }
 
     public Long saveLine(Line line, Long upStationId, Long downStationId, Long distance) {
-        Line saved = lineRepository.save(line);
-        sectionCommandService.save(saved, upStationId, downStationId, distance);
+        Long lineId = lineRepository.save(line)
+                .getId();
+        sectionCommandService.save(lineId, upStationId, downStationId, distance);
 
-        return saved.getId();
+        return lineId;
     }
 
     public Long update(Long id, Line updateLine) {

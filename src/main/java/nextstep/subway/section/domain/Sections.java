@@ -38,8 +38,22 @@ public class Sections {
                 .map(mapper);
     }
 
+    public void addAndResizeDistanceBy(Section section) {
+        sections.stream()
+                .filter(item -> item.isSameUpStation(section) || item.isSameDownStation(section))
+                .findFirst()
+                .ifPresent((near) -> near.resizeBy(section));
+
+        sections.add(section);
+    }
+
+    // 1번 소트처리를한다
+    // 2번
+
     public boolean isAddable(Station upStation, Station downStation, Long distance) {
-        if (sections.isEmpty()) return true;
+        if (sections.isEmpty()) {
+            return true;
+        }
 
         return !containsBetweenDownStationAndDistance(downStation, distance)
                 && !containsBetweenUpStationAndDistance(upStation, distance)
@@ -80,28 +94,42 @@ public class Sections {
             return new ArrayList<>();
         }
 
-        return sort(sections.get(0));
+        Section topSection = getTopSection(sections.get(0));
+
+        return sort(topSection);
     }
 
-    private List<Section> sort(Section of) {
-        List<Section> sortedList = null;
-
-        boolean findUpStation = false;
+    private Section getTopSection(Section firstSection) {
         for (Section section : sections) {
-            if (of.isUpStationEqualsDownStationOf(section)) {
-                findUpStation = true;
-                sortedList = sort(section);
-                sortedList.add(of);
+            if (firstSection.isLower(section)) {
+                return getTopSection(section);
             }
         }
 
-        if (!findUpStation) {
-            sortedList = new ArrayList<>();
-            sortedList.add(of);
+        return firstSection;
+    }
 
+    private List<Section> sort(Section upperSection) {
+        List<Section> sortedList = new ArrayList<>();
+        sortedList.add(upperSection);
+
+        Section bottomSection = findBottomSection(upperSection);
+
+        if (bottomSection == null) {
             return sortedList;
         }
 
+        sortedList.addAll(sort(bottomSection));
         return sortedList;
+    }
+
+    private Section findBottomSection(Section of) {
+        for (Section section : sections) {
+            if (of.isUpper(section)) {
+                return section;
+            }
+        }
+
+        return null;
     }
 }

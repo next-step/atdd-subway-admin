@@ -49,12 +49,14 @@ public class Line extends BaseEntity {
         return sections.getAllStations();
     }
 
-    public Section createSection(Station upStation, Station downStation, Long distance) {
+    public Section createSectionAndResizeDistance(Station upStation, Station downStation, Long distance) {
         Section section = new Section(this, upStation, downStation, distance);
 
         if (!sections.isAddable(upStation, downStation, distance)) {
-            throw new IllegalStateException("새로운 구간 사이에 이미 역이 있습니다");
+            throw new IllegalStateException("추가가 불가능합니다.");
         }
+
+        sections.addAndResizeDistanceBy(section);
 
         return section;
     }

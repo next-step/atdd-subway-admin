@@ -24,22 +24,16 @@ public class SectionCommandService {
     }
 
     public Long save(Long lineId, Long upStationId, Long downStationId, Long distance) {
-        return save(
-                findLineById(lineId),
-                upStationId,
-                downStationId,
+        Line line = findLineById(lineId);
+
+        Section section = line.createSectionAndResizeDistance(
+                findStationById(upStationId),
+                findStationById(downStationId),
                 distance
         );
-    }
 
-    public Long save(Line line, Long upStationId, Long downStationId, Long distance) {
-        return sectionRepository.save(
-                line.createSection(
-                        findStationById(upStationId),
-                        findStationById(downStationId),
-                        distance
-                )
-        ).getId();
+        return sectionRepository.save(section)
+                .getId();
     }
 
     public void deleteByLineId(Long lineId) {

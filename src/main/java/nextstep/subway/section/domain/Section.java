@@ -52,6 +52,10 @@ public class Section extends BaseEntity {
         }
     }
 
+    public void resizeBy(Section section) {
+        this.distance -= section.distance;
+    }
+
     public Long getId() {
         return id;
     }
@@ -78,8 +82,12 @@ public class Section extends BaseEntity {
                 isDistanceUnder(distance);
     }
 
-    public boolean isUpStationEqualsDownStationOf(Section section) {
+    public boolean isLower(Section section) {
         return isUpStation(section.downStation);
+    }
+
+    public boolean isUpper(Section section) {
+        return isDownStation(section.upStation);
     }
 
     public boolean isContains(Station station) {
@@ -92,6 +100,14 @@ public class Section extends BaseEntity {
 
     public boolean isDownStation(Station station) {
         return downStation == station;
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return upStation == section.getUpStation();
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return downStation == section.getDownStation();
     }
 
     public boolean isUpStation(Station station) {
