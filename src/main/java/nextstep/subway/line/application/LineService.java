@@ -44,4 +44,8 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException("해당 Line 정보를 찾을 수 없습니다."));
         line.update(lineRequest.toLine());
     }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
