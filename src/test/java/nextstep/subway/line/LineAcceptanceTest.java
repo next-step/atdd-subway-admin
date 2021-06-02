@@ -114,16 +114,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
-        assertThat(createResponse2.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        
+        assertThat(createResponse2.statusCode()).isEqualTo(HttpStatus.OK.value());
+
         // and
         // 지하철_노선_수정확인
-        uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = get(uri);
-        LineResponse actualResponse = response.body().as(LineResponse.class);
-
-        assertThat(actualResponse.getName()).isEqualTo(LineSeoul.NUMBER_6.lineName());
-        assertThat(actualResponse.getColor()).isEqualTo(LineSeoul.NUMBER_6.color());
+        LineResponse lineResponse = createResponse2.body().as(LineResponse.class);
+        assertThat(lineResponse.getName()).isEqualTo(LineSeoul.NUMBER_6.lineName());
+        assertThat(lineResponse.getColor()).isEqualTo(LineSeoul.NUMBER_6.color());
     }
 
     @DisplayName("지하철 노선을 제거한다.")

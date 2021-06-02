@@ -37,12 +37,14 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    public void update(Long id, LineRequest lineRequest) {
+    public LineResponse update(Long id, LineRequest lineRequest) {
         Line persistLine = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
         persistLine.update(lineRequest.toLine());
+        return LineResponse.of(persistLine);
     }
 
-    public void deleteLineById(Long id) {
+    public Long deleteLineById(Long id) {
         lineRepository.deleteById(id);
+        return id;
     }
 }
