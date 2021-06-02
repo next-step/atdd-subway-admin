@@ -1,3 +1,4 @@
+## 기능
 <p align="center">
     <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
 </p>
@@ -40,15 +41,17 @@ npm run dev
 
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
-
 <br>
 
 ## 🐞 Bug Report
-
 버그를 발견한다면, [Issues](https://github.com/next-step/atdd-subway-admin/issues) 에 등록해주세요 :)
-
 <br>
 
 ## 📝 License
-
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+# ATDD 1단계 - 지하철 노선 관리
+## 구현 목록 
+    - [ ] 지하철 노선 생성 / 목록 조회 / 조회 / 수정 / 삭제
+    - [ ] 기능 구현 전 인수 테스트 작성
+    - [ ] 기능 구현 후 인수 테스트 리팩터링
