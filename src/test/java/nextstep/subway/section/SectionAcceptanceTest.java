@@ -53,7 +53,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
   @DisplayName("지하철 노선 중간에 구간 등록한다.")
   @Test
-  void addSection() {
+  void addSectionInMiddle() {
     // given
     SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
     Long lineId = 신분당선.getId();
@@ -67,7 +67,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
   @DisplayName("새로운 역을 상행 종점으로 등록한다.")
   @Test
-  void addSection() {
+  void adSectionInHead() {
     // given
     SectionRequest sectionParam = new SectionRequest(압구정역_ID, 강남역_ID, 5);
     Long lineId = 신분당선.getId();
@@ -77,6 +77,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     //then
     지하철_구간_등록됨(result, lineId, 압구정역_ID, 강남역_ID, 광교역_ID);
+  }
+
+  @DisplayName("새로운 역을 하행 종점으로 등록한다.")
+  @Test
+  void addSectionInTail() {
+    // given
+    SectionRequest sectionParam = new SectionRequest(광교역_ID, 동탄역_ID, 5);
+    Long lineId = 신분당선.getId();
+
+    //when
+    ExtractableResponse<Response> result = 지하철_구간_등록_요청(lineId, sectionParam);
+
+    //then
+    지하철_구간_등록됨(result, lineId, 강남역_ID, 광교역_ID, 동탄역_ID);
   }
 
   private ExtractableResponse<Response> 지하철_구간_등록_요청(Long lineId, SectionRequest sectionParam) {
