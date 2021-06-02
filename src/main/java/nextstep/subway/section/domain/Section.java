@@ -78,6 +78,10 @@ public class Section extends BaseEntity {
                 isDistanceUnder(distance);
     }
 
+    public boolean isUpStationEqualsDownStationOf(Section section) {
+        return isUpStation(section.downStation);
+    }
+
     public boolean isContains(Station station) {
         return isDownStation(station) || isUpStation(station);
     }
@@ -97,4 +101,5 @@ public class Section extends BaseEntity {
     public List<Station> getStations() {
         return Collections.unmodifiableList(Arrays.asList(upStation, downStation));
     }
+
 }

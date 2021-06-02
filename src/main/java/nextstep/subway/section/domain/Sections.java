@@ -88,7 +88,7 @@ public class Sections {
 
         boolean findUpStation = false;
         for (Section section : sections) {
-            if (of.getUpStation() == section.getDownStation()) {
+            if (of.isUpStationEqualsDownStationOf(section)) {
                 findUpStation = true;
                 sortedList = sort(section);
                 sortedList.add(of);
