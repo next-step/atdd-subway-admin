@@ -20,6 +20,44 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    private ExtractableResponse<Response> executeGet(String path) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(path)
+                .then()
+                .log().all().extract();
+    }
+
+    private ExtractableResponse<Response> executePost(String path, Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(path)
+                .then()
+                .log().all().extract();
+    }
+
+    private ExtractableResponse<Response> executePut(String path, Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(path)
+                .then()
+                .log().all().extract();
+    }
+
+    private ExtractableResponse<Response> executeDelete(String path) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete(path)
+                .then().log().all()
+                .extract();
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -153,42 +191,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private ExtractableResponse<Response> executeGet(String path) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get(path)
-                .then()
-                .log().all().extract();
-    }
-
-    private ExtractableResponse<Response> executePost(String path, Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(path)
-                .then()
-                .log().all().extract();
-    }
-
-    private ExtractableResponse<Response> executePut(String path, Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(path)
-                .then()
-                .log().all().extract();
-    }
-
-    private ExtractableResponse<Response> executeDelete(String path) {
-        return RestAssured.given().log().all()
-                .when()
-                .delete(path)
-                .then().log().all()
-                .extract();
     }
 }
