@@ -7,45 +7,46 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.http.HttpStatus;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.DynamicTest.*;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final LineRequest 분당_라인 = new LineRequest("분당라인", "노란색");
-    private static final LineRequest 신분당_라인 = new LineRequest("신분당라인", "빨간색");
+    private static final LineRequest 분당_라인 = new LineRequest("분당라인", "노란색", 1L, 2L, 10L);
+    private static final LineRequest 신분당_라인 = new LineRequest("신분당라인", "빨간색", 1L, 2L, 10L);
 
     @DisplayName("지하철 노선을 생성한다.")
-    @Test
-    void createLine() {
-        // when
-        ExtractableResponse<Response> response = 노선_생성_요청(분당_라인);
-
-        // then
-        노선_생성_헤더_검증(response);
-
-        LineResponse lineResponse = response.as(LineResponse.class);
-
-        노선_생성_본문_검증(lineResponse, 1L, 분당_라인);
+    @TestFactory
+    Stream<DynamicTest> createLine() {
+        return Stream.of(
+                dynamicTest("강남역을 생성한다", 지하철역_생성_요청_및_체크(강남역, 1L)),
+                dynamicTest("역삼역을 생성한다", 지하철역_생성_요청_및_체크(역삼역, 2L)),
+                dynamicTest("지하철 노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L, new StationRequest[]{강남역, 역삼역}))
+        );
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @TestFactory
     Stream<DynamicTest> createLine2() {
         return Stream.of(
-                dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L)),
+                dynamicTest("강남역을 생성한다", 지하철역_생성_요청_및_체크(강남역, 1L)),
+                dynamicTest("역삼역을 생성한다", 지하철역_생성_요청_및_체크(역삼역, 2L)),
+                dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L, new StationRequest[]{강남역, 역삼역})),
                 dynamicTest("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다", () -> {
                     ExtractableResponse<Response> response = 노선_생성_요청(분당_라인);
 
@@ -58,8 +59,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> getLines() {
         return Stream.of(
-                dynamicTest("분당라인을 추가한다.", 라인_생성_및_체크(분당_라인, 1L)),
-                dynamicTest("신분당라인을 추가한다.", 라인_생성_및_체크(신분당_라인, 2L)),
+                dynamicTest("강남역을 생성한다", 지하철역_생성_요청_및_체크(강남역, 1L)),
+                dynamicTest("역삼역을 생성한다", 지하철역_생성_요청_및_체크(역삼역, 2L)),
+                dynamicTest("분당라인을 추가한다.", 라인_생성_및_체크(분당_라인, 1L, new StationRequest[]{강남역, 역삼역})),
+                dynamicTest("신분당라인을 추가한다.", 라인_생성_및_체크(신분당_라인, 2L, new StationRequest[]{강남역, 역삼역})),
                 dynamicTest("지하철 노석 목록을 조회한다", () -> {
                     ExtractableResponse<Response> response = 노선_목록_조회_요청();
 
@@ -67,7 +70,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
                     LineResponse[] lineResponses = response.body().as(LineResponse[].class);
 
-                    노선_목록_조회_본문_검증(lineResponses, new Long[]{1L, 2L}, 분당_라인, 신분당_라인);
+                    노선_목록_조회_본문_검증(lineResponses,
+                            new Long[]{1L, 2L},
+                            new LineRequest[] {분당_라인, 신분당_라인},
+                            new StationRequest[]{강남역, 역삼역});
                 })
         );
     }
@@ -77,7 +83,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> getLine() {
         return Stream.of(
                 dynamicTest("존재하지 않는 노선을 조회한다", 존재하지_않는_라인_확인(1L)),
-                dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L)),
+                dynamicTest("강남역을 생성한다", 지하철역_생성_요청_및_체크(강남역, 1L)),
+                dynamicTest("역삼역을 생성한다", 지하철역_생성_요청_및_체크(역삼역, 2L)),
+                dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L, new StationRequest[]{강남역, 역삼역})),
                 dynamicTest("노선을 노선을 조회한다", () -> {
                     ExtractableResponse<Response> response = 노선_조회_요청(1L);
 
@@ -85,7 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
                     LineResponse lineResponse = response.as(LineResponse.class);
 
-                    노선_조회_본문_검증(lineResponse, 1L, 분당_라인);
+                    노선_조회_본문_검증(lineResponse, 1L, 분당_라인, new StationRequest[]{강남역, 역삼역});
                 })
         );
     }
@@ -93,10 +101,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @TestFactory
     Stream<DynamicTest> updateLine() {
-        LineRequest 구_분당선 = new LineRequest("구분당선", "bg-blue-600");
+        LineRequest 구_분당선 = new LineRequest("구분당선", "bg-blue-600", 1L, 2L, 10L);
 
         return Stream.of(
-                dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L)),
+                dynamicTest("강남역을 생성한다", 지하철역_생성_요청_및_체크(강남역, 1L)),
+                dynamicTest("역삼역을 생성한다", 지하철역_생성_요청_및_체크(역삼역, 2L)),
+                dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L, new StationRequest[]{강남역, 역삼역})),
                 dynamicTest("노선을 수정을 요청한다", () -> {
                     ExtractableResponse<Response> response = 노선_수정_요청(1L, 구_분당선);
 
@@ -109,7 +119,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
                     LineResponse lineResponse = response.as(LineResponse.class);
 
-                    노선_조회_본문_검증(lineResponse, 1L, 구_분당선);
+                    노선_조회_본문_검증(lineResponse, 1L, 구_분당선, new StationRequest[]{강남역, 역삼역});
                 })
         );
     }
@@ -118,7 +128,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> deleteLine() {
         return Stream.of(
-                dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L)),
+                dynamicTest("강남역을 생성한다", 지하철역_생성_요청_및_체크(강남역, 1L)),
+                dynamicTest("역삼역을 생성한다", 지하철역_생성_요청_및_체크(역삼역, 2L)),
+                dynamicTest("노선을 생성한다", 라인_생성_및_체크(분당_라인, 1L, new StationRequest[]{강남역, 역삼역})),
                 dynamicTest("노선을 삭제을 요청한다", () -> {
                     ExtractableResponse<Response> response = 노선_삭제_요청(1L);
 
@@ -169,14 +181,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private Executable 라인_생성_및_체크(LineRequest lineRequest, Long exceptId) {
+    private Executable 라인_생성_및_체크(LineRequest lineRequest, Long exceptId, StationRequest[] stations) {
         return () -> {
             ExtractableResponse<Response> response = 노선_생성_요청(lineRequest);
 
             노선_생성_헤더_검증(response);
 
             LineResponse lineResponse = response.as(LineResponse.class);
-            노선_생성_본문_검증(lineResponse, exceptId, lineRequest);
+            노선_생성_본문_검증(lineResponse, exceptId, lineRequest, stations);
         };
     }
 
@@ -206,9 +218,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void 노선_생성_본문_검증(
             LineResponse lineResponse,
             Long exceptId,
-            LineRequest requestedLine
+            LineRequest requestedLine,
+            StationRequest[] stations
     ) {
-        노선_조회_본문_검증(lineResponse, exceptId, requestedLine);
+        노선_조회_본문_검증(lineResponse, exceptId, requestedLine, stations);
     }
 
     private void 노선_생성_실패_검증(ExtractableResponse<Response> response) {
@@ -219,7 +232,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void 노선_목록_조회_본문_검증(
             LineResponse[] lineResponses,
             Long exceptedIds[],
-            LineRequest... lineRequests
+            LineRequest[] lineRequests,
+            StationRequest[] stations
     ) {
         assertThat(lineResponses).hasSize(exceptedIds.length);
 
@@ -227,7 +241,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             노선_조회_본문_검증(
                     lineResponses[i],
                     exceptedIds[i],
-                    lineRequests[i]
+                    lineRequests[i],
+                    stations
             );
         }
     }
@@ -235,7 +250,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void 노선_조회_본문_검증(
             LineResponse lineResponse,
             Long exceptedId,
-            LineRequest lineRequest
+            LineRequest lineRequest,
+            StationRequest[] stations
     ) {
         assertThat(lineResponse.getId())
                 .isEqualTo(exceptedId);
@@ -249,6 +265,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .isNotNull();
         assertThat(lineResponse.getModifiedDate())
                 .isNotNull();
+
+        List<Long> stationIdsInLine = lineResponse.getStations()
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        List<String> stationNamesInLine = lineResponse.getStations()
+                .stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        assertThat(stationNamesInLine)
+                .containsExactlyElementsOf(
+                        Arrays.stream(stations)
+                        .map(StationRequest::getName)
+                        .collect(Collectors.toList())
+                );
+        assertThat(stationIdsInLine)
+                .containsExactlyInAnyOrder(lineRequest.getUpStationId(), lineRequest.getDownStationId());
     }
 
     private void 노선_데이터_없음_헤더_검증(ExtractableResponse<Response> response) {

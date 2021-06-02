@@ -1,19 +1,25 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private Sections sections;
+
     @Column(unique = true)
     private String name;
     private String color;
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -36,5 +42,9 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Station> getStationInSections() {
+        return sections.getAllStations();
     }
 }
