@@ -13,7 +13,7 @@ public class Sections {
     @OneToMany(mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
 
-    protected Sections() {
+    public Sections() {
     }
 
     public Sections(List<Section> sections) {
@@ -31,10 +31,38 @@ public class Sections {
 
         return stations;
     }
+
     public <R1> Stream<R1> mapOrderByUpStationToDownStation(Function<? super Section, ? extends R1> mapper) {
-        List<Section> sorted = sort(sections.get(0));
+        List<Section> sorted = sort();
         return sorted.stream()
                 .map(mapper);
+    }
+
+    public boolean isAddable(Station upStation, Station downStation, Long distance) {
+        return notContainsBetweenDownStationAndDistance(downStation, distance)
+                && notContainsBetweenUpStationAndDistance(upStation, distance);
+    }
+
+    private boolean notContainsBetweenDownStationAndDistance(Station downStation, Long distance) {
+        return sections.stream()
+                .filter(item -> item.getDownStation() == downStation)
+                .filter(item -> item.getDistance() <= distance)
+                .count() == 0L;
+    }
+
+    private boolean notContainsBetweenUpStationAndDistance(Station upStation, Long distance) {
+        return sections.stream()
+                .filter(item -> item.getUpStation() == upStation)
+                .filter(item -> item.getDistance() <= distance)
+                .count() == 0L;
+    }
+
+    private List<Section> sort() {
+        if (sections.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return sort(sections.get(0));
     }
 
     private List<Section> sort(Section of) {

@@ -33,12 +33,13 @@ public class SectionCommandService {
     }
 
     public Long save(Line line, Long upStationId, Long downStationId, Long distance) {
-        return save(new Section(line, findStationById(upStationId), findStationById(downStationId), distance));
-    }
-
-    public Long save(Section section) {
-        return sectionRepository.save(section)
-                .getId();
+        return sectionRepository.save(
+                line.createSection(
+                        findStationById(upStationId),
+                        findStationById(downStationId),
+                        distance
+                )
+        ).getId();
     }
 
     public void deleteByLineId(Long lineId) {

@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
@@ -13,7 +14,7 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Sections sections;
+    private Sections sections = new Sections();
 
     @Column(unique = true)
     private String name;
@@ -46,5 +47,15 @@ public class Line extends BaseEntity {
 
     public List<Station> getStationInSections() {
         return sections.getAllStations();
+    }
+
+    public Section createSection(Station upStation, Station downStation, Long distance) {
+        Section section = new Section(this, upStation, downStation, distance);
+
+        if (!sections.isAddable(upStation, downStation, distance)) {
+            throw new IllegalStateException("새로운 구간 사이에 이미 역이 있습니다");
+        }
+
+        return section;
     }
 }

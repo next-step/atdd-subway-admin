@@ -32,8 +32,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     private static Long 분당_라인_ID = 1L;
 
+    // 강남역 <-> 역삼역 <-> 수진역
     private static SectionRequest 역삼역_수진역_길이_15 = new SectionRequest(역삼역_ID, 수진역_ID, 15L);
     private static SectionRequest 수진역_강남역_길이_15 = new SectionRequest(수진역_ID, 강남역_ID, 15L);
+    private static SectionRequest 강남역_수진역_길이_15 = new SectionRequest(강남역_ID, 수진역_ID, 15L);
 
     @TestFactory
     @DisplayName("신규 구간을 추가한다 (상)역삼역 <-> (하)수진역")
@@ -55,7 +57,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @TestFactory
-    @DisplayName("신규 구간을 추가한다 (상)수진역 <-> (하)강남역")
+    @DisplayName("신규 구간을 추가한다 (상)수진역 <-> (하)강남역 (정렬테스트)")
     Stream<DynamicTest> 신규_구간을_추가한다_상_수진역_하_강남역() {
         return Stream.of(
                 dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
@@ -71,6 +73,29 @@ class SectionAcceptanceTest extends AcceptanceTest {
                         new ExpectSectionResponse(강남역_ID, 역삼역_ID, 분당_라인.getDistance())
                 ))
         );
+    }
+
+    @TestFactory
+    @DisplayName("신규 구간 사이에 Section이 존재하며 안된다")
+    Stream<DynamicTest> 신규_구간_사이에_Section이_존재하면_안된다() {
+        return Stream.of(
+                dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
+                dynamicTest("역삼역을 추가한다", 지하철역_생성_요청_및_체크(역삼역, 역삼역_ID)),
+                dynamicTest("수진역을 추가한다", 지하철역_생성_요청_및_체크(수진역, 수진역_ID)),
+                dynamicTest("(상)강남역과 (하)역삼역의 노선을 만든다",
+                        라인_생성_및_체크(분당_라인, 분당_라인_ID, new StationRequest[]{강남역, 역삼역})
+                ),
+                dynamicTest("(상)강남역 (하)수지역을 연결한다", () -> {
+                    ExtractableResponse<Response> response = 구간_생성_요청(강남역_수진역_길이_15, 분당_라인_ID);
+
+                    생성_실패_검증(response);
+                })
+        );
+    }
+
+    private void 생성_실패_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode())
+                .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     private Executable 전체_연결_확인(Long lineId, ExpectSectionResponse ...expectSectionResponses) {
@@ -104,14 +129,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     private Executable 구간_생성_및_체크(SectionRequest sectionRequest, Long lineId, Long expectId) {
         return () -> {
-            ExtractableResponse<Response> response = RestAssured.given()
-                    .log().all()
-                    .contentType(ContentType.JSON)
-                    .body(sectionRequest)
-                    .when()
-                    .log().all()
-                    .post(format("/%d/sections", lineId))
-                    .then().extract();
+            ExtractableResponse<Response> response = 구간_생성_요청(sectionRequest, lineId);
 
             구간_생성_헤더_검증(response);
 
@@ -119,6 +137,18 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
             구간_생성_본문_검증(sectionResponse, expectId, sectionRequest);
         };
+    }
+
+    private ExtractableResponse<Response> 구간_생성_요청(SectionRequest sectionRequest, Long lineId) {
+        ExtractableResponse<Response> response = RestAssured.given()
+                .log().all()
+                .contentType(ContentType.JSON)
+                .body(sectionRequest)
+                .when()
+                .log().all()
+                .post(format("/%d/sections", lineId))
+                .then().extract();
+        return response;
     }
 
     private void 구간_생성_본문_검증(SectionResponse sectionResponse, Long expectId, SectionRequest sectionRequest) {
