@@ -30,6 +30,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     public final static StationRequest 역삼역 = new StationRequest("역삼역");
     public final static StationRequest 수진역 = new StationRequest("수진역");
     public final static StationRequest 모란역 = new StationRequest("모란역");
+    public final static StationRequest 야탑역 = new StationRequest("야탑역");
 
     @DisplayName("지하철역을 생성한다.")
     @Test
