@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class LineService {
     private LineRepository lineRepository;
 
@@ -19,6 +18,7 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
@@ -36,6 +36,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
     public void editLine(Long id, LineRequest lineRequest) {
         Line line = findById(id);
         line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
@@ -45,6 +46,7 @@ public class LineService {
         return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
     }
 
+    @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
