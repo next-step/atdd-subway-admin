@@ -26,7 +26,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        LineRequest lineRequest = LineSeoul.NUMBER_2.toRequest();
+//        LineRequest lineRequest = LineSeoul.NUMBER_2.toRequest();
+        String color = "bg-red-600";
+        String name = "신분당선";
+        Long upStationId = 1L;
+        Long downStationId = 2L;
+        int distance = 10;
+        LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
 
         // when
         // 지하철_노선_생성_요청
@@ -37,6 +43,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
+
+//    @DisplayName("지하철 노선을 생성한다.")
+//    @Test
+//    void createLine() {
+//        // given
+//        LineRequest lineRequest = LineSeoul.NUMBER_2.toRequest();
+//
+//        // when
+//        // 지하철_노선_생성_요청
+//        ExtractableResponse<Response> response = postLineRequest(path, lineRequest);
+//
+//        // then
+//        // 지하철_노선_생성됨
+//        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+//        assertThat(response.header("Location")).isNotBlank();
+//    }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
