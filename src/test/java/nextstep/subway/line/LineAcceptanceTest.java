@@ -30,7 +30,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "red");
 
         ExtractableResponse<Response> response = executePost("/lines", params);
-        
+
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -156,32 +156,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> executeGet(String path) {
-        return RestAssured.given().log().all().
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                get(path).
-                then().
-                log().all().extract();
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(path)
+                .then()
+                .log().all().extract();
     }
 
     private ExtractableResponse<Response> executePost(String path, Map<String, String> params) {
-        return RestAssured.given().log().all().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post(path).
-                then().
-                log().all().extract();
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(path)
+                .then()
+                .log().all().extract();
     }
 
     private ExtractableResponse<Response> executePut(String path, Map<String, String> params) {
-        return RestAssured.given().log().all().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                put(path).
-                then().
-                log().all().extract();
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put(path)
+                .then()
+                .log().all().extract();
     }
 
     private ExtractableResponse<Response> executeDelete(String path) {
