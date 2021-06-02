@@ -1,10 +1,7 @@
 package nextstep.subway.section.ui;
 
-import nextstep.subway.line.application.LineQueryService;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.application.SectionCommandService;
 import nextstep.subway.section.application.SectionQueryService;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import org.springframework.http.ResponseEntity;
@@ -41,9 +38,8 @@ public class SectionController {
     @GetMapping
     public ResponseEntity list(@PathVariable Long lineId) {
         return ResponseEntity.ok(
-                sectionQueryService.findAllByLineIdFetched(lineId)
-                .stream()
-                .map(SectionResponse::of)
+                sectionQueryService.findAllByLineIdFetchedOrderByUpToDownStation(lineId)
+                .mapOrderByUpStationToDownStation(SectionResponse::of)
                 .collect(Collectors.toList())
         );
     }

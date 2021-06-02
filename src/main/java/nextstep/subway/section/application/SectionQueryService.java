@@ -3,9 +3,11 @@ package nextstep.subway.section.application;
 import nextstep.subway.common.exception.EntityNotExistException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.domain.Sections;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -24,7 +26,9 @@ public class SectionQueryService {
         return section;
     }
 
-    public List<Section> findAllByLineIdFetched(Long lineId) {
-        return sectionRepository.findAllByLineId(lineId);
+    public Sections findAllByLineIdFetchedOrderByUpToDownStation(Long lineId) {
+        List<Section> sections = sectionRepository.findAllByLineId(lineId);
+
+        return new Sections(sections);
     }
 }
