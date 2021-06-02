@@ -19,7 +19,7 @@ import org.springframework.http.MediaType;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
     private StationResponse GYEYANG;
     private StationResponse GYULHYEON;
@@ -64,7 +64,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location").startsWith("/lines")).isTrue();
+        assertThat(response.header("Location")).startsWith("/lines");
 
         assertThat(response.body().jsonPath().getString("name"))
             .isEqualTo(INCHEON_SUBWAY_LINE_1.getName());

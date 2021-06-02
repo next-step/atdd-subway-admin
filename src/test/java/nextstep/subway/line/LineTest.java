@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LineTest {
+class LineTest {
 
     @DisplayName("toStation 메소드는 상행-하행 순으로 정리되어야 한다.")
     @Test
@@ -36,7 +36,7 @@ public class LineTest {
 
         List<Station> stations = line.toStations();
 
-        assertThat(stations).hasSize(4);
-        assertThat(stations).hasSameElementsAs(Arrays.asList(stationArray));
+        assertThat(stations).hasSize(4)
+                            .hasSameElementsAs(Arrays.asList(stationArray));
     }
 }

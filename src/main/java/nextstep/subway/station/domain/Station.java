@@ -1,11 +1,15 @@
 package nextstep.subway.station.domain;
 
+import java.io.Serializable;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
 
 @Entity
-public class Station extends BaseEntity {
+public class Station extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = -7072260724840512817L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

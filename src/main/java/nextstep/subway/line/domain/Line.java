@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -13,7 +14,9 @@ import nextstep.subway.section.domain.LineSections;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class Line extends BaseEntity {
+public class Line extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = -1326863547152158454L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
