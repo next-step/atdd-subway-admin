@@ -29,6 +29,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private static Long 강남역_ID = 1L;
     private static Long 역삼역_ID = 2L;
     private static Long 수진역_ID = 3L;
+    private static Long 모란역_ID = 4L;
 
     private static Long 분당_라인_ID = 1L;
 
@@ -43,6 +44,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private static SectionRequest 역삼역_강남역_길이_1 = new SectionRequest(역삼역_ID, 강남역_ID, 1L);
     private static SectionRequest 수진역_역삼역_길이_1 = new SectionRequest(수진역_ID, 역삼역_ID, 1L);
     private static SectionRequest 수진역_강남역_길이_1 = new SectionRequest(수진역_ID, 강남역_ID, 1L);
+
+    private static SectionRequest 수진역_모란역_길이_1 = new SectionRequest(수진역_ID, 모란역_ID, 1L);
 
     @TestFactory
     @DisplayName("신규 구간을 추가한다 (상)역삼역 <-> (하)수진역")
@@ -120,7 +123,22 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 dynamicTest("이미 연결된 (상)강남역 (하)수진역을 연결한다", 구간_생성_및_실패_체크(강남역_수진역_길이_1, 분당_라인_ID)),
                 dynamicTest("이미 연결된 (상)역삼역 (하)강남역을 연결한다", 구간_생성_및_실패_체크(역삼역_강남역_길이_1, 분당_라인_ID)),
                 dynamicTest("이미 연결된 (상)수진역 (하)역삼역을 연결한다", 구간_생성_및_실패_체크(수진역_역삼역_길이_1, 분당_라인_ID)),
-                dynamicTest("이미 연결된 (상)수진역 (하)강남역을 연결한다", 구간_생성_및_실패_체크(강남역_수진역_길이_1, 분당_라인_ID))
+                dynamicTest("이미 연결된 (상)수진역 (하)강남역을 연결한다", 구간_생성_및_실패_체크(수진역_강남역_길이_1, 분당_라인_ID))
+        );
+    }
+
+    @TestFactory
+    @DisplayName("상행역 하행역 둘중 하나라도 노선에 포함이 안되어있으면 안된다")
+    Stream<DynamicTest> 상행역_하행역_둘중_하나라도_노선에_포함이_안되어있으면_안된다() {
+        return Stream.of(
+                dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
+                dynamicTest("역삼역을 추가한다", 지하철역_생성_요청_및_체크(역삼역, 역삼역_ID)),
+                dynamicTest("수진역을 추가한다", 지하철역_생성_요청_및_체크(수진역, 수진역_ID)),
+                dynamicTest("모란역을 추가한다", 지하철역_생성_요청_및_체크(모란역, 모란역_ID)),
+                dynamicTest("(상)강남역과 (하)역삼역의 노선을 만든다",
+                        라인_생성_및_체크(분당_라인, 분당_라인_ID, new StationRequest[]{강남역, 역삼역})
+                ),
+                dynamicTest("수진역과 모란역을 분당라인에 연결한다", 구간_생성_및_실패_체크(수진역_모란역_길이_1, 분당_라인_ID))
         );
     }
 
