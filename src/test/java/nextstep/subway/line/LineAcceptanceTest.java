@@ -48,15 +48,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        ExtractableResponse<Response> 이호선 = 지하철_노선_생성_요청("분당선", "yellow");
-        ExtractableResponse<Response> 삼호선 = 지하철_노선_생성_요청("신분당선", "red");
+        ExtractableResponse<Response> 분당선 = 지하철_노선_생성_요청("분당선", "yellow");
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_생성_요청("신분당선", "red");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         지하철_노선_목록_응답됨(response);
-        지하철_노선_목록_포함됨(response, Arrays.asList(이호선, 삼호선));
+        지하철_노선_목록_포함됨(response, Arrays.asList(분당선, 신분당선));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
