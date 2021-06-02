@@ -85,14 +85,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> 생성된_분당선 = 지하철_노선_생성_요청(분당선);
+        LineRequest 수정내용 = 신분당선;
 
         // when
-        // 지하철_노선_수정_요청
+        ExtractableResponse<Response> 수정된_분당선 = 지하철_노선_수정_요청(수정내용, 생성된_분당선);
 
         // then
-        // 지하철_노선_수정됨
+        지하철_노선_수정됨(수정된_분당선, 수정내용);
     }
+
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
@@ -140,6 +142,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.jsonPath()
                         .getObject(".", LineResponse.class)
                         .getName()).isEqualTo(line.getName())
+        );
+    }
+
+    private void 지하철_노선_수정됨(ExtractableResponse<Response> modifiedResponse, LineRequest modifyObject) {
+        assertAll(
+                () -> assertThat(modifiedResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(modifiedResponse.jsonPath()
+                        .getObject(".", LineResponse.class)
+                        .getName()).isEqualTo(modifyObject.getName()),
+                () -> assertThat(modifiedResponse.jsonPath()
+                        .getObject(".", LineResponse.class)
+                        .getColor()).isEqualTo(modifyObject.getColor())
         );
     }
 }
