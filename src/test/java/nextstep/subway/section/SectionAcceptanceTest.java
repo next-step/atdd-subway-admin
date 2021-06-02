@@ -5,8 +5,6 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.LineAcceptanceTest;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.dto.StationRequest;
@@ -44,14 +42,18 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 dynamicTest("역삼역을 추가한다", 지하철역_생성_요청_및_체크(역삼역, 역삼역_ID)),
                 dynamicTest("수진역을 추가한다", 지하철역_생성_요청_및_체크(수진역, 수진역_ID)),
                 dynamicTest("(상)강남역과 (하)역삼역의 노선을 만든다",
-                        라인_생성_및_체크(분당_라인, 분당_라인_ID, new StationRequest[] {강남역, 역삼역})
+                        라인_생성_및_체크(분당_라인, 분당_라인_ID, new StationRequest[]{강남역, 역삼역})
                 ),
                 dynamicTest("(상)역삼역과 (하)수진역을 연결한다", 구간_생성_및_체크(역삼역_수진역_길이_15, 분당_라인_ID,2L)),
-                dynamicTest("분당라인의 전체 연결을 확인한다", 전체_연결_확인(분당_라인_ID))
+                dynamicTest("분당라인의 전체 연결을 확인한다", 전체_연결_확인(
+                        분당_라인_ID,
+                        new ExpectSectionResponse(강남역_ID, 역삼역_ID, 분당_라인.getDistance()),
+                        new ExpectSectionResponse(역삼역_ID, 수진역_ID, 역삼역_수진역_길이_15.getDistance())
+                ))
         );
     }
 
-    private Executable 전체_연결_확인(Long lineId) {
+    private Executable 전체_연결_확인(Long lineId, ExpectSectionResponse ...expectSectionResponses) {
         return () -> {
             ExtractableResponse<Response> response = RestAssured.given()
                     .log().all()
@@ -66,23 +68,17 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
             SectionResponse[] sectionResponses = response.as(SectionResponse[].class);
 
-            SectionResponse 강남역_역삼역_구간 = sectionResponses[0];
-            SectionResponse 역삼역_수진역_구간 = sectionResponses[1];
+            for (int i = 0; i < sectionResponses.length; i++) {
+                SectionResponse sectionResponse = sectionResponses[i];
+                ExpectSectionResponse expectSectionResponse = expectSectionResponses[i];
 
-            assertThat(강남역_역삼역_구간.getUpStationId())
-                    .isEqualTo(강남역_ID);
-            assertThat(강남역_역삼역_구간.getDownStationId())
-                    .isEqualTo(역삼역_ID);
-            assertThat(강남역_역삼역_구간.getDistance())
-                    .isEqualTo(분당_라인.getDistance());
-
-
-            assertThat(역삼역_수진역_구간.getUpStationId())
-                    .isEqualTo(역삼역_ID);
-            assertThat(역삼역_수진역_구간.getDownStationId())
-                    .isEqualTo(수진역_ID);
-            assertThat(역삼역_수진역_구간.getDistance())
-                    .isEqualTo(역삼역_수진역_길이_15.getDistance());
+                assertThat(sectionResponse.getUpStationId())
+                        .isEqualTo(expectSectionResponse.getUpStationId());
+                assertThat(sectionResponse.getDownStationId())
+                        .isEqualTo(expectSectionResponse.getDownStationId());
+                assertThat(sectionResponse.getDistance())
+                        .isEqualTo(expectSectionResponse.getDistance());
+            }
         };
     }
 
@@ -126,5 +122,29 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private void 정상_응답_헤더_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.header(HttpHeaders.CONTENT_TYPE)).isIn(ContentType.JSON.getContentTypeStrings());
+    }
+
+    private class ExpectSectionResponse {
+        private Long upStationId;
+        private Long downStationId;
+        private Long distance;
+
+        public ExpectSectionResponse(Long upStationId, Long downStationId, Long distance) {
+            this.upStationId = upStationId;
+            this.downStationId = downStationId;
+            this.distance = distance;
+        }
+
+        public Long getUpStationId() {
+            return upStationId;
+        }
+
+        public Long getDownStationId() {
+            return downStationId;
+        }
+
+        public Long getDistance() {
+            return distance;
+        }
     }
 }
