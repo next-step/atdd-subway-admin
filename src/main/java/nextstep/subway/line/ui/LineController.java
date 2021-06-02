@@ -24,6 +24,11 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
+    @GetMapping
+    public ResponseEntity getLines() {
+        return ResponseEntity.ok().body(lineService.findAllLines());
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsExceptionForLine(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
