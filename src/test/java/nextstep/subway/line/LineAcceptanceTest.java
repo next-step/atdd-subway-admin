@@ -95,18 +95,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정됨(수정된_분당선);
     }
 
-
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> 생성된_분당선 = 지하철_노선_생성_요청(분당선);
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(생성된_분당선);
 
         // then
-        // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response);
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
@@ -147,5 +146,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
