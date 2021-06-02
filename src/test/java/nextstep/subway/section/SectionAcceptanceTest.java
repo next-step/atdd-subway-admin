@@ -38,6 +38,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private static SectionRequest 역삼역_수진역_길이_15 = new SectionRequest(역삼역_ID, 수진역_ID, 15L);
     private static SectionRequest 수진역_강남역_길이_15 = new SectionRequest(수진역_ID, 강남역_ID, 15L);
     private static SectionRequest 강남역_수진역_길이_15 = new SectionRequest(강남역_ID, 수진역_ID, 15L);
+    private static SectionRequest 강남역_수진역_길이_10 = new SectionRequest(강남역_ID, 수진역_ID, 15L);
     
     private static SectionRequest 강남역_역삼역_길이_1 = new SectionRequest(강남역_ID, 역삼역_ID, 1L);
     private static SectionRequest 역삼역_수진역_길이_1 = new SectionRequest(역삼역_ID, 수진역_ID, 1L);
@@ -112,7 +113,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 dynamicTest("(상)강남역과 (하)역삼역의 노선을 만든다",
                         라인_생성_및_체크(분당_라인, 분당_라인_ID, new StationRequest[]{강남역, 역삼역})
                 ),
-                dynamicTest("(상)강남역 (하)수진역을 연결한다", 구간_생성_및_실패_체크(강남역_수진역_길이_15, 분당_라인_ID))
+                dynamicTest("(상)강남역 (하)수진역을 연결한다", 구간_생성_및_실패_체크(강남역_수진역_길이_15, 분당_라인_ID)),
+                dynamicTest("(상)강남역 (하)수진역을 연결한다", 구간_생성_및_실패_체크(강남역_수진역_길이_10, 분당_라인_ID))
         );
     }
 
