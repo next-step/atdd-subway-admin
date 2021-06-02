@@ -52,8 +52,17 @@ public class Section extends BaseEntity {
         }
     }
 
-    public void resizeBy(Section section) {
+    public void resizeAndChangeNearStation(Section section) {
+        changeNearStation(section);
         this.distance -= section.distance;
+    }
+
+    private void changeNearStation(Section section) {
+        if (isSameDownStation(section)) {
+            this.downStation = section.upStation;
+        } else if (isSameUpStation(section)) {
+            this.upStation = section.downStation;
+        }
     }
 
     public Long getId() {

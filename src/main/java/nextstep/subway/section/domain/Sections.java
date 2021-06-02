@@ -42,7 +42,7 @@ public class Sections {
         sections.stream()
                 .filter(item -> item.isSameUpStation(section) || item.isSameDownStation(section))
                 .findFirst()
-                .ifPresent((near) -> near.resizeBy(section));
+                .ifPresent((near) -> near.resizeAndChangeNearStation(section));
 
         sections.add(section);
     }
@@ -101,6 +101,8 @@ public class Sections {
 
     private Section getTopSection(Section firstSection) {
         for (Section section : sections) {
+            if (firstSection == section) continue;
+
             if (firstSection.isLower(section)) {
                 return getTopSection(section);
             }
