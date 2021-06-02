@@ -1,11 +1,21 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import nextstep.subway.common.BaseEntity;
-
-import javax.persistence.*;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
+
+import static java.util.stream.Collectors.toList;
 
 @Entity
 public class Line extends BaseEntity {
@@ -54,5 +64,14 @@ public class Line extends BaseEntity {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public List<Station> toStations() {
+        return sections.stream()
+                       .flatMap(
+                           section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                       .distinct()
+                       .sorted(Comparator.comparingLong(Station::getId))
+                       .collect(toList());
     }
 }

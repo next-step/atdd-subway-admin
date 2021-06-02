@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,15 +23,15 @@ public class Section extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 

@@ -38,9 +38,10 @@ public class LineCommandService {
         Station downStation = stationQueryService.findStationById(request.getDownStationId());
 
         Section section = new Section(upStation, downStation, request.getDistance());
-        sectionCommandService.saveSection(section.toLine(persistLine));
+        persistLine.addSection(section);
+        sectionCommandService.saveSection(section);
 
-        return LineResponse.of(persistLine);
+        return LineResponse.of(lineRepository.save(persistLine));
     }
 
     public void updateLine(Long lineId, LineRequest lineRequest) {

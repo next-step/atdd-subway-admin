@@ -16,6 +16,11 @@ public class Station extends BaseEntity {
     }
 
     public Station(String name) {
+        this(null, name);
+    }
+
+    public Station(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 
@@ -25,5 +30,13 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            '}';
     }
 }

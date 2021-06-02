@@ -119,9 +119,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                          .contains(INCHEON_SUBWAY_LINE_1.getName(), AIRPORT_EXPRESS.getName());
         assertThat(lines).extracting(LineResponse::getColor)
                          .contains(INCHEON_SUBWAY_LINE_1.getColor(), AIRPORT_EXPRESS.getColor());
-        assertThat(lines).extracting(LineResponse::getStations)
-                         .contains(Arrays.asList(GYEYANG, GYULHYEON),
-                                   Arrays.asList(SEOUL, GONGDEOK));
+
+        assertThat(lines.get(0).getStations()).hasSameElementsAs(Arrays.asList(GYEYANG, GYULHYEON));
+        assertThat(lines.get(1).getStations()).hasSameElementsAs(Arrays.asList(SEOUL, GONGDEOK));
+
     }
 
     @DisplayName("지하철 노선을 조회한다.")
