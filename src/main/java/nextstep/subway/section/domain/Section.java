@@ -107,10 +107,6 @@ public class Section extends BaseEntity {
         return this.distance.isLessThan(distance);
     }
 
-    public boolean isDownStation(Station station) {
-        return downStation == station;
-    }
-
     public boolean isSameUpStation(Section section) {
         return upStation == section.getUpStation();
     }
@@ -119,12 +115,16 @@ public class Section extends BaseEntity {
         return downStation == section.getDownStation();
     }
 
-    public boolean isUpStation(Station station) {
-        return upStation == station;
-    }
-
     public List<Station> getStations() {
         return Collections.unmodifiableList(Arrays.asList(upStation, downStation));
+    }
+
+    private boolean isDownStation(Station station) {
+        return downStation == station;
+    }
+
+    private boolean isUpStation(Station station) {
+        return upStation == station;
     }
 
 }
