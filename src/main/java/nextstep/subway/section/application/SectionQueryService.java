@@ -6,6 +6,8 @@ import nextstep.subway.section.domain.SectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 public class SectionQueryService {
@@ -20,5 +22,9 @@ public class SectionQueryService {
                 .orElseThrow(EntityNotExistException::new);
 
         return section;
+    }
+
+    public List<Section> findAllByLineIdFetched(Long lineId) {
+        return sectionRepository.findAllByLineId(lineId);
     }
 }

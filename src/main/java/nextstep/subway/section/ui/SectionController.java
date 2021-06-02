@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -35,5 +36,15 @@ public class SectionController {
 
         return ResponseEntity.created(URI.create(format("/%d/sections/%d", lineId, id)))
                 .body(SectionResponse.of(sectionQueryService.findByIdFetched(id)));
+    }
+
+    @GetMapping
+    public ResponseEntity list(@PathVariable Long lineId) {
+        return ResponseEntity.ok(
+                sectionQueryService.findAllByLineIdFetched(lineId)
+                .stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList())
+        );
     }
 }

@@ -37,8 +37,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private static SectionRequest 역삼역_수진역_길이_15 = new SectionRequest(역삼역_ID, 수진역_ID, 15L);
 
     @TestFactory
-    @DisplayName("신규 구간을 추가한다")
-    Stream<DynamicTest> 신규_구간을_추가한다() {
+    @DisplayName("신규 구간을 추가한다 (상)역삼역 <-> (하)수진역")
+    Stream<DynamicTest> 신규_구간을_추가한다_상_역삼역_하_수진역() {
         return Stream.of(
                 dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
                 dynamicTest("역삼역을 추가한다", 지하철역_생성_요청_및_체크(역삼역, 역삼역_ID)),
@@ -58,7 +58,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
                     .when()
                     .log().all()
                     .get(format("/%d/sections", lineId))
-                    .then().extract();
+                    .then()
+                    .log().all()
+                    .extract();
 
             정상_응답_헤더_검증(response);
 
