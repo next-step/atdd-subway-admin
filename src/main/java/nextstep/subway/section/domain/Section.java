@@ -68,6 +68,32 @@ public class Section extends BaseEntity {
         return distance;
     }
 
+    public boolean isUpStationBetween(Station station, Long distance) {
+        return isUpStation(station) &&
+                isDistanceUnder(distance);
+    }
+
+    public boolean isDownStationBetween(Station station, Long distance) {
+        return isDownStation(station) &&
+                isDistanceUnder(distance);
+    }
+
+    public boolean isContains(Station station) {
+        return isDownStation(station) || isUpStation(station);
+    }
+
+    public boolean isDistanceUnder(Long distance) {
+        return this.distance <= distance;
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation == station;
+    }
+
+    public boolean isUpStation(Station station) {
+        return upStation == station;
+    }
+
     public List<Station> getStations() {
         return Collections.unmodifiableList(Arrays.asList(upStation, downStation));
     }

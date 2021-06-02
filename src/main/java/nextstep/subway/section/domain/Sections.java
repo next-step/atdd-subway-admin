@@ -39,22 +39,32 @@ public class Sections {
     }
 
     public boolean isAddable(Station upStation, Station downStation, Long distance) {
-        return notContainsBetweenDownStationAndDistance(downStation, distance)
-                && notContainsBetweenUpStationAndDistance(upStation, distance);
+        return !containsBetweenDownStationAndDistance(downStation, distance)
+                && !containsBetweenUpStationAndDistance(upStation, distance)
+                && !containsStations(upStation, downStation);
     }
 
-    private boolean notContainsBetweenDownStationAndDistance(Station downStation, Long distance) {
+    private boolean containsBetweenDownStationAndDistance(Station downStation, Long distance) {
         return sections.stream()
-                .filter(item -> item.getDownStation() == downStation)
-                .filter(item -> item.getDistance() <= distance)
-                .count() == 0L;
+                .filter(item -> item.isDownStationBetween(downStation, distance))
+                .count() > 0L;
     }
 
-    private boolean notContainsBetweenUpStationAndDistance(Station upStation, Long distance) {
+    private boolean containsBetweenUpStationAndDistance(Station upStation, Long distance) {
         return sections.stream()
-                .filter(item -> item.getUpStation() == upStation)
-                .filter(item -> item.getDistance() <= distance)
-                .count() == 0L;
+                .filter(item -> item.isUpStationBetween(upStation, distance))
+                .count() > 0L;
+    }
+
+    private boolean containsStations(Station upStation, Station downStation) {
+        return containsStation(upStation) &&
+                containsStation(downStation);
+    }
+
+    private boolean containsStation(Station station) {
+        return sections.stream()
+                .filter(item -> item.isContains(station))
+                .count() > 0L;
     }
 
     private List<Section> sort() {
