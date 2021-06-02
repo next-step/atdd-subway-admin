@@ -18,9 +18,9 @@ public class LineCommandService {
         this.sectionCommandService = sectionCommandService;
     }
 
-    public Long saveLine(Line line, long upStationId, long downStationId) {
+    public Long saveLine(Line line, Long upStationId, Long downStationId, Long distance) {
         Line saved = lineRepository.save(line);
-        sectionCommandService.save(saved, upStationId, downStationId);
+        sectionCommandService.save(saved, upStationId, downStationId, distance);
 
         return saved.getId();
     }

@@ -1,5 +1,9 @@
 package nextstep.subway.section.dto;
 
+import nextstep.subway.section.domain.Section;
+
+import java.net.URI;
+
 public class SectionResponse {
     private Long id;
     private Long upStationId;
@@ -27,5 +31,14 @@ public class SectionResponse {
 
     public Long getDistance() {
         return distance;
+    }
+
+    public static SectionResponse of(Section section) {
+        return new SectionResponse(
+                section.getId(),
+                section.getUpStation().getId(),
+                section.getDownStation().getId(),
+                section.getDistance()
+        );
     }
 }

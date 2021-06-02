@@ -27,7 +27,8 @@ public class LineController {
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         Long id = lineCommandService.saveLine(lineRequest.toLine(),
                 lineRequest.getUpStationId(),
-                lineRequest.getDownStationId());
+                lineRequest.getDownStationId(),
+                lineRequest.getDistance());
 
         LineResponse line = LineResponse.of(lineQueryService.findByIdFetched(id));
 
