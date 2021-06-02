@@ -9,7 +9,7 @@ public class SortedSections {
     private List<Section> sections;
 
     public SortedSections(List<Section> sections) {
-        this.sections = sections;
+        this.sections = new ArrayList<>(sections);
         sort();
     }
 
