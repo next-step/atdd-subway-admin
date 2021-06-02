@@ -40,8 +40,9 @@ public class SectionController {
     public ResponseEntity list(@PathVariable Long lineId) {
         return ResponseEntity.ok(
                 sectionQueryService.findAllByLineIdFetchedOrderByUpToDownStation(lineId)
-                .mapOrderByUpStationToDownStation(SectionResponse::of)
-                .collect(Collectors.toList())
+                        .getSortedSections()
+                        .map(SectionResponse::of)
+                        .collect(Collectors.toList())
         );
     }
 }

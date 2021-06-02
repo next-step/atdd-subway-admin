@@ -32,12 +32,6 @@ public class Sections {
         return stations;
     }
 
-    public <R1> Stream<R1> mapOrderByUpStationToDownStation(Function<? super Section, ? extends R1> mapper) {
-        List<Section> sorted = sort();
-        return sorted.stream()
-                .map(mapper);
-    }
-
     public void addAndResizeDistanceBy(Section section) {
         resizeNearSection(section);
 
@@ -53,6 +47,10 @@ public class Sections {
                 && !containsBetweenUpStationAndDistance(upStation, distance)
                 && !containsStationsExactly(upStation, downStation)
                 && containsStationAny(upStation, downStation);
+    }
+
+    public SortedSections getSortedSections() {
+        return new SortedSections(this.sections);
     }
 
     private void resizeNearSection(Section section) {
@@ -90,49 +88,4 @@ public class Sections {
                 .count() > 0L;
     }
 
-    private List<Section> sort() {
-        if (sections.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        Section topSection = getTopSection(sections.get(0));
-
-        return sort(topSection);
-    }
-
-    private Section getTopSection(Section firstSection) {
-        for (Section section : sections) {
-            if (firstSection == section) continue;
-
-            if (firstSection.isLower(section)) {
-                return getTopSection(section);
-            }
-        }
-
-        return firstSection;
-    }
-
-    private List<Section> sort(Section upperSection) {
-        List<Section> sortedList = new ArrayList<>();
-        sortedList.add(upperSection);
-
-        Section bottomSection = findBottomSection(upperSection);
-
-        if (bottomSection == null) {
-            return sortedList;
-        }
-
-        sortedList.addAll(sort(bottomSection));
-        return sortedList;
-    }
-
-    private Section findBottomSection(Section of) {
-        for (Section section : sections) {
-            if (of.isUpper(section)) {
-                return section;
-            }
-        }
-
-        return null;
-    }
 }

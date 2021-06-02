@@ -4,13 +4,11 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class SectionsTest {
 
@@ -47,8 +45,10 @@ class SectionsTest {
                 new Section(new Line("", ""), 역_5, 역_6, zero)
         );
 
-        Sections sorted = new Sections(sections);
-        List<Section> collect = sorted.mapOrderByUpStationToDownStation(item -> item).collect(Collectors.toList());
+        SortedSections sortedSections = new SortedSections(sections);
+        List<Section> collect = sortedSections
+                .map(item -> item)
+                .collect(Collectors.toList());
 
         assertThat(collect.get(0).getUpStation())
                 .isEqualTo(역_1);
@@ -91,8 +91,9 @@ class SectionsTest {
                 new Section(new Line("", ""), 역_2, 역_3, zero)
         );
 
-        Sections sorted = new Sections(sections);
-        List<Section> collect = sorted.mapOrderByUpStationToDownStation(item -> item).collect(Collectors.toList());
+        SortedSections sortedSections = new SortedSections(sections);
+        List<Section> collect = sortedSections.map(item -> item)
+                .collect(Collectors.toList());
 
         assertThat(collect.get(0).getUpStation())
                 .isEqualTo(역_1);
