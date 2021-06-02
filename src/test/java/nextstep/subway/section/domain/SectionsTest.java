@@ -31,18 +31,20 @@ class SectionsTest {
 
         // 1 <-> 12번까지 정렬이 되어야함.
 
+        Distance zero = new Distance(0L);
+
         List<Section> sections = Arrays.asList(
-                new Section(new Line("", ""), 역_2, 역_3, 0L),
-                new Section(new Line("", ""), 역_1, 역_2, 0L),
-                new Section(new Line("", ""), 역_3, 역_4, 0L),
-                new Section(new Line("", ""), 역_10, 역_11, 0L),
-                new Section(new Line("", ""), 역_11, 역_12, 0L),
-                new Section(new Line("", ""), 역_6, 역_7, 0L),
-                new Section(new Line("", ""), 역_8, 역_9, 0L),
-                new Section(new Line("", ""), 역_7, 역_8, 0L),
-                new Section(new Line("", ""), 역_9, 역_10, 0L),
-                new Section(new Line("", ""), 역_4, 역_5, 0L),
-                new Section(new Line("", ""), 역_5, 역_6, 0L)
+                new Section(new Line("", ""), 역_2, 역_3, zero),
+                new Section(new Line("", ""), 역_1, 역_2, zero),
+                new Section(new Line("", ""), 역_3, 역_4, zero),
+                new Section(new Line("", ""), 역_10, 역_11, zero),
+                new Section(new Line("", ""), 역_11, 역_12, zero),
+                new Section(new Line("", ""), 역_6, 역_7, zero),
+                new Section(new Line("", ""), 역_8, 역_9, zero),
+                new Section(new Line("", ""), 역_7, 역_8, zero),
+                new Section(new Line("", ""), 역_9, 역_10, zero),
+                new Section(new Line("", ""), 역_4, 역_5, zero),
+                new Section(new Line("", ""), 역_5, 역_6, zero)
         );
 
         Sections sorted = new Sections(sections);
@@ -82,9 +84,11 @@ class SectionsTest {
         Station 역_2 = new Station("역_2");
         Station 역_3 = new Station("역_3");
 
+        Distance zero = new Distance(0L);
+
         List<Section> sections = Arrays.asList(
-                new Section(new Line("", ""), 역_1, 역_2, 0L),
-                new Section(new Line("", ""), 역_2, 역_3, 0L)
+                new Section(new Line("", ""), 역_1, 역_2, zero),
+                new Section(new Line("", ""), 역_2, 역_3, zero)
         );
 
         Sections sorted = new Sections(sections);

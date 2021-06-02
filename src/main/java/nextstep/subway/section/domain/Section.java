@@ -22,12 +22,12 @@ public class Section extends BaseEntity {
     private Station downStation;
 
     @Column(nullable = false)
-    private Long distance;
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, Long distance) {
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         validateLine(line);
         validateStation(upStation, downStation);
 
@@ -54,7 +54,7 @@ public class Section extends BaseEntity {
 
     public void resizeAndChangeNearStation(Section section) {
         changeNearStation(section);
-        this.distance -= section.distance;
+        this.distance = distance.minus(section.distance);
     }
 
     private void changeNearStation(Section section) {
@@ -77,16 +77,16 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public Long getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
-    public boolean isUpStationBetween(Station station, Long distance) {
+    public boolean isUpStationBetween(Station station, Distance distance) {
         return isUpStation(station) &&
                 isDistanceUnder(distance);
     }
 
-    public boolean isDownStationBetween(Station station, Long distance) {
+    public boolean isDownStationBetween(Station station, Distance distance) {
         return isDownStation(station) &&
                 isDistanceUnder(distance);
     }
@@ -103,8 +103,8 @@ public class Section extends BaseEntity {
         return isDownStation(station) || isUpStation(station);
     }
 
-    public boolean isDistanceUnder(Long distance) {
-        return this.distance <= distance;
+    public boolean isDistanceUnder(Distance distance) {
+        return this.distance.isLessThan(distance);
     }
 
     public boolean isDownStation(Station station) {

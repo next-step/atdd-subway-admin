@@ -2,6 +2,7 @@ package nextstep.subway.section.ui;
 
 import nextstep.subway.section.application.SectionCommandService;
 import nextstep.subway.section.application.SectionQueryService;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class SectionController {
         Long id = sectionCommandService.save(lineId,
                 sectionRequest.getUpStationId(),
                 sectionRequest.getDownStationId(),
-                sectionRequest.getDistance()
+                new Distance(sectionRequest.getDistance())
         );
 
         return ResponseEntity.created(URI.create(format("/%d/sections/%d", lineId, id)))

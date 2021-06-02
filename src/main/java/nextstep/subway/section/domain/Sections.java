@@ -39,18 +39,12 @@ public class Sections {
     }
 
     public void addAndResizeDistanceBy(Section section) {
-        sections.stream()
-                .filter(item -> item.isSameUpStation(section) || item.isSameDownStation(section))
-                .findFirst()
-                .ifPresent((near) -> near.resizeAndChangeNearStation(section));
+        resizeNearSection(section);
 
         sections.add(section);
     }
 
-    // 1번 소트처리를한다
-    // 2번
-
-    public boolean isAddable(Station upStation, Station downStation, Long distance) {
+    public boolean isAddable(Station upStation, Station downStation, Distance distance) {
         if (sections.isEmpty()) {
             return true;
         }
@@ -61,13 +55,20 @@ public class Sections {
                 && containsStationAny(upStation, downStation);
     }
 
-    private boolean containsBetweenDownStationAndDistance(Station downStation, Long distance) {
+    private void resizeNearSection(Section section) {
+        sections.stream()
+                .filter(item -> item.isSameUpStation(section) || item.isSameDownStation(section))
+                .findFirst()
+                .ifPresent((near) -> near.resizeAndChangeNearStation(section));
+    }
+
+    private boolean containsBetweenDownStationAndDistance(Station downStation, Distance distance) {
         return sections.stream()
                 .filter(item -> item.isDownStationBetween(downStation, distance))
                 .count() > 0L;
     }
 
-    private boolean containsBetweenUpStationAndDistance(Station upStation, Long distance) {
+    private boolean containsBetweenUpStationAndDistance(Station upStation, Distance distance) {
         return sections.stream()
                 .filter(item -> item.isUpStationBetween(upStation, distance))
                 .count() > 0L;

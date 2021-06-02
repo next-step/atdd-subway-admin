@@ -38,7 +38,7 @@ public class SectionResponse {
                 section.getId(),
                 section.getUpStation().getId(),
                 section.getDownStation().getId(),
-                section.getDistance()
+                section.getDistance().toLong()
         );
     }
 }

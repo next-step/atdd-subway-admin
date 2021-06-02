@@ -3,6 +3,7 @@ package nextstep.subway.section.application;
 import nextstep.subway.common.exception.EntityNotExistException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
@@ -23,7 +24,7 @@ public class SectionCommandService {
         this.lineRepository = lineRepository;
     }
 
-    public Long save(Long lineId, Long upStationId, Long downStationId, Long distance) {
+    public Long save(Long lineId, Long upStationId, Long downStationId, Distance distance) {
         Line line = findLineById(lineId);
 
         Section section = line.createSectionAndResizeDistance(
