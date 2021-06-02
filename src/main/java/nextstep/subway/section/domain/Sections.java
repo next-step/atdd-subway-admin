@@ -39,9 +39,12 @@ public class Sections {
     }
 
     public boolean isAddable(Station upStation, Station downStation, Long distance) {
+        if (sections.isEmpty()) return true;
+
         return !containsBetweenDownStationAndDistance(downStation, distance)
                 && !containsBetweenUpStationAndDistance(upStation, distance)
-                && !containsStations(upStation, downStation);
+                && !containsStationsExactly(upStation, downStation)
+                && containsStationAny(upStation, downStation);
     }
 
     private boolean containsBetweenDownStationAndDistance(Station downStation, Long distance) {
@@ -56,8 +59,13 @@ public class Sections {
                 .count() > 0L;
     }
 
-    private boolean containsStations(Station upStation, Station downStation) {
+    private boolean containsStationsExactly(Station upStation, Station downStation) {
         return containsStation(upStation) &&
+                containsStation(downStation);
+    }
+
+    private boolean containsStationAny(Station upStation, Station downStation) {
+        return containsStation(upStation) ||
                 containsStation(downStation);
     }
 
