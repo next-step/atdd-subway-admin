@@ -54,4 +54,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## 구현 목록 
 - [X] 지하철 노선 생성 / 목록 조회 / 조회 / 수정 / 삭제
 - [x] 기능 구현 전 인수 테스트 작성
-- [ ] 기능 구현 후 인수 테스트 리팩터링
+- [X] 기능 구현 후 인수 테스트 리팩터링
