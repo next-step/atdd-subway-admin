@@ -10,6 +10,10 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
+  private static final String DUPLICATED_STATIONS = "이미 등록된 역 구간을 다시 등록 할 수 없습니다.";
+  private static final String NOT_CONTAINS_NEITHER_STATIONS = "상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.";
+  private static final String EMPTY_SECTIONS = "등록된 구간이 없습니다.";
+
   @OneToMany(mappedBy = "line")
   private List<Section> lineSections = new ArrayList<>();
 
@@ -40,10 +44,10 @@ public class Sections {
 
   private void validateNewSection(Section newSection) {
     if (hasBothStations(newSection)) {
-      throw new IllegalArgumentException("이미 등록된 역 구간을 다시 등록 할 수 없습니다.");
+      throw new IllegalArgumentException(DUPLICATED_STATIONS);
     }
     if (hasNotBothStations(newSection)) {
-      throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
+      throw new IllegalArgumentException(NOT_CONTAINS_NEITHER_STATIONS);
     }
   }
 
@@ -78,7 +82,7 @@ public class Sections {
     return getLineSections().stream()
         .filter(this::isHead)
         .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("등록된 구간이 없습니다."));
+        .orElseThrow(() -> new IllegalArgumentException(EMPTY_SECTIONS));
   }
 
   private boolean isHead(Section compare) {

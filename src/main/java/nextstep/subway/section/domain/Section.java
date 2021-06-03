@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 @Entity
 public class Section extends BaseEntity {
 
+  private static final String NEW_SECTION_MUST_SHORTER_THAN_EXIST_SECTION = "새로 등록되는 구간 길이가 기존 역 사이 길이보다 크거나 같을 수 없습니다.";
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -136,7 +138,7 @@ public class Section extends BaseEntity {
   private int distanceDiffWithNewSection(Distance newSectionDistacne) {
     int distanceDiff = this.distance.getNumber() - newSectionDistacne.getNumber();
     if (distanceDiff <= 0) {
-      throw new IllegalArgumentException("새로 등록되는 구간 길이가 기존 역 사이 길이보다 크거나 같을 수 없습니다.");
+      throw new IllegalArgumentException(NEW_SECTION_MUST_SHORTER_THAN_EXIST_SECTION);
     }
     return distanceDiff;
   }
