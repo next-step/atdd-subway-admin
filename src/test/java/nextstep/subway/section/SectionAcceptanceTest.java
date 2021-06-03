@@ -185,7 +185,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     LineResponse actualLine = 노선_단건을_조회한다(lineId).as(LineResponse.class);
     List<Long> lineStationIds = 노선_응답에서_역_ID들을_얻는다(actualLine);
     assertThat(lineStationIds).isEqualTo(Stream.of(expectStationIds)
-                                              .collect(Collectors.toList()));
+        .collect(Collectors.toList()));
   }
 
   private void 지하철_구간_등록_실패함(ExtractableResponse<Response> result) {

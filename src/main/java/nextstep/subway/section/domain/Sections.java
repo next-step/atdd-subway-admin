@@ -32,18 +32,25 @@ public class Sections {
   }
 
   public void registerNewSection(Section newSection) {
-    if(hasSameStations(newSection)) {
+    if (hasBothStations(newSection)) {
       throw new IllegalArgumentException("이미 등록된 역 구간을 다시 등록 할 수 없습니다.");
+    }
+    if (hasNotBothStations(newSection)) {
+      throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
     }
     this.lineSections = this.getLineSections().stream()
         .flatMap(lineSection -> lineSection.insertNewSection(newSection).stream())
         .collect(Collectors.toList());
   }
 
-  private boolean hasSameStations(Section section) {
+  private boolean hasBothStations(Section section) {
     Set<Station> stations = getDistinctStations();
     return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
+  }
 
+  private boolean hasNotBothStations(Section section) {
+    Set<Station> stations = getDistinctStations();
+    return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
   }
 
   private List<Section> getSortedSections() {
