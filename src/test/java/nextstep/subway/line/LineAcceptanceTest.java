@@ -3,7 +3,6 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.domain.LineSeoul;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,14 +31,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String name2 = "2호선";
         Long upStationId2 = 1L;
         Long downStationId2 = 2L;
-        int distance2 = 10;
+        int distance2 = 2;
         line2Request = new LineRequest(name2, color2, upStationId2, downStationId2, distance2);
 
-        String color6 = "bg-red-600";
-        String name6 = "2호선";
-        Long upStationId6 = 1L;
-        Long downStationId6 = 2L;
-        int distance6 = 10;
+        String color6 = "bg-orange-600";
+        String name6 = "6호선";
+        Long upStationId6 = 3L;
+        Long downStationId6 = 4L;
+        int distance6 = 6;
         line6Request = new LineRequest(name6, color6, upStationId6, downStationId6, distance6);
     }
 
@@ -80,11 +79,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        postLineRequest(path, LineSeoul.NUMBER_2.toRequest());
+        postLineRequest(path, line2Request);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = postLineRequest(path, LineSeoul.NUMBER_2.toRequest());
+        ExtractableResponse<Response> response = postLineRequest(path, line2Request);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -96,9 +95,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse createResponse1 = postLineRequest(path, LineSeoul.NUMBER_2.toRequest());
+        ExtractableResponse createResponse1 = postLineRequest(path, line2Request);
         // 지하철_노선_등록되어_있음
-        ExtractableResponse createResponse2 = postLineRequest(path, LineSeoul.NUMBER_6.toRequest());
+        ExtractableResponse createResponse2 = postLineRequest(path, line6Request);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -122,7 +121,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse createResponse = postLineRequest(path, LineSeoul.NUMBER_2.toRequest());
+        ExtractableResponse createResponse = postLineRequest(path, line2Request);
 
         // when
         // 지하철_노선_조회_요청
@@ -139,12 +138,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse createResponse = postLineRequest(path, LineSeoul.NUMBER_2.toRequest());
+        ExtractableResponse createResponse = postLineRequest(path, line2Request);
 
         // when
         // 지하철_노선_수정_요청
         String uri = createResponse.header("Location");
-        ExtractableResponse createResponse2 = putLineRequest(uri, LineSeoul.NUMBER_6.toRequest());
+        ExtractableResponse createResponse2 = putLineRequest(uri, line6Request);
 
         // then
         // 지하철_노선_수정됨
@@ -153,8 +152,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // and
         // 지하철_노선_수정확인
         LineResponse lineResponse = createResponse2.body().as(LineResponse.class);
-        assertThat(lineResponse.getName()).isEqualTo(LineSeoul.NUMBER_6.lineName());
-        assertThat(lineResponse.getColor()).isEqualTo(LineSeoul.NUMBER_6.color());
+        assertThat(lineResponse.getName()).isEqualTo(line6Request.getName());
+        assertThat(lineResponse.getColor()).isEqualTo(line6Request.getColor());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -162,7 +161,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse createResponse = postLineRequest(path, LineSeoul.NUMBER_2.toRequest());
+        ExtractableResponse createResponse = postLineRequest(path, line2Request);
 
         // when
         // 지하철_노선_제거_요청
@@ -178,6 +177,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> checkResponse = get(uri);
         assertThat(checkResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
-
 
 }

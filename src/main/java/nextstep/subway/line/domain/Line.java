@@ -13,23 +13,19 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @Column
+    @Column(unique = true)
     private String color;
 
-    @Column
+    @Column(unique = true)
     private Long upStationId;
 
-    @Column
+    @Column(unique = true)
     private Long downStationId;
 
-    @Column
+    @Column(unique = true)
     private int distance;
 
     public Line() {
-    }
-
-    public Line(String name, String color) {
-        this(name, color, null, null, 0);
     }
 
     public Line(String name, String color, Long upStationId, Long downStationId, int distance) {
