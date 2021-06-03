@@ -119,14 +119,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String lineColor, String lineName) {
         Map<String, String> params = createLineParam(lineColor, lineName);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-        return response;
+        return post("/lines", params);
     }
 
     private Map<String, String> createLineParam(String lineColor, String lineName) {
@@ -138,21 +131,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return RestAssured.given().log().all()
-                .when()
-                .get("/lines")
-                .then().log().all()
-                .extract();
+        return get("/lines");
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get(uri)
-                .then().log().all()
-                .extract();
-        return response;
+        return get(uri);
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> createResponse, String lineColor, String lineName) {
@@ -160,24 +144,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         Map<String, String> params = createLineParam(lineColor, lineName);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(uri)
-                .then().log().all()
-                .extract();
-        return response;
+        return put(uri, params);
     }
 
     private ExtractableResponse<Response> 자하철_노선_제거_요청(ExtractableResponse<Response> createResponse) {
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
-        return response;
+        return delete(uri);
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
