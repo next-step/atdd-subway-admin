@@ -66,20 +66,94 @@ public class Section extends BaseEntity {
   }
 
   public List<Station> getUpAndDownStations() {
-    return Stream.of(upStation, downStation)
+    return Stream.of(this.getUpStation(), this.getDownStation())
             .collect(Collectors.toList());
+  }
+
+  public boolean isSameEdges(Section other) {
+    return this.getUpStation().equals(other.getUpStation()) &&
+            this.getDownStation().equals(other.getDownStation());
+  }
+
+  public boolean isNotSameBothEdges(Section other) {
+    return !this.getUpStation().equals(other.getUpStation()) &&
+            !this.getDownStation().equals(other.getDownStation());
+  }
+
+  public boolean isSameDownStation(Section other) {
+    Station thisDownStation = this.getDownStation();
+    Station otherDownStation = other.getDownStation();
+    return thisDownStation.equals(otherDownStation);
+  }
+
+  public boolean isSameUpStation(Section other) {
+    Station thisUpStation = this.getUpStation();
+    Station otherUpStation = other.getUpStation();
+    return thisUpStation.equals(otherUpStation);
+  }
+
+  public boolean isBefore(Section other) {
+    return this.getDownStation().equals(other.getUpStation());
+  }
+
+  public boolean isAfter(Section other) {
+    return this.getUpStation().equals(other.getDownStation());
+  }
+
+  public List<Section> insertNewSection(Section newSection) {
+    if (this.isSameUpStation(newSection)) {
+      this.updateUpStation(newSection);
+      return Stream.of(this, newSection).collect(Collectors.toList());
+    }
+    if (this.isSameDownStation(newSection)) {
+      this.updateDownStation(newSection);
+      return Stream.of(this, newSection).collect(Collectors.toList());
+    }
+    return Stream.of(this, newSection).collect(Collectors.toList());
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if(o == null) return false;
+    if(!(o instanceof Section)) return false;
     Section section = (Section) o;
-    return id.equals(section.id) && upStation.equals(section.upStation) && downStation.equals(section.downStation) && distance.equals(section.distance) && line.equals(section.line);
+    return this.getId().equals(section.getId()) &&
+            this.getUpStation().equals(section.getUpStation()) &&
+            this.getDownStation().equals(section.getDownStation()) &&
+            this.getDistance().equals(section.getDistance()) &&
+            this.getLine().equals(section.getLine());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, upStation, downStation, distance, line);
+    return Objects.hash(this.getId(), this.getUpStation(), this.getDownStation(), this.getDistance(), this.getLine());
+  }
+
+  public void updateDownStation(Section newSection) {
+    int distanceDiff = distanceDiffWithNewSection(newSection.distance);
+    this.downStation = newSection.upStation;
+    this.distance = Distance.from(distanceDiff);
+  }
+
+  public void updateUpStation(Section newSection) {
+    int distanceDiff = distanceDiffWithNewSection(newSection.distance);
+    this.upStation = newSection.downStation;
+    this.distance = Distance.from(distanceDiff);
+  }
+
+  private int distanceDiffWithNewSection(Distance newSectionDistacne) {
+    int distanceDiff = this.distance.getNumber() - newSectionDistacne.getNumber();
+    if (distanceDiff <= 0) {
+      throw new IllegalArgumentException("새로 등록되는 구간 길이가 기존 역 사이 길이보다 크거나 같을 수 없습니다.");
+    }
+    return distanceDiff;
+  }
+
+  @Override
+  public String toString() {
+    return "{"
+        + "                        \"id\":\"" + id + "\""
+        + "}";
   }
 }
