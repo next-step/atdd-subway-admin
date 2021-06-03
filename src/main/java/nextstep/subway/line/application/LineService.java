@@ -43,4 +43,8 @@ public class LineService {
         Line line = lineRepository.findById(id).get();
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
     }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
