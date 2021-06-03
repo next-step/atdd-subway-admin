@@ -30,4 +30,9 @@ public class LineService {
             .map(line -> LineResponse.of(line))
             .collect(Collectors.toList());
     }
+
+    public LineResponse findLine(Long id) {
+        Line line = lineRepository.findById(id).get();
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+    }
 }
