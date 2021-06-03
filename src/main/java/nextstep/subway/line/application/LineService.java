@@ -26,6 +26,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> getLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
@@ -33,8 +34,14 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse getLine(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_LINE_MESSAGE));
         return LineResponse.of(line);
+    }
+
+    public void modifyLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_LINE_MESSAGE));
+        line.update(lineRequest.toLine());
     }
 }
