@@ -6,10 +6,12 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,10 +95,85 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     지하철_구간_등록됨(result, lineId, 강남역_ID, 광교역_ID, 동탄역_ID);
   }
 
+  @DisplayName("기존 역 사이 길이보다 새로운 구간의 길이가 크면 등록할 수 없다.")
+  @Test
+  void tooLongDistanceTest() {
+    // given
+    SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 20);
+    Long lineId = 신분당선.getId();
+
+    //when
+    ExtractableResponse<Response> result = 지하철_구간_등록_요청(lineId, sectionParam);
+
+    //then
+    지하철_구간_등록_실패함(result);
+  }
+
+  @DisplayName("기존 역 사이 길이보다 새로운 구간의 길이가 같으면 등록할 수 없다.")
+  @Test
+  void equalDistanceTest() {
+    // given
+    SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 10);
+    Long lineId = 신분당선.getId();
+
+    //when
+    ExtractableResponse<Response> result = 지하철_구간_등록_요청(lineId, sectionParam);
+
+    //then
+    지하철_구간_등록_실패함(result);
+  }
+
+  @DisplayName("이미 등록되어있는 구간은 다시 등록할 수 없다.")
+  @Test
+  void duplicateSectionTest() {
+    // given
+    SectionRequest sectionParam = new SectionRequest(강남역_ID, 광교역_ID, 10);
+    Long lineId = 신분당선.getId();
+
+    //when
+    ExtractableResponse<Response> result = 지하철_구간_등록_요청(lineId, sectionParam);
+
+    //then
+    지하철_구간_등록_실패함(result);
+  }
+
+  @DisplayName("상행, 하행 역 모두 이미 등록되어 있으면 등록 할 수 없다.")
+  @Test
+  void containsBothStationsTest() {
+    // given
+    SectionRequest preRegisterParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
+    Long lineId = 신분당선.getId();
+    지하철_구간_등록_요청(lineId, preRegisterParam);
+    SectionRequest sectionParam = new SectionRequest(강남역_ID, 광교역_ID, 10);
+
+    //when
+    ExtractableResponse<Response> result = 지하철_구간_등록_요청(lineId, sectionParam);
+
+    //then
+    지하철_구간_등록_실패함(result);
+  }
+
+  @DisplayName("상행, 하행 역 모두 이미 등록되어 있지않으면 등록할 수 없음")
+  @Test
+  void containsNotBothStationsTest() {
+    // given
+    Long 광화문역_ID = 등록된_역_ID(지하철_역_등록되어_있음("광화문역"));
+    Long 신도림역_ID = 등록된_역_ID(지하철_역_등록되어_있음("신도림역"));
+    SectionRequest sectionParam = new SectionRequest(광화문역_ID, 신도림역_ID, 5);
+    Long lineId = 신분당선.getId();
+
+    //when
+    ExtractableResponse<Response> result = 지하철_구간_등록_요청(lineId, sectionParam);
+
+    //then
+    지하철_구간_등록_실패함(result);
+  }
+
   private ExtractableResponse<Response> 지하철_구간_등록_요청(Long lineId, SectionRequest sectionParam) {
     return RestAssured.given().log().all()
         .body(sectionParam)
         .pathParam("id", lineId)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
         .when()
         .post("/lines/{id}/sections")
         .then().log().all()
@@ -109,5 +186,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     List<Long> lineStationIds = 노선_응답에서_역_ID들을_얻는다(actualLine);
     assertThat(lineStationIds).isEqualTo(Stream.of(expectStationIds)
                                               .collect(Collectors.toList()));
+  }
+
+  private void 지하철_구간_등록_실패함(ExtractableResponse<Response> result) {
+    assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
 }
