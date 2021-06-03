@@ -1,20 +1,20 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineHelper.*;
+import static nextstep.subway.station.StationHelper.가짜_역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -22,9 +22,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     ExtractableResponse createResponse;
 
+    Station 강남역;
+    Station 양재역;
+
     @BeforeEach
-    void 미리_역_생성() {
-        LineRequest lineRequest = 노선_요청_정보("신분당선", "bg-red-600");
+    void 미리_노선_및_역_생성() {
+
+        강남역 = 가짜_역_생성("강남역", 1L);
+        양재역 = 가짜_역_생성("양재역", 2L);
+
+        LineRequest lineRequest = 노선_요청_정보("신분당선", "bg-red-600", 강남역.getId(), 양재역.getId(), 10);
 
         createResponse = 노선_생성(lineRequest);
     }
@@ -42,7 +49,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선_생성_중복_발생() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest = 노선_요청_정보("신분당선", "bg-red-600");
+        LineRequest lineRequest = 노선_요청_정보("신분당선", "bg-red-600", 강남역.getId(), 양재역.getId(), 10);
 
         // when
         // 지하철_노선_생성_요청
@@ -58,7 +65,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequest = 노선_요청_정보("3호선", "bg-red-600");
+        LineRequest lineRequest = 노선_요청_정보("3호선", "bg-red-600", 강남역.getId(), 양재역.getId(), 10);
         노선_생성(lineRequest);
 
         // when
@@ -96,7 +103,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         Long id = 생성_노선_아이디(createResponse);
-        LineRequest fixedRequest = 노선_요청_정보("분당선", "bg-red-600");
+        LineRequest fixedRequest = 노선_요청_정보("분당선", "bg-red-600", 강남역.getId(), 양재역.getId(), 10);
         // when
         // 지하철_노선_수정_요청
         ExtractableResponse response = 노선_수정(id, fixedRequest);
