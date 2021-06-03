@@ -14,6 +14,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
 
+    private static final String DONT_CARE = "name";
+
     @DisplayName("toStation 메소드는 상행-하행 순으로 정리되어야 한다.")
     @MethodSource("toStationTestCase")
     @ParameterizedTest
@@ -40,16 +42,16 @@ class LineTest {
     private static Stream<Arguments> toStationTestCase() {
         return Stream.of(
             Arguments.of((Object) new Station[] {
-                new Station(1L, "name"),
-                new Station(2L, "name"),
-                new Station(3L, "name"),
-                new Station(4L, "name")
+                new Station(1L, DONT_CARE),
+                new Station(2L, DONT_CARE),
+                new Station(3L, DONT_CARE),
+                new Station(4L, DONT_CARE)
             }),
             Arguments.of((Object) new Station[] {
-                new Station(4L, "name"),
-                new Station(3L, "name"),
-                new Station(2L, "name"),
-                new Station(1L, "name")
+                new Station(4L, DONT_CARE),
+                new Station(3L, DONT_CARE),
+                new Station(2L, DONT_CARE),
+                new Station(1L, DONT_CARE)
             })
         );
     }
