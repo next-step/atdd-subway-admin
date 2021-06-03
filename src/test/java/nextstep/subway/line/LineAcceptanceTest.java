@@ -1,20 +1,20 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineRequest;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.Map;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -32,13 +32,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
 
         // when
-        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(new LineRequest("1호선", "blue"));
 
         // then
-        // 지하철_노선_생성_실패됨
+        지하철_노선_생성_실패됨(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -106,7 +106,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    private LineResponse 지하철_노선_등록되어_있음(LineRequest lineRequest) {
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
+        return response.jsonPath()
+                .getObject(".", LineResponse.class);
+    }
+
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
