@@ -4,6 +4,15 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+  datasource:
+    hikari:
+      jdbc-url: jdbc:h2:mem:/testdb
+      username: sa
+      password:
+
+  h2:
+    console:
+      enabled: true
 
 server:
   servlet:
