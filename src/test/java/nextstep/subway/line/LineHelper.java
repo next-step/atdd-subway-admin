@@ -16,8 +16,8 @@ public class LineHelper {
                 .then().log().all().extract();
     }
 
-    public static LineRequest 노선_요청_정보(String name, String color) {
-        return new LineRequest(name, color);
+    public static LineRequest 노선_요청_정보(String name, String color, Long upStationId, Long downStationId, Integer distance) {
+        return new LineRequest(name, color, upStationId, downStationId, distance);
     }
     
     public static ExtractableResponse 노선_목록_조회() {
