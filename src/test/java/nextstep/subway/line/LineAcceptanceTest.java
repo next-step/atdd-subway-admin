@@ -93,13 +93,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(line3);
 
         // when
-        // 지하철_노선_수정_요청
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", line5.getName());
+        params.put("color", line5.getColor());
+        ExtractableResponse<Response> response = RestAssured
+            .given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put(createResponse.header("Location"))
+            .then().log().all().extract();
 
         // then
-        // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")

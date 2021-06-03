@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class LineService {
+
     private LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -20,6 +21,13 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
+        return LineResponse.of(persistLine);
+    }
+
+    public LineResponse updateLine(Long id, LineRequest request) {
+        Line persistLine = lineRepository.findById(id).get();
+        persistLine.update(request.toLine());
+        lineRepository.save(persistLine);
         return LineResponse.of(persistLine);
     }
 
