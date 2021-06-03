@@ -1,14 +1,12 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.AcceptanceTest;
+import nextstep.subway.RestAcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,44 +17,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
-
-    private ExtractableResponse<Response> executeGet(String path) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get(path)
-                .then()
-                .log().all().extract();
-    }
-
-    private ExtractableResponse<Response> executePost(String path, Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(path)
-                .then()
-                .log().all().extract();
-    }
-
-    private ExtractableResponse<Response> executePut(String path, Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(path)
-                .then()
-                .log().all().extract();
-    }
-
-    private ExtractableResponse<Response> executeDelete(String path) {
-        return RestAssured.given().log().all()
-                .when()
-                .delete(path)
-                .then().log().all()
-                .extract();
-    }
+public class LineAcceptanceTest extends RestAcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
