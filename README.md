@@ -52,3 +52,52 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+
+
+## 👨🏻‍💻 Todo list
+
+- [x] [**사전 제공**] 지하철 역 관리
+- [ ] 코드 이해 및 Polishing
+- [ ] [**1단계**] 지하철 노선 관리
+  - [ ] 지하철 노선을 생성한다.
+  - [ ] 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.
+  - [ ] 지하철 노선 목록을 조회한다.
+  - [ ] 지하철 노선을 조회한다.
+  - [ ] 지하철 노선을 수정한다.
+  - [ ] 지하철 노선을 제거한다.
+
+- [ ] [**2단계**] 지하철 노선에 구간 등록
+- [ ] [**3단계**] 노선에 등록된 역 목록 조회
+- [ ] [**4단계**] 지하철 노선에 구간 제외
+
+
+
+## [1단계] 지하철 노선 관리
+
+**구현해야 될 부분**
+
+![image.png](https://tva1.sinaimg.cn/large/008i3skNgy1gr55v4rh3sj30vb0u0wk1.jpg)
+
+
+
+![image.png](https://nextstep-storage.s3.ap-northeast-2.amazonaws.com/155885260e20466497cbf3f344cf7a5d)
+
+## 지하철 역(station)
+
+- 지하철 역 속성:
+  - 이름(name)
+
+## 지하철 구간(section)
+
+- 지하철 (상행 방향)역과 (하행 방향)역 사이의 연결 정보
+- 지하철 구간 속성:
+  - 길이(distance)
+
+## 지하철 노선(line)
+
+- 지하철 구간의 모음으로 구간에 포함된 지하철 역의 연결 정보
+- 지하철 노선 속성:
+  - 노선 이름(name)
+  - 노선 색(color)
+
