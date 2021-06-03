@@ -5,10 +5,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -18,6 +22,7 @@ import org.springframework.http.MediaType;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final Line line3 = new Line("3호선", "orange");
+    private static final Line line5 = new Line("5호선", "purple");
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -48,15 +53,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음(line3);
+        ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음(line5);
 
         // when
-        // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = RestAssured
+            .when().get("/lines")
+            .then().log().all().extract();
 
         // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+            .map(it -> it.getId())
+            .collect(Collectors.toList());
+        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
