@@ -75,11 +75,6 @@ public class Section extends BaseEntity {
             this.getDownStation().equals(other.getDownStation());
   }
 
-  public boolean isNotSameBothEdges(Section other) {
-    return !this.getUpStation().equals(other.getUpStation()) &&
-            !this.getDownStation().equals(other.getDownStation());
-  }
-
   public boolean isSameDownStation(Section other) {
     Station thisDownStation = this.getDownStation();
     Station otherDownStation = other.getDownStation();
@@ -90,10 +85,6 @@ public class Section extends BaseEntity {
     Station thisUpStation = this.getUpStation();
     Station otherUpStation = other.getUpStation();
     return thisUpStation.equals(otherUpStation);
-  }
-
-  public boolean isBefore(Section other) {
-    return this.getDownStation().equals(other.getUpStation());
   }
 
   public boolean isAfter(Section other) {
@@ -148,12 +139,5 @@ public class Section extends BaseEntity {
       throw new IllegalArgumentException("새로 등록되는 구간 길이가 기존 역 사이 길이보다 크거나 같을 수 없습니다.");
     }
     return distanceDiff;
-  }
-
-  @Override
-  public String toString() {
-    return "{"
-        + "                        \"id\":\"" + id + "\""
-        + "}";
   }
 }
