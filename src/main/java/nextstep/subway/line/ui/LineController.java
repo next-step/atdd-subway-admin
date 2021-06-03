@@ -5,6 +5,8 @@ import java.net.URI;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,16 @@ public class LineController {
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+    }
+
+    @GetMapping
+    public ResponseEntity findAllLines() {
+        return ResponseEntity.ok().body(lineService.findAllLines());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity findLineById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
