@@ -9,7 +9,9 @@ spring:
       jdbc-url: jdbc:h2:mem:/testdb
       username: sa
       password:
-
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
   h2:
     console:
       enabled: true

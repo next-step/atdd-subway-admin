@@ -12,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -67,5 +69,9 @@ public class Section extends BaseEntity {
 
     public int getDistance() {
         return distance;
+    }
+
+    public List<Station> getStations() {
+        return Arrays.asList(upStation, downStation);
     }
 }
