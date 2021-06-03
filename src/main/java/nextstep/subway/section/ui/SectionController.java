@@ -41,8 +41,7 @@ public class SectionController {
         return ResponseEntity.ok(
                 sectionQueryService.findAllByLineIdFetchedOrderByUpToDownStation(lineId)
                         .getSortedSections()
-                        .map(SectionResponse::of)
-                        .collect(Collectors.toList())
+                        .toResponse()
         );
     }
 }

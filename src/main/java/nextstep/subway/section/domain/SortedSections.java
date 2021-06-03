@@ -1,9 +1,10 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.dto.SectionResponse;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public class SortedSections {
     private List<Section> sections;
@@ -59,8 +60,10 @@ public class SortedSections {
         return null;
     }
 
-    public <R1> Stream<R1> map(Function<? super Section, ? extends R1> mapper) {
-        return sections.stream()
-                .map(mapper);
+    public List<SectionResponse> toResponse() {
+        return sections
+                .stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList());
     }
 }

@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.Test;
 
@@ -14,18 +15,18 @@ class SectionsTest {
 
     @Test
     void mapOrderByUpStationToDownStation() {
-        Station 역_1 = new Station("역_1");
-        Station 역_2 = new Station("역_2");
-        Station 역_3 = new Station("역_3");
-        Station 역_4 = new Station("역_4");
-        Station 역_5 = new Station("역_5");
-        Station 역_6 = new Station("역_6");
-        Station 역_7 = new Station("역_7");
-        Station 역_8 = new Station("역_8");
-        Station 역_9 = new Station("역_9");
-        Station 역_10 = new Station("역_10");
-        Station 역_11 = new Station("역_11");
-        Station 역_12 = new Station("역_12");
+        Station 역_1 = new Station(1L, "역_1");
+        Station 역_2 = new Station(2L, "역_2");
+        Station 역_3 = new Station(3L, "역_3");
+        Station 역_4 = new Station(4L, "역_4");
+        Station 역_5 = new Station(5L, "역_5");
+        Station 역_6 = new Station(6L, "역_6");
+        Station 역_7 = new Station(7L, "역_7");
+        Station 역_8 = new Station(8L, "역_8");
+        Station 역_9 = new Station(9L, "역_9");
+        Station 역_10 = new Station(10L, "역_10");
+        Station 역_11 = new Station(11L, "역_11");
+        Station 역_12 = new Station(12L, "역_12");
 
         // 1 <-> 12번까지 정렬이 되어야함.
 
@@ -46,34 +47,33 @@ class SectionsTest {
         );
 
         SortedSections sortedSections = new SortedSections(sections);
-        List<Section> collect = sortedSections
-                .map(item -> item)
-                .collect(Collectors.toList());
+        List<SectionResponse> collect = sortedSections
+                .toResponse();
 
-        assertThat(collect.get(0).getUpStation())
-                .isEqualTo(역_1);
-        assertThat(collect.get(1).getUpStation())
-                .isEqualTo(역_2);
-        assertThat(collect.get(2).getUpStation())
-                .isEqualTo(역_3);
-        assertThat(collect.get(3).getUpStation())
-                .isEqualTo(역_4);
-        assertThat(collect.get(4).getUpStation())
-                .isEqualTo(역_5);
-        assertThat(collect.get(5).getUpStation())
-                .isEqualTo(역_6);
-        assertThat(collect.get(6).getUpStation())
-                .isEqualTo(역_7);
-        assertThat(collect.get(7).getUpStation())
-                .isEqualTo(역_8);
-        assertThat(collect.get(8).getUpStation())
-                .isEqualTo(역_9);
-        assertThat(collect.get(9).getUpStation())
-                .isEqualTo(역_10);
-        assertThat(collect.get(10).getUpStation())
-                .isEqualTo(역_11);
-        assertThat(collect.get(10).getDownStation())
-                .isEqualTo(역_12);
+        assertThat(collect.get(0).getUpStationId())
+                .isEqualTo(역_1.getId());
+        assertThat(collect.get(1).getUpStationId())
+                .isEqualTo(역_2.getId());
+        assertThat(collect.get(2).getUpStationId())
+                .isEqualTo(역_3.getId());
+        assertThat(collect.get(3).getUpStationId())
+                .isEqualTo(역_4.getId());
+        assertThat(collect.get(4).getUpStationId())
+                .isEqualTo(역_5.getId());
+        assertThat(collect.get(5).getUpStationId())
+                .isEqualTo(역_6.getId());
+        assertThat(collect.get(6).getUpStationId())
+                .isEqualTo(역_7.getId());
+        assertThat(collect.get(7).getUpStationId())
+                .isEqualTo(역_8.getId());
+        assertThat(collect.get(8).getUpStationId())
+                .isEqualTo(역_9.getId());
+        assertThat(collect.get(9).getUpStationId())
+                .isEqualTo(역_10.getId());
+        assertThat(collect.get(10).getUpStationId())
+                .isEqualTo(역_11.getId());
+        assertThat(collect.get(10).getDownStationId())
+                .isEqualTo(역_12.getId());
     }
 
 
@@ -92,14 +92,13 @@ class SectionsTest {
         );
 
         SortedSections sortedSections = new SortedSections(sections);
-        List<Section> collect = sortedSections.map(item -> item)
-                .collect(Collectors.toList());
+        List<SectionResponse> collect = sortedSections.toResponse();
 
-        assertThat(collect.get(0).getUpStation())
-                .isEqualTo(역_1);
-        assertThat(collect.get(1).getUpStation())
-                .isEqualTo(역_2);
-        assertThat(collect.get(1).getDownStation())
-                .isEqualTo(역_3);
+        assertThat(collect.get(0).getUpStationId())
+                .isEqualTo(역_1.getId());
+        assertThat(collect.get(1).getUpStationId())
+                .isEqualTo(역_2.getId());
+        assertThat(collect.get(1).getDownStationId())
+                .isEqualTo(역_3.getId());
     }
 }
