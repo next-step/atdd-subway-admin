@@ -6,6 +6,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.LineSeoul;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -22,17 +23,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private String path = "/lines";
 
+    private LineRequest line2Request;
+    private LineRequest line6Request;
+
+    @BeforeEach
+    void setup() {
+        String color2 = "bg-red-600";
+        String name2 = "2호선";
+        Long upStationId2 = 1L;
+        Long downStationId2 = 2L;
+        int distance2 = 10;
+        line2Request = new LineRequest(name2, color2, upStationId2, downStationId2, distance2);
+
+        String color6 = "bg-red-600";
+        String name6 = "2호선";
+        Long upStationId6 = 1L;
+        Long downStationId6 = 2L;
+        int distance6 = 10;
+        line6Request = new LineRequest(name6, color6, upStationId6, downStationId6, distance6);
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-//        LineRequest lineRequest = LineSeoul.NUMBER_2.toRequest();
-        String color = "bg-red-600";
-        String name = "신분당선";
-        Long upStationId = 1L;
-        Long downStationId = 2L;
-        int distance = 10;
-        LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
+        LineRequest lineRequest = line2Request;
 
         // when
         // 지하철_노선_생성_요청
