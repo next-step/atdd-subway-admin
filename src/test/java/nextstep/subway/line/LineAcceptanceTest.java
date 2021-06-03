@@ -17,7 +17,9 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -78,13 +80,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
 
         // when
-        // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(blueLineResponse.getId(), new LineRequest("2호선", "green"));
 
         // then
-        // 지하철_노선_수정됨
+        지하철_노선_수정됨(response);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -129,6 +131,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+                .accept(ContentType.ANY)
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + id)
+                .then().log().all()
+                .extract();
+    }
+
     private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<LineResponse> lineResponses) {
         List<Long> responseIds = response.jsonPath()
                 .getList(".", LineResponse.class)
@@ -160,6 +173,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

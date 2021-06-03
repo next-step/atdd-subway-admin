@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import javassist.NotFoundException;
+import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
+import org.springframework.data.crossstore.ChangeSetPersister;
 
 /**
  * LineRepository 클래스 기능 검증 테스트
@@ -56,5 +59,21 @@ class LineServiceTest {
 
         // then
         assertThat(lineResponse.getName()).isEqualTo(line.getName());
+    }
+
+    @Test
+    @DisplayName("노선 정보 수정")
+    void line_info_update() {
+        // given
+        Line line = new Line("1호선", "blue");
+        LineRequest updateLineRequest = new LineRequest("2호선", "green");
+        given(repository.findById(1L)).willReturn(Optional.of(line));
+
+        // when
+        service.updateLine(1L, updateLineRequest);
+        LineResponse lineResponse = service.findLineById(1L);
+
+        // then
+        assertThat(lineResponse.getName()).isEqualTo(updateLineRequest.getName());
     }
 }
