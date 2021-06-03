@@ -90,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선 목록을 조회한다.")
+    @DisplayName("지하철 노선 목록(모든 노선)을 조회한다.")
     @Test
     void getLines() {
         // given
@@ -116,7 +116,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("지하철 노선(특정 1개)을 조회한다.")
     @Test
     void getLine() {
         // given
@@ -131,6 +131,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // 지하철 노선에 들어있는 역들을 상행종점부터 하행종점까지 반환한다.
+        Stations stations = response.body().as(LineResponse.class).getStations();
+        List<String> resultStationNames = stations.stream()
+                .map(it -> it.getName())
+                .collect(Collectors.toList());
+        assertThat(resultStationNames).contains("강남역", "역삼역");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
