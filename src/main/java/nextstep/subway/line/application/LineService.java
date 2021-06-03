@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +24,11 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        try {
+            return LineResponse.of(lineRepository.save(request.toLine()));
+        } catch (DataIntegrityViolationException exception) {
+            throw new DuplicateKeyException("노선 생성에 실패했습니다. 이미 존재하는 노선입니다.");
+        }
     }
 
     public List<LineResponse> findAllLines() {

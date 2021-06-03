@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import nextstep.subway.line.dto.LineResponse;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +35,8 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        try {
-            LineResponse lineResponse = lineService.saveLine(lineRequest);
-            return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
-        } catch (DataIntegrityViolationException exception) {
-            throw new DuplicateKeyException("노선 생성에 실패했습니다. 이미 존재하는 노선입니다.");
-        }
+        LineResponse lineResponse = lineService.saveLine(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping
