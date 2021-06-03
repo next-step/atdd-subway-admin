@@ -32,15 +32,19 @@ public class Sections {
   }
 
   public void registerNewSection(Section newSection) {
+    validateNewSection(newSection);
+    this.lineSections = this.getLineSections().stream()
+        .flatMap(lineSection -> lineSection.insertNewSection(newSection).stream())
+        .collect(Collectors.toList());
+  }
+
+  private void validateNewSection(Section newSection) {
     if (hasBothStations(newSection)) {
       throw new IllegalArgumentException("이미 등록된 역 구간을 다시 등록 할 수 없습니다.");
     }
     if (hasNotBothStations(newSection)) {
       throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
     }
-    this.lineSections = this.getLineSections().stream()
-        .flatMap(lineSection -> lineSection.insertNewSection(newSection).stream())
-        .collect(Collectors.toList());
   }
 
   private boolean hasBothStations(Section section) {
