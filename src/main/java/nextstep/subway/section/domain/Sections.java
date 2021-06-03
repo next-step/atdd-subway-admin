@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.domain.spcification.SectionsAddableSpecifications;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embeddable;
@@ -42,10 +43,8 @@ public class Sections {
             return true;
         }
 
-        return !containsBetweenDownStationAndDistance(downStation, distance)
-                && !containsBetweenUpStationAndDistance(upStation, distance)
-                && !containsStationsExactly(upStation, downStation)
-                && containsStationAny(upStation, downStation);
+        return new SectionsAddableSpecifications(sections, upStation, downStation, distance)
+                .isAddable();
     }
 
     public SortedSections getSortedSections() {
@@ -57,32 +56,6 @@ public class Sections {
                 .filter(item -> item.isSameUpStation(section) || item.isSameDownStation(section))
                 .findFirst()
                 .ifPresent((near) -> near.resizeAndChangeNearStation(section));
-    }
-
-    private boolean containsBetweenDownStationAndDistance(Station downStation, Distance distance) {
-        return sections.stream()
-                .anyMatch(item -> item.isDownStationBetween(downStation, distance));
-    }
-
-    private boolean containsBetweenUpStationAndDistance(Station upStation, Distance distance) {
-        return sections.stream()
-                .anyMatch(item -> item.isUpStationBetween(upStation, distance));
-    }
-
-    private boolean containsStationsExactly(Station upStation, Station downStation) {
-        return containsStation(upStation) &&
-                containsStation(downStation);
-    }
-
-    private boolean containsStationAny(Station upStation, Station downStation) {
-        return containsStation(upStation) ||
-                containsStation(downStation);
-    }
-
-    private boolean containsStation(Station station) {
-        return sections.stream()
-                .filter(item -> item.isContains(station))
-                .count() > 0L;
     }
 
 }
