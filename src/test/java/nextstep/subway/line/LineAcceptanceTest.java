@@ -12,6 +12,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -130,10 +131,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-
+        ExtractableResponse<Response> createResponse = createLine("1호선", "Blue");
+        Map<String, String> linePutRequest = createLineRequest("1호선", "Dark Blue");
         // when
         // 지하철_노선_수정_요청
-
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(linePutRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines")
+            .then().log().all()
+            .extract();
         // then
         // 지하철_노선_수정됨
     }
@@ -143,7 +151,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-
+        ExtractableResponse<Response> createResponse = createLine("1호선", "Blue");
         // when
         // 지하철_노선_제거_요청
 
