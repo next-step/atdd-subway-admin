@@ -7,58 +7,32 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SortedSections {
-    private List<Section> sections;
+    private List<Section> sortedSections;
 
     public SortedSections(List<Section> sections) {
-        this.sections = new ArrayList<>(sections);
-        sort();
+        this.sortedSections = sort(sections);
     }
 
-    private void sort() {
-        if (sections.isEmpty()) {
-            return;
+    private List<Section> sort(List<Section> sections) {
+        List<Section> sortedSections = new ArrayList<>();
+        List<Section> copiedSection = new ArrayList<>(sections);
+
+        TopSection topSection = new TopSection(copiedSection);
+
+        while (topSection.getTopSection() != null) {
+            Section section = topSection.getTopSection();
+
+            sortedSections.add(section);
+            copiedSection.remove(section);
+
+            topSection = new TopSection(copiedSection);
         }
 
-        Section topSection = getTopSection(sections.get(0));
-
-        this.sections = sort(topSection);
-    }
-
-    private Section getTopSection(Section firstSection) {
-        for (Section section : sections) {
-            if (firstSection == section) continue;
-
-            if (firstSection.isLower(section)) {
-                return getTopSection(section);
-            }
-        }
-
-        return firstSection;
-    }
-
-    private List<Section> sort(Section upperSection) {
-        List<Section> sortedList = new ArrayList<>();
-        sortedList.add(upperSection);
-
-        Section bottomSection = findBottomSection(upperSection);
-
-        if (bottomSection == null) {
-            return sortedList;
-        }
-
-        sortedList.addAll(sort(bottomSection));
-        return sortedList;
-    }
-
-    private Section findBottomSection(Section of) {
-        return sections.stream()
-                .filter(of::isUpper)
-                .findFirst()
-                .orElse(null);
+        return sortedSections;
     }
 
     public List<SectionResponse> toResponse() {
-        return sections
+        return sortedSections
                 .stream()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
