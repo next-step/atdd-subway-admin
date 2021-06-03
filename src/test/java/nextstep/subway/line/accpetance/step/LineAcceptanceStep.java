@@ -41,6 +41,25 @@ public class LineAcceptanceStep {
         return response;
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청2(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", String.valueOf(upStationId));
+        params.put("downStationId", String.valueOf(downStationId));
+        params.put("distance", String.valueOf(distance));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all().
+                body(params).
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                post("/lines").
+                then().
+                log().all().
+                extract();
+        return response;
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color) {
         return 지하철_노선_생성_요청(name, color);
     }

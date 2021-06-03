@@ -13,12 +13,14 @@ import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_삭제됨;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성_실패됨;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성_요청;
+import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성_요청2;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_생성됨;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_수정_요청;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_수정됨;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_응답됨;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_제거_요청;
 import static nextstep.subway.line.accpetance.step.LineAcceptanceStep.지하철_노선_조회_요청;
+import static nextstep.subway.station.step.StationAcceptanceStep.지하철_역_등록되어_있음;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -45,6 +47,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨(response);
     }
 
+    @DisplayName("지하철 노선을 생성한다.")
+    @Test
+    void createLine3() {
+        // given
+        지하철_역_등록되어_있음("강남역");
+        지하철_역_등록되어_있음("역삼역");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청2(
+                "2호선", "green", 1L, 2L, 10
+        );
+
+        // then
+        지하철_노선_생성됨(response);
+    }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test

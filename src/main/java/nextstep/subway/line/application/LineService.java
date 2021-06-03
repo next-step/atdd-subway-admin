@@ -4,6 +4,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.application.SectionService;
+import nextstep.subway.section.dto.SectionDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +20,11 @@ public class LineService {
     private static final String EXIST_LINE = "이미 존재하는 노선입니다 :";
     private static final String LINE_NOT_EXISTED = "노선이 존재하지 않습니다 :";
     private final LineRepository lineRepository;
+    private final SectionService sectionService;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, SectionService sectionService) {
         this.lineRepository = lineRepository;
+        this.sectionService = sectionService;
     }
 
     @Transactional
@@ -30,6 +34,7 @@ public class LineService {
             throw new LineDuplicatedException(EXIST_LINE + request.getName());
         }
         Line persistLine = lineRepository.save(request.toLine());
+        sectionService.createSection(new SectionDto(persistLine, request));
         return LineResponse.of(persistLine);
     }
 

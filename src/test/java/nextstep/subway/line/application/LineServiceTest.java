@@ -4,10 +4,12 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.application.SectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -33,6 +35,9 @@ class LineServiceTest {
     @Mock
     private LineRepository lineRepository;
 
+    @InjectMocks
+    private SectionService sectionService;
+
     private LineService lineService;
 
     private LineRequest lineRequest;
@@ -44,7 +49,7 @@ class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(lineRepository);
+        lineService = new LineService(lineRepository, sectionService);
         line = new Line("2호선", "green");
         lineRequest = new LineRequest("2호선", "green");
         updateRequest = new LineRequest("3호선", "orange");
