@@ -1,29 +1,25 @@
 package nextstep.subway.line;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
 
     @DisplayName("toStation 메소드는 상행-하행 순으로 정리되어야 한다.")
-    @Test
-    void toStationTest() {
+    @MethodSource("toStationTestCase")
+    @ParameterizedTest
+    void toStationTest(Station[] stationArray) {
 
         Line line = new Line("line", "color");
-
-        Station[] stationArray = {
-            new Station(1L, "name"),
-            new Station(2L, "name"),
-            new Station(3L, "name"),
-            new Station(4L, "name")
-        };
 
         Section section1 = new Section(stationArray[0], stationArray[1], 100);
         line.addSection(section1);
@@ -37,6 +33,24 @@ class LineTest {
         List<Station> stations = line.toStations();
 
         assertThat(stations).hasSize(4)
-                            .hasSameElementsAs(Arrays.asList(stationArray));
+                            .containsExactly(stationArray);
+    }
+
+    @SuppressWarnings("unused")
+    private static Stream<Arguments> toStationTestCase() {
+        return Stream.of(
+            Arguments.of((Object) new Station[] {
+                new Station(1L, "name"),
+                new Station(2L, "name"),
+                new Station(3L, "name"),
+                new Station(4L, "name")
+            }),
+            Arguments.of((Object) new Station[] {
+                new Station(4L, "name"),
+                new Station(3L, "name"),
+                new Station(2L, "name"),
+                new Station(1L, "name")
+            })
+        );
     }
 }
