@@ -7,8 +7,10 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-@Transactional
 public class LineService {
     private LineRepository lineRepository;
 
@@ -16,8 +18,36 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    public List<LineResponse> findAllLines() {
+        List<Line> lines = lineRepository.findAll();
+        return lines.stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(Long id) {
+        Line line = findById(id);
+        return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void editLine(Long id, LineRequest lineRequest) {
+        Line line = findById(id);
+        line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+    }
+
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
     }
 }
