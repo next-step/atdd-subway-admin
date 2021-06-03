@@ -62,14 +62,12 @@ public class Sections {
 
     private boolean containsBetweenDownStationAndDistance(Station downStation, Distance distance) {
         return sections.stream()
-                .filter(item -> item.isDownStationBetween(downStation, distance))
-                .count() > 0L;
+                .anyMatch(item -> item.isDownStationBetween(downStation, distance));
     }
 
     private boolean containsBetweenUpStationAndDistance(Station upStation, Distance distance) {
         return sections.stream()
-                .filter(item -> item.isUpStationBetween(upStation, distance))
-                .count() > 0L;
+                .anyMatch(item -> item.isUpStationBetween(upStation, distance));
     }
 
     private boolean containsStationsExactly(Station upStation, Station downStation) {

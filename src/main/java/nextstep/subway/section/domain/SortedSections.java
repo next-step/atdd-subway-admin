@@ -51,13 +51,10 @@ public class SortedSections {
     }
 
     private Section findBottomSection(Section of) {
-        for (Section section : sections) {
-            if (of.isUpper(section)) {
-                return section;
-            }
-        }
-
-        return null;
+        return sections.stream()
+                .filter(of::isUpper)
+                .findFirst()
+                .orElse(null);
     }
 
     public List<SectionResponse> toResponse() {
