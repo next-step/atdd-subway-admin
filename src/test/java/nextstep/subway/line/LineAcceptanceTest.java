@@ -69,7 +69,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
 
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(response -> Long.parseLong(response.header("Location").split("/")[2]))
+                .map(response -> getIdFromCreateResponse(response))
                 .collect(Collectors.toList());
 
         // then
@@ -86,7 +86,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse = createLineResponse("신분당선", "bg-red-660");
-        long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        long id = getIdFromCreateResponse(createResponse);
 
         // when
         // 지하철_노선_조회_요청
@@ -106,11 +106,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse = createLineResponse("신분당선", "bg-red-660");
-        long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
+        long id = getIdFromCreateResponse(createResponse);
 
         // when
         // 지하철_노선_수정_요청
-        // when
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "bg-blue-660");
@@ -133,12 +132,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = createLineResponse("신분당선", "bg-red-660");
+        long id = getIdFromCreateResponse(createResponse);
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().delete("/lines/{id}", id)
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private long getIdFromCreateResponse(ExtractableResponse<Response> createResponse) {
+        return Long.parseLong(createResponse.header("Location").split("/")[2]);
     }
 
     private ExtractableResponse<Response> createLineResponse(String name, String color) {
