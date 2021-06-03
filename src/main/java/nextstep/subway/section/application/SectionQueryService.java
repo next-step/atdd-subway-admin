@@ -7,7 +7,6 @@ import nextstep.subway.section.domain.Sections;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -20,10 +19,8 @@ public class SectionQueryService {
     }
 
     public Section findByIdFetched(Long id) {
-        Section section = sectionRepository.findById(id)
+        return sectionRepository.findById(id)
                 .orElseThrow(EntityNotExistException::new);
-
-        return section;
     }
 
     public Sections findAllByLineIdFetchedOrderByUpToDownStation(Long lineId) {

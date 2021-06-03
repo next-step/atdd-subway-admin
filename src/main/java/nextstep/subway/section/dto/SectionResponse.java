@@ -2,8 +2,6 @@ package nextstep.subway.section.dto;
 
 import nextstep.subway.section.domain.Section;
 
-import java.net.URI;
-
 public class SectionResponse {
     private Long id;
     private Long upStationId;

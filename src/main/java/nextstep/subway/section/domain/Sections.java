@@ -4,9 +4,8 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
 
 @Embeddable
 public class Sections {
