@@ -2,7 +2,6 @@ package nextstep.subway.section.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.persistence.CascadeType;
@@ -26,10 +25,8 @@ public class LineSections implements Serializable {
 
     public List<Station> toStations() {
         return sections.stream()
-                       .flatMap(
-                           section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                       .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                        .distinct()
-                       .sorted(Comparator.comparingLong(Station::getId))
                        .collect(toList());
     }
 }
