@@ -58,7 +58,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## 👨🏻‍💻 Todo list
 
 - [x] [**사전 제공**] 지하철 역 관리
-- [ ] 코드 이해 및 Polishing
+- [x] 코드 이해 및 Polishing
 - [ ] [**1단계**] 지하철 노선 관리
   - [ ] 지하철 노선을 생성한다.
   - [ ] 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.
