@@ -2,6 +2,10 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -16,14 +20,11 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    public static final String JSON_PATH = ".";
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -93,13 +94,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(blueLineResponse.getId());
 
         // then
-        // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response);
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
@@ -142,9 +143,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
+        return RestAssured.given().log().all()
+                .when()
+                .accept(ContentType.ANY)
+                .delete("/lines/" + id)
+                .then().log().all()
+                .extract();
+    }
+
     private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<LineResponse> lineResponses) {
-        List<Long> responseIds = response.jsonPath()
-                .getList(".", LineResponse.class)
+        List<Long> responseIds = toLineResponses(response)
                 .stream()
                 .map(res -> res.getId())
                 .collect(Collectors.toList());
@@ -156,8 +165,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private LineResponse 지하철_노선_등록되어_있음(LineRequest lineRequest) {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
-        return response.jsonPath()
-                .getObject(".", LineResponse.class);
+        return toLineResponse(response);
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
@@ -178,5 +186,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private List<LineResponse> toLineResponses(ExtractableResponse<Response> response) {
+        return response.jsonPath()
+                .getList(JSON_PATH, LineResponse.class);
+    }
+
+    private LineResponse toLineResponse(ExtractableResponse<Response> response) {
+        return response.jsonPath()
+                .getObject(JSON_PATH, LineResponse.class);
     }
 }

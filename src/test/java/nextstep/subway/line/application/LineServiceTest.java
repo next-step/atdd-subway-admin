@@ -1,14 +1,14 @@
 package nextstep.subway.line.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import javassist.NotFoundException;
-import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,10 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
-import org.springframework.data.crossstore.ChangeSetPersister;
 
 /**
  * LineRepository 클래스 기능 검증 테스트
@@ -48,7 +48,7 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("Id로 노선 찾기")
+    @DisplayName("ID로 노선 찾기")
     void find_line_by_id() {
         // given
         Line line = new Line("1호선", "blue");
@@ -75,5 +75,18 @@ class LineServiceTest {
 
         // then
         assertThat(lineResponse.getName()).isEqualTo(updateLineRequest.getName());
+    }
+
+    @Test
+    @DisplayName("ID기준 노선 삭제")
+    void delete_line_by_id() {
+        // given
+        Long id = 1L;
+
+        // when
+        service.deleteLineById(id);
+
+        // then
+        verify(repository).deleteById(any(Long.class));
     }
 }

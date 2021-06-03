@@ -1,11 +1,8 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javassist.NotFoundException;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,5 +39,9 @@ public class LineService {
     public void updateLine(long id, LineRequest updateLineRequest)  {
         Line line = lineRepository.findById(id).get();
         line.update(updateLineRequest.toLine());
+    }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
     }
 }
