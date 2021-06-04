@@ -79,14 +79,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
-        // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성(name, color);
+        long createLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
-        // when
-        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_조회(createLineId);
 
-        // then
-        // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getString("id")).isEqualTo("1");
+    }
+
+    @DisplayName("지하철 노선을 조회 실패")
+    @Test
+    void getLineFail() {
+        ExtractableResponse<Response> response = 지하철_노선_조회(1L);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -125,6 +132,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회(long createLineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/" + createLineId)
                 .then().log().all()
                 .extract();
     }

@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -13,6 +14,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
+    private static final String LINE_NOT_FOUND_MESSAGE = "원하시는 지하천 노선을 찾지 못했습니다.";
+
     private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -28,4 +31,10 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
     }
+
+    public LineResponse selectLine(Long id) {
+        return LineResponse.of(lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_MESSAGE)));
+    }
+
 }
