@@ -196,6 +196,23 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @TestFactory
+    @DisplayName("구간이 1개일 때 삭제하려고 할 시 문제가 발생한다")
+    Stream<DynamicTest> 구간이_1개일_때_삭제하려고_할_시_문제가_발생한다() {
+        return Stream.of(
+                dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
+                dynamicTest("역삼역을 추가한다", 지하철역_생성_요청_및_체크(역삼역, 역삼역_ID)),
+                dynamicTest("(상)강남역과 (하)역삼역의 노선을 만든다",
+                        라인_생성_및_체크(분당_라인, 분당_라인_ID, new StationRequest[]{강남역, 역삼역})
+                ),
+                dynamicTest("구간이 1개만 남았을 때 삭제하려고 하면 문제가 발생한다", () -> {
+                    ExtractableResponse<Response> response = 구간_역_삭제_요청(분당_라인_ID, 역삼역_ID);
+
+                    구간_역_삭제_실패_검증(response);
+                })
+        );
+    }
+
     public static Executable 구간_역_삭제_및_체크(Long lineId, Long stationId, Long expectDeletedSectionId) {
         return () -> {
             ExtractableResponse<Response> response = 구간_역_삭제_요청(lineId, stationId);
