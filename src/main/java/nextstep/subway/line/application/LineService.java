@@ -28,6 +28,11 @@ public class LineService {
         return lineRepository.findAll();
     }
 
+    public Line findLine(long lineId) {
+        return lineRepository.findById(lineId)
+            .orElseThrow(IllegalArgumentException::new);
+    }
+
     private void checkAlreadyExists(String name) {
         if (lineRepository.existsByName(name)) {
             throw new AlreadyExistsLineNameException(String.format("노선 이름이 이미 존재합니다.[%s]", name));

@@ -64,14 +64,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // when
-        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청(createdResponse);
 
         // then
-        // 지하철_노선_응답됨
-        Assertions.fail("테스트 작성 X");
+        지하철_노선_응답됨(findResponse);
+    }
+
+    private void 지하철_노선_응답됨(ExtractableResponse<Response> findResponse) {
+        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findResponse.as(LineResponse.class)).isNotNull();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createdResponse) {
+        String location = createdResponse.header("Location");
+        // when
+        return RestAssured
+            .given().log().all()
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .when().get(location)
+            .then().log().all().extract();
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -104,6 +118,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response, String lineName, String lineColor) {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Assertions.assertThat(response.header("Location")).isNotBlank();
 
         LineResponse lineResponse = response.as(LineResponse.class);
         Assertions.assertThat(lineResponse.getId()).isNotNull();
@@ -139,6 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return RestAssured
             .given().log().all()
+            .accept(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/lines")
             .then().log().all().extract();
     }

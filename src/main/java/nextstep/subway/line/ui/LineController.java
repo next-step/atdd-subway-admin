@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,9 +36,15 @@ public class LineController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> showLines() {
+    public ResponseEntity<List<LineResponse>> findLines() {
         List<LineResponse> lineResponses = LineResponse.allOf(lineService.findAllLines());
         return ResponseEntity.ok().body(lineResponses);
+    }
+
+    @GetMapping(value = "/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> findLine(@PathVariable long lineId) {
+        Line line = lineService.findLine(lineId);
+        return ResponseEntity.ok().body(LineResponse.of(line));
     }
 
     @ExceptionHandler({AlreadyExistsLineNameException.class})
