@@ -75,7 +75,7 @@ public class Sections {
                 .filter(item -> item != section)
                 .filter(item -> item.isSameUpStation(section) || item.isSameDownStation(section))
                 .findFirst()
-                .ifPresent((near) -> near.connectNewStationToNearStationsAndResize(section));
+                .ifPresent(near -> near.connectNewStationToNearStationsAndResize(section));
     }
 
     private void connectNearStationToNearStationAndResize(Section section, Station station) {
@@ -83,7 +83,7 @@ public class Sections {
                 .filter(item -> item != section)
                 .filter(item -> item.isUpStation(station) || item.isDownStation(station))
                 .findFirst()
-                .ifPresent((near) -> near.connectNearStationToNearStationAndResize(section));
+                .ifPresent(near -> near.connectNearStationToNearStationAndResize(section));
 
     }
 
