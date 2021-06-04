@@ -51,10 +51,6 @@ public class Section extends BaseEntity {
         this.distance = new Distance(distance);
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public void setLine(Line line) {
         this.line = line;
     }
