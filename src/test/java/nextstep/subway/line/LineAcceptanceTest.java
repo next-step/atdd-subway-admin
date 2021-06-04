@@ -126,14 +126,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> deletedResponse = 지하철_노선_제거_요청(createdResponse);
 
         // then
-        // 지하철_노선_삭제됨
-        Assertions.fail("테스트 작성 X");
+        지하철_노선_삭제됨(deletedResponse);
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> deletedResponse) {
+        assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> createdResponse) {
+        String uri = createdResponse.header("Location");
+
+        return RestAssured
+            .given().log().all()
+            .when().delete(uri)
+            .then().log().all().extract();
+
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response, String lineName, String lineColor) {

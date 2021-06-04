@@ -44,4 +44,8 @@ public class LineService {
             throw new AlreadyExistsLineNameException(String.format("노선 이름이 이미 존재합니다.[%s]", name));
         }
     }
+
+    public void deleteLineById(Long lineId) {
+        lineRepository.deleteById(lineId);
+    }
 }

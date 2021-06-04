@@ -9,6 +9,7 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,6 +54,12 @@ public class LineController {
     public ResponseEntity<?> updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
         lineService.updateLineById(lineId, lineRequest.toLine());
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/{lineId}")
+    public ResponseEntity<?> deleteLine(@PathVariable Long lineId) {
+        lineService.deleteLineById(lineId);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler({AlreadyExistsLineNameException.class})
