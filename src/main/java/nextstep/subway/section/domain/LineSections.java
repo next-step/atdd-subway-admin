@@ -2,14 +2,14 @@ package nextstep.subway.section.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import nextstep.subway.station.domain.Station;
-
-import static java.util.stream.Collectors.toList;
 
 @Embeddable
 public class LineSections implements Serializable {
@@ -24,9 +24,33 @@ public class LineSections implements Serializable {
     }
 
     public List<Station> toStations() {
-        return sections.stream()
-                       .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                       .distinct()
-                       .collect(toList());
+
+        Map<Station, Station> map = new HashMap<>();
+        for (Section section : sections) {
+            map.put(section.getDownStation(), section.getUpStation());
+        }
+
+        Station start = null;
+        for (Entry<Station, Station> entry : map.entrySet()) {
+            if (!map.containsKey(entry.getValue())) {
+                start = entry.getValue();
+            }
+        }
+
+        map.clear();
+        for (Section section : sections) {
+            map.put(section.getUpStation(), section.getDownStation());
+        }
+
+        List<Station> stations = new ArrayList<>();
+        stations.add(start);
+
+        Station next = map.get(start);
+        while (next != null) {
+            stations.add(next);
+            next = map.get(next);
+        }
+
+        return stations;
     }
 }

@@ -19,18 +19,19 @@ class LineTest {
     @DisplayName("toStation 메소드는 상행-하행 순으로 정리되어야 한다.")
     @MethodSource("toStationTestCase")
     @ParameterizedTest
-    void toStationTest(Station[] stationArray) {
+    void toStationTest(Station[] stationArray, int[] orders) {
 
         Line line = new Line("line", "color");
 
-        Section section1 = new Section(stationArray[0], stationArray[1], 100);
-        line.addSection(section1);
+        Section[] sections = {
+            new Section(stationArray[0], stationArray[1], 100),
+            new Section(stationArray[1], stationArray[2], 100),
+            new Section(stationArray[2], stationArray[3], 100)
+        };
 
-        Section section2 = new Section(stationArray[1], stationArray[2], 100);
-        line.addSection(section2);
-
-        Section section3 = new Section(stationArray[2], stationArray[3], 100);
-        line.addSection(section3);
+        for (int order : orders) {
+            line.addSection(sections[order]);
+        }
 
         List<Station> stations = line.toStations();
 
@@ -41,18 +42,18 @@ class LineTest {
     @SuppressWarnings("unused")
     private static Stream<Arguments> toStationTestCase() {
         return Stream.of(
-            Arguments.of((Object) new Station[] {
+            Arguments.of(new Station[] {
                 new Station(1L, DONT_CARE),
                 new Station(2L, DONT_CARE),
                 new Station(3L, DONT_CARE),
                 new Station(4L, DONT_CARE)
-            }),
-            Arguments.of((Object) new Station[] {
+            }, new int[] { 0, 1, 2 }),
+            Arguments.of(new Station[] {
                 new Station(4L, DONT_CARE),
                 new Station(3L, DONT_CARE),
                 new Station(2L, DONT_CARE),
                 new Station(1L, DONT_CARE)
-            })
+            }, new int[] { 1, 2, 0 })
         );
     }
 }
