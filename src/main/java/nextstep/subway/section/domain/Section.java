@@ -4,6 +4,7 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,8 +18,6 @@ import java.util.List;
 
 @Entity
 public class Section extends BaseEntity {
-    private static final String NOT_EXIST_LINE = "존재하지 않는 노선입니다.";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,24 +30,25 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    protected Section() {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
         this(null, upStation, downStation, distance);
     }
 
-    protected Section() {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = new Distance(distance);
     }
 
     public Long getId() {

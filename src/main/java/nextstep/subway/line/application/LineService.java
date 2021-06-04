@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Name;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.StationService;
@@ -35,7 +36,7 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Optional<Line> findLine = lineRepository.findByName(request.getName());
+        Optional<Line> findLine = lineRepository.findByName(new Name(request.getName()));
         if (findLine.isPresent()) {
             throw new LineDuplicatedException(EXIST_LINE + request.getName());
         }
