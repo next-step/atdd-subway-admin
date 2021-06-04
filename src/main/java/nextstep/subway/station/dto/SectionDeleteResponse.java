@@ -3,6 +3,9 @@ package nextstep.subway.station.dto;
 public class SectionDeleteResponse {
     private Long id;
 
+    public SectionDeleteResponse() {
+    }
+
     public SectionDeleteResponse(Long id) {
         this.id = id;
     }

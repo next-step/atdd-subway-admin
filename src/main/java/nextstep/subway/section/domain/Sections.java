@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -32,8 +33,8 @@ public class Sections {
         return stations;
     }
 
-    public void addAndResizeDistanceBy(Section section) {
-        resizeNearSection(section);
+    public void addSectionBy(Section section) {
+        connectNewStationToNearStationsAndResize(section);
 
         sections.add(section);
     }
@@ -51,11 +52,52 @@ public class Sections {
         return new SortedSections(this.sections);
     }
 
-    private void resizeNearSection(Section section) {
-        sections.stream()
-                .filter(item -> item.isSameUpStation(section) || item.isSameDownStation(section))
-                .findFirst()
-                .ifPresent((near) -> near.resizeAndChangeNearStation(section));
+    public Section deleteSectionBy(Station station) {
+        Section deletableSectionByStation = findDeletableSectionBy(station)
+                .orElseThrow(() -> new IllegalStateException("삭제할 수 있는 구간이 없습니다."));
+
+        deleteSection(deletableSectionByStation);
+
+        connectNearStationToNearStationAndResize(deletableSectionByStation, station);
+
+        return deletableSectionByStation;
     }
 
+    private void connectNewStationToNearStationsAndResize(Section section) {
+        sections.stream()
+                .filter(item -> item != section)
+                .filter(item -> item.isSameUpStation(section) || item.isSameDownStation(section))
+                .findFirst()
+                .ifPresent((near) -> near.connectNewStationToNearStationsAndResize(section));
+    }
+
+    private void connectNearStationToNearStationAndResize(Section section, Station station) {
+        sections.stream()
+                .filter(item -> item != section)
+                .filter(item -> item.isUpStation(station) || item.isDownStation(station))
+                .findFirst()
+                .ifPresent((near) -> near.connectNearStationToNearStationAndResize(section));
+
+    }
+
+    private Optional<Section> findDeletableSectionBy(Station station) {
+        Section section = sections.stream()
+                .filter(item -> item.isUpStation(station))
+                .findFirst()
+                .orElse(findBottomSectionBy(station));
+
+        return Optional.ofNullable(section);
+    }
+
+    private Section findBottomSectionBy(Station station) {
+        return sections.stream()
+                .filter(item -> item.isDownStation(station))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void deleteSection(Section section) {
+        sections.remove(section);
+        section.removeLine();
+    }
 }

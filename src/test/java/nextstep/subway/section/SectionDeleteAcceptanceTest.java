@@ -84,7 +84,7 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
                 .log().all()
                 .when()
                 .log().all()
-                .delete(format("/lines/%d/sections?stationId=", lineId, stationId))
+                .delete(format("/lines/%d/sections?stationId=%d", lineId, stationId))
                 .then().extract();
         return response;
     }

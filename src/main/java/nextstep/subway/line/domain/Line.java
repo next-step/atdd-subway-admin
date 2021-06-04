@@ -57,8 +57,12 @@ public class Line extends BaseEntity {
             throw new IllegalStateException("추가가 불가능합니다.");
         }
 
-        sections.addAndResizeDistanceBy(section);
+        sections.addSectionBy(section);
 
         return section;
+    }
+
+    public Section deleteSectionAndResizeDistanceBy(Station station) {
+        return sections.deleteSectionBy(station);
     }
 }
