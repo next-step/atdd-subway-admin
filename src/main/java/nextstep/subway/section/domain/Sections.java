@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
@@ -12,7 +13,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new LinkedList<>();
 
     public void remove(Section section) {
