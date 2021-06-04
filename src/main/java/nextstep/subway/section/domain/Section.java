@@ -62,6 +62,14 @@ public class Section extends BaseEntity {
         }
     }
 
+    public void changeLine(Line line) {
+        if (this.line != null) {
+            this.line.getSections().remove(this);
+        }
+        this.line = line;
+        this.line.getSections().add(this);
+    }
+
     public Station getUpStation() {
         return upStation;
     }
