@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -21,12 +22,12 @@ public class Line extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.REMOVE)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() { }
 
-    private Line(String name, String color, List<Section> sections) {
+    private Line(String name, String color, Sections sections) {
         this.name = name;
         this.color = color;
         this.sections = sections;
@@ -35,26 +36,12 @@ public class Line extends BaseEntity {
     private Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        if (section != null) {
-            this.sections.add(section);
-            section.setLine(this);
-        }
-    }
-
-    private Line(String name, String color) {
-        this(name, color, (Section) null);
-    }
-
-    public static Line of(String name, String color, List<Section> sections) {
-        return new Line(name, color, sections);
+        this.addSection(section);
+        section.setLine(this);
     }
 
     public static Line of(String name, String color, Section section) {
         return new Line(name, color, section);
-    }
-
-    public static Line of(String name, String color) {
-        return new Line(name, color);
     }
 
     public void update(Line line) {
@@ -63,7 +50,7 @@ public class Line extends BaseEntity {
         this.sections = line.getSections();
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return this.sections;
     }
 
@@ -87,8 +74,6 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        if (!this.sections.contains(section)) {
-            this.sections.add(section);
-        }
+        sections.add(section);
     }
 }
