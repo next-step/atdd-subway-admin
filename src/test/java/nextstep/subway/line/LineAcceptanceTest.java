@@ -4,18 +4,21 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    private static final String URI_PATH = "/lines";
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -56,14 +59,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+        Map<String, String> params1 = getTargetLine("2호선", "green lighten-1");
+        Map<String, String> params2 = getTargetLine("7호선", "green lighten-2");
+
+        ExtractableResponse<Response> createResponse1 = createLine(params1);
+        ExtractableResponse<Response> createResponse2 = createLine(params2);
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = showStations();
 
         // then
         // 지하철_노선_목록_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
         // 지하철_노선_목록_포함됨
+        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
+        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+
+        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -120,7 +138,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
                 .when()
-                .post("/lines")
+                .post(URI_PATH)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> showStations() {
+        return RestAssured.given().log().all()
+                .when()
+                .get(URI_PATH)
                 .then().log().all()
                 .extract();
     }
