@@ -44,9 +44,9 @@ public class LineRequest {
         return distance;
     }
 
-//    public Line toLine() {
-//        return new Line(name, color, Arrays.asList(new Section(upStationId, downStationId, distance)));
-//    }
+    public Line toLine() {
+        return new Line(name, color);
+    }
 
     public Line toLine(List<Section> sections) {
         return new Line(name, color, sections);

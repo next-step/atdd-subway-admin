@@ -20,7 +20,7 @@ public class Line extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String color;
 
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.REMOVE)
     private List<Section> sections = new ArrayList<>();
 
     public Line() { }
@@ -29,16 +29,19 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
         this.sections = sections;
-//        for (int i = 0; i < sections.size(); ++i) {
-//            sections.get(i).setLine(this);
-//        }
     }
 
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.sections.add(section);
-        section.setLine(this);
+        if (section != null) {
+            this.sections.add(section);
+            section.setLine(this);
+        }
+    }
+
+    public Line(String name, String color) {
+        this(name, color, (Section) null);
     }
 
     public void update(Line line) {

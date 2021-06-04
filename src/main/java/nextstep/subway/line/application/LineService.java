@@ -57,23 +57,18 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        // Line 찾는다.
-        // Line 내에 있는 모든 Section 가져온다.
-        // 모든 Section 에 있는 모든 Station 가져온다. (상행~ 하행)
-        // LineResponse 만든다.
-        // LineResponse 반환한다.
         Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
         return LineResponse.of(line);
     }
 
     public LineResponse update(Long id, LineRequest lineRequest) {
         Line persistLine = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
-//        persistLine.update(lineRequest.toLine());
+        persistLine.update(lineRequest.toLine());
+
         return LineResponse.of(persistLine);
     }
 
-    public Long deleteLineById(Long id) {
+    public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
-        return id;
     }
 }

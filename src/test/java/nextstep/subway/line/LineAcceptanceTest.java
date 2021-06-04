@@ -36,6 +36,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "역삼역");
         ExtractableResponse<Response> response2 = postLineRequest("/stations", params2);
+        Map<String, String> params3 = new HashMap<>();
+        params1.put("name", "태릉입구역");
+        ExtractableResponse<Response> response3 = postLineRequest("/stations", params3);
+        Map<String, String> params4 = new HashMap<>();
+        params2.put("name", "봉화산역");
+        ExtractableResponse<Response> response4 = postLineRequest("/stations", params4);
 
         String color2 = "bg-red-600";
         String name2 = "2호선";
@@ -46,8 +52,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         String color6 = "bg-orange-600";
         String name6 = "6호선";
-        Long upStationId6 = 3L;
-        Long downStationId6 = 4L;
+        Long upStationId6 = response3.as(Station.class).getId();
+        Long downStationId6 = response4.as(Station.class).getId();
         int distance6 = 6;
         line6Request = new LineRequest(name6, color6, upStationId6, downStationId6, distance6);
     }
@@ -76,22 +82,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
         assertThat(names).contains("강남역", "역삼역");
     }
-
-//    @DisplayName("지하철 노선을 생성한다.")
-//    @Test
-//    void createLine() {
-//        // given
-//        LineRequest lineRequest = LineSeoul.NUMBER_2.toRequest();
-//
-//        // when
-//        // 지하철_노선_생성_요청
-//        ExtractableResponse<Response> response = postLineRequest(path, lineRequest);
-//
-//        // then
-//        // 지하철_노선_생성됨
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-//        assertThat(response.header("Location")).isNotBlank();
-//    }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
@@ -161,6 +151,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
+        // 현재는 통과하지만, 다른 방식의 update로 수정될 것 같음
+
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse createResponse = postLineRequest(path, line2Request);
