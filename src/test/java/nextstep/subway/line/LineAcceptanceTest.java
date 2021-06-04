@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = createLineResponse("신분당선", "red");
+        ExtractableResponse<Response> response = createLineResponse(new LineRequest("신분당선", "red"));
 
         // then
         // 지하철_노선_생성됨
@@ -38,13 +39,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        String name = "신분당선";
-        String color = "red";
-        createLineResponse(name, color);
+        LineRequest request = new LineRequest("신분당선", "red");
+        createLineResponse(request);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = createLineResponse(name, color);
+        ExtractableResponse<Response> response = createLineResponse(request);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -57,8 +57,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse1 = createLineResponse("신분당선", "bg-red-660");
-        ExtractableResponse<Response> createResponse2 = createLineResponse("2호선", "bg-green-660");
+        ExtractableResponse<Response> createResponse1 = createLineResponse(new LineRequest("신분당선", "bg-red-660"));
+        ExtractableResponse<Response> createResponse2 = createLineResponse(new LineRequest("2호선", "bg-green-660"));
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -68,7 +68,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
 
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-                .map(response -> getIdFromCreateResponse(response))
+                .map(this::getIdFromCreateResponse)
                 .collect(Collectors.toList());
 
         // then
@@ -84,7 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = createLineResponse("신분당선", "bg-red-660");
+        ExtractableResponse<Response> createResponse = createLineResponse(new LineRequest("신분당선", "bg-red-660"));
         long id = getIdFromCreateResponse(createResponse);
 
         // when
@@ -104,7 +104,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = createLineResponse("신분당선", "bg-red-660");
+        ExtractableResponse<Response> createResponse = createLineResponse(new LineRequest("신분당선", "bg-red-660"));
         long id = getIdFromCreateResponse(createResponse);
 
         // when
@@ -131,7 +131,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = createLineResponse("신분당선", "bg-red-660");
+        ExtractableResponse<Response> createResponse = createLineResponse(new LineRequest("신분당선", "bg-red-660"));
         long id = getIdFromCreateResponse(createResponse);
 
         // when
@@ -150,14 +150,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Long.parseLong(createResponse.header("Location").split("/")[2]);
     }
 
-    private ExtractableResponse<Response> createLineResponse(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-
+    private ExtractableResponse<Response> createLineResponse(LineRequest request) {
         return RestAssured
                 .given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
