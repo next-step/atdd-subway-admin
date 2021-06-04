@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,19 +17,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final String URI_PATH = "/lines";
-
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green lighten-1");
+        Map<String, String> params = getTargetLine("2호선", "green lighten-1");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = getResponse(params);
+        ExtractableResponse<Response> response = createLine(params);
 
         // then
         // 지하철_노선_생성됨
@@ -41,15 +38,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green lighten-1");
+        Map<String, String> params = getTargetLine("2호선", "green lighten-1");
 
-        getResponse(params);
+        createLine(params);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = getResponse(params);
+        ExtractableResponse<Response> response = createLine(params);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -110,12 +105,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_삭제됨
     }
 
-    private ExtractableResponse<Response> getResponse(Map<String, String> params) {
+    private Map<String, String> getTargetLine(String name, String color) {
+        Map<String, String> params = new HashMap<String, String>(){
+            {
+                put("name", name);
+                put("color", color);
+            }
+        };
+        return Collections.unmodifiableMap(params);
+    }
+
+    private ExtractableResponse<Response> createLine(Map<String, String> params) {
         return RestAssured.given().log().all()
-                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
                 .when()
-                .post(URI_PATH)
+                .post("/lines")
                 .then().log().all()
                 .extract();
     }
