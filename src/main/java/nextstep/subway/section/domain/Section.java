@@ -1,8 +1,11 @@
 package nextstep.subway.section.domain;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,18 +26,18 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station"))
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
 
     @Column(nullable = false)
     private int distance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_line"))
     private Line line;
 
@@ -68,6 +71,10 @@ public class Section extends BaseEntity {
         }
         this.line = line;
         this.line.getSections().add(this);
+    }
+
+    public List<Station> toStations() {
+        return new LinkedList<>(Arrays.asList(upStation, downStation));
     }
 
     public Station getUpStation() {
