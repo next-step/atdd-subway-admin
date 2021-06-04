@@ -178,6 +178,24 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @TestFactory
+    @DisplayName("노선에 등록이 안되어잇는 역을 제거하려 할 때는 문제가 발생한다")
+    Stream<DynamicTest> 노선에_등록이_안되어있는_역을_제거하려_할_대는_문제가_발생한다() {
+        return Stream.of(
+                dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
+                dynamicTest("역삼역을 추가한다", 지하철역_생성_요청_및_체크(역삼역, 역삼역_ID)),
+                dynamicTest("수진역을 추가한다", 지하철역_생성_요청_및_체크(수진역, 수진역_ID)),
+                dynamicTest("(상)강남역과 (하)역삼역의 노선을 만든다",
+                        라인_생성_및_체크(분당_라인, 분당_라인_ID, new StationRequest[]{강남역, 역삼역})
+                ),
+                dynamicTest("등록이 안된 수진역을 삭제하면 에러가 발생한다", () -> {
+                    ExtractableResponse<Response> response = 구간_역_삭제_요청(분당_라인_ID, 수진역_ID);
+
+                    구간_역_삭제_헤더_검증(response);
+                })
+        );
+    }
+
     public static Executable 구간_역_삭제_및_체크(Long lineId, Long stationId, Long expectDeletedSectionId) {
         return () -> {
             ExtractableResponse<Response> response = 구간_역_삭제_요청(lineId, stationId);
@@ -207,6 +225,10 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
                 .isIn(ContentType.JSON.getContentTypeStrings());
     }
 
+    private static void 구간_역_삭제_실패_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode())
+                .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 
     private static void 구간_역_삭제_본문_검증(SectionDeleteResponse sectionDeleteResponse, Long expectDeletedSectionId) {
         assertThat(sectionDeleteResponse.getId())
