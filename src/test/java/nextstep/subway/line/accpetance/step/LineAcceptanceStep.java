@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 import org.assertj.core.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,10 +26,13 @@ public class LineAcceptanceStep {
         assertThat(response.header(LOCATION)).isNotBlank();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", String.valueOf(upStationId));
+        params.put("downStationId", String.valueOf(downStationId));
+        params.put("distance", String.valueOf(distance));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all().
                 body(params).
@@ -41,8 +45,9 @@ public class LineAcceptanceStep {
         return response;
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color) {
-        return 지하철_노선_생성_요청(name, color);
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(
+            String name, String color, Long upStationId, Long downStationId, int distance) {
+        return 지하철_노선_생성_요청(name, color, upStationId, downStationId, distance);
     }
 
     public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
@@ -63,7 +68,11 @@ public class LineAcceptanceStep {
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
+        List<List<Station>> stations = response.jsonPath().getList(".", LineResponse.class).stream()
+                .map(it -> it.getStations())
+                .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(stations.size()).isEqualTo(2);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {

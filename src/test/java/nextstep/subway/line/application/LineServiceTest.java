@@ -2,12 +2,17 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Name;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -19,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,21 +37,31 @@ class LineServiceTest {
     @Mock
     private LineRepository lineRepository;
 
+    @Mock
+    private StationRepository stationRepository;
+
+    @InjectMocks
+    private StationService stationService;
+
     private LineService lineService;
 
     private LineRequest lineRequest;
     private LineRequest updateRequest;
     private Line line;
+    private Station upStation;
+    private Station downStation;
 
     @Mock
     private Line line2;
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(lineRepository);
+        lineService = new LineService(lineRepository, stationService);
         line = new Line("2호선", "green");
-        lineRequest = new LineRequest("2호선", "green");
+        lineRequest = new LineRequest("2호선", "green", 1L, 2L, 10);
         updateRequest = new LineRequest("3호선", "orange");
+        upStation = new Station("강남역");
+        downStation = new Station("역삼역");
     }
 
     @DisplayName("노선을 생성요청하면, 생성된 노선을 리턴한다.")
@@ -56,6 +70,10 @@ class LineServiceTest {
         // given
         when(lineRepository.save(any(Line.class)))
                 .thenReturn(line);
+        when(stationRepository.findById(any()))
+                .thenReturn(Optional.of(upStation));
+        when(stationRepository.findById(any()))
+                .thenReturn(Optional.of(downStation));
 
         // when
         final LineResponse actual = lineService.saveLine(lineRequest);
@@ -69,7 +87,7 @@ class LineServiceTest {
     @Test
     void createLineWithDuplicatedLine() {
         // given
-        when(lineRepository.findByName(anyString()))
+        when(lineRepository.findByName(any(Name.class)))
                 .thenReturn(Optional.of(line));
 
         // then
