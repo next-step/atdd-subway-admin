@@ -32,15 +32,21 @@ public class StationAcceptanceTest extends AcceptanceTest {
     public final static StationRequest 모란역 = new StationRequest("모란역");
     public final static StationRequest 야탑역 = new StationRequest("야탑역");
 
+    public static final Long 강남역_ID = 1L;
+    public static final Long 역삼역_ID = 2L;
+    public static final Long 수진역_ID = 3L;
+    public static final Long 모란역_ID = 4L;
+    public static final Long 야탑역_ID = 5L;
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
         ExtractableResponse<Response> response = 지하철역_생성_요청(강남역);
 
-        지하철역_생성_헤더_검증(response, 1L);
+        지하철역_생성_헤더_검증(response, 강남역_ID);
 
         StationResponse stationResponse = response.as(StationResponse.class);
-        지하철역_생성_본문_검증(stationResponse, 1L, 강남역);
+        지하철역_생성_본문_검증(stationResponse, 강남역_ID, 강남역);
     }
 
     private void 지하철역_생성_본문_검증(StationResponse stationResponse, Long exceptedId, StationRequest request) {
@@ -58,7 +64,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> createStationWithDuplicateName() {
         return Stream.of(
-                dynamicTest("지하철역 생성 요청", 지하철역_생성_요청_및_체크(강남역, 1L)),
+                dynamicTest("지하철역 생성 요청", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
                 dynamicTest("기존에 존재하는 지하철역 이름으르 재생성시 요청", () -> {
                     ExtractableResponse<Response> response = 지하철역_생성_요청(강남역);
 
@@ -71,11 +77,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> getStations() {
         return Stream.of(
-                dynamicTest("강남역을 생성한다", 지하철역_생성_요청_및_체크(강남역, 1L)),
-                dynamicTest("역삼역을 생성한다", 지하철역_생성_요청_및_체크(역삼역, 2L)),
+                dynamicTest("강남역을 생성한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
+                dynamicTest("역삼역을 생성한다", 지하철역_생성_요청_및_체크(역삼역, 역삼역_ID)),
                 dynamicTest("지하철역을 조회한다", () -> {
                     ExtractableResponse<Response> response = 지하철역_목록_조회_요청();
-                    지하철역_목록_조회_헤더_검증(response, 1L, 2L);
+                    지하철역_목록_조회_헤더_검증(response, 강남역_ID, 역삼역_ID);
                 })
         );
     }
@@ -84,9 +90,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> deleteStation() {
         return Stream.of(
-                dynamicTest("강남역을 생성한다", 지하철역_생성_요청_및_체크(강남역, 1L)),
+                dynamicTest("강남역을 생성한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
                 dynamicTest("지하철역을 제거한다", () -> {
-                    ExtractableResponse<Response> response = 지하철역_삭제_요청(1L);
+                    ExtractableResponse<Response> response = 지하철역_삭제_요청(강남역_ID);
                     지하철역_삭제_헤더_검증(response);
                 })
         );

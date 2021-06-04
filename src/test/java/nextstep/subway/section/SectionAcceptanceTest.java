@@ -18,21 +18,13 @@ import org.springframework.http.HttpStatus;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static nextstep.subway.line.LineAcceptanceTest.라인_생성_및_체크;
-import static nextstep.subway.line.LineAcceptanceTest.분당_라인;
+import static nextstep.subway.line.LineAcceptanceTest.*;
 import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @DisplayName("구간 테스트")
 class SectionAcceptanceTest extends AcceptanceTest {
-    private static Long 강남역_ID = 1L;
-    private static Long 역삼역_ID = 2L;
-    private static Long 수진역_ID = 3L;
-    private static Long 모란역_ID = 4L;
-    private static Long 야탑역_ID = 5L;
-
-    private static Long 분당_라인_ID = 1L;
 
     // 강남역 <-> 역삼역 <-> 수진역
     private static SectionRequest 역삼역_수진역_길이_15 = new SectionRequest(역삼역_ID, 수진역_ID, 15L);
