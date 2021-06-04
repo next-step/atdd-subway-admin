@@ -35,8 +35,10 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse getLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
-        return LineResponse.of(line);
+        return lineRepository
+                .findById(id)
+                .map(LineResponse::of)
+                .orElseThrow(NotFoundLineException::new);
     }
 
     public void modifyLine(Long id, LineRequest lineRequest) {
