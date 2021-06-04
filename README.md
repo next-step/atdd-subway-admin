@@ -43,6 +43,12 @@ npm run dev
   1. 생성 / 목록조회 / 조회 / 수정 / 삭제 에 대한 인수테스트 작성
   2. 기능 구현 
 
+* step2
+  1. 관련 인수테스트 수정하며
+  2. 구간 관련 클래스 추가
+  3. Line 생성 시 Reqeust 파라미터에 Station 추가, Response에 Station 리스트 추가
+  4. 구간에서 역 정렬 기능 추가
+
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
