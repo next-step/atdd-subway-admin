@@ -18,19 +18,25 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
-        checkAlreadyExists(request.getName());
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+    public Line saveLine(Line line) {
+        checkAlreadyExists(line.getName());
+        return lineRepository.save(line);
     }
 
+    @Transactional(readOnly = true)
     public List<Line> findAllLines() {
         return lineRepository.findAll();
     }
 
-    public Line findLine(long lineId) {
+    @Transactional(readOnly = true)
+    public Line findLineById(Long lineId) {
         return lineRepository.findById(lineId)
             .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public void updateLineById(Long lineId, Line updateLine) {
+        Line line = findLineById(lineId);
+        line.update(updateLine);
     }
 
     private void checkAlreadyExists(String name) {

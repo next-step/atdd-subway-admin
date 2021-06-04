@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,8 +32,9 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLine(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+        Line line = lineService.saveLine(lineRequest.toLine());
+        LineResponse lineResponse = LineResponse.of(line);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -42,9 +44,15 @@ public class LineController {
     }
 
     @GetMapping(value = "/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> findLine(@PathVariable long lineId) {
-        Line line = lineService.findLine(lineId);
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long lineId) {
+        Line line = lineService.findLineById(lineId);
         return ResponseEntity.ok().body(LineResponse.of(line));
+    }
+
+    @PutMapping(value = "/{lineId}")
+    public ResponseEntity<?> updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
+        lineService.updateLineById(lineId, lineRequest.toLine());
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler({AlreadyExistsLineNameException.class})

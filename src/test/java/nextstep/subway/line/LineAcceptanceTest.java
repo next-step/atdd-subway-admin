@@ -2,6 +2,7 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,14 +93,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // when
-        // 지하철_노선_수정_요청
+        ExtractableResponse<Response> updatedResponse = 지하철_노선_수정_요청(createdResponse, "신분당선",
+            "bg-blue-600");
 
         // then
-        // 지하철_노선_수정됨
-        Assertions.fail("테스트 작성 X");
+        지하철_노선_수정됨(updatedResponse);
+    }
+
+    private void 지하철_노선_수정됨(ExtractableResponse<Response> updatedResponse) {
+        Assertions.assertThat(updatedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> createdResponse,
+        String lineName, String lineColor) {
+        Map<String, String> params = new HashMap<>();
+        params.put("color", lineColor);
+        params.put("name", lineName);
+
+        String location = createdResponse.header("Location");
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(location)
+                .then().log().all().extract();
     }
 
     @DisplayName("지하철 노선을 제거한다.")
