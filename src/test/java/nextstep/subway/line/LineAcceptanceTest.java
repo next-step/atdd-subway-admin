@@ -25,7 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private String color;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         name = "4호선";
         color = "blue";
     }

@@ -1,6 +1,5 @@
-package nextstep.subway.common;
+package nextstep.subway.exception;
 
-import nextstep.subway.exception.NotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
