@@ -47,7 +47,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
     public static final SectionRequest 모란역_야탑역_길이_1 = new SectionRequest(모란역_ID, 야탑역_ID, 1L);
 
     @TestFactory
-    @DisplayName("신규 구간을 추가한다 강남역 - 역삼역 - 수진역 => 강남역 - 역삼역 - 모란역 - 수진역 => 강남역 - 역삼역 - 모란역 - 수진역 - 야탑역")
+    @DisplayName("신규 구간을 추가한다 강남역 - 역삼역 - 수진역 =>" +
+            "강남역 - 역삼역 - 모란역 - 수진역 =>" +
+            "강남역 - 역삼역 - 모란역 - 수진역 - 야탑역")
     Stream<DynamicTest> 신규_구간을_추가한다_하행() {
         return Stream.of(
                 dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
@@ -72,7 +74,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @TestFactory
-    @DisplayName("신규 구간을 추가한다 수진역 - 강남역 - 역삼역 => 수진역 - 모란역 - 강남역 - 역삼역 => 야탑역 - 수진역 - 모란역 - 강남역 - 역삼역")
+    @DisplayName("신규 구간을 추가한다 수진역 - 강남역 - 역삼역 =>" +
+            "수진역 - 모란역 - 강남역 - 역삼역 =>" +
+            "야탑역 - 수진역 - 모란역 - 강남역 - 역삼역")
     Stream<DynamicTest> 신규_구간을_추가한다_상행() {
         return Stream.of(
                 dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
