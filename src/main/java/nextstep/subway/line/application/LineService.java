@@ -5,24 +5,31 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import nextstep.subway.section.application.SectionService;
+import nextstep.subway.section.domain.Section;
 
 @Service
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
+    private SectionService sectionService;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, SectionService sectionService) {
         this.lineRepository = lineRepository;
+        this.sectionService = sectionService;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
+        Section section = sectionService.saveSection(request.toSectionRequest());
+        persistLine.addSection(section);
         return LineResponse.of(persistLine);
     }
 

@@ -12,9 +12,9 @@ import nextstep.subway.station.dto.StationRequest;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-    private static final StationRequest 강남역 = new StationRequest("강남역");
-    private static final StationRequest 역삼역 = new StationRequest("역삼역");
-    private static final StationRequest 판교역 = new StationRequest("판교역");
+    public static final StationRequest 강남역 = new StationRequest("강남역");
+    public static final StationRequest 역삼역 = new StationRequest("역삼역");
+    public static final StationRequest 판교역 = new StationRequest("판교역");
 
 
     @DisplayName("지하철역을 생성한다.")

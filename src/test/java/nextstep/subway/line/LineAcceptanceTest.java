@@ -1,6 +1,8 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceStep.*;
+import static nextstep.subway.station.StationAcceptanceStep.*;
+import static nextstep.subway.station.StationAcceptanceTest.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,14 +14,14 @@ import nextstep.subway.line.dto.LineRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600");
-    private static final LineRequest 구분당선 = new LineRequest("구분당선", "bg-blue-600");
+    private static final LineRequest 수도권_신분당선 = new LineRequest("수도권_신분당선", "bg-red-600");
+    private static final LineRequest 수도권_2호선 = new LineRequest("수도권_2호선", "bg-green-600");
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(수도권_신분당선);
         // then
         지하철_노선_생성됨(response);
     }
@@ -28,9 +30,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        지하철_노선_등록되어_있음(신분당선);
+        지하철_노선_등록되어_있음(수도권_신분당선);
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(수도권_신분당선);
         // then
         지하철_노선_생성_실패됨(response);
     }
@@ -39,8 +41,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Long createdLineId1 = 지하철_노선_등록되어_있음(신분당선);
-        Long createdLineId2 = 지하철_노선_등록되어_있음(구분당선);
+        Long createdLineId1 = 지하철_노선_등록되어_있음(수도권_신분당선);
+        Long createdLineId2 = 지하철_노선_등록되어_있음(수도권_2호선);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -55,7 +57,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        Long createdLineId = 지하철_노선_등록되어_있음(신분당선);
+        Long createdLineId = 지하철_노선_등록되어_있음(수도권_신분당선);
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdLineId);
         // then
@@ -66,9 +68,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Long createdLineId = 지하철_노선_등록되어_있음(신분당선);
+        Long createdLineId = 지하철_노선_등록되어_있음(수도권_신분당선);
         // when
-        ExtractableResponse response = 지하철_노선_수정_요청(createdLineId, 구분당선);
+        ExtractableResponse response = 지하철_노선_수정_요청(createdLineId, 수도권_2호선);
         // then
         지하철_노선_수정됨(response);
     }
@@ -77,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Long createdLineId = 지하철_노선_등록되어_있음(신분당선);
+        Long createdLineId = 지하철_노선_등록되어_있음(수도권_신분당선);
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(createdLineId);
         // then
@@ -89,13 +91,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void modifiedCreateLine() {
         // given
-        // 지하철_역_등록되어_있음(강남역)
-        // 지하철_역_등록되어_있음(판교역)
+        Long stationId1 = 지하철_역_등록되어_있음(강남역);
+        Long stationId2 = 지하철_역_등록되어_있음(판교역);
+        int distance = 5;
+        LineRequest 수도권_신분당선 = new LineRequest("수도권_신분당선", "bg-red-600", stationId1, stationId2, distance);
 
         // when
-        // 지하철_노선_생성_요청(신분당선)
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(수도권_신분당선);
 
         // then
-        // 지하철_노선_생성됨
+        지하철_노선_생성됨(response);
     }
 }
