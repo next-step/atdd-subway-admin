@@ -64,9 +64,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> createLineRequestTest02() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequest(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestAndTest(INCHEON_SUBWAY_LINE_1)),
             dynamicTest("인천 1호선 노선 다시 생성 시 실패", () -> {
-                ExtractableResponse<Response> response = createLineRequest(INCHEON_SUBWAY_LINE_1);
+                ExtractableResponse<Response> response = createLineSuccess(INCHEON_SUBWAY_LINE_1);
 
                 // then
                 // 지하철_노선_생성_실패됨
@@ -81,8 +81,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> findLinesTest() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequest(INCHEON_SUBWAY_LINE_1)),
-            dynamicTest("인천 2호선 노선 생성", () -> createLineRequest(AIRPORT_EXPRESS)),
+            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestAndTest(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 2호선 노선 생성", () -> createLineRequestAndTest(AIRPORT_EXPRESS)),
             dynamicTest("지하철 노선 목록 조회 및 검증", () -> fineLinesAndTest(INCHEON_SUBWAY_LINE_1, AIRPORT_EXPRESS))
         );
     }
@@ -92,7 +92,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> getLineFailTest() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequest(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestAndTest(INCHEON_SUBWAY_LINE_1)),
             dynamicTest("지하철 노선 조회 요청", () -> {
                 ExtractableResponse<Response> response = findLine(100L);
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -105,7 +105,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> updateLineTest() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequest(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestAndTest(INCHEON_SUBWAY_LINE_1)),
             dynamicTest("인천 1호선 노선을 인천 2호선 노선으로 수정 및 검증", () -> updateLineTo(INCHEON_SUBWAY_LINE_2))
         );
     }
@@ -115,7 +115,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> deleteLineTest() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequest(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestAndTest(INCHEON_SUBWAY_LINE_1)),
             dynamicTest("생성된 노선 삭제 및 검증", () -> {
                 ExtractableResponse<Response> response = deleteLineRequest();
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -161,7 +161,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                    .extract();
     }
 
-    private ExtractableResponse<Response> createLineRequest(LineTestData data) {
+    private ExtractableResponse<Response> createLineSuccess(LineTestData data) {
         return RestAssured.given().log().all()
                           .body(data.getLine())
                           .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -173,7 +173,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     private void createLineRequestAndTest(LineTestData data) {
 
         LineRequest lineRequest = data.getLine();
-        ExtractableResponse<Response> response = createLineRequest(data);
+        ExtractableResponse<Response> response = createLineSuccess(data);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).startsWith("/lines");

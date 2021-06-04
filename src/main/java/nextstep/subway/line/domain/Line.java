@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -9,9 +8,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.LineSections;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Stations;
 
 @Entity
 public class Line extends BaseEntity implements Serializable {
@@ -65,7 +64,7 @@ public class Line extends BaseEntity implements Serializable {
         return lineSections;
     }
 
-    public List<Station> toStations() {
+    public Stations getSortedStations() {
         return lineSections.toStations();
     }
 }

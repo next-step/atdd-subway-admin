@@ -33,7 +33,7 @@ class LineTest {
             line.addSection(sections[order]);
         }
 
-        List<Station> stations = line.toStations();
+        List<Station> stations = line.getSortedStations().getStations();
 
         assertThat(stations).hasSize(4)
                             .containsExactly(stationArray);

@@ -15,7 +15,8 @@ public class SectionCommandService {
         this.sectionRepository = sectionRepository;
     }
 
-    public Section saveSection(Section entity) {
-        return sectionRepository.save(entity);
+    public Long saveSection(Section entity) {
+        Section persist = sectionRepository.save(entity);
+        return persist.getId();
     }
 }
