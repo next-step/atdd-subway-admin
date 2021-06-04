@@ -94,6 +94,14 @@ public class Section extends BaseEntity {
         return distance;
     }
 
+    public boolean isConnectableNewStationToNearStationBy(Section section) {
+        return isSameUpStation(section) || isSameDownStation(section);
+    }
+
+    public boolean isConnectableNearStationToNearStationBy(Station station) {
+        return isUpStation(station) || isDownStation(station);
+    }
+
     public boolean isUpStationBetween(Station station, Distance distance) {
         return isUpStation(station) &&
                 isDistanceUnder(distance);

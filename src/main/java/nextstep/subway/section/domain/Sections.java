@@ -73,7 +73,7 @@ public class Sections {
     private void connectNewStationToNearStationsAndResize(Section section) {
         sections.stream()
                 .filter(item -> item != section)
-                .filter(item -> item.isSameUpStation(section) || item.isSameDownStation(section))
+                .filter(item -> item.isConnectableNewStationToNearStationBy(section))
                 .findFirst()
                 .ifPresent(near -> near.connectNewStationToNearStationsAndResize(section));
     }
@@ -81,7 +81,7 @@ public class Sections {
     private void connectNearStationToNearStationAndResize(Section section, Station station) {
         sections.stream()
                 .filter(item -> item != section)
-                .filter(item -> item.isUpStation(station) || item.isDownStation(station))
+                .filter(item -> item.isConnectableNearStationToNearStationBy(station))
                 .findFirst()
                 .ifPresent(near -> near.connectNearStationToNearStationAndResize(section));
 
