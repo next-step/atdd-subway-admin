@@ -31,10 +31,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithAlreadyExistsName() {
         // given
-        지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> createdResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = 이미_생성된_노선정보로_노선_생성_요청(createdResponse);
 
         // then
         지하철_노선_생성_실패됨(response);
@@ -53,7 +53,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
-        Assertions.fail("테스트 작성 X");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -107,6 +106,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(lineResponse.getColor()).isEqualTo(lineColor);
         Assertions.assertThat(lineResponse.getCreatedDate()).isNotNull();
         Assertions.assertThat(lineResponse.getModifiedDate()).isNotNull();
+    }
+
+    private ExtractableResponse<Response> 이미_생성된_노선정보로_노선_생성_요청(ExtractableResponse<Response> createdResponse) {
+        LineResponse lineResponse = createdResponse.as(LineResponse.class);
+        return 지하철_노선_생성_요청(lineResponse.getName(), lineResponse.getColor());
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
