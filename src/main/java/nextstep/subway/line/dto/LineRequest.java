@@ -1,6 +1,10 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.Section;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class LineRequest {
     private String name;
@@ -41,7 +45,11 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color, upStationId, downStationId, distance);
+        return new Line(name, color, Arrays.asList(new Section(upStationId, downStationId, distance)));
+    }
+
+    public Line toLine(List<Section> sections) {
+        return new Line(name, color, sections);
     }
 
 }

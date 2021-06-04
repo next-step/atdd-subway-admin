@@ -26,13 +26,6 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        // 이름, 컬러, 상향역id, 하향역id, 역간격 입력받는다.
-        // 상향역 있는지 확인해서 Station 찾아둔다.
-        // 하향역 있는지 확인해서 Station 찾아둔다.
-        // Line 에서 Section 만들 수 있는지 확인한다.
-        // Section 만들어서 Line의 제 위치에 넣는다.
-        // Line 저장한다.
-        // 저장한 Line 반환한다.
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
@@ -44,11 +37,6 @@ public class LineController {
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLineById(@PathVariable Long id) {
-        // Line 찾는다.
-        // Line 내에 있는 모든 Section 가져온다.
-        // 모든 Section 에 있는 모든 Station 가져온다. (상행~ 하행)
-        // LineResponse 만든다.
-        // LineResponse 반환한다.
         return ResponseEntity.ok().body(lineService.findById(id));
     }
 
