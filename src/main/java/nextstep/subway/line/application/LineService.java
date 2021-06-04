@@ -38,7 +38,8 @@ public class LineService {
         return lineRepository
                 .findById(id)
                 .map(LineResponse::of)
-                .orElseThrow(NotFoundLineException::new);
+                .orElseThrow(NotFoundLineException::new)
+                ;
     }
 
     public void modifyLine(Long id, LineRequest lineRequest) {
