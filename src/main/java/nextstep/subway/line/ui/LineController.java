@@ -21,7 +21,8 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) throws NoSuchFieldException {
+        lineService.validateDuplicatedName(lineRequest);
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
