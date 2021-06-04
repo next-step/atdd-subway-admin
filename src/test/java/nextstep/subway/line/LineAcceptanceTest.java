@@ -113,7 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createResponse = createLine("1호선", "Blue");
-        Long id = createResponse.jsonPath().get("id");
+        Long id = createResponse.jsonPath().getLong("id");
         // when
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -167,6 +167,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
         // then
         // 지하철_노선_삭제됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
