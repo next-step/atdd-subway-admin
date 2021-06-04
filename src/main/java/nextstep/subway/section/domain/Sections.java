@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.exception.SectionDoesNotDeleteStationException;
 import nextstep.subway.common.exception.SectionNotContainsStationException;
 import nextstep.subway.section.domain.spcification.SectionsAddableSpecifications;
 import nextstep.subway.station.domain.Station;
@@ -12,6 +13,7 @@ import java.util.Optional;
 
 @Embeddable
 public class Sections {
+    private static final int MINIMUM_SECTION_SIZE = 1;
     @OneToMany(mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
 
@@ -54,6 +56,10 @@ public class Sections {
     }
 
     public Section deleteSectionBy(Station station) {
+        if (sections.size() <= MINIMUM_SECTION_SIZE) {
+            throw new SectionDoesNotDeleteStationException("최소 1개 이상의 구간을 가지고 있어야 합니다.");
+        }
+
         Section deletableSectionByStation = findDeletableSectionBy(station)
                 .orElseThrow(() -> new SectionNotContainsStationException("삭제할 수 있는 구간이 없습니다."));
 
