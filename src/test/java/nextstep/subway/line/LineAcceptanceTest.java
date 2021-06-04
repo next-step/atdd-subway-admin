@@ -102,4 +102,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_생성됨(response);
     }
+
+    @DisplayName("변경된 지하철 노선을 조회한다.")
+    @Test
+    void modifiedGetLine() {
+        // given
+        Long stationId1 = 지하철_역_등록되어_있음(강남역);
+        Long stationId2 = 지하철_역_등록되어_있음(판교역);
+        int distance = 5;
+        LineRequest 수도권_신분당선 = new LineRequest("수도권_신분당선", "bg-red-600", stationId2, stationId1, distance);
+        Long createdLineId = 지하철_노선_등록되어_있음(수도권_신분당선);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdLineId);
+        // then
+        지하철_노선_응답됨(response);
+    }
 }
