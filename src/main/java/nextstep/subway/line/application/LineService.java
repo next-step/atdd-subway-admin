@@ -28,12 +28,6 @@ public class LineService {
         this.stationService = stationService;
     }
 
-    /**
-     * final Station upStation = findStation(dto.getUpStationId());
-     * final Station downStation = findStation(dto.getDownStationId());
-     * sectionRepository.save(new Section(dto.getLine(), upStation, downStation, dto.getDistance()));
-     */
-
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Optional<Line> findLine = lineRepository.findByName(new Name(request.getName()));
