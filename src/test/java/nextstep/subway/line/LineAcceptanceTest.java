@@ -68,7 +68,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         ExtractableResponse<Response> givenResponse1 = 지하철_노선_생성("신분당선", "red");
         assertThat(givenResponse1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
         ExtractableResponse<Response> givenResponse2 = 지하철_노선_생성("분당선", "yellow");
         assertThat(givenResponse2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
@@ -76,16 +75,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("lines")
+                .when().get("/lines")
                 .then().log().all().extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> list = response.jsonPath().getList("$[*].id");
-
+        List<LinesSubResponse> list = response.jsonPath().getList(".");
         assertThat(list.size()).isEqualTo(2);
-        assertThat(list.contains(givenResponse1.jsonPath().get("$.id"))).isTrue();
-        assertThat(list.contains(givenResponse2.jsonPath().get("$.id"))).isTrue();
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -97,10 +93,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(givenResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
-        Map<String, String> params = new HashMap<>();
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("lineId", givenLine.getId())
                 .when().get("/lines/{lineId}")
@@ -129,7 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("lineId", givenResponse.jsonPath().get("$.id").toString())
-                .when().put("lines/{lineId}")
+                .when().put("/lines/{lineId}")
                 .then().log().all().extract();
 
         // then
@@ -147,7 +141,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .pathParam("lineId", givenResponse.jsonPath().get("$.id").toString())
-                .when().delete("lines/{lineId}")
+                .when().delete("/lines/{lineId}")
                 .then().log().all().extract();
 
         // then

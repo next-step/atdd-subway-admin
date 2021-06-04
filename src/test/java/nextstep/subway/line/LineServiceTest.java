@@ -14,6 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,5 +68,23 @@ public class LineServiceTest {
         //when
         //then
         assertThatThrownBy(() -> lineService.readLine(1L)).isInstanceOf(NoSuchDataException.class);
+    }
+
+    @DisplayName("노선 목록 조회")
+    @Test
+    public void 노선목록조회시_노선목록확인() throws Exception {
+        //given
+        Line line1 = new Line(1L, "testName1", "testColor1");
+        Line line2 = new Line(2L, "testName2", "testColor2");
+        List<Line> lines = new ArrayList<>(Arrays.asList(line1, line2));
+        when(lineRepository.findAll()).thenReturn(lines);
+
+        //when
+        List<LinesSubResponse> linesResponse = lineService.readLineAll();
+
+        //then
+        assertThat(linesResponse.size()).isEqualTo(2);
+        assertThat(linesResponse.contains(LinesSubResponse.of(line1))).isTrue();
+        assertThat(linesResponse.contains(LinesSubResponse.of(line2))).isTrue();
     }
 }

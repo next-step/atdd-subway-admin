@@ -1,7 +1,6 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesSubResponse;
@@ -10,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @Validated
 @RestController
@@ -32,5 +32,11 @@ public class LineController {
     public ResponseEntity readLine(@PathVariable Long lineId) {
         LinesSubResponse linesSubResponse = lineService.readLine(lineId);
         return ResponseEntity.ok(linesSubResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity readLineAll() {
+        List<LinesSubResponse> linesSubResponses = lineService.readLineAll();
+        return ResponseEntity.ok(linesSubResponses);
     }
 }
