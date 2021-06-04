@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -70,18 +71,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = showStations();
 
         // then
-        // 지하철_노선_목록_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertAll(
+            // 지하철_노선_목록_응답됨
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 
-        // 지하철_노선_목록_포함됨
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
+            // 지하철_노선_목록_포함됨
+            () -> {
+                List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+                        .map(this::getLocationId)
+                        .collect(Collectors.toList());
+                List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+                        .map(it -> it.getId())
+                        .collect(Collectors.toList());
 
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+                assertThat(resultLineIds).containsAll(expectedLineIds);
+            }
+        );
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -89,12 +94,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> params = getTargetLine("2호선", "green lighten-1");
+        ExtractableResponse<Response> createResponse = createLine(params);
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = showStations(getLocationId(createResponse));
 
         // then
-        // 지하철_노선_응답됨
+        assertAll(
+            // 지하철_노선_응답됨
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+
+            // 지하철_노선_포함됨
+            () -> {
+                Long expected = response.jsonPath().getObject(".", LineResponse.class).getId();
+                assertThat(getLocationId(createResponse)).isEqualTo(expected);
+            }
+        );
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -143,10 +160,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    private long getLocationId(ExtractableResponse<Response> response) {
+        String result = response.header("Location").split("/")[2];
+
+        return Long.parseLong(result);
+    }
+
     private ExtractableResponse<Response> showStations() {
+        return this.showStations(0L);
+    }
+
+    private ExtractableResponse<Response> showStations(final Long id) {
+        String path = (id > 0) ? URI_PATH + "/" + id : URI_PATH;
+
         return RestAssured.given().log().all()
                 .when()
-                .get(URI_PATH)
+                .get(path)
                 .then().log().all()
                 .extract();
     }
