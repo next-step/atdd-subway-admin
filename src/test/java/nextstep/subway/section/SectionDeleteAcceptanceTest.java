@@ -191,7 +191,7 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
                 dynamicTest("등록이 안된 수진역을 삭제하면 에러가 발생한다", () -> {
                     ExtractableResponse<Response> response = 구간_역_삭제_요청(분당_라인_ID, 수진역_ID);
 
-                    구간_역_삭제_헤더_검증(response);
+                    구간_역_삭제_실패_검증(response);
                 })
         );
     }

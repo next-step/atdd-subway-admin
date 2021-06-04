@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.exception.SectionNotContainsStationException;
 import nextstep.subway.section.domain.spcification.SectionsAddableSpecifications;
 import nextstep.subway.station.domain.Station;
 
@@ -54,7 +55,7 @@ public class Sections {
 
     public Section deleteSectionBy(Station station) {
         Section deletableSectionByStation = findDeletableSectionBy(station)
-                .orElseThrow(() -> new IllegalStateException("삭제할 수 있는 구간이 없습니다."));
+                .orElseThrow(() -> new SectionNotContainsStationException("삭제할 수 있는 구간이 없습니다."));
 
         deleteSection(deletableSectionByStation);
 
