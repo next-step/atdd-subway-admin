@@ -44,7 +44,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     public static final SectionRequest 역삼역_모란역_길이_1 = new SectionRequest(역삼역_ID, 모란역_ID, 1L);
     public static final SectionRequest 수진역_모란역_길이_1 = new SectionRequest(수진역_ID, 모란역_ID, 1L);
     public static final SectionRequest 모란역_강남역_길이_1 = new SectionRequest(모란역_ID, 강남역_ID, 1L);
-    public static final SectionRequest 모란역_수진역_길이_1 = new SectionRequest(모란역_ID, 수진역_ID, 1L);
+    public static final SectionRequest 모란역_야탑역_길이_1 = new SectionRequest(모란역_ID, 야탑역_ID, 1L);
 
     @TestFactory
     @DisplayName("신규 구간을 추가한다 강남역 - 역삼역 - 수진역 => 강남역 - 역삼역 - 모란역 - 수진역 => 강남역 - 역삼역 - 모란역 - 수진역 - 야탑역")

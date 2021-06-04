@@ -32,9 +32,13 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
     private final Long 강남역_역삼역_ID = 1L;
     private final Long 역삼역_수진역_ID = 2L;
     private final Long 수진역_모란역_ID = 3L;
+    private final Long 모란역_야탑역_ID = 4L;
 
     @TestFactory
-    @DisplayName("중간역을 삭제한다 강남역 - 역삼역 - 수진역 - 모란역 => 강남역 - 수진역 - 모란역 => 강남역 - 모란역")
+    @DisplayName("중간역을 삭제한다" +
+            "강남역 - 역삼역 - 수진역 - 모란역 =>" +
+            "강남역 - 수진역 - 모란역 =>" +
+            "강남역 - 모란역")
     Stream<DynamicTest> 중간역을_삭제한다() {
         Long 신규_강남역_수진역_ID = 1L;
         Long 신규_강남역_모란역_ID = 1L;
@@ -67,7 +71,10 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
     }
 
     @TestFactory
-    @DisplayName("상행역을 삭제한다 강남역 - 역삼역 - 수진역 - 모란역 => 역삼역 - 수진역 - 모란역 => 수진역 - 모란역")
+    @DisplayName("상행역을 삭제한다" +
+            "강남역 - 역삼역 - 수진역 - 모란역 =>" +
+            "역삼역 - 수진역 - 모란역 =>" +
+            "수진역 - 모란역")
     Stream<DynamicTest> 상행역을_삭제한다() {
         return Stream.of(
                 dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
@@ -95,7 +102,9 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
     }
 
     @TestFactory
-    @DisplayName("하행역을 삭제한다 강남역 - 역삼역 - 수진역 - 모란역 => 강남역 - 역삼역 - 수진역 => 강남역 - 역삼역")
+    @DisplayName("하행역을 삭제한다 강남역 - 역삼역 - 수진역 - 모란역 => " +
+            "강남역 - 역삼역 - 수진역 =>" +
+            "강남역 - 역삼역")
     Stream<DynamicTest> 하행역을_삭제한다() {
         return Stream.of(
                 dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
@@ -120,6 +129,53 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
                         new ExpectSectionResponse(강남역_역삼역_ID, 강남역_ID, 역삼역_ID, 분당_라인.getDistance())
                 )
         ));
+    }
+
+    @TestFactory
+    @DisplayName("복잡하게 삭제한다 강남역 - 역삼역 - 수진역 - 모란역 - 야탑역 => " +
+            "역삼역 - 수진역 - 모란역 - 야탑역 =>" +
+            "역삼역 - 모란역 - 야탑역 =>" +
+            "역삽역 - 모란역")
+    Stream<DynamicTest> 복잡하게_삭제한다() {
+        Long 신규_역삼역_모란역_ID = 역삼역_수진역_ID;
+
+        return Stream.of(
+                dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
+                dynamicTest("역삼역을 추가한다", 지하철역_생성_요청_및_체크(역삼역, 역삼역_ID)),
+                dynamicTest("수진역을 추가한다", 지하철역_생성_요청_및_체크(수진역, 수진역_ID)),
+                dynamicTest("모란역을 추가한다", 지하철역_생성_요청_및_체크(모란역, 모란역_ID)),
+                dynamicTest("야탑역을 추가한다", 지하철역_생성_요청_및_체크(야탑역, 야탑역_ID)),
+                dynamicTest("(상)강남역과 (하)역삼역의 노선을 만든다",
+                        라인_생성_및_체크(분당_라인, 분당_라인_ID, new StationRequest[]{강남역, 역삼역})
+                ),
+                dynamicTest("(상)역삼역과 (하)수진역을 연결한다", 구간_생성_및_체크(역삼역_수진역_길이_1, 분당_라인_ID, 역삼역_수진역_ID)),
+                dynamicTest("(상)수진역과 (하)모란역을 연결한다", 구간_생성_및_체크(수진역_모란역_길이_1, 분당_라인_ID, 수진역_모란역_ID)),
+                dynamicTest("(상)모란역과 (하)야탑역을 연결한다", 구간_생성_및_체크(모란역_야탑역_길이_1, 분당_라인_ID, 모란역_야탑역_ID)),
+                dynamicTest("야탑역 추가된 분당라인의 전체 연결을 확인한다", 야탑역_추가_분당라인_기본_연결_및_길이_체크()),
+                dynamicTest("강남역을 삭제한다", 구간_역_삭제_및_체크(분당_라인_ID, 강남역_ID, 강남역_역삼역_ID)),
+                dynamicTest("강남역을 삭제 후 전체 라인을 검사한다", 전체_연결_확인(
+                        분당_라인_ID,
+                        new ExpectSectionResponse(역삼역_수진역_ID, 역삼역_ID, 수진역_ID, 역삼역_수진역_길이_1.getDistance()),
+                        new ExpectSectionResponse(수진역_모란역_ID, 수진역_ID, 모란역_ID, 수진역_모란역_길이_1.getDistance()),
+                        new ExpectSectionResponse(모란역_야탑역_ID, 모란역_ID, 야탑역_ID, 모란역_야탑역_길이_1.getDistance())
+                    )
+                ),
+                dynamicTest("수진역을 삭제한다", 구간_역_삭제_및_체크(분당_라인_ID, 수진역_ID, 수진역_모란역_ID)),
+                dynamicTest("수진역을 삭제 후 전체 라인을 검사한다", 전체_연결_확인(
+                        분당_라인_ID,
+                        new ExpectSectionResponse(신규_역삼역_모란역_ID, 역삼역_ID, 모란역_ID,
+                                역삼역_수진역_길이_1.getDistance() + 수진역_모란역_길이_1.getDistance()),
+                        new ExpectSectionResponse(모란역_야탑역_ID, 모란역_ID, 야탑역_ID, 모란역_야탑역_길이_1.getDistance())
+                    )
+                ),
+                dynamicTest("야탑역을 삭제한다", 구간_역_삭제_및_체크(분당_라인_ID, 야탑역_ID, 모란역_야탑역_ID)),
+                dynamicTest("야탑역을 삭제 후 전체 라인을 검사한다", 전체_연결_확인(
+                        분당_라인_ID,
+                        new ExpectSectionResponse(신규_역삼역_모란역_ID, 역삼역_ID, 모란역_ID,
+                                역삼역_수진역_길이_1.getDistance() + 수진역_모란역_길이_1.getDistance())
+                    )
+                )
+        );
     }
 
     public static Executable 구간_역_삭제_및_체크(Long lineId, Long stationId, Long expectDeletedSectionId) {
@@ -163,6 +219,17 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
                 new ExpectSectionResponse(강남역_역삼역_ID, 강남역_ID, 역삼역_ID, 분당_라인.getDistance()),
                 new ExpectSectionResponse(역삼역_수진역_ID, 역삼역_ID, 수진역_ID, 역삼역_수진역_길이_1.getDistance()),
                 new ExpectSectionResponse(수진역_모란역_ID, 수진역_ID, 모란역_ID, 수진역_모란역_길이_1.getDistance())
+        );
+    }
+
+
+    private Executable 야탑역_추가_분당라인_기본_연결_및_길이_체크() {
+        return 전체_연결_확인(
+                분당_라인_ID,
+                new ExpectSectionResponse(강남역_역삼역_ID, 강남역_ID, 역삼역_ID, 분당_라인.getDistance()),
+                new ExpectSectionResponse(역삼역_수진역_ID, 역삼역_ID, 수진역_ID, 역삼역_수진역_길이_1.getDistance()),
+                new ExpectSectionResponse(수진역_모란역_ID, 수진역_ID, 모란역_ID, 수진역_모란역_길이_1.getDistance()),
+                new ExpectSectionResponse(모란역_야탑역_ID, 모란역_ID, 야탑역_ID, 모란역_야탑역_길이_1.getDistance())
         );
     }
 }
