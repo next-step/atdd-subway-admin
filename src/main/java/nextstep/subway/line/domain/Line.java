@@ -5,8 +5,9 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
@@ -55,12 +56,10 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        for (int i = 0; i < sections.size(); ++i) {
-            stations.add(sections.get(i).getUpStation());
-            stations.add(sections.get(i).getDownStation());
-        }
-        return stations;
+        Set<Station> stations = sections.stream()
+                .flatMap(station -> Stream.of(station.getUpStation(), station.getDownStation()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return stations.stream().collect(Collectors.toList());
     }
 
     public Long getId() {

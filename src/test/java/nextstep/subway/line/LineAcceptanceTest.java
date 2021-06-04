@@ -80,7 +80,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<String> names = stations.stream()
                 .map(it -> it.getName())
                 .collect(Collectors.toList());
-        assertThat(names).contains("강남역", "역삼역");
+        assertThat(names).containsExactly("강남역", "역삼역");
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -145,7 +145,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<String> resultStationNames = stations.stream()
                 .map(it -> it.getName())
                 .collect(Collectors.toList());
-        assertThat(resultStationNames).contains("강남역", "역삼역");
+        assertThat(resultStationNames).containsExactly("강남역", "역삼역");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
