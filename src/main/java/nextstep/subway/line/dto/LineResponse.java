@@ -13,9 +13,6 @@ public class LineResponse {
     private String name;
     private String color;
     private List<Station> stations;
-//    private Long upStationId;
-//    private Long downStationId;
-//    private int distance;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
@@ -23,24 +20,19 @@ public class LineResponse {
     }
 
     public LineResponse(Long id, String name, String color,
-//                        Long upStationId, Long downStationId, int distance,
                         List<Station> stations,
                         LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
-//        this.upStationId = upStationId;
-//        this.downStationId = downStationId;
-//        this.distance = distance;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
 
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(),
-//                line.getUpStationId(), line.getDownStationId(), line.getDistance(),
-                null,
+                line.getStations(),
                 line.getCreatedDate(), line.getModifiedDate());
     }
 
@@ -62,18 +54,6 @@ public class LineResponse {
         return color;
     }
 
-//    public Long getUpStationId() {
-//        return upStationId;
-//    }
-//
-//    public Long getDownStationId() {
-//        return downStationId;
-//    }
-//
-//    public int getDistance() {
-//        return distance;
-//    }
-
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
@@ -83,7 +63,6 @@ public class LineResponse {
     }
 
     public List<Station> getStations() {
-//        return Arrays.asList(new Station("강남역"), new Station("역삼역"));
         return this.stations;
     }
 }

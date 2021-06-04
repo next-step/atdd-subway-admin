@@ -66,6 +66,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+
+        // and
+        // Check stations
+        LineResponse lineResponse = response.as(LineResponse.class);
+        List<Station> stations = lineResponse.getStations();
+        List<String> names = stations.stream()
+                .map(it -> it.getName())
+                .collect(Collectors.toList());
+        assertThat(names).contains("강남역", "역삼역");
     }
 
 //    @DisplayName("지하철 노선을 생성한다.")

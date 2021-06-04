@@ -4,6 +4,10 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +19,13 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
+    private StationRepository stationRepository;
+    private SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -28,7 +36,16 @@ public class LineService {
         // Section 만들어서 Line의 제 위치에 넣는다.
         // Line 저장한다.
         // 저장한 Line 반환한다.
-        Line persistLine = lineRepository.save(request.toLine());
+        Station upStation = stationRepository.findById(request.getUpStationId())
+                .orElseThrow(NoSuchElementException::new);
+        Station downStation = stationRepository.findById(request.getDownStationId())
+                .orElseThrow(NoSuchElementException::new);
+        Section section = sectionRepository.save(new Section(upStation, downStation, request.getDistance()));
+
+        Line persistLine = lineRepository.save(
+                new Line(request.getName(),
+                        request.getColor(),
+                        section));
         return LineResponse.of(persistLine);
     }
 
@@ -51,7 +68,7 @@ public class LineService {
 
     public LineResponse update(Long id, LineRequest lineRequest) {
         Line persistLine = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
-        persistLine.update(lineRequest.toLine());
+//        persistLine.update(lineRequest.toLine());
         return LineResponse.of(persistLine);
     }
 

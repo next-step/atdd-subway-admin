@@ -1,33 +1,38 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @Column(unique = true)
-    private Long upStationId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn
+    private Station upStation;
 
-    @Column(unique = true)
-    private Long downStationId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn
+    private Station downStation;
 
-    @Column(unique = true)
+    @Column(nullable = false)
     private int distance;
 
     public Section() { }
 
-    public Section(Long upStationId, Long downStationId, int distance) {
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+    public Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
@@ -39,15 +44,20 @@ public class Section {
         return line;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public int getDistance() {
         return distance;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+        line.addSection(this);
     }
 }
