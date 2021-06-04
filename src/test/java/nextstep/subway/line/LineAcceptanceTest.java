@@ -140,4 +140,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .when().post("/lines")
             .then().log().all().extract();
     }
+
+    @DisplayName("지하철 노선 생성 시 두 종점역 추가하기")
+    @Test
+    void createLineWithStations() {
+        // given
+        // 지하철역_등록되어_있음
+        // 지하철역_등록되어_있음
+
+        // when
+        // 지하철_노선_생성_요청_종점역포함
+
+        // then
+        // 지하철_노선이_생성됨
+        // 지하철_구간이_생성됨
+    }
+
+    @DisplayName("지하철 노선의 역 목록을 조회하기")
+    @Test
+    void findLineStations() {
+        // given
+        // 지하철_노선_등록되어_있음_종점역_포함
+
+        // when
+        // 지하철_노선_조회_요청
+
+        // then
+        // 지하철_노선_응답됨
+        // 지하철_노선에서_구간목록을_조회가능
+        // 구간목록은_종점역_상행~하행까지_순서대로_정렬되어 있음
+        // 필요시_노선과_구간(혹은 역)의_관계를_새로_맺기 (양방향매핑)
+    }
+
 }
