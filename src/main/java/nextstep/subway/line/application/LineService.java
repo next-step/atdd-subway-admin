@@ -2,10 +2,11 @@ package nextstep.subway.line.application;
 
 import java.util.List;
 
+import nextstep.subway.line.application.exceptions.AlreadyExistsLineNameException;
+import nextstep.subway.line.application.exceptions.NotFoundLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public Line findLineById(Long lineId) {
         return lineRepository.findById(lineId)
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(NotFoundLineException::new);
     }
 
     public void updateLineById(Long lineId, Line updateLine) {
