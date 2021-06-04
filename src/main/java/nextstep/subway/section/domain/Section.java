@@ -105,24 +105,6 @@ public class Section extends BaseEntity {
     return Stream.of(this, newSection).collect(Collectors.toList());
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if(o == null) return false;
-    if(!(o instanceof Section)) return false;
-    Section section = (Section) o;
-    return this.getId().equals(section.getId()) &&
-            this.getUpStation().equals(section.getUpStation()) &&
-            this.getDownStation().equals(section.getDownStation()) &&
-            this.getDistance().equals(section.getDistance()) &&
-            this.getLine().equals(section.getLine());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(this.getId(), this.getUpStation(), this.getDownStation(), this.getDistance(), this.getLine());
-  }
-
   public void updateDownStation(Section newSection) {
     int distanceDiff = distanceDiffWithNewSection(newSection.distance);
     this.downStation = newSection.upStation;
@@ -141,5 +123,23 @@ public class Section extends BaseEntity {
       throw new IllegalArgumentException(NEW_SECTION_MUST_SHORTER_THAN_EXIST_SECTION);
     }
     return distanceDiff;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if(o == null) return false;
+    if(!(o instanceof Section)) return false;
+    Section section = (Section) o;
+    return this.getId().equals(section.getId()) &&
+        this.getUpStation().equals(section.getUpStation()) &&
+        this.getDownStation().equals(section.getDownStation()) &&
+        this.getDistance().equals(section.getDistance()) &&
+        this.getLine().equals(section.getLine());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.getId(), this.getUpStation(), this.getDownStation(), this.getDistance(), this.getLine());
   }
 }
