@@ -42,6 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_생성_실패됨(response);
+        지하철_요청_실패_메시지_확인됨(response, "노선 생성에 실패했습니다. 이미 존재하는 노선입니다.");
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -97,6 +98,48 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_삭제됨(response);
+    }
+
+    @DisplayName("등록되지 않은 노선 조회 실패")
+    @Test
+    void getLine_error() {
+        // given
+        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(blueLineResponse.getId() + 1L);
+
+        // then
+        지하철_노선_응답_실패됨(response);
+        지하철_요청_실패_메시지_확인됨(response, "노선이 존재하지 않습니다.");
+    }
+
+    @DisplayName("등록되지 않은 노선 수정 시도시 실패")
+    @Test
+    void updateLine_error() {
+        // given
+        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(blueLineResponse.getId() + 1L, new LineRequest("2호선", "green"));
+
+        // then
+        지하철_노선_수정_실패됨(response);
+        지하철_요청_실패_메시지_확인됨(response, "수정 대상 노선이 존재하지 않습니다.");
+    }
+
+    @DisplayName("등록되지 않은 노선 삭제 시도시 실패")
+    @Test
+    void deleteLine_error() {
+        // given
+        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(blueLineResponse.getId() + 1L);
+
+        // then
+        지하철_노선_삭제_실패됨(response);
+        지하철_요청_실패_메시지_확인됨(response, "삭제 대상 노선이 존재하지 않습니다.");
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
@@ -183,5 +226,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void 지하철_노선_응답_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철_노선_수정_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철_노선_삭제_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철_요청_실패_메시지_확인됨(ExtractableResponse<Response> response, String userErrorMessage) {
+        String errorMessage = response.jsonPath().getObject("errorMessage", String.class);
+        assertThat(errorMessage).isEqualTo(userErrorMessage);
     }
 }
