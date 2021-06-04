@@ -42,4 +42,8 @@ public class LineService {
         line.update(request.toLine());
         return LineResponse.of(lineRepository.save(line));
     }
+
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
