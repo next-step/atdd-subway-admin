@@ -22,7 +22,7 @@ import static nextstep.subway.station.StationAcceptanceTest.지하철_역_등록
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
-class LineAcceptanceTest extends AcceptanceTest {
+public class LineAcceptanceTest extends AcceptanceTest {
 
     private Long 강남역_ID;
     private Long 광교역_ID;
@@ -130,7 +130,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(result, savedId);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest param) {
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest param) {
 
         return RestAssured.given().log().all()
             .body(param)
@@ -141,20 +141,27 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
+    public static ExtractableResponse<Response> 노선_단건을_조회한다(Long id) {
+        return RestAssured.given().log().all()
+            .pathParam("id", id)
+            .when()
+            .get("/lines/{id}")
+            .then().log().all()
+            .extract();
+    }
+
+    public static List<Long> 노선_응답에서_역_ID들을_얻는다(LineResponse resultBody) {
+        return resultBody.getStations()
+            .stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+    }
+
     private ExtractableResponse<Response> 노선_목록을_조회한다() {
         return RestAssured.given().log().all()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get("lines")
-            .then().log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> 노선_단건을_조회한다(Long id) {
-        return RestAssured.given().log().all()
-            .pathParam("id", id)
-            .when()
-            .get("/lines/{id}")
             .then().log().all()
             .extract();
     }
@@ -195,13 +202,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultBody.getColor()).isEqualTo(toCreateColor);
         List<Long> upDownStationIds = 노선_응답에서_역_ID들을_얻는다(resultBody);
         assertThat(upDownStationIds).isEqualTo(Stream.of(강남역_ID, 광교역_ID).collect(Collectors.toList()));
-    }
-
-    private List<Long> 노선_응답에서_역_ID들을_얻는다(LineResponse resultBody) {
-        return resultBody.getStations()
-                .stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
     }
 
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> result) {

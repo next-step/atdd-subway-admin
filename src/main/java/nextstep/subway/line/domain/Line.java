@@ -2,12 +2,11 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
@@ -20,8 +19,8 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line")
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -37,20 +36,13 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        sections.add(section);
+        this.sections.add(section);
         section.addLine(this);
     }
 
     public List<Station> getEndToEndStations() {
-        return new ArrayList<>(getDistinctStations());
+        return new ArrayList<>(sections.getDistinctStations());
 
-    }
-
-    private Set<Station> getDistinctStations() {
-        return sections.stream()
-            .flatMap(section -> section.getUpAndDownStations()
-                                        .stream())
-            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public Long getId() {
@@ -63,6 +55,10 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 
     @Override

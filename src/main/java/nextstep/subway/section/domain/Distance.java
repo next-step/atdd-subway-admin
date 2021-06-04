@@ -18,10 +18,14 @@ public class Distance {
   }
 
   public static Distance from(int distance) {
+    validateDistanceMinimumValue(distance);
+    return new Distance(distance);
+  }
+
+  private static void validateDistanceMinimumValue(int distance) {
     if(distance < MIN_DISTANCE) {
       throw new IllegalArgumentException(String.format(DISTANCE_SHOULD_BE_LARGER_THAN_ZERO, MIN_DISTANCE));
     }
-    return new Distance(distance);
   }
 
   public int getNumber() {

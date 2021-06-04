@@ -19,4 +19,9 @@ public class GlobalExceptionHandler {
   public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException e) {
     return ResponseEntity.notFound().build();
   }
+
+  @ExceptionHandler(value = {IllegalArgumentException.class})
+  public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException e) {
+    return ResponseEntity.badRequest().build();
+  }
 }

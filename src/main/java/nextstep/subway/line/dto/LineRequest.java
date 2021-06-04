@@ -1,6 +1,7 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.dto.SectionRequest;
 
 public class LineRequest {
 
@@ -31,6 +32,10 @@ public class LineRequest {
 
     public static LineRequest toUpdateRequestParameter(String name, String color) {
         return new LineRequest(name, color, null, null, null);
+    }
+
+    public SectionRequest toSectionRequest() {
+        return new SectionRequest(upStationId, downStationId, distance);
     }
 
     public String getName() {
