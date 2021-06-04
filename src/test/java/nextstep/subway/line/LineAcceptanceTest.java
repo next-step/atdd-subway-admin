@@ -35,6 +35,35 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    @DisplayName("지하철 노선을 종점역과 함께 생성한다.")
+    @Test
+    void createLineWithLastStop() {
+        // given
+        // 상행역_하행역_등록되어_있음
+        Map<String, String> stationRegisterParam1 = new HashMap<>();
+        stationRegisterParam1.put("name", "강남");
+        executePost("/stations", stationRegisterParam1);
+
+        Map<String, String> stationRegisterParam2 = new HashMap<>();
+        stationRegisterParam2.put("name", "광교");
+        executePost("/stations", stationRegisterParam2);
+        
+        // when
+        // 지하철_노선_생성_요청
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "red");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "40");
+
+        ExtractableResponse<Response> response = executePost("/lines", params);
+
+        // then
+        // 지하철_노선_생성됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
