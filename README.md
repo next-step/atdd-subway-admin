@@ -65,4 +65,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 -[x] 노선 수정 기능 구현
 -[x] 노선 삭제 인수 테스트 작성
 -[x] 노선 삭제 기능 구현
--[ ] 인수 테스트 리팩터링
+-[x] 인수 테스트 리팩터링

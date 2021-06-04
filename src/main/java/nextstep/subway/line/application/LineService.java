@@ -32,7 +32,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public Line findLineById(Long lineId) {
         return lineRepository.findById(lineId)
-            .orElseThrow(NotFoundLineException::new);
+            .orElseThrow(() -> new NotFoundLineException(String.format("노선이 존재하지 않습니다.[%s]", lineId)));
     }
 
     public void updateLineById(Long lineId, Line updateLine) {
