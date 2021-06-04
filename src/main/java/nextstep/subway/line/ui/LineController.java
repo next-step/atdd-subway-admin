@@ -20,7 +20,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity createLine(@RequestBody final LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
@@ -33,6 +33,11 @@ public class LineController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable final Long id) {
         return ResponseEntity.ok().body(lineService.findLine(id));
+    }
+
+    @PatchMapping(value = "/{id}/{color}")
+    public ResponseEntity<LineResponse> updateLine(@PathVariable final Long id, @PathVariable final String color) {
+        return ResponseEntity.ok().body(lineService.updateLine(id, color));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

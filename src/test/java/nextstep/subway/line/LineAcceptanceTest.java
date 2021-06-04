@@ -119,12 +119,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> params = getTargetLine("2호선", "green lighten-1");
+        ExtractableResponse<Response> createResponse = createLine(params);
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = updateColorStation(getLocationId(createResponse), "green");
 
         // then
         // 지하철_노선_수정됨
+        // then
+        assertAll(
+            // 지하철_노선_응답됨
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+
+            // 지하철_노선_포함됨
+            () -> {
+                LineResponse expected = response.jsonPath().getObject(".", LineResponse.class);
+                assertThat(expected.getId()).isEqualTo(getLocationId(createResponse));
+                assertThat(expected.getName()).isEqualTo("2호선");
+                assertThat(expected.getColor()).isEqualTo("green");
+            }
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -156,6 +172,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .when()
                 .post(URI_PATH)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> updateColorStation(final Long id, final String color) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", id).pathParam("color", color)
+                .when()
+                .patch(URI_PATH + "/{id}/{color}")
                 .then().log().all()
                 .extract();
     }

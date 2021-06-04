@@ -38,4 +38,13 @@ public class LineService {
 
         return LineResponse.of(line);
     }
+
+    public LineResponse updateLine(Long id, String color) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException());
+        line.update(new Line(line.getName(), color));
+
+        lineRepository.flush();
+
+        return LineResponse.of(line);
+    }
 }
