@@ -1,7 +1,6 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.application.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -15,7 +14,6 @@ import javax.persistence.ManyToOne;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -39,18 +37,15 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    public Section(Line persistLine, Station upStation, Station downStation, int distance) {
-        validateLine(persistLine);
-        this.line = persistLine;
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    private void validateLine(Line persistLine) {
-        if (Objects.isNull(persistLine)) {
-            throw new LineNotFoundException(NOT_EXIST_LINE);
-        }
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, upStation, downStation, distance);
     }
 
     protected Section() {
@@ -60,16 +55,8 @@ public class Section extends BaseEntity {
         return id;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
+    public void setLine(Line line) {
+        this.line = line;
     }
 
     public List<Station> getStations() {

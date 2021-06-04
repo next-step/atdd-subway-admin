@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class StationService {
+    private static final String NOT_EXIST_STATION = "존재하지 않는 역: ";
     private StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -35,5 +36,10 @@ public class StationService {
 
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findStation(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new StationNotFoundException(NOT_EXIST_STATION + stationId));
     }
 }

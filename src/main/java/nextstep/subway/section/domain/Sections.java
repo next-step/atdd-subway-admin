@@ -35,7 +35,4 @@ public class Sections {
         return stations;
     }
 
-    public int size() {
-        return sections.size();
-    }
 }
