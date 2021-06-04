@@ -1,5 +1,7 @@
 package nextstep.subway.line.application;
 
+import java.util.List;
+
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -20,6 +22,10 @@ public class LineService {
         checkAlreadyExists(request.getName());
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    public List<Line> findAllLines() {
+        return lineRepository.findAll();
     }
 
     private void checkAlreadyExists(String name) {

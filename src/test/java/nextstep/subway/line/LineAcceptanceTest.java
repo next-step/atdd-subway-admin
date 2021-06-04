@@ -1,7 +1,12 @@
 package nextstep.subway.line;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -44,15 +49,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createdResponse1 = 지하철_노선_생성_요청("신분당선", "bg-red-600");
+        ExtractableResponse<Response> createdResponse2 = 지하철_노선_생성_요청("5호선", "bg-purple-600");
 
         // when
-        // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> lineListResponse = 지하철_노선_목록_조회_요청();
 
         // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
+        지하철_노선_목록_응답됨(lineListResponse);
+        지하철_노선_목록_포함됨(lineListResponse, createdResponse1, createdResponse2);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -129,5 +134,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return RestAssured
+            .given().log().all()
+            .when().get("/lines")
+            .then().log().all().extract();
+    }
+
+    private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> lineListResponse) {
+        assertThat(lineListResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> listResponse,
+        ExtractableResponse<Response> createdResponse1,
+        ExtractableResponse<Response> createdResponse2) {
+
+        List<Long> expectedLineIds = Stream.of(createdResponse1, createdResponse2)
+            .map(response -> Long.parseLong(response.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+
+        List<Long> resultLineIds = listResponse.jsonPath().getList(".", LineResponse.class).stream()
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 }
