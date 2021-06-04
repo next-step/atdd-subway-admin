@@ -128,6 +128,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_요청_실패_메시지_확인됨(response, "수정 대상 노선이 존재하지 않습니다.");
     }
 
+    @Test
+    @DisplayName("동일한 노선이름으로 수정 요청할 경우 실패")
+    void duplicate_name_error() {
+        // given
+        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
+        LineResponse greenLineResponse = 지하철_노선_등록되어_있음(new LineRequest("2호선", "grean"));
+        List<Long> lineIds = Arrays.asList(blueLineResponse.getId(), greenLineResponse.getId());
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(blueLineResponse.getId(),
+                new LineRequest("2호선", "green"));
+
+        // then
+        지하철_노선_수정_실패됨(response);
+        지하철_요청_실패_메시지_확인됨(response, "동일한 이름의 노선이 존재합니다.");
+    }
+
     @DisplayName("등록되지 않은 노선 삭제 시도시 실패")
     @Test
     void deleteLine_error() {

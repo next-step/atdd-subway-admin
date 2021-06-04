@@ -44,6 +44,9 @@ public class LineService {
 
     public void updateLine(long id, LineRequest updateLineRequest) {
         Line line = findLineByIdOrThrow(id, "수정 대상 노선이 존재하지 않습니다.");
+        if (lineRepository.findByName(updateLineRequest.getName()).isPresent()) {
+            throw new DuplicateKeyException("동일한 이름의 노선이 존재합니다.");
+        }
         line.update(updateLineRequest.toLine());
     }
 
