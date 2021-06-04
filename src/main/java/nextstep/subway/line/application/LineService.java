@@ -1,10 +1,12 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.exception.DuplicateDataException;
+import nextstep.subway.exception.NoSuchDataException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LinesSubResponse;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,5 +33,12 @@ public class LineService {
                     lineRequest.getClass().getDeclaredField("name").getName(),
                     lineRequest.getName(), lineRequest.getClass().getName());
         }
+    }
+
+    @Transactional(readOnly = true)
+    public LinesSubResponse readLine(Long lineId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선입니다.",
+                "lineId", String.valueOf(lineId), null));
+        return LinesSubResponse.of(line);
     }
 }

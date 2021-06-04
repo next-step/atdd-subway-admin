@@ -5,6 +5,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LinesSubResponse;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -91,6 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() throws JsonProcessingException {
         //given
         ExtractableResponse<Response> givenResponse = 지하철_노선_생성("신분당선", "red");
+        LineResponse givenLine = givenResponse.jsonPath().getObject(".", LineResponse.class);
         assertThat(givenResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // when
@@ -99,14 +102,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("lineId", givenResponse.jsonPath().get("$.id").toString())
+                .pathParam("lineId", givenLine.getId())
                 .when().get("/lines/{lineId}")
                 .then().log().all().extract();
+        LinesSubResponse linesSubResponse = response.jsonPath().getObject(".", LinesSubResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().get("$.name").toString()).isEqualTo("신분당선");
-        assertThat(response.jsonPath().get("$.color").toString()).isEqualTo("red");
+        assertThat(linesSubResponse.getName()).isEqualTo("신분당선");
+        assertThat(linesSubResponse.getColor()).isEqualTo("red");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
