@@ -4,6 +4,7 @@ import nextstep.subway.common.exception.EntityNotExistException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.section.application.SectionCommandService;
+import nextstep.subway.section.domain.Distance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +19,12 @@ public class LineCommandService {
         this.sectionCommandService = sectionCommandService;
     }
 
-    public Long saveLine(Line line, long upStationId, long downStationId) {
-        Line saved = lineRepository.save(line);
-        sectionCommandService.save(saved, upStationId, downStationId);
+    public Long saveLine(Line line, Long upStationId, Long downStationId, Distance distance) {
+        Long lineId = lineRepository.save(line)
+                .getId();
+        sectionCommandService.save(lineId, upStationId, downStationId, distance);
 
-        return saved.getId();
+        return lineId;
     }
 
     public Long update(Long id, Line updateLine) {

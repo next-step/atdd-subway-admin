@@ -5,6 +5,7 @@ import nextstep.subway.line.application.LineCommandService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Distance;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,8 @@ public class LineController {
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         Long id = lineCommandService.saveLine(lineRequest.toLine(),
                 lineRequest.getUpStationId(),
-                lineRequest.getDownStationId());
+                lineRequest.getDownStationId(),
+                new Distance(lineRequest.getDistance()));
 
         LineResponse line = LineResponse.of(lineQueryService.findByIdFetched(id));
 

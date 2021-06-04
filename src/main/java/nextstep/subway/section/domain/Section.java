@@ -21,16 +21,20 @@ public class Section extends BaseEntity {
     @ManyToOne
     private Station downStation;
 
+    @Column(nullable = false)
+    private Distance distance;
+
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation) {
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         validateLine(line);
         validateStation(upStation, downStation);
 
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distance = distance;
     }
 
     private void validateLine(Line line) {
@@ -48,11 +52,79 @@ public class Section extends BaseEntity {
         }
     }
 
+    public void resizeAndChangeNearStation(Section section) {
+        changeNearStation(section);
+        this.distance = distance.minus(section.distance);
+    }
+
+    private void changeNearStation(Section section) {
+        if (isSameDownStation(section)) {
+            this.downStation = section.upStation;
+        } else if (isSameUpStation(section)) {
+            this.upStation = section.downStation;
+        }
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
+    }
+
+    public boolean isUpStationBetween(Station station, Distance distance) {
+        return isUpStation(station) &&
+                isDistanceUnder(distance);
+    }
+
+    public boolean isDownStationBetween(Station station, Distance distance) {
+        return isDownStation(station) &&
+                isDistanceUnder(distance);
+    }
+
+    public boolean isLower(Section section) {
+        return isUpStation(section.downStation);
+    }
+
+    public boolean isUpper(Section section) {
+        return isDownStation(section.upStation);
+    }
+
+    public boolean isContains(Station station) {
+        return isDownStation(station) || isUpStation(station);
+    }
+
+    public boolean isDistanceUnder(Distance distance) {
+        return this.distance.isLessThan(distance);
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return upStation == section.getUpStation();
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return downStation == section.getDownStation();
     }
 
     public List<Station> getStations() {
         return Collections.unmodifiableList(Arrays.asList(upStation, downStation));
     }
+
+    private boolean isDownStation(Station station) {
+        return downStation == station;
+    }
+
+    private boolean isUpStation(Station station) {
+        return upStation == station;
+    }
+
 }

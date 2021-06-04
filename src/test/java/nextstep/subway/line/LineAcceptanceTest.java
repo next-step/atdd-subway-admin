@@ -27,8 +27,8 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final LineRequest 분당_라인 = new LineRequest("분당라인", "노란색", 1L, 2L, 10L);
-    private static final LineRequest 신분당_라인 = new LineRequest("신분당라인", "빨간색", 1L, 2L, 10L);
+    public static final LineRequest 분당_라인 = new LineRequest("분당라인", "노란색", 1L, 2L, 10L);
+    public static final LineRequest 신분당_라인 = new LineRequest("신분당라인", "빨간색", 1L, 2L, 10L);
 
     @DisplayName("지하철 노선을 생성한다.")
     @TestFactory
@@ -140,7 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private ExtractableResponse<Response> 노선_생성_요청(LineRequest request) {
+    private static ExtractableResponse<Response> 노선_생성_요청(LineRequest request) {
         return RestAssured
                 .given().log().all()
                 .body(request)
@@ -151,21 +151,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 노선_목록_조회_요청() {
+    private static ExtractableResponse<Response> 노선_목록_조회_요청() {
         return RestAssured
                 .given().log().all()
                 .when().get("/lines")
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 노선_조회_요청(Long id) {
+    private static ExtractableResponse<Response> 노선_조회_요청(Long id) {
         return RestAssured
                 .given().log().all()
                 .when().get("/lines/" + id)
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 노선_수정_요청(Long id, LineRequest updateRequest) {
+    private static ExtractableResponse<Response> 노선_수정_요청(Long id, LineRequest updateRequest) {
         return RestAssured
                 .given().log().all()
                 .body(updateRequest)
@@ -174,14 +174,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 노선_삭제_요청(Long id) {
+    private static ExtractableResponse<Response> 노선_삭제_요청(Long id) {
         return RestAssured
                 .given().log().all()
                 .when().delete("/lines/" + id)
                 .then().log().all().extract();
     }
 
-    private Executable 라인_생성_및_체크(LineRequest lineRequest, Long exceptId, StationRequest[] stations) {
+    public static Executable 라인_생성_및_체크(LineRequest lineRequest, Long exceptId, StationRequest[] stations) {
         return () -> {
             ExtractableResponse<Response> response = 노선_생성_요청(lineRequest);
 
@@ -192,7 +192,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         };
     }
 
-    private Executable 존재하지_않는_라인_확인(Long id) {
+    private static Executable 존재하지_않는_라인_확인(Long id) {
         return () -> {
             ExtractableResponse<Response> response = 노선_조회_요청(id);
 
@@ -209,13 +209,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    private void 노선_생성_헤더_검증(ExtractableResponse<Response> response) {
+    private static void 노선_생성_헤더_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header(HttpHeaders.CONTENT_TYPE)).isIn(ContentType.JSON.getContentTypeStrings());
         assertThat(response.header(HttpHeaders.LOCATION)).isNotBlank();
     }
 
-    private void 노선_생성_본문_검증(
+    private static void 노선_생성_본문_검증(
             LineResponse lineResponse,
             Long exceptId,
             LineRequest requestedLine,
@@ -224,12 +224,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         노선_조회_본문_검증(lineResponse, exceptId, requestedLine, stations);
     }
 
-    private void 노선_생성_실패_검증(ExtractableResponse<Response> response) {
+    private static void 노선_생성_실패_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private void 노선_목록_조회_본문_검증(
+    private static void 노선_목록_조회_본문_검증(
             LineResponse[] lineResponses,
             Long exceptedIds[],
             LineRequest[] lineRequests,
@@ -247,7 +247,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    private void 노선_조회_본문_검증(
+    private static void 노선_조회_본문_검증(
             LineResponse lineResponse,
             Long exceptedId,
             LineRequest lineRequest,
@@ -286,7 +286,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .containsExactlyInAnyOrder(lineRequest.getUpStationId(), lineRequest.getDownStationId());
     }
 
-    private void 노선_데이터_없음_헤더_검증(ExtractableResponse<Response> response) {
+    private static void 노선_데이터_없음_헤더_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
