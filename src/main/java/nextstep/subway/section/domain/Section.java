@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -72,6 +73,6 @@ public class Section extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return Arrays.asList(upStation, downStation);
+        return new LinkedList<>(Arrays.asList(upStation, downStation));
     }
 }

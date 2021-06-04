@@ -5,8 +5,8 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 @Embeddable
@@ -16,7 +16,7 @@ public class Sections {
     private List<Section> sections;
 
     public Sections() {
-        sections = new ArrayList<>();
+        sections = new LinkedList<>();
     }
 
     public void addSection(Section section) {
@@ -28,7 +28,7 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
+        List<Station> stations = new LinkedList<>();
         for (Section section : sections) {
             stations.addAll(section.getStations());
         }
