@@ -55,14 +55,6 @@ public class LineResponse {
         return color;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
-
     public List<Station> getStations() {
         return this.stations;
     }
