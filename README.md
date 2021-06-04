@@ -52,3 +52,8 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+<br>
+
+***
+## [Step1 - 요구사항 및 개발 내용 정리](STEP1_SUMMARY.md)
