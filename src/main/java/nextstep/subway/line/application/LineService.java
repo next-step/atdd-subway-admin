@@ -58,6 +58,7 @@ public class LineService {
     }
 
     public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
+        Line line = findLineById(id);
+        lineRepository.delete(line);
     }
 }
