@@ -37,9 +37,9 @@ public class LineTest {
         Station downStation = stationRepository.save(Station.of("역삼역"));
         int distance = 5;
 
-        Section section = sectionRepository.save(new Section(upStation, downStation, distance));
+        Section section = sectionRepository.save(Section.of(upStation, downStation, distance));
 
-        Line persistLine = lineRepository.save(new Line("2호선", "다크그린", section));
+        Line persistLine = lineRepository.save(Line.of("2호선", "다크그린", section));
 
         assertThat(persistLine.getStations()).contains(upStation, downStation);
     }
@@ -50,9 +50,9 @@ public class LineTest {
         Station downStation = stationRepository.save(Station.of("역삼역"));
         int distance = 5;
 
-        Section section = sectionRepository.save(new Section(upStation, downStation, distance));
+        Section section = sectionRepository.save(Section.of(upStation, downStation, distance));
 
-        Line expected = lineRepository.save(new Line("2호선", "다크그린", section));
+        Line expected = lineRepository.save(Line.of("2호선", "다크그린", section));
 
         testEntityManager.flush();
         testEntityManager.clear();

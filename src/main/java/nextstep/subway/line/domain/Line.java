@@ -26,13 +26,13 @@ public class Line extends BaseEntity {
 
     public Line() { }
 
-    public Line(String name, String color, List<Section> sections) {
+    private Line(String name, String color, List<Section> sections) {
         this.name = name;
         this.color = color;
         this.sections = sections;
     }
 
-    public Line(String name, String color, Section section) {
+    private Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
         if (section != null) {
@@ -41,8 +41,20 @@ public class Line extends BaseEntity {
         }
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         this(name, color, (Section) null);
+    }
+
+    public static Line of(String name, String color, List<Section> sections) {
+        return new Line(name, color, sections);
+    }
+
+    public static Line of(String name, String color, Section section) {
+        return new Line(name, color, section);
+    }
+
+    public static Line of(String name, String color) {
+        return new Line(name, color);
     }
 
     public void update(Line line) {

@@ -40,10 +40,10 @@ public class LineService {
                 .orElseThrow(NoSuchElementException::new);
         Station downStation = stationRepository.findById(request.getDownStationId())
                 .orElseThrow(NoSuchElementException::new);
-        Section section = sectionRepository.save(new Section(upStation, downStation, request.getDistance()));
+        Section section = sectionRepository.save(Section.of(upStation, downStation, request.getDistance()));
 
         Line persistLine = lineRepository.save(
-                new Line(request.getName(),
+                Line.of(request.getName(),
                         request.getColor(),
                         section));
         return LineResponse.of(persistLine);

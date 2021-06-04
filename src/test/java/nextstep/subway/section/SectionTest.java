@@ -26,7 +26,7 @@ public class SectionTest {
         Station downStation = stationRepository.save(Station.of("역삼역"));
         int distance = 5;
 
-        Section section = sectionRepository.save(new Section(upStation, downStation, distance));
+        Section section = sectionRepository.save(Section.of(upStation, downStation, distance));
 
         assertThat(section.getUpStation()).isEqualTo(upStation);
         assertThat(section.getDownStation()).isEqualTo(downStation);
