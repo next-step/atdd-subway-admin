@@ -42,7 +42,7 @@ public class LineService {
 
     public LineResponse findLine(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+        return LineResponse.of(line);
     }
 
     public void deleteLineById(Long id) {
