@@ -77,11 +77,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
         Long createdLineId = 지하철_노선_등록되어_있음(신분당선);
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(createdLineId);
         // then
         지하철_노선_삭제됨(response);
+    }
+
+
+    @DisplayName("변경된 지하철 노선을 생성한다.")
+    @Test
+    void modifiedCreateLine() {
+        // given
+        // 지하철_역_등록되어_있음(강남역)
+        // 지하철_역_등록되어_있음(판교역)
+
+        // when
+        // 지하철_노선_생성_요청(신분당선)
+
+        // then
+        // 지하철_노선_생성됨
     }
 }
