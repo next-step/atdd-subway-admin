@@ -29,5 +29,5 @@ host: localhost:52165
 - [x] 상행, 하행이 모두 기존 구간에 등록되어있지 않은 경우에는 등록할 수 없다.
 
 ### 지난 코드리뷰 반영
-- [ ] Distance 클래스의 validation 로직 메서드로 분리
+- [X] Distance 클래스의 validation 로직 메서드로 분리
 - [x] Section 클래스의 미사용 메서드 제거
