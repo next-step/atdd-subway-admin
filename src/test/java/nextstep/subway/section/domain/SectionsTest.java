@@ -28,7 +28,7 @@ class SectionsTest {
         Station 역_11 = new Station(11L, "역_11");
         Station 역_12 = new Station(12L, "역_12");
 
-        // 1 <-> 12번까지 정렬이 되어야함.
+        // 1 - 12번까지 정렬이 되어야함.
 
         Distance zero = new Distance(0L);
 
