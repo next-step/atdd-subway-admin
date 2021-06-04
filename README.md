@@ -57,7 +57,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 # 요구사항 정리
 
-## Step 1
+## Step1 - 지하철 노선 관리
 
 ### 기능 구현
 
@@ -208,3 +208,61 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     Date: Fri, 13 Nov 2020 00:11:51 GMT
     ```
 
+---
+
+## Step2 - 인수 테스트 리팩토링
+
+### Request 변경 사항
+
+#### 지하철 노선 생성 요청
+
+- 노선 생성 시 두 종점역의 ID가 필요
+
+    ```text
+    POST /lines HTTP/1.1
+    accept: */*
+    content-type: application/json; charset=UTF-8
+    
+    {
+        "color": "bg-red-600",
+        "name": "신분당선",
+        "upStationId": "1",
+        "downStationId": "2",
+        "distance": "10"
+    }
+    ```
+
+#### 지하철 노선 조회 결과      
+
+- 노선 조회 시 역 목록을 함께 응답
+- 노선에 등록된 구간을 순서대로 정렬하여 상행 종점 ~ 하행 종점까지의 목록 응답
+- 필요시 노선과 구간 관계 새로 정립
+
+```text
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "name": "신분당선",
+        "color": "bg-red-600",
+        "stations": [
+            {
+                "id": 1,
+                "name": "강남역",
+                "createdDate": "2020-11-13T12:17:03.075",
+                "modifiedDate": "2020-11-13T12:17:03.075"
+            },
+            {
+                "id": 2,
+                "name": "역삼역",
+                "createdDate": "2020-11-13T12:17:03.092",
+                "modifiedDate": "2020-11-13T12:17:03.092"
+            }
+        ],
+        "createdDate": "2020-11-13T09:11:51.997",
+        "modifiedDate": "2020-11-13T09:11:51.997"
+    }
+]
+```
