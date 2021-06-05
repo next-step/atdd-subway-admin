@@ -29,8 +29,13 @@ public class LineController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> searchLine() {
+    public ResponseEntity<List<LineResponse>> searchLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
+    }
+
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> searchLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findById(id));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
