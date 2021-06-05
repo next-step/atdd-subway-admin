@@ -41,6 +41,17 @@ public class Line extends BaseEntity {
                 .collect(Collectors.toList());
     }
 
+    public boolean contains(Section section) {
+        return sections.contains(section);
+    }
+
+    public void add(Section section) {
+        section.toLine(this);
+        if (!sections.contains(section)) {
+            sections.add(section);
+        }
+    }
+
     public Long getId() {
         return id;
     }
