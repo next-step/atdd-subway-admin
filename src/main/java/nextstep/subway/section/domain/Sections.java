@@ -1,14 +1,24 @@
 package nextstep.subway.section.domain;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import nextstep.subway.station.domain.Station;
 
+@Embeddable
 public class Sections {
 
     public static final String AT_LEAST_ONE_SECTION_IS_REQUIRED = "1개 이상의 구간이 입력되어야 합니다.";
-    private LinkedList<Section> sections;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "line", cascade = CascadeType.ALL)
+    private List<Section> sections;
+
+    public Sections() {
+        sections = new ArrayList<>();
+    }
 
     public Sections(List<Section> sections) {
         if (sections == null && sections.size() == 0) {
@@ -18,7 +28,7 @@ public class Sections {
     }
 
     private void initSortSections(List<Section> sections) {
-        this.sections = new LinkedList<>();
+        this.sections = new ArrayList<>();
         for (Section section : sections) {
             addSection(section);
         }
@@ -26,11 +36,19 @@ public class Sections {
 
     private void addSection(Section section) {
         if (isBefore(section)) {
-            sections.addFirst(section);
+            addFirst(section);
         }
         if (isAfter(section)) {
-            sections.addLast(section);
+            addLast(section);
         }
+    }
+
+    private void addFirst(Section section) {
+        sections.add(0, section);
+    }
+
+    private void addLast(Section section) {
+        sections.add(sections.size(), section);
     }
 
     public boolean isBefore(Section findSection) {
@@ -56,8 +74,16 @@ public class Sections {
             .map(Section::getUpStation)
             .collect(Collectors.toList());
         if (sections.size() > 0) {
-            stations.add(sections.getLast().getDownStation());
+            stations.add(getLast().getDownStation());
         }
         return stations;
+    }
+
+    private Section getLast() {
+        return sections.get(sections.size() - 1);
+    }
+
+    public boolean add(Section section) {
+        return sections.add(section);
     }
 }
