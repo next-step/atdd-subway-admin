@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -102,7 +103,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_응답됨(response, 생성된_분당선);
-        지하철_노선_지하철역_목록_포함됨(response, Arrays.asList(모란역, 복정역));
+        지하철_노선_지하철역_정렬된_목록_포함됨(response, Arrays.asList(모란역, 복정역));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -176,6 +177,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private void 지하철_노선_지하철역_목록_포함됨(ExtractableResponse<Response> response, List<StationResponse> stations) {
+    private void 지하철_노선_지하철역_정렬된_목록_포함됨(ExtractableResponse<Response> response,
+                                        List<StationResponse> stations) {
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+        List<Long> expectedStationIds = stations.stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        List<Long> resultStationIds = lineResponse.getStations()
+                .stream()
+                .map(Station::getId)
+                .collect(Collectors.toList());
+
+        assertThat(resultStationIds).containsExactlyElementsOf(expectedStationIds);
     }
 }
