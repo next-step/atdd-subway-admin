@@ -24,7 +24,7 @@ public class StationService {
         return StationResponse.of(persistStation);
     }
 
-    private Station findById(Long id) {
+    public Station findById(Long id) {
         return stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
     }
 
