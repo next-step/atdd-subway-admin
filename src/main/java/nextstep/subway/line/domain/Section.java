@@ -30,6 +30,10 @@ public class Section {
         this.downStation = downStation;
     }
 
+    public boolean isEqualToUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
     public Long getId() {
         return id;
     }
