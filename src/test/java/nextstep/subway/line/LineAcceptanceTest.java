@@ -57,15 +57,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void given_ExistingLine_when_CreateLineAlreadyExisting_then_ReturnBadRequest() {
         // given
         // 지하철_노선_등록되어_있음
+        final String name = "1호선";
+        final String color = "bg-blue-600";
+        지하철_노선_등록되어_있음(name, color);
 
         // when
         // 지하철_노선_생성_요청
+        final ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(name, color);
 
         // then
         // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")

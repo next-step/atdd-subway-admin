@@ -62,7 +62,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 #### 인수 테스트 작성
 
 * [x] 지하철 노션을 등록한다.
-* [ ] 등록된 지하철 노션을 등록한다.
+* [x] 등록된 지하철 노션을 등록한다.
 * [ ] 지하철 노선 목록을 조회한다.
 * [ ] 지하철 노선을 조회한다.
 * [ ] 지하철 노션을 수정한다.
