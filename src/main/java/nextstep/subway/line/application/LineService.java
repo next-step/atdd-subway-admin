@@ -27,11 +27,12 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> selectAllLines() {
-        List<Line> lines = lineRepository.findAll();
-        return lines.stream().map(LineResponse::of).collect(Collectors.toList());
+        return LineResponse.ofList(lineRepository.findAll());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse selectLine(Long id) {
         return LineResponse.of(lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(LINE_NOT_FOUND_MESSAGE)));
