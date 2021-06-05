@@ -41,7 +41,7 @@ public class SectionRequest {
     }
 
     public Section toSection() {
-        return new Section(id, lineId, upStationId, downStationId, distance);
+        return new Section(lineId, upStationId, downStationId, distance);
     }
 
     @Override

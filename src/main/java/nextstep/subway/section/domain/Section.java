@@ -51,34 +51,12 @@ public class Section extends BaseEntity {
     private int distance;
 
     public Section(Long upStationId, Long downStationId, int distance) {
-        validationSection(upStationId, downStationId);
-        validationDistance(distance);
-        this.upStation = new Station(upStationId);
-        this.downStation = new Station(downStationId);
-        this.distance = distance;
-    }
-
-    public Section(Station upStation, Station downStation, int distance) {
-        validationSection(upStation.getId(), downStation.getId());
-        validationDistance(distance);
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        this(null, upStationId, downStationId, distance);
     }
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
         validationSection(upStationId, downStationId);
         validationDistance(distance);
-        this.line = new Line(lineId);
-        this.upStation = new Station(upStationId);
-        this.downStation = new Station(downStationId);
-        this.distance = distance;
-    }
-
-    public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
-        validationSection(upStationId, downStationId);
-        validationDistance(distance);
-        this.id = id;
         this.line = new Line(lineId);
         this.upStation = new Station(upStationId);
         this.downStation = new Station(downStationId);

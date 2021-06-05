@@ -12,12 +12,12 @@ import org.junit.jupiter.api.Test;
 @DisplayName("지하철 구간 테스트")
 public class SectionsTest {
 
-    private Section firstSection = new Section(1L, 1L, 1L, 2L, 1000);
-    private Section secondSection = new Section(2L, 1L, 2L, 3L, 1000);
-    private Section thirdSection = new Section(3L, 1L, 3L, 4L, 1000);
-    private Section forthSection = new Section(4L, 1L, 4L, 5L, 1000);
-    private Section fifthSection = new Section(5L, 1L, 5L, 6L, 1000);
-    private Section sixthSection = new Section(6L, 1L, 6L, 7L, 1000);
+    private Section firstSection = new Section(1L, 1L, 2L, 1000);
+    private Section secondSection = new Section(1L, 2L, 3L, 1000);
+    private Section thirdSection = new Section(1L, 3L, 4L, 1000);
+    private Section forthSection = new Section(1L, 4L, 5L, 1000);
+    private Section fifthSection = new Section(1L, 5L, 6L, 1000);
+    private Section sixthSection = new Section(1L, 6L, 7L, 1000);
     private Sections sections;
 
     @BeforeEach
