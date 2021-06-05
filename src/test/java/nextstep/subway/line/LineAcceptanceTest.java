@@ -115,15 +115,15 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
         // then
         // 지하철_노선_응답됨
         LineResponse lineResponse = getResponse.jsonPath().getObject(".", LineResponse.class);
-        StationResponse upStation = lineResponse.getStations().get(0);
-        StationResponse downStation = lineResponse.getStations().get(lineResponse.getStations().size()-1);
+        StationResponse firstStop = lineResponse.getStations().get(0);
+        StationResponse lastStop = lineResponse.getStations().get(lineResponse.getStations().size()-1);
         assertAll(
                 () -> assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
                 () -> assertThat(lineResponse.getColor()).isEqualTo("red"),
                 () -> assertThat(lineResponse.getStations().size()).isEqualTo(2),
-                () -> assertThat(upStation.getName()).isEqualTo("광교"),
-                () -> assertThat(downStation.getName()).isEqualTo("강남")
+                () -> assertThat(firstStop.getName()).isEqualTo("광교"),
+                () -> assertThat(lastStop.getName()).isEqualTo("강남")
         );
     }
 
@@ -184,8 +184,8 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     }
 
     private ExtractableResponse<Response> saveShinBundangLine() {
-        LineResponse upStation = saveStation("광교").jsonPath().getObject(".", LineResponse.class);
-        LineResponse downStation = saveStation("강남").jsonPath().getObject(".", LineResponse.class);
+        LineResponse upStation = saveStation("강남").jsonPath().getObject(".", LineResponse.class);
+        LineResponse downStation = saveStation("광교").jsonPath().getObject(".", LineResponse.class);
         return saveLine("신분당선", "red", upStation.getId(), downStation.getId(), "40");
     }
 
