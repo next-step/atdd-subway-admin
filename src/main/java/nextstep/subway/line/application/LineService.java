@@ -29,13 +29,6 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        // 이름, 컬러, 상향역id, 하향역id, 역간격 입력받는다.
-        // 상향역 있는지 확인해서 Station 찾아둔다.
-        // 하향역 있는지 확인해서 Station 찾아둔다.
-        // Line 에서 Section 만들 수 있는지 확인한다.
-        // Section 만들어서 Line의 제 위치에 넣는다.
-        // Line 저장한다.
-        // 저장한 Line 반환한다.
         Station upStation = stationRepository.findById(request.getUpStationId())
                 .orElseThrow(NoSuchElementException::new);
         Station downStation = stationRepository.findById(request.getDownStationId())

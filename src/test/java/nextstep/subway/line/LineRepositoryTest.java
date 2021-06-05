@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@DisplayName("Line 관련 테스트")
-public class LineTest {
+@DisplayName("LineRepository 관련 테스트")
+public class LineRepositoryTest {
 
     @Autowired
     private TestEntityManager testEntityManager;

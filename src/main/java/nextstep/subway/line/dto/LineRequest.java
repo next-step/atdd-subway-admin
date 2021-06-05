@@ -1,12 +1,5 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
-
-import java.util.Arrays;
-import java.util.List;
-
 public class LineRequest {
     private String name;
     private String color;
