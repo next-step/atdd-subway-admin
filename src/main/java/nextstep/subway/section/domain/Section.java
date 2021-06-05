@@ -16,11 +16,11 @@ public class Section extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "line_id")
     private Line line;
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "station_id")
     private Station station;
 
     private int distance;
