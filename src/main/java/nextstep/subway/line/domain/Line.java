@@ -29,7 +29,11 @@ public class Line extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
-    public Line() {
+    protected Line() {
+    }
+
+    public Line(Long id) {
+        this.id = id;
     }
 
     public Line(String name, String color) {
