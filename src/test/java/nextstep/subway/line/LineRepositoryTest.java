@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.exception.NoSuchDataException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -20,23 +21,19 @@ public class LineRepositoryTest {
 
     @DisplayName("노선 저장")
     @Test
-    public void save() throws Exception {
+    public void save() {
         //given
-        Line line = Line.create("신분당선", "red");
-
         //when
-        Line savedLine = lineRepository.save(line);
-        entityManager.flush();
-        entityManager.clear();
+        Line savedLine = 노선저장("testName", "testColor");
 
         //then
-        Line findLine = lineRepository.findById(savedLine.getId()).orElseThrow(() -> new IllegalStateException());
+        Line findLine = lineRepository.findById(savedLine.getId()).orElseThrow(() -> new NoSuchDataException());
         assertThat(findLine).isEqualTo(savedLine);
     }
 
     @DisplayName("노선 이름 중복 확인: 중복인 경우")
     @Test
-    public void existsByName() throws Exception {
+    public void existsByName() {
         //given
         노선저장("testName", "testColor");
 
@@ -49,7 +46,7 @@ public class LineRepositoryTest {
 
     @DisplayName("노선 이름 중복 확인: 중복이 아닌 경우")
     @Test
-    public void existsByName2() throws Exception {
+    public void existsByName2() {
         //given
         노선저장("testName", "testColor");
 

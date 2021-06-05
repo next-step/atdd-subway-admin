@@ -33,7 +33,7 @@ public class LineServiceTest {
 
     @DisplayName("노선이름 중복검사: 중복시 예외발생")
     @Test
-    public void 노선이름_중복검사_중복시_예외발생() throws Exception {
+    public void 노선이름_중복검사_중복시_예외발생() {
         //given
         LineRequest lineRequest = new LineRequest("testName", "testColor");
         when(lineRepository.existsByName("testName")).thenReturn(true);
@@ -45,7 +45,7 @@ public class LineServiceTest {
 
     @DisplayName("노선 조회")
     @Test
-    public void 노선조회시_노선확인() throws Exception {
+    public void 노선조회시_노선확인() {
         //given
         Long lineId = 1L;
         Line line = new Line(lineId, "testName", "testColor");
@@ -60,7 +60,7 @@ public class LineServiceTest {
 
     @DisplayName("존재하지 않는 노선 ID로 조회시 예외")
     @Test
-    public void 존재하지않는노선아이디로_조회시_예외발생() throws Exception {
+    public void 존재하지않는노선아이디로_조회시_예외발생() {
         //given
         Long lineId = 1L;
         when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
@@ -72,7 +72,7 @@ public class LineServiceTest {
 
     @DisplayName("노선 목록 조회")
     @Test
-    public void 노선목록조회시_노선목록확인() throws Exception {
+    public void 노선목록조회시_노선목록확인() {
         //given
         Line line1 = new Line(1L, "testName1", "testColor1");
         Line line2 = new Line(2L, "testName2", "testColor2");
@@ -90,7 +90,7 @@ public class LineServiceTest {
 
     @DisplayName("노선 삭제")
     @Test
-    public void 노선삭제시_노석확인() throws Exception {
+    public void 노선삭제시_노석확인() {
         //given
         Long lineId = 1L;
 

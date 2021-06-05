@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineTest {
     @DisplayName("노선 생성")
     @Test
-    public void 노선생성시_생성확인() throws Exception {
+    public void 노선생성시_생성확인() {
         //when
         Line line = Line.create("신분당선", "red");
 
@@ -20,7 +20,7 @@ public class LineTest {
 
     @DisplayName("노선 수정")
     @Test
-    public void 노선수정시_수정확인() throws Exception {
+    public void 노선수정시_수정확인() {
         //given
         Line line = Line.create("신분당선", "red");
 
