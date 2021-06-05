@@ -18,19 +18,9 @@ public class SectionService {
     }
 
     @Transactional
-    public void saveFirstSection(Line line, Station station) {
-        Section persistSection = sectionRepository.save(Section.first(station));
-        mapToLine(line, persistSection);
-    }
-
-    @Transactional
-    public void saveSection(Line line, Station station, int distance) {
-        Section persistSection = sectionRepository.save(new Section(station, distance));
-        mapToLine(line, persistSection);
-    }
-
-    private void mapToLine(Line line, Section section) {
-        section.toLine(line);
+    public void saveSection(Line line, Station upStation, Station downStation, int distance) {
+        Section persistSection = sectionRepository.save(new Section(upStation, downStation, distance));
+        persistSection.toLine(line);
     }
 
     @Transactional
