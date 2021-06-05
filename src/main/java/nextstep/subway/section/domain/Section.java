@@ -14,7 +14,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -101,10 +100,6 @@ public class Section extends BaseEntity {
 
     public int getDistance() {
         return distance;
-    }
-
-    public SectionResponse toSectionResponse() {
-        return SectionResponse.of(this);
     }
 
     @Override
