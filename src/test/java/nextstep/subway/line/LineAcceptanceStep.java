@@ -14,7 +14,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 public class LineAcceptanceStep {
     private static final String LINE_BASE_PATH = "/lines";
@@ -89,7 +89,7 @@ public class LineAcceptanceStep {
             .map(it -> it.getId())
             .collect(Collectors.toList());
 
-        List<List<Station>> stations = response.jsonPath().getList(".", LineResponse.class).stream()
+        List<List<StationResponse>> stations = response.jsonPath().getList(".", LineResponse.class).stream()
             .map(it -> it.getStations())
             .collect(Collectors.toList());
 
@@ -99,7 +99,7 @@ public class LineAcceptanceStep {
 
     public static void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Station> stations = response.jsonPath().getObject(".", LineResponse.class).getStations();
+        List<StationResponse> stations = response.jsonPath().getObject(".", LineResponse.class).getStations();
         assertThat(stations.size()).isEqualTo(2);
     }
 
