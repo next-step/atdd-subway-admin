@@ -2,7 +2,7 @@ package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,14 +12,14 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<Station> stations;
+    private List<StationResponse> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<Station> stations) {
+    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -30,8 +30,7 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         List<Section> sections = line.getSections();
-
-        List<Station> stations = new ArrayList<>();
+        List<StationResponse> stations = new ArrayList<>();
         for (Section section : sections) {
             addStation(stations, section);
         }
@@ -39,11 +38,11 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), stations);
     }
 
-    private static void addStation(List<Station> stations, Section section) {
+    private static void addStation(List<StationResponse> stations, Section section) {
         if (!stations.contains(section.getUpStation())) {
-            stations.add(section.getUpStation());
+            stations.add(StationResponse.of(section.getUpStation()));
         }
-        stations.add(section.getDownStation());
+        stations.add(StationResponse.of(section.getDownStation()));
     }
 
     public Long getId() {
@@ -58,7 +57,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<Station> getStations() {
+    public List<StationResponse> getStations() {
         return stations;
     }
 
