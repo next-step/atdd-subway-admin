@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final Line fourthLine = new Line("4호선", "blue");
+    private static final String ROOT_REQUEST_URI = "/lines";
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -105,11 +105,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", fourthLine.getName());
         params.put("color", "red");
 
-        ExtractableResponse<Response> updatedResponse = 지하철_노선_수정_요청(createdLineId, params);
+        ExtractableResponse<Response> updateResponse = 지하철_노선_수정_요청(createdLineId, params);
 
         // then : 지하철_노선_수정됨
-        지하철_노선_OK_응답(updatedResponse);
-        assertThat(updatedResponse.jsonPath().getString("color")).isEqualTo("red");
+        지하철_노선_OK_응답(updateResponse);
+        assertThat(updateResponse.jsonPath().getString("color")).isEqualTo("red");
 
     }
 
@@ -118,24 +118,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/"+id)
+                .put(ROOT_REQUEST_URI + "/" + id)
+
                 .then().log().all()
                 .extract();
     }
 
-//
-//    @DisplayName("지하철 노선을 제거한다.")
-//    @Test
-//    void deleteLine() {
-//        // given
-//        // 지하철_노선_등록되어_있음
-//
-//        // when
-//        // 지하철_노선_제거_요청
-//
-//        // then
-//        // 지하철_노선_삭제됨
-//    }
+    @DisplayName("지하철 노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given : 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(fourthLine);
+        Long createdLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
+
+        // when : 지하철_노선_제거_요청
+        ExtractableResponse<Response> deleteResponse = 지하철_노선_제거_요청(createdLineId);
+
+        // then : 지하철_노선_삭제됨
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(ROOT_REQUEST_URI + "/" + id)
+                .then().log().all()
+                .extract();
+    }
 
     private ExtractableResponse<Response> 지하철_노선_등록되어_있음(Line line) {
         Map<String, String> params = new HashMap<>();
@@ -146,7 +157,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                .post(ROOT_REQUEST_URI)
                 .then().log().all()
                 .extract();
     }
@@ -155,7 +166,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get("/lines")
+                .get(ROOT_REQUEST_URI)
                 .then().log().all()
                 .extract();
     }
@@ -169,7 +180,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get("/lines/" + id)
+                .get(ROOT_REQUEST_URI + "/" + id)
                 .then().log().all()
                 .extract();
     }
