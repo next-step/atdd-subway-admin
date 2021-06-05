@@ -59,12 +59,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void createLine2() {
 		// given
 		// 지하철_노선_등록되어_있음
-		
+		Map<String, String> parameters = new HashMap<>();
+		parameters.put("color", "bg-red-600");
+		parameters.put("name", "신분당선");
+
+		RestAssured.given().log().all()
+			.body(parameters)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines")
+			.then().log().all()
+			.extract();
+
 		// when
 		// 지하철_노선_생성_요청
 
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.body(parameters)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines")
+			.then().log().all()
+			.extract();
+
 		// then
 		// 지하철_노선_생성_실패됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@DisplayName("지하철 노선 목록을 조회한다.")
