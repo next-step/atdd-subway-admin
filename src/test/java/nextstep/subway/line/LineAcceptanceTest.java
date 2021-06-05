@@ -246,6 +246,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(resultLineName).isEqualTo("구분당선");
 	}
 
+	@DisplayName("없는 지하철 노선을 수정한다.")
+	@Test
+	void updateNotExistsLine() {
+		// given
+		// 지하철_노선_등록되어 있지 않음
+
+		// when
+		// 지하철_노선_조회_요청
+		Map<String, String> parameters = new HashMap<>();
+		parameters.put("color", "bg-red-600");
+		parameters.put("name", "구분당선");
+
+		ExtractableResponse<Response> modifyResponse = RestAssured
+			.given().log().all()
+			.body(parameters)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.put("/lines" + "/" + 1)
+			.then().log().all()
+			.extract();
+
+		// then
+		// 지하철_노선_응답됨
+		assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
 	@DisplayName("지하철 노선을 제거한다.")
 	@Test
 	void deleteLine() {
@@ -287,6 +313,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all()
 			.extract();
 
+		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
+	@DisplayName("없는 지하철 노선을 삭제한다.")
+	@Test
+	void deleteNotExistsLine() {
+		// given
+		// 지하철_노선_등록되어 있지 않음
+
+		// when
+		// 지하철_노선_조회_요청
+		ExtractableResponse<Response> deleteResponse = RestAssured
+			.given().log().all()
+			.when()
+			.delete("/lines" + "/" + 1)
+			.then().log().all()
+			.extract();
+
+		// then
+		// 지하철_노선_응답됨
 		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 }
