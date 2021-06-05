@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -145,15 +148,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithStations() {
         // given
-        // 지하철역_등록되어_있음
-        // 지하철역_등록되어_있음
+        Station upStationOfLine5 = StationAcceptanceTest.지하철역_등록되어_있음(StationAcceptanceTest.aeogaeStation).as(Station.class);
+        Station downStationOfLine5 = StationAcceptanceTest.지하철역_등록되어_있음(StationAcceptanceTest.gwanghwamunStation).as(Station.class);
+        Section sectionOfLine5 = new Section(upStationOfLine5, downStationOfLine5, 3000);
 
         // when
-        // 지하철_노선_생성_요청_종점역포함
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", line5.getName());
+        params.put("color", line5.getColor());
+        params.put("upStationId", sectionOfLine5.getUpStation().getId());
+        params.put("downStationId", sectionOfLine5.getDownStation().getId());
+        params.put("distance", sectionOfLine5.getDistance());
+        ExtractableResponse<Response> response = RestAssured
+            .given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines/withSection")
+            .then().log().all().extract();
 
         // then
-        // 지하철_노선이_생성됨
-        // 지하철_구간이_생성됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.jsonPath().getString("name")).isEqualTo(line5.getName());
+        assertThat(response.jsonPath().getString("color")).isEqualTo(line5.getColor());
+        assertThat(response.jsonPath().getLong("sections[0].upStationId")).isEqualTo(sectionOfLine5.getUpStation().getId());
+        assertThat(response.jsonPath().getLong("sections[0].downStationId")).isEqualTo(sectionOfLine5.getDownStation().getId());
     }
 
     @DisplayName("지하철 노선의 역 목록을 조회하기")

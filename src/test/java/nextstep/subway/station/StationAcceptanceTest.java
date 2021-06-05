@@ -21,8 +21,10 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private static final Station gwanghwamunStation = new Station("광화문역");
-    private static final Station seodaemunStation = new Station("서대문역");
+    //5호선라인 지하철역들
+    public static final Station aeogaeStation = new Station("애오개역");
+    public static final Station seodaemunStation = new Station("서대문역");
+    public static final Station gwanghwamunStation = new Station("광화문역");
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -91,7 +93,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> 지하철역_등록되어_있음(Station station) {
+    public static ExtractableResponse<Response> 지하철역_등록되어_있음(Station station) {
         Map<String, String> params = new HashMap<>();
         params.put("name", station.getName());
 

@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -14,11 +15,9 @@ public class Sections {
         this.sections = sections;
     }
 
-    public Section findFirstSection() {
-        return sections.get(0);
-    }
-
-    public Section findLastSection() {
-        return sections.get(sections.size() - 1);
+    public List<SectionResponse> toSectionResponses() {
+        return sections.stream()
+            .map(Section::toSectionResponse)
+            .collect(Collectors.toList());
     }
 }
