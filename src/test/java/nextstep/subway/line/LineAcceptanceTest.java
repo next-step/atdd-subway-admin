@@ -156,10 +156,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(errorResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	private ExtractableResponse<Response> 지하철노선을_삭제요청(long deleteID) {
+	private ExtractableResponse<Response> 지하철노선을_삭제요청(long deleteId) {
 		ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
 			.when()
-			.delete("/lines/" + deleteID)
+			.delete("/lines/" + deleteId)
 			.then()
 			.log().all().extract();
 		return deleteResponse;
@@ -175,13 +175,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.extract();
 	}
 
-	private ExtractableResponse<Response> 지하철노선을_수정요청(long createdLineID,
+	private ExtractableResponse<Response> 지하철노선을_수정요청(long createdLineId,
 		LineRequest lineRequest) {
 		return RestAssured.given().log().all()
 			.body(lineRequest)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
-			.put("/lines/" + createdLineID)
+			.put("/lines/" + createdLineId)
 			.then().log().all().extract();
 	}
 }

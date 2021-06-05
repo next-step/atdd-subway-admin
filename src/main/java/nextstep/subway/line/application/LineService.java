@@ -38,8 +38,8 @@ public class LineService {
 			.collect(Collectors.toList());
 	}
 
-	public LineResponse getLine(long lineID) {
-        Line line = this.lineRepository.findById(lineID)
+	public LineResponse getLine(long lineId) {
+        Line line = this.lineRepository.findById(lineId)
             .orElseThrow(this.getEntityNotFoundExceptionSupplier());
         return LineResponse.of(line);
     }
@@ -48,14 +48,14 @@ public class LineService {
 		return () -> new EntityNotFoundException("id에 해당하는 Line을 찾을 수 없습니다.");
 	}
 
-	public LineResponse updateLine(long lineID, LineRequest lineRequest) {
-		Line line = this.lineRepository.findById(lineID).orElseThrow(this.getEntityNotFoundExceptionSupplier());
+	public LineResponse updateLine(long lineId, LineRequest lineRequest) {
+		Line line = this.lineRepository.findById(lineId).orElseThrow(this.getEntityNotFoundExceptionSupplier());
 		line.update(lineRequest.toLine());
 		return LineResponse.of(this.lineRepository.save(line));
 	}
 
-	public void deleteLine(long lineID) {
-		this.lineRepository.findById(lineID).orElseThrow(this.getEntityNotFoundExceptionSupplier());
-		this.lineRepository.deleteById(lineID);
+	public void deleteLine(long lineId) {
+		this.lineRepository.findById(lineId).orElseThrow(this.getEntityNotFoundExceptionSupplier());
+		this.lineRepository.deleteById(lineId);
 	}
 }

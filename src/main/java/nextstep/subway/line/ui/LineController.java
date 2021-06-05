@@ -41,21 +41,21 @@ public class LineController {
 		return ResponseEntity.ok().body(lineService.findAllLines());
 	}
 
-	@GetMapping("/{lineID}")
-	public ResponseEntity<LineResponse> showLine(@PathVariable("lineID") long lineID) {
-		return ResponseEntity.ok().body(lineService.getLine(lineID));
+	@GetMapping("/{lineId}")
+	public ResponseEntity<LineResponse> showLine(@PathVariable("lineId") long lineId) {
+		return ResponseEntity.ok().body(lineService.getLine(lineId));
 	}
 
-	@PutMapping("/{lineID}")
-	public ResponseEntity updateLine(@PathVariable("lineID") long lineID,
+	@PutMapping("/{lineId}")
+	public ResponseEntity updateLine(@PathVariable("lineId") long lineId,
 		@RequestBody LineRequest lineRequest) {
-		this.lineService.updateLine(lineID,lineRequest);
+		this.lineService.updateLine(lineId,lineRequest);
 		return ResponseEntity.ok().build();
 	}
 
-	@DeleteMapping("/{lineID}")
-	public ResponseEntity deleteLine(@PathVariable("lineID") long lineID) {
-		this.lineService.deleteLine(lineID);
+	@DeleteMapping("/{lineId}")
+	public ResponseEntity deleteLine(@PathVariable("lineId") long lineId) {
+		this.lineService.deleteLine(lineId);
 		return ResponseEntity.noContent().build();
 	}
 
