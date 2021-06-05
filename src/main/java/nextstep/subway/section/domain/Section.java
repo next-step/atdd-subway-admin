@@ -137,4 +137,23 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation);
     }
+
+    public boolean isBefore(Section section) {
+        return upStation.equals(section.getDownStation());
+    }
+
+    public boolean isAfter(Section section) {
+        return downStation.equals(section.getUpStation());
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+            "id=" + id +
+            ", line.id=" + line.getId() +
+            ", upStation.id=" + upStation.getId() +
+            ", downStation.id=" + downStation.getId() +
+            ", distance=" + distance +
+            '}';
+    }
 }
