@@ -16,7 +16,7 @@ public class LineResponse {
     private String color;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private List<StationResponse> stationResponses;
+    private List<StationResponse> stations;
 
     public LineResponse() {
     }
@@ -27,7 +27,7 @@ public class LineResponse {
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.stationResponses = sections.findSortedStations().stream()
+        this.stations = sections.findSortedStations().stream()
             .map(Station::toStationResponse)
             .collect(Collectors.toList());
     }
@@ -56,7 +56,7 @@ public class LineResponse {
         return modifiedDate;
     }
 
-    public List<StationResponse> getStationResponses() {
-        return stationResponses;
+    public List<StationResponse> getStations() {
+        return stations;
     }
 }
