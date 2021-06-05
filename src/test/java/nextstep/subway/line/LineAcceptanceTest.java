@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,19 +16,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineSteps.*;
+import static nextstep.subway.station.StationSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    private StationResponse 모란역;
+    private StationResponse 복정역;
+    private StationResponse 강남역;
+    private StationResponse 광교역;
     private LineRequest 분당선;
     private LineRequest 신분당선;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        분당선 = new LineRequest("분당선", "yellow", 1L, 2L, 10);
-        신분당선 = new LineRequest("신분당선", "red", 1L, 2L, 20);
+        모란역 = 지하철역_등록_되어있음("모란역").as(StationResponse.class);
+        복정역 = 지하철역_등록_되어있음("복정역").as(StationResponse.class);
+        강남역 = 지하철역_등록_되어있음("강남역").as(StationResponse.class);
+        광교역 = 지하철역_등록_되어있음("광교역").as(StationResponse.class);
+        분당선 = new LineRequest("분당선", "yellow", 모란역.getId(), 복정역.getId(), 10);
+        신분당선 = new LineRequest("신분당선", "red", 강남역.getId(), 광교역.getId(), 20);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -79,6 +89,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_응답됨(response, 생성된_분당선);
+    }
+
+    @DisplayName("지하철 노선을 조회한다. (역 목록 포함)")
+    @Test
+    void getLine_new() {
+        // given
+        ExtractableResponse<Response> 생성된_분당선 = 지하철_노선_생성_요청(분당선);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(생성된_분당선);
+
+        // then
+        지하철_노선_응답됨(response, 생성된_분당선);
+        지하철_노선_지하철역_목록_포함됨(response, Arrays.asList(모란역, 복정역));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -150,5 +174,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void 지하철_노선_지하철역_목록_포함됨(ExtractableResponse<Response> response, List<StationResponse> stations) {
     }
 }
