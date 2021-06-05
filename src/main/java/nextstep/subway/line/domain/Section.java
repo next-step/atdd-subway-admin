@@ -21,13 +21,16 @@ public class Section {
     @ManyToOne
     private Station downStation;
 
+    private Integer distance;
+
     public Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation) {
+    public Section(Line line, Station upStation, Station downStation, Integer distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distance = distance;
     }
 
     public boolean isEqualToUpStation(Station station) {

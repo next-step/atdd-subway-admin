@@ -2,7 +2,6 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.List;
@@ -29,9 +28,9 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation) {
+    public Line(String name, String color, Station upStation, Station downStation, Integer distance) {
         this(name, color);
-        addSection(upStation, downStation);
+        addSection(upStation, downStation, distance);
     }
 
     public void update(Line line) {
@@ -51,8 +50,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void addSection(Station upStation, Station downStation) {
-        sections.add(new Section(this, upStation, downStation));
+    public void addSection(Station upStation, Station downStation, Integer distance) {
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public List<Station> stations() {

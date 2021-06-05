@@ -108,8 +108,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         Long id = 생성_노선_아이디(createResponse);
 
-        lineService.addSection(id, 양재역.getId(), 판교역.getId());
-        lineService.addSection(id, 신사역.getId(), 강남역.getId());
+        lineService.addSection(id, 양재역.getId(), 판교역.getId(), 3);
+        lineService.addSection(id, 신사역.getId(), 강남역.getId(), 10);
 
         // when
         // 지하철_노선_조회_요청

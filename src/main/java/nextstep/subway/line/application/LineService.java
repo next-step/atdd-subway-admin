@@ -34,7 +34,7 @@ public class LineService {
                 .orElseThrow(NoSuchElementException::new);
 
         Line persistLine = lineRepository.save(
-                new Line(request.getName(), request.getColor(), upStation, downStation)
+                new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance())
         );
 
         return LineResponse.of(persistLine);
@@ -52,7 +52,7 @@ public class LineService {
         return LineResponse.of(findLine);
     }
 
-    public void addSection(Long id, Long upStationId, Long downStationId) {
+    public void addSection(Long id, Long upStationId, Long downStationId, Integer distance) {
         Line findLine = lineRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
 
@@ -62,7 +62,7 @@ public class LineService {
         Station downStation = stationRepository.findById(downStationId)
                 .orElseThrow(NoSuchElementException::new);
 
-        findLine.addSection(upStation, downStation);
+        findLine.addSection(upStation, downStation, distance);
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
