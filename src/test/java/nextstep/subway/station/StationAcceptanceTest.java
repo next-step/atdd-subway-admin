@@ -23,6 +23,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     //5호선라인 지하철역들
     public static final Station aeogaeStation = new Station("애오개역");
+    public static final Station chungjeongnoStation = new Station("충정로역");
     public static final Station seodaemunStation = new Station("서대문역");
     public static final Station gwanghwamunStation = new Station("광화문역");
 

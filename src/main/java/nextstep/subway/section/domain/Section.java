@@ -66,6 +66,15 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
+        validationSection(upStationId, downStationId);
+        validationDistance(distance);
+        this.line = new Line(lineId);
+        this.upStation = new Station(upStationId);
+        this.downStation = new Station(downStationId);
+        this.distance = distance;
+    }
+
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
         validationSection(upStationId, downStationId);
         validationDistance(distance);

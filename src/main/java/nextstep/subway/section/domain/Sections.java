@@ -24,7 +24,7 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    public void initSortSections(List<Section> sections) {
+    private void initSortSections(List<Section> sections) {
         this.sections = new LinkedList<>();
         for (Section section : sections) {
             addSection(section);
@@ -36,7 +36,7 @@ public class Sections {
             sections.addFirst(section);
         }
         if (isAfter(section)) {
-            sections.add(section);
+            sections.addLast(section);
         }
     }
 
@@ -62,7 +62,13 @@ public class Sections {
         List<Station> stations = sections.stream()
             .map(Section::getUpStation)
             .collect(Collectors.toList());
-        stations.add(sections.getLast().getDownStation());
+        if (sections.size() > 0) {
+            stations.add(sections.getLast().getDownStation());
+        }
         return stations;
+    }
+
+    public int size() {
+        return sections.size();
     }
 }

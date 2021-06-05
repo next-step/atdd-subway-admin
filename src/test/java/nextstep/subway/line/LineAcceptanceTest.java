@@ -13,9 +13,11 @@ import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.SectionAcceptanceTest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,15 +27,19 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final Line line3 = new Line("3호선", "orange");
-    private static final Line line5 = new Line("5호선", "purple");
+    public static final Line line3 = new Line("3호선", "orange");
+    public static final Line line5 = new Line("5호선", "purple");
 
     private Station aeogaeStation;
+    private Station chungjeongnoStation;
+    private Station seodaemunStation;
     private Station gwanghwamunStation;
 
     @BeforeEach
     void setup() {
         aeogaeStation = StationAcceptanceTest.지하철역_등록되어_있음(StationAcceptanceTest.aeogaeStation).as(Station.class);
+        chungjeongnoStation = StationAcceptanceTest.지하철역_등록되어_있음(StationAcceptanceTest.chungjeongnoStation).as(Station.class);
+        seodaemunStation = StationAcceptanceTest.지하철역_등록되어_있음(StationAcceptanceTest.seodaemunStation).as(Station.class);
         gwanghwamunStation = StationAcceptanceTest.지하철역_등록되어_있음(StationAcceptanceTest.gwanghwamunStation).as(Station.class);
     }
 
@@ -141,7 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(Line line) {
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Line line) {
         Map<String, String> params = new HashMap<>();
         params.put("name", line.getName());
         params.put("color", line.getColor());
@@ -154,7 +160,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all().extract();
     }
 
-    public ExtractableResponse<Response> 지하철_노선_등록되어_있음_두_종점역_포함(Line line, Section section) {
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음_두_종점역_포함(Line line, Section section) {
         Map<String, Object> params = new HashMap<>();
         params.put("id", line.getId());
         params.put("name", line.getName());
@@ -190,18 +196,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLineStations() {
         // given
-        지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation, gwanghwamunStation, 3000));
-        // 지하철 노선에 구간이 추가됨
-        // 지하철 노선에 구간이 추가됨
+        ExtractableResponse<Response> createLineResponse = 지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation, chungjeongnoStation, 1000));
+        Long lineId = createLineResponse.jsonPath().getLong("id");
+        SectionAcceptanceTest.지하철_구간_등록되어_있음(new Section(lineId, chungjeongnoStation.getId(), seodaemunStation.getId(), 1000));
+        SectionAcceptanceTest.지하철_구간_등록되어_있음(new Section(lineId, seodaemunStation.getId(), gwanghwamunStation.getId(), 1000));
 
         // when
-        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = RestAssured
+            .when().get("/lines/" + lineId)
+            .then().log().all().extract();
 
         // then
-        // 지하철_노선_응답됨
-        // 지하철_노선에서_구간목록을_조회가능
-        // 구간목록은_종점역_상행~하행까지_순서대로_정렬되어 있음
-        // 필요시_노선과_구간(혹은 역)의_관계를_새로_맺기 (양방향매핑)
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<StationResponse> stationResponses = response.as(LineResponse.class).getStationResponses();
+        assertThat(stationResponses).isNotEmpty();
+        assertThat(stationResponses.get(0)).isEqualTo(aeogaeStation.toStationResponse());
+        assertThat(stationResponses.get(1)).isEqualTo(chungjeongnoStation.toStationResponse());
+        assertThat(stationResponses.get(2)).isEqualTo(seodaemunStation.toStationResponse());
+        assertThat(stationResponses.get(3)).isEqualTo(gwanghwamunStation.toStationResponse());
     }
 
 }
