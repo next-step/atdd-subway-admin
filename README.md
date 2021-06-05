@@ -55,6 +55,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ## 구현 기능 목록
 
+### step1 - 지하철 노선도 관리
 -[x] 노선 생성 인수 테스트 작성
 -[x] 노선 이름 중복 인수 테스트 작성 & 노선 생성 기능 구현
 -[x] 노선 목록 조회 인수 테스트 작성
@@ -66,3 +67,11 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 -[x] 노선 삭제 인수 테스트 작성
 -[x] 노선 삭제 기능 구현
 -[x] 인수 테스트 리팩터링
+
+### step2 - 인수 테스트 리팩터링
+-[ ] 노선 생성 시 종점역 정보를 요청 파라미터에 추가
+    -[x] 테스트 코드 변경
+    -[ ] 프로덕션 코드 변경
+-[ ] 노선 조회 시 응답 결과에 역 목록 추가하기
+    -[ ] 테스트 코드 변경
+    -[ ] 프로덕션 코드 변경
