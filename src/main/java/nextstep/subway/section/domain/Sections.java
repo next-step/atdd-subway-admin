@@ -12,12 +12,25 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections implements Iterable<Section> {
 
+    private static final int FIRST_INDEX = 0;
+
     @OneToMany(mappedBy = "line")
     private final List<Section> sections = new ArrayList<>();
 
     public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        stations.add(getFirstStation());
+        stations.addAll(getUpStations());
+        return stations;
+    }
+
+    private Station getFirstStation() {
+        return sections.get(FIRST_INDEX).getDownStation();
+    }
+
+    private List<Station> getUpStations() {
         return sections.stream()
-                .map(Section::getStation)
+                .map(Section::getUpStation)
                 .collect(Collectors.toList());
     }
 
