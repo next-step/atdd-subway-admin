@@ -16,6 +16,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final Line line3 = new Line("3호선", "orange");
     private static final Line line5 = new Line("5호선", "purple");
+
+    private Station aeogaeStation;
+    private Station gwanghwamunStation;
+
+    @BeforeEach
+    void setup() {
+        aeogaeStation = StationAcceptanceTest.지하철역_등록되어_있음(StationAcceptanceTest.aeogaeStation).as(Station.class);
+        gwanghwamunStation = StationAcceptanceTest.지하철역_등록되어_있음(StationAcceptanceTest.gwanghwamunStation).as(Station.class);
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -144,41 +154,45 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all().extract();
     }
 
-    @DisplayName("지하철 노선 생성 시 두 종점역 추가하기")
-    @Test
-    void createLineWithStations() {
-        // given
-        Station upStationOfLine5 = StationAcceptanceTest.지하철역_등록되어_있음(StationAcceptanceTest.aeogaeStation).as(Station.class);
-        Station downStationOfLine5 = StationAcceptanceTest.지하철역_등록되어_있음(StationAcceptanceTest.gwanghwamunStation).as(Station.class);
-        Section sectionOfLine5 = new Section(upStationOfLine5, downStationOfLine5, 3000);
-
-        // when
+    public ExtractableResponse<Response> 지하철_노선_등록되어_있음_두_종점역_포함(Line line, Section section) {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", line5.getName());
-        params.put("color", line5.getColor());
-        params.put("upStationId", sectionOfLine5.getUpStation().getId());
-        params.put("downStationId", sectionOfLine5.getDownStation().getId());
-        params.put("distance", sectionOfLine5.getDistance());
-        ExtractableResponse<Response> response = RestAssured
+        params.put("id", line.getId());
+        params.put("name", line.getName());
+        params.put("color", line.getColor());
+        params.put("upStationId", section.getUpStation().getId());
+        params.put("downStationId", section.getDownStation().getId());
+        params.put("distance", section.getDistance());
+
+        return RestAssured
             .given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/withSection")
             .then().log().all().extract();
+    }
+
+    @DisplayName("지하철 노선 생성 시 두 종점역 추가하기")
+    @Test
+    void createLineWithStations() {
+        // when
+        Section section = new Section(aeogaeStation, gwanghwamunStation, 3000);
+        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음_두_종점역_포함(line5, section);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.jsonPath().getString("name")).isEqualTo(line5.getName());
         assertThat(response.jsonPath().getString("color")).isEqualTo(line5.getColor());
-        assertThat(response.jsonPath().getLong("sections[0].upStationId")).isEqualTo(sectionOfLine5.getUpStation().getId());
-        assertThat(response.jsonPath().getLong("sections[0].downStationId")).isEqualTo(sectionOfLine5.getDownStation().getId());
+        assertThat(response.jsonPath().getLong("sections[0].upStationId")).isEqualTo(section.getUpStation().getId());
+        assertThat(response.jsonPath().getLong("sections[0].downStationId")).isEqualTo(section.getDownStation().getId());
     }
 
     @DisplayName("지하철 노선의 역 목록을 조회하기")
     @Test
     void findLineStations() {
         // given
-        // 지하철_노선_등록되어_있음_종점역_포함
+        지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation, gwanghwamunStation, 3000));
+        // 지하철 노선에 구간이 추가됨
+        // 지하철 노선에 구간이 추가됨
 
         // when
         // 지하철_노선_조회_요청
