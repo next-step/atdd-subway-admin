@@ -2,8 +2,11 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +20,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.Line;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -40,7 +44,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 지하철_노선_생성_요청
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
+		ExtractableResponse<Response> response = RestAssured
+			.given().log().all()
 			.body(parameters)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
@@ -56,14 +61,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
 	@Test
-	void createLine2() {
+	void createLineWithDuplicateName() {
 		// given
 		// 지하철_노선_등록되어_있음
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("color", "bg-red-600");
 		parameters.put("name", "신분당선");
 
-		RestAssured.given().log().all()
+		RestAssured
+			.given().log().all()
 			.body(parameters)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
@@ -73,8 +79,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 지하철_노선_생성_요청
-
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
+		ExtractableResponse<Response> response = RestAssured
+			.given().log().all()
 			.body(parameters)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
@@ -92,14 +98,55 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLines() {
 		// given
 		// 지하철_노선_등록되어_있음
+		Map<String, String> parameters1 = new HashMap<>();
+		parameters1.put("color", "bg-red-600");
+		parameters1.put("name", "신분당선");
+
+		ExtractableResponse<Response> createResponse1 = RestAssured
+			.given().log().all()
+			.body(parameters1)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines")
+			.then().log().all()
+			.extract();
+
 		// 지하철_노선_등록되어_있음
+		Map<String, String> parameters2 = new HashMap<>();
+		parameters2.put("color", "bg-green-600");
+		parameters2.put("name", "2호선");
+
+		ExtractableResponse<Response> createResponse2 = RestAssured
+			.given().log().all()
+			.body(parameters2)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines")
+			.then().log().all()
+			.extract();
 
 		// when
 		// 지하철_노선_목록_조회_요청
+		ExtractableResponse<Response> response = RestAssured
+			.given().log().all()
+			.when()
+			.get("/lines")
+			.then().log().all()
+			.extract();
 
 		// then
 		// 지하철_노선_목록_응답됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		// 지하철_노선_목록_포함됨
+		List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+			.map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+			.collect(Collectors.toList());
+
+		List<Long> resultLineIds = response.jsonPath().getList(".", Line.class).stream()
+			.map(it -> it.getId())
+			.collect(Collectors.toList());
+
+		assertThat(resultLineIds).containsAll(expectedLineIds);
 	}
 
 	@DisplayName("지하철 노선을 조회한다.")
