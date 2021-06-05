@@ -25,7 +25,16 @@ import org.springframework.http.MediaType;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static nextstep.subway.line.LineAcceptanceTest.AirportStationConstants.*;
+import static nextstep.subway.line.LineAcceptanceTest.StationConstants.BAKCHON;
+import static nextstep.subway.line.LineAcceptanceTest.StationConstants.DMC;
+import static nextstep.subway.line.LineAcceptanceTest.StationConstants.GEOMDAN_ORYU;
+import static nextstep.subway.line.LineAcceptanceTest.StationConstants.GIMPO_AIRPORT;
+import static nextstep.subway.line.LineAcceptanceTest.StationConstants.GONGDEOK;
+import static nextstep.subway.line.LineAcceptanceTest.StationConstants.GYEYANG;
+import static nextstep.subway.line.LineAcceptanceTest.StationConstants.GYULHYEON;
+import static nextstep.subway.line.LineAcceptanceTest.StationConstants.HONGIK_UNIV;
+import static nextstep.subway.line.LineAcceptanceTest.StationConstants.SEOUL;
+import static nextstep.subway.line.LineAcceptanceTest.StationConstants.WANGGIL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
@@ -41,24 +50,19 @@ class LineAcceptanceTest extends AcceptanceTest {
     void setUpField() {
 
         INCHEON_SUBWAY_LINE_1 = new LineTestData(
-            "인천 1호선", "#7CA8D5",
-            new StationResponse(1L, "계양역", null, null),
-            new StationResponse(2L, "귤현역", null, null)
+            "인천 1호선", "#7CA8D5", GYULHYEON.toResponse(), BAKCHON.toResponse()
         );
 
         INCHEON_SUBWAY_LINE_2 = new LineTestData(
-            "인천 2호선", "#ED8B00",
-            new StationResponse(101L, "검단오류역", null, null),
-            new StationResponse(102L, "왕길역", null, null)
+            "인천 2호선", "#ED8B00", GEOMDAN_ORYU.toResponse(), WANGGIL.toResponse()
         );
 
         AIRPORT_EXPRESS_DEFAULT = new LineTestData(
             "공항철도", "#0065B3", GONGDEOK.toResponse(), HONGIK_UNIV.toResponse()
         );
 
-        AIRPORT_EXPRESS_SKIP_GONGDEOK =
-            new LineTestData("공항철도", "#0065B3", 200,
-                             SEOUL.toResponse(), HONGIK_UNIV.toResponse());
+        AIRPORT_EXPRESS_SKIP_GONGDEOK = new LineTestData(
+            "공항철도", "#0065B3", 200, SEOUL.toResponse(), HONGIK_UNIV.toResponse());
     }
 
     @DisplayName("지하철 노선 생성")
@@ -66,7 +70,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> createLineRequestTest() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestAndTest(INCHEON_SUBWAY_LINE_1))
+            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_1))
         );
     }
 
@@ -75,9 +79,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> createLineRequestTest02() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestAndTest(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_1)),
             dynamicTest("인천 1호선 노선 다시 생성 시 실패", () -> {
-                ExtractableResponse<Response> response = createLineSuccess(INCHEON_SUBWAY_LINE_1);
+                ExtractableResponse<Response> response = createLineRequest(INCHEON_SUBWAY_LINE_1);
 
                 // then
                 // 지하철_노선_생성_실패됨
@@ -92,10 +96,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> findLinesTest() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestAndTest(INCHEON_SUBWAY_LINE_1)),
-            dynamicTest("인천 2호선 노선 생성", () -> createLineRequestAndTest(AIRPORT_EXPRESS_DEFAULT)),
-            dynamicTest("지하철 노선 목록 조회 및 검증", () -> fineLinesAndTest(INCHEON_SUBWAY_LINE_1,
-                                                                    AIRPORT_EXPRESS_DEFAULT))
+            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 2호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_2)),
+            dynamicTest("지하철 노선 목록 조회 및 검증", () ->
+                fineLinesSuccess(INCHEON_SUBWAY_LINE_1, INCHEON_SUBWAY_LINE_2))
         );
     }
 
@@ -104,7 +108,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> getLineFailTest() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestAndTest(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_1)),
             dynamicTest("지하철 노선 조회 요청", () -> {
                 ExtractableResponse<Response> response = findLine(100L);
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -117,7 +121,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> updateLineTest() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestAndTest(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_1)),
             dynamicTest("인천 1호선 노선을 인천 2호선 노선으로 수정 및 검증", () -> updateLineTo(INCHEON_SUBWAY_LINE_2))
         );
     }
@@ -127,83 +131,71 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> deleteLineTest() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestAndTest(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_1)),
             dynamicTest("생성된 노선 삭제 및 검증", () -> {
                 ExtractableResponse<Response> response = deleteLineRequest();
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
             })
         );
     }
-
+    
     @DisplayName("기존 노선의 하행 종점에 새 구간을 등록한다.")
     @TestFactory
     Stream<DynamicTest> addSectionTest01() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("공항철도 기본 노선 생성", () -> createLineRequestAndTest(AIRPORT_EXPRESS_DEFAULT)),
-            dynamicTest("홍대입구역-DMC역 구간 추가", () -> {
-                // do something...
-            })
+            dynamicTest("공항철도 기본 노선 생성", () -> createLineRequestSuccess(AIRPORT_EXPRESS_DEFAULT)),
+            dynamicTest("홍대입구역-DMC역 구간 추가", () -> addSectionRequestSuccess(HONGIK_UNIV.getId(), DMC.getId()))
         );
     }
-
+    
     @DisplayName("기존 노선의 상행 종점에 새 구간을 등록한다.")
     @TestFactory
     Stream<DynamicTest> addSectionTest02() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("공항철도 기본 노선 생성", () -> createLineRequestAndTest(AIRPORT_EXPRESS_DEFAULT)),
-            dynamicTest("서울역-공덕역 구간 추가", () -> {
-                // do something...
-            })
+            dynamicTest("공항철도 기본 노선 생성", () -> createLineRequestSuccess(AIRPORT_EXPRESS_DEFAULT)),
+            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL.getId(), GONGDEOK.getId()))
         );
     }
-
+    
     @DisplayName("기존 노선 가운데에 새 구간을 등록한다.")
     @TestFactory
     Stream<DynamicTest> addSectionTest03() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestAndTest(AIRPORT_EXPRESS_SKIP_GONGDEOK)),
-            dynamicTest("서울역-공덕역 구간 추가", () -> {
-                // do something...
-            })
+            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SKIP_GONGDEOK)),
+            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL.getId(), GONGDEOK.getId()))
         );
     }
-
+    
     @DisplayName("기존 노선 가운데에 새 구간을 등록하는 경우 기존 역 사이 간격보다 크거나 같지 않아야 한다.")
     @TestFactory
     Stream<DynamicTest> addSectionFailTest01() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestAndTest(AIRPORT_EXPRESS_SKIP_GONGDEOK)),
-            dynamicTest("서울역-공덕역 구간 추가", () -> {
-                // do something...
-            })
+            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SKIP_GONGDEOK)),
+            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestFail(SEOUL.getId(), GONGDEOK.getId(), 200))
         );
     }
-
+    
     @DisplayName("추가하려는 상/하행역이 기존 노선에 이미 등록되어 있다면 추가할 수 없다.")
     @TestFactory
     Stream<DynamicTest> addSectionFailTest02() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("공항철도 노선 생성", () -> createLineRequestAndTest(AIRPORT_EXPRESS_DEFAULT)),
-            dynamicTest("홍대입구역-공덕역 구간 추가", () -> {
-                // do something...
-            })
+            dynamicTest("공항철도 노선 생성", () -> createLineRequestSuccess(AIRPORT_EXPRESS_DEFAULT)),
+            dynamicTest("홍대입구역-공덕역 구간 추가", () -> addSectionRequestFail(HONGIK_UNIV.getId(), GONGDEOK.getId(), 100))
         );
     }
-
+    
     @DisplayName("추가하려는 상/하행역 중 하나라도 기존 노선에 포함되어 있지 않다면 추가할 수 없다.")
     @TestFactory
     Stream<DynamicTest> addSectionFailTest03() {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
-            dynamicTest("공항철도 노선 생성", () -> createLineRequestAndTest(AIRPORT_EXPRESS_DEFAULT)),
-            dynamicTest("김포공항-계양역 구간 추가", () -> {
-                // do something...
-            })
+            dynamicTest("공항철도 노선 생성", () -> createLineRequestSuccess(AIRPORT_EXPRESS_DEFAULT)),
+            dynamicTest("김포공항-계양역 구간 추가", () -> addSectionRequestFail(GIMPO_AIRPORT.getId(), GYEYANG.getId(), 100))
         );
     }
 
@@ -242,13 +234,27 @@ class LineAcceptanceTest extends AcceptanceTest {
                           .extract();
     }
 
-    private void createAllStations() {
-        INCHEON_SUBWAY_LINE_1.getStations().forEach(this::createStation);
-        INCHEON_SUBWAY_LINE_2.getStations().forEach(this::createStation);
-        AirportStationConstants.getAllStations().forEach(this::createStation);
+    private void addSectionRequestSuccess(Long upStationId, Long downStationId) {
+        ExtractableResponse<Response> response = addSectionRequest(upStationId,
+                                                                   downStationId,
+                                                                   100);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    private void createStation(StationResponse stationResponse) {
+    private void addSectionRequestFail(Long upStationId, Long downStationId, int distance) {
+        ExtractableResponse<Response> response = addSectionRequest(upStationId,
+                                                                   downStationId,
+                                                                   distance);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void createAllStations() {
+        StationConstants.getAllStations().forEach(this::createStationSuccess);
+    }
+
+    private void createStationSuccess(StationResponse stationResponse) {
         ExtractableResponse<Response> response =
             RestAssured.given().log().all()
                        .body(new StationRequest(stationResponse.getName()))
@@ -260,7 +266,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    private ExtractableResponse<Response> createLineSuccess(LineTestData data) {
+    private ExtractableResponse<Response> createLineRequest(LineTestData data) {
         return RestAssured.given().log().all()
                           .body(data.getLine())
                           .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -269,10 +275,10 @@ class LineAcceptanceTest extends AcceptanceTest {
                           .extract();
     }
 
-    private void createLineRequestAndTest(LineTestData data) {
+    private void createLineRequestSuccess(LineTestData data) {
 
         LineRequest lineRequest = data.getLine();
-        ExtractableResponse<Response> response = createLineSuccess(data);
+        ExtractableResponse<Response> response = createLineRequest(data);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).startsWith("/lines");
@@ -284,7 +290,7 @@ class LineAcceptanceTest extends AcceptanceTest {
             .isEqualTo(lineRequest.getColor());
     }
 
-    private void fineLinesAndTest(LineTestData data1, LineTestData data2) {
+    private void fineLinesSuccess(LineTestData data1, LineTestData data2) {
         // when
         // 지하철_노선_목록_조회_요청
         // when
@@ -370,19 +376,23 @@ class LineAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    enum AirportStationConstants {
-        SEOUL(201L, "서울역"),
-        GONGDEOK(202L, "공덕역"),
-        HONGIK_UNIV(203L, "홍대입구역"),
-        DMC(204L, "디지털미디어시티역"),
-        MAGONGNARU(205L, "마곡나루역"),
-        GIMPO_AIRPORT(206L, "김포공항역"),
-        GYEYANG(207L, "계양역");
+    enum StationConstants {
+        GYULHYEON(1L, "귤현역"),
+        BAKCHON(2L, "박촌역"),
+        GEOMDAN_ORYU(3L, "검단오류역"),
+        WANGGIL(4L, "왕길역"),
+        SEOUL(5L, "서울역"),
+        GONGDEOK(6L, "공덕역"),
+        HONGIK_UNIV(7L, "홍대입구역"),
+        DMC(8L, "디지털미디어시티역"),
+        MAGONGNARU(9L, "마곡나루역"),
+        GIMPO_AIRPORT(10L, "김포공항역"),
+        GYEYANG(11L, "계양역");
 
         private final Long id;
         private final String name;
 
-        private static final Map<AirportStationConstants, StationResponse> CACHE =
+        private static final Map<StationConstants, StationResponse> CACHE =
             Arrays.stream(values())
                   .collect(collectingAndThen(
                       toMap(Function.identity(),
@@ -394,7 +404,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                   .map(CACHE::get)
                   .collect(collectingAndThen(toList(), Collections::unmodifiableList));
 
-        AirportStationConstants(Long id, String name) {
+        StationConstants(Long id, String name) {
             this.id = id;
             this.name = name;
         }
