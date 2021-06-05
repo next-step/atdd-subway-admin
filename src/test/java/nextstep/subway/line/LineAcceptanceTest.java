@@ -26,8 +26,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        분당선 = new LineRequest("분당선", "yellow");
-        신분당선 = new LineRequest("신분당선", "red");
+        분당선 = new LineRequest("분당선", "yellow", 1L, 2L, 10);
+        신분당선 = new LineRequest("신분당선", "red", 1L, 2L, 20);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
