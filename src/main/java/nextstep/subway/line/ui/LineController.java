@@ -39,7 +39,7 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        LineResponse lineResponse = lineService.updateLine(id , lineRequest);
+        LineResponse lineResponse = lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().body(lineResponse);
     }
 
@@ -50,7 +50,7 @@ public class LineController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity dataIntegrityViolationHandler(){
+    public ResponseEntity dataIntegrityViolationHandler() {
         return ResponseEntity.badRequest().build();
     }
 
