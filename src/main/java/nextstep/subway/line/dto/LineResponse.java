@@ -1,44 +1,36 @@
 package nextstep.subway.line.dto;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<Station> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+    private List<StationResponse> stations;
 
-    public LineResponse() {
-    }
-
-    public LineResponse(Long id, String name, String color, List<Station> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    private LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
+        this.stations = stations;
     }
-
-    public LineResponse(Line line) {
-        this.id = line.getId();
-        this.name = line.getName();
-        this.color = line.getColor();
-        this.stations = line.toStations();
-        this.createdDate = line.getCreatedDate();
-        this.modifiedDate = line.getModifiedDate();
-    }
-
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.toStations(), line.getCreatedDate(), line.getModifiedDate());
+        List<StationResponse> stationResponses = new ArrayList<>();
+        for (Station station : line.toLineStations()) {
+            stationResponses.add(StationResponse.of(station));
+        }
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), stationResponses);
     }
 
     public Long getId() {
@@ -53,8 +45,8 @@ public class LineResponse {
         return color;
     }
 
-    public List<Station> getStations() {
-        return Collections.unmodifiableList(stations);
+    public List<StationResponse> getStations() {
+        return stations;
     }
 
     public LocalDateTime getCreatedDate() {
