@@ -188,8 +188,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.jsonPath().getString("name")).isEqualTo(line5.getName());
         assertThat(response.jsonPath().getString("color")).isEqualTo(line5.getColor());
-        assertThat(response.jsonPath().getLong("sections[0].upStationId")).isEqualTo(section.getUpStation().getId());
-        assertThat(response.jsonPath().getLong("sections[0].downStationId")).isEqualTo(section.getDownStation().getId());
+        assertThat(response.jsonPath().getLong("stationResponses[0].id")).isEqualTo(section.getUpStation().getId());
+        assertThat(response.jsonPath().getLong("stationResponses[1].id")).isEqualTo(section.getDownStation().getId());
     }
 
     @DisplayName("지하철 노선의 역 목록을 조회하기")
