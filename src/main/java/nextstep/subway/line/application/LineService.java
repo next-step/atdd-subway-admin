@@ -32,9 +32,10 @@ public class LineService {
     }
 
     public LineResponse saveLineWithSection(LineRequest request) {
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
-        Section section = new Section(upStation, downStation, request.getDistance());
+        Section requestSection = request.toSetion();
+        Station upStation = stationService.findById(requestSection.getUpStation().getId());
+        Station downStation = stationService.findById(requestSection.getDownStation().getId());
+        Section section = new Section(upStation, downStation, requestSection.getDistance());
         Line persistLine = lineRepository.save(new Line(request.getName(), request.getColor(), section));
         return LineResponse.of(persistLine);
     }

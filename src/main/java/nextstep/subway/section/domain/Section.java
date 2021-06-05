@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -28,6 +29,9 @@ import nextstep.subway.station.domain.Station;
 )
 public class Section extends BaseEntity {
 
+    public static final String UP_AND_DOWN_STATIONS_CANNOT_BE_THE_SAME = "구간의 상행역과 하행역은 같을 수 없습니다.";
+    public static final int MIN_DISTANCE = 0;
+    public static final String DISTANCE_MUST_BE_AT_LEAST_MIN_DISTANCE = "거리는 %d 이상이어야 합니다.";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,23 +51,41 @@ public class Section extends BaseEntity {
     private int distance;
 
     public Section(Long upStationId, Long downStationId, int distance) {
+        validationSection(upStationId, downStationId);
+        validationDistance(distance);
         this.upStation = new Station(upStationId);
-        this.downStation = new Station(downStationId);;
+        this.downStation = new Station(downStationId);
         this.distance = distance;
     }
 
     public Section(Station upStation, Station downStation, int distance) {
+        validationSection(upStation.getId(), downStation.getId());
+        validationDistance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
     public Section(Long id, Long lineId, Long upStationId, Long downStationId, int distance) {
+        validationSection(upStationId, downStationId);
+        validationDistance(distance);
         this.id = id;
         this.line = new Line(lineId);
         this.upStation = new Station(upStationId);
-        this.downStation = new Station(downStationId);;
+        this.downStation = new Station(downStationId);
         this.distance = distance;
+    }
+
+    public void validationDistance(int distance) {
+        if (distance == MIN_DISTANCE) {
+            throw new IllegalArgumentException(String.format(DISTANCE_MUST_BE_AT_LEAST_MIN_DISTANCE, MIN_DISTANCE));
+        }
+    }
+
+    public void validationSection(Long upStationId, Long downStationId) {
+        if (upStationId == downStationId) {
+            throw new IllegalArgumentException(UP_AND_DOWN_STATIONS_CANNOT_BE_THE_SAME);
+        }
     }
 
     protected Section() {
@@ -98,4 +120,21 @@ public class Section extends BaseEntity {
         return SectionResponse.of(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects
+            .equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, line, upStation, downStation);
+    }
 }
