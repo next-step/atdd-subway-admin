@@ -61,3 +61,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 * 노선의 생성의 인수테스트를 작성하고 성공하는지 테스트 한다.
 * 노선의 각 테스트케이스를 작성하고, 성공을 위하여 컨트롤러를 구현한다.
 * 인수테스트의 중복 로직을 리팩터링한다.
+
+
+## 1단계 질문
+Q. Station 테스트 클래스의 중복인 역을 생성할때 응답으로 BAD_REQUEST의 상태코드를 받는데요. 로직을 찾아보니 BAD_REQUEST를 내려주는 로직이 어디있는지 보이지 않습니다..! 
+어떤 로직에 의하여 BAD_REQUEST를 보내게 되는지 궁금하며 Line 인수 테스트 중 중복되는 라인 생성의 경우에도 BAD_REQUEST를 상태 코드로 응답해주는 것이 옳은 것인지 궁금합니다!
