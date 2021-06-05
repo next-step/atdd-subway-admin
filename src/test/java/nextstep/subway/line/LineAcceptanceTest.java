@@ -12,6 +12,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 import org.junit.jupiter.api.DisplayName;
@@ -27,10 +28,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void createLine() {
 		// when
 		// 지하철_노선_생성_요청
-		Map<String, String> params = new HashMap<>();
-		params.put("color", "bg-red-600");
-		params.put("name", "신분당선");
-		ExtractableResponse<Response> response = 지하철노선을_생성_요청(params);
+		LineRequest lineRequest = new LineRequest("신분당선","bg-red-600");
+		ExtractableResponse<Response> response = 지하철노선을_생성_요청(lineRequest);
 		// then
 		// 지하철_노선_생성됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -42,13 +41,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void createLine2() {
 		// given
 		// 지하철_노선_등록되어_있음
-		Map<String, String> params = new HashMap<>();
-		params.put("color", "bg-red-600");
-		params.put("name", "신분당선");
-		지하철노선을_생성_요청(params);
+		LineRequest lineRequest = new LineRequest("신분당선","bg-red-600");
+		지하철노선을_생성_요청(lineRequest);
 		// when
 		// 지하철_노선_생성_요청
-		ExtractableResponse<Response> response = 지하철노선을_생성_요청(params);
+		ExtractableResponse<Response> response = 지하철노선을_생성_요청(lineRequest);
 		// then
 		// 지하철_노선_생성_실패됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -58,16 +55,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
-		Map<String, String> params1 = new HashMap<>();
-		params1.put("color", "bg-red-600");
-		params1.put("name", "신분당선");
+		LineRequest lineRequest1 = new LineRequest("신분당선","bg-red-600");
+		LineRequest lineRequest2 = new LineRequest("분당선","bg-yellow-600");
 
-		Map<String, String> params2 = new HashMap<>();
-		params2.put("color", "bg-yellow-600");
-		params2.put("name", "분당선");
-
-		ExtractableResponse<Response> createResponse1 = 지하철노선을_생성_요청(params1);
-		ExtractableResponse<Response> createResponse2 = 지하철노선을_생성_요청(params2);
+		ExtractableResponse<Response> createResponse1 = 지하철노선을_생성_요청(lineRequest1);
+		ExtractableResponse<Response> createResponse2 = 지하철노선을_생성_요청(lineRequest2);
 
 		// when
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -94,11 +86,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLine() {
 		// given
 		// 지하철_노선_등록되어_있음
-		Map<String, String> params = new HashMap<>();
-		params.put("color", "bg-red-600");
-		params.put("name", "신분당선");
-
-		ExtractableResponse<Response> createResponse = 지하철노선을_생성_요청(params);
+		LineRequest lineRequest = new LineRequest("신분당선","bg-red-600");
+		ExtractableResponse<Response> createResponse = 지하철노선을_생성_요청(lineRequest);
 
 		LineResponse addLineResponse = createResponse.response().getBody().as(LineResponse.class);
 		Long id = addLineResponse.getId();
@@ -119,10 +108,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("존재하지 않는 노선 업데이트요청시 오류발생확인")
 	@Test
 	void test_updateLine_존재하지않음(){
-		Map<String, String> params = new HashMap<>();
-		params.put("color", "bg-red-600");
-		params.put("name", "신분당선");
-		ExtractableResponse<Response> errorResponse = 지하철노선을_수정요청(999L, params);
+		LineRequest lineRequest = new LineRequest("신분당선","bg-red-600");
+		ExtractableResponse<Response> errorResponse = 지하철노선을_수정요청(999L, lineRequest);
 		assertThat(errorResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
@@ -131,21 +118,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void updateLine() {
 		// given
 		// 지하철_노선_등록되어_있음
-		Map<String, String> params = new HashMap<>();
-		params.put("color", "bg-red-600");
-		params.put("name", "신분당선");
+		LineRequest lineRequest = new LineRequest("신분당선","bg-red-600");
 
-		ExtractableResponse<Response> addLineResponse = 지하철노선을_생성_요청(params);
+		ExtractableResponse<Response> addLineResponse = 지하철노선을_생성_요청(lineRequest);
 		LineResponse createdLine = addLineResponse.response().getBody().as(LineResponse.class);
 
 		// when
 		// 지하철_노선_수정_요청
-		Map<String, String> updateParams = new HashMap<>();
-		String updateColor = "bg-yellow-600";
-		String updateName = "분당선";
-		updateParams.put("color", updateColor);
-		updateParams.put("name", updateName);
-		ExtractableResponse<Response> lineResponse = 지하철노선을_수정요청(createdLine.getId(), updateParams);
+		LineRequest lineRequest2 = new LineRequest("분당선","bg-yellow-600");
+		ExtractableResponse<Response> lineResponse = 지하철노선을_수정요청(createdLine.getId(), lineRequest2);
 
 		// then
 		// 지하철_노선_수정됨
@@ -157,10 +138,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLine() {
 		// given
 		// 지하철_노선_등록되어_있음
-		Map<String, String> params = new HashMap<>();
-		params.put("color", "bg-red-600");
-		params.put("name", "신분당선");
-		ExtractableResponse<Response> addLineResponse = this.지하철노선을_생성_요청(params);
+		LineRequest lineRequest = new LineRequest("신분당선","bg-red-600");
+		ExtractableResponse<Response> addLineResponse = this.지하철노선을_생성_요청(lineRequest);
 		LineResponse createdLine = addLineResponse.response().as(LineResponse.class);
 		// when
 		// 지하철_노선_제거_요청
@@ -186,9 +165,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return deleteResponse;
 	}
 
-	private ExtractableResponse<Response> 지하철노선을_생성_요청(Map<String, String> params) {
+	private ExtractableResponse<Response> 지하철노선을_생성_요청(LineRequest lineRequest) {
 		return RestAssured.given().log().all()
-			.body(params)
+			.body(lineRequest)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
 			.post("/lines")
@@ -197,9 +176,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private ExtractableResponse<Response> 지하철노선을_수정요청(long createdLineID,
-		Map<String, String> updateParams) {
+		LineRequest lineRequest) {
 		return RestAssured.given().log().all()
-			.body(updateParams)
+			.body(lineRequest)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
 			.put("/lines/" + createdLineID)
