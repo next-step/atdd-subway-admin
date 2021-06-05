@@ -33,6 +33,10 @@ public class LineService {
         line.change(lineRequest.getName(), lineRequest.getColor());
     }
 
+    public void removeLine(Long lineId) {
+        lineRepository.deleteById(lineId);
+    }
+
     @Transactional(readOnly = true)
     public void validateDuplicatedName(LineRequest lineRequest) throws NoSuchFieldException {
         if (lineRepository.existsByName(lineRequest.getName())) {

@@ -5,6 +5,8 @@ public class DataException extends RuntimeException {
     private String field;
     private String objectName;
 
+    public DataException() {}
+
     public DataException(String message, String field, String rejectedValue, String objectName) {
         super(message);
         this.field = field;

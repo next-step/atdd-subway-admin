@@ -137,11 +137,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         ExtractableResponse<Response> givenResponse = 지하철_노선_생성("신분당선", "red");
         assertThat(givenResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineResponse lineResponse = givenResponse.jsonPath().getObject(".", LineResponse.class);
 
         // when
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                .pathParam("lineId", givenResponse.jsonPath().get("$.id").toString())
+                .pathParam("lineId", lineResponse.getId())
                 .when().delete("/lines/{lineId}")
                 .then().log().all().extract();
 

@@ -87,4 +87,18 @@ public class LineServiceTest {
         assertThat(linesResponse.contains(LinesSubResponse.of(line1))).isTrue();
         assertThat(linesResponse.contains(LinesSubResponse.of(line2))).isTrue();
     }
+
+    @DisplayName("노선 삭제")
+    @Test
+    public void 노선삭제시_노석확인() throws Exception {
+        //given
+        Long lineId = 1L;
+
+        //when
+        lineService.removeLine(lineId);
+
+        //then
+        when(lineRepository.findById(lineId)).thenThrow(NoSuchDataException.class);
+        assertThatThrownBy(() -> lineService.readLine(lineId)).isInstanceOf(NoSuchDataException.class);
+    }
 }
