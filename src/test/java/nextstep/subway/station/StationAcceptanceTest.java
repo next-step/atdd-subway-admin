@@ -24,7 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        ExtractableResponse<Response> response = createStation(createParams("강남역"));
+        ExtractableResponse<Response> response = createStation(createStationParams("강남역"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -35,7 +35,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = createParams("강남역");
+        Map<String, String> params = createStationParams("강남역");
 
         createStation(params);
 
@@ -50,15 +50,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = createStation(createParams("강남역"));
-        ExtractableResponse<Response> createResponse2 = createStation(createParams("역삼역"));
+        ExtractableResponse<Response> createResponse1 = createStation(createStationParams("강남역"));
+        ExtractableResponse<Response> createResponse2 = createStation(createStationParams("역삼역"));
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = findAllStations();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -75,7 +71,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = createStation(createParams("강남역"));
+        ExtractableResponse<Response> createResponse = createStation(createStationParams("강남역"));
 
         // when
         String uri = createResponse.header("Location");
@@ -89,13 +85,31 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private Map<String, String> createParams(String name) {
+    @DisplayName("지하철역 id로 지하철역을 조회한다.")
+    @Test
+    void getStation() {
+        /// given
+        Map<String, String> params = createStationParams("강남역");
+        createStation(params);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when()
+                .get("/stations/{id}", 1L)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.jsonPath().get("name").toString()).isEqualTo(params.get("name"));
+    }
+
+    public static Map<String, String> createStationParams(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         return params;
     }
 
-    private ExtractableResponse<Response> createStation(Map<String, String> params) {
+    public static ExtractableResponse<Response> createStation(Map<String, String> params) {
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -104,5 +118,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
         return createResponse;
+    }
+
+    private static ExtractableResponse<Response> findAllStations() {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/stations")
+                .then().log().all()
+                .extract();
     }
 }
