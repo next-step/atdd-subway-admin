@@ -24,21 +24,21 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("동일한 상행/하행선 등록 테스트")
+    @DisplayName("하나의 역에 동일한 상행/하행선은 등록 불가능 테스트")
     void up_down_station_equals_register_exception() {
         // given & when & then
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Section(강남역, 강남역, 5));
     }
 
     @Test
-    @DisplayName("유효하지 않은 거리 등록 테스트")
+    @DisplayName("유효하지 않은 거리(0보다 작은) 등록 테스트")
     void distance_register_exception() {
         // given & when & then
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Section(강남역, 판교역, -1));
     }
 
     @Test
-    @DisplayName("구간 내 역 반환 테스트")
+    @DisplayName("구간 내 존재하는 역 반환 테스트")
     void toStation() {
         // given & when
         List<Station> stations = 강남역_판교역_구간.toStations();
