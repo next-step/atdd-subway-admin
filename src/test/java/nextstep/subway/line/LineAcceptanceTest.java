@@ -108,7 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
             // 지하철_노선_포함됨
             () -> {
-                Long expected = response.jsonPath().getObject(".", LineResponse.class).getId();
+                Long expected = response.as(LineResponse.class).getId();
                 assertThat(getLocationId(createResponse)).isEqualTo(expected);
             }
         );
@@ -224,6 +224,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String path = (id > 0) ? URI_PATH + "/" + id : URI_PATH;
 
         return RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get(path)
                 .then().log().all()
