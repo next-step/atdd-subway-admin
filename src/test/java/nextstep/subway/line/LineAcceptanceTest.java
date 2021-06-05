@@ -148,12 +148,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> params = getTargetLine("2호선", "green lighten-1");
+        ExtractableResponse<Response> createResponse = createLine(params);
 
         // when
         // 지하철_노선_제거_요청
+        long deletedId = getLocationId(createResponse);
+        ExtractableResponse<Response> deletedResponse = deleteStation(deletedId);
 
         // then
         // 지하철_노선_삭제됨
+        assertAll(
+            // 지하철_노선삭제
+            () -> assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+
+            // 지하철_노선_찾지못함
+            () -> {
+                ExtractableResponse<Response> response = showStations(deletedId);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+            }
+        );
     }
 
     private Map<String, String> getTargetLine(String name, String color) {
@@ -182,6 +196,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .pathParam("id", id).pathParam("color", color)
                 .when()
                 .patch(URI_PATH + "/{id}/{color}")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteStation(final Long id) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", id)
+                .when()
+                .delete(URI_PATH + "/{id}")
                 .then().log().all()
                 .extract();
     }

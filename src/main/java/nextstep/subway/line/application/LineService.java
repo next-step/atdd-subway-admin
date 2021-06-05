@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.line.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -34,17 +35,21 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(final Long id) {
-         Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException());
+         Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException());
 
         return LineResponse.of(line);
     }
 
     public LineResponse updateLine(Long id, String color) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException());
+        Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException());
         line.update(new Line(line.getName(), color));
 
         lineRepository.flush();
 
         return LineResponse.of(line);
+    }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
     }
 }
