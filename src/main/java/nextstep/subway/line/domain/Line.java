@@ -4,6 +4,8 @@ import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
 
+import org.springframework.util.StringUtils;
+
 @Entity
 public class Line extends BaseEntity {
     @Id
@@ -13,7 +15,7 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
