@@ -77,9 +77,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // Check stations
         LineResponse lineResponse = response.as(LineResponse.class);
         List<Station> stations = lineResponse.getStations();
-        List<String> names = stations.stream()
-                .map(it -> it.getName())
-                .collect(Collectors.toList());
+        List<String> names = getNamesFromStations(stations);
         assertThat(names).containsExactly("강남역", "역삼역");
     }
 
@@ -142,9 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철 노선에 들어있는 역들을 상행종점부터 하행종점까지 반환한다.
         List<Station> stations = response.body().as(LineResponse.class).getStations();
-        List<String> resultStationNames = stations.stream()
-                .map(it -> it.getName())
-                .collect(Collectors.toList());
+        List<String> resultStationNames = getNamesFromStations(stations);
         assertThat(resultStationNames).containsExactly("강남역", "역삼역");
     }
 
@@ -195,4 +191,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(checkResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
+    private List<String> getNamesFromStations(List<Station> stations) {
+        return stations.stream()
+                .map(it -> it.getName())
+                .collect(Collectors.toList());
+    }
 }

@@ -49,10 +49,10 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        Set<Station> stations = sections.stream()
+        return sections.stream()
                 .flatMap(station -> Stream.of(station.getUpStation(), station.getDownStation()))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-        return stations.stream().collect(Collectors.toList());
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
