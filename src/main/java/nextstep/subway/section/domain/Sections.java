@@ -3,7 +3,6 @@ package nextstep.subway.section.domain;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 
 public class Sections {
@@ -16,12 +15,6 @@ public class Sections {
             throw new IllegalArgumentException(AT_LEAST_ONE_SECTION_IS_REQUIRED);
         }
         initSortSections(sections);
-    }
-
-    public List<SectionResponse> toSectionResponses() {
-        return sections.stream()
-            .map(Section::toSectionResponse)
-            .collect(Collectors.toList());
     }
 
     private void initSortSections(List<Section> sections) {
@@ -66,9 +59,5 @@ public class Sections {
             stations.add(sections.getLast().getDownStation());
         }
         return stations;
-    }
-
-    public int size() {
-        return sections.size();
     }
 }
