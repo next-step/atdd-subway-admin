@@ -39,4 +39,13 @@ public class LineService {
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 지하철 노선을 찾을 수 없습니다."));
         return LineResponse.of(foundLine);
     }
+
+    public LineResponse updateLine(Long id, LineRequest lineRequest) throws EntityNotFoundException {
+        Line foundLine = lineRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 지하철 노선을 찾을 수 없습니다."));
+
+        foundLine.update(lineRequest.toLine());
+
+        return LineResponse.of(foundLine);
+    }
 }

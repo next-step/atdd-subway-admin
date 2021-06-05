@@ -97,11 +97,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given : 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(fourthLine);
+        Long createdLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         // when : 지하철_노선_수정_요청
+        Map<String, String> params = new HashMap<>();
+        params.put("name", fourthLine.getName());
+        params.put("color", "red");
+
+        ExtractableResponse<Response> updatedResponse = 지하철_노선_수정_요청(createdLineId, params);
 
         // then : 지하철_노선_수정됨
+        지하철_노선_OK_응답(updatedResponse);
+        assertThat(updatedResponse.jsonPath().getString("color")).isEqualTo("red");
+
     }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/"+id)
+                .then().log().all()
+                .extract();
+    }
+
 //
 //    @DisplayName("지하철 노선을 제거한다.")
 //    @Test
