@@ -111,7 +111,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<Long> resultLineIds = response.body().jsonPath().getObject(".", LineResponse.class).getStations().stream()
                 .map(Station::getId).collect(Collectors.toList());
 
-        assertThat(resultLineIds).contains(upStationId, downStationId);
+        assertThat(resultLineIds).containsExactly(upStationId, downStationId);
 
     }
 

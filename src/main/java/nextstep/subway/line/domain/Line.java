@@ -61,8 +61,9 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return this.sections.getValues().stream()
-                .map(section -> Stream.of(section.getDownStation(), section.getUpStation()))
-                .flatMap(Stream::distinct).collect(Collectors.toList());
+                .map(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .flatMap(Stream::distinct)
+                .collect(Collectors.toList());
     }
 
     public void update(String name, String color, Section section) {
