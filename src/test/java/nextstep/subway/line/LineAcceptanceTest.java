@@ -175,6 +175,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(resultLineId).isEqualTo(createLineId);
 	}
 
+	@DisplayName("없는 지하철 노선을 조회한다.")
+	@Test
+	void getNotExistsLine() {
+		// given
+		// 지하철_노선_등록되어 있지 않음
+
+		// when
+		// 지하철_노선_조회_요청
+		ExtractableResponse<Response> response = RestAssured
+			.given().log().all()
+			.when()
+			.get("/lines" + "/" + 1)
+			.then().log().all()
+			.extract();
+
+		// then
+		// 지하철_노선_응답됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
 	@DisplayName("지하철 노선을 수정한다.")
 	@Test
 	void updateLine() {
@@ -266,7 +286,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.get(uri)
 			.then().log().all()
 			.extract();
-		
+
 		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 }
