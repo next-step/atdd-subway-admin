@@ -58,4 +58,17 @@ public class SectionResponse {
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
+
+    @Override
+    public String toString() {
+        return "SectionResponse{" +
+            "id=" + id +
+            ", lineId=" + lineId +
+            ", upStationId=" + upStationId +
+            ", downStationId=" + downStationId +
+            ", distance=" + distance +
+            ", createdDate=" + createdDate +
+            ", modifiedDate=" + modifiedDate +
+            '}';
+    }
 }
