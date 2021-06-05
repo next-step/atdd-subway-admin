@@ -1,36 +1,33 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
-public class Sections {
+public class LineSections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new LinkedList<>();
-
-    public void remove(Section section) {
-        this.sections.remove(section);
-    }
+    private List<Section> lineSections = new ArrayList<>();
 
     public void add(Section section) {
-        this.sections.add(section);
+        this.lineSections.add(section);
     }
 
     public List<Section> getSections() {
-        return Collections.unmodifiableList(sections);
+        return Collections.unmodifiableList(lineSections);
     }
 
     public List<Station> toStations() {
-        List<Station> stations = new LinkedList<>();
-        for (Section section : sections) {
+        List<Station> stations = new ArrayList<>();
+        for (Section section : lineSections) {
             stations.addAll(section.toStations());
         }
         return stations;
