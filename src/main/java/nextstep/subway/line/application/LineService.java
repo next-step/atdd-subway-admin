@@ -12,25 +12,42 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
-    private SectionService sectionService;
+    private final LineRepository lineRepository;
+    private final SectionRepository sectionRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, SectionService sectionService) {
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.sectionService = sectionService;
+        this.sectionRepository = sectionRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        Section section = sectionService.saveSection(request.toSectionRequest());
-        persistLine.addSection(section);
+        Section section = getSection(request);
+        persistLine.addLineSection(section);
+        sectionRepository.save(section);
         return LineResponse.of(persistLine);
+    }
+
+    private Section getSection(LineRequest request) {
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+
+        return new Section(upStation, downStation, request.getDistance());
+    }
+
+    private Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId)
+            .orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
