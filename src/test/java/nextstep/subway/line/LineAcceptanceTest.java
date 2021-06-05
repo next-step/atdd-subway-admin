@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.RestAcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends RestAcceptanceTest {
@@ -135,6 +137,48 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
         LineResponse lineResponse = getResponse.jsonPath().getObject(".", LineResponse.class);
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
         assertThat(lineResponse.getColor()).isEqualTo("red");
+    }
+
+    @DisplayName("지하철 노선을 종점역과 함께 조회한다.")
+    @Test
+    void getLineWithLastStop() {
+        // given
+        // 지하철_노선_등록되어_있음
+        Map<String, String> stationRegisterParam1 = new HashMap<>();
+        stationRegisterParam1.put("name", "강남");
+        executePost("/stations", stationRegisterParam1);
+
+        Map<String, String> stationRegisterParam2 = new HashMap<>();
+        stationRegisterParam2.put("name", "광교");
+        executePost("/stations", stationRegisterParam2);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "red");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "40");
+
+        ExtractableResponse<Response> registerResponse = executePost("/lines", params);
+
+        // when
+        // 지하철_노선_조회_요청
+        String savedUri = registerResponse.header("Location");
+        ExtractableResponse<Response> getResponse = executeGet(savedUri);
+
+        // then
+        // 지하철_노선_응답됨
+        LineResponse lineResponse = getResponse.jsonPath().getObject(".", LineResponse.class);
+        StationResponse upStation = lineResponse.getStations().get(0);
+        StationResponse downStation = lineResponse.getStations().get(lineResponse.getStations().size()-1);
+        assertAll(
+                () -> assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("red"),
+                () -> assertThat(lineResponse.getStations().size()).isEqualTo(2),
+                () -> assertThat(upStation.getName()).isEqualTo("강남"),
+                () -> assertThat(downStation.getName()).isEqualTo("광교")
+        );
     }
 
     @DisplayName("지하철 노선을 수정한다.")
