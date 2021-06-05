@@ -7,9 +7,9 @@ import org.springframework.http.MediaType;
 
 public class RestAssuredCRUD {
 
-    public static ExtractableResponse<Response> postLineRequest(String path, Object lineRequest) {
+    public static ExtractableResponse<Response> postRequest(String path, Object request) {
         return RestAssured.given().log().all()
-                .body(lineRequest)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(path)
@@ -25,9 +25,9 @@ public class RestAssuredCRUD {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> putLineRequest(String path, Object lineRequest) {
+    public static ExtractableResponse<Response> putRequest(String path, Object request) {
         return RestAssured.given().log().all()
-                .body(lineRequest)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(path)

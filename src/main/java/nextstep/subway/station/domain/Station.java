@@ -10,7 +10,8 @@ public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+
+    @Column(nullable = false, unique = true)
     private String name;
 
     public Station() {

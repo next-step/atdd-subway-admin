@@ -6,6 +6,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,28 +33,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void setup() {
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", "강남역");
-        ExtractableResponse<Response> response1 = postLineRequest("/stations", params1);
+        ExtractableResponse<Response> response1 = postRequest("/stations", params1);
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "역삼역");
-        ExtractableResponse<Response> response2 = postLineRequest("/stations", params2);
+        ExtractableResponse<Response> response2 = postRequest("/stations", params2);
         Map<String, String> params3 = new HashMap<>();
-        params1.put("name", "태릉입구역");
-        ExtractableResponse<Response> response3 = postLineRequest("/stations", params3);
+        params3.put("name", "태릉입구역");
+        ExtractableResponse<Response> response3 = postRequest("/stations", params3);
         Map<String, String> params4 = new HashMap<>();
-        params2.put("name", "봉화산역");
-        ExtractableResponse<Response> response4 = postLineRequest("/stations", params4);
+        params4.put("name", "봉화산역");
+        ExtractableResponse<Response> response4 = postRequest("/stations", params4);
 
         String color2 = "bg-red-600";
         String name2 = "2호선";
-        Long upStationId2 = response1.as(Station.class).getId();
-        Long downStationId2 = response2.as(Station.class).getId();
+        Long upStationId2 = response1.as(StationResponse.class).getId();
+        Long downStationId2 = response2.as(StationResponse.class).getId();
         int distance2 = 2;
         line2Request = new LineRequest(name2, color2, upStationId2, downStationId2, distance2);
 
         String color6 = "bg-orange-600";
         String name6 = "6호선";
-        Long upStationId6 = response3.as(Station.class).getId();
-        Long downStationId6 = response4.as(Station.class).getId();
+        Long upStationId6 = response3.as(StationResponse.class).getId();
+        Long downStationId6 = response4.as(StationResponse.class).getId();
         int distance6 = 6;
         line6Request = new LineRequest(name6, color6, upStationId6, downStationId6, distance6);
     }
@@ -66,7 +67,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = postLineRequest(path, lineRequest);
+        ExtractableResponse<Response> response = postRequest(path, lineRequest);
 
         // then
         // 지하철_노선_생성됨
@@ -86,11 +87,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        postLineRequest(path, line2Request);
+        postRequest(path, line2Request);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = postLineRequest(path, line2Request);
+        ExtractableResponse<Response> response = postRequest(path, line2Request);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -102,9 +103,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse createResponse1 = postLineRequest(path, line2Request);
+        ExtractableResponse createResponse1 = postRequest(path, line2Request);
         // 지하철_노선_등록되어_있음
-        ExtractableResponse createResponse2 = postLineRequest(path, line6Request);
+        ExtractableResponse createResponse2 = postRequest(path, line6Request);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -128,7 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음 + 노선 안에 구간 1개(즉, 역 2개) 들어있음
-        ExtractableResponse createResponse = postLineRequest(path, line2Request);
+        ExtractableResponse createResponse = postRequest(path, line2Request);
 
         // when
         // 지하철_노선_조회_요청
@@ -151,12 +152,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse createResponse = postLineRequest(path, line2Request);
+        ExtractableResponse createResponse = postRequest(path, line2Request);
 
         // when
         // 지하철_노선_수정_요청
         String uri = createResponse.header("Location");
-        ExtractableResponse createResponse2 = putLineRequest(uri, line6Request);
+        ExtractableResponse createResponse2 = putRequest(uri, line6Request);
 
         // then
         // 지하철_노선_수정됨
@@ -174,7 +175,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse createResponse = postLineRequest(path, line2Request);
+        ExtractableResponse createResponse = postRequest(path, line2Request);
 
         // when
         // 지하철_노선_제거_요청
