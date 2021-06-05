@@ -19,6 +19,12 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional(readOnly = true)
+    public Station findById(Long stationId) {
+        return stationRepository.findById(stationId)
+            .orElseThrow(() -> new IllegalArgumentException(String.format("역이 존재하지 않습니다.[%s]", stationId)));
+    }
+
     public StationResponse saveStation(StationRequest stationRequest) {
         Station persistStation = stationRepository.save(stationRequest.toStation());
         return StationResponse.of(persistStation);

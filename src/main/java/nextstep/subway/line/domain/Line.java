@@ -1,19 +1,23 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-
-import org.springframework.util.StringUtils;
 
 @Entity
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
+
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -38,5 +42,14 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public void addSectionBetween(Station upStation, Station downStation, int distance) {
+        Section section = new Section(this, upStation, downStation, distance);
+        sections.add(section);
+    }
+
+    Sections getSections() {
+        return sections;
     }
 }

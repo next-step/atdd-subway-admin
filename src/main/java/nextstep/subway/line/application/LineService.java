@@ -6,6 +6,8 @@ import nextstep.subway.line.application.exceptions.AlreadyExistsLineNameExceptio
 import nextstep.subway.line.application.exceptions.NotFoundLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,13 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
-    public Line saveLine(Line line) {
+    public Line saveLine(Line line, Long upStationId, Long downStationId, int distance) {
         checkAlreadyExists(line.getName());
+        addSection(line, upStationId, downStationId, distance);
         return lineRepository.save(line);
     }
 
@@ -48,5 +53,11 @@ public class LineService {
 
     public void deleteLineById(Long lineId) {
         lineRepository.deleteById(lineId);
+    }
+
+    private void addSection(Line line, Long upStationId, Long downStationId, int distance) {
+        Station upStation = stationService.findById(upStationId);
+        Station downStation = stationService.findById(downStationId);
+        line.addSectionBetween(upStation, downStation, distance);
     }
 }
