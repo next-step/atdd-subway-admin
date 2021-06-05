@@ -28,6 +28,11 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public void changeLine(Long lineId, LineRequest lineRequest) {
+        Line line = findById(lineId);
+        line.change(lineRequest.getName(), lineRequest.getColor());
+    }
+
     @Transactional(readOnly = true)
     public void validateDuplicatedName(LineRequest lineRequest) throws NoSuchFieldException {
         if (lineRepository.existsByName(lineRequest.getName())) {
@@ -39,8 +44,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LinesSubResponse readLine(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선입니다.",
-                "lineId", String.valueOf(lineId), null));
+        Line line = findById(lineId);
         return LinesSubResponse.of(line);
     }
 
@@ -50,5 +54,11 @@ public class LineService {
         return lines.stream()
                 .map(LinesSubResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    private Line findById(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선입니다.",
+                "lineId", String.valueOf(lineId), null));
     }
 }

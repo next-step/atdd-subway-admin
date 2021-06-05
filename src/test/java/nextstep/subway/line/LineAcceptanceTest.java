@@ -113,6 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         ExtractableResponse<Response> givenResponse = 지하철_노선_생성("신분당선", "red");
         assertThat(givenResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineResponse lineResponse = givenResponse.jsonPath().getObject(".", LineResponse.class);
 
         // when
         Map<String, String> params = new HashMap<>();
@@ -122,7 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("lineId", givenResponse.jsonPath().get("$.id").toString())
+                .pathParam("lineId", lineResponse.getId())
                 .when().put("/lines/{lineId}")
                 .then().log().all().extract();
 

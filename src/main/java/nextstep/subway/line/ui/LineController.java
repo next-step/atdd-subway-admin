@@ -39,4 +39,10 @@ public class LineController {
         List<LinesSubResponse> linesSubResponses = lineService.readLineAll();
         return ResponseEntity.ok(linesSubResponses);
     }
+
+    @PutMapping("/{lineId}")
+    public ResponseEntity changeLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
+        lineService.changeLine(lineId, lineRequest);
+        return ResponseEntity.ok().build();
+    }
 }
