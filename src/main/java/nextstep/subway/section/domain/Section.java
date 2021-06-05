@@ -28,14 +28,13 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Line line, Station station, int distance) {
-        toLine(line);
+    public Section(Station station, int distance) {
         this.station = station;
         this.distance = distance;
     }
 
-    public static Section first(Line line, Station firstStop) {
-        return new Section(line, firstStop, FIRST_STOP_DISTANCE);
+    public static Section first(Station firstStop) {
+        return new Section(firstStop, FIRST_STOP_DISTANCE);
     }
 
     public void toLine(Line line) {
