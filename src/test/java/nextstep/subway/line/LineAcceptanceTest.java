@@ -19,18 +19,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private LineRequest 수도권_2호선;
 
 
-    @Override
     @BeforeEach
-    public void setUp() {
-        super.setUp();
+    public void setFields() {
         Long stationId1 = 지하철_역_등록되어_있음(new StationRequest("강남역"));
         Long stationId2 = 지하철_역_등록되어_있음(new StationRequest("판교역"));
 
         Long stationId3 = 지하철_역_등록되어_있음(new StationRequest("당산역"));
         Long stationId4 = 지하철_역_등록되어_있음(new StationRequest("신도림"));
 
-        수도권_신분당선 = new LineRequest("수도권_신분당선", "bg-red-600", stationId1, stationId2, 5);
-        수도권_2호선 = new LineRequest("수도권_2호선", "bg-green-600", stationId3, stationId4, 3);
+        수도권_신분당선 = LineRequest.of("수도권_신분당선", "bg-red-600", stationId1, stationId2, 5);
+        수도권_2호선 = LineRequest.of("수도권_2호선", "bg-green-600", stationId3, stationId4, 3);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
