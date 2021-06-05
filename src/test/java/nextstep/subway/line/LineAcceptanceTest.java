@@ -24,22 +24,6 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // when
-        // 지하철_노선_생성_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-
-        ExtractableResponse<Response> response = executePost("/lines", params);
-
-        // then
-        // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    @DisplayName("지하철 노선을 종점역과 함께 생성한다.")
-    @Test
-    void createLineWithLastStop() {
         // given
         // 상행역_하행역_등록되어_있음
         Map<String, String> stationRegisterParam1 = new HashMap<>();
@@ -71,14 +55,26 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-        executePost("/lines", params);
+        saveShinBundangLine();
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = executePost("/lines", params);
+        Map<String, String> stationRegisterParam1 = new HashMap<>();
+        stationRegisterParam1.put("name", "상현");
+        executePost("/stations", stationRegisterParam1);
+
+        Map<String, String> stationRegisterParam2 = new HashMap<>();
+        stationRegisterParam2.put("name", "양재");
+        executePost("/stations", stationRegisterParam2);
+
+        Map<String, String> registerParams = new HashMap<>();
+        registerParams.put("name", "신분당선");
+        registerParams.put("color", "red");
+        registerParams.put("upStationId", "3");
+        registerParams.put("downStationId", "4");
+        registerParams.put("distance", "40");
+
+        ExtractableResponse<Response> response = executePost("/lines", registerParams);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -90,16 +86,10 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-        executePost("/lines", params);
+        saveShinBundangLine();
 
         // 지하철_노선_등록되어_있음
-        params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
-        executePost("/lines", params);
+        saveLine2();
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -120,11 +110,7 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-
-        ExtractableResponse<Response> registerResponse = executePost("/lines", params);
+        ExtractableResponse<Response> registerResponse = saveShinBundangLine();
 
         // when
         // 지하철_노선_조회_요청
@@ -144,22 +130,7 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     void getLineWithLastStop() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> stationRegisterParam1 = new HashMap<>();
-        stationRegisterParam1.put("name", "강남");
-        executePost("/stations", stationRegisterParam1);
-
-        Map<String, String> stationRegisterParam2 = new HashMap<>();
-        stationRegisterParam2.put("name", "광교");
-        executePost("/stations", stationRegisterParam2);
-
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "40");
-
-        ExtractableResponse<Response> registerResponse = executePost("/lines", params);
+        ExtractableResponse<Response> registerResponse = saveShinBundangLine();
 
         // when
         // 지하철_노선_조회_요청
@@ -186,10 +157,7 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> registerParams = new HashMap<>();
-        registerParams.put("name", "신분당선");
-        registerParams.put("color", "red");
-        ExtractableResponse<Response> registerResponse = executePost("/lines", registerParams);
+        ExtractableResponse<Response> registerResponse = saveShinBundangLine();
 
         // when
         // 지하철_노선_수정_요청
@@ -212,10 +180,7 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> registerParams = new HashMap<>();
-        registerParams.put("name", "신분당선");
-        registerParams.put("color", "red");
-        ExtractableResponse<Response> registerResponse = executePost("/lines", registerParams);
+        ExtractableResponse<Response> registerResponse = saveShinBundangLine();
 
         // when
         // 지하철_노선_제거_요청
@@ -225,5 +190,43 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> saveShinBundangLine() {
+        Map<String, String> stationRegisterParam1 = new HashMap<>();
+        stationRegisterParam1.put("name", "강남");
+        executePost("/stations", stationRegisterParam1);
+
+        Map<String, String> stationRegisterParam2 = new HashMap<>();
+        stationRegisterParam2.put("name", "광교");
+        executePost("/stations", stationRegisterParam2);
+
+        Map<String, String> registerParams = new HashMap<>();
+        registerParams.put("name", "신분당선");
+        registerParams.put("color", "red");
+        registerParams.put("upStationId", "1");
+        registerParams.put("downStationId", "2");
+        registerParams.put("distance", "40");
+
+        return executePost("/lines", registerParams);
+    }
+
+    private ExtractableResponse<Response> saveLine2() {
+        Map<String, String> stationRegisterParam1 = new HashMap<>();
+        stationRegisterParam1.put("name", "을지로입구");
+        executePost("/stations", stationRegisterParam1);
+
+        Map<String, String> stationRegisterParam2 = new HashMap<>();
+        stationRegisterParam2.put("name", "신도림");
+        executePost("/stations", stationRegisterParam2);
+
+        Map<String, String> registerParams = new HashMap<>();
+        registerParams.put("name", "2호선");
+        registerParams.put("color", "green");
+        registerParams.put("upStationId", "3");
+        registerParams.put("downStationId", "4");
+        registerParams.put("distance", "40");
+
+        return executePost("/lines", registerParams);
     }
 }
