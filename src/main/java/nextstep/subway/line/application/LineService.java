@@ -1,11 +1,13 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.exception.DuplicateEntityExistsException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +24,13 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+    public LineResponse saveLine(LineRequest request) throws DuplicateEntityExistsException{
+        Line persistLine = null;
+        try {
+            persistLine = lineRepository.save(request.toLine());
+        }catch (DataIntegrityViolationException e){
+            throw new DuplicateEntityExistsException("해당 이름을 가진 노선이 이미 존재합니다.");
+        }
         return LineResponse.of(persistLine);
     }
 

@@ -1,5 +1,6 @@
 package nextstep.subway.line.ui;
 
+import nextstep.subway.exception.DuplicateEntityExistsException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -8,7 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import javax.print.attribute.standard.Media;
+import javax.swing.text.html.parser.Entity;
 import java.net.URI;
 import java.util.List;
 
@@ -20,24 +23,26 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping(value = "lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    @PostMapping(value = "/lines")
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest)
+                                                                        throws DuplicateEntityExistsException {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @GetMapping(value = "lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) throws EntityNotFoundException {
         return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> changeLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> changeLine(@PathVariable Long id,
+                                                   @RequestBody LineRequest lineRequest) throws EntityNotFoundException{
         return ResponseEntity.ok().body(lineService.updateLine(id, lineRequest));
     }
 
