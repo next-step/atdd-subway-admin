@@ -44,15 +44,7 @@ public class Section extends BaseEntity {
         }
     }
 
-    public Line getLine() {
-        return line;
-    }
-
     public Station getStation() {
         return station;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 }
