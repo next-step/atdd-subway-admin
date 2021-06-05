@@ -36,4 +36,15 @@ public class LineService {
         Line line = lineRepository.findById(id).get();
         return LineResponse.of(line);
     }
+
+    public Object updateLine(LineRequest lineRequest, Long id) {
+        Line line = lineRepository.findById(id).get();
+        line.updateLine(lineRequest.toLine());
+        Line persistLine = lineRepository.save(line);
+        return LineResponse.of(persistLine);
+    }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }

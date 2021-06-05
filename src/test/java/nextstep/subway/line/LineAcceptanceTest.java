@@ -155,12 +155,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "화곡역");
+        params.put("color", "purple");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/{id}", 1)
+                .then().log().all()
+                .extract();
+        // 지하철_노선_응답됨
+        LineResponse line = response.jsonPath().getObject(".", LineResponse.class);
+        params.put("id", line.getId());
+        params.put("name", "화곡역");
+        params.put("color", "green");
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}", line.getId())
+                .then().log().all()
+                .extract();
 
         // then
         // 지하철_노선_수정됨
+        LineResponse expected = updateResponse.jsonPath().getObject(".", LineResponse.class);
+        assertThat(expected.getName()).isEqualTo("화곡역");
+        assertThat(expected.getColor()).isEqualTo("green");
+
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -168,11 +198,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "화곡역");
+        params.put("color", "purple");
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
         // when
         // 지하철_노선_제거_요청
-
+        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+                .when().delete("/lines/{id}", 1)
+                .then().log().all()
+                .extract();
         // then
         // 지하철_노선_삭제됨
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
