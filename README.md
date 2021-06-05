@@ -58,6 +58,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## 미션 단계
 
 ### Step1
-- [ ] 기능 구현 전 인수 테스트 작성
+- [x] 기능 구현 전 인수 테스트 작성
 - [ ] 기능 목록: 노선 생성/목록조회/조회/수정/삭제
 - [ ] 기능 구현 후 인수 테스트 리팩터링
