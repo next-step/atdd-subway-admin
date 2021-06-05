@@ -4,11 +4,15 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +22,10 @@ import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static nextstep.subway.line.LineAcceptanceTest.AirportStationConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
@@ -26,7 +34,8 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     private LineTestData INCHEON_SUBWAY_LINE_1;
     private LineTestData INCHEON_SUBWAY_LINE_2;
-    private LineTestData AIRPORT_EXPRESS;
+    private LineTestData AIRPORT_EXPRESS_DEFAULT;
+    private LineTestData AIRPORT_EXPRESS_SKIP_GONGDEOK;
 
     @BeforeEach
     void setUpField() {
@@ -39,15 +48,17 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         INCHEON_SUBWAY_LINE_2 = new LineTestData(
             "인천 2호선", "#ED8B00",
-            new StationResponse(3L, "검단오류역", null, null),
-            new StationResponse(4L, "왕길역", null, null)
+            new StationResponse(101L, "검단오류역", null, null),
+            new StationResponse(102L, "왕길역", null, null)
         );
 
-        AIRPORT_EXPRESS = new LineTestData(
-            "공항철도", "#0065B3",
-            new StationResponse(5L, "서울역", null, null),
-            new StationResponse(6L, "공덕역", null, null)
+        AIRPORT_EXPRESS_DEFAULT = new LineTestData(
+            "공항철도", "#0065B3", GONGDEOK.toResponse(), HONGIK_UNIV.toResponse()
         );
+
+        AIRPORT_EXPRESS_SKIP_GONGDEOK =
+            new LineTestData("공항철도", "#0065B3", 200,
+                             SEOUL.toResponse(), HONGIK_UNIV.toResponse());
     }
 
     @DisplayName("지하철 노선 생성")
@@ -82,8 +93,9 @@ class LineAcceptanceTest extends AcceptanceTest {
         return Stream.of(
             dynamicTest("모든 지하철 역 생성", this::createAllStations),
             dynamicTest("인천 1호선 노선 생성", () -> createLineRequestAndTest(INCHEON_SUBWAY_LINE_1)),
-            dynamicTest("인천 2호선 노선 생성", () -> createLineRequestAndTest(AIRPORT_EXPRESS)),
-            dynamicTest("지하철 노선 목록 조회 및 검증", () -> fineLinesAndTest(INCHEON_SUBWAY_LINE_1, AIRPORT_EXPRESS))
+            dynamicTest("인천 2호선 노선 생성", () -> createLineRequestAndTest(AIRPORT_EXPRESS_DEFAULT)),
+            dynamicTest("지하철 노선 목록 조회 및 검증", () -> fineLinesAndTest(INCHEON_SUBWAY_LINE_1,
+                                                                    AIRPORT_EXPRESS_DEFAULT))
         );
     }
 
@@ -123,6 +135,78 @@ class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("기존 노선의 하행 종점에 새 구간을 등록한다.")
+    @TestFactory
+    Stream<DynamicTest> addSectionTest01() {
+        return Stream.of(
+            dynamicTest("모든 지하철 역 생성", this::createAllStations),
+            dynamicTest("공항철도 기본 노선 생성", () -> createLineRequestAndTest(AIRPORT_EXPRESS_DEFAULT)),
+            dynamicTest("홍대입구역-DMC역 구간 추가", () -> {
+                // do something...
+            })
+        );
+    }
+
+    @DisplayName("기존 노선의 상행 종점에 새 구간을 등록한다.")
+    @TestFactory
+    Stream<DynamicTest> addSectionTest02() {
+        return Stream.of(
+            dynamicTest("모든 지하철 역 생성", this::createAllStations),
+            dynamicTest("공항철도 기본 노선 생성", () -> createLineRequestAndTest(AIRPORT_EXPRESS_DEFAULT)),
+            dynamicTest("서울역-공덕역 구간 추가", () -> {
+                // do something...
+            })
+        );
+    }
+
+    @DisplayName("기존 노선 가운데에 새 구간을 등록한다.")
+    @TestFactory
+    Stream<DynamicTest> addSectionTest03() {
+        return Stream.of(
+            dynamicTest("모든 지하철 역 생성", this::createAllStations),
+            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestAndTest(AIRPORT_EXPRESS_SKIP_GONGDEOK)),
+            dynamicTest("서울역-공덕역 구간 추가", () -> {
+                // do something...
+            })
+        );
+    }
+
+    @DisplayName("기존 노선 가운데에 새 구간을 등록하는 경우 기존 역 사이 간격보다 크거나 같지 않아야 한다.")
+    @TestFactory
+    Stream<DynamicTest> addSectionFailTest01() {
+        return Stream.of(
+            dynamicTest("모든 지하철 역 생성", this::createAllStations),
+            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestAndTest(AIRPORT_EXPRESS_SKIP_GONGDEOK)),
+            dynamicTest("서울역-공덕역 구간 추가", () -> {
+                // do something...
+            })
+        );
+    }
+
+    @DisplayName("추가하려는 상/하행역이 기존 노선에 이미 등록되어 있다면 추가할 수 없다.")
+    @TestFactory
+    Stream<DynamicTest> addSectionFailTest02() {
+        return Stream.of(
+            dynamicTest("모든 지하철 역 생성", this::createAllStations),
+            dynamicTest("공항철도 노선 생성", () -> createLineRequestAndTest(AIRPORT_EXPRESS_DEFAULT)),
+            dynamicTest("홍대입구역-공덕역 구간 추가", () -> {
+                // do something...
+            })
+        );
+    }
+
+    @DisplayName("추가하려는 상/하행역 중 하나라도 기존 노선에 포함되어 있지 않다면 추가할 수 없다.")
+    @TestFactory
+    Stream<DynamicTest> addSectionFailTest03() {
+        return Stream.of(
+            dynamicTest("모든 지하철 역 생성", this::createAllStations),
+            dynamicTest("공항철도 노선 생성", () -> createLineRequestAndTest(AIRPORT_EXPRESS_DEFAULT)),
+            dynamicTest("김포공항-계양역 구간 추가", () -> {
+                // do something...
+            })
+        );
+    }
+
     private ExtractableResponse<Response> findSavedLine() {
         return RestAssured.given().log().all()
                           .when().get("/lines/1")
@@ -146,19 +230,34 @@ class LineAcceptanceTest extends AcceptanceTest {
                           .extract();
     }
 
+    private ExtractableResponse<Response> addSectionRequest(Long upStationId, Long downStationId, int distance) {
+
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
+
+        return RestAssured.given().log().all()
+                          .body(sectionRequest)
+                          .contentType(MediaType.APPLICATION_JSON_VALUE)
+                          .when().post("/lines/1/sections")
+                          .then().log().all()
+                          .extract();
+    }
+
     private void createAllStations() {
         INCHEON_SUBWAY_LINE_1.getStations().forEach(this::createStation);
         INCHEON_SUBWAY_LINE_2.getStations().forEach(this::createStation);
-        AIRPORT_EXPRESS.getStations().forEach(this::createStation);
+        AirportStationConstants.getAllStations().forEach(this::createStation);
     }
 
     private void createStation(StationResponse stationResponse) {
-        RestAssured.given().log().all()
-                   .body(new StationRequest(stationResponse.getName()))
-                   .contentType(MediaType.APPLICATION_JSON_VALUE)
-                   .when().post("/stations")
-                   .then().log().all()
-                   .extract();
+        ExtractableResponse<Response> response =
+            RestAssured.given().log().all()
+                       .body(new StationRequest(stationResponse.getName()))
+                       .contentType(MediaType.APPLICATION_JSON_VALUE)
+                       .when().post("/stations")
+                       .then().log().all()
+                       .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     private ExtractableResponse<Response> createLineSuccess(LineTestData data) {
@@ -252,7 +351,13 @@ class LineAcceptanceTest extends AcceptanceTest {
         public LineTestData(String name, String color,
                             StationResponse upStation,
                             StationResponse downStation) {
-            this.line = new LineRequest(name, color, upStation.getId(), downStation.getId(), 100);
+            this(name, color, 100, upStation, downStation);
+        }
+
+        public LineTestData(String name, String color, int distance,
+                            StationResponse upStation,
+                            StationResponse downStation) {
+            this.line = new LineRequest(name, color, upStation.getId(), downStation.getId(), distance);
             this.stations = Arrays.asList(upStation, downStation);
         }
 
@@ -262,6 +367,52 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         public List<StationResponse> getStations() {
             return stations;
+        }
+    }
+
+    enum AirportStationConstants {
+        SEOUL(201L, "서울역"),
+        GONGDEOK(202L, "공덕역"),
+        HONGIK_UNIV(203L, "홍대입구역"),
+        DMC(204L, "디지털미디어시티역"),
+        MAGONGNARU(205L, "마곡나루역"),
+        GIMPO_AIRPORT(206L, "김포공항역"),
+        GYEYANG(207L, "계양역");
+
+        private final Long id;
+        private final String name;
+
+        private static final Map<AirportStationConstants, StationResponse> CACHE =
+            Arrays.stream(values())
+                  .collect(collectingAndThen(
+                      toMap(Function.identity(),
+                            c -> new StationResponse(c.getId(), c.getName(), null, null)),
+                      Collections::unmodifiableMap));
+
+        private static final List<StationResponse> ALL_STATIONS =
+            Arrays.stream(values())
+                  .map(CACHE::get)
+                  .collect(collectingAndThen(toList(), Collections::unmodifiableList));
+
+        AirportStationConstants(Long id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public static List<StationResponse> getAllStations() {
+            return ALL_STATIONS;
+        }
+
+        public StationResponse toResponse() {
+            return CACHE.get(this);
         }
     }
 }
