@@ -7,6 +7,8 @@ import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class SectionService {
 
@@ -30,5 +32,10 @@ public class SectionService {
 
     private void mapToLine(Line line, Section section) {
         section.toLine(line);
+    }
+
+    @Transactional
+    public void deleteSections(List<Section> sections) {
+        sectionRepository.deleteAll(sections);
     }
 }
