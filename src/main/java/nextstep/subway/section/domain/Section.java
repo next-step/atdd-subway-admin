@@ -9,8 +9,6 @@ import javax.persistence.*;
 @Entity
 public class Section extends BaseEntity {
 
-    private static final int FIRST_STOP_DISTANCE = 0;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,21 +18,22 @@ public class Section extends BaseEntity {
     private Line line;
 
     @OneToOne
-    @JoinColumn(name = "station_id")
-    private Station station;
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
+
+    @OneToOne
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
 
     private int distance;
 
     protected Section() {
     }
 
-    public Section(Station station, int distance) {
-        this.station = station;
+    public Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public static Section first(Station firstStop) {
-        return new Section(firstStop, FIRST_STOP_DISTANCE);
     }
 
     public void toLine(Line line) {
@@ -44,7 +43,11 @@ public class Section extends BaseEntity {
         }
     }
 
-    public Station getStation() {
-        return station;
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 }
