@@ -24,12 +24,16 @@ public class StationService {
         return StationResponse.of(persistStation);
     }
 
+    private Station findById(Long id) {
+        return stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+    }
+
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
