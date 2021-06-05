@@ -41,6 +41,10 @@ public class Section implements Comparable<Section> {
         return downStation.equals(station);
     }
 
+    public boolean isEqualToUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
     public Long getId() {
         return id;
     }
