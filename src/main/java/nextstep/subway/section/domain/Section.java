@@ -1,6 +1,5 @@
 package nextstep.subway.section.domain;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -14,6 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 
 @Entity

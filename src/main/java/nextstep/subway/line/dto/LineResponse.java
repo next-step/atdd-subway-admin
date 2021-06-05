@@ -3,7 +3,7 @@ package nextstep.subway.line.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.SectionResponse;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.section.domain.Sections;
 
 public class LineResponse {

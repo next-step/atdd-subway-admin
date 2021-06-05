@@ -1,6 +1,7 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.section.dto;
 
 import java.time.LocalDateTime;
+import nextstep.subway.section.domain.Section;
 
 public class SectionResponse {
 

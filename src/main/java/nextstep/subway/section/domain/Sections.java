@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.section.dto.SectionResponse;
 
 public class Sections {
 
