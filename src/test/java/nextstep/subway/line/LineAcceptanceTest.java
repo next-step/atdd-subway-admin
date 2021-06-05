@@ -26,24 +26,12 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     void createLine() {
         // given
         // 상행역_하행역_등록되어_있음
-        Map<String, String> stationRegisterParam1 = new HashMap<>();
-        stationRegisterParam1.put("name", "강남");
-        executePost("/stations", stationRegisterParam1);
+        LineResponse station1 = saveStation("광교").jsonPath().getObject(".", LineResponse.class);
+        LineResponse station2 = saveStation("강남").jsonPath().getObject(".", LineResponse.class);
 
-        Map<String, String> stationRegisterParam2 = new HashMap<>();
-        stationRegisterParam2.put("name", "광교");
-        executePost("/stations", stationRegisterParam2);
-        
         // when
         // 지하철_노선_생성_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "40");
-
-        ExtractableResponse<Response> response = executePost("/lines", params);
+        ExtractableResponse<Response> response = saveLine("신분당선", "red", station1.getId(), station2.getId(), "40");
 
         // then
         // 지하철_노선_생성됨
@@ -59,22 +47,9 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
 
         // when
         // 지하철_노선_생성_요청
-        Map<String, String> stationRegisterParam1 = new HashMap<>();
-        stationRegisterParam1.put("name", "상현");
-        executePost("/stations", stationRegisterParam1);
-
-        Map<String, String> stationRegisterParam2 = new HashMap<>();
-        stationRegisterParam2.put("name", "양재");
-        executePost("/stations", stationRegisterParam2);
-
-        Map<String, String> registerParams = new HashMap<>();
-        registerParams.put("name", "신분당선");
-        registerParams.put("color", "red");
-        registerParams.put("upStationId", "3");
-        registerParams.put("downStationId", "4");
-        registerParams.put("distance", "40");
-
-        ExtractableResponse<Response> response = executePost("/lines", registerParams);
+        LineResponse station1 = saveStation("상현").jsonPath().getObject(".", LineResponse.class);
+        LineResponse station2 = saveStation("양재").jsonPath().getObject(".", LineResponse.class);
+        ExtractableResponse<Response> response = saveLine("신분당선", "red", station1.getId(), station2.getId(), "40");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -147,8 +122,8 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
                 () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
                 () -> assertThat(lineResponse.getColor()).isEqualTo("red"),
                 () -> assertThat(lineResponse.getStations().size()).isEqualTo(2),
-                () -> assertThat(upStation.getName()).isEqualTo("강남"),
-                () -> assertThat(downStation.getName()).isEqualTo("광교")
+                () -> assertThat(upStation.getName()).isEqualTo("광교"),
+                () -> assertThat(downStation.getName()).isEqualTo("강남")
         );
     }
 
@@ -192,41 +167,31 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
+    private ExtractableResponse<Response> saveStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        return executePost("/stations", params);
+    }
+
+    private ExtractableResponse<Response> saveLine(String name, String color, Long upStationId, Long downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId.toString());
+        params.put("downStationId", downStationId.toString());
+        params.put("distance", distance);
+        return executePost("/lines", params);
+    }
+
     private ExtractableResponse<Response> saveShinBundangLine() {
-        Map<String, String> stationRegisterParam1 = new HashMap<>();
-        stationRegisterParam1.put("name", "강남");
-        executePost("/stations", stationRegisterParam1);
-
-        Map<String, String> stationRegisterParam2 = new HashMap<>();
-        stationRegisterParam2.put("name", "광교");
-        executePost("/stations", stationRegisterParam2);
-
-        Map<String, String> registerParams = new HashMap<>();
-        registerParams.put("name", "신분당선");
-        registerParams.put("color", "red");
-        registerParams.put("upStationId", "1");
-        registerParams.put("downStationId", "2");
-        registerParams.put("distance", "40");
-
-        return executePost("/lines", registerParams);
+        LineResponse upStation = saveStation("광교").jsonPath().getObject(".", LineResponse.class);
+        LineResponse downStation = saveStation("강남").jsonPath().getObject(".", LineResponse.class);
+        return saveLine("신분당선", "red", upStation.getId(), downStation.getId(), "40");
     }
 
     private ExtractableResponse<Response> saveLine2() {
-        Map<String, String> stationRegisterParam1 = new HashMap<>();
-        stationRegisterParam1.put("name", "을지로입구");
-        executePost("/stations", stationRegisterParam1);
-
-        Map<String, String> stationRegisterParam2 = new HashMap<>();
-        stationRegisterParam2.put("name", "신도림");
-        executePost("/stations", stationRegisterParam2);
-
-        Map<String, String> registerParams = new HashMap<>();
-        registerParams.put("name", "2호선");
-        registerParams.put("color", "green");
-        registerParams.put("upStationId", "3");
-        registerParams.put("downStationId", "4");
-        registerParams.put("distance", "40");
-
-        return executePost("/lines", registerParams);
+        LineResponse upStation = saveStation("을지로입구").jsonPath().getObject(".", LineResponse.class);
+        LineResponse downStation = saveStation("신도림").jsonPath().getObject(".", LineResponse.class);
+        return saveLine("2호선", "green", upStation.getId(), downStation.getId(), "35");
     }
 }
