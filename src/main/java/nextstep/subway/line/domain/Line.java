@@ -46,10 +46,10 @@ public class Line extends BaseEntity {
     }
 
     public void add(Section section) {
-        section.toLine(this);
         if (!sections.contains(section)) {
             sections.add(section);
         }
+        section.toLine(this);
     }
 
     public Long getId() {
