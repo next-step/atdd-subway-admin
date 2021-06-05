@@ -108,8 +108,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ## [2단계] 인수 테스트 리팩터링  
 
-
-
 ## TODO
 
 [**2단계**] 지하철 노선에 구간 등록  
@@ -151,3 +149,4 @@ public class Line {
 - 노선 조회 시 역 목록을 함께 응답할 수 있도록 변경
 - 노선에 등록된 구간을 순서대로 정렬하여 상행 종점부터 하행 종점까지 목록을 응답하기
 - 필요시 노선과 구간(혹은 역)의 관계를 새로 맺기
+
