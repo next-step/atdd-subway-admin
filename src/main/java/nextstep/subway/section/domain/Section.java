@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 public class Section extends BaseEntity {
 
-    private static final int START_STOP_DISTANCE = 0;
+    private static final int FIRST_STOP_DISTANCE = 0;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,8 +34,8 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public static Section startStop(Line line, Station station) {
-        return new Section(line, station, START_STOP_DISTANCE);
+    public static Section firstStop(Line line, Station station) {
+        return new Section(line, station, FIRST_STOP_DISTANCE);
     }
 
     public Line getLine() {
