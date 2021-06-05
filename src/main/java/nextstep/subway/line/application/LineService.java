@@ -11,10 +11,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -49,21 +47,26 @@ public class LineService {
         int distance = request.getDistance();
 
         Line line = request.toLine();
-        Section section = new Section(line, upStation, downStation, distance);
-        line.addSection(section);
+        line.addSection(new Section(upStation, downStation, distance));
 
-        Line persistLine = lineRepository.save(line);
-
-        List<Station> stations = persistLine.getStations();
-
-        return LineResponse.of(persistLine, stations);
+        Line save = lineRepository.save(line);
+        List<Station> stations = save.getStations();
+        return LineResponse.of(save, stations);
     }
 
-    public LineResponse updateById(final Long lineId,final LineRequest lineRequest) {
-        Line line = lineRepository.findById(lineId)
+    public LineResponse updateById(final Long lineId, final LineRequest lineRequest) {
+        Line origin = lineRepository.findById(lineId)
                 .orElseThrow(() -> new DataIntegrityViolationException("Not Found lineId" + lineId));
-        line.update(lineRequest.toLine());
-        return LineResponse.of(line);
+
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new DataIntegrityViolationException("Not Fount downStationId" + lineRequest.getDownStationId()));
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new DataIntegrityViolationException("Not Fount downStationId" + lineRequest.getUpStationId()));
+        int distance = lineRequest.getDistance();
+
+        Section section = new Section(upStation, downStation, distance);
+        origin.update(lineRequest.getName(), lineRequest.getColor(), section);
+
+        List<Station> stations = origin.getStations();
+        return LineResponse.of(origin, stations);
     }
 
     public void deleteLineById(final Long id) {

@@ -43,8 +43,8 @@ public class LineController {
             @PathVariable Long lineId,
             @RequestBody LineRequest lineRequest
     ) {
-        LineResponse line = lineService.updateById(lineId, lineRequest);
-        return ResponseEntity.ok().body(line);
+        LineResponse body = lineService.updateById(lineId, lineRequest);
+        return ResponseEntity.ok().body(body);
     }
 
     @DeleteMapping("{lineId}")

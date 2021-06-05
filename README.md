@@ -118,6 +118,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - **상행역 부터 하행역 순으로 정렬되어야 함**
 ---
 - [x] service > getStations 을 Line Entity에 위임하기
+- [x] 노선 정보 업데이트시 역 목록 보이도록 변경
 ## 노선 생성 시 두 종점역 추가하기
 
 - 인수 테스트와 DTO 등 수정이 필요함

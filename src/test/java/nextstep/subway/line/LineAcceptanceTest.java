@@ -137,7 +137,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -145,13 +144,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록("1호선", "빨강");
+        ExtractableResponse<Response> createResponse =
+                지하철_노선_등록("2호선", "ga-100", upStationId, downStationId, 100);
         // when
         // 지하철_노선_수정_요청
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(createResponse);
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<Long> resultLineIds = response.body().jsonPath().getObject(".", LineResponse.class).getStations().stream()
+                .map(Station::getId).collect(Collectors.toList());
+        assertThat(resultLineIds).contains(upStationId2, downStationId2);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -204,9 +207,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> createResponse) {
         String linesId = createResponse.header("Location").split("/")[2];
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "10호선");
         params.put("color", "보라색");
+        params.put("upStationId", upStationId2);
+        params.put("downStationId", downStationId2);
+        params.put("distance", 100);
         return given()
                 .log().all()
                 .when()
