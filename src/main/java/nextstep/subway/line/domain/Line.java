@@ -1,9 +1,13 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
@@ -55,7 +59,13 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Sections getSections() {
+    private Sections getSections() {
         return sections;
+    }
+
+    public List<Station> getStations() {
+        return this.sections.getValues().stream()
+                .map(a -> Stream.of(a.getDownStation(), a.getUpStation()))
+                .flatMap(Stream::distinct).collect(Collectors.toList());
     }
 }

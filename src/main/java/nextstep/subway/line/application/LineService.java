@@ -38,9 +38,7 @@ public class LineService {
         Line id = lineRepository.findById(lineId)
                 .orElseThrow(() -> new DataIntegrityViolationException("Not Found lineId" + lineId));
 
-        List<Station> stations = id.getSections().getValues().stream()
-                .map(a -> Stream.of(a.getDownStation(), a.getUpStation()))
-                .flatMap(Stream::distinct).collect(Collectors.toList());
+        List<Station> stations = id.getStations();
 
         return LineResponse.of(id, stations);
     }
@@ -56,9 +54,7 @@ public class LineService {
 
         Line persistLine = lineRepository.save(line);
 
-        List<Station> stations = persistLine.getSections().getValues().stream()
-                .map(a -> Stream.of(a.getDownStation(), a.getUpStation()))
-                .flatMap(Stream::distinct).collect(Collectors.toList());
+        List<Station> stations = persistLine.getStations();
 
         return LineResponse.of(persistLine, stations);
     }
