@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.section.application.SectionCommandService;
 import nextstep.subway.section.application.SectionQueryService;
+import nextstep.subway.section.domain.Section;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,15 +37,24 @@ public class LineCommandService {
         return persistLine.getId();
     }
 
-    public void updateLine(Long lineId, Line updateLine) {
-        Line line = lineQueryService.findLineById(lineId);
+    public void update(Long lineId, Line updateLine) {
+        Line line = lineQueryService.findById(lineId);
         line.update(updateLine);
 
         lineRepository.save(line);
     }
 
     public void deleteById(Long lineId) {
-        Line line = lineQueryService.findLineById(lineId);
+        Line line = lineQueryService.findById(lineId);
         lineRepository.delete(line);
+    }
+
+    public void addSection(Long lineId, Long sectionId) {
+
+        Line persistLine = lineQueryService.findById(lineId);
+        Section section = sectionQueryService.findById(sectionId);
+
+        persistLine.addSection(section);
+        lineRepository.save(persistLine);
     }
 }

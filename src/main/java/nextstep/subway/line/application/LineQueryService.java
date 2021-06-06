@@ -27,7 +27,7 @@ public class LineQueryService {
                              .collect(toList());
     }
 
-    public Line findLineById(Long lineId) {
+    public Line findById(Long lineId) {
         return lineRepository.findById(lineId)
                              .orElseThrow(() -> new NotFoundLineException(lineId));
     }

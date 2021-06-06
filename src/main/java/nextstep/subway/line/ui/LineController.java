@@ -38,7 +38,7 @@ public class LineController {
                                               request.getDistance());
 
         return ResponseEntity.created(URI.create("/lines/" + lineId))
-                             .body(LineResponse.of(lineQueryService.findLineById(lineId)));
+                             .body(LineResponse.of(lineQueryService.findById(lineId)));
     }
 
     @GetMapping
@@ -49,13 +49,13 @@ public class LineController {
 
     @GetMapping(value = "/{lineId}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long lineId) {
-        return ResponseEntity.ok(LineResponse.of(lineQueryService.findLineById(lineId)));
+        return ResponseEntity.ok(LineResponse.of(lineQueryService.findById(lineId)));
     }
 
     @PutMapping(value = "/{lineId}")
     public ResponseEntity<Void> updateLine(@PathVariable Long lineId,
                                            @RequestBody LineRequest lineRequest) {
-        lineCommandService.updateLine(lineId, lineRequest.toLine());
+        lineCommandService.update(lineId, lineRequest.toLine());
         return ResponseEntity.ok().build();
     }
 
