@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SectionRepositoryTest {
 
     @Autowired
+    private LineRepository lineRepository;
+
+    @Autowired
     private StationRepository stationRepository;
 
     @Autowired
@@ -28,8 +33,7 @@ class SectionRepositoryTest {
         Station persistDownStation = saveStation("광교");
 
         // when
-        Section section = new Section(persistUpStation, persistDownStation, 45);
-        Section persistSection = sectionRepository.save(section);
+        Section persistSection = saveSection(persistUpStation, persistDownStation, 45);
         Section actual = sectionRepository.findById(persistSection.getId()).orElseThrow(IllegalArgumentException::new);
 
         // then
@@ -59,6 +63,23 @@ class SectionRepositoryTest {
         // then
         List<Section> expected = sectionRepository.findAll();
         assertThat(expected).isEmpty();
+    }
+
+    @DisplayName("구간을 노선에 연결")
+    @Test
+    void toLine() {
+        // given
+        Line persistLine = lineRepository.save(new Line("신분당선", "red"));
+        Station persistUpStation = saveStation("강남");
+        Station persistDownStation = saveStation("광교");
+        Section persistSection = saveSection(persistUpStation, persistDownStation, 45);
+
+        // when
+        persistSection.toLine(persistLine);
+
+        // then
+        assertThat(persistLine.contains(persistSection)).isTrue();
+        assertThat(persistLine.getStations().size()).isEqualTo(2);
     }
 
     private Station saveStation(String name) {
