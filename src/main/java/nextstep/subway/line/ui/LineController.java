@@ -7,11 +7,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import nextstep.subway.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -49,13 +51,22 @@ public class LineController {
         return ResponseEntity.ok(lineResponses);
     }
 
-    private List<LineResponse> findLines() {
-        return lineService.findLines();
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> searchLine(@PathVariable final Long id) {
+        final LineResponse lineResponse = lineService.findLine(id);
+
+        return ResponseEntity.ok(lineResponse);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<LineResponse> handleIllegalArgsException(final DataIntegrityViolationException e) {
         return ResponseEntity.badRequest()
+            .build();
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<LineResponse> handleNotFoundException(final NotFoundException e) {
+        return ResponseEntity.notFound()
             .build();
     }
 }
