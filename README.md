@@ -78,4 +78,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 -[x] 노선 조회 시 응답 결과에 역 목록 추가하기
     -[x] 테스트 코드 변경
     -[x] 프로덕션 코드 변경
-    -[ ] 성능 최적화
+    -[x] N+1 문제 해결
