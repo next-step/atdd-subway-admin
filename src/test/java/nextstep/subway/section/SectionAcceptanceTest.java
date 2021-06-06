@@ -59,7 +59,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionTest03() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
+            dynamicTest("공항철도 노선 생성(서울역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
             dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL.getId(), GONGDEOK.getId()))
         );
     }
@@ -68,7 +68,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionFailBecauseOfDistance01() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
+            dynamicTest("공항철도 노선 생성(서울역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
             dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestFail(SEOUL.getId(), GONGDEOK.getId(), 200))
         );
     }
@@ -77,25 +77,35 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionFailBecauseOfDistance02() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
+            dynamicTest("공항철도 노선 생성(서울역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
             dynamicTest("공덕역-홍대입구역 구간 추가", () -> addSectionRequestFail(GONGDEOK.getId(), HONGIK_UNIV.getId(), 200))
         );
     }
 
     @DisplayName("추가하려는 상/하행역이 기존 노선에 이미 등록되어 있다면 추가할 수 없다.")
     @TestFactory
-    Stream<DynamicTest> addSectionFailTest02() {
+    Stream<DynamicTest> addSectionFailBecauseOfDuplicate01() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL.getId(), GONGDEOK.getId())),
+            dynamicTest("홍대입구역-서울역 구간 추가", () -> addSectionRequestFail(HONGIK_UNIV.getId(), SEOUL.getId(), 100))
+        );
+    }
+
+    @DisplayName("추가하려는 상/하행역이 기존 노선에 이미 등록되어 있다면 추가할 수 없다.")
+    @TestFactory
+    Stream<DynamicTest> addSectionFailBecauseOfDuplicate02() {
+        return Stream.of(
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
             dynamicTest("홍대입구역-공덕역 구간 추가", () -> addSectionRequestFail(HONGIK_UNIV.getId(), GONGDEOK.getId(), 100))
         );
     }
 
     @DisplayName("추가하려는 상/하행역 중 하나라도 기존 노선에 포함되어 있지 않다면 추가할 수 없다.")
     @TestFactory
-    Stream<DynamicTest> addSectionFailTest03() {
+    Stream<DynamicTest> addSectionFailTest01() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
             dynamicTest("김포공항-계양역 구간 추가", () -> addSectionRequestFail(GIMPO_AIRPORT.getId(), GYEYANG.getId(), 100))
         );
     }

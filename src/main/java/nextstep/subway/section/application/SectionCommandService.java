@@ -54,6 +54,8 @@ public class SectionCommandService {
         Station upStation = stationQueryService.findById(upStationId);
         Station downStation = stationQueryService.findById(downStationId);
 
+        verify(sections, upStation, downStation);
+
         boolean isUpdate = false;
 
         for (Section section : sections) {
@@ -97,5 +99,25 @@ public class SectionCommandService {
 
         newSections.forEach(sectionRepository::save);
         return new LineSections(newSections);
+    }
+
+    private void verify(List<Section> sections, Station upStation, Station downStation) {
+
+        if (sections.isEmpty()) {
+            return;
+        }
+
+        if (sections.size() == 1) {
+            Section section = sections.get(0);
+            if (section.hasStation(upStation) && section.hasStation(downStation)) {
+                throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+            }
+        }
+
+        if (sections.stream()
+                    .filter(section -> section.hasStation(upStation) || section.hasStation(downStation))
+                    .count() >= 2) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+        }
     }
 }
