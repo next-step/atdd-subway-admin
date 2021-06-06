@@ -1,17 +1,18 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.utils.RestAssuredUtils.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.http.MediaType;
-
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.domain.Line;
 
 public class LineAcceptanceFixture {
+
+    public static final String PATH = "/lines";
 
     enum LineFixture {
         FIRST(new Line(1L, "1호선", "bg-blue-600")),
@@ -45,21 +46,11 @@ public class LineAcceptanceFixture {
         params.put("name", lineFixture.getName());
         params.put("color", lineFixture.getColor());
 
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post(path)
-            .then().log().all()
-            .extract();
+        return post(PATH, params);
     }
 
     static ExtractableResponse<Response> 지하철_노션_조회_요청(final String path) {
-        return RestAssured.given().log().all()
-            .when()
-            .get(path)
-            .then().log().all()
-            .extract();
+        return get(path);
     }
 
     static ExtractableResponse<Response> 지하철_노선_수정_요청(final String path, final LineFixture lineFixture) {
@@ -67,22 +58,11 @@ public class LineAcceptanceFixture {
         params.put("name", lineFixture.getName());
         params.put("color", lineFixture.getColor());
 
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .put(path)
-            .then().log().all()
-            .extract();
+        return put(path, params);
     }
 
     static ExtractableResponse<Response> 지하철_노선_제거_요청(final String path) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .delete(path)
-            .then().log().all()
-            .extract();
+        return delete(path);
     }
 
     static Line toLine(final JsonPath jsonPath) {

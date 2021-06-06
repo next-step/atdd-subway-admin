@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceFixture.LineFixture.*;
+import static nextstep.subway.line.LineAcceptanceFixture.PATH;
 import static nextstep.subway.line.LineAcceptanceFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,8 +21,6 @@ import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    public static final String PATH = "/lines";
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
