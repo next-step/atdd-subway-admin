@@ -36,12 +36,12 @@ public class LineController {
 	}
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity showLines() {
+	public ResponseEntity findLines() {
 		return ResponseEntity.ok().body(lineService.findAllLines());
 	}
 
 	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity showLine(@PathVariable Long id) {
+	public ResponseEntity findLine(@PathVariable Long id) {
 		return ResponseEntity.ok().body(lineService.findLine(id));
 	}
 
