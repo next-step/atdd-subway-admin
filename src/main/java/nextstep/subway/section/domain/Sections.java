@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private List<Section> sections = new ArrayList<>();
 
     public Sections() { }
