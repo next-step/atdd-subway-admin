@@ -19,7 +19,7 @@ public class StationQueryService {
         this.stationRepository = stationRepository;
     }
 
-    public Station findStationById(Long stationId) {
+    public Station findById(Long stationId) {
         return stationRepository.findById(stationId)
                                 .orElseThrow(EntityNotFoundException::new);
     }
