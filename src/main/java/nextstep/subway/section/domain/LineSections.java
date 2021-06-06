@@ -80,32 +80,7 @@ public class LineSections implements Serializable {
         }
     }
 
-    public void update(Station upStation, Station downStation, int distance) {
-
-        if (addNewSection(upStation, downStation, distance)) {
-            return;
-        }
-
-        addNewSectionAndUpdate(upStation, downStation, distance);
-    }
-
-    private boolean addNewSection(Station upStation, Station downStation, int newDistance) {
-
-        Optional<Section> maybeSection =
-            sections.stream()
-                    .filter(section -> section.equalsUpStation(downStation)
-                        || section.equalsDownStation(upStation))
-                    .findAny();
-
-        if (!maybeSection.isPresent()) {
-            return false;
-        }
-
-        sections.add(new Section(upStation, downStation, new Distance(newDistance)));
-        return true;
-    }
-
-    private void addNewSectionAndUpdate(Station upStation, Station downStation, int newDistance) {
+    public Optional<Section> updateSection(Station upStation, Station downStation, int distance) {
 
         Optional<Section> maybeSection =
             sections.stream()
@@ -114,19 +89,18 @@ public class LineSections implements Serializable {
                     .findAny();
 
         if (!maybeSection.isPresent()) {
-            return;
+            return Optional.empty();
         }
 
-        sections.add(new Section(upStation, downStation, newDistance));
-
         Section section = maybeSection.get();
-        section.minusDistance(newDistance);
+        section.minusDistance(distance);
 
         if (section.equalsUpStation(upStation)) {
             section.updateUpStation(downStation);
-            return;
+            return Optional.of(section);
         }
 
         section.updateDownStation(upStation);
+        return Optional.of(section);
     }
 }

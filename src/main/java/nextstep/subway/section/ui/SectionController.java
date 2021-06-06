@@ -3,10 +3,10 @@ package nextstep.subway.section.ui;
 import java.net.URI;
 import nextstep.subway.line.application.LineCommandService;
 import nextstep.subway.line.application.LineQueryService;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.application.SectionCommandService;
 import nextstep.subway.section.domain.LineSections;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionsResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,8 +31,8 @@ public class SectionController {
     }
 
     @PostMapping("/sections")
-    public ResponseEntity<LineResponse> addSection(@PathVariable Long lineId,
-                                                   @RequestBody SectionRequest request) {
+    public ResponseEntity<SectionsResponse> addSection(@PathVariable Long lineId,
+                                                       @RequestBody SectionRequest request) {
 
         LineSections sections = lineQueryService.findById(lineId).getSections();
         lineCommandService.updateSections(lineId,
@@ -41,7 +41,9 @@ public class SectionController {
                                                                        request.getDownStationId(),
                                                                        request.getDistance()));
 
-        return ResponseEntity.created(URI.create("/lines/" + lineId))
-                             .body(LineResponse.of(lineQueryService.findById(lineId)));
+        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections"))
+                             .body(SectionsResponse.of(lineId,
+                                                       lineQueryService.findById(lineId)
+                                                                       .getSortedSections()));
     }
 }

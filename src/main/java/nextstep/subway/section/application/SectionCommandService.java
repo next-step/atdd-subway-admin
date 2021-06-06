@@ -1,6 +1,7 @@
 package nextstep.subway.section.application;
 
 import java.util.Optional;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.LineSections;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
@@ -52,8 +53,11 @@ public class SectionCommandService {
         sections.verifyStationCycle(upStation, downStation);
         sections.verifyNotUpdatable(upStation, downStation);
 
-        sections.update(upStation, downStation, distance);
-        sections.getSections().forEach(sectionRepository::save);
+        Optional<Section> updatedSection = sections.updateSection(upStation, downStation, distance);
+        updatedSection.ifPresent(sectionRepository::save);
+
+        Section newSection = sectionRepository.save(new Section(upStation, downStation, new Distance(distance)));
+        sections.add(newSection);
 
         return sections;
     }

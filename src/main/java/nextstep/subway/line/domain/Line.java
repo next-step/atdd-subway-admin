@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.LineSections;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SortedSection;
 import nextstep.subway.station.domain.Stations;
 
 @Entity
@@ -71,5 +72,9 @@ public class Line extends BaseEntity implements Serializable {
 
     public Stations getSortedStations() {
         return lineSections.toStations();
+    }
+
+    public SortedSection getSortedSections() {
+        return new SortedSection(lineSections);
     }
 }

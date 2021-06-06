@@ -3,6 +3,8 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.LineTestData;
@@ -80,10 +82,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
         return Stream.of(
             dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
             dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 50)),
-            dynamicTest("홍대입구역-DMC역 구간 추가", () -> addSectionRequestSuccess(HONGIK_UNIV, DMC, 100, 4)),
-            dynamicTest("DMC역-마곡나루 구간 추가", () -> addSectionRequestSuccess(DMC, MAGONGNARU, 150, 5)),
-            dynamicTest("마곡나루역-김포공항역 구간 추가", () -> addSectionRequestSuccess(MAGONGNARU, GIMPO_AIRPORT, 200,6)),
-            dynamicTest("김포공항역-계양역 구간 추가", () -> addSectionRequestSuccess(GIMPO_AIRPORT, GYEYANG, 250, 7))
+            dynamicTest("홍대입구역-DMC역 구간 추가", () -> addSectionRequestSuccess(HONGIK_UNIV, DMC, 100)),
+            dynamicTest("DMC역-마곡나루 구간 추가", () -> addSectionRequestSuccess(DMC, MAGONGNARU, 150)),
+            dynamicTest("마곡나루역-김포공항역 구간 추가", () -> addSectionRequestSuccess(MAGONGNARU, GIMPO_AIRPORT, 200)),
+            dynamicTest("김포공항역-계양역 구간 추가", () -> addSectionRequestSuccess(GIMPO_AIRPORT, GYEYANG, 250))
         );
     }
 
@@ -166,16 +168,18 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void addSectionRequestSuccess(StationConstants upStation, StationConstants downStation, int distance) {
-        addSectionRequestSuccess(upStation, downStation, distance, 3);
-    }
-
-    private void addSectionRequestSuccess(StationConstants upStation, StationConstants downStation, int distance, int stationCount) {
         ExtractableResponse<Response> response = addSectionRequest(upStation.getId(),
                                                                    downStation.getId(),
                                                                    distance);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.body().jsonPath().getList("stations")).hasSize(stationCount);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("upStationName", upStation.getName());
+        map.put("downStationName", downStation.getName());
+        map.put("distance", distance);
+
+        assertThat(response.body().jsonPath().getList("sections")).contains(map);
     }
 
     private void addSectionRequestFail(StationConstants upStation, StationConstants downStation, int distance) {

@@ -107,6 +107,10 @@ public class Section extends BaseEntity implements Serializable {
         distance = distance.minus(value);
     }
 
+    public int getDistance() {
+        return distance.getValue();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
