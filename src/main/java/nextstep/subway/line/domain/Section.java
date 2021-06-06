@@ -64,7 +64,7 @@ public class Section {
 		return this.upStation.equals(otherSection.downStation);
 	}
 
-	Stream<Station> stations() {
+	Stream<Station> getStreamOfStations() {
 		return Stream.of(upStation, downStation);
 	}
 }

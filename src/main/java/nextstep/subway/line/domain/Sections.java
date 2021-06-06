@@ -43,7 +43,7 @@ public class Sections {
 
 	List<Station> orderedStations() {
 		return orderedSections()
-			.flatMap(Section::stations)
+			.flatMap(Section::getStreamOfStations)
 			.distinct()
 			.collect(toList());
 	}
