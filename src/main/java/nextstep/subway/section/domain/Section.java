@@ -9,6 +9,8 @@ import javax.persistence.*;
 @Entity
 public class Section extends BaseEntity {
 
+    private static final int DISTANCE_NONE = 0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,6 +43,13 @@ public class Section extends BaseEntity {
         if (!line.contains(this)) {
             line.add(this);
         }
+    }
+
+    public void modifyDistance(int distance) {
+        if (distance <= DISTANCE_NONE) {
+            throw new IllegalArgumentException("거리 값은 " + DISTANCE_NONE + " 을 초과하는 값이어야 합니다.");
+        }
+        this.distance = distance;
     }
 
     public Long getId() {
