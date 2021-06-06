@@ -17,13 +17,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 
 /**
  * LineService 클래스 기능 검증 테스트
@@ -31,18 +35,29 @@ import org.springframework.dao.DuplicateKeyException;
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
     @Mock
-    private LineRepository repository;
+    private LineRepository lineRepository;
+
+    @Mock
+    private SectionRepository sectionRepository;
+
+    @Mock
+    private StationRepository stationRepository;
 
     @InjectMocks
     private LineService service;
 
     @Test
-    @DisplayName("신규노선 저장")
+    @DisplayName("구간이 포함된 신규노선 저장")
     void save_line() {
         // given
-        LineRequest lineRequest = new LineRequest("1호선", "blue");
-        Line line = lineRequest.toLine();
-        given(repository.save(any(Line.class))).willReturn(line);
+        Station upStation = new Station("강남역");
+        Station downStation = new Station("역삼역");
+        Section section = new Section(upStation, downStation, 10);
+        LineRequest lineRequest = new LineRequest("1호선", "blue", 1L, 2L, 10);
+        Line line = lineRequest.toLine().addSection(section);
+        given(stationRepository.findById(1L)).willReturn(Optional.of(upStation));
+        given(stationRepository.findById(2L)).willReturn(Optional.of(downStation));
+        given(lineRepository.save(any(Line.class))).willReturn(line);
 
         // when
         LineResponse lineResponse = service.saveLine(lineRequest);
@@ -50,7 +65,8 @@ class LineServiceTest {
         // then
         assertAll(
                 () -> assertThat(lineResponse.getName()).isEqualTo(line.getName()),
-                () -> assertThat(lineResponse.getColor()).isEqualTo(line.getColor())
+                () -> assertThat(lineResponse.getColor()).isEqualTo(line.getColor()),
+                () -> assertThat(lineResponse.getStations().size()).isEqualTo(2)
         );
     }
 
@@ -58,14 +74,17 @@ class LineServiceTest {
     @DisplayName("모든 노선 조회")
     void find_all_lines() {
         // given
-        List<Line> lines = Arrays.asList(new Line("1호선", "blue"), new Line("2호선", "green"));
-        List<String> lineNames = Arrays.asList("1호선", "2호선");
-        given(repository.findAll()).willReturn(lines);
+        Section blueSection = new Section(new Station("사당역"), new Station("서울역"), 10);
+        Section greenSection = new Section(new Station("강남역"), new Station("역삼역"), 10);
+        List<Line> lines = Arrays.asList(new Line("4호선", "blue").addSection(blueSection),
+                new Line("2호선", "green").addSection(greenSection));
+        given(lineRepository.findAll()).willReturn(lines);
 
         // when
         List<LineResponse> lineResponses = service.findAllLines();
 
         // then
+        List<String> lineNames = Arrays.asList("4호선", "2호선");
         assertThat(lineResponses).extracting("name").containsAll(lineNames);
     }
 
@@ -73,8 +92,9 @@ class LineServiceTest {
     @DisplayName("ID로 노선 찾기")
     void find_line_by_id() {
         // given
-        Line line = new Line("1호선", "blue");
-        given(repository.findById(1L)).willReturn(Optional.of(line));
+        Section greenSection = new Section(new Station("강남역"), new Station("역삼역"), 10);
+        Line line = new Line("4호선", "green").addSection(greenSection);
+        given(lineRepository.findById(1L)).willReturn(Optional.of(line));
 
         // when
         LineResponse lineResponse = service.findLineById(1L);
@@ -87,9 +107,10 @@ class LineServiceTest {
     @DisplayName("노선 정보 수정")
     void line_info_update() {
         // given
-        Line line = new Line("1호선", "blue");
-        LineRequest updateLineRequest = new LineRequest("2호선", "green");
-        given(repository.findById(1L)).willReturn(Optional.of(line));
+        Section greenSection = new Section(new Station("강남역"), new Station("역삼역"), 10);
+        Line line = new Line("2호선", "green").addSection(greenSection);
+        LineRequest updateLineRequest = new LineRequest("2호선", "green", 3L, 4L, 4);
+        given(lineRepository.findById(1L)).willReturn(Optional.of(line));
 
         // when
         service.updateLine(1L, updateLineRequest);
@@ -103,23 +124,28 @@ class LineServiceTest {
     @DisplayName("ID기준 노선 삭제")
     void delete_line_by_id() {
         // given
-        Line line = new Line("1호선", "blue");
-        given(repository.findById(1L)).willReturn(Optional.of(line));
+        Section greenSection = new Section(new Station("강남역"), new Station("역삼역"), 10);
+        Line line = new Line("2호선", "green").addSection(greenSection);
+        given(lineRepository.findById(1L)).willReturn(Optional.of(line));
 
         // when
         service.deleteLineById(1L);
 
         // then
-        verify(repository).delete(line);
+        verify(lineRepository).delete(line);
     }
 
     @Test
     @DisplayName("중복등록 예외처리")
     void duplicate_key_exception() {
         // given
-        LineRequest lineRequest = new LineRequest("1호선", "blue");
-        Line line = lineRequest.toLine();
-        given(repository.save(any(Line.class))).willThrow(DataIntegrityViolationException.class);
+        Station upStation = new Station("강남역");
+        Station downStation = new Station("역삼역");
+        Section section = new Section(upStation, downStation, 10);
+        LineRequest lineRequest = new LineRequest("1호선", "blue", 1L, 2L, 3);
+        given(stationRepository.findById(1L)).willReturn(Optional.of(upStation));
+        given(stationRepository.findById(2L)).willReturn(Optional.of(downStation));
+        given(lineRepository.save(any(Line.class))).willThrow(DataIntegrityViolationException.class);
 
         // when
         assertThatThrownBy(() -> service.saveLine(lineRequest))
@@ -132,7 +158,7 @@ class LineServiceTest {
     void findLine_by_id_exception() {
         // given
         Line line = new Line("1호선", "blue");
-        given(repository.findById(1L)).willReturn(Optional.empty());
+        given(lineRepository.findById(1L)).willReturn(Optional.empty());
 
         // then
         assertThatThrownBy(() -> service.findLineById(1L))
@@ -146,7 +172,7 @@ class LineServiceTest {
         // given
         Line line = new Line("1호선", "blue");
         LineRequest updateLineRequest = new LineRequest("2호선", "green");
-        given(repository.findById(1L)).willReturn(Optional.empty());
+        given(lineRepository.findById(1L)).willReturn(Optional.empty());
 
         // when
         assertThatThrownBy(() -> service.updateLine(1L, updateLineRequest))
@@ -159,8 +185,8 @@ class LineServiceTest {
     void update_line_info_by_name_exception() {
         // given
         Line line = new Line("1호선", "blue");
-        given(repository.findById(anyLong())).willReturn(Optional.of(line));
-        given(repository.findByName(anyString())).willReturn(Optional.of(line));
+        given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
+        given(lineRepository.findByName(anyString())).willReturn(Optional.of(line));
 
         // when
         assertThatThrownBy(() -> service.updateLine(1L, new LineRequest("1호선", "green")))
@@ -173,7 +199,7 @@ class LineServiceTest {
     void delete_line_by_id_exception() {
         // given
         Line line = new Line("1호선", "blue");
-        given(repository.findById(1L)).willReturn(Optional.empty());
+        given(lineRepository.findById(1L)).willReturn(Optional.empty());
 
         // then
         assertThatThrownBy(() -> service.deleteLineById(1L))
