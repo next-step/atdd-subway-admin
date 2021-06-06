@@ -1,16 +1,16 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.type.LineColor;
-import org.assertj.core.api.Assertions;
+import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.line.LineAcceptanceTestHelper.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -24,20 +24,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode())
+            .isEqualTo(HttpStatus.CREATED.value());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void createLineWithDuplicate() {
         // given
         // 지하철_노선_등록되어_있음
+        LineRequest request = makeLineRequest("신분당선", LineColor.RED);
+        send_createLine_with_success_check(request);
 
         // when
         // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = send_createLine(request);
 
         // then
         // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode())
+            .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
