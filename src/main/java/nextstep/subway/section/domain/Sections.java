@@ -6,6 +6,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,7 @@ public class Sections implements Iterable<Section> {
     private static final int FIRST_INDEX = 0;
 
     @OneToMany(mappedBy = "line")
-    private final List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new LinkedList<>();
 
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
