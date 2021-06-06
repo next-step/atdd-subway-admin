@@ -27,10 +27,10 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, Long upstationId, Long downStationId, int distance) {
+    public Line(String name, String color, Station upstation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        sections.add(new Section(this, upstationId, downStationId, distance));
+        sections.add(new Section(this, upstation, downStation, distance));
     }
 
     public void update(Line line) {
@@ -51,6 +51,13 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
+        Station upStation = findUpStation(sections);
+
         return new ArrayList<>();
+    }
+
+    private Station findUpStation(List<Section> sections) {
+
+
     }
 }
