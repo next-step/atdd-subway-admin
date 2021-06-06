@@ -15,8 +15,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -53,47 +53,6 @@ public class Line extends BaseEntity {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Station> stations = findStationInSections();
-        return new ArrayList<>(stations);
-    }
-
-    private List<Station> findStationInSections() {
-        List<Station> stations = new ArrayList<>();
-        Section firstSection = findFirstSection();
-        stations.add(firstSection.getUpStation());
-        stations.addAll(findOthersStations(firstSection.getDownStation()));
-        return stations;
-    }
-
-    private List<Station> findOthersStations(Station downStation) {
-        List<Station> stations = new ArrayList<>();
-        stations.add(downStation);
-        Section nextSection = findSectionInUpStation(downStation);
-        while (!Objects.isNull(nextSection)) {
-            stations.add(nextSection.getDownStation());
-            nextSection = findSectionInUpStation(nextSection.getDownStation());
-        }
-        return new ArrayList<>(stations);
-    }
-
-    private Section findFirstSection() {
-        return sections.stream()
-                .filter(section -> Objects.isNull(findSectionInDownStation(section.getUpStation())))
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
-    }
-
-    private Section findSectionInDownStation(Station upStation) {
-        return sections.stream()
-                .filter(section -> section.getDownStation() == upStation)
-                .findFirst()
-                .orElse(null);
-    }
-
-    private Section findSectionInUpStation(Station downStation) {
-        return sections.stream()
-                .filter(section -> section.getUpStation() == downStation)
-                .findFirst()
-                .orElse(null);
+        return new ArrayList<>(sections.findStationInSections());
     }
 }
