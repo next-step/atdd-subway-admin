@@ -63,7 +63,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         * given: 지하철 노선이 등록되어 있다.
         * when: 지하철 노선을 생성 요청 한다.
         * then: 지하철 노선 생성이 실패 한다.
-    * [ ] Scenario: 지하철 노선 목록 조회
+    * [x] Scenario: 지하철 노선 목록 조회
         * given: 지하철 노선 분당선, 2호선이 등록되어 있다.
         * when: 지하철 노선 목록 조회를 요청 한다.
         * then: 지하철 노선 목록이 응답된다.
