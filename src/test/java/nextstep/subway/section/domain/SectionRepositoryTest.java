@@ -6,12 +6,15 @@ import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 @DataJpaTest
 class SectionRepositoryTest {
@@ -101,6 +104,22 @@ class SectionRepositoryTest {
         assertThat(sections.getStations().size()).isEqualTo(2);
         assertThat(firstStop).isSameAs(persistDownStation);
         assertThat(lastStop).isSameAs(persistUpStation);
+    }
+
+    @DisplayName("구간 길이변경 - 유효하지 않은 길이")
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0})
+    void modifyDistance_invalid(int param) {
+        // given
+        Station persistUpStation = saveStation("강남");
+        Station persistDownStation = saveStation("양재");
+
+        Section persistSection = saveSection(persistUpStation, persistDownStation, 10);
+
+        // when then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> persistSection.modifyDistance(param))
+                .withMessageMatching("거리 값은 0 을 초과하는 값이어야 합니다.");
     }
 
     private Station saveStation(String name) {
