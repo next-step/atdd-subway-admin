@@ -63,7 +63,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 * [x] 지하철 노션을 등록한다.
 * [x] 등록된 지하철 노션을 등록한다.
-* [ ] 지하철 노선 목록을 조회한다.
+* [x] 지하철 노선 목록을 조회한다.
 * [ ] 지하철 노선을 조회한다.
 * [ ] 지하철 노션을 수정한다.
 * [ ] 지하철 노션을 제거한다.
