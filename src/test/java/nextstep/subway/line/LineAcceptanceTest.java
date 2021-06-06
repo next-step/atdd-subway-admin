@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -53,13 +54,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
+        send_createLine_with_success_check(makeLineRequest("신분당선", LineColor.RED));
+        send_createLine_with_success_check(makeLineRequest("2호선", LineColor.RED));
 
         // when
         // 지하철_노선_목록_조회_요청
-
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().get("/lines")
+                .then().log().all().extract();
+        
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 조회한다.")
