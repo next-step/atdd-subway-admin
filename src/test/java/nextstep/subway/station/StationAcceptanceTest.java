@@ -103,6 +103,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 역 삭제 시도 시 실패.")
     void delete_failed_exception() {
         // given
         StationResponse 강남역 = 지하철_역_등록되어_있음("강남역");

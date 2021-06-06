@@ -1,5 +1,9 @@
 package nextstep.subway.section.domain;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -11,10 +15,6 @@ import javax.persistence.ManyToOne;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Entity
 public class Section extends BaseEntity {
@@ -61,9 +61,16 @@ public class Section extends BaseEntity {
         return upStation;
     }
 
-
     public Station getDownStation() {
         return downStation;
+    }
+
+    public String getUpStationName() {
+        return this.upStation.getName();
+    }
+
+    public String getDownStationName() {
+        return this.downStation.getName();
     }
 
     public int getDistance() {

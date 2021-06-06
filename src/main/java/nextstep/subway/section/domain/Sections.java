@@ -1,9 +1,11 @@
 package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import nextstep.subway.station.domain.Station;
@@ -17,39 +19,36 @@ public class Sections {
     }
 
     public List<Station> getSortedStations() {
-        return getSortedStationFromUpToDown(getBeginSection());
+        Section beginSection = getBeginSection();
+        Map<String, Section> sections = getSectionsByUpStationName();
+        String nextStationName = beginSection.getDownStationName();
+        Set<Station> stations = new LinkedHashSet<>(beginSection.getStations());
+        while (sections.containsKey(nextStationName)) {
+            nextStationName = addNextStation(stations, sections.get(nextStationName));
+        }
+        return new ArrayList<>(stations);
     }
 
     private Section getBeginSection() {
         return this.sections.stream()
-                .filter(section -> !getSectionFilters().containsKey(section.getUpStation().getName()))
+                .filter(section -> !getSectionsByDownStationName().containsKey(section.getUpStationName()))
                 .findFirst().orElseThrow(() -> new NoSuchElementException("시작 구간을 찾을 수 없습니다."));
     }
 
-    private List<Station> getSortedStationFromUpToDown(Section beginSection) {
-        List<Station> resultStations = new ArrayList<>();
-        resultStations.addAll(beginSection.getStations());
-        makeSortedStations(resultStations, getSectionsByUpStation(), beginSection.getDownStation().getName());
-        return resultStations;
+    private String addNextStation(Set<Station> stations, Section nextSections) {
+        Station nextStation = nextSections.getDownStation();
+        stations.add(nextStation);
+        return nextStation.getName();
     }
 
-    private void makeSortedStations(List<Station> resultStations, Map<String, Section> sections, String nextKey) {
-        String nextStationName = nextKey;
-        while (sections.containsKey(nextStationName)) {
-            Station nextStation = sections.get(nextStationName).getDownStation();
-            resultStations.add(nextStation);
-            nextStationName = nextStation.getName();
-        }
-    }
-
-    private Map<String, Section> getSectionsByUpStation() {
+    private Map<String, Section> getSectionsByUpStationName() {
         return this.sections.stream()
-                .collect(Collectors.toMap(section -> section.getUpStation().getName(), section -> section));
+                .collect(Collectors.toMap(section -> section.getUpStationName(), section -> section));
     }
 
-    private Map<String, Section> getSectionFilters() {
+    private Map<String, Section> getSectionsByDownStationName() {
         return this.sections.stream()
-                .collect(Collectors.toMap(section -> section.getDownStation().getName(), section -> section));
+                .collect(Collectors.toMap(section -> section.getDownStationName(), section -> section));
     }
 
     private void validateSectionsSize(List<Section> sections) {

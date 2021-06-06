@@ -1,7 +1,9 @@
 package nextstep.subway.section.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,5 +45,14 @@ public class SectionsTest {
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
         assertThat(Arrays.equals(resultStationResponses.toArray(), targetStationResponses.toArray())).isTrue();
+    }
+
+    @Test
+    @DisplayName("일급 컬렉션 초기화 유효성 검증")
+    void sections_is_empty_exception() {
+        // then
+        assertThatThrownBy(() -> new Sections(new ArrayList<>()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간 목록은 하나 이상의 구간으로 구성되어야 합니다.");
     }
 }
