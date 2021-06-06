@@ -26,9 +26,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> 신분당선 = new HashMap<>();
-        신분당선.put("color", "bg-red-600");
-        신분당선.put("name", "신분당선");
+        Map<String, String> 신분당선 = createNewLine("신분당선",  "bg-red-600");
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> 응답 = RestAssured.given().log().all()
@@ -50,9 +48,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineDuplicate() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = new HashMap<>();
-        신분당선.put("color", "bg-red-600");
-        신분당선.put("name", "신분당선");
+        Map<String, String> 신분당선 = createNewLine("신분당선",  "bg-red-600");
         RestAssured.given().log().all()
                 .body(신분당선)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -83,9 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = new HashMap<>();
-        신분당선.put("name", "신분당선");
-        신분당선.put("color", "bg-red-600");
+        Map<String, String> 신분당선 = createNewLine("신분당선", "bg-red-600");
         ExtractableResponse<Response> 신분당선_생성_응답 = RestAssured.given().log().all()
                 .body(신분당선)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -94,9 +88,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        Map<String, String> 이호선 = new HashMap<>();
-        이호선.put("name", "2호선");
-        이호선.put("color", "bg-green-100");
+        Map<String, String> 이호선 = createNewLine("2호선", "bg-green-100");
         ExtractableResponse<Response> 이호선_생성_응답 = RestAssured.given().log().all()
                 .body(이호선)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -131,9 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = new HashMap<>();
-        신분당선.put("name", "신분당선");
-        신분당선.put("color", "bg-red-600");
+        Map<String, String> 신분당선 = createNewLine("신분당선", "bg-red-600");
         ExtractableResponse<Response> 신분당선_생성_응답 = RestAssured.given().log().all()
                 .body(신분당선)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -161,9 +151,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = new HashMap<>();
-        신분당선.put("name", "신분당선");
-        신분당선.put("color", "bg-red-600");
+        Map<String, String> 신분당선 = createNewLine("신분당선", "bg-red-600");
         ExtractableResponse<Response> 신분당선_생성_응답 = RestAssured.given().log().all()
                 .body(신분당선)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -172,9 +160,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        Map<String, String> 신분당선_수정 = new HashMap<>();
-        신분당선_수정.put("name", "분당선");
-        신분당선_수정.put("color", "bg-yellow-500");
+        Map<String, String> 신분당선_수정 = createNewLine("분당선", "bg-yellow-500");
 
         // when
         // 지하철_노선_수정_요청
@@ -197,9 +183,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = new HashMap<>();
-        신분당선.put("name", "신분당선");
-        신분당선.put("color", "bg-red-600");
+        Map<String, String> 신분당선 = createNewLine("신분당선", "bg-red-600");
         ExtractableResponse<Response> 신분당선_생성_응답 = RestAssured.given().log().all()
                 .body(신분당선)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -220,5 +204,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private Map<String, String> createNewLine(String name, String color) {
+        Map<String, String> param = new HashMap<>();
+        param.put("name", name);
+        param.put("color", color);
+        return param;
     }
 }
