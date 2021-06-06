@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600");
-    private static final LineRequest 이호선 = new LineRequest("2호선", "bg-green-600");
+    private static final LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+    private static final LineRequest 이호선 = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -121,7 +121,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> createResponse1, ExtractableResponse<Response> createResponse2, ExtractableResponse<Response> response) {
+    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> createResponse1, ExtractableResponse<Response> createResponse2,
+                               ExtractableResponse<Response> response) {
+
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(toList());
