@@ -1,19 +1,17 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.line.LineAcceptanceTest.Line.*;
+import static nextstep.subway.line.LineAcceptanceFixture.LineFixture.*;
+import static nextstep.subway.line.LineAcceptanceFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.HttpStatus.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -23,109 +21,66 @@ import nextstep.subway.line.dto.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    enum Line {
-        FIRST(1L, "1호선", "bg-blue-600"),
-        SECOND(2L, "2호선", "bg-green-600"),
-        THIRD(3L, "2호선", "bg-orange-600");
-
-        private final Long id;
-        private final String name;
-        private final String color;
-
-        Line(final Long id, final String name, final String color) {
-            this.id = id;
-            this.name = name;
-            this.color = color;
-        }
-    }
+    public static final String PATH = "/lines";
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void given_NoExisingLine_when_CreateLine_then_ReturnLine() {
         // when
-        // 지하철_노선_생성_요청
-        final ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(FIRST.name, FIRST.color);
+        final ExtractableResponse<Response> response = 지하철_노선_생성_요청(PATH, FIRST);
 
         // then
-        // 지하철_노선_생성됨
         final JsonPath jsonPath = response.jsonPath();
         assertAll(
-            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+            () -> assertThat(statusCode(response)).isEqualTo(statusCode(CREATED)),
             () -> assertThat(response.header("Location")).isNotBlank(),
             () -> assertThat(jsonPath.getString("id")).isNotNull(),
-            () -> assertThat(jsonPath.getString("name")).isNotNull(),
-            () -> assertThat(jsonPath.getString("color")).isNotNull()
+            () -> assertThat(toLine(jsonPath)).isEqualTo(FIRST.line())
         );
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(final String name, final String color) {
-        // given
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
+    private int statusCode(final ExtractableResponse<Response> response) {
+        return response.statusCode();
+    }
 
-        // when
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+    private int statusCode(final HttpStatus httpStatus) {
+        return httpStatus.value();
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void given_ExistingLine_when_CreateLineAlreadyExisting_then_ReturnBadRequest() {
         // given
-        // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음(FIRST.name, FIRST.color);
+        지하철_노선_생성_요청(PATH, FIRST);
 
         // when
-        // 지하철_노선_생성_요청
-        final ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(FIRST.name, FIRST.color);
+        final ExtractableResponse<Response> response = 지하철_노선_생성_요청(PATH, FIRST);
 
         // then
-        // 지하철_노선_생성_실패됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(statusCode(response)).isEqualTo(statusCode(BAD_REQUEST));
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void given_ExistingLine_when_SearchAllLine_then_ReturnLines() {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음(FIRST.name, FIRST.color);
-        지하철_노선_등록되어_있음(SECOND.name, SECOND.color);
+        지하철_노선_생성_요청(PATH, FIRST);
+        지하철_노선_생성_요청(PATH, SECOND);
 
         // when
-        // 지하철_노선_목록_조회_요청
-        final ExtractableResponse<Response> response = 지하철_노션_조회_요청("/lines");
+        final ExtractableResponse<Response> response = 지하철_노션_조회_요청(PATH);
 
         // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
         final List<LineResponse> lineResponses = lineResponses(response);
         final LineResponse firstLineResponse = lineResponses.get(0);
         final LineResponse secondLineResponse = lineResponses.get(1);
 
         assertAll(
-            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(statusCode(response)).isEqualTo(statusCode(OK)),
             () -> assertThat(lineResponses.size()).isEqualTo(2),
-            () -> assertThat(firstLineResponse.getName()).isEqualTo(FIRST.name),
-            () -> assertThat(firstLineResponse.getColor()).isEqualTo(FIRST.color),
-            () -> assertThat(secondLineResponse.getName()).isEqualTo(SECOND.name),
-            () -> assertThat(secondLineResponse.getColor()).isEqualTo(SECOND.color)
+            () -> assertThat(firstLineResponse.toLine()).isEqualTo(FIRST.line()),
+            () -> assertThat(secondLineResponse.toLine()).isEqualTo(SECOND.line())
         );
-    }
-
-    private ExtractableResponse<Response> 지하철_노션_조회_요청(final String path) {
-        return RestAssured.given().log().all()
-            .when()
-            .get(path)
-            .then().log().all()
-            .extract();
     }
 
     private List<LineResponse> lineResponses(final ExtractableResponse<Response> response) {
@@ -138,76 +93,42 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void given_ExistingLine_when_SearchLine_returnLine() {
         // given
-        // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음(FIRST.name, FIRST.color);
+        지하철_노선_생성_요청(PATH, FIRST);
 
         // when
-        // 지하철_노선_조회_요청
-        final ExtractableResponse<Response> response = 지하철_노션_조회_요청("/lines/" + FIRST.id);
+        final ExtractableResponse<Response> response = 지하철_노션_조회_요청(PATH + "/" + FIRST.getId());
 
         // then
-        // 지하철_노선_응답됨
         final JsonPath jsonPath = response.jsonPath();
         assertAll(
-            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(jsonPath.getLong("id")).isEqualTo(FIRST.id),
-            () -> assertThat(jsonPath.getString("name")).isEqualTo(FIRST.name),
-            () -> assertThat(jsonPath.getString("color")).isEqualTo(FIRST.color)
+            () -> assertThat(statusCode(response)).isEqualTo(statusCode(OK)),
+            () -> assertThat(toLine(jsonPath)).isEqualTo(FIRST.line())
         );
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
-    void updateLine() {
+    void given_ExistingLine_when_ModifyLine_then_ReturnOkStatus() {
         // given
-        // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음(FIRST.name, FIRST.color);
-
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", THIRD.name);
-        params.put("color", THIRD.color);
+        지하철_노선_생성_요청(PATH, FIRST);
 
         // when
-        // 지하철_노선_수정_요청
-        final ExtractableResponse<Response> response = 지하철_노선_수정_요청("/lines/" + FIRST.id, params);
+        final ExtractableResponse<Response> response = 지하철_노선_수정_요청(PATH + "/" + FIRST.getId(), SECOND);
 
         // then
-        // 지하철_노선_수정됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(final String path, final Map<String, String> params) {
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .put(path)
-            .then().log().all()
-            .extract();
+        assertThat(statusCode(response)).isEqualTo(statusCode(OK));
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
-    void deleteLine() {
+    void given_ExistingLine_when_DeleteLine_then_ReturnNoContentStatus() {
         // given
-        // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음(FIRST.name, FIRST.color);
+        지하철_노선_생성_요청(PATH, FIRST);
 
         // when
-        // 지하철_노선_제거_요청
-        final ExtractableResponse<Response> response = 지하철_노선_제거_요청("/lines/" + FIRST.id);
+        final ExtractableResponse<Response> response = 지하철_노선_제거_요청(PATH + "/" + FIRST.getId());
 
         // then
-        // 지하철_노선_삭제됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_제거_요청(final String path) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .delete(path)
-            .then().log().all()
-            .extract();
+        assertThat(statusCode(response)).isEqualTo(statusCode(NO_CONTENT));
     }
 }
