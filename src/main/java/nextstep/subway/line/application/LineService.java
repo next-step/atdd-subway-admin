@@ -45,4 +45,9 @@ public class LineService {
 		Line line = lines.findById(id).orElseThrow(() -> new NoSuchElementException());
 		line.update(lineRequest.toLine());
 	}
+
+	public void deleteLineById(Long id) {
+		Line line = lines.findById(id).orElseThrow(() -> new NoSuchElementException());
+		lines.deleteById(line.getId());
+	}
 }
