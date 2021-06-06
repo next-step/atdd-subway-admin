@@ -82,6 +82,27 @@ class SectionRepositoryTest {
         assertThat(persistLine.getStations().size()).isEqualTo(2);
     }
 
+    @DisplayName("시착, 종착역 검증 테스트")
+    @Test
+    void firstAndLastStop() {
+        // given
+        Station persistUpStation = saveStation("강남");
+        Station persistDownStation = saveStation("양재");
+
+        Section persistSection = saveSection(persistUpStation, persistDownStation, 10);
+
+        // when
+        Sections sections = new Sections();
+        sections.add(persistSection);
+        Station firstStop = sections.getStations().get(0);
+        Station lastStop = sections.getStations().get(1);
+
+        // then
+        assertThat(sections.getStations().size()).isEqualTo(2);
+        assertThat(firstStop).isSameAs(persistDownStation);
+        assertThat(lastStop).isSameAs(persistUpStation);
+    }
+
     private Station saveStation(String name) {
         Station station = new Station(name);
         return stationRepository.save(station);
