@@ -117,18 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
-        assertAll(
-            // 지하철_노선_응답됨
-            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-
-            // 지하철_노선_포함됨
-            () -> {
-                LineResponse expected = response.jsonPath().getObject(".", LineResponse.class);
-                assertThat(expected.getId()).isEqualTo(getLocationId(createResponse));
-                assertThat(expected.getName()).isEqualTo("3호선");
-                assertThat(expected.getColor()).isEqualTo("yellow lighten-1");
-            }
-        );
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 수정할때, 기존에 존재하는 노선 이름으로는 변경할수 없다.")
@@ -144,7 +133,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = updateLine(getLocationId(createResponse1), getTargetLine("2호선", "green lighten-2"));
 
         // then
-        // 지하철_노선_응답됨
+        // 지하철_노선_수정_실패
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
