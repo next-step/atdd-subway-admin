@@ -52,12 +52,25 @@ public class Section extends BaseEntity {
         }
     }
 
-    public void resizeAndChangeNearStation(Section section) {
-        changeNearStation(section);
+    public void connectNewStationToNearStationsAndResize(Section section) {
+        connectNewStationToNearStations(section);
         this.distance = distance.minus(section.distance);
     }
 
-    private void changeNearStation(Section section) {
+    public void connectNearStationToNearStationAndResize(Section section) {
+        connectNearStationToNearStation(section);
+        this.distance = distance.plus(section.distance);
+    }
+
+    private void connectNearStationToNearStation(Section section) {
+        if (isDownStation(section.upStation)) {
+            this.downStation = section.downStation;
+        } else if (isUpStation(section.downStation)) {
+            this.upStation = section.upStation;
+        }
+    }
+
+    private void connectNewStationToNearStations(Section section) {
         if (isSameDownStation(section)) {
             this.downStation = section.upStation;
         } else if (isSameUpStation(section)) {
@@ -79,6 +92,14 @@ public class Section extends BaseEntity {
 
     public Distance getDistance() {
         return distance;
+    }
+
+    public boolean isConnectableNewStationToNearStationBy(Section section) {
+        return isSameUpStation(section) || isSameDownStation(section);
+    }
+
+    public boolean isConnectableNearStationToNearStationBy(Station station) {
+        return isUpStation(station) || isDownStation(station);
     }
 
     public boolean isUpStationBetween(Station station, Distance distance) {
@@ -119,12 +140,15 @@ public class Section extends BaseEntity {
         return Collections.unmodifiableList(Arrays.asList(upStation, downStation));
     }
 
-    private boolean isDownStation(Station station) {
+    public boolean isDownStation(Station station) {
         return downStation == station;
     }
 
-    private boolean isUpStation(Station station) {
+    public boolean isUpStation(Station station) {
         return upStation == station;
     }
 
+    protected void removeLine() {
+        this.line = null;
+    }
 }

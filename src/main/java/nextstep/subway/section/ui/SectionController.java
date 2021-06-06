@@ -5,6 +5,7 @@ import nextstep.subway.section.application.SectionQueryService;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
+import nextstep.subway.station.dto.SectionDeleteResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +14,7 @@ import java.net.URI;
 import static java.lang.String.format;
 
 @RestController
-@RequestMapping("/{lineId}/sections")
+@RequestMapping({"/{lineId}/sections", "/lines/{lineId}/sections"})
 public class SectionController {
     private final SectionCommandService sectionCommandService;
     private final SectionQueryService sectionQueryService;
@@ -41,6 +42,13 @@ public class SectionController {
                 sectionQueryService.findAllByLineIdFetchedOrderByUpToDownStation(lineId)
                         .getSortedSections()
                         .toResponse()
+        );
+    }
+
+    @DeleteMapping
+    public ResponseEntity delete(@PathVariable Long lineId, @RequestParam("stationId") Long stationId) {
+        return ResponseEntity.ok(
+                new SectionDeleteResponse(sectionCommandService.deleteByLineIdAndStationId(lineId, stationId))
         );
     }
 }

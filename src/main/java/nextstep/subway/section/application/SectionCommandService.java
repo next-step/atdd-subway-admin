@@ -41,6 +41,16 @@ public class SectionCommandService {
         sectionRepository.deleteByLineId(lineId);
     }
 
+    public Long deleteByLineIdAndStationId(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStationById(stationId);
+
+        Section section = line.deleteSectionAndResizeDistanceBy(station);
+        sectionRepository.deleteById(section.getId());
+
+        return section.getId();
+    }
+
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(EntityNotExistException::new);

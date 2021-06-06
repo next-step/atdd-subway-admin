@@ -18,43 +18,38 @@ import org.springframework.http.HttpStatus;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static nextstep.subway.line.LineAcceptanceTest.라인_생성_및_체크;
-import static nextstep.subway.line.LineAcceptanceTest.분당_라인;
+import static nextstep.subway.line.LineAcceptanceTest.*;
 import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @DisplayName("구간 테스트")
 class SectionAcceptanceTest extends AcceptanceTest {
-    private static Long 강남역_ID = 1L;
-    private static Long 역삼역_ID = 2L;
-    private static Long 수진역_ID = 3L;
-    private static Long 모란역_ID = 4L;
-    private static Long 야탑역_ID = 5L;
 
-    private static Long 분당_라인_ID = 1L;
-
-    // 강남역 <-> 역삼역 <-> 수진역
-    private static SectionRequest 역삼역_수진역_길이_15 = new SectionRequest(역삼역_ID, 수진역_ID, 15L);
-    private static SectionRequest 수진역_강남역_길이_15 = new SectionRequest(수진역_ID, 강남역_ID, 15L);
-    private static SectionRequest 강남역_수진역_길이_15 = new SectionRequest(강남역_ID, 수진역_ID, 15L);
-    private static SectionRequest 강남역_수진역_길이_10 = new SectionRequest(강남역_ID, 수진역_ID, 15L);
+    // 강남역 - 역삼역 - 수진역
+    public static final SectionRequest 역삼역_수진역_길이_15 = new SectionRequest(역삼역_ID, 수진역_ID, 15L);
+    public static final SectionRequest 수진역_강남역_길이_15 = new SectionRequest(수진역_ID, 강남역_ID, 15L);
+    public static final SectionRequest 강남역_수진역_길이_15 = new SectionRequest(강남역_ID, 수진역_ID, 15L);
+    public static final SectionRequest 강남역_수진역_길이_10 = new SectionRequest(강남역_ID, 수진역_ID, 15L);
     
-    private static SectionRequest 강남역_역삼역_길이_1 = new SectionRequest(강남역_ID, 역삼역_ID, 1L);
-    private static SectionRequest 역삼역_수진역_길이_1 = new SectionRequest(역삼역_ID, 수진역_ID, 1L);
-    private static SectionRequest 강남역_수진역_길이_1 = new SectionRequest(강남역_ID, 수진역_ID, 1L);
-    private static SectionRequest 역삼역_강남역_길이_1 = new SectionRequest(역삼역_ID, 강남역_ID, 1L);
-    private static SectionRequest 수진역_역삼역_길이_1 = new SectionRequest(수진역_ID, 역삼역_ID, 1L);
-    private static SectionRequest 수진역_강남역_길이_1 = new SectionRequest(수진역_ID, 강남역_ID, 1L);
-    private static SectionRequest 수진역_야탑역_길이_22 = new SectionRequest(수진역_ID, 야탑역_ID, 22L);
-    private static SectionRequest 야탑역_수진역_길이_22 = new SectionRequest(야탑역_ID, 수진역_ID, 22L);
+    public static final SectionRequest 강남역_역삼역_길이_1 = new SectionRequest(강남역_ID, 역삼역_ID, 1L);
+    public static final SectionRequest 역삼역_수진역_길이_1 = new SectionRequest(역삼역_ID, 수진역_ID, 1L);
+    public static final SectionRequest 강남역_수진역_길이_1 = new SectionRequest(강남역_ID, 수진역_ID, 1L);
+    public static final SectionRequest 역삼역_강남역_길이_1 = new SectionRequest(역삼역_ID, 강남역_ID, 1L);
+    public static final SectionRequest 수진역_역삼역_길이_1 = new SectionRequest(수진역_ID, 역삼역_ID, 1L);
+    public static final SectionRequest 수진역_강남역_길이_1 = new SectionRequest(수진역_ID, 강남역_ID, 1L);
+    public static final SectionRequest 수진역_야탑역_길이_22 = new SectionRequest(수진역_ID, 야탑역_ID, 22L);
+    public static final SectionRequest 야탑역_수진역_길이_22 = new SectionRequest(야탑역_ID, 수진역_ID, 22L);
 
-    private static SectionRequest 역삼역_모란역_길이_1 = new SectionRequest(역삼역_ID, 모란역_ID, 1L);
-    private static SectionRequest 수진역_모란역_길이_1 = new SectionRequest(수진역_ID, 모란역_ID, 1L);
-    private static SectionRequest 모란역_강남역_길이_1 = new SectionRequest(모란역_ID, 강남역_ID, 1L);
+    public static final SectionRequest 역삼역_모란역_길이_1 = new SectionRequest(역삼역_ID, 모란역_ID, 1L);
+    public static final SectionRequest 수진역_모란역_길이_1 = new SectionRequest(수진역_ID, 모란역_ID, 1L);
+    public static final SectionRequest 모란역_강남역_길이_1 = new SectionRequest(모란역_ID, 강남역_ID, 1L);
+    public static final SectionRequest 모란역_야탑역_길이_1 = new SectionRequest(모란역_ID, 야탑역_ID, 1L);
 
     @TestFactory
-    @DisplayName("신규 구간을 추가한다 강남역 <-> 역삼역 <-> 수진역 => 강남역 <-> 역삼역 <-> 모란역 <-> 수진역 => 강남역 <-> 역삼역 <-> 모란역 <-> 수진역 <-> 야탑역")
+    @DisplayName("신규 구간을 추가한다 강남역 - 역삼역 - 수진역 =>" +
+            "강남역 - 역삼역 - 모란역 - 수진역 =>" +
+            "강남역 - 역삼역 - 모란역 - 수진역 - 야탑역")
     Stream<DynamicTest> 신규_구간을_추가한다_하행() {
         return Stream.of(
                 dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
@@ -70,16 +65,18 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 dynamicTest("(상)수진역과 (하)야탑역을 연결한다", 구간_생성_및_체크(수진역_야탑역_길이_22, 분당_라인_ID,4L)),
                 dynamicTest("분당라인의 전체 연결을 확인한다", 전체_연결_확인(
                         분당_라인_ID,
-                        new ExpectSectionResponse(강남역_ID, 역삼역_ID, 분당_라인.getDistance()),
-                        new ExpectSectionResponse(역삼역_ID, 모란역_ID, 역삼역_모란역_길이_1.getDistance()),
-                        new ExpectSectionResponse(모란역_ID, 수진역_ID, 역삼역_수진역_길이_15.getDistance() - 역삼역_모란역_길이_1.getDistance()),
-                        new ExpectSectionResponse(수진역_ID, 야탑역_ID, 수진역_야탑역_길이_22.getDistance())
+                        new ExpectSectionResponse(1L, 강남역_ID, 역삼역_ID, 분당_라인.getDistance()),
+                        new ExpectSectionResponse(3L, 역삼역_ID, 모란역_ID, 역삼역_모란역_길이_1.getDistance()),
+                        new ExpectSectionResponse(2L, 모란역_ID, 수진역_ID, 역삼역_수진역_길이_15.getDistance() - 역삼역_모란역_길이_1.getDistance()),
+                        new ExpectSectionResponse(4L, 수진역_ID, 야탑역_ID, 수진역_야탑역_길이_22.getDistance())
                 ))
         );
     }
 
     @TestFactory
-    @DisplayName("신규 구간을 추가한다 수진역 <-> 강남역 <-> 역삼역 => 수진역 <-> 모란역 <-> 강남역 <-> 역삼역 => 야탑역 <-> 수진역 <-> 모란역 <-> 강남역 <-> 역삼역")
+    @DisplayName("신규 구간을 추가한다 수진역 - 강남역 - 역삼역 =>" +
+            "수진역 - 모란역 - 강남역 - 역삼역 =>" +
+            "야탑역 - 수진역 - 모란역 - 강남역 - 역삼역")
     Stream<DynamicTest> 신규_구간을_추가한다_상행() {
         return Stream.of(
                 dynamicTest("강남역을 추가한다", 지하철역_생성_요청_및_체크(강남역, 강남역_ID)),
@@ -95,10 +92,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 dynamicTest("(상)야탑역과 (하)수진역을 연결한다", 구간_생성_및_체크(야탑역_수진역_길이_22, 분당_라인_ID,4L)),
                 dynamicTest("분당라인의 전체 연결을 확인한다", 전체_연결_확인(
                         분당_라인_ID,
-                        new ExpectSectionResponse(야탑역_ID, 수진역_ID, 야탑역_수진역_길이_22.getDistance()),
-                        new ExpectSectionResponse(수진역_ID, 모란역_ID, 수진역_강남역_길이_15.getDistance() - 모란역_강남역_길이_1.getDistance()),
-                        new ExpectSectionResponse(모란역_ID, 강남역_ID, 모란역_강남역_길이_1.getDistance()),
-                        new ExpectSectionResponse(강남역_ID, 역삼역_ID, 분당_라인.getDistance())
+                        new ExpectSectionResponse(4L, 야탑역_ID, 수진역_ID, 야탑역_수진역_길이_22.getDistance()),
+                        new ExpectSectionResponse(2L, 수진역_ID, 모란역_ID, 수진역_강남역_길이_15.getDistance() - 모란역_강남역_길이_1.getDistance()),
+                        new ExpectSectionResponse(3L, 모란역_ID, 강남역_ID, 모란역_강남역_길이_1.getDistance()),
+                        new ExpectSectionResponse(1L, 강남역_ID, 역삼역_ID, 분당_라인.getDistance())
                 ))
         );
     }
@@ -116,14 +113,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 dynamicTest("(상)강남역 (하)수진역을 연결한다", 구간_생성_및_실패_체크(강남역_수진역_길이_15, 분당_라인_ID)),
                 dynamicTest("(상)강남역 (하)수진역을 연결한다", 구간_생성_및_실패_체크(강남역_수진역_길이_10, 분당_라인_ID))
         );
-    }
-
-    private Executable 구간_생성_및_실패_체크(SectionRequest sectionRequest, Long lineId) {
-        return () -> {
-            ExtractableResponse<Response> response = 구간_생성_요청(sectionRequest, lineId);
-
-            생성_실패_검증(response);
-        };
     }
 
     @TestFactory
@@ -161,12 +150,20 @@ class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private void 생성_실패_검증(ExtractableResponse<Response> response) {
+    public static Executable 구간_생성_및_실패_체크(SectionRequest sectionRequest, Long lineId) {
+        return () -> {
+            ExtractableResponse<Response> response = 구간_생성_요청(sectionRequest, lineId);
+
+            생성_실패_검증(response);
+        };
+    }
+
+    private static void 생성_실패_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private Executable 전체_연결_확인(Long lineId, ExpectSectionResponse ...expectSectionResponses) {
+    public static Executable 전체_연결_확인(Long lineId, ExpectSectionResponse ...expectSectionResponses) {
         return () -> {
             ExtractableResponse<Response> response = RestAssured.given()
                     .log().all()
@@ -185,6 +182,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 SectionResponse sectionResponse = sectionResponses[i];
                 ExpectSectionResponse expectSectionResponse = expectSectionResponses[i];
 
+                assertThat(sectionResponse.getId())
+                        .isEqualTo(expectSectionResponse.getSectionId());
                 assertThat(sectionResponse.getUpStationId())
                         .isEqualTo(expectSectionResponse.getUpStationId());
                 assertThat(sectionResponse.getDownStationId())
@@ -195,7 +194,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         };
     }
 
-    private Executable 구간_생성_및_체크(SectionRequest sectionRequest, Long lineId, Long expectId) {
+    public static Executable 구간_생성_및_체크(SectionRequest sectionRequest, Long lineId, Long expectId) {
         return () -> {
             ExtractableResponse<Response> response = 구간_생성_요청(sectionRequest, lineId);
 
@@ -207,7 +206,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         };
     }
 
-    private ExtractableResponse<Response> 구간_생성_요청(SectionRequest sectionRequest, Long lineId) {
+    public static  ExtractableResponse<Response> 구간_생성_요청(SectionRequest sectionRequest, Long lineId) {
         ExtractableResponse<Response> response = RestAssured.given()
                 .log().all()
                 .contentType(ContentType.JSON)
@@ -219,7 +218,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    private void 구간_생성_본문_검증(SectionResponse sectionResponse, Long expectId, SectionRequest sectionRequest) {
+    private static void 구간_생성_본문_검증(SectionResponse sectionResponse, Long expectId, SectionRequest sectionRequest) {
         assertThat(sectionResponse.getId())
                 .isEqualTo(expectId);
         assertThat(sectionResponse.getUpStationId())
@@ -230,27 +229,33 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 .isEqualTo(sectionRequest.getDistance());
     }
 
-    private void 구간_생성_헤더_검증(ExtractableResponse<Response> response) {
+    private static void 구간_생성_헤더_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header(HttpHeaders.CONTENT_TYPE))
                 .isIn(ContentType.JSON.getContentTypeStrings());
     }
 
-    private void 정상_응답_헤더_검증(ExtractableResponse<Response> response) {
+    private static void 정상_응답_헤더_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.header(HttpHeaders.CONTENT_TYPE)).isIn(ContentType.JSON.getContentTypeStrings());
     }
 
-    private class ExpectSectionResponse {
+    public static class ExpectSectionResponse {
+        private Long sectionId;
         private Long upStationId;
         private Long downStationId;
         private Long distance;
 
-        public ExpectSectionResponse(Long upStationId, Long downStationId, Long distance) {
+        public ExpectSectionResponse(Long sectionId, Long upStationId, Long downStationId, Long distance) {
+            this.sectionId = sectionId;
             this.upStationId = upStationId;
             this.downStationId = downStationId;
             this.distance = distance;
+        }
+
+        public Long getSectionId() {
+            return sectionId;
         }
 
         public Long getUpStationId() {
