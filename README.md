@@ -38,6 +38,13 @@ npm run dev
 ```
 <br>
 
+## 📖 지하철 도메인 용어정리
+* 상행: 남쪽에서 북쪽으로 향하는 방향의 노선
+    * upStation : 구간에서 북쪽 방향의 역
+* 하행: 북쪽에서 남쪽으로 향하는 방향의 노선
+    * downStation : 구간에서 남쪽 방향의 역
+
+
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 

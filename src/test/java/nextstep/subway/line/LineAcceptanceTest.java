@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.RestAcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends RestAcceptanceTest {
@@ -22,13 +24,14 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        // given
+        // 상행역_하행역_등록되어_있음
+        LineResponse station1 = saveStation("광교").jsonPath().getObject(".", LineResponse.class);
+        LineResponse station2 = saveStation("강남").jsonPath().getObject(".", LineResponse.class);
+
         // when
         // 지하철_노선_생성_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-
-        ExtractableResponse<Response> response = executePost("/lines", params);
+        ExtractableResponse<Response> response = saveLine("신분당선", "red", station1.getId(), station2.getId(), "40");
 
         // then
         // 지하철_노선_생성됨
@@ -40,14 +43,13 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-        executePost("/lines", params);
+        saveShinBundangLine();
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = executePost("/lines", params);
+        LineResponse station1 = saveStation("상현").jsonPath().getObject(".", LineResponse.class);
+        LineResponse station2 = saveStation("양재").jsonPath().getObject(".", LineResponse.class);
+        ExtractableResponse<Response> response = saveLine("신분당선", "red", station1.getId(), station2.getId(), "40");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -59,16 +61,10 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-        executePost("/lines", params);
+        saveShinBundangLine();
 
         // 지하철_노선_등록되어_있음
-        params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
-        executePost("/lines", params);
+        saveLine2();
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -89,11 +85,7 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-
-        ExtractableResponse<Response> registerResponse = executePost("/lines", params);
+        ExtractableResponse<Response> registerResponse = saveShinBundangLine();
 
         // when
         // 지하철_노선_조회_요청
@@ -108,15 +100,39 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
         assertThat(lineResponse.getColor()).isEqualTo("red");
     }
 
+    @DisplayName("지하철 노선을 종점역과 함께 조회한다.")
+    @Test
+    void getLineWithLastStop() {
+        // given
+        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> registerResponse = saveShinBundangLine();
+
+        // when
+        // 지하철_노선_조회_요청
+        String savedUri = registerResponse.header("Location");
+        ExtractableResponse<Response> getResponse = executeGet(savedUri);
+
+        // then
+        // 지하철_노선_응답됨
+        LineResponse lineResponse = getResponse.jsonPath().getObject(".", LineResponse.class);
+        StationResponse firstStop = lineResponse.getStations().get(0);
+        StationResponse lastStop = lineResponse.getStations().get(lineResponse.getStations().size()-1);
+        assertAll(
+                () -> assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("red"),
+                () -> assertThat(lineResponse.getStations().size()).isEqualTo(2),
+                () -> assertThat(firstStop.getName()).isEqualTo("광교"),
+                () -> assertThat(lastStop.getName()).isEqualTo("강남")
+        );
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> registerParams = new HashMap<>();
-        registerParams.put("name", "신분당선");
-        registerParams.put("color", "red");
-        ExtractableResponse<Response> registerResponse = executePost("/lines", registerParams);
+        ExtractableResponse<Response> registerResponse = saveShinBundangLine();
 
         // when
         // 지하철_노선_수정_요청
@@ -139,10 +155,7 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> registerParams = new HashMap<>();
-        registerParams.put("name", "신분당선");
-        registerParams.put("color", "red");
-        ExtractableResponse<Response> registerResponse = executePost("/lines", registerParams);
+        ExtractableResponse<Response> registerResponse = saveShinBundangLine();
 
         // when
         // 지하철_노선_제거_요청
@@ -152,5 +165,33 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> saveStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        return executePost("/stations", params);
+    }
+
+    private ExtractableResponse<Response> saveLine(String name, String color, Long upStationId, Long downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId.toString());
+        params.put("downStationId", downStationId.toString());
+        params.put("distance", distance);
+        return executePost("/lines", params);
+    }
+
+    private ExtractableResponse<Response> saveShinBundangLine() {
+        LineResponse upStation = saveStation("강남").jsonPath().getObject(".", LineResponse.class);
+        LineResponse downStation = saveStation("광교").jsonPath().getObject(".", LineResponse.class);
+        return saveLine("신분당선", "red", upStation.getId(), downStation.getId(), "40");
+    }
+
+    private ExtractableResponse<Response> saveLine2() {
+        LineResponse upStation = saveStation("을지로입구").jsonPath().getObject(".", LineResponse.class);
+        LineResponse downStation = saveStation("신도림").jsonPath().getObject(".", LineResponse.class);
+        return saveLine("2호선", "green", upStation.getId(), downStation.getId(), "35");
     }
 }

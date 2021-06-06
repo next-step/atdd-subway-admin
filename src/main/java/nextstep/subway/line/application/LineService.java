@@ -4,6 +4,9 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.application.SectionService;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,15 +15,22 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
+    private final SectionService sectionService;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService, SectionService sectionService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
+        this.sectionService = sectionService;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        sectionService.saveSection(persistLine, upStation, downStation, request.getDistance());
         return LineResponse.of(persistLine);
     }
 
@@ -48,6 +58,8 @@ public class LineService {
 
     @Transactional
     public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
+        Line line = findById(id);
+        sectionService.deleteSections(line.getSections());
+        lineRepository.delete(line);
     }
 }
