@@ -67,10 +67,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [x] 지하철 노선을 수정한다.
   - [x] 지하철 노선을 제거한다.
 
-- [ ] [**2단계**] 지하철 노선에 구간 등록  
-  - [ ] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기  
+- [x] [**2단계**] 지하철 노선에 구간 등록  
+  - [x] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기  
     - 두 종점역은 **구간**의 형태로 관리되어야 함  
-  - [ ] 노선 조회 시 응답 결과에 역 목록 추가하기  
+  - [x] 노선 조회 시 응답 결과에 역 목록 추가하기  
     - **상행역 부터 하행역 순으로 정렬되어야 함**  
   
 - [ ] [**3단계**] 노선에 등록된 역 목록 조회
@@ -119,6 +119,11 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ---
 - [x] service > getStations 을 Line Entity에 위임하기
 - [x] 노선 정보 업데이트시 역 목록 보이도록 변경
+--- 피드백 리팩토링
+- [ ] stationRepository.findById(request.getDownStationId()) 중복 코드 제거
+- [ ] Inline Variable 제거
+- [ ] getStations() 중복 코드 제거
+
 ## 노선 생성 시 두 종점역 추가하기
 
 - 인수 테스트와 DTO 등 수정이 필요함
