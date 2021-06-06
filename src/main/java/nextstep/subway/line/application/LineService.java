@@ -29,7 +29,7 @@ public class LineService {
         List<Line> Lines = lineRepository.findAll();
 
         return Lines.stream()
-                .map(station -> LineResponse.of(station))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 

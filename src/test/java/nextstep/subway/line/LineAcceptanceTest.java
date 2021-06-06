@@ -68,7 +68,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = showStations();
+        ExtractableResponse<Response> response = showLines();
 
         // then
         assertAll(
@@ -99,7 +99,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = showStations(getLocationId(createResponse));
+        ExtractableResponse<Response> response = showLines(getLocationId(createResponse));
 
         // then
         assertAll(
@@ -124,7 +124,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = updateColorStation(getLocationId(createResponse), "green");
+        ExtractableResponse<Response> response = updateColorLine(getLocationId(createResponse), "green");
 
         // then
         // 지하철_노선_수정됨
@@ -154,7 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_제거_요청
         long deletedId = getLocationId(createResponse);
-        ExtractableResponse<Response> deletedResponse = deleteStation(deletedId);
+        ExtractableResponse<Response> deletedResponse = deleteLine(deletedId);
 
         // then
         // 지하철_노선_삭제됨
@@ -164,7 +164,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
             // 지하철_노선_찾지못함
             () -> {
-                ExtractableResponse<Response> response = showStations(deletedId);
+                ExtractableResponse<Response> response = showLines(deletedId);
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
             }
         );
@@ -190,7 +190,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> updateColorStation(final Long id, final String color) {
+    private ExtractableResponse<Response> updateColorLine(final Long id, final String color) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("id", id).pathParam("color", color)
@@ -200,7 +200,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> deleteStation(final Long id) {
+    private ExtractableResponse<Response> deleteLine(final Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("id", id)
@@ -216,11 +216,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Long.parseLong(result);
     }
 
-    private ExtractableResponse<Response> showStations() {
-        return this.showStations(0L);
+    private ExtractableResponse<Response> showLines() {
+        return this.showLines(0L);
     }
 
-    private ExtractableResponse<Response> showStations(final Long id) {
+    private ExtractableResponse<Response> showLines(final Long id) {
         String path = (id > 0) ? URI_PATH + "/" + id : URI_PATH;
 
         return RestAssured.given().log().all()
