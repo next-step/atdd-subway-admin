@@ -7,17 +7,17 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.domain.Line;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -29,12 +29,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> response = 지하철_노선_생성_요청(PATH, FIRST);
 
         // then
-        final JsonPath jsonPath = response.jsonPath();
         assertAll(
             () -> assertThat(statusCode(response)).isEqualTo(statusCode(CREATED)),
             () -> assertThat(response.header("Location")).isNotBlank(),
-            () -> assertThat(jsonPath.getString("id")).isNotNull(),
-            () -> assertThat(toLine(jsonPath)).isEqualTo(FIRST.line())
+            () -> assertThat(toLine(response)).isEqualTo(FIRST.line())
         );
     }
 
@@ -70,22 +68,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> response = 지하철_노션_조회_요청(PATH);
 
         // then
-        final List<LineResponse> lineResponses = lineResponses(response);
-        final LineResponse firstLineResponse = lineResponses.get(0);
-        final LineResponse secondLineResponse = lineResponses.get(1);
-
         assertAll(
             () -> assertThat(statusCode(response)).isEqualTo(statusCode(OK)),
-            () -> assertThat(lineResponses.size()).isEqualTo(2),
-            () -> assertThat(firstLineResponse.toLine()).isEqualTo(FIRST.line()),
-            () -> assertThat(secondLineResponse.toLine()).isEqualTo(SECOND.line())
+            () -> assertThat(actual(response)).isEqualTo(expected())
         );
     }
 
-    private List<LineResponse> lineResponses(final ExtractableResponse<Response> response) {
-        final JsonPath jsonPath = response.jsonPath();
+    private List<Line> actual(final ExtractableResponse<Response> response) {
+        return response.jsonPath()
+            .getList(".", Line.class);
+    }
 
-        return jsonPath.getList(".", LineResponse.class);
+    private List<Line> expected() {
+        return Arrays.asList(FIRST.line(), SECOND.line());
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -98,10 +93,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> response = 지하철_노션_조회_요청(PATH + "/" + FIRST.getId());
 
         // then
-        final JsonPath jsonPath = response.jsonPath();
         assertAll(
             () -> assertThat(statusCode(response)).isEqualTo(statusCode(OK)),
-            () -> assertThat(toLine(jsonPath)).isEqualTo(FIRST.line())
+            () -> assertThat(toLine(response)).isEqualTo(FIRST.line())
         );
     }
 

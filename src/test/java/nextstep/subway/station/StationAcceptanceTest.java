@@ -5,9 +5,8 @@ import static nextstep.subway.station.StationAcceptanceFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.domain.Station;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -56,36 +55,24 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        final ExtractableResponse<Response> createResponse1 = 지하철역_생성_요청("강남역");
-        final ExtractableResponse<Response> createResponse2 = 지하철역_생성_요청("역삼역");
+        final Station station1 = 지하철역_생성_요청("강남역", StationAcceptanceFixture::toStation);
+        final Station station2 = 지하철역_생성_요청("역삼역", StationAcceptanceFixture::toStation);
 
         // when
         final ExtractableResponse<Response> response = 지하철역_조회_요청(PATH);
 
         // then
         assertThat(statusCode(response)).isEqualTo(statusCode(OK));
-        assertThat(actual(response)).containsAll(expected(createResponse1, createResponse2));
+        assertThat(actual(response)).containsAll(expected(station1, station2));
     }
 
-    private List<Long> actual(final ExtractableResponse<Response> response) {
+    private List<Station> actual(final ExtractableResponse<Response> response) {
         return response.jsonPath()
-            .getList(".", StationResponse.class)
-            .stream()
-            .map(StationResponse::getId)
-            .collect(Collectors.toList());
+            .getList(".", Station.class);
     }
 
-    private List<Long> expected(final ExtractableResponse<Response> createResponse1,
-        final ExtractableResponse<Response> createResponse2) {
-
-        return Stream.of(createResponse1, createResponse2)
-            .map(it -> Long.parseLong(id(it)))
-            .collect(Collectors.toList());
-    }
-
-    private String id(final ExtractableResponse<Response> it) {
-        return it.header("Location")
-            .split("/")[2];
+    private List<Station> expected(final Station station1, final Station station2) {
+        return Arrays.asList(station1, station2);
     }
 
     @DisplayName("지하철역을 제거한다.")

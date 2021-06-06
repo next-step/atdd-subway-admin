@@ -5,7 +5,6 @@ import static nextstep.subway.utils.RestAssuredUtils.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.domain.Line;
@@ -65,7 +64,8 @@ public class LineAcceptanceFixture {
         return delete(path);
     }
 
-    static Line toLine(final JsonPath jsonPath) {
-        return new Line(jsonPath.getLong("id"), jsonPath.getString("name"), jsonPath.getString("color"));
+    static Line toLine(final ExtractableResponse<Response> response) {
+        return response.jsonPath()
+            .getObject(".", Line.class);
     }
 }
