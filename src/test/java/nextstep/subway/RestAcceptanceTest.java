@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class RestAcceptanceTest extends AcceptanceTest {
 
-    protected ExtractableResponse<Response> executeGet(String path) {
+    protected static ExtractableResponse<Response> executeGet(String path) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -18,7 +18,7 @@ public class RestAcceptanceTest extends AcceptanceTest {
                 .log().all().extract();
     }
 
-    protected ExtractableResponse<Response> executePost(String path, Map<String, String> params) {
+    protected static ExtractableResponse<Response> executePost(String path, Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -28,7 +28,7 @@ public class RestAcceptanceTest extends AcceptanceTest {
                 .log().all().extract();
     }
 
-    protected ExtractableResponse<Response> executePut(String path, Map<String, String> params) {
+    protected static ExtractableResponse<Response> executePut(String path, Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -38,7 +38,7 @@ public class RestAcceptanceTest extends AcceptanceTest {
                 .log().all().extract();
     }
 
-    protected ExtractableResponse<Response> executeDelete(String path) {
+    protected static ExtractableResponse<Response> executeDelete(String path) {
         return RestAssured.given().log().all()
                 .when()
                 .delete(path)

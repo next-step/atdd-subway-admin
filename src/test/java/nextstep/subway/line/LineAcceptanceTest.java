@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.station.StationAcceptanceTest.saveStation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -165,12 +166,6 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private ExtractableResponse<Response> saveStation(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        return executePost("/stations", params);
     }
 
     private ExtractableResponse<Response> saveLine(String name, String color, Long upStationId, Long downStationId, String distance) {
