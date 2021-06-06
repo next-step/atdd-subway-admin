@@ -1,28 +1,29 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.type.LineColor;
 
 public class LineRequest {
     private String name;
-    private String color;
+    private LineColor color;
 
     public LineRequest() {
     }
 
-    public LineRequest(String name, String color) {
+    public LineRequest(String name, LineColor color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line toLine() {
+        return new Line(name, color);
     }
 
     public String getName() {
         return name;
     }
 
-    public String getColor() {
+    public LineColor getColor() {
         return color;
-    }
-
-    public Line toLine() {
-        return new Line(name, color);
     }
 }
