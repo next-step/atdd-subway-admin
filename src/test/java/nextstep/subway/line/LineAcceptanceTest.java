@@ -105,12 +105,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = send_updateLine(expected.getId(), makeLineRequest("2호선", LineColor.GREEN));
+        ExtractableResponse<Response> response = send_updateLine(expected.getId(), makeLineRequest("구분당선", LineColor.BLUD));
 
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(convertToLineResponse(response).getName()).isEqualTo("2호선");
+        LineResponse actual = convertToLineResponse(response);
+        assertAll(() -> {
+            assertThat(actual.getName()).isEqualTo("구분당선");
+            assertThat(actual.getColor()).isEqualTo(LineColor.BLUD);
+        });
     }
 
     @DisplayName("지하철 노선을 제거한다.")

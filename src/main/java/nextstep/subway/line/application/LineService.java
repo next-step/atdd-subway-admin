@@ -16,13 +16,14 @@ import static nextstep.subway.exception.ApiExceptionMessge.NOT_FOUND_LINE;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
+    @Transactional
+    public LineResponse saveLine(final LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
@@ -43,5 +44,13 @@ public class LineService {
         return lineRepository.findById(id)
                              .map(LineResponse::of)
                              .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
+    }
+
+    @Transactional
+    public LineResponse updateLine(final Long id, final LineRequest request) {
+        Line line = lineRepository.findById(id)
+                                  .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
+        line.update(request.toLine());
+        return LineResponse.of(line);
     }
 }
