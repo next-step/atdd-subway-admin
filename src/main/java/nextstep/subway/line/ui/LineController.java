@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import java.net.URI;
+import java.util.NoSuchElementException;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
@@ -42,8 +43,13 @@ public class LineController {
 		return ResponseEntity.ok().body(lineService.findLine(id));
 	}
 
+	@ExceptionHandler(NoSuchElementException.class)
+	public ResponseEntity handleNoSuchElementException(NoSuchElementException e) {
+		return ResponseEntity.noContent().build();
+	}
+
 	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity handleIllegalArgsExcception(DataIntegrityViolationException e) {
+	public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
 		return ResponseEntity.badRequest().build();
 	}
 }
