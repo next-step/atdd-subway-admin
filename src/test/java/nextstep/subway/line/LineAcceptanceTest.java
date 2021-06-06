@@ -189,4 +189,8 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
         LineResponse downStation = saveStation("신도림").jsonPath().getObject(".", LineResponse.class);
         return saveLine("2호선", "green", upStation.getId(), downStation.getId(), "35");
     }
+    
+    public static ExtractableResponse<Response> findLine(Long lineId) {
+        return executeGet("/lines/" + lineId.toString());
+    }
 }
