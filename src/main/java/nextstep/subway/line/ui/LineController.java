@@ -56,9 +56,13 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponse);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity dataIntegrityViolationHandler() {
+    @ExceptionHandler(
+            {
+                    DataIntegrityViolationException.class, InvalidDistanceException.class,
+                    TwoStationAlreadyExistException.class, TwoStationNotExistException.class
+            }
+    )
+    public ResponseEntity exceptionHandler() {
         return ResponseEntity.badRequest().build();
     }
-
 }
