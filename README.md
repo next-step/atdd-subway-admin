@@ -56,10 +56,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## 1단계 - 지하철 노선 관리
 ### 기능 목록
 * Feature: 지하철 노선 관련 기능
-    * [ ] Scenario: 지하철 노선 생성한다
+    * [x] Scenario: 지하철 노선 생성한다
         * when: 지하철 노선 생성 요청 한다.
         * then: 지하철 노선이 생성된다.
-    * [ ] Scenario: 이미 등록된 지하철 노선 이름으로 지하철 노선을 생성한다.
+    * [x] Scenario: 이미 등록된 지하철 노선 이름으로 지하철 노선을 생성한다.
         * given: 지하철 노선이 등록되어 있다.
         * when: 지하철 노선을 생성 요청 한다.
         * then: 지하철 노선 생성이 실패 한다.
