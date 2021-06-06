@@ -25,7 +25,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     enum Line {
         FIRST(1L, "1호선", "bg-blue-600"),
-        SECOND(2L, "2호선", "bg-green-600");
+        SECOND(2L, "2호선", "bg-green-600"),
+        THIRD(3L, "2호선", "bg-orange-600");
 
         private final Long id;
         private final String name;
@@ -160,12 +161,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음(FIRST.name, FIRST.color);
+
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", THIRD.name);
+        params.put("color", THIRD.color);
 
         // when
         // 지하철_노선_수정_요청
+        final ExtractableResponse<Response> response = 지하철_노선_수정_요청("/lines/" + FIRST.id, params);
 
         // then
         // 지하철_노선_수정됨
+        final JsonPath jsonPath = response.jsonPath();
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(jsonPath.getLong("id")).isEqualTo(FIRST.id),
+            () -> assertThat(jsonPath.getString("name")).isEqualTo(THIRD.name),
+            () -> assertThat(jsonPath.getString("color")).isEqualTo(THIRD.color)
+        );
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(final String path, final Map<String, String> params) {
+        return RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put(path)
+            .then().log().all()
+            .extract();
     }
 
     @DisplayName("지하철 노선을 제거한다.")
