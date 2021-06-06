@@ -9,7 +9,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import nextstep.subway.station.domain.SortedStations;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.Stations;
 
 @Embeddable
 public class LineSections implements Serializable {
@@ -26,10 +25,6 @@ public class LineSections implements Serializable {
         sections = new ArrayList<>();
     }
 
-    public LineSections(List<Section> sections) {
-        this.sections = sections;
-    }
-
     public void add(Section section) {
         sections.add(section);
     }
@@ -38,8 +33,12 @@ public class LineSections implements Serializable {
         return sections;
     }
 
-    public Stations toStations() {
-        return new SortedStations(this);
+    public SortedStations toStations() {
+        return new SortedStations(toSortedSections());
+    }
+
+    public SortedSection toSortedSections() {
+        return new SortedSection(this);
     }
 
     public void verifyStationCycle(Station upStation, Station downStation) {

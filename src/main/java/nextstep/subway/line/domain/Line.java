@@ -11,7 +11,7 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.LineSections;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SortedSection;
-import nextstep.subway.station.domain.Stations;
+import nextstep.subway.station.domain.SortedStations;
 
 @Entity
 public class Line extends BaseEntity implements Serializable {
@@ -70,11 +70,11 @@ public class Line extends BaseEntity implements Serializable {
         return lineSections;
     }
 
-    public Stations getSortedStations() {
+    public SortedStations getSortedStations() {
         return lineSections.toStations();
     }
 
     public SortedSection getSortedSections() {
-        return new SortedSection(lineSections);
+        return lineSections.toSortedSections();
     }
 }

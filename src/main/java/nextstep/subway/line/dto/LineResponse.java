@@ -3,7 +3,7 @@ package nextstep.subway.line.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Stations;
+import nextstep.subway.station.domain.SortedStations;
 import nextstep.subway.station.dto.StationResponse;
 
 import static java.util.stream.Collectors.toList;
@@ -32,7 +32,7 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
 
-        Stations stations = line.getSortedStations();
+        SortedStations stations = line.getSortedStations();
 
         List<StationResponse> stationResponses =
             stations.getStations()

@@ -1,65 +1,32 @@
 package nextstep.subway.station.domain;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import nextstep.subway.section.domain.LineSections;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SortedSection;
 
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toList;
 
-public class SortedStations implements Stations {
+public class SortedStations {
 
-    private static final String MESSAGE_NOT_FOUND_UPSTATION = "상행역을 찾을 수 없습니다.";
+    private final List<Station> stations;
 
-    private List<Station> stations = new ArrayList<>();
+    public SortedStations(SortedSection sortedSection) {
 
-    public SortedStations(LineSections lineSections) {
-        List<Section> sections = lineSections.getSections();
+        List<Section> sections = sortedSection.getSections();
+        List<Station> sortedStations = sections.stream()
+                                               .map(Section::getUpStation)
+                                               .collect(toList());
 
-        Station startStation = getStartStation(sections);
-        linkToLastStation(startStation, sections);
-
-        stations = Collections.unmodifiableList(stations);
+        sortedStations.add(getLastStation(sections));
+        this.stations = Collections.unmodifiableList(sortedStations);
     }
 
-    private Station getStartStation(List<Section> sections) {
-
-        Map<Station, Station> stationRelationship =
-            sections.stream()
-                    .collect(toMap(Section::getDownStation,
-                                   Section::getUpStation));
-
-        Entry<Station, Station> startEntry =
-            stationRelationship.entrySet()
-                               .stream()
-                               .filter(entry -> !stationRelationship.containsKey(entry.getValue()))
-                               .findAny()
-                               .orElseThrow(
-                                   () -> new IllegalStateException(MESSAGE_NOT_FOUND_UPSTATION));
-
-        return startEntry.getValue();
+    private Station getLastStation(List<Section> sections) {
+        Section section = sections.get(sections.size() - 1);
+        return section.getDownStation();
     }
 
-    private void linkToLastStation(Station startStation, List<Section> sections) {
-
-        Map<Station, Station> stationRelationship =
-            sections.stream()
-                    .collect(toMap(Section::getUpStation,
-                                   Section::getDownStation));
-
-        stations.add(startStation);
-
-        Station nextStation = stationRelationship.get(startStation);
-        while (nextStation != null) {
-            stations.add(nextStation);
-            nextStation = stationRelationship.get(nextStation);
-        }
-    }
-
-    @Override
     public List<Station> getStations() {
         return stations;
     }
