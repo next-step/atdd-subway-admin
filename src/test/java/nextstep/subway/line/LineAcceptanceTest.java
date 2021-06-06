@@ -171,8 +171,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
 		// 지하철_노선_동일함
-		String resultLineId = response.jsonPath().get("$.id");
-		assertThat(resultLineId).isEqualTo(createLineId);
+		Line line = response.jsonPath().getObject(".", Line.class);
+
+		assertThat(String.valueOf(line.getId())).isEqualTo(createLineId);
 	}
 
 	@DisplayName("없는 지하철 노선을 조회한다.")
@@ -242,8 +243,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all()
 			.extract();
 
-		String resultLineName = response.jsonPath().get("$.name");
-		assertThat(resultLineName).isEqualTo("구분당선");
+		Line line = response.jsonPath().getObject(".", Line.class);
+
+		assertThat(line.getName()).isEqualTo("구분당선");
 	}
 
 	@DisplayName("없는 지하철 노선을 수정한다.")
