@@ -10,6 +10,9 @@ public class Distance implements Serializable {
 
     private static final long serialVersionUID = -8710225874702467187L;
 
+    private static final String MESSAGE_IS_POSITIVE =
+        "기존 구간 안에 새 구간을 추가하는 경우, 새 구간의 길이는 기존 구간보다 크거나 같을 수 없습니다.";
+
     @Column(name = "distance", nullable = false)
     private final int value;
 
@@ -24,7 +27,8 @@ public class Distance implements Serializable {
 
     private void verifyValueIsPositive(int value) {
         if (value <= 0) {
-            throw new IllegalArgumentException("기존 구간 안에 새 구간을 추가하는 경우, 새 구간의 길이는 기존 구간보다 크거나 같을 수 없습니다.");
+            throw new IllegalArgumentException(
+                MESSAGE_IS_POSITIVE);
         }
     }
 
