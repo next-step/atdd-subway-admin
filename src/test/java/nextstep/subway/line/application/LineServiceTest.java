@@ -133,6 +133,7 @@ class LineServiceTest {
 
         // then
         verify(lineRepository).delete(line);
+        verify(sectionRepository).deleteAllByLineId(anyLong());
     }
 
     @Test

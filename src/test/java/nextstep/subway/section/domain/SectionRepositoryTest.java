@@ -85,4 +85,22 @@ public class SectionRepositoryTest {
         // then
         assertThat(sections).contains(section);
     }
+
+    @Test
+    @DisplayName("노선ID 기준 구간 전체 삭제")
+    void delete_by_lineId() {
+        // given
+        Section section = new Section(this.upStation, this.downStation, 10);
+        Section section1 = new Section(this.upStation, this.downStation, 10);
+        sectionRepository.saveAll(Arrays.asList(section, section1));
+        Line line = new Line("2호선", "green").addSection(section).addSection(section1);
+        lineRepository.save(line);
+
+        // when
+        sectionRepository.deleteAllByLineId(line.getId());
+        List<Section> resultSections = sectionRepository.findByLineId(line.getId());
+
+        // then
+        assertThat(resultSections.isEmpty()).isTrue();
+    }
 }

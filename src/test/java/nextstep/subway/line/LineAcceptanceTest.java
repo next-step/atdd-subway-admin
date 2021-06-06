@@ -47,10 +47,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
+        StationResponse 강남역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("강남역");
+        StationResponse 역삼역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("역삼역");
+        LineRequest greenLineRequest = new LineRequest("2호선", "green", 강남역.getId(), 역삼역.getId(), 5);
+        지하철_노선_등록되어_있음(greenLineRequest);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(new LineRequest("1호선", "blue"));
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(greenLineRequest);
 
         // then
         지하철_노선_생성_실패됨(response);
@@ -61,15 +64,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
-        LineResponse greenLineResponse = 지하철_노선_등록되어_있음(new LineRequest("2호선", "grean"));
-        List<Long> lineIds = Arrays.asList(blueLineResponse.getId(), greenLineResponse.getId());
+        StationResponse 강남역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("강남역");
+        StationResponse 역삼역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("역삼역");
+        StationResponse 서울역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("서울역");
+        StationResponse 시청역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("시청역");
+        LineResponse greenLineResponse = 지하철_노선_등록되어_있음(new LineRequest("2호선", "green", 강남역.getId(), 역삼역.getId(), 5));
+        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("4호선", "blue", 서울역.getId(), 시청역.getId(), 9));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         지하철_노선_목록_응답됨(response);
+        List<Long> lineIds = Arrays.asList(blueLineResponse.getId(), greenLineResponse.getId());
         지하철_노선_목록_포함됨(response, lineIds);
     }
 
@@ -93,10 +100,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
+        StationResponse 강남역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("강남역");
+        StationResponse 역삼역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("역삼역");
+        LineResponse greenLineResponse = 지하철_노선_등록되어_있음(new LineRequest("2호선", "green", 강남역.getId(), 역삼역.getId(), 5));
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(blueLineResponse.getId(), new LineRequest("2호선", "green"));
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(greenLineResponse.getId(),
+                new LineRequest("4호선", "blue", 강남역.getId(), 역삼역.getId(), 5));
 
         // then
         지하철_노선_수정됨(response);
@@ -106,10 +116,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
+        StationResponse 강남역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("강남역");
+        StationResponse 역삼역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("역삼역");
+        LineResponse greenLineResponse = 지하철_노선_등록되어_있음(new LineRequest("2호선", "green", 강남역.getId(), 역삼역.getId(), 5));
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(blueLineResponse.getId());
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(greenLineResponse.getId());
 
         // then
         지하철_노선_삭제됨(response);
@@ -119,10 +131,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine_error() {
         // given
-        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
+        StationResponse 강남역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("강남역");
+        StationResponse 역삼역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("역삼역");
+        LineResponse greenLineResponse = 지하철_노선_등록되어_있음(new LineRequest("2호선", "green", 강남역.getId(), 역삼역.getId(), 5));
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(blueLineResponse.getId() + 1L);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(greenLineResponse.getId() + 1L);
 
         // then
         지하철_노선_응답_실패됨(response);
@@ -133,10 +147,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine_error() {
         // given
-        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
+        StationResponse 강남역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("강남역");
+        StationResponse 역삼역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("역삼역");
+        LineResponse greenLineResponse = 지하철_노선_등록되어_있음(new LineRequest("2호선", "green", 강남역.getId(), 역삼역.getId(), 5));
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(blueLineResponse.getId() + 1L, new LineRequest("2호선", "green"));
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(greenLineResponse.getId() + 1L, new LineRequest("4호선", "blue", 강남역.getId(), 역삼역.getId(), 5));
 
         // then
         지하철_노선_수정_실패됨(response);
@@ -147,9 +163,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("동일한 노선이름으로 수정 요청할 경우 실패")
     void duplicate_name_error() {
         // given
-        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
-        LineResponse greenLineResponse = 지하철_노선_등록되어_있음(new LineRequest("2호선", "grean"));
-        List<Long> lineIds = Arrays.asList(blueLineResponse.getId(), greenLineResponse.getId());
+        StationResponse 강남역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("강남역");
+        StationResponse 역삼역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("역삼역");
+        StationResponse 서울역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("서울역");
+        StationResponse 시청역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("시청역");
+        지하철_노선_등록되어_있음(new LineRequest("2호선", "green", 강남역.getId(), 역삼역.getId(), 5));
+        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("4호선", "blue", 서울역.getId(), 시청역.getId(), 9));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(blueLineResponse.getId(),
@@ -164,10 +183,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine_error() {
         // given
-        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
+        StationResponse 강남역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("강남역");
+        StationResponse 역삼역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("역삼역");
+        LineResponse greenLineResponse = 지하철_노선_등록되어_있음(new LineRequest("2호선", "green", 강남역.getId(), 역삼역.getId(), 5));
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(blueLineResponse.getId() + 1L);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(greenLineResponse.getId() + 1L);
 
         // then
         지하철_노선_삭제_실패됨(response);

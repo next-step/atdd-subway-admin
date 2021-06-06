@@ -93,10 +93,4 @@ public class Section extends BaseEntity {
             throw new IllegalArgumentException("상행, 하행역은 동일한 역일 수 없습니다.");
         }
     }
-
-    @Override
-    public String toString() {
-        return "Section{" + upStation.toString() +
-                " / " + downStation.toString() + "} \n";
-    }
 }

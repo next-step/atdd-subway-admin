@@ -60,6 +60,7 @@ public class LineService {
 
     public void deleteLineById(Long id) {
         Line line = findLineByIdOrThrow(id, "삭제 대상 노선이 존재하지 않습니다.");
+        sectionRepository.deleteAllByLineId(id);
         lineRepository.delete(line);
     }
 

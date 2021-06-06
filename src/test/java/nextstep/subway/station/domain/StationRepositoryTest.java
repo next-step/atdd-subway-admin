@@ -22,18 +22,6 @@ class StationRepositoryTest {
     private StationRepository stationRepository;
 
     @Test
-    void duplicate_station_exception() {
-        // given
-        Station firstStation = new Station("강남역");
-        Station secondStation = new Station("강남역");
-        this.stationRepository.save(firstStation);
-
-        // when
-        assertThatThrownBy(() -> this.stationRepository.save(secondStation))
-                .isInstanceOf(DataIntegrityViolationException.class);
-    }
-
-    @Test
     @DisplayName("지하철 역 목록 저장")
     void create_all() {
         // given
@@ -47,6 +35,20 @@ class StationRepositoryTest {
     }
 
     @Test
+    @DisplayName("중복된 이름의 역 저장 실패")
+    void duplicate_station_exception() {
+        // given
+        Station firstStation = new Station("강남역");
+        Station secondStation = new Station("강남역");
+        this.stationRepository.save(firstStation);
+
+        // when
+        assertThatThrownBy(() -> this.stationRepository.save(secondStation))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    @DisplayName("전체 저장 시 동일한 역 이름이 있을 경우 실패")
     void create_all_duplicate_exception() {
         // given
         List<Station> stations = Arrays.asList(new Station("강남역"), new Station("강남역"));
