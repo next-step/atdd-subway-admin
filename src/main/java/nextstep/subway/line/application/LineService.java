@@ -56,13 +56,17 @@ public class LineService {
 
     public LineResponse update(Long id, LineRequest lineRequest) {
         Line persistLine = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(NoSuchElementException::new);
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(NoSuchElementException::new);
-        Line updateLine = Line.of(lineRequest.getName()
-                                , lineRequest.getColor()
-                                , Section.of(upStation, downStation, lineRequest.getDistance()));
+
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
+                .orElseThrow(NoSuchElementException::new);
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
+                .orElseThrow(NoSuchElementException::new);
+        Line updateLine = Line.of(
+                lineRequest.getName(),
+                lineRequest.getColor());
 
         persistLine.update(updateLine);
+
         return LineResponse.of(persistLine);
     }
 

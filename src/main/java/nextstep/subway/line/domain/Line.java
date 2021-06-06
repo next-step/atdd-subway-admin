@@ -34,14 +34,22 @@ public class Line extends BaseEntity {
         section.setLine(this);
     }
 
+    public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public static Line of(String name, String color, Section section) {
         return new Line(name, color, section);
+    }
+
+    public static Line of(String name, String color) {
+        return new Line(name, color);
     }
 
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
-        this.sections = line.getSections();
     }
 
     public Sections getSections() {
@@ -68,6 +76,9 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
+        if (section == null) {
+            throw new IllegalArgumentException("Section is null.");
+        }
         sections.add(section);
     }
 }
