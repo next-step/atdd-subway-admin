@@ -3,6 +3,7 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +48,12 @@ public class LineController {
     public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        LineResponse lineResponse = lineService.addSection(id, sectionRequest);
+        return ResponseEntity.ok().body(lineResponse);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

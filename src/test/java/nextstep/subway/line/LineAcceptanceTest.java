@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
@@ -108,8 +109,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         Long id = 생성_노선_아이디(createResponse);
 
-        lineService.addSection(id, 양재역.getId(), 판교역.getId(), 3);
-        lineService.addSection(id, 신사역.getId(), 강남역.getId(), 10);
+        SectionRequest sectionRequest = new SectionRequest(양재역.getId(), 판교역.getId(), 3);
+        SectionRequest sectionRequest1 = new SectionRequest(신사역.getId(), 강남역.getId(), 10);
+
+        lineService.addSection(id, sectionRequest);
+        lineService.addSection(id, sectionRequest1);
 
         // when
         // 지하철_노선_조회_요청
