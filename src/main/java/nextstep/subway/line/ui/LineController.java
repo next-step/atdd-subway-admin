@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
+
+import static java.util.Objects.*;
 
 @RestController
 @RequestMapping("/lines")
@@ -20,7 +23,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
@@ -36,11 +39,12 @@ public class LineController {
     }
 
     @PutMapping("line/{lineId}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long lineId,
-                                     @RequestBody LineRequest lineRequest
+    public ResponseEntity<LineResponse> updateLine(
+            @PathVariable Long lineId,
+            @RequestBody LineRequest lineRequest
     ) {
-        LineResponse line = lineService.updateById(lineId, lineRequest);
-        return ResponseEntity.ok().body(line);
+        LineResponse body = lineService.updateById(lineId, lineRequest);
+        return ResponseEntity.ok().body(body);
     }
 
     @DeleteMapping("{lineId}")
