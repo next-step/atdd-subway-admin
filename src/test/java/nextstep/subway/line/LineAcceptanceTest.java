@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -9,12 +10,16 @@ import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static nextstep.subway.line.LineAcceptanceTestSteps.*;
 import static nextstep.subway.line.LineAcceptanceTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -79,12 +84,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineResponse expected = send_createLine_with_success_check(makeLineRequest("신분당선", LineColor.RED));
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = send_getLine(expected.getId());
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse actual = convertToLineResponse(response);
+        assertAll(() -> {
+            assertThat(actual.getName()).isEqualTo("신분당선");
+            assertThat(actual.getColor()).isEqualTo(LineColor.RED);
+        });
     }
 
     @DisplayName("지하철 노선을 수정한다.")
