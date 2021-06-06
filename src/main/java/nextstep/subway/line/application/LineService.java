@@ -1,5 +1,8 @@
 package nextstep.subway.line.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,5 +23,14 @@ public class LineService {
 	public LineResponse saveLine(LineRequest request) {
 		Line persistLine = lineRepository.save(request.toLine());
 		return LineResponse.of(persistLine);
+	}
+
+	@Transactional(readOnly = true)
+	public List<LineResponse> findAllLines() {
+		List<Line> lines = lineRepository.findAll();
+
+		return lines.stream()
+			.map(LineResponse::of)
+			.collect(Collectors.toList());
 	}
 }
