@@ -79,22 +79,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_포함됨(response, Arrays.asList(생성된_분당선, 생성된_신분당선));
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void getLine() {
-        // given
-        ExtractableResponse<Response> 생성된_분당선 = 지하철_노선_생성_요청(분당선);
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(생성된_분당선);
-
-        // then
-        지하철_노선_응답됨(response, 생성된_분당선);
-    }
-
     @DisplayName("지하철 노선을 조회한다. (역 목록 포함)")
     @Test
-    void getLine_new() {
+    void getLine() {
         // given
         ExtractableResponse<Response> 생성된_분당선 = 지하철_노선_생성_요청(분당선);
 
