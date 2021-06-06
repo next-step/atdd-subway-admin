@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -9,7 +8,6 @@ import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -126,50 +124,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest request) {
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(ROOT_REQUEST_URI)
-                .then().log().all()
-                .extract();
+        return httpPost(ROOT_REQUEST_URI, request);
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get(ROOT_REQUEST_URI)
-                .then().log().all()
-                .extract();
+        return httpGet(ROOT_REQUEST_URI);
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get(ROOT_REQUEST_URI + "/" + id)
-                .then().log().all()
-                .extract();
+        return httpGet(ROOT_REQUEST_URI + "/" + id);
     }
 
     private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .delete(ROOT_REQUEST_URI + "/" + id)
-                .then().log().all()
-                .extract();
+        return httpDelete(ROOT_REQUEST_URI + "/" + id);
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineRequest request) {
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put(ROOT_REQUEST_URI + "/" + id)
-                .then().log().all()
-                .extract();
+        return httpPut(ROOT_REQUEST_URI + "/" + id, request);
     }
 
     private void 지하철_노선_OK_응답(ExtractableResponse<Response> response) {
