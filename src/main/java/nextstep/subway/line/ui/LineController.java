@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/lines")
@@ -30,8 +31,18 @@ public class LineController {
         return ResponseEntity.ok(lineService.findAllLines());
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<LineResponse> getLineById(@PathVariable Long id) {
+        return ResponseEntity.ok(lineService.findLineById(id));
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity handleIllegalLineIdException(NoSuchElementException e) {
         return ResponseEntity.badRequest().build();
     }
 }

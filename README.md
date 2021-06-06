@@ -68,12 +68,12 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         * when: 지하철 노선 목록 조회를 요청 한다.
         * then: 지하철 노선 목록이 응답된다.
         * then: 지하철 노선 목록에 분당선, 2호선이 포함되어 있다.
-    * [ ] Scenario: 지하철 노선 단건 조회
+    * [x] Scenario: 지하철 노선 단건 조회
         * given: 지하철 노선 분당선이 등록되어 있다.
         * when: 지하철 노선 분당선 조회를 요청한다.
         * then: 지하철 노선이 응답된다.
         * then: 지하철 노선 분당선이 응답 된다.
-    * [ ] Scenario: 존재하지 않는 지하철 노선 아이디를 단건 조회
+    * [x] Scenario: 존재하지 않는 지하철 노선 아이디를 단건 조회
         * given: 지하철 노선 분당선이 등록되어 있다.
         * when: 지하철 노선 아이디 100을 조회를 요청한다.
         * then: 지하철 노선 단건 조회가 실패 한다.

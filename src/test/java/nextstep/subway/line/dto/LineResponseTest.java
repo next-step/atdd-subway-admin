@@ -22,4 +22,12 @@ class LineResponseTest {
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
         assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
     }
+
+    @Test
+    @DisplayName("optional로 포장된 Line entity가 비어있을때 에러 발생")
+    void optional_of() {
+        Optional<Line> emptyLine = Optional.empty();
+        assertThatThrownBy(() -> LineResponse.of(emptyLine)).isInstanceOf(NoSuchElementException.class);
+
+    }
 }
