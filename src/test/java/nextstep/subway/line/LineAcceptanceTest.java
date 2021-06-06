@@ -194,9 +194,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .when().put("/lines/{id}", id)
             .then().log().all().extract();
 
+        ExtractableResponse<Response> updatedResponse = RestAssured
+            .given().log().all()
+            .when().get("/lines/{id}", id)
+            .then().log().all().extract();
+
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        assertThat(updatedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(updatedResponse.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        assertThat(updatedResponse.jsonPath().getLong("id")).isEqualTo(id);
+        assertThat(updatedResponse.jsonPath().getString("name")).isEqualTo(params2.get("name"));
+        assertThat(updatedResponse.jsonPath().getString("color")).isEqualTo(params2.get("color"));
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -224,8 +235,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .when().delete("/lines/{id}", id)
                 .then().log().all().extract();
 
+        ExtractableResponse<Response> deletedResponse = RestAssured
+            .given().log().all()
+            .when().get("/lines/{id}", id)
+            .then().log().all().extract();
+
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

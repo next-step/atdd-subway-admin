@@ -4,6 +4,7 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,26 +26,32 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<?> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping(headers = "accept=application/json")
-    public ResponseEntity getLines() {
+    public ResponseEntity<?> getLines() {
         List<LineResponse> lines = lineService.getLines();
         return ResponseEntity.ok(lines);
     }
 
     @GetMapping(value = "/{id}", headers = "accept=application/json")
-    public ResponseEntity getLine(@PathVariable Long id) {
+    public ResponseEntity<?> getLine(@PathVariable Long id) {
         LineResponse line = lineService.getLine(id);
         return ResponseEntity.ok(line);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<?> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> deleteLine(@PathVariable Long id) {
+        lineService.deleteLine(id);
+        return ResponseEntity.noContent().build();
     }
 }
