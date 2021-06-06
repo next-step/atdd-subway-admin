@@ -54,35 +54,45 @@ public class SectionCommandService {
         Station upStation = stationQueryService.findById(upStationId);
         Station downStation = stationQueryService.findById(downStationId);
 
+        boolean isUpdate = false;
+
         for (Section section : sections) {
 
             if (section.equalsUpStation(downStation)) {
                 newSections.add(new Section(upStation, downStation, distance));
                 newSections.add(section.updateUpStation(downStation, distance));
+                isUpdate = true;
                 continue;
             }
 
             if (section.equalsUpStation(upStation)) {
                 newSections.add(new Section(upStation, downStation, section.minusDistance(distance)));
                 newSections.add(section.updateUpStation(downStation, distance));
+                isUpdate = true;
                 continue;
             }
 
             if (section.equalsDownStation(upStation)) {
                 newSections.add(section.updateDownStation(upStation, distance));
                 newSections.add(new Section(upStation, downStation, distance));
+                isUpdate = true;
                 continue;
             }
 
             if (section.equalsDownStation(downStation)) {
                 newSections.add(section.updateDownStation(upStation, distance));
                 newSections.add(new Section(upStation, downStation, section.minusDistance(distance)));
+                isUpdate = true;
                 continue;
             }
 
             if (section.hasNotUpAndDownStation(upStation, downStation)) {
                 newSections.add(section);
             }
+        }
+
+        if (!isUpdate) {
+            throw new IllegalArgumentException("신규 구간의 상행역과 하행역 모두가 기존 구간에 포함되어 있지 않습니다.");
         }
 
         newSections.forEach(sectionRepository::save);
