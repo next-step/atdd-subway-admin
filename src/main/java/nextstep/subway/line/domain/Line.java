@@ -4,8 +4,8 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
 
 @Entity
 public class Line extends BaseEntity {
@@ -51,13 +51,50 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        Station upStation = findUpStation(sections);
-
-        return new ArrayList<>();
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Station> stations = findStationInSections();
+        return new ArrayList<>(stations);
     }
 
-    private Station findUpStation(List<Section> sections) {
+    private List<Station> findStationInSections() {
+        List<Station> stations = new ArrayList<>();
+        Section firstSection = findFirstSection();
+        stations.add(firstSection.getUpStation());
+        stations.addAll(findOthersStations(firstSection.getDownStation()));
+        return stations;
+    }
 
+    private List<Station> findOthersStations(Station downStation) {
+        List<Station> stations = new ArrayList<>();
+        stations.add(downStation);
+        Section nextSection = findSectionInUpStation(downStation);
+        while (!Objects.isNull(nextSection)) {
+            stations.add(nextSection.getDownStation());
+            nextSection = findSectionInUpStation(nextSection.getDownStation());
+        }
+        return new ArrayList<>(stations);
+    }
 
+    private Section findFirstSection() {
+        return sections.stream()
+                .filter(section -> Objects.isNull(findSectionInDownStation(section.getUpStation())))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    private Section findSectionInDownStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.getDownStation() == upStation)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Section findSectionInUpStation(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation() == downStation)
+                .findFirst()
+                .orElse(null);
     }
 }
