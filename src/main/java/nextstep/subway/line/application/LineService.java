@@ -5,9 +5,11 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -25,6 +27,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
@@ -32,16 +35,16 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id).get();
+            Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
         return LineResponse.of(line);
     }
 
-    public Object updateLine(LineRequest lineRequest, Long id) {
-        Line line = lineRepository.findById(id).get();
+    public LineResponse updateLine(LineRequest lineRequest, Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
         line.updateLine(lineRequest.toLine());
-        Line persistLine = lineRepository.save(line);
-        return LineResponse.of(persistLine);
+        return LineResponse.of(line);
     }
 
     public void deleteLineById(Long id) {
