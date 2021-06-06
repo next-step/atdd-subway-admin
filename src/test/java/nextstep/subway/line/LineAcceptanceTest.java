@@ -161,12 +161,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> 신분당선 = new HashMap<>();
+        신분당선.put("name", "신분당선");
+        신분당선.put("color", "bg-red-600");
+        ExtractableResponse<Response> 신분당선_생성_응답 = RestAssured.given().log().all()
+                .body(신분당선)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
+
+        Map<String, String> 신분당선_수정 = new HashMap<>();
+        신분당선_수정.put("name", "분당선");
+        신분당선_수정.put("color", "bg-yellow-500");
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> 노선_수정_응답 = RestAssured.given().log().all()
+                .body(신분당선_수정)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/" + 신분당선_생성_응답.body().jsonPath().get("id"))
+                .then().log().all()
+                .extract();
 
         // then
         // 지하철_노선_수정됨
+        assertThat(노선_수정_응답.body().jsonPath().get("name").toString()).isEqualTo("분당선");
+        assertThat(노선_수정_응답.body().jsonPath().get("color").toString()).isEqualTo("bg-yellow-500");
     }
 
     @DisplayName("지하철 노선을 제거한다.")

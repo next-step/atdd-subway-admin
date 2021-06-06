@@ -38,9 +38,22 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         Optional<Line> line = lineRepository.findById(id);
+        checkLine(line);
+        return LineResponse.of(line.get());
+    }
+
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Optional<Line> line = lineRepository.findById(id);
+        checkLine(line);
+
+        line.get().update(lineRequest.toLine());
+
+        return LineResponse.of(line.get());
+    }
+
+    private void checkLine(Optional<Line> line) {
         if(!line.isPresent()) {
             throw new RuntimeException("노선을 찾을 수 없습니다.");
         }
-        return LineResponse.of(line.get());
     }
 }
