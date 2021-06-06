@@ -52,3 +52,14 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+# [Step 1] 지하철 노선 관리
+## 요구사항
+### 지하철 노선 관리 기능을 구현하기 
+ - 기능 목록: 생성 / 목록 조회 / 조회 / 수정 / 삭제
+ - 기능 구현 전 인수 테스트 작성
+ - 기능 구현 후 인수 테스트 리팩터링
+
+## 요구사항 설명
+ - 지하철 노선 관련 기능의 인수 테스트를 작성하기
+ - 지하철 노선 관련 기능 구현하기 
