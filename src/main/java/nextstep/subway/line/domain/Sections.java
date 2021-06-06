@@ -62,10 +62,10 @@ public class Sections {
             return;
         }
 
-        boolean isDownStationExist = !stations().contains(addedSection.getDownStation());
-        boolean isUpStationExist = !stations().contains(addedSection.getUpStation());
+        boolean isDownStationExist = stations().contains(addedSection.getDownStation());
+        boolean isUpStationExist = stations().contains(addedSection.getUpStation());
 
-        if (isDownStationExist && isUpStationExist) {
+        if (!isDownStationExist && !isUpStationExist) {
             throw new TwoStationNotExistException();
         }
     }
