@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
+
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
@@ -44,12 +46,16 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void addSectionBetween(Station upStation, Station downStation, int distance) {
+    public void addSection(Station upStation, Station downStation, int distance) {
         Section section = new Section(this, upStation, downStation, distance);
         sections.add(section);
     }
 
     Sections getSections() {
         return sections;
+    }
+
+    public List<Station> orderedStations() {
+        return sections.orderedStations();
     }
 }

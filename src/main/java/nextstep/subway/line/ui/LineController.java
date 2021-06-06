@@ -5,6 +5,7 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,14 +42,15 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> findLines() {
-        List<LineResponse> lineResponses = LineResponse.allOf(lineService.findAllLines());
+        List<LineResponse> lineResponses = LineResponse.list(lineService.findAllLines());
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping(value = "/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> findLine(@PathVariable Long lineId) {
         Line line = lineService.findLineById(lineId);
-        return ResponseEntity.ok().body(LineResponse.of(line));
+        List<StationResponse> stationResponses = StationResponse.list(line.orderedStations());
+        return ResponseEntity.ok().body(LineResponse.of(line, stationResponses));
     }
 
     @PutMapping(value = "/{lineId}")

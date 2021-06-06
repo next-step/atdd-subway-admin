@@ -58,6 +58,6 @@ public class LineService {
     private void addSection(Line line, Long upStationId, Long downStationId, int distance) {
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
-        line.addSectionBetween(upStation, downStation, distance);
+        line.addSection(upStation, downStation, distance);
     }
 }

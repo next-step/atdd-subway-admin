@@ -71,7 +71,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청(createdResponse);
 
         // then
-        지하철_노선_응답됨(findResponse);
+        지하철_노선_응답됨(findResponse, "강남역", "광교역");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -199,9 +199,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(updatedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private void 지하철_노선_응답됨(ExtractableResponse<Response> findResponse) {
+    private void 지하철_노선_응답됨(ExtractableResponse<Response> findResponse, String... stations) {
         assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(findResponse.as(LineResponse.class)).isNotNull();
+        assertThat(findResponse.jsonPath().getList("stations.name", String.class)).containsExactly(stations);
     }
 
     private Map<String, Object> createBody(String name, String color) {

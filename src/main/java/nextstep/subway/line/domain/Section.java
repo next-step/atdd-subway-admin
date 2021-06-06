@@ -2,6 +2,9 @@ package nextstep.subway.line.domain;
 
 import static javax.persistence.FetchType.*;
 
+import java.util.Objects;
+import java.util.stream.Stream;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,6 +42,11 @@ public class Section {
 	protected Section() { }
 
 	Section(Line line, Station upStation, Station downStation, Integer distance) {
+		this(null, line, upStation, downStation, distance);
+	}
+
+	Section(Long id, Line line, Station upStation, Station downStation, Integer distance) {
+		this.id = id;
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
@@ -47,5 +55,32 @@ public class Section {
 
 	boolean isIn(Line line) {
 		return this.line.equals(line);
+	}
+
+	boolean isPreviousOf(Section otherSection) {
+		return this.downStation.equals(otherSection.upStation);
+	}
+
+	boolean isNextOf(Section otherSection) {
+		return this.upStation.equals(otherSection.downStation);
+	}
+
+	Stream<Station> stations() {
+		return Stream.of(upStation, downStation);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Section section = (Section)o;
+		return Objects.equals(id, section.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 }

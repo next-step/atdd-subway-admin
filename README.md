@@ -75,6 +75,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
       -[x] Line 저장 시 종점역 정보가 없다면 저장할 수 없다.
       -[x] Line 저장 시 Section 을 함께 저장해야 한다. 
       -[x] Section 은 자신의 Line 과 상행방향역 하행방향역 정보를 갖는다.
--[ ] 노선 조회 시 응답 결과에 역 목록 추가하기
-    -[ ] 테스트 코드 변경
-    -[ ] 프로덕션 코드 변경
+-[x] 노선 조회 시 응답 결과에 역 목록 추가하기
+    -[x] 테스트 코드 변경
+    -[x] 프로덕션 코드 변경
+    -[ ] 성능 최적화
