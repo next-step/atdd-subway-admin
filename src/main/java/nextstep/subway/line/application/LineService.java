@@ -8,8 +8,8 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineService {
 
     private LineRepository lineRepository;
-    private StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
-        this.stationService = stationService;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -31,10 +29,7 @@ public class LineService {
     }
 
     public LineResponse saveLineWithSection(LineRequest request) {
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
-        Section section = new Section(upStation.getId(), downStation.getId(), request.getDistance());
-        Line persistLine = lineRepository.save(new Line(request.getName(), request.getColor(), section));
+        Line persistLine = lineRepository.save(request.toLineWithSection());
         return LineResponse.of(persistLine);
     }
 
@@ -60,5 +55,12 @@ public class LineService {
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public SectionResponse addSection(Long lineId, SectionRequest request) {
+        Section section = request.toSection();
+        Line persistLine = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+        persistLine.addSection(section);
+        return SectionResponse.of(section);
     }
 }

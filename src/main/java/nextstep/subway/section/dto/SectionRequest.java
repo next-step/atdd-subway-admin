@@ -4,8 +4,6 @@ import nextstep.subway.section.domain.Section;
 
 public class SectionRequest {
 
-    private Long id;
-    private Long lineId;
     private Long upStationId;
     private Long downStationId;
     private int distance;
@@ -13,19 +11,10 @@ public class SectionRequest {
     public SectionRequest() {
     }
 
-    public SectionRequest(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this.lineId = lineId;
+    public SectionRequest(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getLineId() {
-        return lineId;
     }
 
     public Long getUpStationId() {
@@ -41,14 +30,12 @@ public class SectionRequest {
     }
 
     public Section toSection() {
-        return new Section(lineId, upStationId, downStationId, distance);
+        return new Section(upStationId, downStationId, distance);
     }
 
     @Override
     public String toString() {
         return "SectionRequest{" +
-            "id=" + id +
-            ", lineId=" + lineId +
             ", upStationId=" + upStationId +
             ", downStationId=" + downStationId +
             ", distance=" + distance +
