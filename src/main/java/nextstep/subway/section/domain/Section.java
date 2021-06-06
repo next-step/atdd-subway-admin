@@ -1,7 +1,7 @@
 package nextstep.subway.section.domain;
 
 import java.io.Serializable;
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -32,8 +32,8 @@ public class Section extends BaseEntity implements Serializable {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    @Column(nullable = false)
-    private Integer distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
 
@@ -45,6 +45,10 @@ public class Section extends BaseEntity implements Serializable {
     }
 
     public Section(Station upStation, Station downStation, Integer distance) {
+        this(upStation, downStation, new Distance(distance));
+    }
+
+    public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -65,5 +69,33 @@ public class Section extends BaseEntity implements Serializable {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public boolean hasNotUpAndDownStation(Station upStation, Station downStation) {
+        return ! (hasStation(upStation) || hasStation(downStation));
+    }
+
+    public boolean hasStation(Station station) {
+        return station.equals(this.upStation) || station.equals(this.downStation);
+    }
+
+    public boolean equalsUpStation(Station station) {
+        return station.equals(this.upStation);
+    }
+
+    public boolean equalsDownStation(Station station) {
+        return station.equals(this.downStation);
+    }
+
+    public Section updateUpStation(Station downStation, int distance) {
+        return new Section(downStation, this.downStation, new Distance(distance));
+    }
+
+    public Section updateDownStation(Station upStation, int distance) {
+        return new Section(this.upStation, upStation, new Distance(distance));
+    }
+
+    public Distance minusDistance(int distance) {
+        return this.distance.minus(distance);
     }
 }

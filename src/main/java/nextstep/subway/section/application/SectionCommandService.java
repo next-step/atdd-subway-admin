@@ -1,9 +1,13 @@
 package nextstep.subway.section.application;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import nextstep.subway.section.domain.LineSections;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.application.StationQueryService;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,5 +41,51 @@ public class SectionCommandService {
                                      distance);
 
         return sectionRepository.save(entity).getId();
+    }
+
+    public LineSections upsert(List<Long> sectionIds,
+                               Long upStationId,
+                               Long downStationId,
+                               int distance) {
+
+        List<Section> sections = sectionRepository.findAllById(sectionIds);
+        List<Section> newSections = new ArrayList<>();
+
+        Station upStation = stationQueryService.findById(upStationId);
+        Station downStation = stationQueryService.findById(downStationId);
+
+        for (Section section : sections) {
+
+            if (section.equalsUpStation(downStation)) {
+                newSections.add(new Section(upStation, downStation, distance));
+                newSections.add(section.updateUpStation(downStation, distance));
+                continue;
+            }
+
+            if (section.equalsUpStation(upStation)) {
+                newSections.add(new Section(upStation, downStation, section.minusDistance(distance)));
+                newSections.add(section.updateUpStation(downStation, distance));
+                continue;
+            }
+
+            if (section.equalsDownStation(upStation)) {
+                newSections.add(section.updateDownStation(upStation, distance));
+                newSections.add(new Section(upStation, downStation, distance));
+                continue;
+            }
+
+            if (section.equalsDownStation(downStation)) {
+                newSections.add(section.updateDownStation(upStation, distance));
+                newSections.add(new Section(upStation, downStation, section.minusDistance(distance)));
+                continue;
+            }
+
+            if (section.hasNotUpAndDownStation(upStation, downStation)) {
+                newSections.add(section);
+            }
+        }
+
+        newSections.forEach(sectionRepository::save);
+        return new LineSections(newSections);
     }
 }

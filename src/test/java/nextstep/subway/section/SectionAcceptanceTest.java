@@ -41,7 +41,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionTest01() {
         return Stream.of(
-            dynamicTest("공항철도 기본 노선 생성", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
             dynamicTest("홍대입구역-DMC역 구간 추가", () -> addSectionRequestSuccess(HONGIK_UNIV.getId(), DMC.getId()))
         );
     }
@@ -50,8 +50,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionTest02() {
         return Stream.of(
-            dynamicTest("공항철도 기본 노선 생성", () -> createLineRequestSuccess(
-                AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
             dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL.getId(), GONGDEOK.getId()))
         );
     }
@@ -60,19 +59,26 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionTest03() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestSuccess(
-                AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
+            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
             dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL.getId(), GONGDEOK.getId()))
         );
     }
 
     @DisplayName("기존 노선 가운데에 새 구간을 등록하는 경우 기존 역 사이 간격보다 크거나 같지 않아야 한다.")
     @TestFactory
-    Stream<DynamicTest> addSectionFailTest01() {
+    Stream<DynamicTest> addSectionFailBecauseOfDistance01() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestSuccess(
-                AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
+            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
             dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestFail(SEOUL.getId(), GONGDEOK.getId(), 200))
+        );
+    }
+
+    @DisplayName("기존 노선 가운데에 새 구간을 등록하는 경우 기존 역 사이 간격보다 크거나 같지 않아야 한다.")
+    @TestFactory
+    Stream<DynamicTest> addSectionFailBecauseOfDistance02() {
+        return Stream.of(
+            dynamicTest("공항철도 노선 생성(서울-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
+            dynamicTest("공덕역-홍대입구역 구간 추가", () -> addSectionRequestFail(GONGDEOK.getId(), HONGIK_UNIV.getId(), 200))
         );
     }
 
@@ -80,8 +86,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionFailTest02() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성", () -> createLineRequestSuccess(
-                AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("공항철도 노선 생성", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
             dynamicTest("홍대입구역-공덕역 구간 추가", () -> addSectionRequestFail(HONGIK_UNIV.getId(), GONGDEOK.getId(), 100))
         );
     }
@@ -90,8 +95,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionFailTest03() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성", () -> createLineRequestSuccess(
-                AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("공항철도 노선 생성", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
             dynamicTest("김포공항-계양역 구간 추가", () -> addSectionRequestFail(GIMPO_AIRPORT.getId(), GYEYANG.getId(), 100))
         );
     }
@@ -134,6 +138,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
                                                                    100);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.body().jsonPath().getList("stations")).hasSize(3);
     }
 
     private void addSectionRequestFail(Long upStationId, Long downStationId, int distance) {
