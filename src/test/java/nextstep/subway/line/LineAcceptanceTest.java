@@ -197,11 +197,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음(FIRST.name, FIRST.color);
 
         // when
         // 지하철_노선_제거_요청
+        final ExtractableResponse<Response> response = 지하철_노선_제거_요청("/lines/" + FIRST.id);
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(final String path) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete(path)
+            .then().log().all()
+            .extract();
     }
 }
