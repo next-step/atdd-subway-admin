@@ -24,13 +24,15 @@ import nextstep.subway.line.dto.LineResponse;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     enum Line {
-        FIRST("1호선", "bg-blue-600"),
-        SECOND("2호선", "bg-green-600");
+        FIRST(1L, "1호선", "bg-blue-600"),
+        SECOND(2L, "2호선", "bg-green-600");
 
+        private final Long id;
         private final String name;
         private final String color;
 
-        Line(final String name, final String color) {
+        Line(final Long id, final String name, final String color) {
+            this.id = id;
             this.name = name;
             this.color = color;
         }
@@ -98,11 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
+        final ExtractableResponse<Response> response = 지하철_노션_조회_요청("/lines");
 
         // then
         // 지하철_노선_목록_응답됨
@@ -121,6 +119,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    private ExtractableResponse<Response> 지하철_노션_조회_요청(final String path) {
+        return RestAssured.given().log().all()
+            .when()
+            .get(path)
+            .then().log().all()
+            .extract();
+    }
+
     private List<LineResponse> lineResponses(final ExtractableResponse<Response> response) {
         final JsonPath jsonPath = response.jsonPath();
 
@@ -129,15 +135,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void getLine() {
+    void given_ExistingLine_when_SearchLine_returnLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음(FIRST.name, FIRST.color);
 
         // when
         // 지하철_노선_조회_요청
+        final ExtractableResponse<Response> response = 지하철_노션_조회_요청("/lines/" + FIRST.id);
 
         // then
         // 지하철_노선_응답됨
+        final JsonPath jsonPath = response.jsonPath();
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(jsonPath.getLong("id")).isEqualTo(FIRST.id),
+            () -> assertThat(jsonPath.getString("name")).isEqualTo(FIRST.name),
+            () -> assertThat(jsonPath.getString("color")).isEqualTo(FIRST.color)
+        );
     }
 
     @DisplayName("지하철 노선을 수정한다.")
