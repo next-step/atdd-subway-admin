@@ -34,4 +34,11 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 노선을 찾을 수 없습니다."));
         return LineResponse.of(line);
     }
+
+    public LineResponse updateLine(long id, LineRequest request){
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 노선을 찾을 수 없습니다."));
+        line.update(request.toLine());
+        return LineResponse.of(line);
+    }
 }

@@ -104,12 +104,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_수정_요청
         Map<String, String> params = new HashMap<>();
         params.put("color", "paleblue");
+        params.put("name", "1호선");
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                .pathParam("id", 1L)
-                .params(params)
+                .pathParam("id", 1)
+                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().patch("/lines")
+                .when().put("/lines/{id}")
                 .then().log().all().extract();
 
         // then

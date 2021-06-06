@@ -35,6 +35,11 @@ public class LineController {
         return ResponseEntity.ok(lineService.getLine(id));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<LineResponse> updateLine(@PathVariable long id, @RequestBody LineRequest lineRequest){
+        return ResponseEntity.ok(lineService.updateLine(id, lineRequest));
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
