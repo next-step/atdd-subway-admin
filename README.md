@@ -69,7 +69,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [ ] 노선 조회 시 응답 결과에 역 목록 추가
   - [ ] 상행역 부터 하행역 순으로 정렬
 - [ ] 노선 생성 시 두 종점역 추가
-  - [ ] 노선 생성 시 종점역(상행, 하행, distance) 정보를 파라미터에 추가
+  - [x] 노선 생성 시 종점역(상행, 하행, distance) 정보를 파라미터에 추가
   - [ ] 두 종점역은 구간의 형태로 관리
 - [x] 노선 객체에서 구간 정보 관리
   - [x] 구간 entity 구성 및 연관관계 매핑
