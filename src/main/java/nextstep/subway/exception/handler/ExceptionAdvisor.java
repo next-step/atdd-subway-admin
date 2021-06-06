@@ -16,11 +16,13 @@ public class ExceptionAdvisor {
 
     @ExceptionHandler(DuplicateDataException.class)
     public ResponseEntity<ErrorDto> handleDuplicateDataException(DuplicateDataException exception) {
+        log.error("DuplicateDataException", exception);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.createErrorDto());
     }
 
     @ExceptionHandler(NoSuchDataException.class)
     public ResponseEntity<ErrorDto> handleNoSuchDataException(NoSuchDataException exception) {
+        log.error("NoSuchDataException", exception);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.createErrorDto());
     }
 }
