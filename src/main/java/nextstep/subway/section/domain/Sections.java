@@ -13,6 +13,7 @@ import nextstep.subway.station.domain.Station;
 public class Sections {
 
     public static final String AT_LEAST_ONE_SECTION_IS_REQUIRED = "1개 이상의 구간이 입력되어야 합니다.";
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections;
 
@@ -25,6 +26,20 @@ public class Sections {
             throw new IllegalArgumentException(AT_LEAST_ONE_SECTION_IS_REQUIRED);
         }
         initSortSections(sections);
+    }
+
+    public List<Station> findSortedStations() {
+        List<Station> stations = sections.stream()
+            .map(Section::getUpStation)
+            .collect(Collectors.toList());
+        if (sections.size() > 0) {
+            stations.add(getLast().getDownStation());
+        }
+        return stations;
+    }
+
+    public boolean add(Section section) {
+        return sections.add(section);
     }
 
     private void initSortSections(List<Section> sections) {
@@ -51,7 +66,7 @@ public class Sections {
         sections.add(sections.size(), section);
     }
 
-    public boolean isBefore(Section findSection) {
+    private boolean isBefore(Section findSection) {
         if (sections.size() == 0) {
             return true;
         }
@@ -60,7 +75,7 @@ public class Sections {
             .count() > 0;
     }
 
-    public boolean isAfter(Section findSection) {
+    private boolean isAfter(Section findSection) {
         if (sections.size() == 0) {
             return true;
         }
@@ -69,21 +84,7 @@ public class Sections {
             .count() > 0;
     }
 
-    public List<Station> findSortedStations() {
-        List<Station> stations = sections.stream()
-            .map(Section::getUpStation)
-            .collect(Collectors.toList());
-        if (sections.size() > 0) {
-            stations.add(getLast().getDownStation());
-        }
-        return stations;
-    }
-
     private Section getLast() {
         return sections.get(sections.size() - 1);
-    }
-
-    public boolean add(Section section) {
-        return sections.add(section);
     }
 }
