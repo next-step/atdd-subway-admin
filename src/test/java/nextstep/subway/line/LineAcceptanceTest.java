@@ -173,13 +173,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
-        final JsonPath jsonPath = response.jsonPath();
-        assertAll(
-            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(jsonPath.getLong("id")).isEqualTo(FIRST.id),
-            () -> assertThat(jsonPath.getString("name")).isEqualTo(THIRD.name),
-            () -> assertThat(jsonPath.getString("color")).isEqualTo(THIRD.color)
-        );
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(final String path, final Map<String, String> params) {
