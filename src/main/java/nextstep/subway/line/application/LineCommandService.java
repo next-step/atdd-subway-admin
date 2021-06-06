@@ -43,7 +43,7 @@ public class LineCommandService {
         lineRepository.save(line);
     }
 
-    public void deleteLine(Long lineId) {
+    public void deleteById(Long lineId) {
         Line line = lineQueryService.findLineById(lineId);
         lineRepository.delete(line);
     }

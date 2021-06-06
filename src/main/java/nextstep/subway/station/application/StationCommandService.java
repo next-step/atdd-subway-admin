@@ -19,7 +19,7 @@ public class StationCommandService {
         return stationRepository.save(nonPersistStation).getId();
     }
 
-    public void deleteStationById(Long id) {
+    public void deleteById(Long id) {
         stationRepository.deleteById(id);
     }
 }
