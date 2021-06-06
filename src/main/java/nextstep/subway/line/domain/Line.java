@@ -4,9 +4,12 @@ import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
+    private static final String NOT_FOUND_LINE_ERROR_MESSAGE = "요청한 id 기준 노선이 존재하지않습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,6 +28,12 @@ public class Line extends BaseEntity {
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public static void checkNullLine(Optional<Line> optionalLine) {
+        if (!optionalLine.isPresent()) {
+            throw new IllegalArgumentException(NOT_FOUND_LINE_ERROR_MESSAGE);
+        }
     }
 
     public Long getId() {

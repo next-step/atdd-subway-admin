@@ -27,12 +27,6 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
     }
 
-    public static LineResponse of(Optional<Line> optionalLine) {
-        Line line = optionalLine.get();
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
-    }
-
-
     public Long getId() {
         return id;
     }

@@ -36,13 +36,19 @@ public class LineController {
         return ResponseEntity.ok(lineService.findLineById(id));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity updateLineById(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.updateLineById(id, lineRequest);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity handleIllegalLineIdException(NoSuchElementException e) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleIllegalIdException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().build();
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +31,14 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        return LineResponse.of(lineRepository.findById(id));
+        Optional<Line> findLine = lineRepository.findById(id);
+        Line.checkNullLine(findLine);
+        return LineResponse.of(findLine.get());
+    }
+
+    public void updateLineById(Long id, LineRequest lineRequest) {
+        Optional<Line> findLine = lineRepository.findById(id);
+        Line.checkNullLine(findLine);
+        findLine.get().update(lineRequest.toLine());
     }
 }

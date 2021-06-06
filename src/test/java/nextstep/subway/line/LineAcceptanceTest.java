@@ -165,7 +165,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-red-600");
         params.put("name", "신분당선");
         ExtractableResponse<Response> createResponse = createTestLineData(params);
-        String createdId = createResponse.header("Location").split("/")[1];
+        String createdId = createResponse.header("Location").split("/")[2];
 
         // when
         // 지하철_노선_수정_요청
