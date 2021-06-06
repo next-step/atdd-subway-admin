@@ -109,12 +109,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        LineResponse actual = convertToLineResponse(response);
-        assertAll(() -> {
-            assertThat(actual.getName()).isEqualTo("구분당선");
-            assertThat(actual.getColor()).isEqualTo(LineColor.BLUD);
-        });
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());;
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -130,6 +125,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
