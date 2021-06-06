@@ -34,8 +34,17 @@ public class LineService {
 	}
 
 	public LineResponse getLine(Long id) {
-		Line line = lineRepository.findById(id)
-			.orElseThrow(() -> new NoSuchLineException("존재하지 않는 노선입니다."));
+		Line line = getLineById(id);
 		return LineResponse.of(line);
+	}
+
+	public void updateLine(Long id, LineRequest lineRequest) {
+		Line line = getLineById(id);
+		line.update(lineRequest.toLine());
+	}
+
+	private Line getLineById(Long id) {
+		return lineRepository.findById(id)
+			.orElseThrow(() -> new NoSuchLineException("존재하지 않는 노선입니다."));
 	}
 }

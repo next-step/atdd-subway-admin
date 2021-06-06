@@ -169,12 +169,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red darken-1");
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "신분당선");
+        params1.put("color", "red darken-1");
         ExtractableResponse<Response> createResponse = RestAssured
             .given().log().all()
-            .body(params)
+            .body(params1)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines")
             .then().log().all()
@@ -185,8 +185,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_수정_요청
         Map<String, String> params2 = new HashMap<>();
-        params.put("name", "분신당선");
-        params.put("color", "blue darken-1");
+        params2.put("name", "분신당선");
+        params2.put("color", "blue darken-1");
         ExtractableResponse<Response> response = RestAssured
             .given().log().all()
             .body(params2)
