@@ -168,7 +168,7 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> saveLine(String name, String color, Long upStationId, Long downStationId, String distance) {
+    public static ExtractableResponse<Response> saveLine(String name, String color, Long upStationId, Long downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -178,13 +178,13 @@ public class LineAcceptanceTest extends RestAcceptanceTest {
         return executePost("/lines", params);
     }
 
-    private ExtractableResponse<Response> saveShinBundangLine() {
+    public static ExtractableResponse<Response> saveShinBundangLine() {
         LineResponse upStation = saveStation("강남").jsonPath().getObject(".", LineResponse.class);
         LineResponse downStation = saveStation("광교").jsonPath().getObject(".", LineResponse.class);
         return saveLine("신분당선", "red", upStation.getId(), downStation.getId(), "40");
     }
 
-    private ExtractableResponse<Response> saveLine2() {
+    public static ExtractableResponse<Response> saveLine2() {
         LineResponse upStation = saveStation("을지로입구").jsonPath().getObject(".", LineResponse.class);
         LineResponse downStation = saveStation("신도림").jsonPath().getObject(".", LineResponse.class);
         return saveLine("2호선", "green", upStation.getId(), downStation.getId(), "35");
