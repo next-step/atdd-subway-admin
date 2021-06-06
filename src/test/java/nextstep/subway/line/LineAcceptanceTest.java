@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -10,11 +9,8 @@ import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static nextstep.subway.line.LineAcceptanceTestSteps.*;
 import static nextstep.subway.line.LineAcceptanceTestUtils.*;
@@ -105,12 +101,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineResponse expected = send_createLine_with_success_check(makeLineRequest("신분당선", LineColor.RED));
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = send_updateLine(expected.getId(), makeLineRequest("2호선", LineColor.RED));
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(convertToLineResponse(response).getName()).isEqualTo("2호선");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
