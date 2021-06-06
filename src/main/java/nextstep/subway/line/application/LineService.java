@@ -31,6 +31,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findLines() {
         final List<Line> lines = findAllLine();
         final List<LineResponse> lineResponses = new ArrayList<>(lines.size());
@@ -43,6 +44,7 @@ public class LineService {
         return lineRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLine(final Long id) {
         return LineResponse.of(findById(id));
     }
