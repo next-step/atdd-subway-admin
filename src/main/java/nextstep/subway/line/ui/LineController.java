@@ -35,9 +35,11 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
-    @PatchMapping(value = "/{id}/{color}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable final Long id, @PathVariable final String color) {
-        return ResponseEntity.ok().body(lineService.updateLine(id, color));
+    @PutMapping(value = "/{id}")
+    public ResponseEntity updateLine(@PathVariable final Long id, @RequestBody final LineRequest lineRequest) {
+        LineResponse line = lineService.updateLine(id, lineRequest);
+
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @DeleteMapping("/{id}")

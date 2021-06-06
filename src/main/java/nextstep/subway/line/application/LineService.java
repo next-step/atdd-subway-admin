@@ -41,11 +41,11 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    public LineResponse updateLine(Long id, String color) {
+    public LineResponse updateLine(final Long id, final LineRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new LineNotFoundException());
 
-        line.update(new Line(line.getName(), color));
+        line.update(new Line(request.getName(), request.getColor()));
 
         return LineResponse.of(line);
     }

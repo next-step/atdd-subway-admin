@@ -25,7 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = createTestLine();
+        ExtractableResponse<Response> response = createTestLine1();
 
         // then
         // 지하철_노선_생성됨
@@ -38,11 +38,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        createTestLine();
+        createTestLine1();
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = createTestLine();
+        ExtractableResponse<Response> response = createTestLine1();
 
         // then
         // 지하철_노선_생성_실패됨
@@ -54,8 +54,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse1 = createLine(getTargetLine("2호선", "green lighten-1"));
-        ExtractableResponse<Response> createResponse2 = createLine(getTargetLine("5호선", "green lighten-2"));
+        ExtractableResponse<Response> createResponse1 = createTestLine1();
+        ExtractableResponse<Response> createResponse2 = createTestLine2();
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -85,7 +85,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = createTestLine();
+        ExtractableResponse<Response> createResponse = createTestLine1();
 
         // when
         // 지하철_노선_조회_요청
@@ -109,25 +109,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = createTestLine();
+        ExtractableResponse<Response> createResponse = createTestLine1();
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = updateColorLine(getLocationId(createResponse), "green");
+        ExtractableResponse<Response> response = updateLine(getLocationId(createResponse), getTargetLine("3호선", "yellow lighten-1"));
 
         // then
         // 지하철_노선_수정됨
-        // then
         assertAll(
             // 지하철_노선_응답됨
-            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
 
             // 지하철_노선_포함됨
             () -> {
                 LineResponse expected = response.jsonPath().getObject(".", LineResponse.class);
                 assertThat(expected.getId()).isEqualTo(getLocationId(createResponse));
-                assertThat(expected.getName()).isEqualTo("2호선");
-                assertThat(expected.getColor()).isEqualTo("green");
+                assertThat(expected.getName()).isEqualTo("3호선");
+                assertThat(expected.getColor()).isEqualTo("yellow lighten-1");
             }
         );
     }
@@ -137,7 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = createTestLine();
+        ExtractableResponse<Response> createResponse = createTestLine1();
 
         // when
         // 지하철_노선_제거_요청
@@ -168,7 +167,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Collections.unmodifiableMap(params);
     }
 
-    private ExtractableResponse<Response> createTestLine() {
+    private ExtractableResponse<Response> createTestLine1() {
+        return createLine(getTargetLine("1호선", "blue lighten-1"));
+    }
+
+    private ExtractableResponse<Response> createTestLine2() {
         return createLine(getTargetLine("2호선", "green lighten-1"));
     }
 
@@ -182,12 +185,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> updateColorLine(final Long id, final String color) {
+    private ExtractableResponse<Response> updateLine(final Long id, final Map<String, String> params) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("id", id).pathParam("color", color)
+                .pathParam("id", id)
+                .body(params)
                 .when()
-                .patch(URI_PATH + "/{id}/{color}")
+                .put(URI_PATH + "/{id}")
                 .then().log().all()
                 .extract();
     }
