@@ -75,7 +75,7 @@ public class LineController {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<LineResponse> handleNotFoundException(final NotFoundException e) {
-        return ResponseEntity.notFound()
+        return ResponseEntity.noContent()
             .build();
     }
 }
