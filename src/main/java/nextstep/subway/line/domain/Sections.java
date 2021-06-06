@@ -32,9 +32,9 @@ public class Sections {
 		return new Sections(asList(sections));
 	}
 
-	boolean isIn(Line line) {
+	boolean isPartOf(Line line) {
 		return sections.stream()
-			.allMatch(section -> section.isIn(line));
+			.allMatch(section -> section.isPartOf(line));
 	}
 
 	void add(Section section) {

@@ -53,7 +53,7 @@ public class Section {
 		this.distance = distance;
 	}
 
-	boolean isIn(Line line) {
+	boolean isPartOf(Line line) {
 		return this.line.equals(line);
 	}
 

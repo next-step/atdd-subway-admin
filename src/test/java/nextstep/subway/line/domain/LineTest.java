@@ -17,6 +17,6 @@ class LineTest {
 		line.addSection(강남, 양재, 10);
 
 		Sections sections = line.getSections();
-		assertThat(sections.isIn(line)).isTrue();
+		assertThat(sections.isPartOf(line)).isTrue();
 	}
 }
