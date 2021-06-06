@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.dto.LineRequest;
 
 import javax.persistence.*;
 
