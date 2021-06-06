@@ -185,14 +185,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createLinesSection(Map<String, Object> params) {
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
                 .then().log().all()
                 .extract();
-        return createResponse;
     }
 
     private ExtractableResponse<Response> findAllLines() {
