@@ -42,7 +42,6 @@ public class Line extends BaseEntity {
         section.toLine(this);
     }
 
-
     public Long getId() {
         return id;
     }

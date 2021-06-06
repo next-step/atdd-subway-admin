@@ -33,44 +33,38 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(final Long lineId) {
-        Line id = lineRepository.findById(lineId)
+        Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new DataIntegrityViolationException("Not Found lineId" + lineId));
 
-        List<Station> stations = id.getStations();
-
-        return LineResponse.of(id, stations);
+        return LineResponse.of(line);
     }
 
     public LineResponse saveLine(final LineRequest request) {
-        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new DataIntegrityViolationException("Not Fount downStationId" + request.getDownStationId()));
-        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(() -> new DataIntegrityViolationException("Not Fount downStationId" + request.getUpStationId()));
-        int distance = request.getDistance();
 
         Line line = request.toLine();
-        line.addSection(new Section(upStation, downStation, distance));
+        line.addSection(new Section(getStation(request.getUpStationId()), getStation(request.getDownStationId()),
+                request.getDistance()));
 
         Line save = lineRepository.save(line);
-        List<Station> stations = save.getStations();
-        return LineResponse.of(save, stations);
+        return LineResponse.of(save);
     }
 
     public LineResponse updateById(final Long lineId, final LineRequest lineRequest) {
-        Line origin = lineRepository.findById(lineId)
+        Line originLine = lineRepository.findById(lineId)
                 .orElseThrow(() -> new DataIntegrityViolationException("Not Found lineId" + lineId));
 
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new DataIntegrityViolationException("Not Fount downStationId" + lineRequest.getDownStationId()));
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new DataIntegrityViolationException("Not Fount downStationId" + lineRequest.getUpStationId()));
-        int distance = lineRequest.getDistance();
+        Section section = new Section(getStation(lineRequest.getUpStationId()), getStation(lineRequest.getDownStationId()),
+                lineRequest.getDistance());
+        originLine.update(lineRequest.getName(), lineRequest.getColor(), section);
 
-        Section section = new Section(upStation, downStation, distance);
-        origin.update(lineRequest.getName(), lineRequest.getColor(), section);
+        return LineResponse.of(originLine);
+    }
 
-        List<Station> stations = origin.getStations();
-        return LineResponse.of(origin, stations);
+    private Station getStation(Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(() -> new DataIntegrityViolationException("Not Fount downStationId" + stationId));
     }
 
     public void deleteLineById(final Long id) {
         lineRepository.deleteById(id);
     }
-
 }

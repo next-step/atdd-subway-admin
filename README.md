@@ -120,9 +120,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [x] service > getStations 을 Line Entity에 위임하기
 - [x] 노선 정보 업데이트시 역 목록 보이도록 변경
 --- 피드백 리팩토링
-- [ ] stationRepository.findById(request.getDownStationId()) 중복 코드 제거
-- [ ] Inline Variable 제거
-- [ ] getStations() 중복 코드 제거
+- [x] stationRepository.findById(request.getDownStationId()) 중복 코드 제거
+- [x] Inline Variable 제거
+- [x] getStations() 중복 코드 제거
 
 ## 노선 생성 시 두 종점역 추가하기
 
