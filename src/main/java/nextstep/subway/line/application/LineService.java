@@ -56,4 +56,8 @@ public class LineService {
             throw new RuntimeException("노선을 찾을 수 없습니다.");
         }
     }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
