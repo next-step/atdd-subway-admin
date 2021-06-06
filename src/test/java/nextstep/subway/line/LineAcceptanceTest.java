@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.LineTestData;
-import nextstep.subway.common.StationConstants;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationRequest;
@@ -19,10 +18,7 @@ import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import static nextstep.subway.common.StationConstants.GEOMDAN_ORYU;
-import static nextstep.subway.common.StationConstants.GYEYANG;
-import static nextstep.subway.common.StationConstants.GYULHYEON;
-import static nextstep.subway.common.StationConstants.WANGGIL;
+import static nextstep.subway.common.StationConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
@@ -135,10 +131,6 @@ class LineAcceptanceTest extends AcceptanceTest {
                           .when().delete("/lines/1")
                           .then().log().all()
                           .extract();
-    }
-
-    private void createAllStations() {
-        StationConstants.getAllStations().forEach(this::createStationSuccess);
     }
 
     private void createStationSuccess(StationResponse stationResponse) {

@@ -1,15 +1,22 @@
 package nextstep.subway.common;
 
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public enum StationConstants {
 
@@ -53,11 +60,26 @@ public enum StationConstants {
         return name;
     }
 
-    public static List<StationResponse> getAllStations() {
-        return ALL_STATIONS;
-    }
-
     public StationResponse toResponse() {
         return CACHE.get(this);
+    }
+
+    public static void createAllStations() {
+
+        List<StationResponse> allStations = Arrays.stream(values())
+                                                  .map(CACHE::get)
+                                                  .collect(toList());
+
+        allStations.forEach(stationResponse -> {
+            ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                           .body(new StationRequest(stationResponse.getName()))
+                           .contentType(MediaType.APPLICATION_JSON_VALUE)
+                           .when().post("/stations")
+                           .then().log().all()
+                           .extract();
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        });
     }
 }

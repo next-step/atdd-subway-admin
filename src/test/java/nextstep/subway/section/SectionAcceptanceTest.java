@@ -33,6 +33,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         AIRPORT_EXPRESS_SEOUL_TO_HONGIK = new LineTestData(
             "공항철도", "#0065B3", 200, SEOUL.toResponse(), HONGIK_UNIV.toResponse());
+
+        createAllStations();
     }
 
     @DisplayName("기존 노선의 하행 종점에 새 구간을 등록한다.")
