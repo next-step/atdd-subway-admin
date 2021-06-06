@@ -51,4 +51,12 @@ public class LineService {
         return lineRepository.findById(id)
             .orElseThrow(NotFoundException::new);
     }
+
+    public LineResponse updateLine(final Long id, final LineRequest lineRequest) {
+        final Line line = findById(id);
+        line.update(lineRequest.toLine());
+        final Line savedLIne = lineRepository.save(line);
+
+        return LineResponse.of(savedLIne);
+    }
 }
