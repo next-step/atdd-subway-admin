@@ -133,18 +133,6 @@ class LineAcceptanceTest extends AcceptanceTest {
                           .extract();
     }
 
-    private void createStationSuccess(StationResponse stationResponse) {
-        ExtractableResponse<Response> response =
-            RestAssured.given().log().all()
-                       .body(new StationRequest(stationResponse.getName()))
-                       .contentType(MediaType.APPLICATION_JSON_VALUE)
-                       .when().post("/stations")
-                       .then().log().all()
-                       .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
     private ExtractableResponse<Response> createLineRequest(LineTestData data) {
         return RestAssured.given().log().all()
                           .body(data.getLine())
