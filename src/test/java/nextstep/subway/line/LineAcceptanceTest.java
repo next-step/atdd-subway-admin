@@ -122,11 +122,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineResponse expected = send_createLine_with_success_check(makeLineRequest("신분당선", LineColor.RED));
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = send_deleteLine(expected.getId());
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
