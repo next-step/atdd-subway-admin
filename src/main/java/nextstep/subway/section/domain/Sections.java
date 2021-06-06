@@ -21,7 +21,7 @@ public class Sections {
 
     public void add(Section section) {
         if (section == null) {
-            return;
+            throw new IllegalArgumentException("Section is null.");
         }
         if (!sections.contains(section)) {
             sections.add(section);

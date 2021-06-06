@@ -30,32 +30,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setup() {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        ExtractableResponse<Response> response1 = postRequest("/stations", params1);
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        ExtractableResponse<Response> response2 = postRequest("/stations", params2);
-        Map<String, String> params3 = new HashMap<>();
-        params3.put("name", "태릉입구역");
-        ExtractableResponse<Response> response3 = postRequest("/stations", params3);
-        Map<String, String> params4 = new HashMap<>();
-        params4.put("name", "봉화산역");
-        ExtractableResponse<Response> response4 = postRequest("/stations", params4);
-
-        String color2 = "bg-red-600";
-        String name2 = "2호선";
-        Long upStationId2 = response1.as(StationResponse.class).getId();
-        Long downStationId2 = response2.as(StationResponse.class).getId();
-        int distance2 = 2;
-        line2Request = new LineRequest(name2, color2, upStationId2, downStationId2, distance2);
-
-        String color6 = "bg-orange-600";
-        String name6 = "6호선";
-        Long upStationId6 = response3.as(StationResponse.class).getId();
-        Long downStationId6 = response4.as(StationResponse.class).getId();
-        int distance6 = 6;
-        line6Request = new LineRequest(name6, color6, upStationId6, downStationId6, distance6);
+        line2Request = 라인2를_생성하기위한_request를_만든다();
+        line6Request = 라인6을_생성하기위한_request를_만든다();
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -189,6 +165,40 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_삭제확인
         ExtractableResponse<Response> checkResponse = get(uri);
         assertThat(checkResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    private LineRequest 라인2를_생성하기위한_request를_만든다() {
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+        ExtractableResponse<Response> response1 = postRequest("/stations", params1);
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "역삼역");
+        ExtractableResponse<Response> response2 = postRequest("/stations", params2);
+
+        String color2 = "bg-red-600";
+        String name2 = "2호선";
+        Long upStationId2 = response1.as(StationResponse.class).getId();
+        Long downStationId2 = response2.as(StationResponse.class).getId();
+        int distance2 = 2;
+
+        return new LineRequest(name2, color2, upStationId2, downStationId2, distance2);
+    }
+
+    private LineRequest 라인6을_생성하기위한_request를_만든다() {
+        Map<String, String> params3 = new HashMap<>();
+        params3.put("name", "태릉입구역");
+        ExtractableResponse<Response> response3 = postRequest("/stations", params3);
+        Map<String, String> params4 = new HashMap<>();
+        params4.put("name", "봉화산역");
+        ExtractableResponse<Response> response4 = postRequest("/stations", params4);
+
+        String color6 = "bg-orange-600";
+        String name6 = "6호선";
+        Long upStationId6 = response3.as(StationResponse.class).getId();
+        Long downStationId6 = response4.as(StationResponse.class).getId();
+        int distance6 = 6;
+
+        return new LineRequest(name6, color6, upStationId6, downStationId6, distance6);
     }
 
     private List<String> getNamesFromStations(List<StationResponse> stationResponses) {

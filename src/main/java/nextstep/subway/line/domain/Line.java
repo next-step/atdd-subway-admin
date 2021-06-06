@@ -76,9 +76,6 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        if (section == null) {
-            throw new IllegalArgumentException("Section is null.");
-        }
         sections.add(section);
     }
 }
