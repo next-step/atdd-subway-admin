@@ -80,39 +80,53 @@ public class LineSections implements Serializable {
         }
     }
 
-    public LineSections toNewSections(Station upStation, Station downStation, int distance) {
+    public void update(Station upStation, Station downStation, int distance) {
 
-        List<Section> newSections = new ArrayList<>();
-
-        for (Section section : sections) {
-
-            if (section.equalsUpStation(downStation)) {
-                newSections.add(new Section(upStation, downStation, distance));
-                newSections.add(section.updateUpStation(downStation, distance));
-                continue;
-            }
-
-            if (section.equalsUpStation(upStation)) {
-                newSections.add(new Section(upStation, downStation, section.minusDistance(distance)));
-                newSections.add(section.updateUpStation(downStation, distance));
-                continue;
-            }
-
-            if (section.equalsDownStation(upStation)) {
-                newSections.add(section.updateDownStation(upStation, distance));
-                newSections.add(new Section(upStation, downStation, distance));
-                continue;
-            }
-
-            if (section.equalsDownStation(downStation)) {
-                newSections.add(section.updateDownStation(upStation, distance));
-                newSections.add(new Section(upStation, downStation, section.minusDistance(distance)));
-                continue;
-            }
-
-            newSections.add(section);
+        if (addNewSection(upStation, downStation, distance)) {
+            return;
         }
 
-        return new LineSections(newSections);
+        addNewSectionAndUpdate(upStation, downStation, distance);
+    }
+
+    private boolean addNewSection(Station upStation, Station downStation, int newDistance) {
+
+        Optional<Section> maybeSection =
+            sections.stream()
+                    .filter(section -> section.equalsUpStation(downStation)
+                        || section.equalsDownStation(upStation))
+                    .findAny();
+
+        if (!maybeSection.isPresent()) {
+            return false;
+        }
+
+        sections.add(new Section(upStation, downStation, new Distance(newDistance)));
+        return true;
+    }
+
+    private void addNewSectionAndUpdate(Station upStation, Station downStation, int newDistance) {
+
+        Optional<Section> maybeSection =
+            sections.stream()
+                    .filter(section -> section.equalsUpStation(upStation)
+                        || section.equalsDownStation(downStation))
+                    .findAny();
+
+        if (!maybeSection.isPresent()) {
+            return;
+        }
+
+        sections.add(new Section(upStation, downStation, newDistance));
+
+        Section section = maybeSection.get();
+        section.minusDistance(newDistance);
+
+        if (section.equalsUpStation(upStation)) {
+            section.updateUpStation(downStation);
+            return;
+        }
+
+        section.updateDownStation(upStation);
     }
 }

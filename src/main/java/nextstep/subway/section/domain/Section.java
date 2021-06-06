@@ -88,20 +88,23 @@ public class Section extends BaseEntity implements Serializable {
         return station.equals(this.downStation);
     }
 
-    public Section updateUpStation(Station downStation, int distance) {
-        this.upStation = downStation;
-        this.distance = new Distance(distance);
+    public Section updateUpStation(Station station) {
+        this.upStation = station;
         return this;
     }
 
-    public Section updateDownStation(Station upStation, int distance) {
+    public Section updateDownStation(Station upStation) {
         this.downStation = upStation;
+        return this;
+    }
+
+    public Section updateDistance(int distance) {
         this.distance = new Distance(distance);
         return this;
     }
 
-    public Distance minusDistance(int distance) {
-        return this.distance.minus(distance);
+    public void minusDistance(int value) {
+        distance = distance.minus(value);
     }
 
     @Override

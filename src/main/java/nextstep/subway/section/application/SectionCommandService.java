@@ -52,9 +52,9 @@ public class SectionCommandService {
         sections.verifyStationCycle(upStation, downStation);
         sections.verifyNotUpdatable(upStation, downStation);
 
-        LineSections newSections = sections.toNewSections(upStation, downStation, distance);
-        newSections.getSections().forEach(sectionRepository::save);
+        sections.update(upStation, downStation, distance);
+        sections.getSections().forEach(sectionRepository::save);
 
-        return newSections;
+        return sections;
     }
 }
