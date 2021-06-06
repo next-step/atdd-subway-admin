@@ -28,4 +28,10 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
     }
+
+    public LineResponse getLine(long id){
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 노선을 찾을 수 없습니다."));
+        return LineResponse.of(line);
+    }
 }
