@@ -19,6 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    private static final String BASE_PATH = "/lines";
+
+    private String location;
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -51,10 +54,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse line2 = 지하철_노선_생성("분당선", "yellow");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
+        ExtractableResponse<Response> extractableResponse = 지하철_노선_목록_조회_요청();
 
         // then
-        지하철_노선_목록_조회됨(response, line1, line2);
+        지하철_노선_목록_조회됨(extractableResponse, line1, line2);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -64,41 +67,43 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = 지하철_노선_생성("신분당선", "red");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineResponse);
+        ExtractableResponse<Response> extractableResponse = 지하철_노선_조회_요청();
 
         // then
-        지하철_노선_조회됨(response, lineResponse);
+        지하철_노선_조회됨(extractableResponse, lineResponse);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
-        LineResponse lineResponse = 지하철_노선_생성("신분당선", "red");
+        지하철_노선_생성("신분당선", "red");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineResponse);
+        Map<String, String> params = 지하철_노선_파라미터("구분당선", "blue");
+        ExtractableResponse<Response> extractableResponse = 지하철_노선_수정_요청(params);
 
         // then
-        지하철_노선_수정됨(response);
+        지하철_노선_수정됨(extractableResponse);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
-        LineResponse lineResponse = 지하철_노선_생성("신분당선", "red");
+        지하철_노선_생성("신분당선", "red");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_삭제_요청(lineResponse);
+        ExtractableResponse<Response> extractableResponse = 지하철_노선_삭제_요청();
 
         // then
-        지하철_노선_삭제됨(response);
+        지하철_노선_삭제됨(extractableResponse);
     }
 
     private LineResponse 지하철_노선_생성(String name, String color) {
         Map<String, String> params = 지하철_노선_파라미터(name, color);
         ExtractableResponse<Response> extractableResponse = 지하철_노선_생성_요청(params);
+        setLocation(extractableResponse.header("Location"));
         지하철_노선_생성됨(extractableResponse);
         return extractableResponse.jsonPath().getObject(".", LineResponse.class);
     }
@@ -118,23 +123,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
-    private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    private void 지하철_노선_수정됨(ExtractableResponse<Response> extractableResponse) {
+        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> extractableResponse) {
+        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private void 지하철_노선_목록_조회됨(ExtractableResponse<Response> response, LineResponse... lineResponses) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<LinesSubResponse> list = response.jsonPath().getList(".");
+    private void 지하철_노선_목록_조회됨(ExtractableResponse<Response> extractableResponse, LineResponse... lineResponses) {
+        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<LinesSubResponse> list = extractableResponse.jsonPath().getList(".");
         assertThat(list.size()).isEqualTo(lineResponses.length);
     }
 
-    private void 지하철_노선_조회됨(ExtractableResponse<Response> response, LineResponse lineResponse) {
-        LinesSubResponse linesSubResponse = response.jsonPath().getObject(".", LinesSubResponse.class);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    private void 지하철_노선_조회됨(ExtractableResponse<Response> extractableResponse, LineResponse lineResponse) {
+        LinesSubResponse linesSubResponse = extractableResponse.jsonPath().getObject(".", LinesSubResponse.class);
+        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(linesSubResponse.getName()).isEqualTo(lineResponse.getName());
         assertThat(linesSubResponse.getColor()).isEqualTo(lineResponse.getColor());
     }
@@ -144,52 +149,48 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 given()
                         .log().all()
                         .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .when()
-                        .get("/lines")
-                        .then()
+                .when()
+                        .get(BASE_PATH)
+                .then()
                         .log().all()
                         .extract();
         return response;
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(LineResponse lineResponse) {
+    private ExtractableResponse<Response> 지하철_노선_조회_요청() {
         ExtractableResponse<Response> response =
                 given()
                         .log().all()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .pathParam("lineId", lineResponse.getId())
-                        .when()
-                        .get("/lines/{lineId}")
-                        .then()
+                .when()
+                        .get(getLocation())
+                .then()
                         .log().all()
                         .extract();
         return response;
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(LineResponse lineResponse) {
-        Map<String, String> params = 지하철_노선_파라미터("구분당선", "blue");
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Map<String, String> params) {
         ExtractableResponse<Response> response =
                 given()
                         .log().all()
                         .body(params)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .pathParam("lineId", lineResponse.getId())
-                        .when()
-                        .put("/lines/{lineId}")
-                        .then()
+                .when()
+                        .put(getLocation())
+                .then()
                         .log().all()
                         .extract();
         return response;
     }
 
-    private ExtractableResponse<Response> 지하철_노선_삭제_요청(LineResponse lineResponse) {
+    private ExtractableResponse<Response> 지하철_노선_삭제_요청() {
         ExtractableResponse<Response> response =
                 given()
                         .log().all()
-                        .pathParam("lineId", lineResponse.getId())
-                        .when()
-                        .delete("/lines/{lineId}")
-                        .then()
+                .when()
+                        .delete(getLocation())
+                .then()
                         .log().all()
                         .extract();
         return response;
@@ -201,11 +202,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
                         .log().all()
                         .body(params)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when()
-                        .post("/lines")
-                        .then()
+                .when()
+                        .post(BASE_PATH)
+                .then()
                         .log().all()
                         .extract();
         return response;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }
