@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.List;
 
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -21,11 +23,21 @@ import nextstep.subway.line.dto.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private StationAcceptanceTest stationAcceptanceTest;
+
+    public LineAcceptanceTest() {
+        this.stationAcceptanceTest = new StationAcceptanceTest();
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        // given
+        StationResponse 강남역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("강남역");
+        StationResponse 역삼역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("역삼역");
+
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(new LineRequest("1호선", "blue"));
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(new LineRequest("1호선", "blue", 강남역.getId(), 역삼역.getId(), 10));
 
         // then
         지하철_노선_생성됨(response);
@@ -65,13 +77,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("1호선", "blue"));
+        StationResponse 강남역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("강남역");
+        StationResponse 역삼역 = this.stationAcceptanceTest.지하철_역_등록되어_있음("역삼역");
+        LineResponse blueLineResponse = 지하철_노선_등록되어_있음(new LineRequest("2호선", "green", 강남역.getId(), 역삼역.getId(), 10));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(blueLineResponse.getId());
 
         // then
         지하철_노선_응답됨(response);
+        지하철_노선_역_포함됨(response, Arrays.asList(강남역, 역삼역));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -260,5 +275,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void 지하철_요청_실패_메시지_확인됨(ExtractableResponse<Response> response, String userErrorMessage) {
         String errorMessage = response.jsonPath().getObject("errorMessage", String.class);
         assertThat(errorMessage).isEqualTo(userErrorMessage);
+    }
+
+    private void 지하철_노선_역_포함됨(ExtractableResponse<Response> response, List<StationResponse> stationResponses) {
+        List<StationResponse> resultStationResponses = response.jsonPath().getList("stations", StationResponse.class);
+        assertThat(resultStationResponses).containsAll(stationResponses);
     }
 }

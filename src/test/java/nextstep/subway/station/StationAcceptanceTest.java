@@ -152,7 +152,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private StationResponse 지하철_역_등록되어_있음(String stationName) {
+    public StationResponse 지하철_역_등록되어_있음(String stationName) {
         return 지하철_역_생성_요청(stationName)
                 .jsonPath()
                 .getObject(".", StationResponse.class);
