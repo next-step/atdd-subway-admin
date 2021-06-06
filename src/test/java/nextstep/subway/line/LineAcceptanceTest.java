@@ -133,7 +133,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .pathParam("id", 1L)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines")
+                .when().delete("/lines/{id}")
                 .then().log().all().extract();
         // then
         // 지하철_노선_삭제됨

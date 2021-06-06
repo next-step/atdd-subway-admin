@@ -41,4 +41,10 @@ public class LineService {
         line.update(request.toLine());
         return LineResponse.of(line);
     }
+
+    public void delete(long id){
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 노선을 찾을 수 없습니다."));
+        lineRepository.delete(line);
+    }
 }
