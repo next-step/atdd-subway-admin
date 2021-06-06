@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ExceptionController {
 
-    @ExceptionHandler(DuplicateEntityExistsException.class)
-    public ResponseEntity<LineResponse> handleDuplicateDataExistsException(DuplicateEntityExistsException e) {
+    @ExceptionHandler(DuplicateDataExistsException.class)
+    public ResponseEntity<LineResponse> handleDuplicateDataExistsException(DuplicateDataExistsException e) {
         return ResponseEntity.badRequest().build();
     }
 

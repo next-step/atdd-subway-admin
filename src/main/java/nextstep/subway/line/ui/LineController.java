@@ -1,17 +1,13 @@
 package nextstep.subway.line.ui;
 
-import nextstep.subway.exception.DuplicateEntityExistsException;
+import nextstep.subway.exception.DuplicateDataExistsException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
-import javax.print.attribute.standard.Media;
-import javax.swing.text.html.parser.Entity;
 import java.net.URI;
 import java.util.List;
 
@@ -26,7 +22,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest)
-            throws DuplicateEntityExistsException {
+            throws DuplicateDataExistsException {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
