@@ -3,7 +3,6 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.line.domain.type.LineColor;
 import nextstep.subway.line.dto.LineRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,7 +13,7 @@ public class LineAcceptanceTestHelper {
 
 	private static final String URL_CREATE_LINE = "/lines";
 
-	static LineRequest makeLineRequest(final String name, final LineColor color) {
+	static LineRequest makeLineRequest(final String name, final String color) {
 		return new LineRequest(name, color);
 	}
 

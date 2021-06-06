@@ -1,5 +1,5 @@
 package nextstep.subway.line.domain.type;
 
-public enum LineColor {
-	RED;
+public final class LineColor {
+	public final static String RED = "bg-red-600";
 }
