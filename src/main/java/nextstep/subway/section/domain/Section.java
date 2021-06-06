@@ -32,10 +32,21 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public static Section of(Station upStation, Station downStation, int distance) {
+        validateDistance(distance);
+        return new Section(upStation, downStation, distance);
+    }
+
+    private static void validateDistance(int distance) {
+        if (distance <= DISTANCE_NONE) {
+            throw new IllegalArgumentException("거리 값은 " + DISTANCE_NONE + " 을 초과하는 값이어야 합니다.");
+        }
     }
 
     public void toLine(Line line) {
@@ -46,9 +57,7 @@ public class Section extends BaseEntity {
     }
 
     public void modifyDistance(int distance) {
-        if (distance <= DISTANCE_NONE) {
-            throw new IllegalArgumentException("거리 값은 " + DISTANCE_NONE + " 을 초과하는 값이어야 합니다.");
-        }
+        validateDistance(distance);
         this.distance = distance;
     }
 

@@ -19,7 +19,7 @@ public class SectionService {
 
     @Transactional
     public void saveSection(Line line, Station upStation, Station downStation, int distance) {
-        Section persistSection = sectionRepository.save(new Section(upStation, downStation, distance));
+        Section persistSection = sectionRepository.save(Section.of(upStation, downStation, distance));
         persistSection.toLine(line);
     }
 

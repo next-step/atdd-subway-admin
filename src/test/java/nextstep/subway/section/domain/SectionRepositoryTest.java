@@ -128,7 +128,7 @@ class SectionRepositoryTest {
     }
 
     private Section saveSection(Station upStation, Station downStation, int distance) {
-        Section section = new Section(upStation, downStation, distance);
+        Section section = Section.of(upStation, downStation, distance);
         return sectionRepository.save(section);
     }
 }
