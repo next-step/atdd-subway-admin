@@ -2,7 +2,6 @@ package nextstep.subway.line.domain;
 
 import static javax.persistence.FetchType.*;
 
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import javax.persistence.Column;
@@ -67,20 +66,5 @@ public class Section {
 
 	Stream<Station> stations() {
 		return Stream.of(upStation, downStation);
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		Section section = (Section)o;
-		return Objects.equals(id, section.id);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
 	}
 }
