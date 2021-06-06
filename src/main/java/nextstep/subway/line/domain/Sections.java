@@ -1,11 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
+import org.hibernate.annotations.SortComparator;
+import org.hibernate.annotations.SortNatural;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -14,54 +13,46 @@ import java.util.stream.Collectors;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @SortNatural
+    private SortedSet<Section> sections = new TreeSet<>();
 
     public Sections() {
     }
 
-    public void add(Section section) {
-        sections.add(section);
+    public TreeSet<Section> getSections() {
+        return (TreeSet<Section>) sections;
+    }
+
+    public void add(Section addedSection) {
+
+        //validateTwoStationAlreadyExist(addedSection);
+        sections.add(addedSection);
+
+        sections.stream().forEach(section -> {
+            System.out.println(section.getUpStation().getName() + ", " + section.getDownStation().getName());
+        });
+
+        System.out.println("====================");
+
+    }
+
+    private void validateTwoStationAlreadyExist(Section addedSection) {
+        boolean isDownStationExist = stations().contains(addedSection.getDownStation());
+        boolean isUpStationExist = stations().contains(addedSection.getUpStation());
+
+        if (isDownStationExist && isUpStationExist) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public List<Station> stations() {
         List<Station> stations = new ArrayList<>();
 
-        List<Station> upStations = gatherStations(Section::getUpStation);
-        List<Station> downStations = gatherStations(Section::getDownStation);
-
-        Station firstStation = findNotContainStation(upStations, downStations);
-        Station lastStation = findNotContainStation(downStations, upStations);
-
-        Station nextStation = firstStation;
-
-        stations.add(firstStation);
-
-        while (!nextStation.equals(lastStation)) {
-            nextStation = nextStation(nextStation);
-            stations.add(nextStation);
+        stations.add(sections.first().getUpStation());
+        for (Section section : sections) {
+            stations.add(section.getDownStation());
         }
 
         return stations;
-    }
-
-    private Station findNotContainStation(List<Station> toFindStations, List<Station> criteriaStations) {
-
-        return toFindStations.stream()
-                .filter(toFindStation -> !criteriaStations.contains(toFindStation))
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
-    }
-
-    private List<Station> gatherStations(Function<Section, Station> getStation) {
-
-        return sections.stream().map(getStation).collect(Collectors.toList());
-    }
-
-    private Station nextStation(Station nextStation) {
-
-        return sections.stream()
-                .filter(section -> section.isEqualToUpStation(nextStation))
-                .findFirst().orElseThrow(NoSuchElementException::new)
-                .getDownStation();
     }
 }

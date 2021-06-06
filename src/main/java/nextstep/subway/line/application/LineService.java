@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -54,17 +55,19 @@ public class LineService {
         return LineResponse.of(findLine);
     }
 
-    public void addSection(Long id, Long upStationId, Long downStationId, Integer distance) {
+    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
         Line findLine = lineRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
 
-        Station upStation = stationRepository.findById(upStationId)
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
                 .orElseThrow(NoSuchElementException::new);
 
-        Station downStation = stationRepository.findById(downStationId)
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(NoSuchElementException::new);
 
-        findLine.addSection(new Section(upStation, downStation, distance));
+        findLine.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
+
+        return LineResponse.of(findLine);
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {

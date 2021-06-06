@@ -5,7 +5,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,5 +50,18 @@ public class Section {
 
     public void addLine(Line line) {
         this.line = line;
+    }
+
+    @Override
+    public int compareTo(Section section) {
+        if (this.upStation.equals(section.getUpStation()) || this.downStation.equals(section.getUpStation())) {
+            return -1; //앞으로 간다.
+        }
+
+        if (this.downStation.equals(section.getDownStation()) || this.upStation.equals(section.getDownStation())) {
+            return 1; //뒤로 간다.
+        }
+
+        return 0;
     }
 }
