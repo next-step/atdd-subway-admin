@@ -1,5 +1,6 @@
 package nextstep.subway.exception;
 
+import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,12 +9,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionController {
 
     @ExceptionHandler(DuplicateEntityExistsException.class)
-    public ResponseEntity handleDuplicateEntityExistsException(DuplicateEntityExistsException e) {
+    public ResponseEntity<LineResponse> handleDuplicateDataExistsException(DuplicateEntityExistsException e) {
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(DataNotFoundException.class)
-    public ResponseEntity handleDataNotFoundException(DataNotFoundException e) {
+    public ResponseEntity<LineResponse> handleDataNotFoundException(DataNotFoundException e) {
         return ResponseEntity.notFound().build();
     }
 }
