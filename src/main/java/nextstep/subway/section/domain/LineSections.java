@@ -52,9 +52,15 @@ public class LineSections implements Serializable {
             throw new IllegalArgumentException(MESSAGE_SECTION_HAS_CYCLE);
         }
 
-        if (sections.stream()
-                    .filter(section -> section.hasStation(upStation) || section.hasStation(downStation))
-                    .count() >= 2) {
+        Optional<Section> maybeUpStation = sections.stream()
+                                                   .filter(section -> section.contains(upStation))
+                                                   .findAny();
+
+        Optional<Section> maybeDownStation = sections.stream()
+                                                     .filter(section -> section.contains(downStation))
+                                                     .findAny();
+
+        if (maybeUpStation.isPresent() && maybeDownStation.isPresent()) {
             throw new IllegalArgumentException(MESSAGE_SECTION_HAS_CYCLE);
         }
     }
@@ -104,9 +110,7 @@ public class LineSections implements Serializable {
                 continue;
             }
 
-            if (section.hasNotUpAndDownStation(upStation, downStation)) {
-                newSections.add(section);
-            }
+            newSections.add(section);
         }
 
         return new LineSections(newSections);

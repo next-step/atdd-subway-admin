@@ -64,6 +64,19 @@ class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("서울역 ~ 계양역 구간 완성")
+    @TestFactory
+    Stream<DynamicTest> addSectionTest04() {
+        return Stream.of(
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL.getId(), GONGDEOK.getId())),
+            dynamicTest("홍대입구역-DMC역 구간 추가", () -> addSectionRequestSuccess(HONGIK_UNIV.getId(), DMC.getId(), 4)),
+            dynamicTest("DMC역-마곡나루 구간 추가", () -> addSectionRequestSuccess(DMC.getId(), MAGONGNARU.getId(), 5)),
+            dynamicTest("마곡나루역-김포공항역 구간 추가", () -> addSectionRequestSuccess(MAGONGNARU.getId(), GIMPO_AIRPORT.getId(), 6)),
+            dynamicTest("김포공항역-계양역 구간 추가", () -> addSectionRequestSuccess(GIMPO_AIRPORT.getId(), GYEYANG.getId(), 7))
+        );
+    }
+
     @DisplayName("기존 노선 가운데에 새 구간을 등록하는 경우 기존 역 사이 간격보다 크거나 같지 않아야 한다.")
     @TestFactory
     Stream<DynamicTest> addSectionFailBecauseOfDistance01() {
@@ -143,12 +156,16 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void addSectionRequestSuccess(Long upStationId, Long downStationId) {
+        addSectionRequestSuccess(upStationId, downStationId, 3);
+    }
+
+    private void addSectionRequestSuccess(Long upStationId, Long downStationId, int stationCount) {
         ExtractableResponse<Response> response = addSectionRequest(upStationId,
                                                                    downStationId,
                                                                    100);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.body().jsonPath().getList("stations")).hasSize(3);
+        assertThat(response.body().jsonPath().getList("stations")).hasSize(stationCount);
     }
 
     private void addSectionRequestFail(Long upStationId, Long downStationId, int distance) {

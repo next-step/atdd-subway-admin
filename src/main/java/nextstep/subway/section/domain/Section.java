@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -71,16 +72,12 @@ public class Section extends BaseEntity implements Serializable {
         return downStation;
     }
 
-    public boolean hasNotUpAndDownStation(Station upStation, Station downStation) {
-        return ! (hasStation(upStation) || hasStation(downStation));
-    }
-
-    public boolean hasStation(Station station) {
+    public boolean contains(Station station) {
         return station.equals(this.upStation) || station.equals(this.downStation);
     }
 
     public boolean isDuplicateSection(Station upStation, Station downStation) {
-        return hasStation(upStation) && hasStation(downStation);
+        return contains(upStation) && contains(downStation);
     }
 
     public boolean equalsUpStation(Station station) {
@@ -92,14 +89,35 @@ public class Section extends BaseEntity implements Serializable {
     }
 
     public Section updateUpStation(Station downStation, int distance) {
-        return new Section(downStation, this.downStation, new Distance(distance));
+        this.upStation = downStation;
+        this.distance = new Distance(distance);
+        return this;
     }
 
     public Section updateDownStation(Station upStation, int distance) {
-        return new Section(this.upStation, upStation, new Distance(distance));
+        this.downStation = upStation;
+        this.distance = new Distance(distance);
+        return this;
     }
 
     public Distance minusDistance(int distance) {
         return this.distance.minus(distance);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
