@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -32,5 +33,14 @@ public class LineService {
         return lines.stream()
                 .map(line -> LineResponse.of(line))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse findLine(Long id) {
+        Optional<Line> line = lineRepository.findById(id);
+        if(!line.isPresent()) {
+            throw new RuntimeException("노선을 찾을 수 없습니다.");
+        }
+        return LineResponse.of(line.get());
     }
 }

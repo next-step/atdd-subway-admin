@@ -26,13 +26,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
+        Map<String, String> 신분당선 = new HashMap<>();
+        신분당선.put("color", "bg-red-600");
+        신분당선.put("name", "신분당선");
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+        ExtractableResponse<Response> 응답 = RestAssured.given().log().all()
+                .body(신분당선)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -41,8 +41,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(응답.header("Location")).isNotBlank();
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -50,11 +50,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineDuplicate() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
+        Map<String, String> 신분당선 = new HashMap<>();
+        신분당선.put("color", "bg-red-600");
+        신분당선.put("name", "신분당선");
         RestAssured.given().log().all()
-                .body(params)
+                .body(신분당선)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -63,8 +63,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
+        ExtractableResponse<Response> 응답 = RestAssured.given().log().all()
+                .body(신분당선)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
@@ -74,7 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성_실패됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(응답.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -131,12 +131,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> 신분당선 = new HashMap<>();
+        신분당선.put("name", "신분당선");
+        신분당선.put("color", "bg-red-600");
+        ExtractableResponse<Response> 신분당선_생성_응답 = RestAssured.given().log().all()
+                .body(신분당선)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> 노선_조회_응답 = RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + 신분당선_생성_응답.body().jsonPath().get("id"))
+                .then().log().all()
+                .extract();
 
         // then
         // 지하철_노선_응답됨
+        assertThat(노선_조회_응답.body().jsonPath().get("name").toString()).isEqualTo("신분당선");
+        assertThat(노선_조회_응답.body().jsonPath().get("color").toString()).isEqualTo("bg-red-600");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
