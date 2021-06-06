@@ -25,17 +25,17 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = findStation(request);
-        Station downStation = findStation(request);
+        Station upStation = findStation(request.getUpStationId());
+        Station downStation = findStation(request.getDownStationId());
         Line inputLine = new Line(request.getName(), request.getColor(),
-                upStation.getId(), downStation.getId(), request.getDistance());
+                upStation, downStation, request.getDistance());
 
         Line persistLine = lineRepository.save(inputLine);
         return LineResponse.of(persistLine);
     }
 
-    private Station findStation(LineRequest request) {
-        return stationRepository.findById(request.getUpStationId())
+    private Station findStation(Long stationId) {
+        return stationRepository.findById(stationId)
                 .orElseThrow(() -> new NoSuchElementException("해당 지하철 역은 존재하지 않습니다."));
     }
 
