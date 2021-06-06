@@ -29,7 +29,7 @@ public class LineController {
         return ResponseEntity.ok(lineService.getLines());
     }
 
-    @GetMapping(name = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getLine(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.getLine(id));
     }
