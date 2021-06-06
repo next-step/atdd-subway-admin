@@ -1,9 +1,19 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 @Table(name = "line")
@@ -23,17 +33,22 @@ public class Line extends BaseEntity {
     @Column(name = "color", nullable = false)
     private String color;
 
-    public Line() {
+    protected Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(final String name, final String color) {
         this.name = name;
         this.color = color;
     }
 
-    public void update(Line line) {
+    public void update(final Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void addSection(final Section section) {
+        this.sections.add(section);
+        section.setLine(this);
     }
 
     public Long getId() {
@@ -46,6 +61,10 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Station> getStations() {
+        return Collections.unmodifiableList(sections.getStations());
     }
 
     @Override
