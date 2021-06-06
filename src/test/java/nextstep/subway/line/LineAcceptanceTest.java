@@ -131,6 +131,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("지하철 노선을 수정할때, 기존에 존재하는 노선 이름으로는 변경할수 없다.")
+    @Test
+    void updateLine2() {
+        // given
+        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse1 = createTestLine1();
+        ExtractableResponse<Response> createResponse2 = createTestLine2();
+
+        // when
+        // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = updateLine(getLocationId(createResponse1), getTargetLine("2호선", "green lighten-2"));
+
+        // then
+        // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
