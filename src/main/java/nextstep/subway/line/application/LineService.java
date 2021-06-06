@@ -35,16 +35,17 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(final Long id) {
-         Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException());
+         Line line = lineRepository.findById(id)
+                 .orElseThrow(() -> new LineNotFoundException());
 
         return LineResponse.of(line);
     }
 
     public LineResponse updateLine(Long id, String color) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException());
-        line.update(new Line(line.getName(), color));
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new LineNotFoundException());
 
-        lineRepository.flush();
+        line.update(new Line(line.getName(), color));
 
         return LineResponse.of(line);
     }

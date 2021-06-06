@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,12 +23,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // given
-        Map<String, String> params = getTargetLine("2호선", "green lighten-1");
-
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = createLine(params);
+        ExtractableResponse<Response> response = createTestLine();
 
         // then
         // 지하철_노선_생성됨
@@ -42,13 +38,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = getTargetLine("2호선", "green lighten-1");
-
-        createLine(params);
+        createTestLine();
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = createLine(params);
+        ExtractableResponse<Response> response = createTestLine();
 
         // then
         // 지하철_노선_생성_실패됨
@@ -60,11 +54,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params1 = getTargetLine("2호선", "green lighten-1");
-        Map<String, String> params2 = getTargetLine("7호선", "green lighten-2");
-
-        ExtractableResponse<Response> createResponse1 = createLine(params1);
-        ExtractableResponse<Response> createResponse2 = createLine(params2);
+        ExtractableResponse<Response> createResponse1 = createLine(getTargetLine("2호선", "green lighten-1"));
+        ExtractableResponse<Response> createResponse2 = createLine(getTargetLine("5호선", "green lighten-2"));
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -94,8 +85,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = getTargetLine("2호선", "green lighten-1");
-        ExtractableResponse<Response> createResponse = createLine(params);
+        ExtractableResponse<Response> createResponse = createTestLine();
 
         // when
         // 지하철_노선_조회_요청
@@ -119,8 +109,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = getTargetLine("2호선", "green lighten-1");
-        ExtractableResponse<Response> createResponse = createLine(params);
+        ExtractableResponse<Response> createResponse = createTestLine();
 
         // when
         // 지하철_노선_수정_요청
@@ -148,8 +137,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = getTargetLine("2호선", "green lighten-1");
-        ExtractableResponse<Response> createResponse = createLine(params);
+        ExtractableResponse<Response> createResponse = createTestLine();
 
         // when
         // 지하철_노선_제거_요청
@@ -178,6 +166,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
             }
         };
         return Collections.unmodifiableMap(params);
+    }
+
+    private ExtractableResponse<Response> createTestLine() {
+        return createLine(getTargetLine("2호선", "green lighten-1"));
     }
 
     private ExtractableResponse<Response> createLine(Map<String, String> params) {
