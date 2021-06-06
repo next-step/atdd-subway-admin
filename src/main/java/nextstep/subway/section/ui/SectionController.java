@@ -1,13 +1,11 @@
 package nextstep.subway.section.ui;
 
 import java.net.URI;
-import java.util.List;
 import nextstep.subway.line.application.LineCommandService;
 import nextstep.subway.line.application.LineQueryService;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.application.SectionCommandService;
 import nextstep.subway.section.domain.LineSections;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,8 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import static java.util.stream.Collectors.toList;
 
 @Controller
 @RequestMapping("/lines/{lineId}")
@@ -39,13 +35,8 @@ public class SectionController {
                                                    @RequestBody SectionRequest request) {
 
         LineSections sections = lineQueryService.findById(lineId).getSections();
-        List<Long> sectionIds = sections.getSections()
-                                        .stream()
-                                        .map(Section::getId)
-                                        .collect(toList());
-
         lineCommandService.updateSections(lineId,
-                                          sectionCommandService.upsert(sectionIds,
+                                          sectionCommandService.upsert(sections,
                                                                        request.getUpStationId(),
                                                                        request.getDownStationId(),
                                                                        request.getDistance()));

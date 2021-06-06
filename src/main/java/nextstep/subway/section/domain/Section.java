@@ -79,6 +79,10 @@ public class Section extends BaseEntity implements Serializable {
         return station.equals(this.upStation) || station.equals(this.downStation);
     }
 
+    public boolean isDuplicateSection(Station upStation, Station downStation) {
+        return hasStation(upStation) && hasStation(downStation);
+    }
+
     public boolean equalsUpStation(Station station) {
         return station.equals(this.upStation);
     }

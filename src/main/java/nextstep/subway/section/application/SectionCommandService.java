@@ -43,48 +43,42 @@ public class SectionCommandService {
         return sectionRepository.save(entity).getId();
     }
 
-    public LineSections upsert(List<Long> sectionIds,
+    public LineSections upsert(LineSections sections,
                                Long upStationId,
                                Long downStationId,
                                int distance) {
 
-        List<Section> sections = sectionRepository.findAllById(sectionIds);
-        List<Section> newSections = new ArrayList<>();
-
         Station upStation = stationQueryService.findById(upStationId);
         Station downStation = stationQueryService.findById(downStationId);
 
-        verify(sections, upStation, downStation);
+        sections.verifyStationCycle(upStation, downStation);
+        sections.verifyNotUpdatable(upStation, downStation);
 
-        boolean isUpdate = false;
+        List<Section> newSections = new ArrayList<>();
 
-        for (Section section : sections) {
+        for (Section section : sections.getSections()) {
 
             if (section.equalsUpStation(downStation)) {
                 newSections.add(new Section(upStation, downStation, distance));
                 newSections.add(section.updateUpStation(downStation, distance));
-                isUpdate = true;
                 continue;
             }
 
             if (section.equalsUpStation(upStation)) {
                 newSections.add(new Section(upStation, downStation, section.minusDistance(distance)));
                 newSections.add(section.updateUpStation(downStation, distance));
-                isUpdate = true;
                 continue;
             }
 
             if (section.equalsDownStation(upStation)) {
                 newSections.add(section.updateDownStation(upStation, distance));
                 newSections.add(new Section(upStation, downStation, distance));
-                isUpdate = true;
                 continue;
             }
 
             if (section.equalsDownStation(downStation)) {
                 newSections.add(section.updateDownStation(upStation, distance));
                 newSections.add(new Section(upStation, downStation, section.minusDistance(distance)));
-                isUpdate = true;
                 continue;
             }
 
@@ -93,31 +87,7 @@ public class SectionCommandService {
             }
         }
 
-        if (!isUpdate) {
-            throw new IllegalArgumentException("신규 구간의 상행역과 하행역 모두가 기존 구간에 포함되어 있지 않습니다.");
-        }
-
         newSections.forEach(sectionRepository::save);
         return new LineSections(newSections);
-    }
-
-    private void verify(List<Section> sections, Station upStation, Station downStation) {
-
-        if (sections.isEmpty()) {
-            return;
-        }
-
-        if (sections.size() == 1) {
-            Section section = sections.get(0);
-            if (section.hasStation(upStation) && section.hasStation(downStation)) {
-                throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
-            }
-        }
-
-        if (sections.stream()
-                    .filter(section -> section.hasStation(upStation) || section.hasStation(downStation))
-                    .count() >= 2) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
-        }
     }
 }
