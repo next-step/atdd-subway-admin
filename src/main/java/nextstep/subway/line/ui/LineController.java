@@ -1,10 +1,12 @@
 package nextstep.subway.line.ui;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +40,17 @@ public class LineController {
 
     private URI createUri(final LineResponse line) {
         return URI.create("/lines/" + line.getId());
+    }
+
+    @GetMapping
+    public ResponseEntity<List<LineResponse>> listLines() {
+        final List<LineResponse> lineResponses = findLines();
+
+        return ResponseEntity.ok(lineResponses);
+    }
+
+    private List<LineResponse> findLines() {
+        return lineService.findLines();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

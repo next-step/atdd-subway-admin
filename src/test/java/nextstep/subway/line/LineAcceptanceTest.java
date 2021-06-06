@@ -89,7 +89,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
-    void getLines() {
+    void given_ExistingLine_when_SearchAllLine_then_ReturnLines() {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
