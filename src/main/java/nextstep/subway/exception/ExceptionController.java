@@ -12,8 +12,8 @@ public class ExceptionController {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity handleEntityNotFoundException(EntityNotFoundException e) {
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseEntity handleDataNotFoundException(DataNotFoundException e) {
         return ResponseEntity.notFound().build();
     }
 }

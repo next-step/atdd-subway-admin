@@ -37,13 +37,13 @@ public class LineController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) throws EntityNotFoundException {
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> changeLine(@PathVariable Long id,
-                                                   @RequestBody LineRequest lineRequest) throws EntityNotFoundException {
+                                                   @RequestBody LineRequest lineRequest) {
         return ResponseEntity.ok().body(lineService.updateLine(id, lineRequest));
     }
 

@@ -5,8 +5,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +22,7 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) throws DuplicateEntityExistsException{
+    public LineResponse saveLine(LineRequest request) {
         Line persistLine = null;
         try {
             persistLine = lineRepository.save(request.toLine());
@@ -41,13 +39,13 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLineById(Long id) throws EntityNotFoundException {
+    public LineResponse findLineById(Long id) {
         Line foundLine = lineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 지하철 노선을 찾을 수 없습니다."));
         return LineResponse.of(foundLine);
     }
 
-    public LineResponse updateLine(Long id, LineRequest lineRequest) throws EntityNotFoundException {
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line foundLine = lineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 지하철 노선을 찾을 수 없습니다."));
 
