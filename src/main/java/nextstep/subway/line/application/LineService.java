@@ -7,6 +7,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.NoSuchLineException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,5 +31,11 @@ public class LineService {
 		return lines.stream()
 			.map(LineResponse::of)
 			.collect(Collectors.toList());
+	}
+
+	public LineResponse getLine(Long id) {
+		Line line = lineRepository.findById(id)
+			.orElseThrow(() -> new NoSuchLineException("존재하지 않는 노선입니다."));
+		return LineResponse.of(line);
 	}
 }
