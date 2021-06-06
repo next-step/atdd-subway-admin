@@ -1,7 +1,5 @@
 package nextstep.subway.section.application;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import nextstep.subway.section.domain.LineSections;
 import nextstep.subway.section.domain.Section;
@@ -54,40 +52,9 @@ public class SectionCommandService {
         sections.verifyStationCycle(upStation, downStation);
         sections.verifyNotUpdatable(upStation, downStation);
 
-        List<Section> newSections = new ArrayList<>();
+        LineSections newSections = sections.toNewSections(upStation, downStation, distance);
+        newSections.getSections().forEach(sectionRepository::save);
 
-        for (Section section : sections.getSections()) {
-
-            if (section.equalsUpStation(downStation)) {
-                newSections.add(new Section(upStation, downStation, distance));
-                newSections.add(section.updateUpStation(downStation, distance));
-                continue;
-            }
-
-            if (section.equalsUpStation(upStation)) {
-                newSections.add(new Section(upStation, downStation, section.minusDistance(distance)));
-                newSections.add(section.updateUpStation(downStation, distance));
-                continue;
-            }
-
-            if (section.equalsDownStation(upStation)) {
-                newSections.add(section.updateDownStation(upStation, distance));
-                newSections.add(new Section(upStation, downStation, distance));
-                continue;
-            }
-
-            if (section.equalsDownStation(downStation)) {
-                newSections.add(section.updateDownStation(upStation, distance));
-                newSections.add(new Section(upStation, downStation, section.minusDistance(distance)));
-                continue;
-            }
-
-            if (section.hasNotUpAndDownStation(upStation, downStation)) {
-                newSections.add(section);
-            }
-        }
-
-        newSections.forEach(sectionRepository::save);
-        return new LineSections(newSections);
+        return newSections;
     }
 }

@@ -73,4 +73,42 @@ public class LineSections implements Serializable {
             throw new IllegalArgumentException(MESSAGE_SECTION_IS_NOT_UPDATABLE);
         }
     }
+
+    public LineSections toNewSections(Station upStation, Station downStation, int distance) {
+
+        List<Section> newSections = new ArrayList<>();
+
+        for (Section section : sections) {
+
+            if (section.equalsUpStation(downStation)) {
+                newSections.add(new Section(upStation, downStation, distance));
+                newSections.add(section.updateUpStation(downStation, distance));
+                continue;
+            }
+
+            if (section.equalsUpStation(upStation)) {
+                newSections.add(new Section(upStation, downStation, section.minusDistance(distance)));
+                newSections.add(section.updateUpStation(downStation, distance));
+                continue;
+            }
+
+            if (section.equalsDownStation(upStation)) {
+                newSections.add(section.updateDownStation(upStation, distance));
+                newSections.add(new Section(upStation, downStation, distance));
+                continue;
+            }
+
+            if (section.equalsDownStation(downStation)) {
+                newSections.add(section.updateDownStation(upStation, distance));
+                newSections.add(new Section(upStation, downStation, section.minusDistance(distance)));
+                continue;
+            }
+
+            if (section.hasNotUpAndDownStation(upStation, downStation)) {
+                newSections.add(section);
+            }
+        }
+
+        return new LineSections(newSections);
+    }
 }
