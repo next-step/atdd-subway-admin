@@ -41,4 +41,10 @@ public class LineService {
         Line.checkNullLine(findLine);
         findLine.get().update(lineRequest.toLine());
     }
+
+    public void deleteLineById(Long id) {
+        Optional<Line> findLine = lineRepository.findById(id);
+        Line.checkNullLine(findLine);
+        lineRepository.delete(findLine.get());
+    }
 }

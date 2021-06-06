@@ -81,7 +81,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         * given: 지하철 노선 분당선이 등록되어 있다.
         * when: 지하철 노선 이름을 구분당선으로 수정 요청한다.
         * then: 지하철 노선이 정상 수정된다.
-    * [ ] 지하철 노선 삭제
+    * [x] 지하철 노선 삭제
         * given: 지하철 노선 분당선이 등록되어 있다.
         * when: 지하철 노선 분당선을 삭제 요청한다.
         * then: 지하철 노선이 정상 삭제된다.
