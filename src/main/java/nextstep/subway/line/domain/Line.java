@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.type.LineColor;
 
 import javax.persistence.*;
 
@@ -14,13 +13,12 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @Enumerated(value = EnumType.STRING)
-    private LineColor color;
+    private String color;
 
     public Line() {
     }
 
-    public Line(String name, LineColor color) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
@@ -38,7 +36,7 @@ public class Line extends BaseEntity {
         return name;
     }
 
-    public LineColor getColor() {
+    public String getColor() {
         return color;
     }
 }

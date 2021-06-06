@@ -1,16 +1,15 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.type.LineColor;
 
 public class LineRequest {
     private String name;
-    private LineColor color;
+    private String color;
 
     public LineRequest() {
     }
 
-    public LineRequest(String name, LineColor color) {
+    public LineRequest(String name, String color) {
         this.name = name;
         this.color = color;
     }
@@ -23,7 +22,7 @@ public class LineRequest {
         return name;
     }
 
-    public LineColor getColor() {
+    public String getColor() {
         return color;
     }
 }
