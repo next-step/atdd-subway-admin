@@ -62,7 +62,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
         LineResponse expect_1 = send_createLine_with_success_check(makeLineRequest("신분당선", LineColor.RED));
-        LineResponse expect_2 = send_createLine_with_success_check(makeLineRequest("2호선", LineColor.RED));
+        LineResponse expect_2 = send_createLine_with_success_check(makeLineRequest("2호선", LineColor.GREEN));
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -105,7 +105,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = send_updateLine(expected.getId(), makeLineRequest("2호선", LineColor.RED));
+        ExtractableResponse<Response> response = send_updateLine(expected.getId(), makeLineRequest("2호선", LineColor.GREEN));
 
         // then
         // 지하철_노선_수정됨
