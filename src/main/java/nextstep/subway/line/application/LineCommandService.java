@@ -2,12 +2,8 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.application.SectionCommandService;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.station.application.StationQueryService;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.section.application.SectionQueryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,37 +12,33 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineCommandService {
 
     private final LineQueryService lineQueryService;
-    private final StationQueryService stationQueryService;
     private final SectionCommandService sectionCommandService;
+    private final SectionQueryService sectionQueryService;
 
     private final LineRepository lineRepository;
 
     public LineCommandService(LineQueryService lineQueryService,
-                              StationQueryService stationQueryService,
                               SectionCommandService sectionCommandService,
+                              SectionQueryService sectionQueryService,
                               LineRepository lineRepository) {
         this.lineQueryService = lineQueryService;
-        this.stationQueryService = stationQueryService;
         this.sectionCommandService = sectionCommandService;
+        this.sectionQueryService = sectionQueryService;
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+    public Long save(Line nonPersistLine, Long upStationId, Long downStationId, int distance) {
 
-        Station upStation = stationQueryService.findStationById(request.getUpStationId());
-        Station downStation = stationQueryService.findStationById(request.getDownStationId());
+        Line persistLine = lineRepository.save(nonPersistLine);
+        Long sectionId = sectionCommandService.save(upStationId, downStationId, distance);
+        persistLine.addSection(sectionQueryService.findById(sectionId));
 
-        Section section = new Section(upStation, downStation, request.getDistance());
-        persistLine.addSection(section);
-        sectionCommandService.saveSection(section);
-
-        return LineResponse.of(lineRepository.save(persistLine));
+        return persistLine.getId();
     }
 
-    public void updateLine(Long lineId, LineRequest lineRequest) {
+    public void updateLine(Long lineId, Line updateLine) {
         Line line = lineQueryService.findLineById(lineId);
-        line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
+        line.update(updateLine);
 
         lineRepository.save(line);
     }

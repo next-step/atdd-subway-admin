@@ -1,7 +1,6 @@
 package nextstep.subway.section.domain;
 
 import java.io.Serializable;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,15 +21,14 @@ public class Section extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "line_id")
+    @ManyToOne
     private Line line;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
@@ -39,6 +37,11 @@ public class Section extends BaseEntity implements Serializable {
 
     protected Section() {
 
+    }
+
+    public Section(Line line, Station upStation, Station downStation, Integer distance) {
+        this(upStation, downStation, distance);
+        this.line = line;
     }
 
     public Section(Station upStation, Station downStation, Integer distance) {

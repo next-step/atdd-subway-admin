@@ -26,8 +26,9 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        StationResponse station = stationCommandService.saveStation(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
+        Long stationId = stationCommandService.save(stationRequest.toStation());
+        return ResponseEntity.created(URI.create("/stations/" + stationId))
+                             .body(StationResponse.of(stationQueryService.findStationById(stationId)));
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
