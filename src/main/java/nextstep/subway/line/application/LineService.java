@@ -10,7 +10,6 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +31,9 @@ public class LineService {
     }
 
     public LineResponse saveLineWithSection(LineRequest request) {
-        Section requestSection = request.toSetion();
-        Station upStation = stationService.findById(requestSection.getUpStation().getId());
-        Station downStation = stationService.findById(requestSection.getDownStation().getId());
-        Section section = new Section(upStation.getId(), downStation.getId(), requestSection.getDistance());
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        Section section = new Section(upStation.getId(), downStation.getId(), request.getDistance());
         Line persistLine = lineRepository.save(new Line(request.getName(), request.getColor(), section));
         return LineResponse.of(persistLine);
     }
