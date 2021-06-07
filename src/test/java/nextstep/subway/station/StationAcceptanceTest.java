@@ -3,14 +3,11 @@ package nextstep.subway.station;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static nextstep.subway.station.StationSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,29 +64,5 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철역_삭제됨(response);
-    }
-
-    private void 지하철역_생성됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
-    }
-
-    private void 지하철역_목록_응답됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private void 지하철역_목록_포함됨(ExtractableResponse<Response> response,
-                             List<ExtractableResponse<Response>> createResponses) {
-        List<Long> expectedLineIds = createResponses.stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
-    }
-
-    private void 지하철역_삭제됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
