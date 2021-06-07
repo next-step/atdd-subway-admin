@@ -44,10 +44,12 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         return LineResponse.of(getLine(id));
     }
 
+    @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = getLine(id);
         line.update(lineRequest.toLine());
@@ -56,5 +58,11 @@ public class LineService {
     private Line getLine(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new LineNotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
+    }
+
+    @Transactional
+    public void deleteLine(Long id){
+        Line line = getLine(id);
+        lineRepository.delete(line);
     }
 }

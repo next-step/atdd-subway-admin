@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -122,5 +123,16 @@ class LineServiceTest {
         assertThat(line1.getColor()).isEqualTo(lineRequest2.getColor());
     }
 
+    @DisplayName("요청한 ID에 해당하는 노선을 삭제한다.")
+    @Test
+    void delete() {
+        //given
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line1));
 
+        //when
+        lineService.deleteLine(anyLong());
+
+        //then
+        verify(lineRepository).delete(line1);
+    }
 }

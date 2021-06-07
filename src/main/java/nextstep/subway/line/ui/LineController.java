@@ -32,7 +32,7 @@ public class LineController {
      * 지하철 노선 목록조회
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> getLines(){
+    public ResponseEntity<List<LineResponse>> getLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
@@ -40,7 +40,7 @@ public class LineController {
      * 지하철 노선 조회
      */
     @GetMapping(value = "/{id:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> getLine(@PathVariable Long id){
+    public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
@@ -56,4 +56,9 @@ public class LineController {
     /**
      * 지하철 노선 삭제
      */
+    @DeleteMapping(value = "/{id:\\d+}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.deleteLine(id);
+        return ResponseEntity.noContent().build();
+    }
 }
