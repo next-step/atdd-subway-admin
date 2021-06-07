@@ -1,7 +1,6 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -34,19 +33,21 @@ public class LineService {
 
 	@Transactional(readOnly = true)
 	public LineResponse findLineById(Long id) {
-		return lineRepository.findById(id).map(LineResponse::of)
-			.orElseThrow(EntityNotFoundException::new);
+		return LineResponse.of(findByIdLine(id));
 	}
 
 	public void deleteLineById(Long id) {
 		lineRepository.deleteById(id);
 	}
 
-	@Transactional
 	public LineResponse updateLine(Long id, LineRequest request) {
-		Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-		line.update(line);
+		Line line = findByIdLine(id);
+		line.update(request.toLine());
 		return LineResponse.of(line);
+	}
+
+	private Line findByIdLine(Long id) {
+		return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 	}
 
 }
