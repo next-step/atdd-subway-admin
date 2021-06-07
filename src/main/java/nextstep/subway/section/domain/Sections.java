@@ -83,6 +83,9 @@ public class Sections implements Iterable<Section> {
         if (getFirstStation().equals(element.getUpStation())) {
             return FIRST_INDEX;
         }
+        if (getLastStation().equals(element.getUpStation())) {
+            return lastIndex();
+        }
         if (getLastStation().equals(element.getDownStation())) {
             return sections.size();
         }
