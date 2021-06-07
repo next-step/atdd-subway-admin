@@ -109,7 +109,7 @@ class LineServiceTest {
                 .hasMessage(LineService.LINE_NOT_FOUND_EXCEPTION_MESSAGE);
     }
 
-    @DisplayName("요청한 ID를 새로운 이름과 색깔로 대체한다.")
+    @DisplayName("요청한 ID에 해당하는 노선을 새로운 이름과 색깔로 대체한다.")
     @Test
     void update() {
         //given
@@ -121,6 +121,19 @@ class LineServiceTest {
         //then
         assertThat(line1.getName()).isEqualTo(lineRequest2.getName());
         assertThat(line1.getColor()).isEqualTo(lineRequest2.getColor());
+    }
+
+    @DisplayName("요청한 ID에 해당하는 노선의 대체할 이름이 이미 존재할 경우 예외를 발생시킨다.")
+    @Test
+    void updateDuplicatedNameException() {
+        //given
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line1));
+        when(lineRepository.findByName(anyString())).thenReturn(Optional.of(line2));
+
+        //when
+        assertThatThrownBy(() -> lineService.updateLine(anyLong(), lineRequest2))
+                .isInstanceOf(LineDuplicatedException.class) //then
+                .hasMessage(LineService.LINE_DUPLICATED_EXCEPTION_MESSAGE);
     }
 
     @DisplayName("요청한 ID에 해당하는 노선을 삭제한다.")

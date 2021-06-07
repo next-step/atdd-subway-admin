@@ -28,6 +28,10 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
+    public boolean isDifferentName(String name){
+        return !this.name.equals(name);
+    }
+
     public Long getId() {
         return id;
     }

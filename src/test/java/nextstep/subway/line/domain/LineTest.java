@@ -33,4 +33,28 @@ class LineTest {
         assertThat(line.getName()).isEqualTo(newLine.getName());
         assertThat(line.getColor()).isEqualTo(newLine.getColor());
     }
+
+    @Test
+    void isDifferentNameTrue() {
+        //given
+        Line line = new Line("1호선", "blue");
+
+        //when
+        boolean actual = line.isDifferentName("2호선");
+
+        //then
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    void isDifferentNameFalse() {
+        //given
+        Line line = new Line("1호선", "blue");
+
+        //when
+        boolean actual = line.isDifferentName("1호선");
+
+        //then
+        assertThat(actual).isFalse();
+    }
 }

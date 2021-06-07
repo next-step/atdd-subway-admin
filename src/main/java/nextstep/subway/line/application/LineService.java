@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    public static final String LINE_DUPLICATED_EXCEPTION_MESSAGE = "이미 지하철 노선이 등록되어 있습니다.";
+    public static final String LINE_DUPLICATED_EXCEPTION_MESSAGE = "해당 이름으로 등록된 지하철 노선이 있습니다.";
     public static final String LINE_NOT_FOUND_EXCEPTION_MESSAGE = "해당 ID로 된 지하철 노선이 존재하지 않습니다.";
     private final LineRepository lineRepository;
 
@@ -24,13 +24,13 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        checkDuplicatedLine(request.getName());
+        checkDuplicatedLineName(request.getName());
 
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
 
-    private void checkDuplicatedLine(String name) {
+    private void checkDuplicatedLineName(String name) {
         if (lineRepository.findByName(name).isPresent()) {
             throw new LineDuplicatedException(LINE_DUPLICATED_EXCEPTION_MESSAGE);
         }
@@ -52,6 +52,9 @@ public class LineService {
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = getLine(id);
+        if (line.isDifferentName(lineRequest.getName())) {
+            checkDuplicatedLineName(lineRequest.getName());
+        }
         line.update(lineRequest.toLine());
     }
 
@@ -61,7 +64,7 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteLine(Long id){
+    public void deleteLine(Long id) {
         Line line = getLine(id);
         lineRepository.delete(line);
     }
