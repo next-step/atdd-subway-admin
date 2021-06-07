@@ -84,12 +84,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
+        int expectedStationCount = 2;
 
         // when
         ExtractableResponse<Response> 조회된_노선 = 지하철_노선_조회_요청(생성된_신분당선);
 
         // then
-        지하철_노선_응답됨(조회된_노선);
+        지하철_노선_응답됨(조회된_노선, 신분당선, expectedStationCount);
+        지하철_노선_역_응답됨(조회된_노선, 신분당선, 강남역, 양재역);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -153,25 +155,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    private void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
+    private void 지하철_노선_응답됨(ExtractableResponse<Response> response, LineRequest lineRequest, int expectedStationCount) {
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
-                () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600"),
-                () -> assertThat(lineResponse.getStations().size()).isEqualTo(2)
+                () -> assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor()),
+                () -> assertThat(lineResponse.getStations().size()).isEqualTo(expectedStationCount)
         );
+    }
 
+    private void 지하철_노선_역_응답됨(ExtractableResponse<Response> response, LineRequest lineRequest,
+                              Map<String, String> upStationParam, Map<String, String> downStationParam) {
+
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
         StationResponse upStation = lineResponse.getStations().get(0);
         assertAll(
-                () -> assertThat(upStation.getId()).isEqualTo(1L),
-                () -> assertThat(upStation.getName()).isEqualTo("강남역")
+                () -> assertThat(upStation.getId()).isEqualTo(lineRequest.getUpStationId()),
+                () -> assertThat(upStation.getName()).isEqualTo(upStationParam.get("name"))
         );
 
         StationResponse downStation = lineResponse.getStations().get(1);
         assertAll(
-                () -> assertThat(downStation.getId()).isEqualTo(2L),
-                () -> assertThat(downStation.getName()).isEqualTo("역삼역")
+                () -> assertThat(downStation.getId()).isEqualTo(lineRequest.getDownStationId()),
+                () -> assertThat(downStation.getName()).isEqualTo(downStationParam.get("name"))
         );
     }
 
