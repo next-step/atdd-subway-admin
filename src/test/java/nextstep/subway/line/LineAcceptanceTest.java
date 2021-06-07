@@ -37,7 +37,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine2() {
 		// given
-		지하철_노선을_생성한다(lineNumber2);
+		지하철_노선_생성되어_있음(lineNumber2);
 		// when
 		ExtractableResponse<Response> response = 지하철_노선을_생성한다(lineNumber2);
 		// then
@@ -48,8 +48,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
-		ExtractableResponse<Response> createResponse2 = 지하철_노선을_생성한다(lineNumber1);
-		ExtractableResponse<Response> createResponse1 = 지하철_노선을_생성한다(lineNumber2);
+		ExtractableResponse<Response> createResponse1 = 지하철_노선_생성되어_있음(lineNumber1);
+		ExtractableResponse<Response> createResponse2 = 지하철_노선_생성되어_있음(lineNumber2);
 		// when
 		ExtractableResponse<Response> response = 모든_지하철_노선을_조회한다();
 		// then
@@ -62,7 +62,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
-		ExtractableResponse<Response> createResponse = 지하철_노선을_생성한다(lineNumber2);
+		ExtractableResponse<Response> createResponse = 지하철_노선_생성되어_있음(lineNumber2);
 		// when
 		Long id = createResponse.jsonPath().getLong("id");
 		ExtractableResponse<Response> response = 단일_지하철_노선을_조회한다(id);
@@ -74,7 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
-		ExtractableResponse<Response> createResponse = 지하철_노선을_생성한다(lineNumber2);
+		ExtractableResponse<Response> createResponse = 지하철_노선_생성되어_있음(lineNumber2);
 		// when
 		long id = createResponse.jsonPath().getLong("id");
 		ExtractableResponse<Response> response = 지하철_노선을_수정한다(lineNumber1, id);
@@ -86,7 +86,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
-		ExtractableResponse<Response> createResponse = 지하철_노선을_생성한다(lineNumber1);
+		ExtractableResponse<Response> createResponse = 지하철_노선_생성되어_있음(lineNumber1);
 		// when
 		long id = createResponse.jsonPath().getLong("id");
 		ExtractableResponse<Response> response = 지하철_노선을_제거한다(id);
@@ -112,6 +112,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.header("Location")).isNotBlank();
 		assertThat(response.body().jsonPath().getString("name")).isEqualTo(lineRequest.getName());
 		assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineRequest.getColor());
+	}
+
+	ExtractableResponse<Response> 지하철_노선_생성되어_있음(LineRequest lineRequest) {
+		ExtractableResponse<Response> response = 지하철_노선을_생성한다(lineRequest);
+		지하철_노선_생성됨(response, lineRequest);
+		return response;
 	}
 
 	void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
