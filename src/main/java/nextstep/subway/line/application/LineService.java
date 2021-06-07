@@ -31,33 +31,29 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Optional<Line> line = lineRepository.findById(id);
-        checkLine(line);
-        return LineResponse.of(line.get());
+        Line line = getLine(id);
+        return LineResponse.of(line);
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Optional<Line> line = lineRepository.findById(id);
-        checkLine(line);
+        Line line = getLine(id);
 
-        line.get().update(lineRequest.toLine());
+        line.update(lineRequest.toLine());
 
-        return LineResponse.of(line.get());
-    }
-
-    private void checkLine(Optional<Line> line) {
-        if(!line.isPresent()) {
-            throw new RuntimeException("노선을 찾을 수 없습니다.");
-        }
+        return LineResponse.of(line);
     }
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Line getLine(Long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new RuntimeException("노선을 찾을 수 없습니다."));
     }
 }
