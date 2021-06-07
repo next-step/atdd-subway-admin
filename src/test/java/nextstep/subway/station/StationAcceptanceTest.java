@@ -2,7 +2,6 @@ package nextstep.subway.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
@@ -16,13 +15,15 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private static final Station gwanghwamunStation = new Station("광화문역");
-    private static final Station seodaemunStation = new Station("서대문역");
+    //5호선라인 지하철역들
+    public static final Station aeogaeStation = new Station("애오개역");
+    public static final Station chungjeongnoStation = new Station("충정로역");
+    public static final Station seodaemunStation = new Station("서대문역");
+    public static final Station gwanghwamunStation = new Station("광화문역");
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -56,11 +57,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse2 = 지하철역_등록되어_있음(seodaemunStation);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/stations")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = get("/stations");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -81,25 +78,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = delete(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> 지하철역_등록되어_있음(Station station) {
+    public static ExtractableResponse<Response> 지하철역_등록되어_있음(Station station) {
         Map<String, String> params = new HashMap<>();
         params.put("name", station.getName());
 
-        return RestAssured
-            .given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/stations")
-            .then().log().all().extract();
+        return post(params, "/stations");
     }
 }

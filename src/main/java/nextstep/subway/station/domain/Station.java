@@ -1,18 +1,29 @@
 package nextstep.subway.station.domain;
 
+import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
-
-import javax.persistence.*;
+import nextstep.subway.station.dto.StationResponse;
 
 @Entity
 public class Station extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
 
-    public Station() {
+    protected Station() {
+    }
+
+    public Station(Long id) {
+        this.id = id;
     }
 
     public Station(String name) {
@@ -25,5 +36,31 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public StationResponse toStationResponse() {
+        return StationResponse.of(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        Station station = (Station) o;
+        return Objects.equals(id, station.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            '}';
     }
 }
