@@ -33,10 +33,6 @@ public class Section implements Comparable<Section> {
         this.distance = distance;
     }
 
-    public boolean isEqualToUpStation(Station station) {
-        return upStation.equals(station);
-    }
-
     public boolean isEqualToDownStation(Station station) {
         return downStation.equals(station);
     }
