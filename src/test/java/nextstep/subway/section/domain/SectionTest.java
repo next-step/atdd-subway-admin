@@ -88,4 +88,15 @@ public class SectionTest {
         assertThat(강남_판교_구간.getDownStation()).isEqualTo(양재역);
         assertThat(강남_판교_구간.getDistance()).isEqualTo(4);
     }
+
+    @Test
+    @DisplayName("비교 구간의 상행선 또는 하행선 포함 확인 테스트")
+    void isContainSection() {
+        // given
+        Section 강남_광교_구간 = new Section(5L, 강남역, 광교역, 5);
+        // when & then
+        assertThat(강남_광교_구간.isContainSection(강남_판교_구간)).isTrue();
+        assertThat(강남_광교_구간.isContainSection(수지_광교_구간)).isTrue();
+        assertThat(강남_판교_구간.isContainSection(판교_수지_구간)).isFalse();
+    }
 }

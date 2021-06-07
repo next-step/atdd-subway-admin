@@ -89,6 +89,10 @@ public class Section extends BaseEntity {
         this.downStation = newSection.upStation;
     }
 
+    public boolean isContainSection(Section section) {
+        return this.upStation.isSame(section.upStation) || this.downStation.isSame(section.downStation);
+    }
+
     public void changeLine(Line line) {
         this.line = line;
     }

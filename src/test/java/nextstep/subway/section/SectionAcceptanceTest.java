@@ -65,52 +65,56 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addUpStation() {
         // given
-        // 지하철_역_등록되어_있음
+        Long 강남역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        SectionRequest sectionRequest = SectionRequest.of(강남역_ID, 판교역_ID, 3);
 
         // when
-        // 지하철_노선에_구간_등록_요청
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선_ID, sectionRequest);
 
         // then
-        // 지하철_노선에_구간_등록됨
+        지하철_노선에_구간_등록됨(response);
     }
 
     @DisplayName("노선에 하행 종점으로 등록한다.")
     @Test
     void addDownStation() {
         // given
-        // 지하철_역_등록되어_있음
+        Long 광교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("광교역"));
+        SectionRequest sectionRequest = SectionRequest.of(수지역_ID, 광교역_ID, 4);
 
         // when
-        // 지하철_노선에_구간_등록_요청
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선_ID, sectionRequest);
 
         // then
-        // 지하철_노선에_구간_등록됨
+        지하철_노선에_구간_등록됨(response);
     }
 
     @DisplayName("노선에 기존 역 사이 길이보다 큰 구간을 등록한다.")
     @Test
     void addStationTooLongDistance() {
         // given
-        // 지하철_역_등록되어_있음
+        Long 정자역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("정자역"));
+        SectionRequest sectionRequest = SectionRequest.of(판교역_ID, 정자역_ID, 10);
 
         // when
-        // 지하철_노선에_구간_등록_요청
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선_ID, sectionRequest);
 
         // then
-        // 지하철_노선에_구간_등록에_실패함
+        지하철_노선에_구간_등록에_실패함(response);
     }
 
     @DisplayName("노선에 기존 역 사이 길이가 같은 구간을 등록한다.")
     @Test
     void addStationEqualsDistance() {
         // given
-        // 지하철_역_등록되어_있음
+        Long 정자역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("정자역"));
+        SectionRequest sectionRequest = SectionRequest.of(판교역_ID, 정자역_ID, 4);
 
         // when
-        // 지하철_노선에_구간_등록_요청
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선_ID, sectionRequest);
 
         // then
-        // 지하철_노선에_구간_등록에_실패함
+        지하철_노선에_구간_등록에_실패함(response);
     }
 
     @DisplayName("노선에 이미 존재하는 구간을 등록한다.")
