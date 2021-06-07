@@ -29,9 +29,23 @@ public class Sections implements Iterable<Section> {
         return sections.get(FIRST_INDEX).getDownStation();
     }
 
+    private Station getLastStation() {
+        return sections.get(lastIndex()).getUpStation();
+    }
+
+    private int lastIndex() {
+        return sections.size() - 1;
+    }
+
     private List<Station> getUpStations() {
         return sections.stream()
                 .map(Section::getUpStation)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> getDownStations() {
+        return sections.stream()
+                .map(Section::getDownStation)
                 .collect(Collectors.toList());
     }
 
@@ -39,14 +53,13 @@ public class Sections implements Iterable<Section> {
         return sections.contains(section);
     }
 
-    public void add(Section section) {
+    public void add(Section element) {
         if (sections.isEmpty()) {
-            sections.add(section);
+            sections.add(element);
             return;
         }
-        validateAddable(section);
-        // TODO : 등록구간 인덱스를 판별한다
-        // TODO : 구간인덱스에 맞게 등록한다
+        validateAddable(element);
+        add(selectAddIndex(element), element);
     }
 
     private void validateAddable(Section section) {
@@ -64,6 +77,23 @@ public class Sections implements Iterable<Section> {
 
     private boolean isStationNotContains(Section section) {
         return !getStations().contains(section.getUpStation()) && !getStations().contains(section.getDownStation());
+    }
+
+    private int selectAddIndex(Section element) {
+        if (getFirstStation().equals(element.getUpStation())) {
+            return FIRST_INDEX;
+        }
+        if (getLastStation().equals(element.getDownStation())) {
+            return lastIndex();
+        }
+        if (getUpStations().contains(element.getDownStation())) {
+            return getUpStations().indexOf(element.getDownStation()) + 1;
+        }
+        return getDownStations().indexOf(element.getUpStation());
+    }
+
+    private void add(int index, Section element) {
+        sections.add(index, element);
     }
 
     @Override
