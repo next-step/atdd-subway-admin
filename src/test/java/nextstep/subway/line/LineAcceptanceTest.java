@@ -115,10 +115,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_응답됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
-        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
-        Assertions.assertThat(lineResponses)
-                .hasSize(1)
-                .extracting("name").contains("경의선");
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+        Assertions.assertThat(lineResponse.getName()).isEqualTo("경의선");
+
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -145,10 +144,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_수정됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
-        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
-        Assertions.assertThat(lineResponses)
-                .hasSize(1)
-                .extracting("color").contains("red");
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+        Assertions.assertThat(lineResponse.getName()).isEqualTo("경의선");
+        Assertions.assertThat(lineResponse.getColor()).isEqualTo("red");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -173,10 +171,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        // 지하철_노선_목록_포함됨
-        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
-        Assertions.assertThat(lineResponses)
-                .hasSize(0);
     }
 
     void 지하철_노선_등록되어_있음(String name, String color) {

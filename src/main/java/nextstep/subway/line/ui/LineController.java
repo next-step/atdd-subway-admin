@@ -20,13 +20,18 @@ public class LineController {
     }
 
     @GetMapping(value = "/{name}")
-    public ResponseEntity getLine(@PathVariable  String name) {
-        List<LineResponse> lines = lineService.getLine(name);
+    public ResponseEntity getLine(@PathVariable String name) {
+        LineResponse line = null;
+        try {
+            line = lineService.getLine(name);
+        } catch (NullPointerException e) {
+            return ResponseEntity.notFound().build();
+        }
 
-        return ResponseEntity.ok().body(lines);
+        return ResponseEntity.ok().body(line);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity getLines() {
         List<LineResponse> lines = lineService.findAll();
 
@@ -41,20 +46,30 @@ public class LineController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
+
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @PutMapping
     public ResponseEntity updateLine(@RequestBody LineRequest lineRequest) {
-        List<LineResponse> lines = lineService.updateLine(lineRequest);
+        LineResponse line = null;
+        try {
+            line = lineService.updateLine(lineRequest);
+        } catch (NullPointerException e) {
+            return ResponseEntity.notFound().build();
+        }
 
-        return ResponseEntity.ok().body(lines);
+        return ResponseEntity.ok().body(line);
     }
 
     @DeleteMapping
     public ResponseEntity deleteLine(@RequestBody LineRequest lineRequest) {
-        List<LineResponse> lines = lineService.deleteLine(lineRequest);
-
-        return ResponseEntity.ok().body(lines);
+        LineResponse line = null;
+        try {
+            line = lineService.deleteLine(lineRequest);
+        } catch (NullPointerException e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(line);
     }
 }

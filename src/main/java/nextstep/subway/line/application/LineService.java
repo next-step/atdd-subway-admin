@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,12 +24,14 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         validateDuplicate(request);
 
-        Line persistLine = lineRepository.save(request.toLine());
+        Line persistLine = lineRepository.save(request.toLine()) ;
         return LineResponse.of(persistLine);
     }
 
     private void validateDuplicate(LineRequest request) {
-        if (this.findByName(request.getName()).size() != 0) {
+        Line line = request.toLine();
+
+        if (Objects.nonNull(lineRepository.findByName(line.getName()))) {
             throw new IllegalArgumentException("노선이름이 이미 존재합니다.");
         }
     }
@@ -38,34 +42,31 @@ public class LineService {
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
     }
 
-    private List<Line> findByName(String name) {
-        return lineRepository.findByName(name);
+    private Line findByName(String name) {
+        Line line = lineRepository.findByName(name);
+
+        return Optional.ofNullable(line).orElseThrow(() -> new NullPointerException("존재하지 않는 노선입니다."));
     }
 
-    public List<LineResponse> updateLine(LineRequest request) {
+    public LineResponse updateLine(LineRequest request) {
         Line line = request.toLine();
-        List<Line> lines = this.findByName(line.getName());
+        Line persistLine = this.findByName(line.getName());
 
-        for (int i = 0; i < lines.size(); i++) {
-            lines.get(i).update(line);
-        }
+        persistLine.update(line);
 
-        List<Line> persistLines = lineRepository.saveAll(lines);
-        return persistLines.stream().map(LineResponse::of).collect(Collectors.toList());
+        return LineResponse.of(lineRepository.save(persistLine));
     }
 
-    public List<LineResponse> getLine(String name) {
-        return this.findByName(name).stream().map(LineResponse::of).collect(Collectors.toList());
+    public LineResponse getLine(String name) {
+        return LineResponse.of(this.findByName(name));
     }
 
-    public List<LineResponse> deleteLine(LineRequest request) {
+    public LineResponse deleteLine(LineRequest request) {
         Line line = request.toLine();
-        List<Line> lines = this.findByName(line.getName());
+        Line persistLine = this.findByName(line.getName());
 
-        for (int i = 0; i < lines.size(); i++) {
-            lineRepository.delete(lines.get(i));
-        }
+        lineRepository.delete(persistLine);
 
-        return this.findAll();
+        return LineResponse.of(persistLine);
     }
 }
