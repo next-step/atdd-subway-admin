@@ -55,9 +55,8 @@ public class Section extends BaseEntity implements Serializable {
         this.distance = distance;
     }
 
-    public Section toLine(Line line) {
+    public void toLine(Line line) {
         this.line = line;
-        return this;
     }
 
     public Long getId() {
@@ -76,10 +75,6 @@ public class Section extends BaseEntity implements Serializable {
         return station.equals(this.upStation) || station.equals(this.downStation);
     }
 
-    public boolean isDuplicateSection(Station upStation, Station downStation) {
-        return contains(upStation) && contains(downStation);
-    }
-
     public boolean equalsUpStation(Station station) {
         return station.equals(this.upStation);
     }
@@ -88,19 +83,12 @@ public class Section extends BaseEntity implements Serializable {
         return station.equals(this.downStation);
     }
 
-    public Section updateUpStation(Station station) {
+    public void updateUpStation(Station station) {
         this.upStation = station;
-        return this;
     }
 
-    public Section updateDownStation(Station upStation) {
+    public void updateDownStation(Station upStation) {
         this.downStation = upStation;
-        return this;
-    }
-
-    public Section updateDistance(int distance) {
-        this.distance = new Distance(distance);
-        return this;
     }
 
     public void minusDistance(int value) {
