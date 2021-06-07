@@ -3,9 +3,7 @@ package nextstep.subway.station;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +15,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
@@ -25,7 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createStation() {
 		// given
-		Map<String, String> params = getParameter("강남역");
+		StationRequest params = new StationRequest("강남역");
 
 		// when
 		ExtractableResponse<Response> response = createStations(params);
@@ -39,7 +38,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createStationWithDuplicateName() {
 		// given
-		Map<String, String> params = getParameter("강남역");
+		StationRequest params = new StationRequest("강남역");
 		createStations(params);
 
 		// when
@@ -53,8 +52,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getStations() {
 		/// given
-		ExtractableResponse<Response> createResponse1 = createStations(getParameter("강남역"));
-		ExtractableResponse<Response> createResponse2 = createStations(getParameter("역삼역"));
+		ExtractableResponse<Response> createResponse1 = createStations(new StationRequest("강남역"));
+		ExtractableResponse<Response> createResponse2 = createStations(new StationRequest("역삼역"));
 
 		// when
 		ExtractableResponse<Response> response = findAllStations();
@@ -74,8 +73,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteStation() {
 		// given
-		Map<String, String> params = getParameter("강남역");
-		ExtractableResponse<Response> createResponse = createStations(params);
+		ExtractableResponse<Response> createResponse = createStations(new StationRequest("강남역"));
 
 		// when
 		ExtractableResponse<Response> response = deleteStation(createResponse);
@@ -86,7 +84,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
 	private ExtractableResponse<Response> deleteStation(ExtractableResponse<Response> createResponse) {
 		String uri = createResponse.header("Location");
-		
+
 		return RestAssured.given().log().all()
 			.when()
 			.delete(uri)
@@ -94,15 +92,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 			.extract();
 	}
 
-	private Map<String, String> getParameter(String name) {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
-		return params;
-	}
-
-	private ExtractableResponse<Response> createStations(Map<String, String> params) {
+	private ExtractableResponse<Response> createStations(StationRequest stationRequest) {
 		return RestAssured.given().log().all()
-			.body(params)
+			.body(stationRequest)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
 			.post("/stations")
