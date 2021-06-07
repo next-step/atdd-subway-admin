@@ -80,6 +80,6 @@ public class SectionAcceptanceTest extends RestAcceptanceTest {
         params.put("upStationId", upStationId.toString());
         params.put("downStationId", downStationId.toString());
         params.put("distance", String.valueOf(distance));
-        return executePost("/" + lineId.toString() + "/sections", params);
+        return executePost("lines/" + lineId.toString() + "/sections", params);
     }
 }
