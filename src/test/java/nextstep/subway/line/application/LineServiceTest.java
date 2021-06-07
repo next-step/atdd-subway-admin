@@ -29,14 +29,16 @@ class LineServiceTest {
 
     @Mock
     private LineRepository lineRepository;
-    private LineRequest lineRequest;
+    private LineRequest lineRequest1;
+    private LineRequest lineRequest2;
     private Line line1;
     private Line line2;
 
     @BeforeEach
     void setUp() {
         lineService = new LineService(lineRepository);
-        lineRequest = new LineRequest("1호선", "blue");
+        lineRequest1 = new LineRequest("1호선", "blue");
+        lineRequest2 = new LineRequest("2호선", "green");
         line1 = new Line("1호선", "blue");
         line2 = new Line("2호선", "green");
     }
@@ -48,7 +50,7 @@ class LineServiceTest {
         when(lineRepository.save(any(Line.class))).thenReturn(line1);
 
         //when
-        LineResponse actual = lineService.saveLine(lineRequest);
+        LineResponse actual = lineService.saveLine(lineRequest1);
 
         //then
         assertThat(actual.getName()).isEqualTo("1호선");
@@ -62,7 +64,7 @@ class LineServiceTest {
         when(lineRepository.findByName(anyString())).thenReturn(Optional.of(line1));
 
         //when
-        assertThatThrownBy(() -> lineService.saveLine(lineRequest))
+        assertThatThrownBy(() -> lineService.saveLine(lineRequest1))
                 .isInstanceOf(LineDuplicatedException.class) // then
                 .hasMessage(LineService.LINE_DUPLICATED_EXCEPTION_MESSAGE);
     }
@@ -105,4 +107,20 @@ class LineServiceTest {
                 .isInstanceOf(LineNotFoundException.class)
                 .hasMessage(LineService.LINE_NOT_FOUND_EXCEPTION_MESSAGE);
     }
+
+    @DisplayName("요청한 ID를 새로운 이름과 색깔로 대체한다.")
+    @Test
+    void update() {
+        //given
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line1));
+
+        //when
+        lineService.updateLine(anyLong(), lineRequest2);
+
+        //then
+        assertThat(line1.getName()).isEqualTo(lineRequest2.getName());
+        assertThat(line1.getColor()).isEqualTo(lineRequest2.getColor());
+    }
+
+
 }

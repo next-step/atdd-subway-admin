@@ -47,6 +47,11 @@ public class LineController {
     /**
      * 지하철 노선 수정
      */
+    @PutMapping(value = "/{id:\\d+}")
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.updateLine(id, lineRequest);
+        return ResponseEntity.ok().build();
+    }
 
     /**
      * 지하철 노선 삭제

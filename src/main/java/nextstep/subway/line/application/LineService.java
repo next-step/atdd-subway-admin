@@ -45,7 +45,16 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        return LineResponse.of(lineRepository.findById(id)
-                .orElseThrow(() -> new LineNotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE)));
+        return LineResponse.of(getLine(id));
+    }
+
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = getLine(id);
+        line.update(lineRequest.toLine());
+    }
+
+    private Line getLine(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new LineNotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 }
