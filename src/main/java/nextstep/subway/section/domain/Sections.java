@@ -66,6 +66,10 @@ public class Sections implements Iterable<Section> {
         synchronizeSequence();
     }
 
+    public void removeStation(Station element) {
+        validateRemovable(element);
+    }
+
     private void validateAddable(Section section) {
         if (isStationAllContains(section)) {
             throw new IllegalArgumentException("구간에 속한 모든 역이 노선에 포함되어 있습니다. 역 정보를 확인해주세요.");
@@ -97,6 +101,15 @@ public class Sections implements Iterable<Section> {
             return getUpStations().indexOf(element.getDownStation()) + 1;
         }
         return getDownStations().indexOf(element.getUpStation()) - 1;
+    }
+
+    private void validateRemovable(Station element) {
+        if (sections.size() == 1) {
+            throw new IllegalStateException("구간은 최소 한 개 이상 존재해야 합니다.");
+        }
+        if (!getStations().contains(element)) {
+            throw new IllegalArgumentException("삭제하고자 하는 역 정보가 존재하지 않습니다. 입력정보를 확인해주세요.");
+        }
     }
 
     private void add(int index, Section element) {
