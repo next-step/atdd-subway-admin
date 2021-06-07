@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Line entity 테스트")
 class LineTest {
@@ -16,7 +15,7 @@ class LineTest {
     @DisplayName("아이디 기준 노선 조회 결과가 없을 시 에러 정상 발생")
     void checkNullLine() {
         Optional<Line> emptyLine = Optional.empty();
-        assertThatThrownBy(() -> Line.checkNullLine(emptyLine)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Line.getNotNullLine(emptyLine)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

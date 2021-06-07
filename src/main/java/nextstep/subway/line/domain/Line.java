@@ -30,10 +30,11 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public static void checkNullLine(Optional<Line> optionalLine) {
+    public static Line getNotNullLine(Optional<Line> optionalLine) {
         if (!optionalLine.isPresent()) {
             throw new IllegalArgumentException(NOT_FOUND_LINE_ERROR_MESSAGE);
         }
+        return optionalLine.get();
     }
 
     public Long getId() {

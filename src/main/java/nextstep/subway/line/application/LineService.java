@@ -32,19 +32,19 @@ public class LineService {
 
     public LineResponse findLineById(Long id) {
         Optional<Line> findLine = lineRepository.findById(id);
-        Line.checkNullLine(findLine);
-        return LineResponse.of(findLine.get());
+        Line line = Line.getNotNullLine(findLine);
+        return LineResponse.of(line);
     }
 
     public void updateLineById(Long id, LineRequest lineRequest) {
         Optional<Line> findLine = lineRepository.findById(id);
-        Line.checkNullLine(findLine);
-        findLine.get().update(lineRequest.toLine());
+        Line line = Line.getNotNullLine(findLine);
+        line.update(lineRequest.toLine());
     }
 
     public void deleteLineById(Long id) {
         Optional<Line> findLine = lineRepository.findById(id);
-        Line.checkNullLine(findLine);
-        lineRepository.delete(findLine.get());
+        Line line = Line.getNotNullLine(findLine);
+        lineRepository.delete(line);
     }
 }
