@@ -129,25 +129,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addStationExistsStation() {
         // given
-        // 지하철_역_등록되어_있음
+        SectionRequest sectionRequest = SectionRequest.of(판교역_ID, 수지역_ID, 4);
 
         // when
-        // 지하철_노선에_구간_등록_요청
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선_ID, sectionRequest);
 
         // then
-        // 지하철_노선에_구간_등록에_실패함
+        지하철_노선에_구간_등록에_실패함(response);
     }
 
     @DisplayName("노선에 상행/하행 정보가 없는 구간을 등록한다.")
     @Test
     void addStationWithEmptyUpOrDownStation() {
         // given
-        // 지하철_역_등록되어_있음
+        SectionRequest sectionRequest = SectionRequest.of(null, 수지역_ID, 4);
 
         // when
-        // 지하철_노선에_구간_등록_요청
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선_ID, sectionRequest);
 
         // then
-        // 지하철_노선에_구간_등록에_실패함
+        지하철_노선에_구간_등록에_실패함(response);
     }
 }
