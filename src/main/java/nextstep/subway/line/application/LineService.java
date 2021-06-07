@@ -1,32 +1,45 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityNotFoundException;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import nextstep.subway.section.application.SectionService;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 
 @Service
 @Transactional
 public class LineService {
-	private LineRepository lineRepository;
+	private final LineRepository lineRepository;
 
-	public LineService(LineRepository lineRepository) {
+	private final StationService stationService;
+
+	private final SectionService sectionService;
+
+	public LineService(LineRepository lineRepository, StationService stationService, SectionService sectionService) {
 		this.lineRepository = lineRepository;
+		this.stationService = stationService;
+		this.sectionService = sectionService;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		Line persistLine = lineRepository.save(request.toLine());
+		Line line = request.toLine();
+		Station upStation = this.stationService.getStation(request.getUpStationId());
+		Station downStation = this.stationService.getStation(request.getDownStationId());
+		Section section = new Section(line, upStation, downStation, request.getDistance());
+		this.sectionService.saveSection(section);
+		Line persistLine = lineRepository.save(line);
 		return LineResponse.of(persistLine);
 	}
 
@@ -39,10 +52,10 @@ public class LineService {
 	}
 
 	public LineResponse getLine(long lineId) {
-        Line line = this.lineRepository.findById(lineId)
-            .orElseThrow(this.getEntityNotFoundExceptionSupplier());
-        return LineResponse.of(line);
-    }
+		Line line = this.lineRepository.findById(lineId)
+			.orElseThrow(this.getEntityNotFoundExceptionSupplier());
+		return LineResponse.of(line);
+	}
 
 	private Supplier<EntityNotFoundException> getEntityNotFoundExceptionSupplier() {
 		return () -> new EntityNotFoundException("id에 해당하는 Line을 찾을 수 없습니다.");

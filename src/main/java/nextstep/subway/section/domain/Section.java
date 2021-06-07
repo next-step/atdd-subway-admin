@@ -36,8 +36,15 @@ public class Section {
 	protected Section() {
 	}
 
-	public void changeLine(Line line){
-		if(this.line != null){
+	public Section(Line line, Station upStation, Station downStation, int distance) {
+		this.line = line;
+		this.upStation = upStation;
+		this.downStation = downStation;
+		this.distance = distance;
+	}
+
+	public void changeLine(Line line) {
+		if (this.line != null) {
 			line.getSections().remove(this);
 		}
 		this.line = line;
