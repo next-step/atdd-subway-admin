@@ -71,6 +71,11 @@ public class LineController {
         return ResponseEntity.badRequest().body(makeErrorMessage(HttpStatus.BAD_REQUEST, e.getMessage()));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(makeErrorMessage(HttpStatus.BAD_REQUEST, e.getMessage()));
+    }
+
     private Map<String, Object> makeErrorMessage(HttpStatus status, String errorMessage) {
         Map<String, Object> errors = new HashMap<>();
         errors.put("timestamp", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")));
