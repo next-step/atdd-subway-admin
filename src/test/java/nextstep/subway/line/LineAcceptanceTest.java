@@ -1,6 +1,6 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.line.LineAcceptanceFixture.*;
+import static nextstep.subway.line.LineAcceptanceTool.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
