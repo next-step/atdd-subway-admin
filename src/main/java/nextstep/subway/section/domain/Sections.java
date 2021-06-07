@@ -23,8 +23,12 @@ public class Sections {
         if (section == null) {
             throw new IllegalArgumentException("Section is null.");
         }
-        if (!sections.contains(section)) {
+        if (!this.contains(section)) {
             sections.add(section);
         }
+    }
+
+    public boolean contains(Section section) {
+        return sections.contains(section);
     }
 }
