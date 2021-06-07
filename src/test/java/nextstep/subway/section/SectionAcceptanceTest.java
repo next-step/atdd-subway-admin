@@ -3,7 +3,6 @@ package nextstep.subway.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -59,11 +57,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", section.getDownStation().getId());
         params.put("distance", section.getDistance());
 
-        return RestAssured
-            .given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines/" + section.getLine().getId() + "/sections")
-            .then().log().all().extract();
+        return post(params, "/lines/" + section.getLine().getId() + "/sections");
     }
 }

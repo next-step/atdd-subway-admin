@@ -2,7 +2,6 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
@@ -22,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -76,9 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음(line5);
 
         // when
-        ExtractableResponse<Response> response = RestAssured
-            .when().get("/lines")
-            .then().log().all().extract();
+        ExtractableResponse<Response> response = get("/lines");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -99,9 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long lineId = createResponse.jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = RestAssured
-            .when().get("/lines/" + lineId)
-            .then().log().all().extract();
+        ExtractableResponse<Response> response = get("/lines/" + lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -118,12 +112,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", line5.getName());
         params.put("color", line5.getColor());
-        ExtractableResponse<Response> response = RestAssured
-            .given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().put(createResponse.header("Location"))
-            .then().log().all().extract();
+
+        String uri = createResponse.header("Location");
+        ExtractableResponse<Response> response = put(params, uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -137,11 +128,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .delete(uri)
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = delete(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -152,12 +139,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("name", line.getName());
         params.put("color", line.getColor());
 
-        return RestAssured
-            .given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines")
-            .then().log().all().extract();
+        return post(params, "/lines");
     }
 
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음_두_종점역_포함(Line line, Section section) {
@@ -169,12 +151,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", section.getDownStation().getId());
         params.put("distance", section.getDistance());
 
-        return RestAssured
-            .given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines/withSection")
-            .then().log().all().extract();
+        return post(params, "/lines/withSection");
     }
 
     @DisplayName("지하철 노선 생성 시 두 종점역 추가하기")
@@ -202,9 +179,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         SectionAcceptanceTest.지하철_구간_등록되어_있음(new Section(lineId, seodaemunStation.getId(), gwanghwamunStation.getId(), 1000));
 
         // when
-        ExtractableResponse<Response> response = RestAssured
-            .when().get("/lines/" + lineId)
-            .then().log().all().extract();
+        ExtractableResponse<Response> response = get("/lines/" + lineId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
