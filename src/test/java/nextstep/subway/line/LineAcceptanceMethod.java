@@ -1,16 +1,14 @@
 package nextstep.subway.line;
 
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 
-@Component
 public class LineAcceptanceMethod {
-	public ExtractableResponse<Response> createLine(LineRequest lineRequest) {
+	public static ExtractableResponse<Response> createLine(LineRequest lineRequest) {
 		return RestAssured
 			.given().log().all()
 			.body(lineRequest)
@@ -21,7 +19,7 @@ public class LineAcceptanceMethod {
 			.extract();
 	}
 
-	public ExtractableResponse<Response> findLine(String createLineId) {
+	public static ExtractableResponse<Response> findLine(String createLineId) {
 		return RestAssured
 			.given().log().all()
 			.when()
@@ -30,11 +28,11 @@ public class LineAcceptanceMethod {
 			.extract();
 	}
 
-	public String getLineID(ExtractableResponse<Response> createResponse) {
+	public static String getLineID(ExtractableResponse<Response> createResponse) {
 		return createResponse.header("Location").split("/")[2];
 	}
 
-	public ExtractableResponse<Response> updateLine(String id, LineRequest lineRequest) {
+	public static ExtractableResponse<Response> updateLine(String id, LineRequest lineRequest) {
 		return RestAssured
 			.given().log().all()
 			.body(lineRequest)
@@ -45,7 +43,7 @@ public class LineAcceptanceMethod {
 			.extract();
 	}
 
-	public ExtractableResponse<Response> deleteLine(String id) {
+	public static ExtractableResponse<Response> deleteLine(String id) {
 		return RestAssured
 			.given().log().all()
 			.when()
@@ -54,7 +52,7 @@ public class LineAcceptanceMethod {
 			.extract();
 	}
 
-	public ExtractableResponse<Response> findAllLines() {
+	public static ExtractableResponse<Response> findAllLines() {
 		return RestAssured
 			.given().log().all()
 			.when()
