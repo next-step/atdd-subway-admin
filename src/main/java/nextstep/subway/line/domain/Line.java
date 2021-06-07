@@ -43,9 +43,9 @@ public class Line extends BaseEntity {
         addSection(section);
     }
 
-    public boolean addSection(Section section) {
+    public void addSection(Section section) {
         section.toLine(this);
-        return sections.add(section);
+        sections.add(section);
     }
 
     public void update(Line line) {

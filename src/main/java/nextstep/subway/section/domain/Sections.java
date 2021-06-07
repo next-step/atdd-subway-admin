@@ -38,8 +38,8 @@ public class Sections {
         return stations;
     }
 
-    public boolean add(Section section) {
-        return sections.add(section);
+    public void add(Section section) {
+        addSection(section);
     }
 
     private void initSortSections(List<Section> sections) {
