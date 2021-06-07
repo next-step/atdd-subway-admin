@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.stream.Stream;
 
 @Entity
 public class Section extends BaseEntity {
@@ -31,10 +32,19 @@ public class Section extends BaseEntity {
 		// empty
 	}
 
-	public Section(final Line line, final Station upStation, final Station downStation, final Integer distance) {
-		this.line = line;
+	public Section(final Station upStation, final Station downStation, final Integer distance) {
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
 	}
+
+	public void toLine(final Line line) {
+		this.line = line;
+		line.addSection(this);
+	}
+
+	public Stream<Station> streamOfStation() {
+		return Stream.of(this.upStation, this.downStation);
+	}
+
 }
