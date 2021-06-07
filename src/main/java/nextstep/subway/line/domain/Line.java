@@ -13,7 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -76,7 +76,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return Collections.unmodifiableList(sections.getStations());
+        return new ArrayList<>(sections.getStations());
     }
 
     @Override
