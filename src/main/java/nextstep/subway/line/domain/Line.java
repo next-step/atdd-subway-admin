@@ -61,6 +61,14 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public Station upEndStation() {
+        return sections().upEndStation();
+    }
+
+    public Station downEndStation() {
+        return sections().downEndStation();
+    }
+
     public void addSections(Section section) {
         sections.add(section);
     }
@@ -96,5 +104,9 @@ public class Line extends BaseEntity {
 
     public Sections sections() {
         return sections;
+    }
+
+    public List<Station> stationsFromUpToDown() {
+        return sections.stationsFromUpToDown();
     }
 }

@@ -1,13 +1,16 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.NoSuchDataException;
 import nextstep.subway.exception.ValueFormatException;
+import nextstep.subway.section.Section;
 import nextstep.subway.station_section.StationSection;
 import nextstep.subway.station_section.StationSectionsByStation;
 import org.apache.logging.log4j.util.Strings;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 
 @Entity
 public class Station extends BaseEntity {
@@ -48,5 +51,31 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Station station = (Station) o;
+        return Objects.equals(getId(), station.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
+
+    public Section downSection() {
+        return stationSectionsByStation.downSection();
+    }
+
+    public boolean isExitsDownSection() {
+        try {
+            stationSectionsByStation.downSection();
+            return true;
+        } catch (NoSuchDataException exception) {
+            return false;
+        }
     }
 }

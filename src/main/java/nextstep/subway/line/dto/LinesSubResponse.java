@@ -29,7 +29,10 @@ public class LinesSubResponse {
     }
 
     public static LinesSubResponse of(Line line) {
-        return new LinesSubResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>(),
+        List<StationResponse> stationResponses = new ArrayList<>();
+        line.stationsFromUpToDown().stream().forEach(station -> stationResponses.add(StationResponse.of(station)));
+
+        return new LinesSubResponse(line.getId(), line.getName(), line.getColor(), stationResponses,
                 line.getCreatedDate(), line.getModifiedDate());
     }
 

@@ -11,6 +11,7 @@ import nextstep.subway.station_section.StationType;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Section extends BaseEntity {
@@ -77,6 +78,10 @@ public class Section extends BaseEntity {
         return stationSectionsBySection.downStationName();
     }
 
+    public Station upStation() { return stationSectionsBySection.upStation(); }
+
+    public Station downStation() { return stationSectionsBySection.downStation(); }
+
     public int distance() {
         return distance;
     }
@@ -91,5 +96,9 @@ public class Section extends BaseEntity {
 
     public int stationSectionsSize() {
         return stationSectionsBySection.size();
+    }
+
+    public void findEndStations(Set<StationSection> endStations) {
+        stationSectionsBySection.findEndStations(endStations);
     }
 }

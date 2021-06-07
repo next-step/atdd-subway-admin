@@ -72,7 +72,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_조회됨(extractableResponse, line1, line2);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("지하철 노선 조회시, 노선의 역 목록을 상행 종점부터 하행 종점까지 정렬하여 조회한다.")
     @Test
     void getLine() {
         //given
@@ -172,6 +172,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(linesSubResponse.getName()).isEqualTo(lineResponse.getName());
         assertThat(linesSubResponse.getColor()).isEqualTo(lineResponse.getColor());
+        assertThat(linesSubResponse.getStations().size()).isEqualTo(2);
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {

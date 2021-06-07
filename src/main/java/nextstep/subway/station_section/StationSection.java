@@ -72,6 +72,14 @@ public class StationSection extends BaseEntity {
         return stationType == StationType.DOWN;
     }
 
+    public boolean isUpSectionType() {
+        return stationType == StationType.DOWN;
+    }
+
+    public boolean isDownSectionType() {
+        return stationType == StationType.UP;
+    }
+
     public String stationName() {
         return station.getName();
     }
