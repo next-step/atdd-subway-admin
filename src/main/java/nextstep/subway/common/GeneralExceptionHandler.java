@@ -13,23 +13,23 @@ import nextstep.subway.line.exception.NoSuchLineException;
 @ControllerAdvice
 public class GeneralExceptionHandler {
 
-	private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
-	@ExceptionHandler(NoHandlerFoundException.class)
-	public ResponseEntity<Void> handleNotFoundException(Exception e) {
-		log.warn("핸들링 되지 않은 예외입니다.", e);
-		return ResponseEntity.notFound().build();
-	}
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<Void> handleNotFoundException(Exception e) {
+        log.warn("핸들링 되지 않은 예외입니다.", e);
+        return ResponseEntity.notFound().build();
+    }
 
-	@ExceptionHandler(DuplicateLineException.class)
-	public ResponseEntity<Void> duplicateException(Exception e) {
-		log.debug("중복된 값이 입력되었습니다.", e);
-		return ResponseEntity.badRequest().build();
-	}
+    @ExceptionHandler(DuplicateLineException.class)
+    public ResponseEntity<Void> duplicateException(Exception e) {
+        log.debug("중복된 값이 입력되었습니다.", e);
+        return ResponseEntity.badRequest().build();
+    }
 
-	@ExceptionHandler(NoSuchLineException.class)
-	public ResponseEntity<Void> noSuchResourceException(Exception e) {
-		log.debug("존재하지 않는 값이 요청되었습니다.", e);
-		return ResponseEntity.notFound().build();
-	}
+    @ExceptionHandler(NoSuchLineException.class)
+    public ResponseEntity<Void> noSuchResourceException(Exception e) {
+        log.debug("존재하지 않는 값이 요청되었습니다.", e);
+        return ResponseEntity.notFound().build();
+    }
 }

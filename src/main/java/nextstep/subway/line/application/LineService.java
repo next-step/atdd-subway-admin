@@ -23,41 +23,43 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-		checkExistence(request.getName());
+        checkExistence(request.getName());
 
-		Line persistLine = lineRepository.save(request.toLine());
-		return LineResponse.of(persistLine);
+        Line persistLine = lineRepository.save(request.toLine());
+        return LineResponse.of(persistLine);
     }
 
-	private void checkExistence(String name) {
-		lineRepository.findByName(name)
-			.ifPresent(line -> { throw new DuplicateLineException("해당 노선이름이 이미 존재합니다."); });
-	}
+    private void checkExistence(String name) {
+        lineRepository.findByName(name)
+            .ifPresent(line -> {
+                throw new DuplicateLineException("해당 노선이름이 이미 존재합니다.");
+            });
+    }
 
-	public List<LineResponse> getLines() {
-    	List<Line> lines = lineRepository.findAll();
-		return lines.stream()
-			.map(LineResponse::of)
-			.collect(Collectors.toList());
-	}
+    public List<LineResponse> getLines() {
+        List<Line> lines = lineRepository.findAll();
+        return lines.stream()
+            .map(LineResponse::of)
+            .collect(Collectors.toList());
+    }
 
-	public LineResponse getLine(Long id) {
-		Line line = getLineById(id);
-		return LineResponse.of(line);
-	}
+    public LineResponse getLine(Long id) {
+        Line line = getLineById(id);
+        return LineResponse.of(line);
+    }
 
-	public void updateLine(Long id, LineRequest lineRequest) {
-		Line line = getLineById(id);
-		line.update(lineRequest.toLine());
-	}
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = getLineById(id);
+        line.update(lineRequest.toLine());
+    }
 
-	public void deleteLine(Long id) {
-		Line line = getLineById(id);
-		lineRepository.delete(line);
-	}
+    public void deleteLine(Long id) {
+        Line line = getLineById(id);
+        lineRepository.delete(line);
+    }
 
-	private Line getLineById(Long id) {
-		return lineRepository.findById(id)
-			.orElseThrow(() -> new NoSuchLineException("존재하지 않는 노선 ID 입니다."));
-	}
+    private Line getLineById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchLineException("존재하지 않는 노선 ID 입니다."));
+    }
 }
