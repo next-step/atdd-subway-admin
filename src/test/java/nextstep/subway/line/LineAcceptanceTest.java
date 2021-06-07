@@ -93,12 +93,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		createLine(params);
 
 		// when
-		ExtractableResponse<Response> response = findLineById(1L);
+		ExtractableResponse<Response> response = findLineById(2L);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		String expectedName = "신분당선";
-		String resultName = response.jsonPath().getString(".name");
+		String resultName = response.jsonPath().getString("name");
 		assertThat(resultName).isEqualTo(expectedName);
 	}
 
@@ -128,7 +128,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		String expected = "신분당선";
-		String actual = modifiedResponse.jsonPath().getString(".name");
+		String actual = modifiedResponse.jsonPath().getString("name");
 		assertThat(actual).isEqualTo(expected);
 	}
 

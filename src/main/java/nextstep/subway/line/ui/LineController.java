@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.ResponseEntity;
@@ -28,5 +29,10 @@ public class LineController {
 	@GetMapping
 	public ResponseEntity<List<LineResponse>> getLines() {
 		return ResponseEntity.ok(lineService.getLines());
+	}
+
+	@GetMapping("/{lineId}")
+	public ResponseEntity<LineResponse> getLineById(@PathVariable Long lineId) {
+		return ResponseEntity.ok(lineService.findLineById(lineId));
 	}
 }
