@@ -6,8 +6,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class PageController {
-    @GetMapping(value = {"/", "/stations", "/lines", "/sections"}, produces = MediaType.TEXT_HTML_VALUE)
+
+    @GetMapping(value = {"/", URIMapping.STATION, URIMapping.LINE, URIMapping.SECTION}, produces = MediaType.TEXT_HTML_VALUE)
     public String index() {
         return "index";
+    }
+
+    public static final class URIMapping {
+        public static final String LINE = "/lines";
+        public static final String STATION = "/stations";
+        public static final String SECTION = "/sections";
+
+        private URIMapping() {
+        }
     }
 }

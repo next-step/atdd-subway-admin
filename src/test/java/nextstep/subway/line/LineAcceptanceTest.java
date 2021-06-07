@@ -1,31 +1,52 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.utils.RestAssuredTemplate;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static nextstep.subway.PageController.URIMapping.LINE;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static final String URI_PATH = "/lines";
+    private static RestAssuredTemplate restAssuredTemplate;
+    private static Map<String, String> param1;
+    private static Map<String, String> param2;
+
+    @BeforeAll
+    public static void setup() {
+        restAssuredTemplate = new RestAssuredTemplate(LINE);
+
+        param1 = new HashMap<String, String>(){
+            {
+                put("name", "1호선");
+                put("color", "blue lighten-1");
+            }
+        };
+
+        param2 = new HashMap<String, String>(){
+            {
+                put("name", "2호선");
+                put("color", "green lighten-1");
+            }
+        };
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = createTestLine1();
+        ExtractableResponse<Response> response = requestCreatedLine(param1);
 
         // then
         // 지하철_노선_생성됨
@@ -38,11 +59,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        createTestLine1();
+        requestCreatedLine(param1);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = createTestLine1();
+        ExtractableResponse<Response> response = requestCreatedLine(param1);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -54,12 +75,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse1 = createTestLine1();
-        ExtractableResponse<Response> createResponse2 = createTestLine2();
+        ExtractableResponse<Response> createResponse1 = requestCreatedLine(param1);
+        ExtractableResponse<Response> createResponse2 = requestCreatedLine(param2);
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = showLines();
+        ExtractableResponse<Response> response = requestShowLines();
 
         // then
         assertAll(
@@ -69,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             // 지하철_노선_목록_포함됨
             () -> {
                 List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                        .map(this::getLocationId)
+                        .map(restAssuredTemplate::getLocationId)
                         .collect(Collectors.toList());
                 List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                         .map(it -> it.getId())
@@ -85,11 +106,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = createTestLine1();
+        ExtractableResponse<Response> createResponse = requestCreatedLine(param1);
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = showLines(getLocationId(createResponse));
+        ExtractableResponse<Response> response = requestShowLines(restAssuredTemplate.getLocationId(createResponse));
 
         // then
         assertAll(
@@ -99,7 +120,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             // 지하철_노선_포함됨
             () -> {
                 Long expected = response.as(LineResponse.class).getId();
-                assertThat(getLocationId(createResponse)).isEqualTo(expected);
+                assertThat(restAssuredTemplate.getLocationId(createResponse)).isEqualTo(expected);
             }
         );
     }
@@ -109,11 +130,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = createTestLine1();
+        ExtractableResponse<Response> createResponse = requestCreatedLine(param1);
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = updateLine(getLocationId(createResponse), "3호선", "yellow lighten-1");
+        ExtractableResponse<Response> response = requestUpdateLine(restAssuredTemplate.getLocationId(createResponse), param2);
 
         // then
         // 지하철_노선_수정됨
@@ -125,12 +146,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse1 = createTestLine1();
-        ExtractableResponse<Response> createResponse2 = createTestLine2();
+        ExtractableResponse<Response> createResponse1 = requestCreatedLine(param1);
+        ExtractableResponse<Response> createResponse2 = requestCreatedLine(param2);
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = updateLine(getLocationId(createResponse1), "2호선", "green lighten-2");
+        ExtractableResponse<Response> response = requestUpdateLine(restAssuredTemplate.getLocationId(createResponse1), param2);
 
         // then
         // 지하철_노선_수정_실패
@@ -142,12 +163,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = createTestLine1();
+        ExtractableResponse<Response> createResponse = requestCreatedLine(param1);
 
         // when
         // 지하철_노선_제거_요청
-        long deletedId = getLocationId(createResponse);
-        ExtractableResponse<Response> deletedResponse = deleteLine(deletedId);
+        long deletedId = restAssuredTemplate.getLocationId(createResponse);
+        ExtractableResponse<Response> deletedResponse = requestDeleteLine(deletedId);
 
         // then
         // 지하철_노선_삭제됨
@@ -157,84 +178,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
             // 지하철_노선_찾지못함
             () -> {
-                ExtractableResponse<Response> response = showLines(deletedId);
+                ExtractableResponse<Response> response = requestShowLines(deletedId);
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
             }
         );
     }
 
-
-    private ExtractableResponse<Response> createTestLine1() {
-        return createLine("1호선", "blue lighten-1");
+    private ExtractableResponse<Response> requestShowLines() {
+        return restAssuredTemplate.get();
     }
 
-    private ExtractableResponse<Response> createTestLine2() {
-        return createLine("2호선", "green lighten-1");
+    private ExtractableResponse<Response> requestShowLines(final Long id) {
+        return restAssuredTemplate.get(id);
     }
 
-    private ExtractableResponse<Response> createLine(final String name, final String color) {
-        Map<String, String> params = new HashMap<String, String>(){
-            {
-                put("name", name);
-                put("color", color);
-            }
-        };
-
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when()
-                .post(URI_PATH)
-                .then().log().all()
-                .extract();
+    private ExtractableResponse<Response> requestCreatedLine(final Map<String, String> param) {
+        return restAssuredTemplate.post(param);
     }
 
-    private ExtractableResponse<Response> updateLine(final Long id, final String name, final String color) {
-        Map<String, String> params = new HashMap<String, String>(){
-            {
-                put("name", name);
-                put("color", color);
-            }
-        };
-
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("id", id)
-                .body(params)
-                .when()
-                .put(URI_PATH + "/{id}")
-                .then().log().all()
-                .extract();
+    private ExtractableResponse<Response> requestUpdateLine(final Long id, final Map<String, String> param) {
+        return restAssuredTemplate.put(id, param);
     }
 
-    private ExtractableResponse<Response> deleteLine(final Long id) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("id", id)
-                .when()
-                .delete(URI_PATH + "/{id}")
-                .then().log().all()
-                .extract();
-    }
-
-    private long getLocationId(final ExtractableResponse<Response> response) {
-        String result = response.header("Location").split("/")[2];
-
-        return Long.parseLong(result);
-    }
-
-    private ExtractableResponse<Response> showLines() {
-        return this.showLines(0L);
-    }
-
-    private ExtractableResponse<Response> showLines(final Long id) {
-        String path = (id > 0) ? URI_PATH + "/" + id : URI_PATH;
-
-        return RestAssured.given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get(path)
-                .then().log().all()
-                .extract();
+    private ExtractableResponse<Response> requestDeleteLine(final Long id) {
+        return restAssuredTemplate.delete(id);
     }
 }
