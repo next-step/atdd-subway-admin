@@ -84,7 +84,7 @@ public class Sections implements Iterable<Section> {
             return FIRST_INDEX;
         }
         if (getLastStation().equals(element.getDownStation())) {
-            return lastIndex() + 1;
+            return sections.size();
         }
         if (getUpStations().contains(element.getDownStation())) {
             return getUpStations().indexOf(element.getDownStation()) + 1;
@@ -93,8 +93,25 @@ public class Sections implements Iterable<Section> {
     }
 
     private void add(int index, Section element) {
-        // TODO : validate distance and modify distance
+        if (isEdge(index)) {
+            sections.add(index, element);
+            return;
+        }
+        divideSection(index, element);
         sections.add(index, element);
+    }
+
+    private boolean isEdge(int index) {
+        return index == FIRST_INDEX || index == sections.size();
+    }
+
+    private void divideSection(int index, Section element) {
+        Section divisionTarget = sections.get(index);
+        divisionTarget.divideDistance(element);
+        Section prevSection = sections.get(index - 1);
+        prevSection.modifyUpStation(element.getDownStation());
+        Section nextSection = sections.get(index);
+        nextSection.modifyDownStation(element.getUpStation());
     }
 
     @Override
