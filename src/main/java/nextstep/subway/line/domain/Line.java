@@ -34,7 +34,7 @@ public class Line extends BaseEntity {
         section.setLine(this);
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
