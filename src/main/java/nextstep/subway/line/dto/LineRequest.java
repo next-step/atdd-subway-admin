@@ -1,6 +1,10 @@
 package nextstep.subway.line.dto;
 
+import java.util.Arrays;
+
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 public class LineRequest {
     private String name;
@@ -11,24 +15,12 @@ public class LineRequest {
 
     public LineRequest() {}
 
-    public LineRequest(String name, String color) {
+    public LineRequest(String name, String color, Long upStationId, Long downStationId, Integer distance) {
         this.name = name;
         this.color = color;
-    }
-
-    public LineRequest upStationId(Long upStationId) {
         this.upStationId = upStationId;
-        return this;
-    }
-
-    public LineRequest downStationId(Long downStationId) {
         this.downStationId = downStationId;
-        return this;
-    }
-
-    public LineRequest distance(Integer distance) {
         this.distance = distance;
-        return this;
     }
 
     public String getName() {
@@ -39,8 +31,11 @@ public class LineRequest {
         return color;
     }
 
-    public Line toLine() {
-        return new Line(name, color);
+    public Line toLine(Station upStaion, Station downStaion) {
+        Line line = new Line(name, color);
+        Section section = Section.of(upStaion, downStaion, this.distance);
+        line.setSections(Arrays.asList(section));
+        return line;
     }
 
     public Long getUpStationId() {

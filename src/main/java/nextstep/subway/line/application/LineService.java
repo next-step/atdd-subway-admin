@@ -1,6 +1,5 @@
 package nextstep.subway.line.application;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,14 +12,13 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
@@ -29,14 +27,9 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line line = request.toLine();
-
-        Section newSection = Section.of(
-            findStation(request.getUpStationId()),
-            findStation(request.getDownStationId()),
-            request.getDistance());
-
-        line.createSections(Arrays.asList(newSection));
+        Station upStaion = findStation(request.getUpStationId());
+        Station downStaion = findStation(request.getDownStationId());
+        Line line = request.toLine(upStaion, downStaion);
 
         return LineResponse.of(lineRepository.save(line));
     }
@@ -59,7 +52,9 @@ public class LineService {
 
     public void updateLine(LineRequest lineRequest, Long id) {
         Line findedLine = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        findedLine.update(lineRequest.toLine());
+        Station upStaion = findStation(lineRequest.getUpStationId());
+        Station downStaion = findStation(lineRequest.getDownStationId());
+        findedLine.update(lineRequest.toLine(upStaion, downStaion));
     }
 
     public void deleteLine(Long id) {

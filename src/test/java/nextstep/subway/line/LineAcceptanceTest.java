@@ -1,7 +1,12 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.utils.CommonSettings.*;
-import static org.assertj.core.api.Assertions.*;
+import static nextstep.subway.utils.CommonSettings.지하철_노선_목록_반환_요청;
+import static nextstep.subway.utils.CommonSettings.지하철_노선_생성_요청;
+import static nextstep.subway.utils.CommonSettings.지하철_노선_수정_요청;
+import static nextstep.subway.utils.CommonSettings.지하철_노선_제거;
+import static nextstep.subway.utils.CommonSettings.지하철_조회_요청;
+import static nextstep.subway.utils.CommonSettings.지하철역_생성_요청;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,17 +46,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 상행선,하행선을 포함한 노선 생성 요청
         createdLineResponse = 지하철_노선_생성_요청(
-            new LineRequest("신분당선", "bg-red-600")
-                .upStationId(지하철역에서_ID_추출(upStation))
-                .downStationId(지하철역에서_ID_추출(downStation))
-                .distance(10));
+            new LineRequest("신분당선", "bg-red-600", 지하철역에서_ID_추출(upStation), 지하철역에서_ID_추출(downStation), 10));
 
         // 상행선,하행선을 포함한 노선 생성 요청2
         createdLineResponse2 = 지하철_노선_생성_요청(
-            new LineRequest("2호선", "bg-green-600")
-                .upStationId(지하철역에서_ID_추출(upStation))
-                .downStationId(지하철역에서_ID_추출(downStation))
-                .distance(10));
+            new LineRequest("2호선", "bg-green-600", 지하철역에서_ID_추출(upStation), 지하철역에서_ID_추출(downStation), 10));
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -70,10 +69,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> createdSameLineResponse = 지하철_노선_생성_요청(
-            new LineRequest("신분당선", "bg-red-600")
-                .upStationId(지하철역에서_ID_추출(upStation))
-                .downStationId(지하철역에서_ID_추출(downStation))
-                .distance(10));
+            new LineRequest("신분당선", "bg-red-600", 지하철역에서_ID_추출(upStation), 지하철역에서_ID_추출(downStation), 10));
 
         // then
         // 지하철_노선_생성_실패됨
@@ -108,7 +104,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_응답됨
         assertThat(findedLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(생성된_노선에서_ID_추출(createdLineResponse)).isEqualTo(조회된_노선에서_ID_추출(findedLineResponse));
-        assertThat(생성된_노선에서_Sations_추출(createdLineResponse).size()).isEqualTo(2);
+    }
+
+    @DisplayName("상행역 부터 하행역 순으로 정렬되어야 한다.")
+    @Test
+    void getLineOrder() {
+        ExtractableResponse<Response> findedLineResponse = 지하철_조회_요청(생성된_노선에서_Path추출(createdLineResponse));
+
+        // then
+        // 지하철_노선_응답됨
+        assertThat(찾은_노선에서_Sations_ID추출(findedLineResponse))
+            .containsExactly(지하철역에서_ID_추출(upStation), 지하철역에서_ID_추출(downStation));
     }
 
     @DisplayName("지하철 없는 노선을 조회한다.")
@@ -121,6 +127,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // NOT_FOUND 생성
         assertThat(findedLineResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -199,8 +206,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Long.parseLong(reponse.header("Location").split("/")[2]);
     }
 
-    private List<StationResponse> 생성된_노선에서_Sations_추출(ExtractableResponse<Response> response) {
-        return response.jsonPath().getObject(".", LineResponse.class).getStations();
+    private List<Long> 찾은_노선에서_Sations_ID추출(ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject(".", LineResponse.class).getStations().stream()
+            .map(station -> station.getId()).collect(Collectors.toList());
     }
 
 }

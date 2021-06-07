@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
@@ -14,8 +13,8 @@ import nextstep.subway.station.dto.StationResponse;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    List<Section> sections = new ArrayList<Section>();
+    @OneToMany(mappedBy = "line")
+    private List<Section> sections = new ArrayList<Section>();
 
     public Sections() {}
 

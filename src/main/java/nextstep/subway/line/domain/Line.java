@@ -54,7 +54,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void createSections(List<Section> sections) {
+    public void setSections(List<Section> sections) {
+        sections.stream().forEach(section -> section.addLine(this));
         this.sections = Sections.of(sections);
     }
 
