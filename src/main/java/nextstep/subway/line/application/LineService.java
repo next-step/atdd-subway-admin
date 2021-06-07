@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,11 +62,23 @@ public class LineService {
         return LineResponse.of(originLine);
     }
 
+    public Line addSection(Long lineId, Long upStationId, Long downStationId, int distance){
+        Line find = lineRepository.findById(lineId).orElseThrow(() -> new DataIntegrityViolationException("Not Found lineId" + lineId));
+        Section section = new Section(getStation(upStationId), getStation(downStationId),
+                distance);
+        find.addSection(section);
+        return find;
+    }
+
     private Station getStation(Long stationId) {
         return stationRepository.findById(stationId).orElseThrow(() -> new DataIntegrityViolationException("Not Fount downStationId" + stationId));
     }
 
     public void deleteLineById(final Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public Line addSection(SectionRequest request) {
+        throw new UnsupportedOperationException("LineService#addSection not implemented yet !!");
     }
 }
