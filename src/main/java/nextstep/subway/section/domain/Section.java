@@ -21,7 +21,8 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section extends BaseEntity {
-    private static final String CAN_NOT_STATION_EQUALS = "동일한 역을 등록할 수 없습니다.";
+    private static final String CAN_NOT_STATION_CREATE = "상행선과 하행선 동일한 역을 등록할 수 없습니다.";
+    private static final String EXISTS_SAME_SECTION = "추가할 구간과 동일한 구간이 존재합니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,7 +52,7 @@ public class Section extends BaseEntity {
     }
 
     public Section(Long id, Station upStation, Station downStation, int distance) {
-        stationEqualsValidate(upStation, downStation);
+        validate(upStation, downStation);
 
         this.id = id;
         this.upStation = upStation;
@@ -59,9 +60,9 @@ public class Section extends BaseEntity {
         this.distance = Distance.of(distance);
     }
 
-    private void stationEqualsValidate(Station upStation, Station downStation)  {
+    private void validate(Station upStation, Station downStation)  {
         if (upStation.equals(downStation)) {
-            throw new IllegalArgumentException(CAN_NOT_STATION_EQUALS);
+            throw new IllegalArgumentException(CAN_NOT_STATION_CREATE);
         }
     }
 
@@ -75,6 +76,9 @@ public class Section extends BaseEntity {
     }
 
     public boolean isContainSection(Section section) {
+        if (upStation.isSame(section.upStation) && downStation.isSame(section.downStation)) {
+            throw new IllegalArgumentException(EXISTS_SAME_SECTION);
+        }
         return upStation.isSame(section.upStation) || downStation.isSame(section.downStation);
     }
 

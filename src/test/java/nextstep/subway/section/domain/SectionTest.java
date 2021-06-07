@@ -99,4 +99,13 @@ public class SectionTest {
         assertThat(강남_광교_구간.isContainSection(수지_광교_구간)).isTrue();
         assertThat(강남_판교_구간.isContainSection(판교_수지_구간)).isFalse();
     }
+
+    @Test
+    @DisplayName("비교 구간의 상행성 또는 하행성 모두 포함 확인 테스트")
+    void isContainSectionException() {
+        // given
+        Section 강남_판교_구간_2 = new Section(5L, 강남역, 판교역, 10);
+        // when & then
+        Assertions.assertThrows(IllegalArgumentException.class, () -> 강남_판교_구간.isContainSection(강남_판교_구간_2));
+    }
 }
