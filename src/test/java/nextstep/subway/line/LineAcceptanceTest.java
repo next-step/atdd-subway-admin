@@ -74,7 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Long id = createResponse.jsonPath().getLong("id");
 		ExtractableResponse<Response> response = 단일_지하철_노선을_조회한다(id);
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		지하철_노선_조회_확인(response, lineNumber2);
 	}
 
 	@DisplayName("지하철 노선을 수정한다.")
@@ -86,7 +86,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		long id = createResponse.jsonPath().getLong("id");
 		ExtractableResponse<Response> response = 지하철_노선을_수정한다(lineNumber1, id);
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		지하철_노선_수정_확인(response);
 	}
 
 	@DisplayName("지하철 노선을 제거한다.")
@@ -98,7 +98,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		long id = createResponse.jsonPath().getLong("id");
 		ExtractableResponse<Response> response = 지하철_노선을_제거한다(id);
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		지하철_노선_제거_확인(response);
 	}
 
 	ExtractableResponse<Response> 지하철_노선을_생성한다(LineRequest lineRequest) {
@@ -181,5 +181,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
-	
+
+	void 지하철_노선_수정_확인(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	void 지하철_노선_제거_확인(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
+	void 지하철_노선_조회_확인(ExtractableResponse<Response> response, LineRequest lineRequest) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.body().jsonPath().getString("name")).isEqualTo(lineRequest.getName());
+		assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineRequest.getColor());
+	}
 }
