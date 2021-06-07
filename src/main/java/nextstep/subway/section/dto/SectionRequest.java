@@ -2,9 +2,9 @@ package nextstep.subway.section.dto;
 
 public class SectionRequest {
 
-    private final Long upStationId;         // 상행역 아이디
-    private final Long downStationId;       // 하행역 아이디
-    private final int distance;             // 거리
+    private final Long upStationId;
+    private final Long downStationId;
+    private final int distance;
 
     public SectionRequest(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
