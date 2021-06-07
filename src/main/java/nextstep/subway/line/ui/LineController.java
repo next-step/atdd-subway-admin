@@ -4,12 +4,10 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
@@ -20,9 +18,32 @@ public class LineController {
         this.lineService = lineService;
     }
 
+    /**
+     * 지하철 노선 생성
+     */
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
+
+    /**
+     * 지하철 노선 목록조회
+     */
+    @GetMapping
+    public ResponseEntity<List<LineResponse>> getLines(){
+        return ResponseEntity.ok().body(lineService.findAllLines());
+    }
+
+    /**
+     * 지하철 노선 조회
+     */
+
+    /**
+     * 지하철 노선 수정
+     */
+
+    /**
+     * 지하철 노선 삭제
+     */
 }
