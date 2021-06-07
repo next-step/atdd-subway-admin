@@ -16,11 +16,11 @@ public class SectionTest {
 
         // then
         assertAll(
-            () -> assertThatThrownBy(() -> new Section(null, station, 100))
+            () -> assertThatThrownBy(() -> new Section(null, station, 100, null))
                 .isInstanceOf(IllegalArgumentException.class),
-            () -> assertThatThrownBy(() -> new Section(station, null, 100))
+            () -> assertThatThrownBy(() -> new Section(station, null, 100, null))
                 .isInstanceOf(IllegalArgumentException.class),
-            () -> assertThatThrownBy(() -> new Section(station, station, 0))
+            () -> assertThatThrownBy(() -> new Section(station, station, 0, null))
                 .isInstanceOf(IllegalArgumentException.class)
         );
     }

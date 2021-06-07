@@ -11,20 +11,36 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(final LineRepository lineRepository) {
+    public LineService(final LineRepository lineRepository,
+        final StationRepository stationRepository) {
+
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(final LineRequest request) {
-        final Line persistLine = lineRepository.save(request.toLine());
+        final Line line = request.toLine();
+        final Section section = new Section(station(request.getUpStationId()), station(request.getDownStationId()),
+            request.getDistance(), line);
+        line.addSection(section);
+        final Line persistLine = lineRepository.save(line);
 
         return lineResponse(persistLine);
+    }
+
+    private Station station(final Long upStationId) {
+        return stationRepository.findById(upStationId)
+            .orElseThrow(NotFoundException::new);
     }
 
     private LineResponse lineResponse(final Line line) {
