@@ -26,22 +26,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	@DisplayName("상행,하행 종점정보를 추가한 노선 생성을 테스트")
 	void testCreateLine() {
-		LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600");
-		ExtractableResponse<Response> createLineResponse = 지하철노선을_생성_요청(lineRequest);
+		LineRequest lineRequest = this.createLineRequest("신분당선", "bg-red-600");
+		ExtractableResponse<Response> createLineResponse = this.지하철노선을_생성_요청(lineRequest);
 		assertThat(createLineResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(createLineResponse.header("Location")).isNotBlank();
-	}
-
-	private LineRequest createLineRequest(String lineName, String color) {
-		StationRequest upStationRequest = new StationRequest("강남역");
-		ExtractableResponse<Response> upStationResponse = 지하철역_생성_요청(upStationRequest);
-		StationResponse upStation = upStationResponse.response().getBody().as(StationResponse.class);
-
-		StationRequest downStationRequest = new StationRequest("잠실역");
-		ExtractableResponse<Response> downStationResponse = 지하철역_생성_요청(downStationRequest);
-		StationResponse downStation = downStationResponse.response().getBody().as(StationResponse.class);
-
-		return new LineRequest(lineName, color, upStation.getId(), downStation.getId(), 20);
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -163,6 +151,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void test_delete없는아이디() {
 		ExtractableResponse<Response> errorResponse = 지하철노선을_삭제요청(999L);
 		assertThat(errorResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	private LineRequest createLineRequest(String lineName, String color) {
+		StationRequest upStationRequest = new StationRequest("강남역");
+		ExtractableResponse<Response> upStationResponse = 지하철역_생성_요청(upStationRequest);
+		StationResponse upStation = upStationResponse.response().getBody().as(StationResponse.class);
+
+		StationRequest downStationRequest = new StationRequest("잠실역");
+		ExtractableResponse<Response> downStationResponse = 지하철역_생성_요청(downStationRequest);
+		StationResponse downStation = downStationResponse.response().getBody().as(StationResponse.class);
+
+		return new LineRequest(lineName, color, upStation.getId(), downStation.getId(), 20);
 	}
 
 	private ExtractableResponse<Response> 지하철노선을_삭제요청(long deleteId) {
