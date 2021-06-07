@@ -4,6 +4,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,14 +17,25 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
+    private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        Station upStation = findStation(request.getUpStationId());
+        Station downStation = findStation(request.getDownStationId());
+        Line inputLine = new Line(request.getName(), request.getColor(),
+                upStation, downStation, request.getDistance());
+
+        return LineResponse.of(lineRepository.save(inputLine));
+    }
+
+    private Station findStation(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new NoSuchElementException("해당 지하철 역은 존재하지 않습니다."));
     }
 
     @Transactional(readOnly = true)
