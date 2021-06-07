@@ -21,22 +21,25 @@ import nextstep.subway.line.dto.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+	private static final LineRequest lineNumber1 = new LineRequest("1호선", "Blue");
+	private static final LineRequest lineNumber2 = new LineRequest("2호선", "Green");
+
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
 		//when
-		ExtractableResponse<Response> response = 지하철_노선을_생성한다(new LineRequest("2호선", "Green"));
+		ExtractableResponse<Response> response = 지하철_노선을_생성한다(lineNumber2);
 		// then
-		지하철_노선_생성됨(response);
+		지하철_노선_생성됨(response, lineNumber2);
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
 	@Test
 	void createLine2() {
 		// given
-		지하철_노선을_생성한다(new LineRequest("2호선", "Green"));
+		지하철_노선을_생성한다(lineNumber2);
 		// when
-		ExtractableResponse<Response> response = 지하철_노선을_생성한다(new LineRequest("2호선", "Green"));
+		ExtractableResponse<Response> response = 지하철_노선을_생성한다(lineNumber2);
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
@@ -45,8 +48,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
-		ExtractableResponse<Response> createResponse1 = 지하철_노선을_생성한다(new LineRequest("2호선", "Green"));
-		ExtractableResponse<Response> createResponse2 = 지하철_노선을_생성한다(new LineRequest("1호선", "Blue"));
+		ExtractableResponse<Response> createResponse2 = 지하철_노선을_생성한다(lineNumber1);
+		ExtractableResponse<Response> createResponse1 = 지하철_노선을_생성한다(lineNumber2);
 		// when
 		ExtractableResponse<Response> response = 모든_지하철_노선을_조회한다();
 		// then
@@ -59,7 +62,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
-		ExtractableResponse<Response> createResponse = 지하철_노선을_생성한다(new LineRequest("2호선", "Green"));
+		ExtractableResponse<Response> createResponse = 지하철_노선을_생성한다(lineNumber2);
 		// when
 		Long id = createResponse.jsonPath().getLong("id");
 		ExtractableResponse<Response> response = 단일_지하철_노선을_조회한다(id);
@@ -71,10 +74,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
-		ExtractableResponse<Response> createResponse = 지하철_노선을_생성한다(new LineRequest("2호선", "Green"));
+		ExtractableResponse<Response> createResponse = 지하철_노선을_생성한다(lineNumber2);
 		// when
 		long id = createResponse.jsonPath().getLong("id");
-		ExtractableResponse<Response> response = 지하철_노선을_수정한다(new LineRequest("1호선", "Dark Blue"), id);
+		ExtractableResponse<Response> response = 지하철_노선을_수정한다(lineNumber1, id);
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
@@ -83,7 +86,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
-		ExtractableResponse<Response> createResponse = 지하철_노선을_생성한다(new LineRequest("1호선", "Blue"));
+		ExtractableResponse<Response> createResponse = 지하철_노선을_생성한다(lineNumber1);
 		// when
 		long id = createResponse.jsonPath().getLong("id");
 		ExtractableResponse<Response> response = 지하철_노선을_제거한다(id);
@@ -104,11 +107,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return response;
 	}
 
-	void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+	void 지하철_노선_생성됨(ExtractableResponse<Response> response, LineRequest lineRequest) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(response.header("Location")).isNotBlank();
-		assertThat(response.body().jsonPath().getString("name")).isEqualTo("2호선");
-		assertThat(response.body().jsonPath().getString("color")).isEqualTo("Green");
+		assertThat(response.body().jsonPath().getString("name")).isEqualTo(lineRequest.getName());
+		assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineRequest.getColor());
 	}
 
 	void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
