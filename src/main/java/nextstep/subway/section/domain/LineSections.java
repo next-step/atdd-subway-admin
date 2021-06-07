@@ -34,6 +34,10 @@ public class LineSections implements Serializable {
         return sections;
     }
 
+    public int size() {
+        return sections.size();
+    }
+
     public SortedStations toStations() {
         return new SortedStations(toSortedSections());
     }

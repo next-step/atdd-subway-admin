@@ -52,9 +52,7 @@ public class SectionController {
     @DeleteMapping
     public ResponseEntity<Void> removeSection(@PathVariable Long lineId,
                                               @RequestParam Long stationId) {
-
-        // do something...
-
+        sectionCommandService.delete(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
 }

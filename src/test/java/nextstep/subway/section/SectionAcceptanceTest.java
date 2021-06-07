@@ -135,6 +135,15 @@ class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("노선에 구간이 1개 남은 경우 삭제 불가능")
+    @TestFactory
+    Stream<DynamicTest> removeSectionFailTest01() {
+        return Stream.of(
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("공덕역 삭제 요청", () -> removeSectionRequestFail(GONGDEOK))
+        );
+    }
+
     private void createLineRequestSuccess(LineTestData data) {
 
         LineRequest lineRequest = data.getLine();
@@ -187,6 +196,18 @@ class SectionAcceptanceTest extends AcceptanceTest {
                                                                    downStation.getId(),
                                                                    distance);
 
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> removeSectionRequest(StationConstants station) {
+        return RestAssured.given().log().all()
+                          .when().delete("/lines/1/sections?stationId=" + station.getId())
+                          .then().log().all()
+                          .extract();
+    }
+
+    private void removeSectionRequestFail(StationConstants station) {
+        ExtractableResponse<Response> response = removeSectionRequest(station);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
