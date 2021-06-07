@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -41,6 +42,13 @@ public class Sections {
     public void add(Section section) {
         addInOrder(section);
     }
+
+    public List<SectionResponse> toSectionResponses() {
+        return sections.stream()
+            .map(SectionResponse::of)
+            .collect(Collectors.toList());
+    }
+
 
     private void initSortSections(List<Section> sections) {
         this.sections = new ArrayList<>();
