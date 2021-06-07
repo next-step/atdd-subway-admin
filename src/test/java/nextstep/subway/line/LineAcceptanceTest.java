@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import static nextstep.subway.line.LineAcceptanceFixture.LineFixture.*;
 import static nextstep.subway.line.LineAcceptanceFixture.PATH;
 import static nextstep.subway.line.LineAcceptanceFixture.*;
+import static nextstep.subway.station.StationAcceptanceFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
@@ -23,6 +24,22 @@ import nextstep.subway.line.domain.Line;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다.")
+    @Test
+    void given_NoExisingLine_when_CreateLineWithStation_then_ReturnLine() {
+        // when
+        지하철역_생성_요청("강남역");
+        지하철역_생성_요청("역삼역");
+        final ExtractableResponse<Response> response = NEW_지하철_노선_생성_요청(PATH + "/new", FIRST);
+
+        // then
+        assertAll(
+            () -> assertThat(statusCode(response)).isEqualTo(statusCode(CREATED)),
+            () -> assertThat(response.header("Location")).isNotBlank(),
+            () -> assertThat(toLine(response)).isEqualTo(FIRST.line())
+        );
+    }
+
+    @DisplayName("지하철 노선을 생성한다. (Old)")
     @Test
     void given_NoExisingLine_when_CreateLine_then_ReturnLine() {
         // when
