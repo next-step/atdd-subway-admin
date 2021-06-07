@@ -40,9 +40,30 @@ public class Sections implements Iterable<Section> {
     }
 
     public void add(Section section) {
-        if (!contains(section)) {
+        if (sections.isEmpty()) {
             sections.add(section);
+            return;
         }
+        validateAddable(section);
+        // TODO : 등록구간 인덱스를 판별한다
+        // TODO : 구간인덱스에 맞게 등록한다
+    }
+
+    private void validateAddable(Section section) {
+        if (isStationAllContains(section)) {
+            throw new IllegalArgumentException("구간에 속한 모든 역이 노선에 포함되어 있습니다. 역 정보를 확인해주세요.");
+        }
+        if (isStationNotContains(section)) {
+            throw new IllegalArgumentException("구간에 속한 모든 역이 노선에 포함되어 있지 않습니다. 역 정보를 확인해주세요.");
+        }
+    }
+
+    private boolean isStationAllContains(Section section) {
+        return getStations().contains(section.getUpStation()) && getStations().contains(section.getDownStation());
+    }
+
+    private boolean isStationNotContains(Section section) {
+        return !getStations().contains(section.getUpStation()) && !getStations().contains(section.getDownStation());
     }
 
     @Override
