@@ -1,10 +1,8 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.*;
 import nextstep.subway.station.domain.*;
 import nextstep.subway.station.dto.StationResponse;
@@ -14,9 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.line.SectionHelper.섹션_추가;
+import static nextstep.subway.line.SectionHelper.역_삭제;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -149,6 +149,67 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //when
         ExtractableResponse response = 섹션_추가(sectionRequest, 일호선_id);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("맨 앞 역 삭제")
+    @Test
+    public void 맨_앞_역_삭제() {
+        //when
+        ExtractableResponse response = 역_삭제(일호선_id, 대청역.getId());
+        List<StationResponse> stations = lineService.getLine(일호선_id).getStations();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(stations.stream().map(StationResponse::getName)).containsExactly("동춘역", "원인재역");
+    }
+
+    @DisplayName("맨 뒤 역 삭제")
+    @Test
+    public void 맨_뒤_역_삭제() {
+        //when
+        ExtractableResponse response = 역_삭제(일호선_id, 원인재역.getId());
+        List<StationResponse> stations = lineService.getLine(일호선_id).getStations();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(stations.stream().map(StationResponse::getName)).containsExactly("대청역", "동춘역");
+    }
+
+    @DisplayName("중간역 삭제")
+    @Test
+    public void 중간역_삭제() {
+        //given
+        SectionRequest sectionRequest = new SectionRequest(원인재역.getId(), 잠실역.getId(), 5);
+        섹션_추가(sectionRequest, 일호선_id);
+
+        //when
+        ExtractableResponse response = 역_삭제(일호선_id, 원인재역.getId());
+        List<StationResponse> stations = lineService.getLine(일호선_id).getStations();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(stations.stream().map(StationResponse::getName)).containsExactly("대청역", "동춘역", "잠실역");
+    }
+
+    @DisplayName("노선에 포함되지 않은 역 삭제")
+    @Test
+    public void 노선에_포함되지_않은_역_삭제() {
+        //when
+        ExtractableResponse response = 역_삭제(일호선_id, 잠실역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("노선에 섹션이 하나 남았을 때 삭제")
+    @Test
+    public void 노선에_섹션이_하나_남았을_때_삭제() {
+        //when
+        역_삭제(일호선_id, 원인재역.getId());
+        ExtractableResponse response = 역_삭제(일호선_id, 동춘역.getId());
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
