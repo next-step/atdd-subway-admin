@@ -39,17 +39,17 @@ public class Sections {
     }
 
     public void add(Section section) {
-        addSection(section);
+        addInOrder(section);
     }
 
     private void initSortSections(List<Section> sections) {
         this.sections = new ArrayList<>();
         for (Section section : sections) {
-            addSection(section);
+            addInOrder(section);
         }
     }
 
-    private void addSection(Section section) {
+    private void addInOrder(Section section) {
         if (isBefore(section)) {
             addFirst(section);
         }
