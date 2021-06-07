@@ -59,7 +59,7 @@ public class Sections implements Iterable<Section> {
             return;
         }
         validateAddable(element);
-        add(selectAddIndex(element), element);
+        add(selectDivisionIndex(element), element);
     }
 
     private void validateAddable(Section section) {
@@ -79,7 +79,7 @@ public class Sections implements Iterable<Section> {
         return !getStations().contains(section.getUpStation()) && !getStations().contains(section.getDownStation());
     }
 
-    private int selectAddIndex(Section element) {
+    private int selectDivisionIndex(Section element) {
         if (getFirstStation().equals(element.getUpStation())) {
             return FIRST_INDEX;
         }
