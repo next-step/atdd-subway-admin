@@ -72,6 +72,20 @@ public class Section extends BaseEntity {
         this.distance -= element.distance;
     }
 
+    public void modifyUpStation(Station station) {
+        if (downStation.equals(station)) {
+            throw new IllegalArgumentException("상행역과 하행역은 동일할 수 없습니다.");
+        }
+        this.upStation = station;
+    }
+
+    public void modifyDownStation(Station station) {
+        if (upStation.equals(station)) {
+            throw new IllegalArgumentException("상행역과 하행역은 동일할 수 없습니다.");
+        }
+        this.downStation = station;
+    }
+
     public Long getId() {
         return id;
     }
