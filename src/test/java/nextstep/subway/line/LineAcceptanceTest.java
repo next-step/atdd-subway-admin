@@ -17,31 +17,31 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static nextstep.subway.line.LineSteps.*;
-import static nextstep.subway.station.StationSteps.지하철_역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-    private static final LineRequest 이호선 = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
     private static final Map<String, String> 강남역 = new HashMap<>();
-    private static final Map<String, String> 역삼역 = new HashMap<>();
+    private static final Map<String, String> 양재역 = new HashMap<>();
+    private static final Map<String, String> 신림역 = new HashMap<>();
+    private static final Map<String, String> 봉천역 = new HashMap<>();
 
     static {
         강남역.put("name", "강남역");
-        역삼역.put("name", "역삼역");
+        양재역.put("name", "양재역");
+        신림역.put("name", "신림역");
+        봉천역.put("name", "봉천역");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        지하철_역_생성_요청(강남역);
-        지하철_역_생성_요청(역삼역);
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 
         // when
-        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
+        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
 
         // then
         지하철_노선_생성됨(생성된_신분당선);
@@ -51,9 +51,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        지하철_역_생성_요청(강남역);
-        지하철_역_생성_요청(역삼역);
-        지하철_노선_생성_요청(신분당선);
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        지하철_노선_생성_요청(신분당선, 강남역, 양재역);
 
         // when
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
@@ -66,10 +65,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_역_생성_요청(강남역);
-        지하철_역_생성_요청(역삼역);
-        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
-        ExtractableResponse<Response> 생성된_이호선 = 지하철_노선_생성_요청(이호선);
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest 이호선 = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
+        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
+        ExtractableResponse<Response> 생성된_이호선 = 지하철_노선_생성_요청(이호선, 신림역, 봉천역);
 
         // when
         ExtractableResponse<Response> 조회된_노선_목록 = 지하철_노선_목록_조회_요청();
@@ -83,9 +82,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        지하철_역_생성_요청(강남역);
-        지하철_역_생성_요청(역삼역);
-        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
 
         // when
         ExtractableResponse<Response> 조회된_노선 = 지하철_노선_조회_요청(생성된_신분당선);
@@ -98,9 +96,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        지하철_역_생성_요청(강남역);
-        지하철_역_생성_요청(역삼역);
-        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
         Map<String, String> params = createParams("구분당선", "bg-blue-600");
 
         // when
@@ -114,9 +111,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        지하철_역_생성_요청(강남역);
-        지하철_역_생성_요청(역삼역);
-        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
 
         // when
         ExtractableResponse<Response> 제거된_노선 = 지하철_노선_제거_요청(생성된_신분당선);
