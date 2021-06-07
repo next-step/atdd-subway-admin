@@ -66,7 +66,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-        LineRequest 이호선 = new LineRequest("2호선", "bg-green-600", 1L, 2L, 10);
+        LineRequest 이호선 = new LineRequest("2호선", "bg-green-600", 3L, 4L, 10);
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
         ExtractableResponse<Response> 생성된_이호선 = 지하철_노선_생성_요청(이호선, 신림역, 봉천역);
 
