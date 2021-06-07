@@ -1,12 +1,17 @@
 package nextstep.subway.section;
 
+import static nextstep.subway.section.SectionAcceptanceStep.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceStep;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceStep;
 import nextstep.subway.station.dto.StationRequest;
 
@@ -31,13 +36,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addStation() {
         // given
-        // 지하철_역_등록되어_있음
+        Long 정자역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("정자역"));
+        SectionRequest sectionRequest = SectionRequest.of(판교역_ID, 정자역_ID, 1);
 
         // when
-        // 지하철_노선에_구간_등록_요청
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선_ID, sectionRequest);
 
         // then
-        // 지하철_노선에_구간_등록됨
+        지하철_노선에_구간_등록됨(response);
     }
 
     @DisplayName("지하철 노선 조회 시, 역 정보가 정렬되어 포함된다.")
