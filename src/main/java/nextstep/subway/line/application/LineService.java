@@ -3,6 +3,8 @@ package nextstep.subway.line.application;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,17 +29,13 @@ public class LineService {
 
 	@Transactional(readOnly = true)
 	public List<LineResponse> findAllLines() {
-		List<Line> lines = lineRepository.findAll();
-
-		return lines.stream()
-			.map(line -> LineResponse.of(line))
-			.collect(Collectors.toList());
+		return LineResponse.ofList(lineRepository.findAll());
 	}
 
+	@Transactional(readOnly = true)
 	public LineResponse findLineById(Long id) {
-		Line line = lineRepository.getOne(id);
-		return LineResponse.of(line);
-
+		return lineRepository.findById(id).map(LineResponse::of)
+			.orElseThrow(EntityNotFoundException::new);
 	}
 
 	public void deleteLineById(Long id) {
@@ -45,8 +43,8 @@ public class LineService {
 	}
 
 	@Transactional
-	public LineResponse updateSLine(Long id, LineRequest request) {
-		Line line = lineRepository.getOne(id);
+	public LineResponse updateLine(Long id, LineRequest request) {
+		Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 		line.update(line);
 		return LineResponse.of(line);
 	}
