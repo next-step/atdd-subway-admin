@@ -53,6 +53,15 @@ public class LineSections {
         return orderedSections;
     }
 
+    public List<Station> getOrderStation() {
+        List<Section> sections = getOrderLineSections();
+        List<Station> stations = new ArrayList<>();
+        sections.forEach(section -> stations.add(section.getUpStation()));
+        stations.add(sections.get(sections.size() - 1).getDownStation());
+
+        return stations;
+    }
+
     private Optional<Section> findFirstSection() {
         return lineSections.stream()
             .filter(section -> !isExistsDownStation(section.getUpStation()))
@@ -61,15 +70,14 @@ public class LineSections {
 
     private boolean isExistsDownStation(Station station) {
         Optional<Section> findSection = lineSections.stream()
-            .filter(section -> station.equals(section.getDownStation()))
+            .filter(section -> station.isSame(section.getDownStation()))
             .findFirst();
         return findSection.isPresent();
     }
 
     private Optional<Section> findSameUpStation(Station station) {
         return lineSections.stream()
-            .filter(section -> section.getUpStation().equals(station))
+            .filter(section -> section.getUpStation().isSame(station))
             .findFirst();
     }
-
 }

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 public class LineSectionsTest {
     public final LineSections lineSections = new LineSections(Arrays.asList(강남_판교_구간, 판교_수지_구간, 수지_광교_구간));
@@ -23,13 +24,24 @@ public class LineSectionsTest {
     }
 
     @Test
-    @DisplayName("구간 내 역 정렬 테스트")
-    void orderedLineStationsTest() {
+    @DisplayName("구간 정렬 테스트")
+    void getOrderLineSections() {
         // given
         LineSections notOrderedLineSections = new LineSections(Arrays.asList(판교_수지_구간, 수지_광교_구간, 강남_판교_구간));
         // when
         List<Section> orderLineSections = notOrderedLineSections.getOrderLineSections();
         // then
         assertThat(orderLineSections).isEqualTo(lineSections.getSections());
+    }
+
+    @Test
+    @DisplayName("구간 내 역 정렬 테스트")
+    void getOrderStation() {
+        // given
+        LineSections notOrderedLineSections = new LineSections(Arrays.asList(판교_수지_구간, 수지_광교_구간, 강남_판교_구간));
+        // when
+        List<Station> orderStations = notOrderedLineSections.getOrderStation();
+        // then
+        assertThat(orderStations).isEqualTo(Arrays.asList(강남역, 판교역, 수지역, 광교역));
     }
 }
