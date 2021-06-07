@@ -66,7 +66,7 @@ public class Section extends BaseEntity {
     }
 
     public void divideDistance(Section element) {
-        if (dividable(element)) {
+        if (!dividable(element)) {
             throw new IllegalArgumentException("추가하려는 구간의 길이는 기존 구간의 길이보다 작아야 합니다. 구간정보를 확인해주세요");
         }
         this.distance -= element.distance;
