@@ -11,7 +11,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -210,6 +212,37 @@ class SectionRepositoryTest {
         assertThat(sections.getStations().size()).isEqualTo(3);
         assertThat(sections.getFirstStation().getName()).isEqualTo("양재");
         assertThat(sections.getLastStation().getName()).isEqualTo("용산");
+    }
+
+    @DisplayName("구간 중간에 추가 - 상행역을 기준으로 매핑")
+    @Test
+    void addByUpStation() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+        Station station4 = saveStation("강남");
+
+        Section section1 = saveSection(station2, station1, 5);
+        Section section2 = saveSection(station3, station2, 20);
+        Section section3 = saveSection(station4, station3, 7);
+        
+        Sections sections = new Sections();
+        sections.add(section1);
+        sections.add(section2);
+        sections.add(section3);
+
+        // when
+        Station station5 = saveStation("청계산입구");
+        Section section4 = saveSection(station3, station5, 10);
+        sections.add(section4);
+
+        // then
+        List<String> stationNames = sections.getStations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(stationNames.size()).isEqualTo(5);
+        assertThat(stationNames).isEqualTo(Arrays.asList("정자", "판교", "청계산입구", "양재", "강남"));
     }
 
     private Section saveSection(Station upStation, Station downStation, int distance) {
