@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final LineRequest fourthLine = new LineRequest("4호선", "blue");
+    private static final LineRequest newLine = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
     private static final String ROOT_REQUEST_URI = "/lines";
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -121,6 +122,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then : 지하철_노선_삭제됨
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
+    }
+
+    @DisplayName("종점역 정보와 함께 지하철 노선을 생성한다.")
+    @Test
+    void createLineWithSection() {
+        // given
+        // 지하철_역_등록되어_있음
+        // 지하철_역_등록되어_있음
+
+        // when : 지하철_노선_등록되어_있음 - 종점역 포함
+
+        // then
+        // 지하철_노선_생성됨 - 종점역 포함
+        // 지하철_구간_생성됨
+    }
+
+    @DisplayName("지하철역 정보들과 함께 지하철 노선을 조회한다.")
+    @Test
+    void getLineWithSections() {
+        // given : 지하철_노선_등록되어_있음 - 종점역 포함
+
+        // when : 지하철_노선_조회_요청
+
+        // then
+        // 지하철_노선_응답됨
+        // 지하철_노선의_역목록_조회됨 (상행 → 하행 순정렬)
     }
 
     private ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest request) {
