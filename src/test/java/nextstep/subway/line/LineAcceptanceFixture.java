@@ -3,11 +3,14 @@ package nextstep.subway.line;
 import static nextstep.subway.utils.RestAssuredUtils.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
 public class LineAcceptanceFixture {
 
@@ -94,7 +97,14 @@ public class LineAcceptanceFixture {
     }
 
     static Line toLine(final ExtractableResponse<Response> response) {
-        return response.jsonPath()
-            .getObject(".", Line.class);
+        final JsonPath jsonPath = response.jsonPath();
+
+        return new Line(jsonPath.getLong("id"), jsonPath.getString("name"), jsonPath.getString("color"));
+    }
+
+    static List<Station> toStations(final ExtractableResponse<Response> response) {
+        final JsonPath jsonPath = response.jsonPath();
+
+        return jsonPath.getList("stations", Station.class);
     }
 }

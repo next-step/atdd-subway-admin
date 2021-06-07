@@ -29,9 +29,10 @@ public class LineService {
     }
 
     public LineResponse saveLine(final LineRequest request) {
+        final Station station = station(request.getUpStationId());
+        final Station station1 = station(request.getDownStationId());
         final Line line = request.toLine();
-        final Section section = new Section(station(request.getUpStationId()), station(request.getDownStationId()),
-            request.getDistance(), line);
+        final Section section = new Section(station, station1, request.getDistance(), line);
         line.addSection(section);
         final Line persistLine = lineRepository.save(line);
 

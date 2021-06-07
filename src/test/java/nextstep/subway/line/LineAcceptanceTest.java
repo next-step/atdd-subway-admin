@@ -19,6 +19,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.StationAcceptanceFixture;
+import nextstep.subway.station.domain.Station;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -27,29 +29,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void given_NoExisingLine_when_CreateLineWithStation_then_ReturnLine() {
         // when
-        지하철역_생성_요청("강남역");
-        지하철역_생성_요청("역삼역");
-        final ExtractableResponse<Response> response = NEW_지하철_노선_생성_요청(PATH + "/new", FIRST);
+        final Station station1 = 지하철역_생성_요청("강남역", StationAcceptanceFixture::toStation);
+        final Station station2 = 지하철역_생성_요청("역삼역", StationAcceptanceFixture::toStation);
+        final ExtractableResponse<Response> response = NEW_지하철_노선_생성_요청(PATH, FIRST);
 
         // then
         assertAll(
             () -> assertThat(statusCode(response)).isEqualTo(statusCode(CREATED)),
             () -> assertThat(response.header("Location")).isNotBlank(),
-            () -> assertThat(toLine(response)).isEqualTo(FIRST.line())
-        );
-    }
-
-    @DisplayName("지하철 노선을 생성한다. (Old)")
-    @Test
-    void given_NoExisingLine_when_CreateLine_then_ReturnLine() {
-        // when
-        final ExtractableResponse<Response> response = 지하철_노선_생성_요청(PATH, FIRST);
-
-        // then
-        assertAll(
-            () -> assertThat(statusCode(response)).isEqualTo(statusCode(CREATED)),
-            () -> assertThat(response.header("Location")).isNotBlank(),
-            () -> assertThat(toLine(response)).isEqualTo(FIRST.line())
+            () -> assertThat(toLine(response)).isEqualTo(FIRST.line()),
+            () -> assertThat(toStations(response)).isEqualTo(Arrays.asList(station1, station2))
         );
     }
 
