@@ -36,15 +36,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> 신분당선 = createNewLine(신분당선_이름, 빨간색);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색);
+
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> 응답 = API_요청_POST(신분당선);
+        ExtractableResponse<Response> 응답 = 노선생성_요청(신분당선);
 
         // then
         // 지하철_노선_생성됨
-        assertThat(응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(응답.header("Location")).isNotBlank();
+        지하철_노선_생성됨(응답);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -52,16 +52,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineDuplicate() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = createNewLine(신분당선_이름, 빨간색);
-        API_요청_POST(신분당선);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색);
+        노선생성_요청(신분당선);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> 응답 = API_요청_POST(신분당선);
+        ExtractableResponse<Response> 응답 = 노선생성_요청(신분당선);
 
         // then
         // 지하철_노선_생성_실패됨
-        assertThat(응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        노선_생성_요청_실패(응답);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -70,27 +70,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = createNewLine(신분당선_이름, 빨간색);
-        ExtractableResponse<Response> 신분당선_생성_응답 = API_요청_POST(신분당선);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색);
+        ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
-        Map<String, String> 이호선 = createNewLine(LineAcceptanceTest.이호선, 녹색);
-        ExtractableResponse<Response> 이호선_생성_응답 = API_요청_POST(이호선);
+        Map<String, String> 이호선 = 노선_파라미터_생성(LineAcceptanceTest.이호선, 녹색);
+        ExtractableResponse<Response> 이호선_생성_응답 = 노선생성_요청(이호선);
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> 노선_목록_조회_응답 = API_요청_GET();
+        ExtractableResponse<Response> 노선_목록_조회_응답 = 노선_목록_조회_요청();
 
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
         assertThat(노선_목록_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(신분당선_생성_응답, 이호선_생성_응답).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = 노선_목록_조회_응답.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
+        지하철_노선_목록_포함_검사(신분당선_생성_응답, 이호선_생성_응답, 노선_목록_조회_응답);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -98,17 +92,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = createNewLine(신분당선_이름, 빨간색);
-        ExtractableResponse<Response> 신분당선_생성_응답 = API_요청_POST(신분당선);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색);
+        ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> 노선_조회_응답 = API_요청_GET(신분당선_생성_응답.body().jsonPath().get("id").toString());
+        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(신분당선_생성_응답.body().jsonPath().get("id").toString());
 
         // then
         // 지하철_노선_응답됨
-        assertThat(노선_조회_응답.body().jsonPath().get(PARAM_NAME).toString()).isEqualTo(신분당선_이름);
-        assertThat(노선_조회_응답.body().jsonPath().get(PARAM_COLOR).toString()).isEqualTo(빨간색);
+        노선_이름_색_검사(노선_조회_응답, 신분당선_이름, 빨간색);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -116,19 +109,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = createNewLine(신분당선_이름, 빨간색);
-        ExtractableResponse<Response> 신분당선_생성_응답 = API_요청_POST(신분당선);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색);
+        ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
-        Map<String, String> 신분당선_수정 = createNewLine(분당선_이름, 노란색);
+        Map<String, String> 신분당선_수정 = 노선_파라미터_생성(분당선_이름, 노란색);
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> 노선_수정_응답 = API_요청_PUT(신분당선_수정, Integer.toString(신분당선_생성_응답.body().jsonPath().get("id")));
+        ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(신분당선_수정, Integer.toString(신분당선_생성_응답.body().jsonPath().get("id")));
 
         // then
         // 지하철_노선_수정됨
-        assertThat(노선_수정_응답.body().jsonPath().get(PARAM_NAME).toString()).isEqualTo(분당선_이름);
-        assertThat(노선_수정_응답.body().jsonPath().get(PARAM_COLOR).toString()).isEqualTo(노란색);
+        노선_이름_색_검사(노선_수정_응답, 분당선_이름, 노란색);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -136,27 +128,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = createNewLine(신분당선_이름, 빨간색);
-        ExtractableResponse<Response> 신분당선_생성_응답 = API_요청_POST(신분당선);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색);
+        ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
         // when
         // 지하철_노선_제거_요청
         String uri = 신분당선_생성_응답.header("Location");
-        ExtractableResponse<Response> response = API_요청_DELETE(uri);
+        ExtractableResponse<Response> response = 노선_삭제_요청(uri);
 
         // then
         // 지하철_노선_삭제됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        노선_삭제_검사(response, HttpStatus.NO_CONTENT);
     }
 
-    private Map<String, String> createNewLine(String name, String color) {
+    private Map<String, String> 노선_파라미터_생성(String name, String color) {
         Map<String, String> param = new HashMap<>();
         param.put(PARAM_NAME, name);
         param.put(PARAM_COLOR, color);
         return param;
     }
 
-    private ExtractableResponse<Response> API_요청_POST(Map<String, String> param) {
+    private ExtractableResponse<Response> 노선생성_요청(Map<String, String> param) {
         return RestAssured.given().log().all()
                 .body(param)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -166,7 +158,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> API_요청_GET(String pathVariable) {
+    private ExtractableResponse<Response> 노선_조회_요청(String pathVariable) {
         return RestAssured.given().log().all()
                 .when()
                 .get("/lines/" + pathVariable)
@@ -174,7 +166,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> API_요청_PUT(Map<String, String> param, String pathVariable) {
+    private ExtractableResponse<Response> 노선_수정_요청(Map<String, String> param, String pathVariable) {
         return RestAssured.given().log().all()
                 .body(param)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -184,7 +176,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> API_요청_GET() {
+    private ExtractableResponse<Response> 노선_목록_조회_요청() {
         return RestAssured.given().log().all()
                 .when()
                 .get("/lines")
@@ -192,11 +184,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> API_요청_DELETE(String uri) {
+    private ExtractableResponse<Response> 노선_삭제_요청(String uri) {
         return RestAssured.given().log().all()
                 .when()
                 .delete(uri)
                 .then().log().all()
                 .extract();
+    }
+
+    private void 지하철_노선_목록_포함_검사(ExtractableResponse<Response> 지하철_생성_응답_1, ExtractableResponse<Response> 지하철_생성_응답_2, ExtractableResponse<Response> 노선_목록_조회_응답) {
+        List<Long> expectedLineIds = Arrays.asList(지하철_생성_응답_1, 지하철_생성_응답_2).stream()
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
+        List<Long> resultLineIds = 노선_목록_조회_응답.jsonPath().getList(".", LineResponse.class).stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+        assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private void 지하철_노선_생성됨(ExtractableResponse<Response> 응답) {
+        assertThat(응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(응답.header("Location")).isNotBlank();
+    }
+
+    private void 노선_생성_요청_실패(ExtractableResponse<Response> 응답) {
+        assertThat(응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 노선_이름_색_검사(ExtractableResponse<Response> 노선_수정_응답, String 분당선이름, String 노란색) {
+        assertThat(노선_수정_응답.body().jsonPath().get(PARAM_NAME).toString()).isEqualTo(분당선이름);
+        assertThat(노선_수정_응답.body().jsonPath().get(PARAM_COLOR).toString()).isEqualTo(노란색);
+    }
+
+    private void 노선_삭제_검사(ExtractableResponse<Response> response, HttpStatus noContent) {
+        assertThat(response.statusCode()).isEqualTo(noContent.value());
     }
 }
