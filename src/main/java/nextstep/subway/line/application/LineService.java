@@ -17,7 +17,15 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
+        validateDuplicate(request);
+
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    private void validateDuplicate(LineRequest request) {
+        if (lineRepository.findByName(request.getName()).size() != 0) {
+            throw new IllegalArgumentException("노선이름이 이미 존재합니다.");
+        }
     }
 }
