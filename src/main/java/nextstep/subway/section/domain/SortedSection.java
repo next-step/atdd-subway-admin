@@ -26,24 +26,20 @@ public class SortedSection {
 
     private Section getStartSection(List<Section> sections) {
 
-        Map<Station, Station> stationMap =
+        Map<Station, Section> stationMap =
             sections.stream()
                     .collect(toMap(Section::getDownStation,
-                                   Section::getUpStation));
+                                   Function.identity()));
 
-        Entry<Station, Station> startEntry =
+        Entry<Station, Section> startEntry =
             stationMap.entrySet()
                       .stream()
-                      .filter(entry -> !stationMap.containsKey(entry.getValue()))
+                      .filter(entry -> !stationMap.containsKey(entry.getValue().getUpStation()))
                       .findAny()
                       .orElseThrow(
                           () -> new IllegalStateException(MESSAGE_NOT_FOUND_UPSTATION));
 
-        return sections.stream()
-                       .filter(section -> section.equalsUpStation(startEntry.getValue()))
-                       .filter(section -> section.equalsDownStation(startEntry.getKey()))
-                       .findAny()
-                       .orElseThrow(() -> new IllegalStateException(MESSAGE_NOT_FOUND_UPSTATION));
+        return startEntry.getValue();
     }
 
     private List<Section> linkToLastSection(Section startSection, List<Section> sections) {
