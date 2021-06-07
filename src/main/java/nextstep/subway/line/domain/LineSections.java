@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -41,7 +42,34 @@ public class LineSections {
     }
 
     public List<Section> getOrderLineSections() {
+        Optional<Section> preSection = findFirstSection();
         List<Section> orderedSections = new ArrayList<>();
+
+        while (preSection.isPresent()) {
+            Section curSection = preSection.get();
+            orderedSections.add(curSection);
+            preSection = findSameUpStation(curSection.getDownStation());
+        }
         return orderedSections;
     }
+
+    private Optional<Section> findFirstSection() {
+        return lineSections.stream()
+            .filter(section -> !isExistsDownStation(section.getUpStation()))
+            .findFirst();
+    }
+
+    private boolean isExistsDownStation(Station station) {
+        Optional<Section> findSection = lineSections.stream()
+            .filter(section -> station.equals(section.getDownStation()))
+            .findFirst();
+        return findSection.isPresent();
+    }
+
+    private Optional<Section> findSameUpStation(Station station) {
+        return lineSections.stream()
+            .filter(section -> section.getUpStation().equals(station))
+            .findFirst();
+    }
+
 }
