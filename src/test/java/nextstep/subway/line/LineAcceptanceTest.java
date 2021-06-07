@@ -66,12 +66,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> createResponse2 = createLine(params2);
 
 		// when
-		ExtractableResponse<Response> response = findLineById(1L);
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+				.when()
+				.get("/lines")
+				.then().log().all()
+				.extract();
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
-				.map(it -> Long.parseLong(it.header("Location" .split("/")[2])))
+				.map(it -> Long.parseLong(it.header("Location").split("/")[2]))
 				.collect(Collectors.toList());
 		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
 				.map(LineResponse::getId)
