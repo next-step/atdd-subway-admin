@@ -4,13 +4,16 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -41,18 +44,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> alreadyParams = new HashMap<>();
-        alreadyParams.put("name", "경의선");
-        alreadyParams.put("color", "blue");
-
-        ExtractableResponse<Response> alreadyResponse = RestAssured
-                .given().log().all()
-                .body(alreadyParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
-
-        Assertions.assertThat(alreadyResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        지하철_노선_등록되어_있음("경의선", "blue");
 
         // when
         // 지하철_노선_생성_요청
@@ -77,14 +69,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("경의선", "blue");
         // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("4호선", "green");
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().get("/lines")
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_목록_응답됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
+        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+        Assertions.assertThat(lineResponses)
+                .hasSize(2)
+                .extracting("name").contains("경의선", "4호선");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -124,5 +127,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+
+    void 지하철_노선_등록되어_있음(String name, String color) {
+        Map<String, String> alreadyParams = new HashMap<>();
+        alreadyParams.put("name", name);
+        alreadyParams.put("color", color);
+
+        ExtractableResponse<Response> alreadyResponse = RestAssured
+                .given().log().all()
+                .body(alreadyParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all().extract();
+
+        Assertions.assertThat(alreadyResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 }
