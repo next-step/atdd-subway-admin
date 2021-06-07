@@ -52,3 +52,15 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+
+## 1단계 요구사항
+
+* 각 미션의 요구사항을 파악한다.
+* 각 미션에 관한 API를 파악한다.
+* 노선의 생성의 인수테스트를 작성하고 성공하는지 테스트 한다.
+* 노선의 각 테스트케이스를 작성하고, 성공을 위하여 컨트롤러를 구현한다.
+* 인수테스트의 중복 로직을 리팩터링한다.
+
+
+## 1단계 질문
