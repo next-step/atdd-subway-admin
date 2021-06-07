@@ -15,6 +15,7 @@ public class ErrorAdvice {
     private static final String LINE_ALREADY_EXISTED = "이미 존재하는 노선을 생성할 수 없습니다";
     private static final String LINE_NOT_FOUND = "존재하지 않은 노선입니다.";
     private static final String STATION_NOT_FOUND = "존재하지 않은 역입니다.";
+    private static final String INVALID_INPUT = "잘못된 입력입니다.";
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(LineDuplicatedException.class)
@@ -32,5 +33,11 @@ public class ErrorAdvice {
     @ExceptionHandler(StationNotFoundException.class)
     public ErrorResponse handleStationNotFound() {
         return new ErrorResponse(STATION_NOT_FOUND);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorResponse handleIllegalArgument() {
+        return new ErrorResponse(INVALID_INPUT);
     }
 }

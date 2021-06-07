@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Entity
 public class Section extends BaseEntity {
@@ -55,7 +56,32 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance.getDistance();
+    }
+
+    public void changeDownStation(Section section) {
+        this.downStation = section.getUpStation();
+    }
+
+    public void changeUpStation(Section section) {
+        this.upStation = section.getDownStation();
+    }
+
     public List<Station> getStations() {
         return new LinkedList<>(Arrays.asList(upStation, downStation));
     }
+
+    public Stream<Station> getProcessStations() {
+        return Stream.of(upStation, downStation);
+    }
+
 }

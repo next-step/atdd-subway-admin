@@ -55,7 +55,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/{lineId}/section", 이호선.getId())
+                .when().post("/lines/{lineId}/sections", 이호선.getId())
                 .then().log().all().extract();
 
         // then
