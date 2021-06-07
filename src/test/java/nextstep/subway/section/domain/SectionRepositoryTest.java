@@ -190,6 +190,28 @@ class SectionRepositoryTest {
         assertThat(sections.getLastStation().getName()).isEqualTo("강남");
     }
 
+    @DisplayName("구간추가 - 구간 맨 뒤에 추가")
+    @Test
+    void addToLast() {
+        // given
+        Station persistUpStation = saveStation("강남");
+        Station persistDownStation = saveStation("양재");
+        Section persistSection = saveSection(persistUpStation, persistDownStation, 10);
+
+        Station persistDownStation2 = saveStation("용산");
+        Section persistSection2 = saveSection(persistDownStation2, persistUpStation, 20);
+
+        // when
+        Sections sections = new Sections();
+        sections.add(persistSection);
+        sections.add(persistSection2);
+
+        // then
+        assertThat(sections.getStations().size()).isEqualTo(3);
+        assertThat(sections.getFirstStation().getName()).isEqualTo("양재");
+        assertThat(sections.getLastStation().getName()).isEqualTo("용산");
+    }
+
     private Section saveSection(Station upStation, Station downStation, int distance) {
         Section section = Section.of(upStation, downStation, distance);
         return sectionRepository.save(section);
