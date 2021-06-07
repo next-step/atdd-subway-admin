@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceTest;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.domain.Station;
@@ -22,9 +21,6 @@ import org.springframework.http.MediaType;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
-
-    public static final Line line3 = new Line("3호선", "orange");
-    public static final Line line5 = new Line("5호선", "purple");
 
     private Station aeogaeStation;
     private Station chungjeongnoStation;
