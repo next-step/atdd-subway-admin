@@ -93,6 +93,7 @@ public class Sections implements Iterable<Section> {
     }
 
     private void add(int index, Section element) {
+        // TODO : validate distance and modify distance
         sections.add(index, element);
     }
 
