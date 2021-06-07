@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -21,8 +22,6 @@ import nextstep.subway.station.domain.Station;
 @Entity
 public class Section extends BaseEntity {
     private static final String CAN_NOT_STATION_EQUALS = "동일한 역을 등록할 수 없습니다.";
-    private static final String NOT_ENOUGH_DISTANCE = "충분하지 않은 구간 크기입니다.";
-    private static final String NOT_ADD_ENOUGH_DISTANCE = "추가하기에 충분하지 않은 구간 크기입니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +36,8 @@ public class Section extends BaseEntity {
     private Station downStation;
 
     @Column(nullable = false)
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_line"))
@@ -52,12 +52,11 @@ public class Section extends BaseEntity {
 
     public Section(Long id, Station upStation, Station downStation, int distance) {
         stationEqualsValidate(upStation, downStation);
-        distanceValidate(distance);
 
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = Distance.of(distance);
     }
 
     private void stationEqualsValidate(Station upStation, Station downStation)  {
@@ -66,31 +65,17 @@ public class Section extends BaseEntity {
         }
     }
 
-    private void distanceValidate(int distance) {
-        if (distance < 0) {
-            throw new IllegalArgumentException(NOT_ENOUGH_DISTANCE);
-        }
-    }
-
-    private void updateDistanceValidate(int distance) {
-        if (this.distance <= distance) {
-            throw new IllegalArgumentException(NOT_ADD_ENOUGH_DISTANCE);
-        }
-    }
-
     public void updateSection(Section newSection) {
-        updateDistanceValidate(newSection.distance);
-
-        this.distance = this.distance - newSection.distance;
+        distance.updateDiffDistance(newSection.getDistance());
         if (upStation.isSame(newSection.upStation)) {
-            this.upStation = newSection.downStation;
+            upStation = newSection.downStation;
             return;
         }
-        this.downStation = newSection.upStation;
+        downStation = newSection.upStation;
     }
 
     public boolean isContainSection(Section section) {
-        return this.upStation.isSame(section.upStation) || this.downStation.isSame(section.downStation);
+        return upStation.isSame(section.upStation) || downStation.isSame(section.downStation);
     }
 
     public void changeLine(Line line) {
@@ -110,7 +95,7 @@ public class Section extends BaseEntity {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.toNumber();
     }
 
     public Line getLine() {
