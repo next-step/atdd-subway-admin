@@ -34,9 +34,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = lineService.saveLine(lineRequest.toLine(), lineRequest.getUpStationId(),
-            lineRequest.getDownStationId(), lineRequest.getDistance());
-        LineResponse lineResponse = LineResponse.of(line);
+        LineResponse lineResponse = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
@@ -55,7 +53,7 @@ public class LineController {
 
     @PutMapping(value = "/{lineId}")
     public ResponseEntity<?> updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
-        lineService.updateLineById(lineId, lineRequest.toLine());
+        lineService.updateLineById(lineId, lineRequest);
         return ResponseEntity.ok().build();
     }
 

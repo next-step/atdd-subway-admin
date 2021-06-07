@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -24,5 +26,20 @@ public class Distance {
 
 	public static Distance valueOf(int distance) {
 		return new Distance(distance);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Distance other = (Distance)o;
+		return distance == other.distance;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(distance);
 	}
 }

@@ -32,11 +32,6 @@ public class Sections {
 		return new Sections(asList(sections));
 	}
 
-	boolean isPartOf(Line line) {
-		return sections.stream()
-			.allMatch(section -> section.isPartOf(line));
-	}
-
 	void add(Section section) {
 		this.sections.add(section);
 	}

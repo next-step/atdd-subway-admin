@@ -24,14 +24,20 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    public Line(String name, String color) {
+    Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+    public static Line of(Station upStation, Station downStation, String name, String color, int distance) {
+        Line line = new Line(name, color);
+        line.addSection(upStation, downStation, distance);
+        return line;
+    }
+
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public Long getId() {
@@ -46,16 +52,16 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void addSection(Station upStation, Station downStation, int distance) {
-        Section section = new Section(this, upStation, downStation, distance);
-        sections.add(section);
+    public List<Station> orderedStations() {
+        return sections.orderedStations();
     }
 
     Sections getSections() {
         return sections;
     }
 
-    public List<Station> orderedStations() {
-        return sections.orderedStations();
+    private void addSection(Station upStation, Station downStation, int distance) {
+        Section section = new Section(this, upStation, downStation, distance);
+        sections.add(section);
     }
 }

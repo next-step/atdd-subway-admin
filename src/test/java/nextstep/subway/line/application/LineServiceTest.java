@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -31,13 +32,14 @@ class LineServiceTest {
 	@DisplayName("노선 저장시 종점역 정보가 없으면 저장할 수 없다.")
 	void saveLineTestWithNonExistsStation() {
 		// given
-		Line line = new Line("5호선", "보라");
-		Station station = new Station("종점역");
-		when(stationService.findById(1L)).thenReturn(station);
+		LineRequest lineRequest = mock(LineRequest.class);
+		when(lineRequest.getUpStationId()).thenReturn(1L);
+		when(lineRequest.getDownStationId()).thenReturn(2L);
+		when(stationService.findById(1L)).thenReturn(new Station("강남역"));
 		when(stationService.findById(2L)).thenThrow(IllegalArgumentException.class);
 
 		// when then
-		assertThatThrownBy(() -> lineService.saveLine(line, 1L, 2L, 1))
+		assertThatThrownBy(() -> lineService.saveLine(lineRequest))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
 }

@@ -1,6 +1,6 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Line;
+import static java.util.Objects.*;
 
 public class LineRequest {
     private String name;
@@ -17,10 +17,6 @@ public class LineRequest {
         return color;
     }
 
-    public Line toLine() {
-        return new Line(name, color);
-    }
-
     public Long getUpStationId() {
         return upStationId;
     }
@@ -31,5 +27,11 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void validateSaveRequest() {
+        if (isNull(name) || isNull(color) || isNull(upStationId) || isNull(downStationId) || distance <= 0) {
+            throw new IllegalArgumentException("노선 저장요청이 유효하지 않습니다.");
+        }
     }
 }

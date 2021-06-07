@@ -52,10 +52,6 @@ public class Section {
 		this.distance = Distance.valueOf(distance);
 	}
 
-	boolean isPartOf(Line line) {
-		return this.line.equals(line);
-	}
-
 	boolean isPreviousOf(Section otherSection) {
 		return this.downStation.equals(otherSection.upStation);
 	}
