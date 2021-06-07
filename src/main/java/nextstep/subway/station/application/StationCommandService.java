@@ -2,8 +2,6 @@ package nextstep.subway.station.application;
 
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.dto.StationRequest;
-import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,12 +15,11 @@ public class StationCommandService {
         this.stationRepository = stationRepository;
     }
 
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationResponse.of(persistStation);
+    public Long save(Station nonPersistStation) {
+        return stationRepository.save(nonPersistStation).getId();
     }
 
-    public void deleteStationById(Long id) {
+    public void deleteById(Long id) {
         stationRepository.deleteById(id);
     }
 }

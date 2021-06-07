@@ -27,12 +27,7 @@ public class LineQueryService {
                              .collect(toList());
     }
 
-    public LineResponse findLine(Long lineId) {
-        Line line = findLineById(lineId);
-        return LineResponse.of(line);
-    }
-
-    public Line findLineById(Long lineId) {
+    public Line findById(Long lineId) {
         return lineRepository.findById(lineId)
                              .orElseThrow(() -> new NotFoundLineException(lineId));
     }

@@ -19,12 +19,19 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse constraintViolationExceptionHandler(DataIntegrityViolationException e) {
         log.error(e.getMessage(), e);
-        return ErrorResponse.of("이미 생성된 데이터입니다.");
+        return ErrorResponse.of("중복 데이터입니다.");
     }
 
     @ExceptionHandler(NotFoundLineException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse constraintViolationExceptionHandler(NotFoundLineException e) {
+        log.error(e.getMessage(), e);
+        return ErrorResponse.of(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse illegalArgumentExceptionHandler(IllegalArgumentException e) {
         log.error(e.getMessage(), e);
         return ErrorResponse.of(e.getMessage());
     }

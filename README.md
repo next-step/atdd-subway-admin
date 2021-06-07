@@ -232,7 +232,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     }
     ```
 
-#### 지하철 노선 조회 결과      
+#### 지하철 노선 조회 결과
 
 - 노선 조회 시 역 목록을 함께 응답
 - 노선에 등록된 구간을 순서대로 정렬하여 상행 종점 ~ 하행 종점까지의 목록 응답
@@ -266,3 +266,49 @@ Content-Type: application/json
     }
 ]
 ```
+
+---
+
+## Step3 - 구간 추가 기능
+
+### 요구사항
+
+1. 지하철 구간 등록 기능 구현
+    - API Request
+        ```text
+        POST /lines/1/sections HTTP/1.1
+        accept: */*
+        content-type: application/json; charset=UTF-8
+        host: localhost:52165
+        
+        {
+        "downStationId": "4",
+        "upStationId": "2",
+        "distance": 10
+        }
+        ```
+
+#### 요구사항 설명
+
+1. 역 사이에 새로운 역 등록
+    - A -> C 거리가 7m 일 때, A -> B 4m를 추가하면 A -> B -> C로 변경
+    - 이 경우 A -> B 4m, B -> C 3m로 설정
+
+2. 새로운 역을 상행 종점으로 등록
+    - A -> C 인 노선에 B -> A 노선 등록
+    - B -> A -> C (상행 종점 확장)
+
+3. 새로운 역을 하행 종점으로 등록
+    - A -> C 인 노선에 C -> B 노선 등록
+    - A -> C -> B (하행 종점 확장)
+    
+#### 예외 케이스
+
+1. 역 사이에 새로운 역을 등록할 때, 기존 역 사이 길이보다 크거나 같은 경우 등록 불가
+    - A -> C 7m 노선에 B -> C 7m 노선을 등록하는 경우 오류 발생
+
+2. 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 등록 불가
+    - A -> B -> C -> D 인 노선에 B -> D 노선을 등록하는 경우 오류 발생
+
+3. 상행역과 하행역이 기존 노선에 하나도 포함되어 있지 않으면 등록 불가
+    - A -> B -> C 인 노선에 X -> Y 등록하는 경우 오류 발생

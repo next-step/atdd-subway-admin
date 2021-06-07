@@ -1,8 +1,9 @@
 package nextstep.subway.line.ui;
 
+import java.net.URI;
 import java.util.List;
-import nextstep.subway.line.application.LineQueryService;
 import nextstep.subway.line.application.LineCommandService;
+import nextstep.subway.line.application.LineQueryService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.net.URI;
 
 @RestController
 @RequestMapping("/lines")
@@ -31,9 +30,15 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineCommandService.saveLine(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest request) {
+
+        Long lineId = lineCommandService.save(request.toLine(),
+                                              request.getUpStationId(),
+                                              request.getDownStationId(),
+                                              request.getDistance());
+
+        return ResponseEntity.created(URI.create("/lines/" + lineId))
+                             .body(LineResponse.of(lineQueryService.findById(lineId)));
     }
 
     @GetMapping
@@ -44,20 +49,19 @@ public class LineController {
 
     @GetMapping(value = "/{lineId}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long lineId) {
-        LineResponse line = lineQueryService.findLine(lineId);
-        return ResponseEntity.ok(line);
+        return ResponseEntity.ok(LineResponse.of(lineQueryService.findById(lineId)));
     }
 
     @PutMapping(value = "/{lineId}")
     public ResponseEntity<Void> updateLine(@PathVariable Long lineId,
                                            @RequestBody LineRequest lineRequest) {
-        lineCommandService.updateLine(lineId, lineRequest);
+        lineCommandService.update(lineId, lineRequest.toLine());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{lineId}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long lineId) {
-        lineCommandService.deleteLine(lineId);
+        lineCommandService.deleteById(lineId);
         return ResponseEntity.noContent().build();
     }
 }
