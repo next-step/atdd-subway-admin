@@ -4,6 +4,7 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,8 +15,10 @@ import java.util.stream.Collectors;
 public class Sections implements Iterable<Section> {
 
     private static final int FIRST_INDEX = 0;
+    private static final int FRONT_OF_SECTIONS = -1;
 
     @OneToMany(mappedBy = "line")
+    @OrderBy("sequence ASC")
     private final List<Section> sections = new LinkedList<>();
 
     public List<Station> getStations() {
@@ -60,6 +63,7 @@ public class Sections implements Iterable<Section> {
         }
         validateAddable(element);
         add(selectDivisionIndex(element), element);
+        synchronizeSequence();
     }
 
     private void validateAddable(Section section) {
@@ -81,7 +85,7 @@ public class Sections implements Iterable<Section> {
 
     private int selectDivisionIndex(Section element) {
         if (getFirstStation().equals(element.getUpStation())) {
-            return FIRST_INDEX;
+            return FRONT_OF_SECTIONS;
         }
         if (getLastStation().equals(element.getUpStation())) {
             return lastIndex();
@@ -97,14 +101,22 @@ public class Sections implements Iterable<Section> {
 
     private void add(int index, Section element) {
         if (isEdge(index)) {
-            sections.add(index, element);
+            addEdge(index, element);
             return;
         }
         divideSection(index, element);
     }
 
     private boolean isEdge(int index) {
-        return index == FIRST_INDEX || index == sections.size();
+        return index == FRONT_OF_SECTIONS || index == sections.size();
+    }
+
+    private void addEdge(int index, Section element) {
+        if (index == FRONT_OF_SECTIONS) {
+            sections.add(FIRST_INDEX, element);
+            return;
+        }
+        sections.add(index, element);
     }
 
     private void divideSection(int index, Section element) {
@@ -117,6 +129,13 @@ public class Sections implements Iterable<Section> {
         if (divisionTarget.getDownStation().equals(element.getDownStation())) {
             divisionTarget.modifyDownStation(element.getUpStation());
             sections.add(index, element);
+        }
+    }
+
+    private void synchronizeSequence() {
+        for (int i = 0; i < sections.size(); i++) {
+            Section section = sections.get(i);
+            section.modifySequence(i);
         }
     }
 
