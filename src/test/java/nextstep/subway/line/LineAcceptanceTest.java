@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,13 +21,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+	Map<String, String> params;
+
+	@BeforeEach
+	void setBeforeEach() {
+		params = new HashMap<>();
+		params.put("color", "br-red-600");
+		params.put("name", "신분당선");
+	}
+
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
-		Map<String, String> params = new HashMap<>();
-		params.put("color", "br-red-600");
-		params.put("name", "신분당선");
-
 		// when
 		ExtractableResponse<Response> response = createLine(params);
 
@@ -39,9 +45,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine2() {
 		// given
-		Map<String, String> params = new HashMap<>();
-		params.put("color", "br-red-600");
-		params.put("name", "신분당선");
 		createLine(params);
 
 		// when
@@ -55,9 +58,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
-		Map<String, String> params = new HashMap<>();
-		params.put("color", "br-red-600");
-		params.put("name", "신분당선");
 		ExtractableResponse<Response> createResponse1 = createLine(params);
 
 		Map<String, String> params2 = new HashMap<>();
@@ -87,9 +87,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
-		Map<String, String> params = new HashMap<>();
-		params.put("color", "br-red-600");
-		params.put("name", "신분당선");
 		createLine(params);
 
 		// when
@@ -106,9 +103,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
-		Map<String, String> params = new HashMap<>();
-		params.put("color", "br-red-600");
-		params.put("name", "신분당선");
 		createLine(params);
 
 		// when
@@ -136,17 +130,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
-		Map<String, String> params = new HashMap<>();
-		params.put("color", "br-red-600");
-		params.put("name", "신분당선");
 		createLine(params);
 
 		// when
-		ExtractableResponse<Response> response = findLineById(1L);
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+				.when()
+				.delete("/lines/1")
+				.then().log().all()
+				.extract();
 
 		// then
+		ExtractableResponse<Response> actual = findLineById(1L);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(actual.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
 	private ExtractableResponse<Response> createLine(Map<String, String> params) {

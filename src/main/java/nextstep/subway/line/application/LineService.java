@@ -39,4 +39,9 @@ public class LineService {
 		Line line = findLineById(lineId);
 		line.update(request.toLine());
 	}
+
+	public void deleteLine(Long lineId) {
+		Line line = findLineById(lineId);
+		lineRepository.delete(line);
+	}
 }
