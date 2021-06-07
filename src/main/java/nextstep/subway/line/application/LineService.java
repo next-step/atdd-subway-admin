@@ -30,19 +30,17 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(final LineRequest request) {
-        final Section section = createSection(request);
+        final Section section = createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance());
         final Line line = request.toLine();
         line.addSection(section);
         final Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
 
-    private Section createSection(final LineRequest request) {
-        final Station upStation = stationRepository.findById(request.getUpStationId())
-                .orElseThrow(EntityExistsException::new);
-        final Station downStation = stationRepository.findById(request.getDownStationId())
-                .orElseThrow(EntityExistsException::new);
-        return new Section(upStation, downStation, request.getDistance());
+    private Section createSection(final Long upStationId, final Long downStationId, final int distance) {
+        final Station upStation = stationRepository.findById(upStationId).orElseThrow(EntityExistsException::new);
+        final Station downStation = stationRepository.findById(downStationId).orElseThrow(EntityExistsException::new);
+        return new Section(upStation, downStation, distance);
     }
 
     public List<LineResponse> findAllLines() {
