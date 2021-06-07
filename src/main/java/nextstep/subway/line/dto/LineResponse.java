@@ -59,4 +59,16 @@ public class LineResponse {
     public List<StationResponse> getStations() {
         return stations;
     }
+
+    @Override
+    public String toString() {
+        return "LineResponse{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", color='" + color + '\'' +
+            ", createdDate=" + createdDate +
+            ", modifiedDate=" + modifiedDate +
+            ", stations=" + stations +
+            '}';
+    }
 }
