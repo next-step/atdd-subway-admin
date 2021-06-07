@@ -28,14 +28,14 @@ public class SectionTest {
 
     @Test
     @DisplayName("하나의 역에 동일한 상행/하행선은 등록 불가능 테스트")
-    void up_down_station_equals_register_exception() {
+    void upDownStationEqualsRegisterException() {
         // given & when & then
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Section(강남역, 강남역, 5));
     }
 
     @Test
     @DisplayName("유효하지 않은 거리(0보다 작은) 등록 테스트")
-    void distance_register_exception() {
+    void distanceRegisterException() {
         // given & when & then
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Section(강남역, 판교역, -1));
     }
@@ -49,4 +49,43 @@ public class SectionTest {
         assertThat(stations.get(0)).isEqualTo(강남역);
         assertThat(stations.get(1)).isEqualTo(판교역);
    }
+
+    @Test
+    @DisplayName("구간 내 거리 보다 같거나 큰 경우, 수정 불가 테스트")
+    void updateDistanceValidate() {
+        // given
+        Section 강남_양재_구간 = new Section(5L, 강남역, 양재역, 5);
+        Section 강남_수지_구간 = new Section(5L, 강남역, 양재역, 10);
+        // when & then
+        Assertions.assertThrows(IllegalArgumentException.class, () -> 강남_판교_구간.updateSection(강남_양재_구간));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> 강남_판교_구간.updateSection(강남_수지_구간));
+    }
+
+    @Test
+    @DisplayName("상행선이 같은 구간 추가 시, 수정 테스트")
+    void updateSameUpStation() {
+        // given
+        Section 강남_판교_구간 = new Section(1L, 강남역, 판교역, 5);
+        Section 강남_양재_구간 = new Section(5L, 강남역, 양재역, 2);
+        // when
+        강남_판교_구간.updateSection(강남_양재_구간);
+        // then
+        assertThat(강남_판교_구간.getUpStation()).isEqualTo(양재역);
+        assertThat(강남_판교_구간.getDownStation()).isEqualTo(판교역);
+        assertThat(강남_판교_구간.getDistance()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("하행선이 같은 구간 추가 시, 수정 테스트")
+    void updateSameDownStation() {
+        // given
+        Section 강남_판교_구간 = new Section(1L, 강남역, 판교역, 5);
+        Section 양재_판교_구간 = new Section(5L, 양재역, 판교역, 1);
+        // when
+        강남_판교_구간.updateSection(양재_판교_구간);
+        // then
+        assertThat(강남_판교_구간.getUpStation()).isEqualTo(강남역);
+        assertThat(강남_판교_구간.getDownStation()).isEqualTo(양재역);
+        assertThat(강남_판교_구간.getDistance()).isEqualTo(4);
+    }
 }
