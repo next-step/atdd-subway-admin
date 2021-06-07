@@ -97,10 +97,11 @@ public class SectionRepositoryTest {
         lineRepository.save(line);
 
         // when
+        line.removeAllSections();
         sectionRepository.deleteAllByLineId(line.getId());
-        List<Section> resultSections = sectionRepository.findByLineId(line.getId());
 
         // then
+        List<Section> resultSections = sectionRepository.findByLineId(line.getId());
         assertThat(resultSections.isEmpty()).isTrue();
     }
 }
