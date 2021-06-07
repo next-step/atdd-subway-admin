@@ -99,8 +99,6 @@ public class LineAcceptanceStep {
 
     public static void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<StationResponse> stations = response.jsonPath().getObject(".", LineResponse.class).getStations();
-        assertThat(stations.size()).isEqualTo(2);
     }
 
     public static void 지하철_노선_수정됨(ExtractableResponse<Response> response) {

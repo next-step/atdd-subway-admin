@@ -2,6 +2,8 @@ package nextstep.subway.section;
 
 import static nextstep.subway.section.SectionAcceptanceStep.*;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +28,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void setFields() {
         // given
         판교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("판교역"));
-        수지역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("수지"));
+        수지역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("수지역"));
 
         LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", 판교역_ID, 수지역_ID, 4);
         신분당선_ID = LineAcceptanceStep.지하철_노선_등록되어_있음(lineRequest);
@@ -50,15 +52,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineWithStations() {
         // given
-        // 지하철_역_등록되어_있음
-        // 지하철_노선에_구간_등록_요청
+        Long 강남역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("강남역"));
+        Long 정자역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("정자역"));
+        SectionRequest sectionRequest1 = SectionRequest.of(판교역_ID, 정자역_ID, 1);
+        SectionRequest sectionRequest2 = SectionRequest.of(강남역_ID, 판교역_ID, 5);
 
         // when
-        // 지하철_노선_조회_요청
+        지하철_노선에_구간_등록_요청(신분당선_ID, sectionRequest1);
+        지하철_노선에_구간_등록_요청(신분당선_ID, sectionRequest2);
+
+        // when
+        ExtractableResponse<Response> response = LineAcceptanceStep.지하철_노선_조회_요청(신분당선_ID);
 
         // then
-        // 지하철_노선_정보_응답됨
-        // 지하철_노선에_역_순서_정렬됨
+        LineAcceptanceStep.지하철_노선_응답됨(response);
+        지하철_노선에_역_순서_정렬됨(response, Arrays.asList(강남역_ID, 판교역_ID, 정자역_ID, 수지역_ID));
     }
 
     @DisplayName("노선에 상행 종점으로 등록한다.")
