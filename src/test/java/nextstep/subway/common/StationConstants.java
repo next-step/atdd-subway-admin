@@ -65,12 +65,7 @@ public enum StationConstants {
     }
 
     public static void createAllStations() {
-
-        List<StationResponse> allStations = Arrays.stream(values())
-                                                  .map(CACHE::get)
-                                                  .collect(toList());
-
-        allStations.forEach(stationResponse -> {
+        ALL_STATIONS.forEach(stationResponse -> {
             ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
                            .body(new StationRequest(stationResponse.getName()))
