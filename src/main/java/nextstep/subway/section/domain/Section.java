@@ -19,6 +19,8 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
+    private int sequence;
+
     @OneToOne
     @JoinColumn(name = "up_station_id")
     private Station upStation;
@@ -86,6 +88,10 @@ public class Section extends BaseEntity {
         if (upStation.equals(downStation)) {
             throw new IllegalStateException("상행역과 하행역은 동일할 수 없습니다.");
         }
+    }
+
+    public void modifySequence(int sequence) {
+        this.sequence = sequence;
     }
 
     public Long getId() {
