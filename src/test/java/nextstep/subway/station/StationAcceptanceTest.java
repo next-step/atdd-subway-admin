@@ -116,6 +116,18 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_요청에러_메시지확인(response, "삭제 대상 역이 존재하지 않습니다.");
     }
 
+    public static StationResponse 지하철_역_등록되어_있음_공용(String stationName) {
+        return RestAssured.given().log().all()
+                .body(new StationRequest(stationName))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract()
+                .jsonPath()
+                .getObject(".", StationResponse.class);
+    }
+
     private ExtractableResponse<Response> 지하철_역_생성_요청(String stationName) {
         return RestAssured.given().log().all()
                 .body(new StationRequest(stationName))
