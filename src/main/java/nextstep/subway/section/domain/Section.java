@@ -46,10 +46,10 @@ public class Section {
 
 	public void changeLine(Line line) {
 		if (this.line != null) {
-			line.getSections().remove(this);
+			line.getSections().removeSection(this);
 		}
 		this.line = line;
-		line.getSections().add(this);
+		line.getSections().addSection(this);
 	}
 
 }
