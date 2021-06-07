@@ -48,10 +48,6 @@ public class LineSections implements Serializable {
             return;
         }
 
-        if (sections.size() == 1 && sections.get(0).isDuplicateSection(upStation, downStation)) {
-            throw new IllegalArgumentException(MESSAGE_SECTION_HAS_CYCLE);
-        }
-
         Optional<Section> maybeUpStation = sections.stream()
                                                    .filter(section -> section.contains(upStation))
                                                    .findAny();
