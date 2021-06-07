@@ -10,17 +10,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @ControllerAdvice
 @ResponseBody
-public class ApiExceptionHandler {
+public class GlobalExceptionHandler {
 
 	@ExceptionHandler(value = ApiException.class)
-	public ResponseEntity apiException(ApiException exception) {
-		return ResponseEntity.status(exception.status())
-							 .build();
+	public ResponseEntity<Void> apiException(ApiException exception) {
+		return ResponseEntity.status(exception.status()).build();
 	}
 
 	@ExceptionHandler(value = EmptyResultDataAccessException.class)
-	public ResponseEntity EmptyResultDataAccessException(EmptyResultDataAccessException exception) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-							 .build();
+	public ResponseEntity<Void> emptyResultDataAccessException(EmptyResultDataAccessException exception) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	}
+
+	@ExceptionHandler(value = Exception.class)
+	public ResponseEntity<Void> commonException(Exception exception) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	}
 }
