@@ -1,13 +1,11 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.ws.Response;
 import java.net.URI;
 import java.util.List;
 
@@ -33,6 +31,12 @@ public class LineController {
 
 	@GetMapping("/{lineId}")
 	public ResponseEntity<LineResponse> getLineById(@PathVariable Long lineId) {
-		return ResponseEntity.ok(lineService.findLineById(lineId));
+		return ResponseEntity.ok(LineResponse.of(lineService.findLineById(lineId)));
+	}
+
+	@PutMapping("/{lineId}")
+	public ResponseEntity<Void> modifyLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
+		lineService.modifyLine(lineId, lineRequest);
+		return ResponseEntity.ok().build();
 	}
 }

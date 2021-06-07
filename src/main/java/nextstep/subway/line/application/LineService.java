@@ -30,9 +30,13 @@ public class LineService {
 				.collect(Collectors.toList());
 	}
 
-	public LineResponse findLineById(Long lineId) {
-		Line line = lineRepository.findById(lineId)
+	public Line findLineById(Long lineId) {
+		return lineRepository.findById(lineId)
 				.orElseThrow(() -> new LineNotFoundException(lineId));
-		return LineResponse.of(line);
+	}
+
+	public void modifyLine(Long lineId, LineRequest request) {
+		Line line = findLineById(lineId);
+		line.update(request.toLine());
 	}
 }
