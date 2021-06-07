@@ -1,5 +1,7 @@
 package nextstep.subway.line.application;
 
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -12,14 +14,11 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
-        this.lineRepository = lineRepository;
-    }
-
-    public LineResponse saveLine(LineRequest request) {
+    public LineResponse saveLine(final LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
@@ -48,7 +47,7 @@ public class LineService {
         line.update(request.toLine());
     }
 
-    public void deleteLineById(Long id) {
+    public void deleteLineById(final Long id) {
         lineRepository.deleteById(id);
     }
 }

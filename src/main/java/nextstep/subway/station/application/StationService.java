@@ -1,5 +1,6 @@
 package nextstep.subway.station.application;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -12,14 +13,11 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
-    public StationService(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
-
-    public StationResponse saveStation(StationRequest stationRequest) {
+    public StationResponse saveStation(final StationRequest stationRequest) {
         Station persistStation = stationRepository.save(stationRequest.toStation());
         return StationResponse.of(persistStation);
     }
@@ -33,7 +31,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteStationById(Long id) {
+    public void deleteStationById(final Long id) {
         stationRepository.deleteById(id);
     }
 }

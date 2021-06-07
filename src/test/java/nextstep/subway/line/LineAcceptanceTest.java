@@ -172,7 +172,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return createLine("2호선", "green lighten-1");
     }
 
-    private ExtractableResponse<Response> createLine(String name, String color) {
+    private ExtractableResponse<Response> createLine(final String name, final String color) {
         Map<String, String> params = new HashMap<String, String>(){
             {
                 put("name", name);
@@ -217,7 +217,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private long getLocationId(ExtractableResponse<Response> response) {
+    private long getLocationId(final ExtractableResponse<Response> response) {
         String result = response.header("Location").split("/")[2];
 
         return Long.parseLong(result);
