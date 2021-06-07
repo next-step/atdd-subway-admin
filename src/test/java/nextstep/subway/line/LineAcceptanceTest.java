@@ -96,22 +96,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         지하철_노선_등록되어_있음("경의선", "blue");
+        지하철_노선_등록되어_있음("4호선", "green");
 
         // when
         // 지하철_노선_조회_요청
+        final String name = "경의선";
         Map<String, String> params = new HashMap<>();
-        params.put("name", "경의선");
+        params.put("name", name);
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines")
+                .when().get("/lines/{name}", name)
                 .then().log().all().extract();
 
         // then
         // 지하철_노선_응답됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // 지하철_노선_목록_포함됨
+        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+        Assertions.assertThat(lineResponses)
+                .hasSize(1)
+                .extracting("name").contains("경의선");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -119,12 +126,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("경의선", "blue");
 
         // when
         // 지하철_노선_수정_요청
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "경의선");
+        params.put("color", "red");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines")
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_수정됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // 지하철_노선_목록_포함됨
+        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+        Assertions.assertThat(lineResponses)
+                .hasSize(1)
+                .extracting("color").contains("red");
     }
 
     @DisplayName("지하철 노선을 제거한다.")

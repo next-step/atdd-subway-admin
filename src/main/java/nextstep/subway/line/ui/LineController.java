@@ -20,8 +20,8 @@ public class LineController {
     }
 
     @GetMapping(value = "/{name}")
-    public ResponseEntity getLine(String name) {
-        List<LineResponse> lines = lineService.findByName(name);
+    public ResponseEntity getLine(@PathVariable  String name) {
+        List<LineResponse> lines = lineService.getLine(name);
 
         return ResponseEntity.ok().body(lines);
     }
@@ -42,5 +42,12 @@ public class LineController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+    }
+
+    @PutMapping
+    public ResponseEntity updateLine(@RequestBody LineRequest lineRequest) {
+        List<LineResponse> lines = lineService.updateLine(lineRequest);
+
+        return ResponseEntity.ok().body(lines);
     }
 }

@@ -38,9 +38,23 @@ public class LineService {
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
     }
 
-    public List<LineResponse> findByName(String name) {
-        List<Line> lines = lineRepository.findByName(name);
+    private List<Line> findByName(String name) {
+        return lineRepository.findByName(name);
+    }
 
-        return lines.stream().map(LineResponse::of).collect(Collectors.toList());
+    public List<LineResponse> updateLine(LineRequest request) {
+        Line line = request.toLine();
+        List<Line> lines = this.findByName(line.getName());
+
+        for (int i = 0; i < lines.size(); i++) {
+            lines.get(i).update(line);
+        }
+
+        List<Line> persistLines = lineRepository.saveAll(lines);
+        return persistLines.stream().map(LineResponse::of).collect(Collectors.toList());
+    }
+
+    public List<LineResponse> getLine(String name) {
+        return this.findByName(name).stream().map(LineResponse::of).collect(Collectors.toList());
     }
 }
