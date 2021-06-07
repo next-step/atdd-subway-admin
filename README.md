@@ -282,9 +282,9 @@ Content-Type: application/json
         host: localhost:52165
         
         {
-        "downStationId": "4",
-        "upStationId": "2",
-        "distance": 10
+            "downStationId": "4",
+            "upStationId": "2",
+            "distance": 10
         }
         ```
 
@@ -312,3 +312,34 @@ Content-Type: application/json
 
 3. 상행역과 하행역이 기존 노선에 하나도 포함되어 있지 않으면 등록 불가
     - A -> B -> C 인 노선에 X -> Y 등록하는 경우 오류 발생
+
+--- 
+
+## Step4 - 구간 삭제 기능
+
+### 요구사항
+
+1. 지하철 구간 제거 기능 구현
+    - API Request
+        ```text
+        DELETE /lines/1/sections?stationId=2 HTTP/1.1
+        accept: */*
+        host: localhost:52165
+        ```
+
+#### 요구사항 설명
+
+1. 요청 시 `구간` 제거 요청이 아닌 `역` 제거 요청
+
+2. 중간역이 제거되는 경우 재배치
+    - A -> B -> C 구간에서 B를 제거하면 A -> C로 구간 재배치
+    - A -> B, B -> C 구간 삭제
+    - A -> B 3m, B -> C 가 4m이면, A -> C의 거리는 7m 로 재설정 (두 구간 거리 합산)
+
+3. 종점이 제거되는 경우 제일 가까운 역이 새로운 종점
+    - 종점 이전 역 -> 종점 구간 삭제
+
+#### 예외 케이스
+
+1. 제거하려는 구간이 마지막으로 남은 구간인 경우 삭제 불가능
+    - 노선은 반드시 1개 이상의 구간을 포함
