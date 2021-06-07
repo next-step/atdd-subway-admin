@@ -290,6 +290,33 @@ class SectionRepositoryTest {
                 .withMessageMatching("구간은 최소 한 개 이상 존재해야 합니다.");
     }
 
+    @DisplayName("역 제거 검증 - 구간에 존재하지 않는 역 제거")
+    @Test
+    void removeStation_stationIsNotExist() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+        Station station4 = saveStation("강남");
+
+        Section section1 = saveSection(station2, station1, 5);
+        Section section2 = saveSection(station3, station2, 20);
+        Section section3 = saveSection(station4, station3, 7);
+
+        Sections sections = new Sections();
+        sections.add(section1);
+        sections.add(section2);
+        sections.add(section3);
+
+        // when
+        Station station5 = saveStation("청계산입구");
+
+        // then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> sections.removeStation(station5))
+                .withMessageMatching("삭제하고자 하는 역 정보가 존재하지 않습니다. 입력정보를 확인해주세요.");
+    }
+
     private Section saveSection(Station upStation, Station downStation, int distance) {
         Section section = Section.of(upStation, downStation, distance);
         return sectionRepository.save(section);
