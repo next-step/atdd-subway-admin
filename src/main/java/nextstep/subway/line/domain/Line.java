@@ -42,10 +42,8 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public Line addSection(Section section) {
-        section.registerLine(this);
+    public void addSection(Section section) {
         this.sections.add(section);
-        return this;
     }
 
     public void removeSection(Section section) {

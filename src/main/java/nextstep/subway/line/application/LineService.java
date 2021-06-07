@@ -71,8 +71,7 @@ public class LineService {
         Station downStation = this.stationRepository.findById(request.getDownStationId())
                 .orElseThrow(() -> new NoSuchElementException("요청한 하행역은 등록되지 않은 역입니다. 역 ID : "
                         + request.getDownStationId()));
-        return request.toLine()
-                .addSection(new Section(upStation, downStation, request.getDistance()));
+        return new Section(upStation, downStation, request.getDistance(), request.toLine()).getLine();
     }
 
     private Line findLineByIdOrThrow(Long id, String throwMessage) {

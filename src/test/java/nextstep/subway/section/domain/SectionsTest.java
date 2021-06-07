@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -22,16 +23,17 @@ public class SectionsTest {
     @DisplayName("상행역에서 하행역으로 정렬된 역 목록 반환")
     void getStationResponses() {
         // given
+        Line line = new Line("2호선", "green");
         Station station2 = new Station("역삼역");
         Station station3 = new Station("교대역");
         Station station1 = new Station("강남역");
         Station station4 = new Station("서초역");
         Station station5 = new Station("방배역");
         List<Station> lineStations = Arrays.asList(station2, station3, station1, station4, station5);
-        Section section1 = new Section(station2, station3, 3);
-        Section section2 = new Section(station1, station4, 10);
-        Section section3 = new Section(station4, station5, 3);
-        Section section4 = new Section(station3, station1, 3);
+        Section section1 = new Section(station2, station3, 3, line);
+        Section section2 = new Section(station1, station4, 10, line);
+        Section section3 = new Section(station4, station5, 3, line);
+        Section section4 = new Section(station3, station1, 3, line);
         Sections sections = new Sections(Arrays.asList(section1, section2, section3, section4));
 
         // when

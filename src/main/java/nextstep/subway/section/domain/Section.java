@@ -48,6 +48,12 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public Section(Station upStation, Station downStation, int distance, Line line) {
+        this(upStation, downStation, distance);
+        this.line = line;
+        this.line.addSection(this);
+    }
+
     public Long getId() {
         return id;
     }
@@ -76,10 +82,6 @@ public class Section extends BaseEntity {
         return this.line;
     }
 
-    public void registerLine(Line line) {
-        this.line = line;
-    }
-
     public List<Station> getStations() {
         return new ArrayList<>(Arrays.asList(this.upStation, this.downStation));
     }
@@ -94,5 +96,16 @@ public class Section extends BaseEntity {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException("상행, 하행역은 동일한 역일 수 없습니다.");
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", upStation=" + upStation.toString() +
+                ", downStation=" + downStation.toString() +
+                ", distance=" + distance +
+                ", lineId=" + line.getId() +
+                '}';
     }
 }

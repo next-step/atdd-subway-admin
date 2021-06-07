@@ -50,11 +50,11 @@ class LineServiceTest {
     @DisplayName("구간이 포함된 신규노선 저장")
     void save_line() {
         // given
+        LineRequest lineRequest = new LineRequest("1호선", "blue", 1L, 2L, 10);
+        Line line = lineRequest.toLine();
         Station upStation = new Station("강남역");
         Station downStation = new Station("역삼역");
-        Section section = new Section(upStation, downStation, 10);
-        LineRequest lineRequest = new LineRequest("1호선", "blue", 1L, 2L, 10);
-        Line line = lineRequest.toLine().addSection(section);
+        Section section = new Section(upStation, downStation, 10, line);
         given(stationRepository.findById(1L)).willReturn(Optional.of(upStation));
         given(stationRepository.findById(2L)).willReturn(Optional.of(downStation));
         given(lineRepository.save(any(Line.class))).willReturn(line);
@@ -74,10 +74,9 @@ class LineServiceTest {
     @DisplayName("모든 노선 조회")
     void find_all_lines() {
         // given
-        Section blueSection = new Section(new Station("사당역"), new Station("서울역"), 10);
-        Section greenSection = new Section(new Station("강남역"), new Station("역삼역"), 10);
-        List<Line> lines = Arrays.asList(new Line("4호선", "blue").addSection(blueSection),
-                new Line("2호선", "green").addSection(greenSection));
+        Line blueLine = new Section(new Station("사당역"), new Station("서울역"), 10, new Line("4호선", "blue")).getLine();
+        Line greenLine = new Section(new Station("강남역"), new Station("역삼역"), 10, new Line("2호선", "green")).getLine();
+        List<Line> lines = Arrays.asList(blueLine, greenLine);
         given(lineRepository.findAll()).willReturn(lines);
 
         // when
@@ -92,8 +91,8 @@ class LineServiceTest {
     @DisplayName("ID로 노선 찾기")
     void find_line_by_id() {
         // given
-        Section greenSection = new Section(new Station("강남역"), new Station("역삼역"), 10);
-        Line line = new Line("4호선", "green").addSection(greenSection);
+        Line line = new Line("4호선", "green");
+        Section greenSection = new Section(new Station("강남역"), new Station("역삼역"), 10, line);
         given(lineRepository.findById(1L)).willReturn(Optional.of(line));
 
         // when
@@ -107,8 +106,8 @@ class LineServiceTest {
     @DisplayName("노선 정보 수정")
     void line_info_update() {
         // given
-        Section greenSection = new Section(new Station("강남역"), new Station("역삼역"), 10);
-        Line line = new Line("2호선", "green").addSection(greenSection);
+        Line line = new Line("2호선", "green");
+        Section greenSection = new Section(new Station("강남역"), new Station("역삼역"), 10, line);
         LineRequest updateLineRequest = new LineRequest("2호선", "green", 3L, 4L, 4);
         given(lineRepository.findById(1L)).willReturn(Optional.of(line));
 
@@ -124,8 +123,8 @@ class LineServiceTest {
     @DisplayName("ID기준 노선 삭제")
     void delete_line_by_id() {
         // given
-        Section greenSection = new Section(new Station("강남역"), new Station("역삼역"), 10);
-        Line line = new Line("2호선", "green").addSection(greenSection);
+        Line line = new Line("2호선", "green");
+        Section greenSection = new Section(new Station("강남역"), new Station("역삼역"), 10, line);
         given(lineRepository.findById(1L)).willReturn(Optional.of(line));
 
         // when
@@ -140,10 +139,10 @@ class LineServiceTest {
     @DisplayName("중복등록 예외처리")
     void duplicate_key_exception() {
         // given
+        LineRequest lineRequest = new LineRequest("1호선", "blue", 1L, 2L, 3);
         Station upStation = new Station("강남역");
         Station downStation = new Station("역삼역");
-        Section section = new Section(upStation, downStation, 10);
-        LineRequest lineRequest = new LineRequest("1호선", "blue", 1L, 2L, 3);
+        Section section = new Section(upStation, downStation, 10, lineRequest.toLine());
         given(stationRepository.findById(1L)).willReturn(Optional.of(upStation));
         given(stationRepository.findById(2L)).willReturn(Optional.of(downStation));
         given(lineRepository.save(any(Line.class))).willThrow(DataIntegrityViolationException.class);

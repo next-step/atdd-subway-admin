@@ -35,8 +35,6 @@ class LineRepositoryTest {
     private Station secondStation;
     private Station thirdStation;
     private List<Station> stations;
-    private Section firstSection;
-    private Section secondSection;
 
     @BeforeEach
     void setUp() {
@@ -44,16 +42,13 @@ class LineRepositoryTest {
         this.secondStation = new Station("역삼역");
         this.thirdStation = new Station("교대역");
         this.stations = stationRepository.saveAll(Arrays.asList(this.firstStation, this.secondStation, this.thirdStation));
-        this.firstSection = new Section(this.firstStation, this.secondStation, 10);
-        this.secondSection = new Section(this.secondStation, this.thirdStation, 10);
     }
 
     @Test
     @DisplayName("구간 추가된 노선 저장")
     void new_create_line() {
         // given
-        Line line = new Line("2호선", "green");
-        line.addSection(this.firstSection);
+        Line line = new Section(this.firstStation, this.secondStation, 10, new Line("2호선", "green")).getLine();
 
         // when
         Line savedLine = lineRepository.save(line);

@@ -34,11 +34,14 @@ public class SectionRepositoryTest {
     private Station upStation;
     private Station downStation;
     private List<Station> stations;
+    private Line greenLine;
 
     @BeforeEach
     void setUp() {
         this.upStation = new Station("강남역");
         this.downStation = new Station("역삼역");
+        this.greenLine = new Line("2호선", "green");
+        lineRepository.save(greenLine);
         this.stations = stationRepository.saveAll(Arrays.asList(upStation, downStation));
 
     }
@@ -47,7 +50,7 @@ public class SectionRepositoryTest {
     @DisplayName("상행역 ID로 찾기")
     void findByUpStationId() {
         // given
-        Section section = new Section(this.upStation, this.downStation, 10);
+        Section section = new Section(this.upStation, this.downStation, 10, greenLine);
         Section savedSection = sectionRepository.save(section);
 
         // when
@@ -61,7 +64,7 @@ public class SectionRepositoryTest {
     @DisplayName("하행역 ID로 찾기")
     void findByDownStationId() {
         // given
-        Section section = new Section(this.upStation, this.downStation, 10);
+        Section section = new Section(this.upStation, this.downStation, 10, this.greenLine);
         Section savedSection = sectionRepository.save(section);
 
         // when
@@ -75,9 +78,8 @@ public class SectionRepositoryTest {
     @DisplayName("노선 ID로 구간 목록 찾기")
     void findByLineId() {
         // given
-        Section section = new Section(this.upStation, this.downStation, 10);
-        Line line = new Line("2호선", "green").addSection(section);
-        lineRepository.save(line);
+        Section section = new Section(this.upStation, this.downStation, 10, this.greenLine);
+        sectionRepository.save(section);
 
         // when
         List<Section> sections = sectionRepository.findByLineId(section.getLine().getId());
@@ -90,18 +92,16 @@ public class SectionRepositoryTest {
     @DisplayName("노선ID 기준 구간 전체 삭제")
     void delete_by_lineId() {
         // given
-        Section section = new Section(this.upStation, this.downStation, 10);
-        Section section1 = new Section(this.upStation, this.downStation, 10);
+        Section section = new Section(this.upStation, this.downStation, 10, this.greenLine);
+        Section section1 = new Section(this.upStation, this.downStation, 10, this.greenLine);
         sectionRepository.saveAll(Arrays.asList(section, section1));
-        Line line = new Line("2호선", "green").addSection(section).addSection(section1);
-        lineRepository.save(line);
 
         // when
-        line.removeAllSections();
-        sectionRepository.deleteAllByLineId(line.getId());
+        this.greenLine.removeAllSections();
+        sectionRepository.deleteAllByLineId(this.greenLine.getId());
 
         // then
-        List<Section> resultSections = sectionRepository.findByLineId(line.getId());
+        List<Section> resultSections = sectionRepository.findByLineId(this.greenLine.getId());
         assertThat(resultSections.isEmpty()).isTrue();
     }
 }
