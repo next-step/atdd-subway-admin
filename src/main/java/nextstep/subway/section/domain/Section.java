@@ -52,11 +52,6 @@ public class Section extends BaseEntity {
         return id;
     }
 
-    public Section setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
     public Station getUpStation() {
         return upStation;
     }
@@ -81,7 +76,7 @@ public class Section extends BaseEntity {
         return this.line;
     }
 
-    public void setLine(Line line) {
+    public void registerLine(Line line) {
         this.line = line;
     }
 
