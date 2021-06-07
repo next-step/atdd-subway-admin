@@ -10,8 +10,17 @@ import org.springframework.web.bind.annotation.*;
 public class SectionController {
 
     @PostMapping(name = "{lineId}/sections")
-    public ResponseEntity<LineResponse> showLines(
+    public ResponseEntity<LineResponse> registerSections(
             @PathVariable Long lineId,
+            @RequestBody SectionRequest request
+    ) {
+        return null;
+    }
+
+    @DeleteMapping(name = "{lineId}/sections/{sectionId}")
+    public ResponseEntity<LineResponse> deleteSection(
+            @PathVariable Long lineId,
+            @PathVariable Long sectionId,
             @RequestBody SectionRequest request
     ) {
         return null;
