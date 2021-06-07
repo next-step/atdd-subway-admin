@@ -57,4 +57,15 @@ public class LineService {
     public List<LineResponse> getLine(String name) {
         return this.findByName(name).stream().map(LineResponse::of).collect(Collectors.toList());
     }
+
+    public List<LineResponse> deleteLine(LineRequest request) {
+        Line line = request.toLine();
+        List<Line> lines = this.findByName(line.getName());
+
+        for (int i = 0; i < lines.size(); i++) {
+            lineRepository.delete(lines.get(i));
+        }
+
+        return this.findAll();
+    }
 }

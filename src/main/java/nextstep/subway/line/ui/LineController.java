@@ -50,4 +50,11 @@ public class LineController {
 
         return ResponseEntity.ok().body(lines);
     }
+
+    @DeleteMapping
+    public ResponseEntity deleteLine(@RequestBody LineRequest lineRequest) {
+        List<LineResponse> lines = lineService.deleteLine(lineRequest);
+
+        return ResponseEntity.ok().body(lines);
+    }
 }

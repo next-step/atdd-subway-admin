@@ -156,12 +156,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("경의선", "blue");
 
         // when
         // 지하철_노선_제거_요청
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "경의선");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines")
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_삭제됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // 지하철_노선_목록_포함됨
+        List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+        Assertions.assertThat(lineResponses)
+                .hasSize(0);
     }
 
     void 지하철_노선_등록되어_있음(String name, String color) {
