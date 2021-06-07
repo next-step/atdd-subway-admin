@@ -24,25 +24,8 @@ public class Sections {
         validateTwoStationAlreadyExist(addedSection);
         validateTwoStationNotExist(addedSection);
 
-        for (Section section : sections) {
-            //중간(앞 역 일치)
-            if (section.isEqualToUpStation(addedSection.getUpStation())) {
-                validateDistanceChange(section, addedSection);
-                section.changeUpStation(addedSection.getDownStation());
-                section.changeDistance(section.getDistance() - addedSection.getDistance());
-
-                break;
-            }
-
-            //중간(뒤 역 일치)
-            if (section.isEqualToDownStation(addedSection.getDownStation())) {
-                validateDistanceChange(section, addedSection);
-                section.changeDownStation(addedSection.getUpStation());
-                section.changeDistance(section.getDistance() - addedSection.getDistance());
-
-                break;
-            }
-        }
+        changeStationInfoWhenUpStationMatch(addedSection);
+        changeStationInfoWhenDownStationMatch(addedSection);
 
         sections.add(addedSection);
     }
@@ -54,6 +37,28 @@ public class Sections {
         if (isDownStationExist && isUpStationExist) {
             throw new TwoStationAlreadyExistException();
         }
+    }
+
+    private void changeStationInfoWhenUpStationMatch(Section addedSection) {
+        sections.stream()
+                .filter(section -> section.isEqualToUpStation(addedSection.getUpStation()))
+                .findFirst()
+                .ifPresent(findSection -> {
+                    validateDistanceChange(findSection, addedSection);
+                    findSection.changeUpStation(addedSection.getDownStation());
+                    findSection.changeDistance(findSection.getDistance() - addedSection.getDistance());
+                });
+    }
+
+    private void changeStationInfoWhenDownStationMatch(Section addedSection) {
+        sections.stream()
+                .filter(section -> section.isEqualToDownStation(addedSection.getDownStation()))
+                .findFirst()
+                .ifPresent(findSection -> {
+                    validateDistanceChange(findSection, addedSection);
+                    findSection.changeDownStation(addedSection.getUpStation());
+                    findSection.changeDistance(findSection.getDistance() - addedSection.getDistance());
+                });
     }
 
     private void validateTwoStationNotExist(Section addedSection) {
