@@ -25,11 +25,11 @@ public class Sections implements Iterable<Section> {
         return stations;
     }
 
-    private Station getFirstStation() {
+    public Station getFirstStation() {
         return sections.get(FIRST_INDEX).getDownStation();
     }
 
-    private Station getLastStation() {
+    public Station getLastStation() {
         return sections.get(lastIndex()).getUpStation();
     }
 
