@@ -28,7 +28,6 @@ public class LineService {
         this.stations = stationRepository;
     }
 
-    @Transactional
     public LineResponse saveLine(final LineRequest request) {
         Line persistLine = lines.save(makeLine(request));
         return LineResponse.of(persistLine);
@@ -65,7 +64,6 @@ public class LineService {
                     .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
     }
 
-    @Transactional
     public LineResponse updateLine(final Long id, final LineRequest request) {
         Line line = lines.findById(id)
                          .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
@@ -73,7 +71,6 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    @Transactional
     public void deleteLine(final Long id) {
         lines.deleteById(id);
     }
