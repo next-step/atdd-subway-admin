@@ -16,6 +16,7 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationResponse;
 
 @Service
 @Transactional
@@ -61,7 +62,10 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse getLine(Long id) {
         Line line = findLineById(id);
-        return LineResponse.of(line);
+        List<StationResponse> stationResponses = line.getOrderStation().stream()
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
+        return LineResponse.of(line, stationResponses);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
