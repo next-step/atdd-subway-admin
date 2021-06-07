@@ -19,7 +19,14 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @GetMapping
+    @GetMapping(value = "/{name}")
+    public ResponseEntity getLine(String name) {
+        List<LineResponse> lines = lineService.findByName(name);
+
+        return ResponseEntity.ok().body(lines);
+    }
+
+    @GetMapping()
     public ResponseEntity getLines() {
         List<LineResponse> lines = lineService.findAll();
 

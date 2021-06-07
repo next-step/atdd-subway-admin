@@ -27,13 +27,19 @@ public class LineService {
     }
 
     private void validateDuplicate(LineRequest request) {
-        if (lineRepository.findByName(request.getName()).size() != 0) {
+        if (this.findByName(request.getName()).size() != 0) {
             throw new IllegalArgumentException("노선이름이 이미 존재합니다.");
         }
     }
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineRepository.findAll();
+
+        return lines.stream().map(LineResponse::of).collect(Collectors.toList());
+    }
+
+    public List<LineResponse> findByName(String name) {
+        List<Line> lines = lineRepository.findByName(name);
 
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
     }
