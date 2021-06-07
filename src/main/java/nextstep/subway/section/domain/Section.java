@@ -73,17 +73,19 @@ public class Section extends BaseEntity {
     }
 
     public void modifyUpStation(Station station) {
-        if (downStation.equals(station)) {
-            throw new IllegalArgumentException("상행역과 하행역은 동일할 수 없습니다.");
-        }
         this.upStation = station;
+        validateStations();
     }
 
     public void modifyDownStation(Station station) {
-        if (upStation.equals(station)) {
-            throw new IllegalArgumentException("상행역과 하행역은 동일할 수 없습니다.");
-        }
         this.downStation = station;
+        validateStations();
+    }
+
+    private void validateStations() {
+        if (upStation.equals(downStation)) {
+            throw new IllegalStateException("상행역과 하행역은 동일할 수 없습니다.");
+        }
     }
 
     public Long getId() {
