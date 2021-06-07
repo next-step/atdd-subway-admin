@@ -2,16 +2,20 @@ package nextstep.subway.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class LineAcceptanceTestUtils {
 
-	static LineRequest makeLineRequest(final String name, final String color) {
-		return new LineRequest(name, color);
+	static Map<String, String> makeParams(final String name, final String color) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		params.put("color", color);
+		return params;
 	}
 
 	static LineResponse convertToLineResponse(ExtractableResponse<Response> response) {
