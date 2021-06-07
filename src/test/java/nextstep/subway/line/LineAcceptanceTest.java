@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,14 @@ import nextstep.subway.line.dto.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-	private static final LineRequest lineNumber1 = new LineRequest("1호선", "Blue");
-	private static final LineRequest lineNumber2 = new LineRequest("2호선", "Green");
+	private LineRequest lineNumber1;
+	private LineRequest lineNumber2;
+
+	@BeforeEach
+	void lineSetUp() {
+		lineNumber1 = new LineRequest("1호선", "Blue");
+		lineNumber2 = new LineRequest("2호선", "Green");
+	}
 
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
@@ -41,7 +48,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// when
 		ExtractableResponse<Response> response = 지하철_노선을_생성한다(lineNumber2);
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		지하철_노선_생성_실패됨(response);
 	}
 
 	@DisplayName("지하철 노선 목록을 조회한다.")
@@ -170,4 +177,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.extract();
 		return response;
 	}
+
+	private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+	
 }
