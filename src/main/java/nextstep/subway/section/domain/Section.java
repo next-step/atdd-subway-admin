@@ -29,11 +29,11 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
