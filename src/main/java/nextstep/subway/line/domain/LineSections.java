@@ -17,6 +17,13 @@ public class LineSections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> lineSections = new ArrayList<>();
 
+    public LineSections(List<Section> lineSections) {
+        this.lineSections = lineSections;
+    }
+
+    public LineSections() {
+    }
+
     public void add(Section section) {
         this.lineSections.add(section);
     }
@@ -31,5 +38,10 @@ public class LineSections {
             stations.addAll(section.toStations());
         }
         return stations;
+    }
+
+    public List<Section> getOrderLineSections() {
+        List<Section> orderedSections = new ArrayList<>();
+        return orderedSections;
     }
 }

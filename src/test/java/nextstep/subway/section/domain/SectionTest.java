@@ -12,15 +12,18 @@ import org.junit.jupiter.api.Test;
 import nextstep.subway.station.domain.Station;
 
 public class SectionTest {
-    public static final Section 강남역_판교역_구간 = new Section(강남역, 판교역, 5);
+    public static final Section 강남_판교_구간 = new Section(1L, 강남역, 판교역, 5);
+    public static final Section 판교_수지_구간 = new Section(2L, 판교역, 수지역, 5);
+    public static final Section 수지_광교_구간 = new Section(3L, 수지역, 광교역, 5);
+
 
     @Test
     @DisplayName("생성 테스트")
     void create() {
         // given & when & then
-        assertThat(강남역_판교역_구간.getUpStation()).isEqualTo(강남역);
-        assertThat(강남역_판교역_구간.getDownStation()).isEqualTo(판교역);
-        assertThat(강남역_판교역_구간.getDistance()).isEqualTo(5);
+        assertThat(강남_판교_구간.getUpStation()).isEqualTo(강남역);
+        assertThat(강남_판교_구간.getDownStation()).isEqualTo(판교역);
+        assertThat(강남_판교_구간.getDistance()).isEqualTo(5);
     }
 
     @Test
@@ -41,7 +44,7 @@ public class SectionTest {
     @DisplayName("구간 내 존재하는 역 반환 테스트")
     void toStation() {
         // given & when
-        List<Station> stations = 강남역_판교역_구간.toStations();
+        List<Station> stations = 강남_판교_구간.toStations();
         // then
         assertThat(stations.get(0)).isEqualTo(강남역);
         assertThat(stations.get(1)).isEqualTo(판교역);
