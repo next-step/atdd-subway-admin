@@ -4,7 +4,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -30,17 +29,10 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(final LineRequest request) {
-        final Section section = createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance());
-        final Line line = request.toLine();
-        line.addSection(section);
-        final Line persistLine = lineRepository.save(line);
+        final Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(EntityExistsException::new);
+        final Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(EntityExistsException::new);
+        final Line persistLine = lineRepository.save(Line.of(upStation, downStation, request));
         return LineResponse.of(persistLine);
-    }
-
-    private Section createSection(final Long upStationId, final Long downStationId, final int distance) {
-        final Station upStation = stationRepository.findById(upStationId).orElseThrow(EntityExistsException::new);
-        final Station downStation = stationRepository.findById(downStationId).orElseThrow(EntityExistsException::new);
-        return new Section(upStation, downStation, distance);
     }
 
     public List<LineResponse> findAllLines() {
@@ -55,10 +47,10 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(final Long id, final LineRequest lineRequest) {
+    public void updateLine(final Long id, final LineRequest request) {
         final Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new LineNotFoundException(LINE_NOT_FOUND + id));
-        line.update(lineRequest.toLine());
+        line.update(request.toLine());
     }
 
     @Transactional
