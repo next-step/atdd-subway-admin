@@ -9,6 +9,10 @@ import org.springframework.http.MediaType;
 
 public class LineSteps {
 
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest request) {
+        return 지하철_노선_생성_요청(request);
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
         return sendBodyApi(request)
                 .post("/lines")
