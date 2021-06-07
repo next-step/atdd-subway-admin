@@ -3,6 +3,7 @@ package nextstep.subway.exception.handler;
 import nextstep.subway.exception.DuplicateDataException;
 import nextstep.subway.exception.ErrorDto;
 import nextstep.subway.exception.NoSuchDataException;
+import nextstep.subway.exception.ValueOutOfBoundsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,12 @@ public class ExceptionAdvisor {
     @ExceptionHandler(NoSuchDataException.class)
     public ResponseEntity<ErrorDto> handleNoSuchDataException(NoSuchDataException exception) {
         log.error("NoSuchDataException", exception);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.createErrorDto());
+    }
+
+    @ExceptionHandler(ValueOutOfBoundsException.class)
+    public ResponseEntity<ErrorDto> handleOutOfBoundsException(ValueOutOfBoundsException exception) {
+        log.error("OutOfBoundsException", exception);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.createErrorDto());
     }
 }
