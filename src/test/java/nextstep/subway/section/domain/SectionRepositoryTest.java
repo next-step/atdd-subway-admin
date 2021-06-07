@@ -15,8 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 class SectionRepositoryTest {
@@ -273,6 +272,22 @@ class SectionRepositoryTest {
                 .collect(Collectors.toList());
         assertThat(stationNames.size()).isEqualTo(5);
         assertThat(stationNames).isEqualTo(Arrays.asList("정자", "판교", "청계산입구", "양재", "강남"));
+    }
+
+    @DisplayName("역 제거 검증 - 구간이 하나만 존재하는 경우")
+    @Test
+    void removeStation_sizeIsOne() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Section section = saveSection(station2, station1, 5);
+        Sections sections = new Sections();
+        sections.add(section);
+
+        // when then
+        assertThatIllegalStateException()
+                .isThrownBy(() -> sections.removeStation(station1))
+                .withMessageMatching("구간은 최소 한 개 이상 존재해야 합니다.");
     }
 
     private Section saveSection(Station upStation, Station downStation, int distance) {
