@@ -122,6 +122,25 @@ class SectionRepositoryTest {
                 .withMessageMatching("거리 값은 0 을 초과하는 값이어야 합니다.");
     }
 
+    @DisplayName("구간추가 - 모든 역이 기존 구간에 포함된 경우")
+    @Test
+    void add_isStationAllContains() {
+        // given
+        Station persistUpStation = saveStation("강남");
+        Station persistDownStation = saveStation("양재");
+        Section persistSection = saveSection(persistUpStation, persistDownStation, 10);
+        Section addPersistSection = saveSection(persistUpStation, persistDownStation, 10);
+
+        // when
+        Sections sections = new Sections();
+        sections.add(persistSection);
+
+        // then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> sections.add(addPersistSection))
+                .withMessageMatching("구간에 속한 모든 역이 노선에 포함되어 있습니다. 역 정보를 확인해주세요.");
+    }
+
     private Station saveStation(String name) {
         Station station = new Station(name);
         return stationRepository.save(station);
