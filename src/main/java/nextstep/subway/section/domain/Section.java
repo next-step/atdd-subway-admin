@@ -61,6 +61,10 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public boolean dividable(Section target) {
+        return this.distance > target.distance;
+    }
+
     public Long getId() {
         return id;
     }
