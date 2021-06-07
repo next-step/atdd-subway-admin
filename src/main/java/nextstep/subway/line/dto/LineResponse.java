@@ -1,8 +1,10 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public class LineResponse {
@@ -45,5 +47,9 @@ public class LineResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+
+    }
+    public List<StationResponse>  getStations() {
+        return null;
     }
 }
