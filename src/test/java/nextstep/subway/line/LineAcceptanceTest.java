@@ -95,7 +95,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	ExtractableResponse<Response> 지하철_노선을_생성한다(LineRequest lineRequest) {
-		// when
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.body(lineRequest)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -103,7 +102,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.post("/lines")
 			.then().log().all()
 			.extract();
-
 		return response;
 	}
 
