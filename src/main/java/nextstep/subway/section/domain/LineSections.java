@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.SortedStations;
 import nextstep.subway.station.domain.Station;
 
@@ -101,5 +102,9 @@ public class LineSections implements Serializable {
 
         section.updateDownStation(upStation);
         return Optional.of(section);
+    }
+
+    public void updateLine(Line line) {
+        sections.forEach(section -> section.toLine(line));
     }
 }

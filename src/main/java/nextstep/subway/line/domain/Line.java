@@ -51,7 +51,7 @@ public class Line extends BaseEntity implements Serializable {
 
     public void updateSections(LineSections lineSections) {
         this.lineSections = lineSections;
-        lineSections.getSections().forEach(section -> section.toLine(this));
+        lineSections.updateLine(this);
     }
 
     public Long getId() {
