@@ -113,7 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = updateLine(getLocationId(createResponse), getTargetLine("3호선", "yellow lighten-1"));
+        ExtractableResponse<Response> response = updateLine(getLocationId(createResponse), "3호선", "yellow lighten-1");
 
         // then
         // 지하철_노선_수정됨
@@ -130,7 +130,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = updateLine(getLocationId(createResponse1), getTargetLine("2호선", "green lighten-2"));
+        ExtractableResponse<Response> response = updateLine(getLocationId(createResponse1), "2호선", "green lighten-2");
 
         // then
         // 지하철_노선_수정_실패
@@ -163,25 +163,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private Map<String, String> getTargetLine(String name, String color) {
+
+    private ExtractableResponse<Response> createTestLine1() {
+        return createLine("1호선", "blue lighten-1");
+    }
+
+    private ExtractableResponse<Response> createTestLine2() {
+        return createLine("2호선", "green lighten-1");
+    }
+
+    private ExtractableResponse<Response> createLine(String name, String color) {
         Map<String, String> params = new HashMap<String, String>(){
             {
                 put("name", name);
                 put("color", color);
             }
         };
-        return Collections.unmodifiableMap(params);
-    }
 
-    private ExtractableResponse<Response> createTestLine1() {
-        return createLine(getTargetLine("1호선", "blue lighten-1"));
-    }
-
-    private ExtractableResponse<Response> createTestLine2() {
-        return createLine(getTargetLine("2호선", "green lighten-1"));
-    }
-
-    private ExtractableResponse<Response> createLine(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
@@ -191,7 +189,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> updateLine(final Long id, final Map<String, String> params) {
+    private ExtractableResponse<Response> updateLine(final Long id, final String name, final String color) {
+        Map<String, String> params = new HashMap<String, String>(){
+            {
+                put("name", name);
+                put("color", color);
+            }
+        };
+
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("id", id)
