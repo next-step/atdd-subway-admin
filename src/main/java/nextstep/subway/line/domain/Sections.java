@@ -66,4 +66,16 @@ public class Sections {
                 .findFirst()
                 .orElse(null);
     }
+
+    public boolean isFirstSection() {
+        return sections.isEmpty();
+    }
+
+    public boolean isMatchWithUpStation(Section section) {
+        return findStationInSections().stream().anyMatch(section::hasSameUpStation);
+    }
+
+    public boolean isMatchWithDownStation(Section section) {
+        return findStationInSections().stream().anyMatch(section::hasSameDownStation);
+    }
 }

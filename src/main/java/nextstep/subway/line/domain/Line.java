@@ -55,4 +55,13 @@ public class Line extends BaseEntity {
         }
         return new ArrayList<>(sections.findStationInSections());
     }
+
+    public void addSection(Section section) {
+        if (sections.isFirstSection()) {
+            sections.add(section);
+        }
+
+        boolean isExistUpStation = sections.isMatchWithUpStation(section);
+        boolean isExistDownStation = sections.isMatchWithDownStation(section);
+    }
 }

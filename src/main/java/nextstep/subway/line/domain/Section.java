@@ -55,4 +55,12 @@ public class Section extends BaseEntity {
     public int getDistance() {
         return distance;
     }
+
+    public boolean hasSameUpStation(Station station) {
+        return station == upStation;
+    }
+
+    public boolean hasSameDownStation(Station station) {
+        return station == downStation;
+    }
 }
