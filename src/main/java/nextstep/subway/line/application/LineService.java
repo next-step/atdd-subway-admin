@@ -40,14 +40,13 @@ public class LineService {
 		return LineResponse.of(lines.findById(id).get());
 	}
 
-	@Transactional
 	public void updateLine(Long id, LineRequest lineRequest) {
-		Line line = lines.findById(id).orElseThrow(() -> new NoSuchElementException());
+		Line line = lines.findById(id).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
 		line.update(lineRequest.toLine());
 	}
 
 	public void deleteLineById(Long id) {
-		Line line = lines.findById(id).orElseThrow(() -> new NoSuchElementException());
+		Line line = lines.findById(id).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
 		lines.deleteById(line.getId());
 	}
 }
