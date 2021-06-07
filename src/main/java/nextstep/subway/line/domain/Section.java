@@ -4,7 +4,7 @@ import static javax.persistence.FetchType.*;
 
 import java.util.stream.Stream;
 
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -35,8 +35,8 @@ public class Section {
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
-	@Column(nullable = false)
-	private Integer distance;
+	@Embedded
+	private Distance distance;
 
 	protected Section() { }
 
@@ -49,7 +49,7 @@ public class Section {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = distance;
+		this.distance = Distance.valueOf(distance);
 	}
 
 	boolean isPartOf(Line line) {
