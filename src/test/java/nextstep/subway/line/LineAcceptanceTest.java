@@ -51,7 +51,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_포함됨(expected1, expected2, response);
     }
 
-
     @DisplayName("지하철 노선을 조회한다.") //Scenario
     @Test
     void getLine() {
@@ -64,7 +63,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_응답됨(expected, response);
     }
-
 
     @DisplayName("지하철 노선을 수정한다.") //Scenario
     @Test

@@ -3,6 +3,7 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class LineController {
     /**
      * 지하철 노선 목록조회
      */
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> getLines(){
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
@@ -38,6 +39,10 @@ public class LineController {
     /**
      * 지하철 노선 조회
      */
+    @GetMapping(value = "/{id:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> getLine(@PathVariable Long id){
+        return ResponseEntity.ok().body(lineService.findLine(id));
+    }
 
     /**
      * 지하철 노선 수정

@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.line.application.exception.LineDuplicatedException;
+import nextstep.subway.line.application.exception.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
     public static final String LINE_DUPLICATED_EXCEPTION_MESSAGE = "이미 지하철 노선이 등록되어 있습니다.";
+    public static final String LINE_NOT_FOUND_EXCEPTION_MESSAGE = "해당 ID로 된 지하철 노선이 존재하지 않습니다.";
     private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -40,5 +42,10 @@ public class LineService {
         return lines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(Long id) {
+        return LineResponse.of(lineRepository.findById(id)
+                .orElseThrow(() -> new LineNotFoundException(LINE_NOT_FOUND_EXCEPTION_MESSAGE)));
     }
 }
