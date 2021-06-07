@@ -54,4 +54,8 @@ public class Line extends BaseEntity {
     public List<Station> stations() {
         return sections.stations();
     }
+
+    public void deleteStation(Station station) {
+        sections.deleteStation(station);
+    }
 }

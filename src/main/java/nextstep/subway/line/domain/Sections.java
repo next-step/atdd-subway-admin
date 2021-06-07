@@ -1,8 +1,6 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.ui.InvalidDistanceException;
-import nextstep.subway.line.ui.TwoStationAlreadyExistException;
-import nextstep.subway.line.ui.TwoStationNotExistException;
+import nextstep.subway.line.ui.*;
 import nextstep.subway.station.domain.Station;
 import org.hibernate.annotations.SortNatural;
 
@@ -28,6 +26,28 @@ public class Sections {
         changeStationInfoWhenDownStationMatch(addedSection);
 
         sections.add(addedSection);
+    }
+
+
+    public void deleteStation(Station station) {
+
+        validateLineContainsStation(station);
+        validateSectionsHasOnlySection();
+
+        //맨 앞역 삭제
+        if (sections.first().getUpStation().equals(station)) {
+            sections.remove(sections.first());
+            return;
+        }
+
+        //맨 뒤역 삭제
+        if (sections.last().getDownStation().equals(station)) {
+            sections.remove(sections.last());
+            return;
+        }
+
+        //중간역 삭제
+        removeMiddleStation(station);
     }
 
     private void validateTwoStationAlreadyExist(Section addedSection) {
@@ -79,6 +99,35 @@ public class Sections {
         if (section.getDistance() < addedSection.getDistance()) {
             throw new InvalidDistanceException();
         }
+    }
+
+    private void validateLineContainsStation(Station station) {
+        if (!stations().contains(station)) {
+            throw new NoStationInLineException();
+        }
+    }
+
+    private void validateSectionsHasOnlySection() {
+        if (sections.size() <= 1) {
+            throw new CannotDeleteOnlySectionException();
+        }
+    }
+
+    private void removeMiddleStation(Station station) {
+        Section removedSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+
+        Section changedSection = sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+
+        sections.remove(removedSection);
+
+        changedSection.changeDownStation(removedSection.getDownStation());
+        changedSection.changeDistance(changedSection.getDistance() + removedSection.getDistance());
     }
 
     public List<Station> stations() {
