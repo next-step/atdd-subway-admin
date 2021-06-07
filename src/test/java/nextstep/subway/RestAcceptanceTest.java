@@ -45,4 +45,14 @@ public class RestAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+    protected static ExtractableResponse<Response> executeDelete(String path, Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(path)
+                .then().log().all()
+                .extract();
+    }
 }
