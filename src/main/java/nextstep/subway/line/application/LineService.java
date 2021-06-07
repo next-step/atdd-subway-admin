@@ -1,9 +1,11 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.exception.DuplicateValueException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
+    public static final String DUPLICATE_VALUE_ERROR_MESSAGE = "%s 라인은 이미 등록된 라인 합니다.";
     private LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -21,8 +24,12 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        try {
+            Line persistLine = lineRepository.save(request.toLine());
+            return LineResponse.of(persistLine);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateValueException(String.format(DUPLICATE_VALUE_ERROR_MESSAGE, request.getName()));
+        }
     }
 
     public List<LineResponse> findAllLines() {

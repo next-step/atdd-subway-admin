@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.common.ErrorMessageResponse;
+import nextstep.subway.exception.DuplicateValueException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -49,8 +50,8 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+    @ExceptionHandler(DuplicateValueException.class)
+    public ResponseEntity handleIllegalArgsException(DuplicateValueException e) {
         return ResponseEntity.badRequest().body(new ErrorMessageResponse(e.getMessage()));
     }
 
