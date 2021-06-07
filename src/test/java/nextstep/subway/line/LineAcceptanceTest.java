@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.utils.RestAssuredTemplate;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,26 +20,22 @@ import static nextstep.subway.PageController.URIMapping.LINE;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private static RestAssuredTemplate restAssuredTemplate;
-    private static Map<String, String> param1;
-    private static Map<String, String> param2;
+    private static LineRequest param1;
+    private static LineRequest param2;
 
     @BeforeAll
     public static void setup() {
         restAssuredTemplate = new RestAssuredTemplate(LINE);
 
-        param1 = new HashMap<String, String>(){
-            {
-                put("name", "1호선");
-                put("color", "blue lighten-1");
-            }
-        };
+        param1 = LineRequest.builder()
+            .name("1호선")
+            .color("blue lighten-1")
+            .build();
 
-        param2 = new HashMap<String, String>(){
-            {
-                put("name", "2호선");
-                put("color", "green lighten-1");
-            }
-        };
+        param2 = LineRequest.builder()
+            .name("2호선")
+            .color("green lighten-1")
+            .build();
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -192,12 +189,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return restAssuredTemplate.get(id);
     }
 
-    private ExtractableResponse<Response> requestCreatedLine(final Map<String, String> param) {
-        return restAssuredTemplate.post(param);
+    private ExtractableResponse<Response> requestCreatedLine(final LineRequest param) {
+        return restAssuredTemplate.post(param.toMap());
     }
 
-    private ExtractableResponse<Response> requestUpdateLine(final Long id, final Map<String, String> param) {
-        return restAssuredTemplate.put(id, param);
+    private ExtractableResponse<Response> requestUpdateLine(final Long id, final LineRequest param) {
+        return restAssuredTemplate.put(id, param.toMap());
     }
 
     private ExtractableResponse<Response> requestDeleteLine(final Long id) {

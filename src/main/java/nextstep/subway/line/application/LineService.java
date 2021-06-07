@@ -19,7 +19,7 @@ public class LineService {
     private final LineRepository lineRepository;
 
     public LineResponse saveLine(final LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Line persistLine = lineRepository.save(request.toEntity());
         return LineResponse.of(persistLine);
     }
 
@@ -44,7 +44,7 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new LineNotFoundException());
 
-        line.update(request.toLine());
+        line.update(request.toEntity());
     }
 
     public void deleteLineById(final Long id) {

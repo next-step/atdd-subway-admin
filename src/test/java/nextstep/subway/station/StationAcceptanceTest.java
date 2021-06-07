@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.RestAssuredTemplate;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,9 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import static nextstep.subway.PageController.URIMapping.STATION;
 
@@ -22,22 +21,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest extends AcceptanceTest {
 
     private static RestAssuredTemplate restAssuredTemplate;
-    private static Map<String, String> param1;
-    private static Map<String, String> param2;
+    private static StationRequest param1;
+    private static StationRequest param2;
 
     @BeforeAll
     public static void setup() {
         restAssuredTemplate = new RestAssuredTemplate(STATION);
-        param1 = new HashMap<String, String>(){
-            {
-                put("name", "강남역");
-            }
-        };
-        param2 = new HashMap<String, String>(){
-            {
-                put("name", "역삼역");
-            }
-        };
+        param1 = StationRequest.builder()
+                .name("강남역")
+                .build();
+
+        param2 = StationRequest.builder()
+                .name("역삼역")
+                .build();
     }
 
     @DisplayName("지하철역을 생성한다.")
@@ -103,8 +99,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         return restAssuredTemplate.get();
     }
 
-    private ExtractableResponse<Response> requestCreateStation(Map<String, String> param) {
-        return restAssuredTemplate.post(param);
+    private ExtractableResponse<Response> requestCreateStation(StationRequest param) {
+        return restAssuredTemplate.post(param.toMap());
     }
 
     private ExtractableResponse<Response> requestDeleteStation(String uri) {
