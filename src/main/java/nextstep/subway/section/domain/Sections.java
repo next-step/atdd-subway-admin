@@ -89,7 +89,7 @@ public class Sections implements Iterable<Section> {
         if (getUpStations().contains(element.getDownStation())) {
             return getUpStations().indexOf(element.getDownStation()) + 1;
         }
-        return getDownStations().indexOf(element.getUpStation());
+        return getDownStations().indexOf(element.getUpStation()) - 1;
     }
 
     private void add(int index, Section element) {
@@ -98,7 +98,6 @@ public class Sections implements Iterable<Section> {
             return;
         }
         divideSection(index, element);
-        sections.add(index, element);
     }
 
     private boolean isEdge(int index) {
@@ -108,10 +107,14 @@ public class Sections implements Iterable<Section> {
     private void divideSection(int index, Section element) {
         Section divisionTarget = sections.get(index);
         divisionTarget.divideDistance(element);
-        Section prevSection = sections.get(index - 1);
-        prevSection.modifyUpStation(element.getDownStation());
-        Section nextSection = sections.get(index);
-        nextSection.modifyDownStation(element.getUpStation());
+        if (divisionTarget.getUpStation().equals(element.getUpStation())) {
+            divisionTarget.modifyUpStation(element.getDownStation());
+            sections.add(index + 1, element);
+        }
+        if (divisionTarget.getDownStation().equals(element.getDownStation())) {
+            divisionTarget.modifyDownStation(element.getUpStation());
+            sections.add(index, element);
+        }
     }
 
     @Override
