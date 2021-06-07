@@ -53,11 +53,10 @@ class SectionRepositoryTest {
         // given
         Station persistUpStation = saveStation("왕십리");
         Station persistDownStation = saveStation("수원");
-        Station persistUpStation2 = saveStation("을지로입구");
-        Station persistDownStation2 = saveStation("신도림");
+        Station persistDownStation2 = saveStation("인천");
 
         Section persistSection = saveSection(persistUpStation, persistDownStation, 45);
-        Section persistSection2 = saveSection(persistUpStation2, persistDownStation2, 30);
+        Section persistSection2 = saveSection(persistDownStation, persistDownStation2, 30);
 
         // when
         Sections sections = new Sections();
