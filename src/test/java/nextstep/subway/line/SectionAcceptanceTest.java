@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import static nextstep.subway.line.LineSteps.지하철_노선_등록되어_있음;
 import static nextstep.subway.station.StationSteps.지하철역_등록_되어있음;
@@ -58,6 +59,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                                                              StationResponse downStation, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), distance);
         return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(sectionRequest)
                 .when()
                 .post("/lines/"+line.getId()+"/sections")
