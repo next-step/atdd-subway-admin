@@ -214,7 +214,7 @@ class SectionRepositoryTest {
         assertThat(sections.getLastStation().getName()).isEqualTo("용산");
     }
 
-    @DisplayName("구간 중간에 추가 - 상행역을 기준으로 매핑")
+    @DisplayName("구간 중간에 추가 - 추가하고자 하는 역이 구간의 하행역일 경우")
     @Test
     void addByUpStation() {
         // given
@@ -235,6 +235,37 @@ class SectionRepositoryTest {
         // when
         Station station5 = saveStation("청계산입구");
         Section section4 = saveSection(station3, station5, 10);
+        sections.add(section4);
+
+        // then
+        List<String> stationNames = sections.getStations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(stationNames.size()).isEqualTo(5);
+        assertThat(stationNames).isEqualTo(Arrays.asList("정자", "판교", "청계산입구", "양재", "강남"));
+    }
+
+    @DisplayName("구간 중간에 추가 - 추가하고자 하는 역이 구간의 상행역일 경우")
+    @Test
+    void addByDownStation() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+        Station station4 = saveStation("강남");
+
+        Section section1 = saveSection(station2, station1, 5);
+        Section section2 = saveSection(station3, station2, 20);
+        Section section3 = saveSection(station4, station3, 7);
+
+        Sections sections = new Sections();
+        sections.add(section1);
+        sections.add(section2);
+        sections.add(section3);
+
+        // when
+        Station station5 = saveStation("청계산입구");
+        Section section4 = saveSection(station5, station2, 10);
         sections.add(section4);
 
         // then
