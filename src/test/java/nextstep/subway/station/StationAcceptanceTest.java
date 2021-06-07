@@ -39,7 +39,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         String stationsName = "강남역";
-        지하철역_생성_요청(stationsName);
+        지하철역_생성_요청_및_성공_체크(stationsName);
 
         // when
         ExtractableResponse<Response> response = 지하철역_생성_요청(stationsName);
@@ -84,18 +84,24 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private ExtractableResponse<Response> 지하철역_생성_요청(final String name) {
+    public static ExtractableResponse<Response> 지하철역_생성_요청(final String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
         return post(URL_CREATE_STATION, params);
     }
 
-    private ExtractableResponse<Response> 지하철역_목록_조회_요청() {
+    public static StationResponse 지하철역_생성_요청_및_성공_체크(final String name) {
+        ExtractableResponse<Response> response = 지하철역_생성_요청(name);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        return response.as(StationResponse.class);
+    }
+
+    public static ExtractableResponse<Response> 지하철역_목록_조회_요청() {
         return get(URL_GET_STATIONS);
     }
 
-    private ExtractableResponse<Response> 지하철역_제거_요청(final String uri) {
+    public static ExtractableResponse<Response> 지하철역_제거_요청(final String uri) {
         return delete(uri);
     }
 }

@@ -29,14 +29,14 @@ public class AcceptanceTest {
     }
 
 
-    protected ExtractableResponse<Response> get(final String url) {
+    protected static ExtractableResponse<Response> get(final String url) {
         // when
         return RestAssured.given().log().all()
                 .when().get(url)
                 .then().log().all().extract();
     }
 
-    protected ExtractableResponse<Response> post(final String url, final Object params) {
+    protected static ExtractableResponse<Response> post(final String url, final Object params) {
         // when
         return RestAssured.given().log().all()
                 .body(params)
@@ -45,7 +45,7 @@ public class AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    protected ExtractableResponse<Response> put(final String url, final Object params) {
+    protected static ExtractableResponse<Response> put(final String url, final Object params) {
         // when
         return RestAssured.given().log().all()
                           .body(params)
@@ -54,7 +54,7 @@ public class AcceptanceTest {
                           .then().log().all().extract();
     }
 
-    protected ExtractableResponse<Response> delete(final String url) {
+    protected static ExtractableResponse<Response> delete(final String url) {
         // when
         return RestAssured.given().log().all()
                           .when().delete(url)

@@ -11,10 +11,6 @@ import java.util.stream.Collectors;
 
 public class LineAcceptanceTestUtils {
 
-	static Map<String, Object> makeBaseParams(final String name, final String color) {
-		return makeParams(name, color, 0l, 0l, 0);
-	}
-
 	static Map<String, Object> makeParams(final String name, final String color, final Long upStationId, final Long downStationId, final int distance) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", name);
@@ -23,10 +19,6 @@ public class LineAcceptanceTestUtils {
 		params.put("downStationId", downStationId);
 		params.put("distance", distance);
 		return params;
-	}
-
-	static LineResponse convertToLineResponse(ExtractableResponse<Response> response) {
-		return response.jsonPath().getObject(".", LineResponse.class);
 	}
 
 	static List<LineResponse> convertToLineResponses(ExtractableResponse<Response> response) {
