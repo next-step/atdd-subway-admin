@@ -141,6 +141,28 @@ class SectionRepositoryTest {
                 .withMessageMatching("구간에 속한 모든 역이 노선에 포함되어 있습니다. 역 정보를 확인해주세요.");
     }
 
+    @DisplayName("구간추가 - 모든 역이 기존 구간에 포함되지 않은 경우")
+    @Test
+    void add_isStationNotContains() {
+        // given
+        Station persistUpStation = saveStation("강남");
+        Station persistDownStation = saveStation("양재");
+        Section persistSection = saveSection(persistUpStation, persistDownStation, 10);
+
+        Station persistUpStation2 = saveStation("판교");
+        Station persistDownStation2 = saveStation("정자");
+        Section addPersistSection = saveSection(persistUpStation2, persistDownStation2, 5);
+
+        // when
+        Sections sections = new Sections();
+        sections.add(persistSection);
+
+        // then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> sections.add(addPersistSection))
+                .withMessageMatching("구간에 속한 모든 역이 노선에 포함되어 있지 않습니다. 역 정보를 확인해주세요.");
+    }
+
     private Station saveStation(String name) {
         Station station = new Station(name);
         return stationRepository.save(station);
