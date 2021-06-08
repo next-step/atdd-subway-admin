@@ -52,3 +52,8 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+## 🚀 미션 요구사항
+
+1단계 - 지하철 노선 관리
+[바로가기](./markdown/step1.md)
