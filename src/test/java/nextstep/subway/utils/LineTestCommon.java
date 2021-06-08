@@ -4,7 +4,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineTestCommon {
 
@@ -94,4 +98,28 @@ public class LineTestCommon {
                 .extract();
     }
 
+    public static void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+    }
+
+    public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    public static void 지하철_노선_조회됨(ExtractableResponse<Response> extractableResponse, LineRequest request) {
+        LineResponse linesResponse = extractableResponse.jsonPath().getObject(".", LineResponse.class);
+        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(linesResponse.getName()).isEqualTo(request.getName());
+        assertThat(linesResponse.getColor()).isEqualTo(request.getColor());
+        assertThat(linesResponse.getStations().size()).isEqualTo(2);
+    }
+
+    public static void 지하철_노선_수정됨(ExtractableResponse<Response> extractableResponse) {
+        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 지하철_노선_삭제됨(ExtractableResponse<Response> extractableResponse) {
+        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 }

@@ -41,8 +41,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        LineTestCommon.지하철_노선_생성됨(response);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -53,6 +52,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationResponse upStation = this.stationAcceptanceTest.지하철_역_생성됨("서울대입구역");
         StationResponse downSation = this.stationAcceptanceTest.지하철_역_생성됨("사당역");
         LineRequest params = LineTestCommon.createLineParams("신분당선", "bg-red-600", upStation.getId(), downSation.getId(), 10L);
+        LineTestCommon.createResponse(params, "/lines");
 
         // when
         // 지하철_노선_생성_요청
@@ -60,7 +60,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성_실패됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineTestCommon.지하철_노선_생성_실패됨(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -86,8 +86,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> allResponse = LineTestCommon.findAllResponse("/lines");
 
         // then
-        // 지하철_노선_목록_응답됨
-        assertThat(allResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
@@ -114,11 +112,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_조회_요청
         Long id = 1L;
-        ExtractableResponse<Response> response = LineTestCommon.findOneResponse(id);
+        ExtractableResponse<Response> extractableResponse = LineTestCommon.findOneResponse(id);
 
         // then
-        // 지하철_노선_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // 지하철_노선_조회됨
+        LineTestCommon.지하철_노선_조회됨(extractableResponse, params);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -143,10 +141,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.as(LineResponse.class).getStations()).hasSize(2);
-        assertThat(response.as(LineResponse.class).getStations().get(0).getId()).isSameAs(upStation_1.getId());
-        assertThat(response.as(LineResponse.class).getStations().get(1).getId()).isSameAs(downStation_1.getId());
+        LineTestCommon.지하철_노선_수정됨(response);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -166,7 +161,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        LineTestCommon.지하철_노선_삭제됨(response);
     }
 
 }
