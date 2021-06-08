@@ -317,6 +317,25 @@ class SectionRepositoryTest {
                 .withMessageMatching("삭제하고자 하는 역 정보가 존재하지 않습니다. 입력정보를 확인해주세요.");
     }
 
+    @DisplayName("구간 병합 - 하행선 추가")
+    @Test
+    void mergeDownStation() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+
+        Section section1 = saveSection(station2, station1, 5);
+        Section section2 = saveSection(station3, station2, 20);
+
+        // when
+        section2.mergeDownStation(section1);
+
+        // then
+        assertThat(section2.getUpStation()).isSameAs(station3);
+        assertThat(section2.getDownStation()).isSameAs(station1);
+    }
+
     private Section saveSection(Station upStation, Station downStation, int distance) {
         Section section = Section.of(upStation, downStation, distance);
         return sectionRepository.save(section);
