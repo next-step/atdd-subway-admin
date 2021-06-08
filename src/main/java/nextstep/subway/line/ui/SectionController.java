@@ -21,4 +21,9 @@ public class SectionController {
         sectionService.addSection(lineId, sectionRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleIllegalArgsExceptionForSection(IllegalArgumentException exception) {
+        return ResponseEntity.badRequest().build();
+    }
 }

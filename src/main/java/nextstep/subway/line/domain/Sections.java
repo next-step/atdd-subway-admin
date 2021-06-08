@@ -28,6 +28,10 @@ public class Sections {
         boolean isExistUpStation = isMatchWithUpStation(section);
         boolean isExistDownStation = isMatchWithDownStation(section);
 
+        if (isExistUpStation && isExistDownStation) {
+            throw new IllegalArgumentException("상행역, 하행역 모두 등록되어 있습니다.");
+        }
+
         addEqualUpStation(section);
         addEqualDownStation(section);
         sections.add(section);
