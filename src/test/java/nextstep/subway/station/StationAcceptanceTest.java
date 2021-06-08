@@ -24,6 +24,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     public static final Station chungjeongnoStation = new Station("충정로역");
     public static final Station seodaemunStation = new Station("서대문역");
     public static final Station gwanghwamunStation = new Station("광화문역");
+    public static final Station yeouidoStation = new Station("여의도역");
+    public static final Station yeouinaruStation = new Station("여의나루역");
 
     @DisplayName("지하철역을 생성한다.")
     @Test

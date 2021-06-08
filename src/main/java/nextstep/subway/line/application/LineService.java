@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import org.springframework.stereotype.Service;
@@ -19,8 +20,11 @@ public class LineService {
 
     private LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
+    private SectionRepository sectionRepository;
+
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -61,6 +65,11 @@ public class LineService {
         Section section = request.toSection();
         Line persistLine = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
         persistLine.addSection(section);
-        return SectionResponse.of(section);
+        return SectionResponse.of(sectionRepository.save(section));
+    }
+
+    public List<SectionResponse> findAllSections(Long lineId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+        return line.getSections().toSectionResponses();
     }
 }

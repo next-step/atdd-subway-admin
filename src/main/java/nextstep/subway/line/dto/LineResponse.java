@@ -27,7 +27,7 @@ public class LineResponse {
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.stations = sections.findSortedStations().stream()
+        this.stations = sections.findStationsInOrder().stream()
             .map(Station::toStationResponse)
             .collect(Collectors.toList());
     }

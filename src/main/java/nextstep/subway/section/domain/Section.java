@@ -29,8 +29,12 @@ import nextstep.subway.station.domain.Station;
 public class Section extends BaseEntity {
 
     public static final String UP_AND_DOWN_STATIONS_CANNOT_BE_THE_SAME = "구간의 상행역과 하행역은 같을 수 없습니다.";
-    public static final int MIN_DISTANCE = 0;
     public static final String DISTANCE_MUST_BE_AT_LEAST_MIN_DISTANCE = "거리는 %d 이상이어야 합니다.";
+    public static final String CANNOT_ADD_SECTION_GREATER_THAN_OR_EQUAL_DISTANCE = "기존 역 사이 길이보다 크거나 같은 구간은 추가할 수 없습니다.";
+    public static final String UP_STATION_ID_CANNOT_BE_NULL = "상행역ID는 NULL이 될 수 없습니다.";
+    public static final String DOWN_STATION_CANNOT_BE_NULL = "상행역ID는 NULL이 될 수 없습니다.";
+    public static final int MIN_DISTANCE = 0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -50,11 +54,15 @@ public class Section extends BaseEntity {
     private int distance;
 
     public Section(Long upStationId, Long downStationId, int distance) {
-        this(null, upStationId, downStationId, distance);
+        validationStations(upStationId, downStationId);
+        validationDistance(distance);
+        this.upStation = new Station(upStationId);
+        this.downStation = new Station(downStationId);
+        this.distance = distance;
     }
 
     public Section(Long lineId, Long upStationId, Long downStationId, int distance) {
-        validationSection(upStationId, downStationId);
+        validationStations(upStationId, downStationId);
         validationDistance(distance);
         this.line = new Line(lineId);
         this.upStation = new Station(upStationId);
@@ -62,20 +70,116 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public void validationDistance(int distance) {
+    protected Section() {
+
+    }
+
+    protected boolean isBefore(Section section) {
+        return downStation.equals(section.getUpStation());
+    }
+
+    protected boolean isBetween(Section section) {
+        if (isBaseOnUpStation(section)) {
+            return true;
+        }
+        if (isBaseOnDownStation(section)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isBaseOnUpStation(Section section) {
+        if (!isEqualUpStation(section)) {
+            return false;
+        }
+        if (isEqualDownStation(section)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isEqualDownStation(Section section) {
+        return downStation.equals(section.getDownStation());
+    }
+
+    private boolean isBaseOnDownStation(Section section) {
+        if (isEqualUpStation(section)) {
+            return false;
+        }
+        if (!isEqualDownStation(section)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isEqualUpStation(Section section) {
+        return upStation.equals(section.getUpStation());
+    }
+
+    protected boolean isAfter(Section section) {
+        return upStation.equals(section.getDownStation());
+    }
+
+    protected boolean isEqualUpAndDownStation(Section section) {
+        return isEqualUpStation(section) && isEqualDownStation(section);
+    }
+
+    protected void addIntoSection(Section newSection) {
+        minusDistance(newSection.distance);
+        if (isEqualUpStation(newSection)) {
+            reconnectStationsByUpStation(newSection);
+            return;
+        }
+        if (isEqualDownStation(newSection)) {
+            reconnectStationsByDownStation(newSection);
+            return;
+        }
+        throw new IllegalArgumentException(Sections.THERE_IS_NO_STATION_INCLUDED_BETWEEN_UP_AND_DOWN_STATIONS);
+    }
+
+    private void reconnectStationsByUpStation(Section newSection) {
+        Station preDownStation = new Station(downStation.getId());
+        Station newStation = new Station(newSection.downStation.getId());
+        downStation = newStation;
+        newSection.upStation = newStation;
+        newSection.downStation = preDownStation;
+    }
+
+    private void reconnectStationsByDownStation(Section newSection) {
+        Station preUpStation = new Station(upStation.getId());
+        Station newStation = new Station(newSection.upStation.getId());
+        upStation = newStation;
+        newSection.upStation = preUpStation;
+        newSection.downStation = newStation;
+    }
+
+    private void minusDistance(int distance) {
+        if (isShortEqualThan(distance)) {
+            throw new IllegalArgumentException(CANNOT_ADD_SECTION_GREATER_THAN_OR_EQUAL_DISTANCE);
+        }
+        this.distance -= distance;
+    }
+
+    private boolean isShortEqualThan(int distance) {
+        return this.distance <= distance;
+    }
+
+    private void validationDistance(int distance) {
         if (distance == MIN_DISTANCE) {
             throw new IllegalArgumentException(String.format(DISTANCE_MUST_BE_AT_LEAST_MIN_DISTANCE, MIN_DISTANCE));
         }
     }
 
-    public void validationSection(Long upStationId, Long downStationId) {
-        if (upStationId == downStationId) {
+    private void validationStations(Long upStationId, Long downStationId) {
+        if (upStationId == null) {
+            throw new IllegalArgumentException(UP_STATION_ID_CANNOT_BE_NULL);
+        }
+        if (downStationId == null) {
+            throw new IllegalArgumentException(DOWN_STATION_CANNOT_BE_NULL);
+        }
+        if (upStationId.equals(downStationId)) {
             throw new IllegalArgumentException(UP_AND_DOWN_STATIONS_CANNOT_BE_THE_SAME);
         }
-    }
-
-    protected Section() {
-
     }
 
     public Long getId() {
@@ -111,8 +215,10 @@ public class Section extends BaseEntity {
             return false;
         }
         Section section = (Section) o;
-        return Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects
-            .equals(downStation, section.downStation);
+        return Objects.equals(id, section.id)
+            && Objects.equals(line, section.line)
+            && Objects.equals(upStation, section.upStation)
+            && Objects.equals(downStation, section.downStation);
     }
 
     @Override
@@ -120,19 +226,11 @@ public class Section extends BaseEntity {
         return Objects.hash(id, line, upStation, downStation);
     }
 
-    public boolean isBefore(Section section) {
-        return upStation.equals(section.getDownStation());
-    }
-
-    public boolean isAfter(Section section) {
-        return downStation.equals(section.getUpStation());
-    }
-
     @Override
     public String toString() {
         return "Section{" +
             "id=" + id +
-            ", line.id=" + line.getId() +
+            ", line=" + line +
             ", upStation.id=" + upStation.getId() +
             ", downStation.id=" + downStation.getId() +
             ", distance=" + distance +
