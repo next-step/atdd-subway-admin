@@ -36,7 +36,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선에 구간을 등록한다.")
     @Test
-    void addStation() {
+    void addSection() {
         // given
         Long 정자역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("정자역"));
         SectionRequest sectionRequest = SectionRequest.of(판교역_ID, 정자역_ID, 1);
@@ -71,7 +71,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선에 상행 종점으로 등록한다.")
     @Test
-    void addUpStation() {
+    void addSectionOfUpPoint() {
         // given
         Long 강남역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("강남역"));
         SectionRequest sectionRequest = SectionRequest.of(강남역_ID, 판교역_ID, 3);
@@ -85,7 +85,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선에 하행 종점으로 등록한다.")
     @Test
-    void addDownStation() {
+    void addSectionOfEndPoint() {
         // given
         Long 광교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("광교역"));
         SectionRequest sectionRequest = SectionRequest.of(수지역_ID, 광교역_ID, 4);
@@ -99,7 +99,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선에 기존 역 사이 길이보다 큰 구간을 등록한다.")
     @Test
-    void addStationTooLongDistance() {
+    void addSectionTooLongDistance() {
         // given
         Long 정자역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("정자역"));
         SectionRequest sectionRequest = SectionRequest.of(판교역_ID, 정자역_ID, 10);
@@ -113,7 +113,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선에 기존 역 사이 길이가 같은 구간을 등록한다.")
     @Test
-    void addStationEqualsDistance() {
+    void addSectionEqualsDistance() {
         // given
         Long 정자역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("정자역"));
         SectionRequest sectionRequest = SectionRequest.of(판교역_ID, 정자역_ID, 4);
@@ -127,7 +127,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선에 이미 존재하는 구간을 등록한다.")
     @Test
-    void addStationExistsStation() {
+    void addSectionExistsSection() {
         // given
         SectionRequest sectionRequest = SectionRequest.of(판교역_ID, 수지역_ID, 4);
 
@@ -140,7 +140,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선에 상행/하행 정보가 없는 구간을 등록한다.")
     @Test
-    void addStationWithEmptyUpOrDownStation() {
+    void addSectionWithEmptyUpOrDownStation() {
         // given
         SectionRequest sectionRequest = SectionRequest.of(null, 수지역_ID, 4);
 
