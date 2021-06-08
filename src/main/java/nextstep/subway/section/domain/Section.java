@@ -157,7 +157,7 @@ public class Section extends BaseEntity {
     }
 
     private void validationDistance(int distance) {
-        if (distance == MIN_DISTANCE) {
+        if (distance <= MIN_DISTANCE) {
             throw new IllegalArgumentException(String.format(DISTANCE_MUST_BE_AT_LEAST_MIN_DISTANCE, MIN_DISTANCE));
         }
     }
