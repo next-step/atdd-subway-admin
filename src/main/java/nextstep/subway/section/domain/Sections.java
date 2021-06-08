@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.application.SectionDuplicatedException;
+import nextstep.subway.section.application.StationNotRegisterException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -15,6 +17,8 @@ import static java.util.stream.Collectors.toList;
 
 @Embeddable
 public class Sections {
+    private static final String SECTION_DUPLICATE = "이미 등록된 구간입니다.";
+    public static final String NOT_REGISTERED_STATION = "주어진 역을 포함하지 않아 추가할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections;
@@ -28,9 +32,29 @@ public class Sections {
     }
 
     public void updateStation(Section section) {
+        validate(section);
         changeUpStation(section);
         changeDownStation(section);
         sections.add(section);
+    }
+
+    private void validate(Section section) {
+        final List<Station> stations = getStations();
+
+        if (checkSectionDuplicated(stations, section)) {
+            throw new SectionDuplicatedException(SECTION_DUPLICATE);
+        }
+        if (checkSectionStationExisted(stations, section)) {
+            throw new StationNotRegisterException(NOT_REGISTERED_STATION);
+        }
+    }
+
+    private boolean checkSectionDuplicated(List<Station> stations, Section section) {
+        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
+    }
+
+    private boolean checkSectionStationExisted(List<Station> stations, Section section) {
+        return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
     }
 
     private void changeDownStation(Section section) {
@@ -57,21 +81,21 @@ public class Sections {
         result.add(queue.pop());
 
         while (!queue.isEmpty()) {
-            Section pop = queue.pop();
+            Section section = queue.pop();
 
             result.stream()
                     .map(Section::getUpStation)
-                    .filter(v -> Objects.nonNull(pop.getDownStation()) && v.equals(pop.getDownStation()))
+                    .filter(v -> Objects.nonNull(section.getDownStation()) && v.equals(section.getDownStation()))
                     .findFirst()
                     .ifPresent(
-                            v -> result.addFirst(pop)
+                            v -> result.addFirst(section)
                     );
             result.stream()
                     .map(Section::getDownStation)
-                    .filter(v -> Objects.nonNull(pop.getUpStation()) && v.equals(pop.getUpStation()))
+                    .filter(v -> Objects.nonNull(section.getUpStation()) && v.equals(section.getUpStation()))
                     .findFirst()
                     .ifPresent(
-                            v -> result.addLast(pop)
+                            v -> result.addLast(section)
                     );
         }
         return collectStations(result);
@@ -83,11 +107,4 @@ public class Sections {
                 .distinct()
                 .collect(toList());
     }
-
-    public int getTotalLength() {
-        return this.sections.stream()
-                .map(Section::getDistance)
-                .reduce(0, Integer::sum);
-    }
-
 }

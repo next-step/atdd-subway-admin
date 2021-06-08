@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,21 +50,15 @@ public class SectionControllerTest {
         class Context_with_valid_section {
             final SectionRequest givenSectionRequest = sectionRequest;
 
-            @BeforeEach
-            void setUp() {
-                when(sectionService.saveSection(anyLong(), any(SectionRequest.class)))
-                        .thenReturn(sectionResponse);
-            }
-
             @DisplayName("201 create를 응답한다.")
             @Test
             void It_responds_create() throws Exception {
                 mockMvc.perform(
-                        post("/lines/{lineId}/sections", 1L)
+                        post("/lines/{lineId}/sections", EXIST_LINE_ID)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(givenSectionRequest))
                 )
-                        .andExpect(status().isCreated());
+                        .andExpect(status().isOk());
             }
         }
 
@@ -75,15 +69,14 @@ public class SectionControllerTest {
 
             @BeforeEach
             void setUp() {
-                when(sectionService.saveSection(anyLong(), any(SectionRequest.class)))
-                        .thenThrow(new LineNotFoundException());
+                doThrow(new LineNotFoundException()).when(sectionService).saveSection(anyLong(), any(SectionRequest.class));
             }
 
             @DisplayName("404 not found 응답한다.")
             @Test
             void It_responds_not_found() throws Exception {
                 mockMvc.perform(
-                        post("/{lineId}/sections", 1L)
+                        post("/{lineId}/sections", EXIST_LINE_ID)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(givenSectionRequest))
                 )

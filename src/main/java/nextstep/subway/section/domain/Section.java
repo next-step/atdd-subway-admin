@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.application.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embedded;
@@ -15,10 +16,13 @@ import javax.persistence.ManyToOne;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Entity
 public class Section extends BaseEntity {
+    public static final String STATION_NOT_FOUND = "역을 찾을 수 없습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,10 +50,17 @@ public class Section extends BaseEntity {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        validateStation(upStation, downStation);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);
+    }
+
+    private void validateStation(Station upStation, Station downStation) {
+        if (Objects.isNull(upStation) || Objects.isNull(downStation)) {
+            throw new StationNotFoundException(STATION_NOT_FOUND);
+        }
     }
 
     public void setLine(Line line) {
@@ -69,11 +80,15 @@ public class Section extends BaseEntity {
     }
 
     public void changeDownStation(Section section) {
+        this.distance.checkDistanceUpdate(section);
         this.downStation = section.getUpStation();
+        this.distance = new Distance(this.getDistance() - section.getDistance());
     }
 
     public void changeUpStation(Section section) {
+        this.distance.checkDistanceUpdate(section);
         this.upStation = section.getDownStation();
+        this.distance = new Distance(this.getDistance() - section.getDistance());
     }
 
     public List<Station> getStations() {
@@ -83,5 +98,4 @@ public class Section extends BaseEntity {
     public Stream<Station> getProcessStations() {
         return Stream.of(upStation, downStation);
     }
-
 }

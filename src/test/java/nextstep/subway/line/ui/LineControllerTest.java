@@ -7,6 +7,8 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -48,10 +50,11 @@ class LineControllerTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    private Section section = new Section(new Station("강남역"), new Station("역삼역"), 10);
     private LineRequest lineRequest = new LineRequest("2호선", "green");
     private LineRequest updateRequest = new LineRequest("3호선", "orange");
-    private LineResponse lineResponse = LineResponse.of(new Line("2호선", "green"));
-    private LineResponse updateResponse = LineResponse.of(new Line("3호선", "orange"));
+    private LineResponse lineResponse = LineResponse.of(new Line("2호선", "green", section));
+    private LineResponse updateResponse = LineResponse.of(new Line("3호선", "orange", section));
 
     @Nested
     @DisplayName("POST /lines는")
