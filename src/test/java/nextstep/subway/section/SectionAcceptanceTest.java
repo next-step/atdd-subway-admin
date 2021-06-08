@@ -53,11 +53,25 @@ class SectionAcceptanceTest extends AcceptanceTest {
   }
 
 
-  @DisplayName("지하철 노선 중간에 구간 등록한다.")
+  @DisplayName("지하철 노선 중간에 구간 등록한다. -> 기존 상행역 - 새로운 하행역")
   @Test
-  void addSectionInMiddle() {
+  void addSectionInMiddleWithExistUpStationNewDownStation() {
     // given
     SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
+    Long lineId = 신분당선.getId();
+
+    //when
+    ExtractableResponse<Response> result = 지하철_구간_등록_요청(lineId, sectionParam);
+
+    //then
+    지하철_구간_등록됨(result, lineId, 강남역_ID, 판교역_ID, 광교역_ID);
+  }
+
+  @DisplayName("지하철 노선 중간에 구간 등록한다. -> 새로운 상행역 - 기존 하행역")
+  @Test
+  void addSectionInMiddleWithNewUpStationExistDownStation() {
+    // given
+    SectionRequest sectionParam = new SectionRequest(판교역_ID, 광교역_ID, 5);
     Long lineId = 신분당선.getId();
 
     //when
