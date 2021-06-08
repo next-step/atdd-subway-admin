@@ -34,7 +34,8 @@ public class LineService {
 		Line persistLine = lines.save(request.toLine());
 		Station upStation = stations.findById(request.getUpStationId()).orElseThrow(EntityNotFoundException::new);
 		Station downStation = stations.findById(request.getDownStationId()).orElseThrow(EntityNotFoundException::new);
-		sections.save(new Section(persistLine, upStation, downStation, request.getDistance()));
+		Section persistSection = sections.save(new Section(persistLine, upStation, downStation, request.getDistance()));
+		persistLine.addSection(persistSection);
 		return LineResponse.of(persistLine);
 	}
 

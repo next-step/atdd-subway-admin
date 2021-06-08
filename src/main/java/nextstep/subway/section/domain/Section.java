@@ -47,4 +47,19 @@ public class Section {
 		return this.id;
 	}
 
+	public Station getUpStation() {
+		return this.upStation;
+	}
+
+	public Station getDownStation() {
+		return this.downStation;
+	}
+
+	public void setLine(Line line) {
+		if(Objects.nonNull(this.line)) {
+			this.line.getSections().remove(this);
+		}
+		this.line = line;
+		line.getSections().add(this);
+	}
 }

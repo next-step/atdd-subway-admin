@@ -29,7 +29,8 @@ public class LineResponse {
 	}
 
 	public static LineResponse of(Line line) {
-		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations(), line.getCreatedDate(),
+		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations(),
+			line.getCreatedDate(),
 			line.getModifiedDate());
 	}
 
@@ -57,5 +58,9 @@ public class LineResponse {
 
 	public LocalDateTime getModifiedDate() {
 		return modifiedDate;
+	}
+
+	public List<Station> getStations() {
+		return this.stations;
 	}
 }

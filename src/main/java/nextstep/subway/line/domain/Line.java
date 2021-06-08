@@ -26,7 +26,7 @@ public class Line extends BaseEntity {
 	private String name;
 	private String color;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "line")
+	@OneToMany(mappedBy = "line")
 	private List<Section> sections = new LinkedList<>();
 
 	public Line() {
@@ -54,11 +54,21 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
+	public void addSection(Section section) {
+		this.sections.add(section);
+		section.setLine(this);
+	}
+
 	public List<Section> getSections() {
 		return this.sections;
 	}
 
 	public List<Station> getStations() {
-		return new LinkedList<>(Arrays.asList());
+		List<Station> stations = new LinkedList<>();
+		this.sections.stream().forEach(section -> {
+			stations.add(section.getUpStation());
+			stations.add(section.getDownStation());
+		});
+		return stations;
 	}
 }
