@@ -106,7 +106,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse line = searchLine.jsonPath().getObject(".", LineResponse.class);
         assertThat(searchLine.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(line.getName()).isEqualTo("1호선");
-        assertThat(line.getSections().size()).isEqualTo(2);
+        assertThat(line.getSections().getSection().size()).isEqualTo(2);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
