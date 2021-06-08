@@ -22,4 +22,13 @@ class SectionTest {
 			() -> assertThat(청계산입구_판교_구간.isNextOf(양재시민의숲_청계산입구_구간)).isTrue()
 		);
 	}
+
+	@Test
+	@DisplayName("구간의 Id 가 같으면 같은 구간이다.")
+	public void equalsTest() {
+		Section section1 = new Section(1L, 신분당선, 양재, 강남, 5);
+		Section section2 = new Section(1L, 신분당선, 양재, 강남, 10);
+
+		assertThat(section1).isEqualTo(section2);
+	}
 }
