@@ -62,7 +62,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
 		// then
 		// 지하철_노선_생성_실패됨
-		assertThat(line_신분당선.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		assertThat(line_신분당선.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@DisplayName("지하철 노선 목록을 조회한다.")
