@@ -286,7 +286,7 @@ class SectionRepositoryTest {
 
         // when then
         assertThatIllegalStateException()
-                .isThrownBy(() -> sections.removeStation(station1))
+                .isThrownBy(() -> sections.remove(station1))
                 .withMessageMatching("구간은 최소 한 개 이상 존재해야 합니다.");
     }
 
@@ -313,7 +313,7 @@ class SectionRepositoryTest {
 
         // then
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> sections.removeStation(station5))
+                .isThrownBy(() -> sections.remove(station5))
                 .withMessageMatching("삭제하고자 하는 역 정보가 존재하지 않습니다. 입력정보를 확인해주세요.");
     }
 
@@ -390,7 +390,7 @@ class SectionRepositoryTest {
         sections.add(section3);
 
         // when
-        sections.removeStation(station1);
+        sections.remove(station1);
 
         // then
         List<String> stationNames = sections.getStations().stream()
@@ -419,7 +419,7 @@ class SectionRepositoryTest {
         sections.add(section3);
 
         // when
-        sections.removeStation(station4);
+        sections.remove(station4);
 
         // then
         List<String> stationNames = sections.getStations().stream()
@@ -448,7 +448,7 @@ class SectionRepositoryTest {
         sections.add(section3);
 
         // when
-        sections.removeStation(station2);
+        sections.remove(station2);
 
         // then
         List<String> stationNames = sections.getStations().stream()

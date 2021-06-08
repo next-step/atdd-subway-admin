@@ -132,9 +132,11 @@ public class Sections implements Iterable<Section> {
         }
     }
 
-    public void removeStation(Station element) {
+    public Section remove(Station element) {
         validateRemovable(element);
-        removeStation(selectRemoveIndex(element));
+        Section removeTarget = selectRemoveTarget(element);
+        remove(removeTarget);
+        return removeTarget;
     }
 
     private void validateRemovable(Station element) {
@@ -146,38 +148,35 @@ public class Sections implements Iterable<Section> {
         }
     }
 
-    private int selectRemoveIndex(Station element) {
+    private Section selectRemoveTarget(Station element) {
         if (getFirstStation().equals(element)) {
-            return FIRST_INDEX;
+            return sections.get(FIRST_INDEX);
         }
         if (getLastStation().equals(element)) {
-            return lastIndex();
+            return sections.get(lastIndex());
         }
-        return getDownStations().indexOf(element);
+        int index = getDownStations().indexOf(element);
+        return sections.get(index);
     }
 
-    private void removeStation(int index) {
-        if (isEdge(index)) {
-            remove(index);
+    private void remove(Section section) {
+        mergeSection(section);
+        sections.remove(section);
+        synchronizeSequence();
+    }
+
+    private void mergeSection(Section removeTarget) {
+        if (isEdge(removeTarget)) {
             return;
         }
-        mergeSection(index);
-    }
-
-    private boolean isEdge(int index) {
-        return index == FIRST_INDEX || index == lastIndex();
-    }
-
-    private void mergeSection(int index) {
-        Section removeTarget = sections.get(index);
-        Section mergeTarget = sections.get(index - 1);
+        int removeIndex = sections.indexOf(removeTarget);
+        Section mergeTarget = sections.get(removeIndex - 1);
         mergeTarget.mergeUpStation(removeTarget);
-        remove(index);
     }
 
-    private void remove(int index) {
-        sections.remove(index);
-        synchronizeSequence();
+    private boolean isEdge(Section section) {
+        int index = sections.indexOf(section);
+        return index == FIRST_INDEX || index == lastIndex();
     }
 
     private void synchronizeSequence() {
