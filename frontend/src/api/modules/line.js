@@ -11,7 +11,7 @@ const LineService = {
     return ApiService.get(`${BASE_URL}`)
   },
   create(newLine) {
-    return ApiService.post(`${BASE_URL}/withSection`, newLine)
+    return ApiService.post(`${BASE_URL}`, newLine)
   },
   update(editingLine) {
     return ApiService.update(`${BASE_URL}/${editingLine.lineId}`, editingLine.line)

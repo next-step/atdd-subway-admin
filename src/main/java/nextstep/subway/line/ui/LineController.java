@@ -36,12 +36,6 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @PostMapping("/withSection")
-    public ResponseEntity<LineResponse> createLineWithSection(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLineWithSection(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
-    }
-
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
@@ -70,8 +64,18 @@ public class LineController {
         return ResponseEntity.created(URI.create("/" + lineId + "/sections/" + section.getId())).body(section);
     }
 
+    @GetMapping("/{lineId}/sections")
+    public ResponseEntity<List<SectionResponse>> showSections(@PathVariable Long lineId) {
+        return ResponseEntity.ok().body(lineService.findAllSections(lineId));
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity<Void> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Void> handleRuntimeException(RuntimeException e) {
         return ResponseEntity.badRequest().build();
     }
 }

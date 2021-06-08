@@ -27,7 +27,7 @@ public class LineResponse {
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.stations = sections.findSortedStations().stream()
+        this.stations = sections.findStationsInOrder().stream()
             .map(Station::toStationResponse)
             .collect(Collectors.toList());
     }
@@ -58,5 +58,17 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
+    }
+
+    @Override
+    public String toString() {
+        return "LineResponse{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", color='" + color + '\'' +
+            ", createdDate=" + createdDate +
+            ", modifiedDate=" + modifiedDate +
+            ", stations=" + stations +
+            '}';
     }
 }
