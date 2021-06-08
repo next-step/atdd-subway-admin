@@ -36,6 +36,14 @@ public class Sections implements Iterable<Section> {
         return sections.get(lastIndex()).getUpStation();
     }
 
+    private boolean isFirstStop(Station station) {
+        return getFirstStation().equals(station);
+    }
+
+    private boolean isLastStop(Station station) {
+        return getLastStation().equals(station);
+    }
+
     private int lastIndex() {
         return sections.size() - 1;
     }
@@ -84,13 +92,13 @@ public class Sections implements Iterable<Section> {
     }
 
     private int selectDivisionIndex(Section element) {
-        if (getFirstStation().equals(element.getUpStation())) {
+        if (isFirstStop(element.getUpStation())) {
             return FRONT_OF_SECTIONS;
         }
-        if (getLastStation().equals(element.getUpStation())) {
+        if (isLastStop(element.getUpStation())) {
             return lastIndex();
         }
-        if (getLastStation().equals(element.getDownStation())) {
+        if (isLastStop(element.getDownStation())) {
             return sections.size();
         }
         if (getUpStations().contains(element.getDownStation())) {
@@ -150,10 +158,10 @@ public class Sections implements Iterable<Section> {
     }
 
     private Section selectRemoveTarget(Station element) {
-        if (getFirstStation().equals(element)) {
+        if (isFirstStop(element)) {
             return sections.get(FIRST_INDEX);
         }
-        if (getLastStation().equals(element)) {
+        if (isLastStop(element)) {
             return sections.get(lastIndex());
         }
         int index = getDownStations().indexOf(element);
@@ -170,7 +178,7 @@ public class Sections implements Iterable<Section> {
     }
 
     private boolean isEdge(Station station) {
-        return getFirstStation().equals(station) || getLastStation().equals(station);
+        return isFirstStop(station) || isLastStop(station);
     }
 
     private void remove(Section section) {
