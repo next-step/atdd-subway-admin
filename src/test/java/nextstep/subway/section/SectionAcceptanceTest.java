@@ -167,6 +167,17 @@ class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("종점이 아닌 구간 삭제 시 빈 구간이 연결되어야 한다.")
+    @TestFactory
+    Stream<DynamicTest> removeSectionTest03() {
+        return Stream.of(
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 150)),
+            dynamicTest("공덕역 구간 삭제 요청", () -> removeSectionRequestSuccess(GONGDEOK)),
+            dynamicTest("서울역-홍대입구 구간 확인", () -> getSectionRequestAndTest(SEOUL, HONGIK_UNIV, 250))
+        );
+    }
+
     private void createLineRequestSuccess(LineTestData data) {
 
         LineRequest lineRequest = data.getLine();

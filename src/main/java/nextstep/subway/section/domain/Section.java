@@ -99,6 +99,10 @@ public class Section extends BaseEntity implements Serializable {
         return distance.getValue();
     }
 
+    public void plusDistance(int distance) {
+        this.distance = this.distance.plus(distance);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

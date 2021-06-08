@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -11,6 +12,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.SortedStations;
 import nextstep.subway.station.domain.Station;
 
+import static java.util.stream.Collectors.toList;
+
 @Embeddable
 public class LineSections implements Serializable {
 
@@ -18,6 +21,8 @@ public class LineSections implements Serializable {
 
     private static final String MESSAGE_SECTION_HAS_CYCLE = "상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.";
     private static final String MESSAGE_SECTION_IS_NOT_UPDATABLE = "신규 구간의 상행역과 하행역 모두가 기존 구간에 포함되어 있지 않습니다.";
+    private static final String MESSAGE_HAS_ONE_SECTION = "노선에 구간이 1개이면 삭제할 수 없습니다.";
+    private static final String MESSAGE_NOT_FOUND_SECTION = "삭제할 구간을 찾을 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Section> sections;
@@ -32,10 +37,6 @@ public class LineSections implements Serializable {
 
     public Set<Section> getSections() {
         return sections;
-    }
-
-    public int size() {
-        return sections.size();
     }
 
     public SortedStations toStations() {
@@ -112,25 +113,51 @@ public class LineSections implements Serializable {
 
         verifyHasSingleSection();
 
-        long size = sections.stream()
-                            .filter(section -> section.contains(station))
-                            .count();
+        List<Section> targets = sections.stream()
+                                 .filter(section -> section.contains(station))
+                                 .collect(toList());
 
-        if (size >= 2) {
-            throw new IllegalArgumentException("현재는 종점역이 포함된 노선만 삭제하게 고려되어 있습니다.");
+        verifyNotFoundDeleteTarget(targets);
+
+        if (targets.size() == 1) {
+            deleteSingleSection(targets);
+            return;
         }
 
-        Section target = sections.stream()
-                                 .filter(section -> section.contains(station))
-                                 .findAny()
-                                 .orElseThrow(() -> new IllegalArgumentException("해당 역을 포함하는 노선이 존재하지 않습니다."));
-
-        sections.remove(target);
+        deleteDoubleSectionAndUpdate(station, targets);
     }
 
     private void verifyHasSingleSection() {
         if (sections.size() == 1) {
-            throw new IllegalArgumentException("노선에 구간이 1개이면 삭제할 수 없습니다.");
+            throw new IllegalArgumentException(MESSAGE_HAS_ONE_SECTION);
         }
+    }
+
+    private void deleteSingleSection(List<Section> targets) {
+        targets.forEach(sections::remove);
+    }
+
+    private void verifyNotFoundDeleteTarget(List<Section> targets) {
+        if (targets.isEmpty()) {
+            throw new IllegalArgumentException(MESSAGE_NOT_FOUND_SECTION);
+        }
+    }
+
+    private void deleteDoubleSectionAndUpdate(Station station, List<Section> targets) {
+
+        Section upSection = targets.stream()
+                                   .filter(target -> target.equalsDownStation(station))
+                                   .findAny()
+                                   .orElseThrow(() -> new IllegalArgumentException(MESSAGE_NOT_FOUND_SECTION));
+
+        Section downSection = targets.stream()
+                                     .filter(target -> target.equalsUpStation(station))
+                                     .findAny()
+                                     .orElseThrow(() -> new IllegalArgumentException(MESSAGE_NOT_FOUND_SECTION));
+
+        sections.remove(downSection);
+
+        upSection.updateDownStation(downSection.getDownStation());
+        upSection.plusDistance(downSection.getDistance());
     }
 }
