@@ -145,17 +145,17 @@ public class Section extends BaseEntity {
     protected void reconnectStations(Section newSection) {
         minusDistance(newSection.distance);
         if (upStation.equals(newSection.getUpStation())) {
-            reconnectStationsByUpStation(newSection);
+            updateDownStationTo(newSection);
             return;
         }
         if (downStation.equals(newSection.getDownStation())) {
-            reconnectStationsByDownStation(newSection);
+            updateUpStationTo(newSection);
             return;
         }
         throw new IllegalArgumentException(Sections.THERE_IS_NO_STATION_INCLUDED_BETWEEN_UP_AND_DOWN_STATIONS);
     }
 
-    private void reconnectStationsByUpStation(Section newSection) {
+    private void updateDownStationTo(Section newSection) {
         Station preDownStation = new Station(downStation.getId());
         Station newStation = new Station(newSection.downStation.getId());
         downStation = newStation;
@@ -163,7 +163,7 @@ public class Section extends BaseEntity {
         newSection.downStation = preDownStation;
     }
 
-    private void reconnectStationsByDownStation(Section newSection) {
+    private void updateUpStationTo(Section newSection) {
         Station preUpStation = new Station(upStation.getId());
         Station newStation = new Station(newSection.upStation.getId());
         upStation = newStation;
