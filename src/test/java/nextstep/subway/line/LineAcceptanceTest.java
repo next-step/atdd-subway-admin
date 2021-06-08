@@ -26,9 +26,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         //given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
+        Map<String, String> params = createLineParams("신분당선", "bg-red-600");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
@@ -55,9 +53,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
+        Map<String, String> params = createLineParams("신분당선", "bg-red-600");
         지하철_노선_등록되어_있음(params);
 
         // when
@@ -79,14 +75,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("color", "bg-red-600");
-        params1.put("name", "신분당선");
+        Map<String, String> params1 = createLineParams("신분당선", "bg-red-600");
         지하철_노선_등록되어_있음(params1);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("color", "bg-green-600");
-        params2.put("name", "2호선");
+        Map<String, String> params2 = createLineParams("2호선", "bg-green-600");
         지하철_노선_등록되어_있음(params2);
         List<String> names = new ArrayList<>(Arrays.asList(params1.get("name"), params2.get("name")));
 
@@ -153,5 +145,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+
+    private Map<String, String> createLineParams(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        return params;
     }
 }
