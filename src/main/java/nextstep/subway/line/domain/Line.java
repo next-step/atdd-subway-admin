@@ -14,7 +14,6 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    //@OneToMany(mappedBy = "line", fetch = FetchType.LAZY)
     @Embedded
     private Sections sections = new Sections();
 

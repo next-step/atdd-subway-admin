@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.station.dto.StationResponse;
+
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -11,9 +13,10 @@ public class Sections {
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY)
     private final List<Section> sections;
 
-    public Sections(){
+    public Sections() {
         this.sections = new ArrayList<>();
     }
+
     public Sections(List<Section> sections) {
         this.sections = sections;
     }
@@ -24,5 +27,14 @@ public class Sections {
 
     public List<Section> getSection() {
         return this.sections;
+    }
+
+    public List<StationResponse> getStations() {
+        List<StationResponse> stationResponses = new ArrayList<>();
+        sections.stream()
+                .forEach(
+                        section -> stationResponses.add(StationResponse.of(section.getStation()))
+                );
+        return stationResponses;
     }
 }
