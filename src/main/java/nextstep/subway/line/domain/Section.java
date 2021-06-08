@@ -6,6 +6,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -41,12 +42,12 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public boolean hasSameUpStation(Station station) {
-        return station == upStation;
+    public boolean hasSameUpStation(Section section) {
+        return upStation.equals(section.downStation);
     }
 
-    public boolean hasSameDownStation(Station station) {
-        return station == downStation;
+    public boolean hasSameDownStation(Section section) {
+        return downStation.equals(section.upStation);
     }
 
     public static Section makeAfterSection(Section preSection, Section section) {
@@ -84,15 +85,26 @@ public class Section extends BaseEntity {
     public List<Station> findAllStations(Sections sections) {
         List<Station> stations = new ArrayList<>();
         stations.add(upStation);
-        stations.addAll(sections.findOthersStations(downStation));
+        stations.addAll(sections.findOthersStations(this));
         return stations;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public List<Station> findStationsByFirstSection(Sections sections) {
+        List<Station> stations = new ArrayList<>();
+        stations.add(downStation);
+        Section nextSection = sections.findSectionInUpStation(this);
+        while (!Objects.isNull(nextSection)) {
+            stations.add(nextSection.downStation);
+            nextSection = sections.findSectionInUpStation(nextSection);
+        }
+        return stations;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public boolean isMatchUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isMatchDownStation(Station station) {
+        return downStation.equals(station);
     }
 }

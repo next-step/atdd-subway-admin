@@ -85,34 +85,28 @@ public class Sections {
         return firstSection.findAllStations(this);
     }
 
-    public List<Station> findOthersStations(Station downStation) {
-        List<Station> stations = new ArrayList<>();
-        stations.add(downStation);
-        Section nextSection = findSectionInUpStation(downStation);
-        while (!Objects.isNull(nextSection)) {
-            stations.add(nextSection.getDownStation());
-            nextSection = findSectionInUpStation(nextSection.getDownStation());
-        }
+    public List<Station> findOthersStations(Section section) {
+        List<Station> stations = section.findStationsByFirstSection(this);
         return new ArrayList<>(stations);
     }
 
     public Section findFirstSection() {
         return sections.stream()
-                .filter(section -> Objects.isNull(findSectionInDownStation(section.getUpStation())))
+                .filter(section -> Objects.isNull(findSectionInDownStation(section)))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
 
-    public Section findSectionInDownStation(Station upStation) {
+    public Section findSectionInDownStation(Section newSection) {
         return sections.stream()
-                .filter(section -> section.hasSameDownStation(upStation))
+                .filter(section -> section.hasSameDownStation(newSection))
                 .findFirst()
                 .orElse(null);
     }
 
-    public Section findSectionInUpStation(Station downStation) {
+    public Section findSectionInUpStation(Section newSection) {
         return sections.stream()
-                .filter(section -> section.hasSameUpStation(downStation))
+                .filter(section -> section.hasSameUpStation(newSection))
                 .findFirst()
                 .orElse(null);
     }
@@ -122,10 +116,10 @@ public class Sections {
     }
 
     public boolean isMatchWithUpStation(Section section) {
-        return findStationInSections().stream().anyMatch(section::hasSameUpStation);
+        return findStationInSections().stream().anyMatch(section::isMatchUpStation);
     }
 
     public boolean isMatchWithDownStation(Section section) {
-        return findStationInSections().stream().anyMatch(section::hasSameDownStation);
+        return findStationInSections().stream().anyMatch(section::isMatchDownStation);
     }
 }
