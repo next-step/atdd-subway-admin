@@ -4,6 +4,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.SectionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +20,17 @@ import java.util.stream.Collectors;
 public class LineService {
     private LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
+    private SectionRepository sectionRepository;
+
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Line saveLine = request.toLine();
+        sectionRepository.saveAll(saveLine.getSections());
+        Line persistLine = lineRepository.save(saveLine);
         return LineResponse.of(persistLine);
     }
 
