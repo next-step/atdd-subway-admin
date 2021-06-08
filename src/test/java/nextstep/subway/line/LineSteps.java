@@ -52,8 +52,8 @@ public class LineSteps {
         return getLines("/lines");
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> response) {
-        String uri = response.header("Location");
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
+        String uri = "/lines/" + lineId;
         return getLines(uri);
     }
 
