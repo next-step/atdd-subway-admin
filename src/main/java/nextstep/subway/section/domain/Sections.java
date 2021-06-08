@@ -98,7 +98,7 @@ public class Sections {
         }
         List<Station> resultStations = getUpStations(sortedSections);
         if (!sortedSections.isEmpty()) {
-            resultStations.add(getLastDownStation(sortedSections));
+            resultStations.add(getLastStation(sortedSections));
         }
         return resultStations;
     }
@@ -120,7 +120,7 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    private Station getLastDownStation(List<Section> sections) {
+    private Station getLastStation(List<Section> sections) {
         return sections.get(sections.size() - ONE).getDownStation();
     }
 
