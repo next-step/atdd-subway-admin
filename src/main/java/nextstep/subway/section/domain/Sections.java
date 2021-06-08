@@ -40,11 +40,29 @@ public class Sections {
         if (!sections.isEmpty()) {
             validationForAdd(newSection);
         }
-        sections.stream()
-            .filter(section -> section.isBetween(newSection))
-            .findFirst()
-            .ifPresent(section -> section.reconnectStations(newSection));
+        changeSectionWhenUpStationMatch(newSection);
+        changeSectionWhenDownStationMatch(newSection);
         return sections.add(newSection);
+    }
+
+    private void changeSectionWhenUpStationMatch(Section newSection) {
+        sections.stream()
+            .filter(section -> section.isEqualUpStation(newSection))
+            .findFirst()
+            .ifPresent(section -> {
+                section.updateUpStationTo(newSection.getDownStation());
+                section.minusDistance(newSection.getDistance());
+            });
+    }
+
+    private void changeSectionWhenDownStationMatch(Section newSection) {
+        sections.stream()
+            .filter(section -> section.isEqualDownStation(newSection))
+            .findFirst()
+            .ifPresent(section -> {
+                section.updateDownStationTo(newSection.getUpStation());
+                section.minusDistance(newSection.getDistance());
+            });
     }
 
     private void validationForAdd(Section section) {

@@ -51,14 +51,6 @@ public class SectionTest {
         assertThat(after.isAfter(before)).isTrue();
     }
 
-    @DisplayName("구간에 포함될수 있는지 확인")
-    @ParameterizedTest
-    @MethodSource("newSections")
-    void isBetween(Section newSection) {
-        Section preSection = new Section(1L, 3L, 7);
-        assertThat(newSection.isBetween(preSection)).isTrue();
-    }
-
     static Stream<Section> newSections() {
         return Stream.of(
             new Section(1L, 2L, 4),
@@ -72,23 +64,5 @@ public class SectionTest {
         Section preSection = new Section(1L, 3L, 7);
         Section newSection = new Section(1L, 3L, 4);
         assertThat(newSection.isEqualAllStation(preSection)).isTrue();
-    }
-
-    @DisplayName("구간에 새로운 구간을 추가할 경우 확인")
-    @Test
-    void addIntoSection() {
-        // given
-        Section preSection = new Section(1L, 3L, 7);
-        Section newSection = new Section(1L, 2L, 4);
-
-        // when
-        preSection.reconnectStations(newSection);
-
-        //then
-        assertThat(preSection.getDownStation().getId()).isEqualTo(2L);
-        assertThat(preSection.getDistance()).isEqualTo(3);
-        assertThat(newSection.getUpStation().getId()).isEqualTo(2L);
-        assertThat(newSection.getDownStation().getId()).isEqualTo(3L);
-        assertThat(newSection.getDistance()).isEqualTo(4);
     }
 }

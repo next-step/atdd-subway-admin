@@ -82,34 +82,12 @@ public class Section extends BaseEntity {
         return upStation.equals(section.getDownStation());
     }
 
-    protected boolean isBetween(Section section) {
-        if (isBaseOnUpStation(section)) {
-            return true;
-        }
-        if (isBaseOnDownStation(section)) {
-            return true;
-        }
-        return false;
+    protected boolean isEqualUpStation(Section section) {
+        return upStation.equals(section.getUpStation());
     }
 
-    private boolean isBaseOnUpStation(Section section) {
-        if (!upStation.equals(section.getUpStation())) {
-            return false;
-        }
-        if (downStation.equals(section.getDownStation())) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isBaseOnDownStation(Section section) {
-        if (upStation.equals(section.getUpStation())) {
-            return false;
-        }
-        if (!downStation.equals(section.getDownStation())) {
-            return false;
-        }
-        return true;
+    protected boolean isEqualDownStation(Section section) {
+        return downStation.equals(section.getDownStation());
     }
 
     protected boolean isEqualAllStation(Section section) {
@@ -142,36 +120,15 @@ public class Section extends BaseEntity {
         return false;
     }
 
-    protected void reconnectStations(Section newSection) {
-        minusDistance(newSection.distance);
-        if (upStation.equals(newSection.getUpStation())) {
-            updateDownStationTo(newSection);
-            return;
-        }
-        if (downStation.equals(newSection.getDownStation())) {
-            updateUpStationTo(newSection);
-            return;
-        }
-        throw new IllegalArgumentException(Sections.THERE_IS_NO_STATION_INCLUDED_BETWEEN_UP_AND_DOWN_STATIONS);
-    }
-
-    private void updateDownStationTo(Section newSection) {
-        Station preDownStation = new Station(downStation.getId());
-        Station newStation = new Station(newSection.downStation.getId());
-        downStation = newStation;
-        newSection.upStation = newStation;
-        newSection.downStation = preDownStation;
-    }
-
-    private void updateUpStationTo(Section newSection) {
-        Station preUpStation = new Station(upStation.getId());
-        Station newStation = new Station(newSection.upStation.getId());
+    protected void updateUpStationTo(Station newStation) {
         upStation = newStation;
-        newSection.upStation = preUpStation;
-        newSection.downStation = newStation;
     }
 
-    private void minusDistance(int distance) {
+    protected void updateDownStationTo(Station newStation) {
+        downStation = newStation;
+    }
+
+    protected void minusDistance(int distance) {
         if (isShortEqualThan(distance)) {
             throw new IllegalArgumentException(CANNOT_ADD_SECTION_GREATER_THAN_OR_EQUAL_DISTANCE);
         }
