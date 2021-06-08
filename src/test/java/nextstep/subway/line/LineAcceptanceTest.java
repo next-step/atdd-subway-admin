@@ -102,15 +102,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_응답됨
         assertThat(findedLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(생성된_노선에서_ID_추출(createdLineResponse)).isEqualTo(조회된_노선에서_ID_추출(findedLineResponse));
-    }
-
-    @DisplayName("상행역 부터 하행역 순으로 정렬되어야 한다.")
-    @Test
-    void getLineOrder() {
-        ExtractableResponse<Response> findedLineResponse = 조회_요청(생성된_노선에서_Path추출(createdLineResponse));
-
-        // then
-        // 지하철_노선_응답됨
         assertThat(찾은_노선에서_Sations_ID추출(findedLineResponse))
             .containsExactly(지하철역에서_ID_추출(upStation), 지하철역에서_ID_추출(downStation));
     }
