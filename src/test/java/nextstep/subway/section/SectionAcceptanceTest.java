@@ -46,6 +46,84 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         신분당선 = LineAcceptanceTest.지하철_노선_등록되어_있음(createParams).as(LineResponse.class);
     }
 
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void exceptionTest_1() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        StationResponse 강남역과_광교역_사이의_역 =
+                StationAcceptanceTest.지하철역_등록되어_있음("강남역과_광교역_사이의_역")
+                        .as(StationResponse.class);
+
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 강남역과_광교역_사이의_역.getId() + "");
+        createParams.put("downStationId", 광교역.getId() + "");
+        createParams.put("distance", 10 + "");
+
+        ExtractableResponse<Response> response = RestAssuredCRUD
+                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+
+        // then
+        // 지하철_노선에_지하철역_등록_실패함
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 새로운_역을_상행_종점으로_등록할_경우() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        StationResponse 강남역_보다_상행역 =
+                StationAcceptanceTest.지하철역_등록되어_있음("강남역_보다_상행역")
+                        .as(StationResponse.class);
+
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 강남역_보다_상행역.getId() + "");
+        createParams.put("downStationId", 강남역.getId() + "");
+        createParams.put("distance", 5 + "");
+
+        ExtractableResponse<Response> response = RestAssuredCRUD
+                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineResponse 구간등록_후_신분당선 = get("/lines/"+신분당선.getId())
+                .body()
+                .as(LineResponse.class);
+        List<String> stations = 구간등록_후_신분당선.getStations().stream()
+                .map(stationResponse -> stationResponse.getName())
+                .collect(Collectors.toList());
+        assertThat(stations).containsExactly("강남역_보다_상행역", "강남역", "광교역");
+    }
+
+    @Test
+    void 새로운_역을_하행_종점으로_등록할_경우() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        StationResponse 광교역_보다_하행역 =
+                StationAcceptanceTest.지하철역_등록되어_있음("광교역_보다_하행역")
+                        .as(StationResponse.class);
+
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 광교역.getId() + "");
+        createParams.put("downStationId", 광교역_보다_하행역.getId() + "");
+        createParams.put("distance", 5 + "");
+
+        ExtractableResponse<Response> response = RestAssuredCRUD
+                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineResponse 구간등록_후_신분당선 = get("/lines/"+신분당선.getId())
+                .body()
+                .as(LineResponse.class);
+        List<String> stations = 구간등록_후_신분당선.getStations().stream()
+                .map(stationResponse -> stationResponse.getName())
+                .collect(Collectors.toList());
+        assertThat(stations).containsExactly("강남역", "광교역", "광교역_보다_하행역");
+    }
+
     @DisplayName("역_사이_뒤쪽에_새로운_역을_등록할_경우")
     @Test
     void addSection_1() {
