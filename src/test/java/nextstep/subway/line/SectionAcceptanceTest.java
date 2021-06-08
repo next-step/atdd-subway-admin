@@ -9,6 +9,8 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 
@@ -89,6 +91,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_구간_등록됨(response);
         지하철_노선_지하철역_정렬된_목록_포함됨(조회된_구간들, Arrays.asList(강남역, 정자역, 광교역));
+    }
+
+    @DisplayName("노선에 구간을 등록할 때 실패한다. (새로운 역을 기존 역사이에 등록할 때, 기존 구간 길이보다 같거나 클 경우")
+    @ParameterizedTest
+    @ValueSource(ints = {10, 11, 12})
+    void addSection_at_inside_fail(int distance) {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 정자역, 광교역, distance);
+
+        지하철_노선_구간_생성_실패됨(response);
     }
 
     @DisplayName("노선에 구간을 등록할 때 실패한다. (상행역, 하행역이 이미 노선에 등록되어 있다.)")
