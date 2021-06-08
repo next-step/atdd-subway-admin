@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -44,8 +45,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionTest01() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
-            dynamicTest("홍대입구역-DMC역 구간 추가", () -> addSectionRequestSuccess(HONGIK_UNIV, DMC, 50))
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("홍대입구역-DMC역 구간 추가", addSectionRequestSuccess(HONGIK_UNIV, DMC, 50))
         );
     }
 
@@ -53,8 +54,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionTest02() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
-            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 50))
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", addSectionRequestSuccess(SEOUL, GONGDEOK, 50))
         );
     }
 
@@ -62,8 +63,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionTest03() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(서울역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
-            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 50))
+            dynamicTest("공항철도 노선 생성(서울역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", addSectionRequestSuccess(SEOUL, GONGDEOK, 50))
         );
     }
 
@@ -71,8 +72,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionTest04() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(서울역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
-            dynamicTest("공덕역-홍대입구역 구간 추가", () -> addSectionRequestSuccess(GONGDEOK, HONGIK_UNIV, 50))
+            dynamicTest("공항철도 노선 생성(서울역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
+            dynamicTest("공덕역-홍대입구역 구간 추가", addSectionRequestSuccess(GONGDEOK, HONGIK_UNIV, 50))
         );
     }
 
@@ -80,12 +81,12 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionTest05() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
-            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 50)),
-            dynamicTest("홍대입구역-DMC역 구간 추가", () -> addSectionRequestSuccess(HONGIK_UNIV, DMC, 100)),
-            dynamicTest("DMC역-마곡나루 구간 추가", () -> addSectionRequestSuccess(DMC, MAGONGNARU, 150)),
-            dynamicTest("마곡나루역-김포공항역 구간 추가", () -> addSectionRequestSuccess(MAGONGNARU, GIMPO_AIRPORT, 200)),
-            dynamicTest("김포공항역-계양역 구간 추가", () -> addSectionRequestSuccess(GIMPO_AIRPORT, GYEYANG, 250))
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", addSectionRequestSuccess(SEOUL, GONGDEOK, 50)),
+            dynamicTest("홍대입구역-DMC역 구간 추가", addSectionRequestSuccess(HONGIK_UNIV, DMC, 100)),
+            dynamicTest("DMC역-마곡나루 구간 추가", addSectionRequestSuccess(DMC, MAGONGNARU, 150)),
+            dynamicTest("마곡나루역-김포공항역 구간 추가", addSectionRequestSuccess(MAGONGNARU, GIMPO_AIRPORT, 200)),
+            dynamicTest("김포공항역-계양역 구간 추가", addSectionRequestSuccess(GIMPO_AIRPORT, GYEYANG, 250))
         );
     }
 
@@ -93,8 +94,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionFailBecauseOfDistance01() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(서울역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
-            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestFail(SEOUL, GONGDEOK, 200))
+            dynamicTest("공항철도 노선 생성(서울역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", addSectionRequestFail(SEOUL, GONGDEOK, 200))
         );
     }
 
@@ -102,8 +103,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionFailBecauseOfDistance02() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(서울역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
-            dynamicTest("공덕역-홍대입구역 구간 추가", () -> addSectionRequestFail(GONGDEOK, HONGIK_UNIV, 200))
+            dynamicTest("공항철도 노선 생성(서울역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_SEOUL_TO_HONGIK)),
+            dynamicTest("공덕역-홍대입구역 구간 추가", addSectionRequestFail(GONGDEOK, HONGIK_UNIV, 200))
         );
     }
 
@@ -111,9 +112,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionFailBecauseOfDuplicate01() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
-            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 150)),
-            dynamicTest("홍대입구역-서울역 구간 추가", () -> addSectionRequestFail(HONGIK_UNIV, SEOUL, 100))
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", addSectionRequestSuccess(SEOUL, GONGDEOK, 150)),
+            dynamicTest("홍대입구역-서울역 구간 추가", addSectionRequestFail(HONGIK_UNIV, SEOUL, 100))
         );
     }
 
@@ -121,8 +122,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionFailBecauseOfDuplicate02() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
-            dynamicTest("홍대입구역-공덕역 구간 추가", () -> addSectionRequestFail(HONGIK_UNIV, GONGDEOK, 100))
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("홍대입구역-공덕역 구간 추가", addSectionRequestFail(HONGIK_UNIV, GONGDEOK, 100))
         );
     }
 
@@ -130,8 +131,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> addSectionFailTest01() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
-            dynamicTest("김포공항-계양역 구간 추가", () -> addSectionRequestFail(GIMPO_AIRPORT, GYEYANG, 100))
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("김포공항-계양역 구간 추가", addSectionRequestFail(GIMPO_AIRPORT, GYEYANG, 100))
         );
     }
 
@@ -139,9 +140,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> removeSectionFailTest01() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
-            dynamicTest("공덕역 삭제 요청", () -> removeSectionRequestFail(GONGDEOK)),
-            dynamicTest("홍대입구역 삭제 요청", () -> removeSectionRequestFail(HONGIK_UNIV))
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("공덕역 삭제 요청", removeSectionRequestFail(GONGDEOK)),
+            dynamicTest("홍대입구역 삭제 요청", removeSectionRequestFail(HONGIK_UNIV))
         );
     }
 
@@ -149,10 +150,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> removeSectionTest01() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
-            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 150)),
-            dynamicTest("서울역 구간 삭제 요청", () -> removeSectionRequestSuccess(SEOUL)),
-            dynamicTest("공덕역-홍대입구역 구간 확인", () -> getSectionRequestAndTest(GONGDEOK, HONGIK_UNIV, 100))
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", addSectionRequestSuccess(SEOUL, GONGDEOK, 150)),
+            dynamicTest("서울역 구간 삭제 요청", removeSectionRequestSuccess(SEOUL)),
+            dynamicTest("구간 개수 확인", getSectionRequestAndTest(1)),
+            dynamicTest("공덕역-홍대입구역 구간 확인", getSectionRequestAndTest(GONGDEOK, HONGIK_UNIV, 100))
         );
     }
 
@@ -160,10 +162,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> removeSectionTest02() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
-            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 150)),
-            dynamicTest("홍대입구역 구간 삭제 요청", () -> removeSectionRequestSuccess(HONGIK_UNIV)),
-            dynamicTest("서울역-공덕역 구간 확인", () -> getSectionRequestAndTest(SEOUL, GONGDEOK, 150))
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", addSectionRequestSuccess(SEOUL, GONGDEOK, 150)),
+            dynamicTest("홍대입구역 구간 삭제 요청", removeSectionRequestSuccess(HONGIK_UNIV)),
+            dynamicTest("구간 개수 확인", getSectionRequestAndTest(1)),
+            dynamicTest("서울역-공덕역 구간 확인", getSectionRequestAndTest(SEOUL, GONGDEOK, 150))
         );
     }
 
@@ -171,10 +174,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> removeSectionTest03() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
-            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 150)),
-            dynamicTest("공덕역 구간 삭제 요청", () -> removeSectionRequestSuccess(GONGDEOK)),
-            dynamicTest("서울역-홍대입구 구간 확인", () -> getSectionRequestAndTest(SEOUL, HONGIK_UNIV, 250))
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", addSectionRequestSuccess(SEOUL, GONGDEOK, 150)),
+            dynamicTest("공덕역 구간 삭제 요청", removeSectionRequestSuccess(GONGDEOK)),
+            dynamicTest("구간 개수 확인", getSectionRequestAndTest(1)),
+            dynamicTest("서울역-홍대입구 구간 확인", getSectionRequestAndTest(SEOUL, HONGIK_UNIV, 250))
         );
     }
 
@@ -182,39 +186,40 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> removeSectionTest04() {
         return Stream.of(
-            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역, 길이 100)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
-            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 50)),
-            dynamicTest("홍대입구역-DMC역 구간 추가", () -> addSectionRequestSuccess(HONGIK_UNIV, DMC, 100)),
-            dynamicTest("DMC역-마곡나루 구간 추가", () -> addSectionRequestSuccess(DMC, MAGONGNARU, 150)),
-            dynamicTest("마곡나루역-김포공항역 구간 추가", () -> addSectionRequestSuccess(MAGONGNARU, GIMPO_AIRPORT, 200)),
-            dynamicTest("김포공항역-계양역 구간 추가", () -> addSectionRequestSuccess(GIMPO_AIRPORT, GYEYANG, 250)),
-            dynamicTest("서울역 구간 삭제 요청", () -> removeSectionRequestSuccess(SEOUL)),
-            dynamicTest("서울역 구간 삭제 확인", () -> getSectionRequestAndTest(5)),
-            dynamicTest("DMC역 구간 삭제 요청", () -> removeSectionRequestSuccess(DMC)),
-            dynamicTest("홍대입구역-마곡나루역 구간 확인", () -> getSectionRequestAndTest(HONGIK_UNIV, MAGONGNARU, 250)),
-            dynamicTest("김포공항역 구간 삭제 요청", () -> removeSectionRequestSuccess(GIMPO_AIRPORT)),
-            dynamicTest("마곡나루역-계양역 구간 확인", () -> getSectionRequestAndTest(MAGONGNARU, GYEYANG, 450))
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역, 길이 100)", createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", addSectionRequestSuccess(SEOUL, GONGDEOK, 50)),
+            dynamicTest("홍대입구역-DMC역 구간 추가", addSectionRequestSuccess(HONGIK_UNIV, DMC, 100)),
+            dynamicTest("DMC역-마곡나루 구간 추가", addSectionRequestSuccess(DMC, MAGONGNARU, 150)),
+            dynamicTest("마곡나루역-김포공항역 구간 추가", addSectionRequestSuccess(MAGONGNARU, GIMPO_AIRPORT, 200)),
+            dynamicTest("김포공항역-계양역 구간 추가", addSectionRequestSuccess(GIMPO_AIRPORT, GYEYANG, 250)),
+            dynamicTest("서울역 구간 삭제 요청", removeSectionRequestSuccess(SEOUL)),
+            dynamicTest("구간 개수 확인", getSectionRequestAndTest(5)),
+            dynamicTest("DMC역 구간 삭제 요청", removeSectionRequestSuccess(DMC)),
+            dynamicTest("홍대입구역-마곡나루역 구간 확인", getSectionRequestAndTest(HONGIK_UNIV, MAGONGNARU, 250)),
+            dynamicTest("김포공항역 구간 삭제 요청", removeSectionRequestSuccess(GIMPO_AIRPORT)),
+            dynamicTest("마곡나루역-계양역 구간 확인", getSectionRequestAndTest(MAGONGNARU, GYEYANG, 450))
         );
     }
 
-    private void createLineRequestSuccess(LineTestData data) {
+    private Executable createLineRequestSuccess(LineTestData data) {
+        return () -> {
+            LineRequest lineRequest = data.getLine();
+            ExtractableResponse<Response> response = RestAssured.given().log().all()
+                                                                .body(data.getLine())
+                                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                                .when().post("/lines")
+                                                                .then().log().all()
+                                                                .extract();
 
-        LineRequest lineRequest = data.getLine();
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                                                            .body(data.getLine())
-                                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                            .when().post("/lines")
-                                                            .then().log().all()
-                                                            .extract();
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(response.header("Location")).startsWith("/lines");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).startsWith("/lines");
+            assertThat(response.body().jsonPath().getString("name"))
+                .isEqualTo(lineRequest.getName());
 
-        assertThat(response.body().jsonPath().getString("name"))
-            .isEqualTo(lineRequest.getName());
-
-        assertThat(response.body().jsonPath().getString("color"))
-            .isEqualTo(lineRequest.getColor());
+            assertThat(response.body().jsonPath().getString("color"))
+                .isEqualTo(lineRequest.getColor());
+        };
     }
 
     private ExtractableResponse<Response> addSectionRequest(Long upStationId, Long downStationId, int distance) {
@@ -229,14 +234,16 @@ class SectionAcceptanceTest extends AcceptanceTest {
                           .extract();
     }
 
-    private void addSectionRequestSuccess(StationConstants upStation, StationConstants downStation, int distance) {
-        ExtractableResponse<Response> response = addSectionRequest(upStation.getId(),
-                                                                   downStation.getId(),
-                                                                   distance);
+    private Executable addSectionRequestSuccess(StationConstants upStation, StationConstants downStation, int distance) {
+        return () -> {
+            ExtractableResponse<Response> response = addSectionRequest(upStation.getId(),
+                                                                       downStation.getId(),
+                                                                       distance);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        testSection(upStation, downStation, distance, response);
+            testSection(upStation, downStation, distance, response);
+        };
     }
 
     private void testSection(StationConstants upStation, StationConstants downStation, int distance,
@@ -250,12 +257,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private void addSectionRequestFail(StationConstants upStation, StationConstants downStation, int distance) {
-        ExtractableResponse<Response> response = addSectionRequest(upStation.getId(),
-                                                                   downStation.getId(),
-                                                                   distance);
+    private Executable addSectionRequestFail(StationConstants upStation, StationConstants downStation, int distance) {
+        return () -> {
+            ExtractableResponse<Response> response = addSectionRequest(upStation.getId(),
+                                                                       downStation.getId(),
+                                                                       distance);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        };
     }
 
     private ExtractableResponse<Response> removeSectionRequest(StationConstants station) {
@@ -265,14 +274,18 @@ class SectionAcceptanceTest extends AcceptanceTest {
                           .extract();
     }
 
-    private void removeSectionRequestSuccess(StationConstants station) {
-        ExtractableResponse<Response> response = removeSectionRequest(station);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    private Executable removeSectionRequestSuccess(StationConstants station) {
+        return () -> {
+            ExtractableResponse<Response> response = removeSectionRequest(station);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        };
     }
 
-    private void removeSectionRequestFail(StationConstants station) {
-        ExtractableResponse<Response> response = removeSectionRequest(station);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    private Executable removeSectionRequestFail(StationConstants station) {
+        return () -> {
+            ExtractableResponse<Response> response = removeSectionRequest(station);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        };
     }
 
     private ExtractableResponse<Response> getSectionRequest() {
@@ -282,13 +295,17 @@ class SectionAcceptanceTest extends AcceptanceTest {
                           .extract();
     }
 
-    private void getSectionRequestAndTest(StationConstants upStation, StationConstants downStation, int distance) {
-        ExtractableResponse<Response> response = getSectionRequest();
-        testSection(upStation, downStation, distance, response);
+    private Executable getSectionRequestAndTest(StationConstants upStation, StationConstants downStation, int distance) {
+        return () -> {
+            ExtractableResponse<Response> response = getSectionRequest();
+            testSection(upStation, downStation, distance, response);
+        };
     }
 
-    private void getSectionRequestAndTest(int sectionSize) {
-        ExtractableResponse<Response> response = getSectionRequest();
-        assertThat(response.body().jsonPath().getList("sections")).hasSize(sectionSize);
+    private Executable getSectionRequestAndTest(int sectionSize) {
+        return () -> {
+            ExtractableResponse<Response> response = getSectionRequest();
+            assertThat(response.body().jsonPath().getList("sections")).hasSize(sectionSize);
+        };
     }
 }
