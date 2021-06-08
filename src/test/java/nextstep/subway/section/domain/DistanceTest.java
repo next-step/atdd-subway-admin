@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class DistanceTest {
@@ -29,15 +30,13 @@ class DistanceTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("주어진 거리보다 더 큰 구간 거리가 주어지면 예외를 던진다.")
     @Test
-    void createWithLongerDistance() {
+    void minus() {
         // given
-        final Distance givenDistance = new Distance(10);
-        final Section givenSection = section;
+        Distance givenDistance = new Distance(5);
 
-        // when
-        assertThatThrownBy(() -> givenDistance.checkDistanceUpdate(givenSection))
-                .isInstanceOf(IllegalArgumentException.class);
+        Distance actual = givenDistance.minus(new Distance(3));
+
+        assertThat(actual).isEqualTo(new Distance(2));
     }
 }

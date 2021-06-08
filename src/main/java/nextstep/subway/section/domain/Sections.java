@@ -7,6 +7,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -28,33 +29,85 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        this.sections.add(section);
+        if (sections.isEmpty()) {
+            this.sections.add(section);
+            return;
+        }
+        validate(section);
+        LinkedList<Section> result = new LinkedList(sections);
+        if (isFirstSectionNext(section, result.getFirst()) || isFirstSectionBefore(section, result.getFirst())) {
+            addToFirstSection(section, result, result.getFirst());
+            return;
+        }
+        if (isLastSectionNext(section, result.getLast())) {
+            addToLastSectionNext(section, result, result.getLast());
+            return;
+        }
+        if (isLastSectionBefore(section, result.getLast())) {
+            addToLastSectionBefore(section, result, result.getLast());
+            return;
+        }
+        addToMiddle(section, result);
+        sections = new ArrayList<>(result);
     }
 
-    public void updateStation(Section section) {
-        validate(section);
+    private void addToMiddle(Section section, LinkedList<Section> temp) {
         changeUpStation(section);
         changeDownStation(section);
-        sections.add(section);
+        temp.add(section);
+    }
+
+    private boolean isLastSectionBefore(Section section, Section last) {
+        return last.getDownStation().equals(section.getDownStation());
+    }
+
+    private void addToLastSectionBefore(Section section, LinkedList<Section> temp, Section last) {
+        temp.addLast(new Section(last));
+        last.changeUpStation(section);
+        sections = new ArrayList<>(temp);
+    }
+
+    private void addToLastSectionNext(Section section, LinkedList<Section> temp, Section last) {
+        last.changeDownStation(section);
+        temp.addLast(section);
+        sections = new ArrayList<>(temp);
+    }
+
+    private boolean isLastSectionNext(Section section, Section last) {
+        return last.getDownStation().equals(section.getUpStation());
+    }
+
+    private void addToFirstSection(Section section, LinkedList<Section> temp, Section first) {
+        first.changeUpStation(section);
+        temp.addFirst(section);
+        sections = new ArrayList<>(temp);
+    }
+
+    private boolean isFirstSectionBefore(Section section, Section first) {
+        return first.getUpStation().equals(section.getDownStation());
+    }
+
+    private boolean isFirstSectionNext(Section section, Section first) {
+        return first.getUpStation().equals(section.getUpStation());
     }
 
     private void validate(Section section) {
-        final List<Station> stations = getStations();
-
-        if (checkSectionDuplicated(stations, section)) {
+        if (checkSectionDuplicated(section)) {
             throw new SectionDuplicatedException(SECTION_DUPLICATE);
         }
-        if (checkSectionStationExisted(stations, section)) {
+        if (checkSectionStationExisted(section)) {
             throw new StationNotRegisterException(NOT_REGISTERED_STATION);
         }
     }
 
-    private boolean checkSectionDuplicated(List<Station> stations, Section section) {
-        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
+    private boolean checkSectionDuplicated(Section section) {
+        return sections.stream()
+                .allMatch(section::containsAllStations);
     }
 
-    private boolean checkSectionStationExisted(List<Station> stations, Section section) {
-        return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
+    private boolean checkSectionStationExisted(Section section) {
+        return sections.stream()
+                .allMatch(section::containsNoneStations);
     }
 
     private void changeDownStation(Section section) {

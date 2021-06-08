@@ -39,7 +39,7 @@ public class SectionControllerTest {
 
     private SectionRequest sectionRequest = new SectionRequest(1L, 3L, 5);
 
-    private SectionResponse sectionResponse = new SectionResponse(2L, 1L, 3L, 5);
+    private SectionResponse sectionResponse = new SectionResponse(1L, 3L, 5);
 
     @Nested
     @DisplayName("POST /{lineId}/section는")

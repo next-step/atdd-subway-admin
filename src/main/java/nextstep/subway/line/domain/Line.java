@@ -46,11 +46,6 @@ public class Line extends BaseEntity {
         this.sections.addSection(section);
     }
 
-    public void updateSection(Section section) {
-        section.setLine(this);
-        this.sections.updateStation(section);
-    }
-
     public void update(Line line) {
         this.name = new Name(line.getName());
         this.color = new Color(line.getColor());

@@ -20,6 +20,7 @@ public class ErrorAdvice {
     private static final String STATION_NOT_REGISTERED = "등록되지 않은 역입니다.";
     private static final String STATION_NOT_FOUND = "존재하지 않은 역입니다.";
     private static final String INVALID_INPUT = "잘못된 입력입니다.";
+    private static final String SEVER_ERROR = "에러가 발생했습니다.";
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(LineDuplicatedException.class)
@@ -51,10 +52,15 @@ public class ErrorAdvice {
         return new ErrorResponse(SECTION_ALREADY_EXISTED);
     }
 
-
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(StationNotRegisterException.class)
     public ErrorResponse handleStationNotRegistered() {
         return new ErrorResponse(STATION_NOT_REGISTERED);
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Throwable.class)
+    public ErrorResponse handleException() {
+        return new ErrorResponse(SEVER_ERROR);
     }
 }
