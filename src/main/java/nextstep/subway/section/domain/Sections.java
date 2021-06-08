@@ -31,10 +31,11 @@ public class Sections {
 
 	public List<Station> getOrderedStations() {
 		Section currentSection = this.getFirstSection();
-		Stream<Station> stations = Stream.empty();
+		Stream<Station> stations = currentSection.toStationStream();
 		do {
+			currentSection = this.nextSection(currentSection);
 			stations = Stream.concat(stations,
-				Stream.of(currentSection.getUpStation(), currentSection.getDownStation()))
+				currentSection.toStationStream())
 				.distinct();
 		} while (hasNext(currentSection));
 
@@ -44,6 +45,13 @@ public class Sections {
 	private boolean hasNext(Section currentSection) {
 		return this.sections.stream()
 			.anyMatch(section -> section.getUpStation().equals(currentSection.getDownStation()));
+	}
+
+	private Section nextSection(Section currentSection) {
+		return this.sections.stream()
+			.filter(section -> section.getUpStation().equals(currentSection.getDownStation()))
+			.findAny().orElse(currentSection);
+
 	}
 
 	private Section getFirstSection() {
