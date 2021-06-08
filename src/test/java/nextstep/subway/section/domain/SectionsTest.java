@@ -52,6 +52,18 @@ public class SectionsTest {
         assertThat(stations.get(6)).isEqualTo(sixthSection.getDownStation());
     }
 
+    @DisplayName("구간추가시 연결이 불가능한 구간일 경우 예외 발생")
+    @Test
+    void addFail() {
+        // given
+        Sections sections = new Sections();
+        sections.add(firstSection);
+
+        // when & then
+        assertThatThrownBy(() -> sections.add(thirdSection))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("구간추가 메서드를 이용했을때 지하철역 정렬 확인")
     @Test
     void add() {
