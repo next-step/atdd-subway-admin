@@ -76,7 +76,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		지하철_역_삭제_확인(response);
 	}
 
-	ExtractableResponse<Response> 지하철역_생성하기(StationRequest stationRequest) {
+	public static ExtractableResponse<Response> 지하철역_생성하기(StationRequest stationRequest) {
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.body(stationRequest)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -87,13 +87,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		return response;
 	}
 
-	void 지하철역_생성됨(ExtractableResponse<Response> response, StationRequest stationRequest) {
+	public static void 지하철역_생성됨(ExtractableResponse<Response> response, StationRequest stationRequest) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(response.header("Location")).isNotBlank();
 		assertThat(response.body().jsonPath().getString("name")).isEqualTo(stationRequest.getName());
 	}
 
-	ExtractableResponse<Response> 지하철역_생성되어_있음(StationRequest stationRequest) {
+	public static ExtractableResponse<Response> 지하철역_생성되어_있음(StationRequest stationRequest) {
 		ExtractableResponse<Response> response = 지하철역_생성하기(stationRequest);
 		지하철역_생성됨(response, stationRequest);
 		return response;

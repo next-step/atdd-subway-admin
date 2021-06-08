@@ -18,6 +18,8 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -27,8 +29,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	@BeforeEach
 	void lineSetUp() {
-		lineNumber1 = new LineRequest("1호선", "Blue");
-		lineNumber2 = new LineRequest("2호선", "Green");
+		ExtractableResponse<Response> createGangNamStationResponse = StationAcceptanceTest.지하철역_생성되어_있음(
+			new StationRequest("강남역"));
+		ExtractableResponse<Response> createSungSuStationResponse = StationAcceptanceTest.지하철역_생성되어_있음(
+			new StationRequest("성수역"));
+		ExtractableResponse<Response> createSeoulStationResponse = StationAcceptanceTest.지하철역_생성되어_있음(
+			new StationRequest("서울역"));
+		ExtractableResponse<Response> createSindorimStationResponse = StationAcceptanceTest.지하철역_생성되어_있음(
+			new StationRequest("신도림역"));
+		Long gangNameStationId = createGangNamStationResponse.body().jsonPath().getLong("id");
+		Long sungSuStationId = createSungSuStationResponse.body().jsonPath().getLong("id");
+		Long seoulStationId = createSeoulStationResponse.body().jsonPath().getLong("id");
+		Long sindorimStationId = createSindorimStationResponse.body().jsonPath().getLong("id");
+		lineNumber1 = new LineRequest("1호선", "Blue",seoulStationId, sindorimStationId, 15);
+		lineNumber2 = new LineRequest("2호선", "Green",gangNameStationId, sungSuStationId, 10);
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
@@ -36,6 +50,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void createLine() {
 		//when
 		ExtractableResponse<Response> response = 지하철_노선을_생성한다(lineNumber2);
+
 		// then
 		지하철_노선_생성됨(response, lineNumber2);
 	}
@@ -194,5 +209,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		assertThat(response.body().jsonPath().getString("name")).isEqualTo(lineRequest.getName());
 		assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineRequest.getColor());
+		assertThat(response.body().jsonPath().getList("sections")).hasSize(2);
+		assertThat(response.body().jsonPath().getLong("$.sections[0].id")).isEqualTo(lineRequest.getUpStationId());
+		assertThat(response.body().jsonPath().getLong("$.sections[1].id")).isEqualTo(lineRequest.getDownStationId());
 	}
 }
