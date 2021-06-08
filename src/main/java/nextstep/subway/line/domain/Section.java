@@ -27,6 +27,7 @@ public class Section extends BaseEntity {
     private int distance;
 
     private static final int MINIMUN_NEW_DISTANCE = 0;
+    private static final String EXCEPTION_FOR_DISTANCE = "기존 구간 안에 구간 등록시 distance는 기존 구간보다 작아야 합니다.";
 
     protected Section() {
     }
@@ -66,7 +67,7 @@ public class Section extends BaseEntity {
 
     private static void checkDistance(int calculatedDistance) {
         if (calculatedDistance <= MINIMUN_NEW_DISTANCE) {
-            throw new IllegalArgumentException("기존 구간 내부에 구간 등록시 distance는 기존 구간보다 작아야 합니다.");
+            throw new IllegalArgumentException(EXCEPTION_FOR_DISTANCE);
         }
     }
 

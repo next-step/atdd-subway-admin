@@ -16,6 +16,9 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    private static final String EXCEPTION_FOR_EQUAL_SECTION = "상행역, 하행역 모두 등록되어 있습니다.";
+    private static final String EXCEPTION_FOR_HAS_NOT_STATIONS = "상행역, 하행역 모두 등록되어 있지 않습니다.";
+
     protected Sections() {
     }
 
@@ -35,13 +38,13 @@ public class Sections {
 
     private void checkExistEqualSection(Section section) {
         if (isMatchWithUpStation(section) && isMatchWithDownStation(section)) {
-            throw new IllegalArgumentException("상행역, 하행역 모두 등록되어 있습니다.");
+            throw new IllegalArgumentException(EXCEPTION_FOR_EQUAL_SECTION);
         }
     }
 
     private void checkNotExistAnyEqualStation(Section section) {
         if (!isMatchWithUpStation(section) && !isMatchWithDownStation(section)) {
-            throw new IllegalArgumentException("상행역, 하행역 모두 등록되어 있지 않습니다.");
+            throw new IllegalArgumentException(EXCEPTION_FOR_HAS_NOT_STATIONS);
         }
     }
 
