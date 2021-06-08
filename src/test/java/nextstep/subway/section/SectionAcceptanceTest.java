@@ -46,9 +46,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         신분당선 = LineAcceptanceTest.지하철_노선_등록되어_있음(createParams).as(LineResponse.class);
     }
 
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("역_사이_뒤쪽에_새로운_역을_등록할_경우")
     @Test
-    void addSection() {
+    void addSection_1() {
         // when
         // 지하철_노선에_지하철역_등록_요청
         StationResponse 강남역과_광교역_사이의_역 =
@@ -75,4 +75,33 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(stations).containsExactly("강남역", "강남역과_광교역_사이의_역", "광교역");
     }
 
+    @DisplayName("역_사이_앞쪽에_새로운_역을_등록할_경우")
+    @Test
+    void addSection_2() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        StationResponse 강남역과_광교역_사이의_역 =
+                StationAcceptanceTest.지하철역_등록되어_있음("강남역과_광교역_사이의_역")
+                        .as(StationResponse.class);
+
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 강남역.getId() + "");
+        createParams.put("downStationId", 강남역과_광교역_사이의_역.getId() + "");
+        createParams.put("distance", 5 + "");
+
+        ExtractableResponse<Response> response = RestAssuredCRUD
+                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+
+        // then
+        // 지하철_노선에_지하철역_등록됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineResponse 구간등록_후_신분당선 = get("/lines/"+신분당선.getId())
+                .body()
+                .as(LineResponse.class);
+        List<String> stations = 구간등록_후_신분당선.getStations().stream()
+                .map(stationResponse -> stationResponse.getName())
+                .collect(Collectors.toList());
+        assertThat(stations).containsExactly("강남역", "강남역과_광교역_사이의_역", "광교역");
+    }
+    
 }
