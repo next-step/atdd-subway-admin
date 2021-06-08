@@ -106,23 +106,13 @@ public class Section extends BaseEntity {
   }
 
   public void updateDownStation(Section newSection) {
-    int distanceDiff = distanceDiffWithNewSection(newSection.distance);
     this.downStation = newSection.upStation;
-    this.distance = Distance.from(distanceDiff);
+    this.distance = this.distance.subtract(newSection.distance);
   }
 
   public void updateUpStation(Section newSection) {
-    int distanceDiff = distanceDiffWithNewSection(newSection.distance);
     this.upStation = newSection.downStation;
-    this.distance = Distance.from(distanceDiff);
-  }
-
-  private int distanceDiffWithNewSection(Distance newSectionDistacne) {
-    int distanceDiff = this.distance.getNumber() - newSectionDistacne.getNumber();
-    if (distanceDiff <= 0) {
-      throw new IllegalArgumentException(NEW_SECTION_MUST_SHORTER_THAN_EXIST_SECTION);
-    }
-    return distanceDiff;
+    this.distance = this.distance.subtract(newSection.distance);
   }
 
   @Override
