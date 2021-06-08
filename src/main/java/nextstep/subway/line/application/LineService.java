@@ -5,11 +5,14 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.domain.Stations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -36,10 +39,15 @@ public class LineService {
     }
 
     private Section createSection(LineRequest request) {
-        Station upStation = findStationById(request.getUpStationId());
-        Station downStation = findStationById(request.getDownStationId());
+        Stations stations = findByIdIn(request.getUpStationId(), request.getDownStationId());
+        Station upStation = stations.getStationById(request.getUpStationId());
+        Station downStation = stations.getStationById(request.getDownStationId());
 
         return Section.create(upStation, downStation, request.getDistance());
+    }
+
+    private Stations findByIdIn(Long upStationId, Long downStationId) {
+        return Stations.create(stationRepository.findByIdIn(Arrays.asList(upStationId, downStationId)));
     }
 
     private Station findStationById(long stationId) {
@@ -69,5 +77,20 @@ public class LineService {
     @Transactional
     public void deleteLine(long lineId) {
         lineRepository.deleteById(lineId);
+    }
+
+    @Transactional
+    public LineResponse addSection(long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+
+        Stations stations = findByIdIn(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
+        Station upStation = stations.getStationById(sectionRequest.getUpStationId());
+        Station downStation = stations.getStationById(sectionRequest.getDownStationId());
+
+        Section section = Section.create(upStation, downStation, sectionRequest.getDistance());
+
+        line.addSection(section);
+
+        return LineResponse.of(line);
     }
 }
