@@ -36,7 +36,7 @@ public class LineController {
         return ResponseEntity.ok().body(line);
     }
 
-    @PatchMapping("/")
+    @PatchMapping
     public ResponseEntity<LineResponse> updateLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.updateByName(lineRequest);
         return ResponseEntity.ok().body(line);
