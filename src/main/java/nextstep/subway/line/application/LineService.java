@@ -28,11 +28,6 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
-    }
-
-    public LineResponse saveLineWithSection(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLineWithSection());
         return LineResponse.of(persistLine);
     }
