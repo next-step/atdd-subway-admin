@@ -27,3 +27,4 @@ host: localhost:52165
 - [ ] Sections의 OneToMany 변수에 cascade, orphanRemoval 속성 부여
     - 서비스 메서드에 드러나있던 로직을 도메인 메서드로 변경와 연계가 필요함
 - [ ] 의미있는 이름으로 변경
+- [x] sections 정렬 메서드 리팩토링

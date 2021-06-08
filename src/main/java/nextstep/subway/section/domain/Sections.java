@@ -60,41 +60,31 @@ public class Sections {
     Set<Station> stations = getDistinctStations();
     return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
   }
-
   private List<Section> getSortedSections() {
     List<Section> sortedSections = new ArrayList<>();
-    Section currentSection = findFirstSection();
-    sortedSections.add(currentSection);
-    addNextSectionIfExist(findNextSection(currentSection), sortedSections);
+    List<Section> elementDecreasingList = new ArrayList<>(getLineSections());
+    Iterator<Section> elementDecreasingListIterator = elementDecreasingList.iterator();
+    while (elementDecreasingListIterator.hasNext()) {
+      sortedSections.add(popFirstSection(elementDecreasingList));
+    }
     return sortedSections;
   }
 
-  private void addNextSectionIfExist(Optional<Section> maybeNextSection, List<Section> sortedSections) {
-    if (!maybeNextSection.isPresent()) {
-      return;
+  private Section popFirstSection(List<Section> sections) {
+    Iterator<Section> iterator = sections.iterator();
+    while (iterator.hasNext()) {
+      Section current = iterator.next();
+      if (isHead(sections, current)) {
+        iterator.remove();
+        return current;
+      }
     }
-    Section section = maybeNextSection.get();
-    sortedSections.add(section);
-    addNextSectionIfExist(findNextSection(section), sortedSections);
+    throw new IllegalArgumentException(EMPTY_SECTIONS);
   }
 
-  private Section findFirstSection() {
-    return getLineSections().stream()
-        .filter(this::isHead)
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException(EMPTY_SECTIONS));
-  }
-
-  private boolean isHead(Section compare) {
-    return getLineSections().stream()
+  private boolean isHead(List<Section> sections, Section compare) {
+    return sections.stream()
         .filter(origin -> !compare.isSameEdges(origin))
         .noneMatch(compare::isAfter);
-  }
-
-  private Optional<Section> findNextSection(Section compare) {
-    return getLineSections().stream()
-        .filter(origin -> !compare.isSameEdges(origin))
-        .filter(origin -> origin.isAfter(compare))
-        .findFirst();
   }
 }
