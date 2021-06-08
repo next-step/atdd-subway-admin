@@ -101,9 +101,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// 지하철_노선_응답됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-		String resultLineName = response.jsonPath().get().toString();
+		String resultLineName = response.jsonPath()
+				.getString("name");
 
-		assertThat(resultLineName.contains(name)).isTrue(); // 더 좋은 방법은 없을까?
+		assertThat(resultLineName.contains(name)).isTrue();
 	}
 
 	@DisplayName("지하철 노선을 수정한다.")
@@ -111,9 +112,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void updateLine() {
 		// given
 		// 지하철_노선_등록되어_있음
+		String name = "잠실역";
+		String originColor = "yellow";
+		노선정보세팅_메소드(name, originColor);
 
-		// when
+		// when;
 		// 지하철_노선_수정_요청
+		String newColor = "puple";
+
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		params.put("color", newColor);
+
+		RestAssured.given().log().all()
+				.body(params)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when()
+				.patch("/lines/" + name)
+				.then().log().all()
+				.extract();
 
 		// then
 		// 지하철_노선_수정됨
@@ -124,6 +141,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLine() {
 		// given
 		// 지하철_노선_등록되어_있음
+		ExtractableResponse<Response> response = 노선정보세팅_메소드("잠실역", "yellow");
 
 		// when
 		// 지하철_노선_제거_요청
