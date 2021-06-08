@@ -178,6 +178,25 @@ class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("서울역 ~ 계양역 구간 생성 후 서울역, DMC역, 김포공항역 삭제")
+    @TestFactory
+    Stream<DynamicTest> removeSectionTest04() {
+        return Stream.of(
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역, 길이 100)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 50)),
+            dynamicTest("홍대입구역-DMC역 구간 추가", () -> addSectionRequestSuccess(HONGIK_UNIV, DMC, 100)),
+            dynamicTest("DMC역-마곡나루 구간 추가", () -> addSectionRequestSuccess(DMC, MAGONGNARU, 150)),
+            dynamicTest("마곡나루역-김포공항역 구간 추가", () -> addSectionRequestSuccess(MAGONGNARU, GIMPO_AIRPORT, 200)),
+            dynamicTest("김포공항역-계양역 구간 추가", () -> addSectionRequestSuccess(GIMPO_AIRPORT, GYEYANG, 250)),
+            dynamicTest("서울역 구간 삭제 요청", () -> removeSectionRequestSuccess(SEOUL)),
+            dynamicTest("서울역 구간 삭제 확인", () -> getSectionRequestAndTest(5)),
+            dynamicTest("DMC역 구간 삭제 요청", () -> removeSectionRequestSuccess(DMC)),
+            dynamicTest("홍대입구역-마곡나루역 구간 확인", () -> getSectionRequestAndTest(HONGIK_UNIV, MAGONGNARU, 250)),
+            dynamicTest("김포공항역 구간 삭제 요청", () -> removeSectionRequestSuccess(GIMPO_AIRPORT)),
+            dynamicTest("마곡나루역-계양역 구간 확인", () -> getSectionRequestAndTest(MAGONGNARU, GYEYANG, 450))
+        );
+    }
+
     private void createLineRequestSuccess(LineTestData data) {
 
         LineRequest lineRequest = data.getLine();
@@ -256,13 +275,20 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    private ExtractableResponse<Response> getSectionRequest() {
+        return RestAssured.given().log().all()
+                          .when().get("/lines/1/sections")
+                          .then().log().all()
+                          .extract();
+    }
+
     private void getSectionRequestAndTest(StationConstants upStation, StationConstants downStation, int distance) {
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                                                            .when().get("/lines/1/sections")
-                                                            .then().log().all()
-                                                            .extract();
-
+        ExtractableResponse<Response> response = getSectionRequest();
         testSection(upStation, downStation, distance, response);
+    }
+
+    private void getSectionRequestAndTest(int sectionSize) {
+        ExtractableResponse<Response> response = getSectionRequest();
+        assertThat(response.body().jsonPath().getList("sections")).hasSize(sectionSize);
     }
 }
