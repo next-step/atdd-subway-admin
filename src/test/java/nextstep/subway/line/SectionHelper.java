@@ -14,4 +14,10 @@ public class SectionHelper {
                 .when().post("/lines/" + lineId + "/sections/")
                 .then().log().all().extract();
     }
+
+    public static ExtractableResponse 역_삭제(Long lineId, Long stationId) {
+        return RestAssured.given().log().all().queryParam("stationId", stationId)
+                .when().delete("/lines/" + lineId + "/sections")
+                .then().log().all().extract();
+    }
 }

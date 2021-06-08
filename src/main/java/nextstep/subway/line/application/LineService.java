@@ -83,4 +83,13 @@ public class LineService {
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
     }
+
+    public void deleteStation(Long id, Long stationId) {
+        Line findLine = lineRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new);
+
+        Station station = stationRepository.findById(stationId).orElseThrow(NoSuchElementException::new);
+
+        findLine.deleteStation(station);
+    }
 }

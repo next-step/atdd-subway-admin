@@ -33,12 +33,12 @@ public class Section implements Comparable<Section> {
         this.distance = distance;
     }
 
-    public boolean isEqualToUpStation(Station station) {
-        return upStation.equals(station);
-    }
-
     public boolean isEqualToDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    public boolean isEqualToUpStation(Station station) {
+        return upStation.equals(station);
     }
 
     public Long getId() {
@@ -78,6 +78,10 @@ public class Section implements Comparable<Section> {
 
         if (isEqualToUpStation(section.getDownStation())) {
             return 1; //뒤로 간다.
+        }
+
+        if (this.equals(section)) {
+            return 0; //treeSet은 add, remove 할 때 equals나 hashcode가 아닌 compareTo의 영향을 받는다.
         }
 
         // treeSet의 특성상 return 값이 0이면 add를 하지 않으므로 뒤로 가는 조건만 걸리지 않으면 무조건 앞(index==0 쪽)으로 보낸다.

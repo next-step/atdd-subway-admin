@@ -56,10 +56,17 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponse);
     }
 
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity deleteStation(@PathVariable Long id, @RequestParam Long stationId) {
+        lineService.deleteStation(id, stationId);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(
             {
                     DataIntegrityViolationException.class, InvalidDistanceException.class,
-                    TwoStationAlreadyExistException.class, TwoStationNotExistException.class
+                    TwoStationAlreadyExistException.class, TwoStationNotExistException.class,
+                    CannotDeleteOnlySectionException.class, NoStationInLineException.class
             }
     )
     public ResponseEntity exceptionHandler() {
