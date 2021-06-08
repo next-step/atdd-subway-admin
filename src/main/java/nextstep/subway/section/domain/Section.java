@@ -94,6 +94,11 @@ public class Section extends BaseEntity {
         this.sequence = sequence;
     }
 
+    public void mergeDownStation(Section section) {
+        this.distance += section.distance;
+        this.downStation = section.downStation;
+    }
+
     public Long getId() {
         return id;
     }
