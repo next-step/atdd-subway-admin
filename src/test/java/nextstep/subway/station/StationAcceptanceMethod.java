@@ -35,4 +35,8 @@ public class StationAcceptanceMethod {
 			.then().log().all()
 			.extract();
 	}
+
+	public static Long getStationID(ExtractableResponse<Response> createResponse) {
+		return Long.parseLong(createResponse.header("Location").split("/")[2]);
+	}
 }

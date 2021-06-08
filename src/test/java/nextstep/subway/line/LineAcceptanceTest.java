@@ -15,18 +15,35 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.StationAcceptanceMethod;
+import nextstep.subway.station.dto.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+	Long stationId1;
+	Long stationId2;
+	int distance;
+
+	private void setUpStations() {
+		stationId1 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("강남역")));
+		stationId2 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("역삼역")));
+		distance = 10;
+	}
+
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
 		// given
+		// 지하철_역_등록되어_있음
+		setUpStations();
 		// 지하철_노선_미등록_상태
 
 		// when
 		// 지하철_노선_생성_요청
-		ExtractableResponse<Response> response = LineAcceptanceMethod.createLine(new LineRequest("신분당선", "bg-red-600"));
+		ExtractableResponse<Response> response = LineAcceptanceMethod.createLine(
+			new LineRequest("신분당선", "bg-red-600", stationId1, stationId2, distance));
 
 		// then
 		// 지하철_노선_생성됨
@@ -38,12 +55,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineWithDuplicateName() {
 		// given
+		// 지하철_역_등록되어_있음
+		setUpStations();
 		// 지하철_노선_등록되어_있음
-		LineAcceptanceMethod.createLine(new LineRequest("신분당선", "bg-red-600"));
+		LineAcceptanceMethod.createLine(new LineRequest("신분당선", "bg-red-600", stationId1, stationId2, distance));
 
 		// when
 		// 지하철_노선_생성_요청
-		ExtractableResponse<Response> response = LineAcceptanceMethod.createLine(new LineRequest("신분당선", "bg-red-600"));
+		ExtractableResponse<Response> response = LineAcceptanceMethod.createLine(
+			new LineRequest("신분당선", "bg-red-600", stationId1, stationId2, distance));
 
 		// then
 		// 지하철_노선_생성_실패됨
@@ -54,13 +74,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
+		// 지하철_역_등록되어_있음
+		setUpStations();
 		// 지하철_노선_등록되어_있음
 		ExtractableResponse<Response> createResponse1 = LineAcceptanceMethod.createLine(
-			new LineRequest("신분당선", "bg-red-600"));
-
+			new LineRequest("신분당선", "bg-red-600", stationId1, stationId2, distance));
 		// 지하철_노선_등록되어_있음
 		ExtractableResponse<Response> createResponse2 = LineAcceptanceMethod.createLine(
-			new LineRequest("2호선", "bg-green-600"));
+			new LineRequest("2호선", "bg-green-600", stationId1, stationId2, distance));
 
 		// when
 		// 지하철_노선_목록_조회_요청
@@ -86,9 +107,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
+		// 지하철_역_등록되어_있음
+		setUpStations();
+
 		// 지하철_노선_등록되어_있음
 		ExtractableResponse<Response> createResponse = LineAcceptanceMethod.createLine(
-			new LineRequest("신분당선", "bg-red-600"));
+			new LineRequest("신분당선", "bg-red-600", stationId1, stationId2, distance));
 
 		// when
 		// 지하철_노선_조회_요청
@@ -108,7 +132,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getNotExistsLine() {
 		// given
-		// 지하철_노선_등록되어 있지 않음
+		// 지하철_노선_등록되어 있음
+		setUpStations();
 
 		// when
 		// 지하철_노선_조회_요청
@@ -123,9 +148,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
+		// 지하철_역_등록되어_있음
+		setUpStations();
+
 		// 지하철_노선_등록되어_있음
 		ExtractableResponse<Response> createResponse = LineAcceptanceMethod.createLine(
-			new LineRequest("신분당선", "bg-red-600"));
+			new LineRequest("신분당선", "bg-red-600", stationId1, stationId2, distance));
 
 		// when
 		// 지하철_노선_수정_요청
@@ -148,10 +176,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateNotExistsLine() {
 		// given
+		// 지하철_역_등록되어_있음
+		setUpStations();
+
 		// 지하철_노선_등록되어 있지 않음
 
 		// when
-		// 지하철_노선_조회_요청
+		// 지하철_노선_수정_요청
 		ExtractableResponse<Response> modifyResponse = LineAcceptanceMethod.updateLine("1",
 			new LineRequest("구분당선", "bg-red-600"));
 
@@ -164,9 +195,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
+		// 지하철_역_등록되어_있음
+		setUpStations();
+
 		// 지하철_노선_등록되어_있음
 		ExtractableResponse<Response> createResponse = LineAcceptanceMethod.createLine(
-			new LineRequest("신분당선", "bg-red-600"));
+			new LineRequest("신분당선", "bg-red-600", stationId1, stationId2, distance));
 
 		// when
 		// 지하철_노선_제거_요청
@@ -187,6 +221,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteNotExistsLine() {
 		// given
+		// 지하철_역_등록되어_있음
+		setUpStations();
+
 		// 지하철_노선_등록되어 있지 않음
 
 		// when
