@@ -371,6 +371,93 @@ class SectionRepositoryTest {
                 .withMessageMatching("상행역과 하행역은 동일할 수 없습니다.");
     }
 
+    @DisplayName("역 제거 - 시착역 제거")
+    @Test
+    void removeStation_firstStop() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+        Station station4 = saveStation("강남");
+
+        Section section1 = saveSection(station2, station1, 5);
+        Section section2 = saveSection(station3, station2, 20);
+        Section section3 = saveSection(station4, station3, 7);
+
+        Sections sections = new Sections();
+        sections.add(section1);
+        sections.add(section2);
+        sections.add(section3);
+
+        // when
+        sections.removeStation(station1);
+
+        // then
+        List<String> stationNames = sections.getStations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(stationNames.size()).isEqualTo(3);
+        assertThat(stationNames).isEqualTo(Arrays.asList("판교", "양재", "강남"));
+    }
+
+    @DisplayName("역 제거 - 종착역 제거")
+    @Test
+    void removeStation_lastStop() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+        Station station4 = saveStation("강남");
+
+        Section section1 = saveSection(station2, station1, 5);
+        Section section2 = saveSection(station3, station2, 20);
+        Section section3 = saveSection(station4, station3, 7);
+
+        Sections sections = new Sections();
+        sections.add(section1);
+        sections.add(section2);
+        sections.add(section3);
+
+        // when
+        sections.removeStation(station4);
+
+        // then
+        List<String> stationNames = sections.getStations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(stationNames.size()).isEqualTo(3);
+        assertThat(stationNames).isEqualTo(Arrays.asList("정자", "판교", "양재"));
+    }
+
+    @DisplayName("역 제거 - 중간역 제거")
+    @Test
+    void removeStation_middle() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+        Station station4 = saveStation("강남");
+
+        Section section1 = saveSection(station2, station1, 5);
+        Section section2 = saveSection(station3, station2, 20);
+        Section section3 = saveSection(station4, station3, 7);
+
+        Sections sections = new Sections();
+        sections.add(section1);
+        sections.add(section2);
+        sections.add(section3);
+
+        // when
+        sections.removeStation(station2);
+
+        // then
+        List<String> stationNames = sections.getStations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(stationNames.size()).isEqualTo(3);
+        assertThat(stationNames).isEqualTo(Arrays.asList("정자", "양재", "강남"));
+    }
+
     private Section saveSection(Station upStation, Station downStation, int distance) {
         Section section = Section.of(upStation, downStation, distance);
         return sectionRepository.save(section);
