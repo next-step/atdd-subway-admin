@@ -100,4 +100,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_구간_생성_실패됨(response);
     }
+
+    @DisplayName("노선에 구간을 등록할 때 실패한다. (상행역, 하행역이 어느것도 노선에 등록되어 있지 않다.)")
+    @Test
+    void addSection_fail_has_not_upstation_and_downstation() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 판교역, 정자역, 5);
+
+        // then
+        지하철_노선_구간_생성_실패됨(response);
+    }
 }
