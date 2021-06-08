@@ -3,11 +3,8 @@ package nextstep.subway.section.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("구간 테스트")
 public class SectionTest {
@@ -49,13 +46,6 @@ public class SectionTest {
         Section before = new Section(1L, 2L, 7);
         Section after = new Section(2L, 3L, 4);
         assertThat(after.isAfter(before)).isTrue();
-    }
-
-    static Stream<Section> newSections() {
-        return Stream.of(
-            new Section(1L, 2L, 4),
-            new Section(2L, 3L, 4)
-        );
     }
 
     @DisplayName("상행선 하행선이 모두 동일한지 확인")
