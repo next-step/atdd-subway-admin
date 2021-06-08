@@ -144,8 +144,6 @@ public class SectionAcceptanceTest extends RestAcceptanceTest {
     }
 
     public static ExtractableResponse<Response> removeSectionByStationId(Long lineId, Long stationId) {
-        Map<String, String> params = new HashMap<>();
-        params.put("stationId", stationId.toString());
-        return executeDelete("lines/" + lineId.toString() + "/sections", params);
+        return executeDelete("lines/" + lineId.toString() + "/sections?stationId=" + stationId.toString());
     }
 }
