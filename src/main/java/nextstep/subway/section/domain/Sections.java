@@ -75,14 +75,12 @@ public class Sections {
 
     private boolean isPresent(Section section) {
         return sections.stream()
-            .filter(s -> s.isEqualAllStation(section))
-            .findFirst().isPresent();
+            .anyMatch(s -> s.isEqualAllStation(section));
     }
 
     private boolean isPresentAnyStation(Section section) {
         return sections.stream()
-            .filter(s -> s.isPresentAnyStation(section))
-            .findFirst().isPresent();
+            .anyMatch(s -> s.isPresentAnyStation(section));
     }
 
     public List<Station> findStationsInOrder() {
