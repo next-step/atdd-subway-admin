@@ -140,7 +140,30 @@ class SectionAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> removeSectionFailTest01() {
         return Stream.of(
             dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
-            dynamicTest("공덕역 삭제 요청", () -> removeSectionRequestFail(GONGDEOK))
+            dynamicTest("공덕역 삭제 요청", () -> removeSectionRequestFail(GONGDEOK)),
+            dynamicTest("홍대입구역 삭제 요청", () -> removeSectionRequestFail(HONGIK_UNIV))
+        );
+    }
+
+    @DisplayName("상행 종점 구간 삭제")
+    @TestFactory
+    Stream<DynamicTest> removeSectionTest01() {
+        return Stream.of(
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 150)),
+            dynamicTest("서울역 구간 삭제 요청", () -> removeSectionRequestSuccess(SEOUL)),
+            dynamicTest("공덕역-홍대입구역 구간 확인", () -> getSectionRequestAndTest(GONGDEOK, HONGIK_UNIV, 100))
+        );
+    }
+
+    @DisplayName("하행 종점 구간 삭제")
+    @TestFactory
+    Stream<DynamicTest> removeSectionTest02() {
+        return Stream.of(
+            dynamicTest("공항철도 노선 생성(공덕역-홍대입구역)", () -> createLineRequestSuccess(AIRPORT_EXPRESS_GONGDEOK_TO_HONGIK)),
+            dynamicTest("서울역-공덕역 구간 추가", () -> addSectionRequestSuccess(SEOUL, GONGDEOK, 150)),
+            dynamicTest("홍대입구역 구간 삭제 요청", () -> removeSectionRequestSuccess(HONGIK_UNIV)),
+            dynamicTest("서울역-공덕역 구간 확인", () -> getSectionRequestAndTest(SEOUL, GONGDEOK, 150))
         );
     }
 
@@ -183,6 +206,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
+        testSection(upStation, downStation, distance, response);
+    }
+
+    private void testSection(StationConstants upStation, StationConstants downStation, int distance,
+                             ExtractableResponse<Response> response) {
         Map<String, Object> map = new HashMap<>();
         map.put("upStationName", upStation.getName());
         map.put("downStationName", downStation.getName());
@@ -190,6 +218,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.body().jsonPath().getList("sections")).contains(map);
     }
+
 
     private void addSectionRequestFail(StationConstants upStation, StationConstants downStation, int distance) {
         ExtractableResponse<Response> response = addSectionRequest(upStation.getId(),
@@ -206,8 +235,23 @@ class SectionAcceptanceTest extends AcceptanceTest {
                           .extract();
     }
 
+    private void removeSectionRequestSuccess(StationConstants station) {
+        ExtractableResponse<Response> response = removeSectionRequest(station);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
     private void removeSectionRequestFail(StationConstants station) {
         ExtractableResponse<Response> response = removeSectionRequest(station);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void getSectionRequestAndTest(StationConstants upStation, StationConstants downStation, int distance) {
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                                                            .when().get("/lines/1/sections")
+                                                            .then().log().all()
+                                                            .extract();
+
+        testSection(upStation, downStation, distance, response);
     }
 }

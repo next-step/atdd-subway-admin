@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import nextstep.subway.station.domain.Station;
 
@@ -18,13 +19,13 @@ public class SortedSection {
 
     public SortedSection(LineSections lineSections) {
 
-        List<Section> sortedSections = lineSections.getSections();
+        Set<Section> sortedSections = lineSections.getSections();
 
         Section startSection = getStartSection(sortedSections);
         this.sections = Collections.unmodifiableList(linkToLastSection(startSection, sortedSections));
     }
 
-    private Section getStartSection(List<Section> sections) {
+    private Section getStartSection(Set<Section> sections) {
 
         Map<Station, Section> stationMap =
             sections.stream()
@@ -42,7 +43,7 @@ public class SortedSection {
         return startEntry.getValue();
     }
 
-    private List<Section> linkToLastSection(Section startSection, List<Section> sections) {
+    private List<Section> linkToLastSection(Section startSection, Set<Section> sections) {
 
         Map<Station, Section> sectionMap =
             sections.stream()

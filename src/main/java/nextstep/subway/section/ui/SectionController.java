@@ -10,6 +10,7 @@ import nextstep.subway.section.dto.SectionsResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +31,13 @@ public class SectionController {
         this.lineQueryService = lineQueryService;
         this.lineCommandService = lineCommandService;
         this.sectionCommandService = sectionCommandService;
+    }
+
+    @GetMapping
+    public ResponseEntity<SectionsResponse> getSection(@PathVariable Long lineId) {
+        return ResponseEntity.ok()
+                             .body(SectionsResponse.of(lineId, lineQueryService.findById(lineId)
+                                                                               .getSortedSections()));
     }
 
     @PostMapping

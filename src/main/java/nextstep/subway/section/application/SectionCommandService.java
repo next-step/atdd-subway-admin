@@ -70,8 +70,7 @@ public class SectionCommandService {
 
     public void delete(Long lineId, Long stationId) {
         Line line = lineQueryService.findById(lineId);
-        if (line.getSections().size() == 1) {
-            throw new IllegalArgumentException("노선에 구간이 1개이면 삭제할 수 없습니다.");
-        }
+        LineSections lineSections = line.getSections();
+        lineSections.deleteSection(stationQueryService.findById(stationId));
     }
 }
