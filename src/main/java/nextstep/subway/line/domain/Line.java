@@ -6,7 +6,6 @@ import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import javax.xml.bind.ValidationException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -65,7 +64,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getOrderedStations() {
-        return sections.getOrderedStations();
+        return sections.orderedStations();
     }
 
     public Long getId() {
@@ -109,13 +108,15 @@ public class Line extends BaseEntity {
             return;
         }
 
+        sections.checkIfValid(sectionIn);
+
+        Station upStationIn = sectionIn.getUpStation();
+        Station downStationIn = sectionIn.getDownStation();
+
         List<Section> orderedSections = sections.orderFromTopToBottom();
 
         for (int i = 0; i < orderedSections.size(); ++i) {
             Section section = orderedSections.get(i);
-
-            Station upStationIn = sectionIn.getUpStation();
-            Station downStationIn = sectionIn.getDownStation();
 
             // 1)
             if (downStationIn.equals(section.getUpStation())) {
@@ -150,11 +151,7 @@ public class Line extends BaseEntity {
             }
         }
 
-//        if (!sections.contains(sectionIn))
-        {
-//            sections.add(i, sectionIn);
-            sectionIn.setLine(this);
-        }
+        sectionIn.setLine(this);
     }
 
     private void validateDistance(int inputDistance, int existDistance) {

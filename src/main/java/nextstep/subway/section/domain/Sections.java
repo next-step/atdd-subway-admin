@@ -38,7 +38,34 @@ public class Sections {
         return sections.contains(section);
     }
 
-    public List<Station> getOrderedStations() {
+    public boolean checkIfValid(Section sectionIn) {
+        alreadyInBoth(sectionIn);
+        nothingInBoth(sectionIn);
+        return true;
+    }
+
+    private void alreadyInBoth(Section sectionIn) {
+        if (stations().contains(sectionIn.getUpStation())
+                && stations().contains(sectionIn.getDownStation())) {
+            throw new IllegalArgumentException("둘 다 이미 들어있는 역.");
+        }
+    }
+
+    private void nothingInBoth(Section sectionIn) {
+        if (!stations().contains(sectionIn.getUpStation())
+                && !stations().contains(sectionIn.getDownStation())) {
+            throw new IllegalArgumentException("둘 다 들어있지 않은 역.");
+        }
+    }
+
+    public List<Station> stations() {
+        return this.sections.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public List<Station> orderedStations() {
         return makeOrderedSectionsFrom(findTopSection()).stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .distinct()
