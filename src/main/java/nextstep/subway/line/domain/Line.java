@@ -5,7 +5,7 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.SortedSet;
 
 @Entity
 public class Line extends BaseEntity {
@@ -44,7 +44,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
+    public SortedSet<Section> getSections() {
         return sections.getSections();
     }
 
