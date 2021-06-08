@@ -26,13 +26,13 @@ public class Section extends BaseEntity {
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
-	private Integer distance;
+	private int distance;
 
 	protected Section() {
 		// empty
 	}
 
-	public Section(final Station upStation, final Station downStation, final Integer distance) {
+	public Section(final Station upStation, final Station downStation, final int distance) {
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;

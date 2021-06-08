@@ -38,7 +38,6 @@ class LineServiceTest {
 	@InjectMocks
 	private LineService lineService;
 
-
 	@Test
 	@DisplayName("노선 등록 테스트")
 	void saveLineTest() {

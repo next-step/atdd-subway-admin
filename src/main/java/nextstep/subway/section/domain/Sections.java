@@ -15,7 +15,6 @@ public class Sections {
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
-
 	public void add(final Section section) {
 		sections.add(section);
 	}
@@ -23,7 +22,6 @@ public class Sections {
 	public boolean contain(final Section section) {
 		return sections.contains(section);
 	}
-
 
 	public List<Station> stationsBySorted() {
 		return this.sections.stream()

@@ -20,58 +20,58 @@ import static nextstep.subway.exception.ApiExceptionMessge.NOT_FOUND_STATION;
 @Service
 @Transactional
 public class LineService {
-    private final LineRepository lines;
-    private final StationRepository stations;
+	private final LineRepository lineRepository;
+	private final StationRepository stationRepository;
 
-    public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
-        this.lines = lineRepository;
-        this.stations = stationRepository;
-    }
+	public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
+		this.lineRepository = lineRepository;
+		this.stationRepository = stationRepository;
+	}
 
-    public LineResponse saveLine(final LineRequest request) {
-        Line persistLine = lines.save(makeLine(request));
-        return LineResponse.of(persistLine);
-    }
+	public LineResponse saveLine(final LineRequest request) {
+		Line persistLine = lineRepository.save(createLine(request));
+		return LineResponse.of(persistLine);
+	}
 
-    private Line makeLine(final LineRequest request) {
-        Station upStation = findStationById(request.getUpStationId());
-        Station downStation = findStationById(request.getDownStationId());
+	private Line createLine(final LineRequest request) {
+		Station upStation = findStationById(request.getUpStationId());
+		Station downStation = findStationById(request.getDownStationId());
 
-        Line line = request.toLine();
-        line.addSection(new Section(upStation, downStation, request.getDistance()));
-        return line;
-    }
+		Line line = request.toLine();
+		line.addSection(new Section(upStation, downStation, request.getDistance()));
+		return line;
+	}
 
-    private Station findStationById(final Long id) {
-        return stations.findById(id).orElseThrow(() -> new ApiException(NOT_FOUND_STATION));
-    }
+	private Station findStationById(final Long id) {
+		return stationRepository.findById(id).orElseThrow(() -> new ApiException(NOT_FOUND_STATION));
+	}
 
-    @Transactional(readOnly = true)
-    public List<LineResponse> getLines() {
-        return convertLineResponse(lines.findAll());
-    }
+	@Transactional(readOnly = true)
+	public List<LineResponse> getLineRepository() {
+		return convertLineResponse(lineRepository.findAll());
+	}
 
-    private List<LineResponse> convertLineResponse(List<Line> lines) {
-        return lines.stream()
-                    .map(LineResponse::of)
-                    .collect(Collectors.toList());
-    }
+	private List<LineResponse> convertLineResponse(List<Line> lines) {
+		return lines.stream()
+					.map(LineResponse::of)
+					.collect(Collectors.toList());
+	}
 
-    @Transactional(readOnly = true)
-    public LineResponse getLine(final Long id) {
-        return lines.findById(id)
-                    .map(LineResponse::of)
-                    .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
-    }
+	@Transactional(readOnly = true)
+	public LineResponse getLine(final Long id) {
+		return lineRepository.findById(id)
+							 .map(LineResponse::of)
+							 .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
+	}
 
-    public LineResponse updateLine(final Long id, final LineRequest request) {
-        Line line = lines.findById(id)
-                         .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
-        line.update(request.toLine());
-        return LineResponse.of(line);
-    }
+	public LineResponse updateLine(final Long id, final LineRequest request) {
+		Line line = lineRepository.findById(id)
+								  .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
+		line.update(request.toLine());
+		return LineResponse.of(line);
+	}
 
-    public void deleteLine(final Long id) {
-        lines.deleteById(id);
-    }
+	public void deleteLine(final Long id) {
+		lineRepository.deleteById(id);
+	}
 }
