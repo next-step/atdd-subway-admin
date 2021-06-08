@@ -1,11 +1,9 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.utils.CommonSettings.지하철_노선_목록_반환_요청;
-import static nextstep.subway.utils.CommonSettings.지하철_노선_생성_요청;
-import static nextstep.subway.utils.CommonSettings.지하철_노선_수정_요청;
-import static nextstep.subway.utils.CommonSettings.지하철_노선_제거;
-import static nextstep.subway.utils.CommonSettings.지하철_조회_요청;
-import static nextstep.subway.utils.CommonSettings.지하철역_생성_요청;
+import static nextstep.subway.utils.CommonSettings.삭제_요청;
+import static nextstep.subway.utils.CommonSettings.생성_요청;
+import static nextstep.subway.utils.CommonSettings.수정_요청;
+import static nextstep.subway.utils.CommonSettings.조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
@@ -39,18 +37,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         super.setUp();
         //given
         //상행선 종점역이 등록되어 있다.
-        upStation = 지하철역_생성_요청(new StationRequest("강남역"));
+        upStation = 생성_요청(new StationRequest("강남역"), "/stations");
         //하행선 종점역이 등록되어 있다.
-        downStation = 지하철역_생성_요청(new StationRequest("역삼역"));
+        downStation = 생성_요청(new StationRequest("역삼역"), "/stations");
 
         // when
         // 상행선,하행선을 포함한 노선 생성 요청
-        createdLineResponse = 지하철_노선_생성_요청(
-            new LineRequest("신분당선", "bg-red-600", 지하철역에서_ID_추출(upStation), 지하철역에서_ID_추출(downStation), 10));
+        createdLineResponse = 생성_요청(
+            new LineRequest("신분당선", "bg-red-600", 지하철역에서_ID_추출(upStation), 지하철역에서_ID_추출(downStation), 10), "/lines");
 
         // 상행선,하행선을 포함한 노선 생성 요청2
-        createdLineResponse2 = 지하철_노선_생성_요청(
-            new LineRequest("2호선", "bg-green-600", 지하철역에서_ID_추출(upStation), 지하철역에서_ID_추출(downStation), 10));
+        createdLineResponse2 = 생성_요청(
+            new LineRequest("2호선", "bg-green-600", 지하철역에서_ID_추출(upStation), 지하철역에서_ID_추출(downStation), 10), "/lines");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -67,9 +65,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // when
-        // 지하철_노선_생성_요청
-        ExtractableResponse<Response> createdSameLineResponse = 지하철_노선_생성_요청(
-            new LineRequest("신분당선", "bg-red-600", 지하철역에서_ID_추출(upStation), 지하철역에서_ID_추출(downStation), 10));
+        // 생성_요청
+        ExtractableResponse<Response> createdSameLineResponse = 생성_요청(
+            new LineRequest("신분당선", "bg-red-600", 지하철역에서_ID_추출(upStation), 지하철역에서_ID_추출(downStation), 10), "/lines");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -81,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> existsLineList = 지하철_노선_목록_반환_요청();
+        ExtractableResponse<Response> existsLineList = 조회_요청("/lines");
 
         // then
         // 지하철_노선_목록_응답됨
@@ -98,7 +96,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> findedLineResponse = 지하철_조회_요청(생성된_노선에서_Path추출(createdLineResponse));
+        ExtractableResponse<Response> findedLineResponse = 조회_요청(생성된_노선에서_Path추출(createdLineResponse));
 
         // then
         // 지하철_노선_응답됨
@@ -109,7 +107,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행역 부터 하행역 순으로 정렬되어야 한다.")
     @Test
     void getLineOrder() {
-        ExtractableResponse<Response> findedLineResponse = 지하철_조회_요청(생성된_노선에서_Path추출(createdLineResponse));
+        ExtractableResponse<Response> findedLineResponse = 조회_요청(생성된_노선에서_Path추출(createdLineResponse));
 
         // then
         // 지하철_노선_응답됨
@@ -122,7 +120,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getNoLine() {
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> findedLineResponse = 지하철_조회_요청("/lines/10");
+        ExtractableResponse<Response> findedLineResponse = 조회_요청("/lines/10");
 
         // then
         // NOT_FOUND 생성
@@ -135,7 +133,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(생성된_노선에서_Path추출(createdLineResponse));
+        ExtractableResponse<Response> response = 수정_요청(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10),
+            생성된_노선에서_Path추출(createdLineResponse));
 
         // then
         // 지하철_노선_수정_요청됨
@@ -147,7 +146,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateNoLine() {
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청("/lines/10");
+        ExtractableResponse<Response> response = 수정_요청(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10), "/lines/10");
 
         // then
         // NOT_FOUND 생성
@@ -159,7 +158,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse<Response> removedLineResponse = 지하철_노선_제거(생성된_노선에서_Path추출(createdLineResponse));
+        ExtractableResponse<Response> removedLineResponse = 삭제_요청(생성된_노선에서_Path추출(createdLineResponse));
 
         // then
         // 지하철_노선_삭제됨
@@ -171,7 +170,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteNoLine() {
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse<Response> removedLineResponse = 지하철_노선_제거("/lines/10");
+        ExtractableResponse<Response> removedLineResponse = 삭제_요청("/lines/10");
 
         // then
         // 지하철_노선_삭제됨

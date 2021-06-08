@@ -1,7 +1,7 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.utils.CommonSettings.*;
-import static org.assertj.core.api.Assertions.*;
+import static nextstep.subway.utils.CommonSettings.생성_요청;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청(new StationRequest("강남역"));
+        ExtractableResponse<Response> response = 생성_요청(new StationRequest("강남역"), "/stations");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -35,10 +35,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        지하철역_생성_요청(new StationRequest("강남역"));
+        생성_요청(new StationRequest("강남역"), "/stations");
 
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청(new StationRequest("강남역"));
+        ExtractableResponse<Response> response = 생성_요청(new StationRequest("강남역"), "/stations");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -48,8 +48,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = 지하철역_생성_요청(new StationRequest("강남역"));
-        ExtractableResponse<Response> createResponse2 = 지하철역_생성_요청(new StationRequest("역삼역"));
+        ExtractableResponse<Response> createResponse1 = 생성_요청(new StationRequest("강남역"), "/stations");
+        ExtractableResponse<Response> createResponse2 = 생성_요청(new StationRequest("역삼역"), "/stations");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -73,7 +73,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철역_생성_요청(new StationRequest("강남역"));
+        ExtractableResponse<Response> createResponse = 생성_요청(new StationRequest("강남역"), "/stations");
 
         // when
         String uri = createResponse.header("Location");
