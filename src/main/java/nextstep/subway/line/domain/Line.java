@@ -57,11 +57,6 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        if (sections.isFirstSection()) {
-            sections.add(section);
-        }
-
-        boolean isExistUpStation = sections.isMatchWithUpStation(section);
-        boolean isExistDownStation = sections.isMatchWithDownStation(section);
+        sections.add(section);
     }
 }

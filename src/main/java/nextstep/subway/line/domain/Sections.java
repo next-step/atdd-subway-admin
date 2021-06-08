@@ -20,6 +20,12 @@ public class Sections {
     }
 
     public void add(Section section) {
+        if (isFirstSection()) {
+            sections.add(section);
+        }
+
+        boolean isExistUpStation = isMatchWithUpStation(section);
+        boolean isExistDownStation = isMatchWithDownStation(section);
         sections.add(section);
     }
 
