@@ -216,18 +216,18 @@ class SectionAcceptanceTest extends AcceptanceTest {
 //    노선에서_역_제거_완료(result);
 //  }
 //
-//  @DisplayName("등록되어 있지 않은 역은 제거할 수 없다.")
-//  @Test
-//  void canNotRemoveNoneRegisteredStation() {
-//    //given
-//    Long lineId = 신분당선.getId();
-//
-//    //when
-//    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 동탄역_ID);
-//
-//    //then
-//    노선에서_역_제거_실패(result);
-//  }
+  @DisplayName("등록되어 있지 않은 역은 제거할 수 없다.")
+  @Test
+  void canNotRemoveNoneRegisteredStation() {
+    //given
+    Long lineId = 신분당선.getId();
+
+    //when
+    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 동탄역_ID);
+
+    //then
+    노선에서_역_제거_실패(result);
+  }
 //
 //  @DisplayName("상행 종점 - 하행 종점으로 이루어진 하나의 구간만 있을 때는 역을 제거할 수 없다.")
 //  @Test
