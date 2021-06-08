@@ -90,4 +90,12 @@ public class Sections {
         .filter(origin -> !compare.isSameEdges(origin))
         .noneMatch(compare::isNextSection);
   }
+
+  public void removeStation(Station stationForRemove) {
+    List<Section> filtered = lineSections.stream().filter(section -> section.containsStation(stationForRemove))
+        .collect(Collectors.toList());
+    if(filtered.size() == 1) {
+      lineSections.remove(filtered.get(0));
+    }
+  }
 }

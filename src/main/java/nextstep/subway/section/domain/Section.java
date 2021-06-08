@@ -115,6 +115,10 @@ public class Section extends BaseEntity {
     this.distance = this.distance.subtract(newSection.distance);
   }
 
+  public boolean containsStation(Station station) {
+    return upStation.equals(station) || downStation.equals(station);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

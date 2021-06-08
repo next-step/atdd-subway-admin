@@ -23,7 +23,7 @@ import static nextstep.subway.station.StationAcceptanceTest.지하철_역_등록
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+class SectionAcceptanceTest extends AcceptanceTest {
 
   private Long 압구정역_ID;
 
@@ -169,37 +169,37 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     지하철_구간_등록_실패함(result);
   }
 
-//  @DisplayName("지하철 상행 종점을 제거한다.")
-//  @Test
-//  void removeUpStationEdge() {
-//    //given
-//    SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
-//    Long lineId = 신분당선.getId();
-//    지하철_구간_등록_요청(lineId, sectionParam);
-//
-//    //when
-//    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 강남역_ID);
-//
-//    //then
-//    노선에서_역_제거_완료(result);
-//
-//  }
-//
-//  @DisplayName("지하철 하행 종점을 제거한다.")
-//  @Test
-//  void removeDownStationEdge() {
-//    //given
-//    SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
-//    Long lineId = 신분당선.getId();
-//    지하철_구간_등록_요청(lineId, sectionParam);
-//
-//    //when
-//    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 광교역_ID);
-//
-//    //then
-//    노선에서_역_제거_완료(result);
-//
-//  }
+  @DisplayName("지하철 상행 종점을 제거한다.")
+  @Test
+  void removeUpStationEdge() {
+    //given
+    SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
+    Long lineId = 신분당선.getId();
+    지하철_구간_등록_요청(lineId, sectionParam);
+
+    //when
+    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 강남역_ID);
+
+    //then
+    노선에서_역_제거_완료(result, 판교역_ID, 광교역_ID);
+
+  }
+
+  @DisplayName("지하철 하행 종점을 제거한다.")
+  @Test
+  void removeDownStationEdge() {
+    //given
+    SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
+    Long lineId = 신분당선.getId();
+    지하철_구간_등록_요청(lineId, sectionParam);
+
+    //when
+    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 광교역_ID);
+
+    //then
+    노선에서_역_제거_완료(result, 강남역_ID, 판교역_ID);
+
+  }
 //
 //  @DisplayName("지하철 중간역을 제거한다. 거리는 두 구간 거리의 합이어야 한다.")
 //  @Test
@@ -274,8 +274,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         .extract();
   }
 
-  private void 노선에서_역_제거_완료(ExtractableResponse<Response> result) {
+  private void 노선에서_역_제거_완료(ExtractableResponse<Response> result, Long... expectStationIds) {
     assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
+    LineResponse responseBody = result.as(LineResponse.class);
+    List<Long> lineStationIds = 노선_응답에서_역_ID들을_얻는다(responseBody);
+    assertThat(lineStationIds).containsExactly(expectStationIds);
   }
 
   private void 노선에서_역_제거_실패(ExtractableResponse<Response> result) {
