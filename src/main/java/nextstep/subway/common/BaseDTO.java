@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public abstract class BaseDTO<E> {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public abstract E toEntity();
+    protected abstract E toEntity();
 
     public final Map<String, String> toMap() {
         Map<String, Object> result = objectMapper.convertValue(this, Map.class);

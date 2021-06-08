@@ -1,14 +1,16 @@
 package nextstep.subway.line.ui;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.PageController;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -21,7 +23,7 @@ public class LineController {
     private final LineService lineService;
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody final LineRequest lineRequest) {
+    public ResponseEntity createLine(@Valid @RequestBody final LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create(LINE + "/" + line.getId())).body(line);
     }
@@ -51,6 +53,11 @@ public class LineController {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(final DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         return ResponseEntity.badRequest().build();
     }
 }

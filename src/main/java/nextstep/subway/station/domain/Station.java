@@ -8,11 +8,9 @@ import javax.persistence.*;
 
 @Entity
 @Getter @NoArgsConstructor
+@Table(uniqueConstraints = @UniqueConstraint(name = "unique_station_name", columnNames={"name"}))
 public class Station extends BaseEntity {
-    @Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @Column(unique = true)
     private String name;
 
     public Station(final String name) {

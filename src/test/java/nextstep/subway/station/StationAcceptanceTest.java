@@ -6,9 +6,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.RestAssuredTemplate;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
 import java.util.Arrays;
 import java.util.List;
@@ -20,15 +18,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private static RestAssuredTemplate restAssuredTemplate;
+    private static RestAssuredTemplate restAssuredTemplate = new RestAssuredTemplate(STATION);
     private static StationRequest param1;
     private static StationRequest param2;
 
-    @BeforeAll
-    public static void setup() {
-        restAssuredTemplate = new RestAssuredTemplate(STATION);
+    @BeforeEach
+    public void register() {
+        setTestParameter();
+    }
+
+    @AfterEach
+    public void rollback() {
+        setTestParameter();
+    }
+
+    private static void setTestParameter() {
         param1 = StationRequest.builder()
-                .name("강남역")
+                .name("강남")
                 .build();
 
         param2 = StationRequest.builder()
@@ -95,15 +101,15 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> requestShowStations() {
+    public static ExtractableResponse<Response> requestShowStations() {
         return restAssuredTemplate.get();
     }
 
-    private ExtractableResponse<Response> requestCreateStation(StationRequest param) {
+    public static ExtractableResponse<Response> requestCreateStation(StationRequest param) {
         return restAssuredTemplate.post(param.toMap());
     }
 
-    private ExtractableResponse<Response> requestDeleteStation(String uri) {
+    public static ExtractableResponse<Response> requestDeleteStation(String uri) {
         return restAssuredTemplate.delete(uri);
     }
 }
