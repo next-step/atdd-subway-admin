@@ -64,7 +64,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
         if (this.equals(section)) {
             return 0;
         }
-        return 1;
+        return -1;
     }
 
     public boolean equalsUpStation(Section addSection) {
