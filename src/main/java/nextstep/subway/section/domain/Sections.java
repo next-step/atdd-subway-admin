@@ -21,10 +21,6 @@ public class Sections {
   public Sections() {
   }
 
-  public List<Section> getLineSections() {
-    return lineSections;
-  }
-
   public Set<Station> getDistinctStations() {
     return this.getSortedSections().stream()
         .flatMap(section -> section.getUpAndDownStations()
@@ -42,7 +38,7 @@ public class Sections {
 
   private void registerNewSectionToNotEmptySections(Section newSection) {
     validateNewSection(newSection);
-    List<Section> newLineSections = this.getLineSections().stream()
+    List<Section> newLineSections = this.lineSections.stream()
         .flatMap(lineSection -> lineSection.insertNewSection(newSection).stream())
         .collect(Collectors.toList());
     this.lineSections.clear();
@@ -69,7 +65,7 @@ public class Sections {
   }
   private List<Section> getSortedSections() {
     List<Section> sortedSections = new ArrayList<>();
-    List<Section> elementDecreasingList = new ArrayList<>(getLineSections());
+    List<Section> elementDecreasingList = new ArrayList<>(lineSections);
     Iterator<Section> elementDecreasingListIterator = elementDecreasingList.iterator();
     while (elementDecreasingListIterator.hasNext()) {
       sortedSections.add(popFirstSection(elementDecreasingList));
