@@ -65,6 +65,6 @@ public class LineService {
 
     public List<SectionResponse> findAllSections(Long lineId) {
         Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
-        return line.getSections().toSectionResponses();
+        return SectionResponse.toSectionResponses(line.getSections());
     }
 }

@@ -10,7 +10,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -124,9 +123,7 @@ public class Sections {
         return sections.get(sections.size() - ONE).getDownStation();
     }
 
-    public List<SectionResponse> toSectionResponses() {
-        return sections.stream()
-            .map(SectionResponse::of)
-            .collect(Collectors.toList());
+    public List<Section> getSections() {
+        return sections;
     }
 }
