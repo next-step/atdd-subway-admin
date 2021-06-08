@@ -19,7 +19,7 @@ public class Sections {
     public static final String SECTION_ALREADY_EXISTS = "이미 상행역과 하행역으로 연결되는 구간이 등록되어 있습니다.";
     public static final String THERE_IS_NO_STATION_INCLUDED_BETWEEN_UP_AND_DOWN_STATIONS = "상행역과 하행역 둘중 포함되는 역이 없습니다.";
     public static final int ONE = 1;
-    public static final boolean EMPTY_UPSTATION = false;
+    public static final boolean NOT_EXIST_UPSTATION = false;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections;
@@ -102,13 +102,15 @@ public class Sections {
 
     private Section findFirstSection() {
         Map<Boolean, Section> map = new HashMap<>();
-        sections.forEach(current -> {
-            Optional<Section> optional = sections.stream()
-                .filter(section -> section.isBefore(current))
-                .findFirst();
-            map.put(optional.isPresent(), current);
+        sections.forEach(section -> {
+            map.put(existUpStation(section), section);
         });
-        return map.get(EMPTY_UPSTATION);
+        return map.get(NOT_EXIST_UPSTATION);
+    }
+
+    private boolean existUpStation(Section destSection) {
+        return sections.stream()
+            .anyMatch(section -> section.isBefore(destSection));
     }
 
     private List<Station> getUpStations(List<Section> sections) {
