@@ -95,7 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_응답됨(조회된_노선, 신분당선, expectedStationCount);
-        지하철_노선_역_응답됨(조회된_노선, 신분당선, 강남역, 양재역);
+        지하철_노선_역_응답됨(조회된_노선, 신분당선, 강남역.get("name"), 양재역.get("name"));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -170,19 +170,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_역_응답됨(ExtractableResponse<Response> response, LineRequest lineRequest,
-                              Map<String, String> upStationParam, Map<String, String> downStationParam) {
+                              String expectedUpStationName, String expectedDownStationName) {
 
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
         StationResponse upStation = lineResponse.getStations().get(0);
         assertAll(
                 () -> assertThat(upStation.getId()).isEqualTo(lineRequest.getUpStationId()),
-                () -> assertThat(upStation.getName()).isEqualTo(upStationParam.get("name"))
+                () -> assertThat(upStation.getName()).isEqualTo(expectedUpStationName)
         );
 
         StationResponse downStation = lineResponse.getStations().get(1);
         assertAll(
                 () -> assertThat(downStation.getId()).isEqualTo(lineRequest.getDownStationId()),
-                () -> assertThat(downStation.getName()).isEqualTo(downStationParam.get("name"))
+                () -> assertThat(downStation.getName()).isEqualTo(expectedDownStationName)
         );
     }
 
