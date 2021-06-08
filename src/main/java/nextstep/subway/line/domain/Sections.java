@@ -81,11 +81,8 @@ public class Sections {
     }
 
     public List<Station> findStationInSections() {
-        List<Station> stations = new ArrayList<>();
         Section firstSection = findFirstSection();
-        stations.add(firstSection.getUpStation());
-        stations.addAll(findOthersStations(firstSection.getDownStation()));
-        return stations;
+        return firstSection.findAllStations(this);
     }
 
     public List<Station> findOthersStations(Station downStation) {

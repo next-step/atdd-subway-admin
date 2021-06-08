@@ -4,6 +4,8 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Section extends BaseEntity {
@@ -79,12 +81,11 @@ public class Section extends BaseEntity {
         return this.downStation.equals(section.downStation);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Line getLine() {
-        return line;
+    public List<Station> findAllStations(Sections sections) {
+        List<Station> stations = new ArrayList<>();
+        stations.add(upStation);
+        stations.addAll(sections.findOthersStations(downStation));
+        return stations;
     }
 
     public Station getUpStation() {
@@ -93,9 +94,5 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 }
