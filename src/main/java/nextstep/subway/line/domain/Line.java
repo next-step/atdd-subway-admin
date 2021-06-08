@@ -2,12 +2,18 @@ package nextstep.subway.line.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@ToString(callSuper = true)
 @Getter @NoArgsConstructor
 @Table(uniqueConstraints = @UniqueConstraint(name = "unique_line_name", columnNames={"name"}))
 public class Line extends BaseEntity {
@@ -30,8 +36,12 @@ public class Line extends BaseEntity {
     }
 
     public void update(final Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-        this.sections = line.getSections();
+        this.name = line.name;
+        this.color = line.color;
+        this.sections = line.sections;
+    }
+
+    public List<Station> lineUp() {
+        return new ArrayList<>(sections.lineUp());
     }
 }

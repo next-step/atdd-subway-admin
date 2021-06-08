@@ -8,7 +8,7 @@ import nextstep.subway.section.domain.Section;
 @NoArgsConstructor
 public class SectionResponse {
 
-    //TODO
+    //TODO : 다음 미션때 작업
     public static SectionResponse of(final Section section) {
         return new SectionResponse();
     }

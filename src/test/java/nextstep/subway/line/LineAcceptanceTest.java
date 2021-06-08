@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.RestAssuredTemplate;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
@@ -151,7 +152,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("지하철 노선을 조회한다. 지하철 노선에는 구간정보가 포함되어있다.")
     @Test
     void getLine() {
         // given
@@ -167,10 +168,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
             // 지하철_노선_응답됨
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 
-            // 지하철_노선_포함됨
             () -> {
-                Long expected = response.as(LineResponse.class).getId();
-                assertThat(restAssuredTemplate.getLocationId(createResponse)).isEqualTo(expected);
+                LineResponse lineResponse = response.as(LineResponse.class);
+
+                List<StationResponse> resultLineIds = response.jsonPath().getList("$.stations", StationResponse.class)
+                        .stream()
+                        .collect(Collectors.toList());
+
+                // 지하철_노선_포함됨
+                assertThat(restAssuredTemplate.getLocationId(createResponse)).isEqualTo(lineResponse.getId());
+
+                // 지하철_노선_구간정보_포함됨
+                assertThat(lineResponse.getStations().size()).isGreaterThan(0);
+                assertThat(lineResponse.getStations()).containsAll(resultLineIds);
             }
         );
     }

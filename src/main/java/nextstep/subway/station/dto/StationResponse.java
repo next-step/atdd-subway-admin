@@ -1,11 +1,13 @@
 package nextstep.subway.station.dto;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(of = "id")
 @Getter @NoArgsConstructor
 public class StationResponse {
     private Long id;

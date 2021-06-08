@@ -34,5 +34,7 @@ public class Section extends BaseEntity {
 
     public void registerLine(Line line) {
         this.line = line;
+
+        line.appendSection(this);
     }
 }
