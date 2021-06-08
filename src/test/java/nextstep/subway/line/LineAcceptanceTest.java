@@ -108,6 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
 			.map(LineResponse::getId)
 			.collect(Collectors.toList());
+
 		assertThat(resultLineIds).containsAll(expectedLineIds);
 	}
 
@@ -142,6 +143,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		LineResponse lineResponse = response.response().getBody().as(LineResponse.class);
 		assertThat(lineResponse.getId()).isEqualTo(id);
+		assertThat(lineResponse.getStations()).containsExactly(upStation, downStation);
 	}
 
 	@DisplayName("존재하지 않는 노선 업데이트요청시 오류발생확인")
