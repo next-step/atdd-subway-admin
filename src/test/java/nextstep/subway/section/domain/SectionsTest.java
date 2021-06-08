@@ -50,11 +50,11 @@ class SectionsTest {
   @DisplayName("이미 등록된 역 구간을 등록할 수 없다.")
   @Test
   void addFailTest() {
-    Section given1 = new Section(청계산입구역, 판교역, 8);
-    Section given2 = new Section(강남역, 광교역, 8);
+    Section alreadyExistEdgesSection = new Section(청계산입구역, 판교역, 8);
+    Section alreadyContainsEachStationsSection = new Section(강남역, 광교역, 8);
     assertAll(
-        () -> assertThatThrownBy(() -> sections.registerNewSection(given1)).isInstanceOf(IllegalArgumentException.class),
-        () -> assertThatThrownBy(() -> sections.registerNewSection(given2)).isInstanceOf(IllegalArgumentException.class)
+        () -> assertThatThrownBy(() -> sections.registerNewSection(alreadyExistEdgesSection)).isInstanceOf(IllegalArgumentException.class),
+        () -> assertThatThrownBy(() -> sections.registerNewSection(alreadyContainsEachStationsSection)).isInstanceOf(IllegalArgumentException.class)
     );
   }
 

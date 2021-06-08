@@ -88,6 +88,6 @@ public class Sections {
   private boolean isHead(List<Section> sections, Section compare) {
     return sections.stream()
         .filter(origin -> !compare.isSameEdges(origin))
-        .noneMatch(compare::isAfter);
+        .noneMatch(compare::isNextSection);
   }
 }

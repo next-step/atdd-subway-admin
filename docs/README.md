@@ -26,5 +26,5 @@ host: localhost:52165
 - [x] 담당 할 수 있는 도메인이 있는데, 다른 도메인에 포함되어있던 로직 이동
 - [x] Sections의 OneToMany 변수에 cascade, orphanRemoval 속성 부여
     - 서비스 메서드에 드러나있던 로직을 도메인 메서드로 변경와 연계가 필요함
-- [ ] 의미있는 이름으로 변경
+- [x] 의미있는 이름으로 변경
 - [x] sections 정렬 메서드 리팩토링

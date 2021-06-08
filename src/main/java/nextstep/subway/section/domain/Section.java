@@ -89,7 +89,7 @@ public class Section extends BaseEntity {
     return thisUpStation.equals(otherUpStation);
   }
 
-  public boolean isAfter(Section other) {
+  public boolean isNextSection(Section other) {
     return this.getUpStation().equals(other.getDownStation());
   }
 
