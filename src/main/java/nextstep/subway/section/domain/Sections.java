@@ -66,27 +66,12 @@ public class Sections implements Iterable<Section> {
         synchronizeSequence();
     }
 
-    public void removeStation(Station element) {
-        validateRemovable(element);
-        remove(selectRemoveIndex(element), element);
-        synchronizeSequence();
-    }
-
     private void validateAddable(Section section) {
         if (isStationAllContains(section)) {
             throw new IllegalArgumentException("구간에 속한 모든 역이 노선에 포함되어 있습니다. 역 정보를 확인해주세요.");
         }
         if (isStationNotContains(section)) {
             throw new IllegalArgumentException("구간에 속한 모든 역이 노선에 포함되어 있지 않습니다. 역 정보를 확인해주세요.");
-        }
-    }
-
-    private void validateRemovable(Station element) {
-        if (sections.size() == 1) {
-            throw new IllegalStateException("구간은 최소 한 개 이상 존재해야 합니다.");
-        }
-        if (!getStations().contains(element)) {
-            throw new IllegalArgumentException("삭제하고자 하는 역 정보가 존재하지 않습니다. 입력정보를 확인해주세요.");
         }
     }
 
@@ -114,33 +99,15 @@ public class Sections implements Iterable<Section> {
         return getDownStations().indexOf(element.getUpStation()) - 1;
     }
 
-    private int selectRemoveIndex(Station element) {
-        if (getFirstStation().equals(element)) {
-            return FRONT_OF_SECTIONS;
-        }
-        if (getLastStation().equals(element)) {
-            return sections.size();
-        }
-        return getUpStations().indexOf(element);
-    }
-
     private void add(int index, Section element) {
-        if (isEdge(index)) {
+        if (isOutOfEdge(index)) {
             addEdge(index, element);
             return;
         }
         divideSection(index, element);
     }
 
-    private void remove(int index, Station station) {
-        if (isEdge(index)) {
-            removeEdge(index);
-            return;
-        }
-        mergeSection(index, station);
-    }
-
-    private boolean isEdge(int index) {
+    private boolean isOutOfEdge(int index) {
         return index == FRONT_OF_SECTIONS || index == sections.size();
     }
 
@@ -150,14 +117,6 @@ public class Sections implements Iterable<Section> {
             return;
         }
         sections.add(index, element);
-    }
-
-    private void removeEdge(int index) {
-        if (index == FRONT_OF_SECTIONS) {
-            sections.remove(FIRST_INDEX);
-            return;
-        }
-        sections.remove(lastIndex());
     }
 
     private void divideSection(int index, Section element) {
@@ -173,11 +132,52 @@ public class Sections implements Iterable<Section> {
         }
     }
 
-    private void mergeSection(int index, Station station) {
+    public void removeStation(Station element) {
+        validateRemovable(element);
+        removeStation(selectRemoveIndex(element));
+    }
+
+    private void validateRemovable(Station element) {
+        if (sections.size() == 1) {
+            throw new IllegalStateException("구간은 최소 한 개 이상 존재해야 합니다.");
+        }
+        if (!getStations().contains(element)) {
+            throw new IllegalArgumentException("삭제하고자 하는 역 정보가 존재하지 않습니다. 입력정보를 확인해주세요.");
+        }
+    }
+
+    private int selectRemoveIndex(Station element) {
+        if (getFirstStation().equals(element)) {
+            return FIRST_INDEX;
+        }
+        if (getLastStation().equals(element)) {
+            return lastIndex();
+        }
+        return getDownStations().indexOf(element);
+    }
+
+    private void removeStation(int index) {
+        if (isEdge(index)) {
+            remove(index);
+            return;
+        }
+        mergeSection(index);
+    }
+
+    private boolean isEdge(int index) {
+        return index == FIRST_INDEX || index == lastIndex();
+    }
+
+    private void mergeSection(int index) {
         Section removeTarget = sections.get(index);
-        Section mergeTarget = sections.get(index + 1);
-        mergeTarget.mergeDownStation(removeTarget);
+        Section mergeTarget = sections.get(index - 1);
+        mergeTarget.mergeUpStation(removeTarget);
+        remove(index);
+    }
+
+    private void remove(int index) {
         sections.remove(index);
+        synchronizeSequence();
     }
 
     private void synchronizeSequence() {
