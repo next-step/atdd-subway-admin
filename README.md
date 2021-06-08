@@ -73,25 +73,25 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     
 
 *   Scenario: 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.
-    *   Given 지하철 노선이 등록되어 있다
+    *   Given 지하철 노선이 등록되어 있다.
     *   When 지하철 노선을 생성 요청한다.
     *   Then 지하철 노선 생성이 실패된다.
 
     
 *   Scenario: 지하철 노선 목록을 조회한다.
-    *   Given 지하철 노선이 등록되어 있다
+    *   Given 지하철 노선이 등록되어 있다.
     *   When 지하철 노선 목록 조회 요청한다.
     *   Then 지하철 노선 조회시 생성된 노선이 포함 되어 있다.
 
 
 *   Scenario: 단일 지하철 노선을 조회한다.
-    *   Given 지하철 노선이 등록되어 있다
+    *   Given 지하철 노선이 등록되어 있다.
     *   When 단일 지하철 노선 조회 요청한다.
     *   Then 지하철 노선 조회 응답이 온다.
 
 
 *   Scenario: 지하철 노선을 수정한다.
-    *   Given 지하철 노선이 등록되어 있다
+    *   Given 지하철 노선이 등록되어 있다.
     *   When 지하철 노선 정보 수정 요청한다.
     *   Then 지하철 노선이 수정된다.    
 
@@ -100,6 +100,37 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     *   Given 지하철 노선이 등록되어 있다
     *   When 지하철 노선 제거 요청한다.
     *   Then 지하철 노선이 제거된다.
+
+
+*   Scenario: 지하철 노선 구간을 등록한다.
+    *   Given 지하철 노선이 등록되어 있다.
+    *   When 지하철 노선 구간 등록 요청한다.
+    *   Then 지하철 노선 구간이 등록된다.   
+
+
+*   Scenario: 역 사이에 새로운 역을 등록한다.
+    *   Given 지하철 노선이 등록되어 있다.
+    *   When 등록된 지하철 노선 사이에 구간 등록 요청한다
+    *   Then 지하철 노선 구간이 등록된다.
+
+
+*   Scenario: 기존 역 사이 길이보다 큰 새로운 역을 등록한다.
+    *   Given 지하철 노선이 등록되어 있다.
+    *   When 등록된 지하철 노선 사이에 구간 등록 요청한다.
+    *   Then 지하철 노선 구간이 실패한다.
+
+
+*   Scenario: 상행역과 하행역이 모두 등록되있는 새로운 역을 등록한다.
+    *   Given 지하철 노선이 등록되어 있다.
+    *   When 등록된 지하철 노선 사이에 구간 등록 요청한다.
+    *   Then 지하철 노선 구간이 실패한다.
+
+
+*   Scenario: 상행역과 하행역이 모두 등록되어있지 않은 새로운 역을 등록한다.
+    *   Given 지하철 노선이 등록되어 있다.
+    *   When 등록된 지하철 노선 사이에 구간 등록 요청한다.
+    *   Then 지하철 노선 구간이 실패한다.
+
 
 ##  기능 목록
 *   지하철 노선 생성
