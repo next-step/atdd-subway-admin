@@ -31,7 +31,7 @@ public class LineRequest {
         return color;
     }
 
-    public Line toLine(Station upStaion, Station downStaion) {
+    public Line toLine(Station upStation, Station downStation) {
         Line line = new Line(name, color);
         Section section = Section.of(upStaion, downStaion, this.distance);
         line.setSections(Arrays.asList(section));
