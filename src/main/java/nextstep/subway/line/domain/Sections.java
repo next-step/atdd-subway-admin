@@ -32,6 +32,10 @@ public class Sections {
             throw new IllegalArgumentException("상행역, 하행역 모두 등록되어 있습니다.");
         }
 
+        if (!isExistUpStation && !isExistDownStation) {
+            throw new IllegalArgumentException("상행역, 하행역 모두 등록되어 있지 않습니다.");
+        }
+
         addEqualUpStation(section);
         addEqualDownStation(section);
         sections.add(section);
