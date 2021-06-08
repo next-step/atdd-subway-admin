@@ -35,9 +35,6 @@ public class SectionService {
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(NoSuchElementException::new);
 
-        // 찾은 line에서, 넣으려는 상행역이나 하행역이 있는지 확인한다.
-        Sections sections = line.getSections();
-
         Section newSection = Section.of(upStation, downStation, sectionRequest.getDistance());
 
         line.addSection(newSection);

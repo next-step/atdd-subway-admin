@@ -6,6 +6,7 @@ import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import javax.xml.bind.ValidationException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -63,6 +64,10 @@ public class Line extends BaseEntity {
                 .collect(Collectors.toList());
     }
 
+    public List<Station> getOrderedStations() {
+        return sections.getOrderedStations();
+    }
+
     public Long getId() {
         return id;
     }
@@ -75,10 +80,86 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void addSection(Section section) {
-        if (!sections.contains(section)) {
-            sections.add(section);
-            section.setLine(this);
+    public boolean contains(Section section) {
+        return sections.contains(section);
+    }
+
+    public void addSection(Section sectionIn) {
+        // validate
+        // 1. upStation과 downStation이 둘다 있으면 안됨
+        // 2. upStation, downStation 둘 중에 하나라도 있어야함
+
+        // sections 돌면서 확인한다.
+        // 1) downStation이 이번 section의 앞에 있는지 확인한다.
+        //  맞으면 -> 앞에 붙인다.
+        // 2) upStation이 이번 section의 앞에 있는지 확인한다.
+        //  맞으면 -> 안에 붙는 조건을 확인한다.
+        //   조건은 -> 거리가 해당 section 거리보다 짧다.
+        //    맞으면 -> 안에 붙인다.
+        // 3) downStation이 이번 section의 뒤에 있는지 확인한다.
+        //  맞으면 -> 안에 붙는 조건을 확인한다.
+        //   조건은 -> 거리가 해당 section 거리보다 짧다.
+        //    맞으면 -> 안에 붙인다.
+        // 4) sections 의 마지막 section 이었다면,
+        //  upStation이 이번 section의 뒤에 있는지 확인한다.
+        //   맞으면 -> 뒤에 붙인다.
+
+        if (sections.isEmpty()) {
+            sections.add(sectionIn);
+            return;
+        }
+
+        List<Section> orderedSections = sections.orderFromTopToBottom();
+
+        for (int i = 0; i < orderedSections.size(); ++i) {
+            Section section = orderedSections.get(i);
+
+            Station upStationIn = sectionIn.getUpStation();
+            Station downStationIn = sectionIn.getDownStation();
+
+            // 1)
+            if (downStationIn.equals(section.getUpStation())) {
+                sections.add(i, sectionIn);
+                break;
+            }
+            // 4)
+            if (i == orderedSections.size() - 1) {
+                if (upStationIn.equals(section.getDownStation())) {
+                    sections.add(sectionIn);
+                    break;
+                }
+            }
+
+            // 2)
+            if (upStationIn.equals(section.getUpStation())) {
+                validateDistance(sectionIn.getDistance(), section.getDistance());
+
+                section.setDistance(section.getDistance() - sectionIn.getDistance());
+                section.setUpStation(downStationIn);
+                sections.add(i, sectionIn);
+                break;
+            }
+            // 3)
+            if (downStationIn.equals(section.getDownStation())) {
+                validateDistance(sectionIn.getDistance(), section.getDistance());
+
+                section.setDistance(section.getDistance() - sectionIn.getDistance());
+                section.setDownStation(upStationIn);
+                sections.add(i+1, sectionIn);
+                break;
+            }
+        }
+
+//        if (!sections.contains(sectionIn))
+        {
+//            sections.add(i, sectionIn);
+            sectionIn.setLine(this);
+        }
+    }
+
+    private void validateDistance(int inputDistance, int existDistance) {
+        if (inputDistance >= existDistance) {
+            throw new IllegalArgumentException();
         }
     }
 }

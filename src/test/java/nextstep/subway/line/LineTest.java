@@ -36,23 +36,21 @@ public class LineTest {
         Station station6 = Station.of("역6");
         int distance = 5;
 
-        // 1 - 2 - 4 - 3 - 6 - 5 - 1
+        // 1 - 2 - 4 - 3 - 6 - 5
         Section section1 = Section.of(station1, station2, distance);
         Section section2 = Section.of(station2, station4, distance);
         Section section3 = Section.of(station4, station3, distance);
         Section section4 = Section.of(station3, station6, distance);
         Section section5 = Section.of(station6, station5, distance);
-        Section section6 = Section.of(station5, station1, distance);
 
         line2.addSection(section1);
         line2.addSection(section2);
         line2.addSection(section3);
         line2.addSection(section4);
         line2.addSection(section5);
-        line2.addSection(section6);
 
         // expect 1 - 2 - 4 - 3 - 6 - 5
-        assertThat(line2.getStations()).containsExactly(station1, station2, station4, station3, station6, station5);
+        assertThat(line2.getOrderedStations()).containsExactly(station1, station2, station4, station3, station6, station5);
     }
 
     @Test

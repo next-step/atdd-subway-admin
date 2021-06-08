@@ -21,7 +21,7 @@ public class SectionResponse {
                             LocalDateTime createdDate,
                             LocalDateTime modifiedDate) {
         this.id = id;
-        this.lineId = id;
+        this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
