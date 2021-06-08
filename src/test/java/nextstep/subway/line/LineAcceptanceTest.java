@@ -5,6 +5,8 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineSteps.*;
+import static nextstep.subway.station.StationSteps.지하철_역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -24,17 +27,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setUpLine() {
-        params = new LineRequest("신분당선", "bg-red-660");
+        params = new LineRequest("신분당선", "bg-red-660", 1L, 2L, 10);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        // given
+        ExtractableResponse<Response> stationResponse1 = 지하철_역_등록되어_있음(new StationRequest("강남역"));
+        ExtractableResponse<Response> stationResponse2 = 지하철_역_등록되어_있음(new StationRequest("광교역"));
+
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
         지하철_노선_생성됨(response);
+        지하철_노선에_역_목록_포함됨(Arrays.asList(stationResponse1, stationResponse2), response);
+    }
+
+    private void 지하철_노선에_역_목록_포함됨(List<ExtractableResponse<Response>> stationResponseList, ExtractableResponse<Response> response) {
+        List<Long> resultStationIds = response.jsonPath().getObject(".", LineResponse.class).getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        List<Long> expectedStationIds = stationResponseList.stream()
+                .map(this::getIdFromCreateResponse)
+                .collect(Collectors.toList());
+
+        assertThat(resultStationIds).containsAll(expectedStationIds);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
