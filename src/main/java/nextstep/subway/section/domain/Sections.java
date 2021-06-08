@@ -15,6 +15,7 @@ public class Sections {
   private static final String NOT_CONTAINS_NEITHER_STATIONS = "상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.";
   private static final String EMPTY_SECTIONS = "등록된 구간이 없습니다.";
   private static final String CAN_NOT_REMOVE_NON_REGISTERED_STATION = "등록되어 있지 않은 역은 제거할 수 없습니다.";
+  private static final String CAN_NOT_REMOVE_STATION_FROM_SINGLE_SECTION = "상행 종점 - 하행 종점으로 이루어진 하나의 구간만 있을 때는 역을 제거할 수 없습니다.";
 
   @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Section> lineSections = new ArrayList<>();
@@ -94,6 +95,9 @@ public class Sections {
   }
 
   public void removeStation(Station stationForRemove) {
+    if (lineSections.size() == 1) {
+      throw new IllegalArgumentException(CAN_NOT_REMOVE_STATION_FROM_SINGLE_SECTION);
+    }
     List<Section> filtered = lineSections.stream().filter(section -> section.containsStation(stationForRemove))
         .collect(Collectors.toList());
     if (filtered.isEmpty()) {
