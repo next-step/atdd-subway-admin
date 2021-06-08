@@ -45,7 +45,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation.getId(), gwanghwamunStation.getId(), 10));
+        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation, gwanghwamunStation, 10));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -57,10 +57,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation.getId(), gwanghwamunStation.getId(), 10));
+        지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation, gwanghwamunStation, 10));
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation.getId(), gwanghwamunStation.getId(), 10));
+        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation, gwanghwamunStation, 10));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -70,9 +70,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Section section1 = new Section(aeogaeStation.getId(), gwanghwamunStation.getId(), 3000);
+        Section section1 = new Section(aeogaeStation, gwanghwamunStation, 3000);
         ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음_두_종점역_포함(line3, section1);
-        Section section2 = new Section(aeogaeStation.getId(), gwanghwamunStation.getId(), 3000);
+        Section section2 = new Section(aeogaeStation, gwanghwamunStation, 3000);
         ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음_두_종점역_포함(line5, section2);
 
         // when
@@ -93,7 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation.getId(), gwanghwamunStation.getId(), 10));
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation, gwanghwamunStation, 10));
         Long lineId = createResponse.jsonPath().getLong("id");
 
         // when
@@ -108,7 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음_두_종점역_포함(line3, new Section(aeogaeStation.getId(), gwanghwamunStation.getId(), 10));
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음_두_종점역_포함(line3, new Section(aeogaeStation, gwanghwamunStation, 10));
 
         // when
         Map<String, Object> params = new HashMap<>();
@@ -126,7 +126,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation.getId(), gwanghwamunStation.getId(), 10));
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(aeogaeStation, gwanghwamunStation, 10));
 
         // when
         String uri = createResponse.header("Location");
@@ -152,7 +152,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithStations() {
         // when
-        Section section = new Section(aeogaeStation.getId(), gwanghwamunStation.getId(), 3000);
+        Section section = new Section(aeogaeStation, gwanghwamunStation, 3000);
         ExtractableResponse<Response> response = 지하철_노선_등록되어_있음_두_종점역_포함(line5, section);
 
         // then
@@ -167,10 +167,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLineStations() {
         // given
-        ExtractableResponse<Response> createLineResponse = 지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(seodaemunStation.getId(), gwanghwamunStation.getId(), 1000));
+        ExtractableResponse<Response> createLineResponse = 지하철_노선_등록되어_있음_두_종점역_포함(line5, new Section(seodaemunStation, gwanghwamunStation, 1000));
         Long lineId = createLineResponse.jsonPath().getLong("id");
-        SectionAcceptanceTest.지하철_구간_등록되어_있음(new Section(lineId, chungjeongnoStation.getId(), seodaemunStation.getId(), 1000));
-        SectionAcceptanceTest.지하철_구간_등록되어_있음(new Section(lineId, aeogaeStation.getId(), chungjeongnoStation.getId(), 1000));
+        SectionAcceptanceTest.지하철_구간_등록되어_있음(new Section(lineId, chungjeongnoStation, seodaemunStation, 1000));
+        SectionAcceptanceTest.지하철_구간_등록되어_있음(new Section(lineId, aeogaeStation, chungjeongnoStation, 1000));
 
         // when
         ExtractableResponse<Response> response = get("/lines/" + lineId);
