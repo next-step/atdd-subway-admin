@@ -170,6 +170,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.body().jsonPath().getString("stations")).isNotBlank();
     }
 
     private String 지하철_노선_등록되어_있음() {
