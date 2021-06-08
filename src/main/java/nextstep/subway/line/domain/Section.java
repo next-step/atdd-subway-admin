@@ -26,6 +26,8 @@ public class Section extends BaseEntity {
 
     private int distance;
 
+    private static final int MINIMUN_NEW_DISTANCE = 0;
+
     protected Section() {
     }
 
@@ -45,13 +47,27 @@ public class Section extends BaseEntity {
     }
 
     public static Section makeAfterSection(Section preSection, Section section) {
+        int calculatedDistance = calculateNewDistance(preSection, section);
+        checkDistance(calculatedDistance);
         return new Section(preSection.line, section.downStation, preSection.downStation,
-                preSection.distance - section.distance);
+                calculatedDistance);
     }
 
     public static Section makeBeforeSection(Section preSection, Section section) {
+        int calculatedDistance = calculateNewDistance(preSection, section);
+        checkDistance(calculatedDistance);
         return new Section(preSection.line, preSection.upStation, section.upStation,
-                preSection.distance - section.distance);
+                calculatedDistance);
+    }
+
+    private static int calculateNewDistance(Section preSection, Section section) {
+        return preSection.distance - section.distance;
+    }
+
+    private static void checkDistance(int calculatedDistance) {
+        if (calculatedDistance <= MINIMUN_NEW_DISTANCE) {
+            throw new IllegalArgumentException("기존 구간 내부에 구간 등록시 distance는 기존 구간보다 작아야 합니다.");
+        }
     }
 
     public boolean isEqualsUpStation(Section section) {
