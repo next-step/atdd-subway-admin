@@ -13,7 +13,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
@@ -25,12 +24,9 @@ public class LineService {
 
 	private final StationService stationService;
 
-	private final SectionService sectionService;
-
-	public LineService(LineRepository lineRepository, StationService stationService, SectionService sectionService) {
+	public LineService(LineRepository lineRepository, StationService stationService) {
 		this.lineRepository = lineRepository;
 		this.stationService = stationService;
-		this.sectionService = sectionService;
 	}
 
 	public LineResponse saveLine(LineRequest request) {

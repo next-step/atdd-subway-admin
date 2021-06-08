@@ -3,7 +3,7 @@ package nextstep.subway.section.domain;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -35,8 +35,8 @@ public class Section extends BaseEntity {
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
-	@Column(name = "distance")
-	private int distance;
+	@Embedded
+	private Distance distance;
 
 	protected Section() {
 	}
@@ -45,7 +45,7 @@ public class Section extends BaseEntity {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = distance;
+		this.distance = new Distance(distance);
 	}
 
 	public void changeLine(Line line) {
@@ -73,7 +73,7 @@ public class Section extends BaseEntity {
 	}
 
 	public int getDistance() {
-		return distance;
+		return this.distance.getDistance();
 	}
 
 	public Stream<Station> toStationStream() {
@@ -87,9 +87,9 @@ public class Section extends BaseEntity {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		Section section = (Section)o;
-		return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line,
-			section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation,
-			section.downStation);
+		return Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects
+			.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation)
+			&& Objects.equals(distance, section.distance);
 	}
 
 	@Override
@@ -102,8 +102,8 @@ public class Section extends BaseEntity {
 		return "Section{" +
 			"id=" + id +
 			", line=" + line +
-			", upStationID=" + upStation.getId() +
-			", downStationID=" + downStation.getId() +
+			", upStationId=" + upStation.getId() +
+			", downStationId=" + downStation.getId() +
 			", distance=" + distance +
 			'}';
 	}
