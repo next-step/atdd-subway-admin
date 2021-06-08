@@ -21,40 +21,30 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
-	private static final String BASE_URL = "/lines";
+	private static final String BASE_LINE_URL = "/lines";
 
 	private StationResponse 강남역;
 	private StationResponse 역삼역;
+
+	private LineResponse line_신분당선;
 
 	@BeforeEach
 	void setUpStations() {
 		// given
 		// 지하철 역 생성 요청
-		// 지하철 역 생성 요청
 		강남역 = 지하철역_생성_요청_및_성공_체크("강남역");
 		역삼역 = 지하철역_생성_요청_및_성공_체크("역삼역");
-	}
 
-	@DisplayName("지하철 노선을 생성한다.")
-	@Test
-	void createLine() {
-		// when
 		// 지하철_노선_생성_요청
-		LineRequest params = makeParams("신분당선", "bg-red-600", 강남역, 역삼역, 10);
-		ExtractableResponse<Response> line_신분당선 = 지하철_노선_생성_요청(params);
-
-		// then
-		// 지하철_노선_생성됨
-		assertThat(line_신분당선.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		LineRequest params = createLineRequest("신분당선", "bg-red-600", 강남역, 역삼역, 10);
+		line_신분당선 = 지하철_노선_생성_요청_및_성공_체크(params);
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
 	@Test
 	void createLineWithDuplicate() {
 		// given
-		// 지하철_노선_등록되어_있음
-		LineRequest params = makeParams("신분당선", "bg-red-600", 강남역, 역삼역, 10);
-		지하철_노선_생성_요청_및_성공_체크(params);
+		LineRequest params = createLineRequest("신분당선", "bg-red-600", 강남역, 역삼역, 10);
 
 		// when
 		// 지하철_노선_생성_요청
@@ -70,9 +60,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	void getLines() {
 		// given
 		// 지하철_노선_등록되어_있음
-		// 지하철_노선_등록되어_있음
-		LineResponse line_신분당선 = 지하철_노선_생성_요청_및_성공_체크(makeParams("신분당선", "bg-red-600", 강남역, 역삼역, 10));
-		LineResponse line_2호선 = 지하철_노선_생성_요청_및_성공_체크(makeParams("2호선", "bg-green-600", 강남역, 역삼역, 10));
+		LineResponse line_2호선 = 지하철_노선_생성_요청_및_성공_체크(createLineRequest("2호선", "bg-green-600", 강남역, 역삼역, 10));
 
 		// when
 		// 지하철_노선_목록_조회_요청
@@ -88,10 +76,6 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("지하철 노선을 조회한다.")
 	@Test
 	void getLine() {
-		// given
-		// 지하철_노선_등록되어_있음
-		LineResponse line_신분당선 = 지하철_노선_생성_요청_및_성공_체크(makeParams("신분당선", "bg-red-600", 강남역, 역삼역, 10));
-
 		// when
 		// 지하철_노선_조회_요청
 		ExtractableResponse<Response> line = 지하철_노선_조회_요청(line_신분당선.getId());
@@ -109,14 +93,9 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("지하철 노선을 수정한다.")
 	@Test
 	void updateLine() {
-		// given
-		// 지하철_노선_등록되어_있음
-		LineRequest params = makeParams("신분당선", "bg-red-600", 강남역, 역삼역, 10);
-		LineResponse line_신분당선 = 지하철_노선_생성_요청_및_성공_체크(params);
-
 		// when
 		// 지하철_노선_수정_요청
-		params = makeParams("구분당선", "bg-blue-600", 강남역, 역삼역, 10);
+		LineRequest params = createLineRequest("구분당선", "bg-blue-600", 강남역, 역삼역, 10);
 		ExtractableResponse<Response> line_구분당선 = 지하철_노선_수정_요청(line_신분당선.getId(), params);
 
 		// then
@@ -127,11 +106,6 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("지하철 노선을 제거한다.")
 	@Test
 	void deleteLine() {
-		// given
-		// 지하철_노선_등록되어_있음
-		LineRequest params = makeParams("신분당선", "bg-red-600", 강남역, 역삼역, 10);
-		LineResponse line_신분당선 = 지하철_노선_생성_요청_및_성공_체크(params);
-
 		// when
 		// 지하철_노선_제거_요청
 		ExtractableResponse<Response> response = 지하철_노선_삭제_요청(line_신분당선.getId());
@@ -141,9 +115,11 @@ class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
+
+
 	public static ExtractableResponse<Response> 지하철_노선_생성_요청(final LineRequest params) {
 		// when
-		return post(BASE_URL, params);
+		return post(BASE_LINE_URL, params);
 	}
 
 	public static LineResponse 지하철_노선_생성_요청_및_성공_체크(final LineRequest params) {
@@ -154,21 +130,21 @@ class LineAcceptanceTest extends AcceptanceTest {
 
 	public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
 		// when
-		return get(BASE_URL);
+		return get(BASE_LINE_URL);
 	}
 
 	public static ExtractableResponse<Response> 지하철_노선_조회_요청(final Long id) {
 		// when
-		return get(String.format("%s/%d", BASE_URL, id));
+		return get(String.format("%s/%d", BASE_LINE_URL, id));
 	}
 
 	public static ExtractableResponse<Response> 지하철_노선_수정_요청(final Long id, final LineRequest params) {
 		// when
-		return put(String.format("%s/%d", BASE_URL, id), params);
+		return put(String.format("%s/%d", BASE_LINE_URL, id), params);
 	}
 
 	public static ExtractableResponse<Response> 지하철_노선_삭제_요청(final Long id) {
 		// when
-		return delete(String.format("%s/%d", BASE_URL, id));
+		return delete(String.format("%s/%d", BASE_LINE_URL, id));
 	}
 }

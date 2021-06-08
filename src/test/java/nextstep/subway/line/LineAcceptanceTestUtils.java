@@ -11,7 +11,12 @@ import java.util.stream.Collectors;
 
 public class LineAcceptanceTestUtils {
 
-	static LineRequest makeParams(final String name, final String color, final StationResponse upStation, final StationResponse downStation, final int distance) {
+	private LineAcceptanceTestUtils() {
+		// empty
+	}
+
+
+	static LineRequest createLineRequest(final String name, final String color, final StationResponse upStation, final StationResponse downStation, final int distance) {
 		return new LineRequest(name, color, upStation.getId(), downStation.getId(), distance);
 	}
 
