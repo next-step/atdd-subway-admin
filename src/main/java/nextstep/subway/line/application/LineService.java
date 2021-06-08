@@ -42,10 +42,32 @@ public class LineService {
     }
 
     public LineResponse findByName(String name) {
+        Line line = checkExistLine(name);
+
+        return LineResponse.of(line);
+    }
+
+    public LineResponse updateByName(LineRequest req) {
+        Line line = checkExistLine(req.getName());
+
+        line.updateColor(req.getColor());
+
+        return LineResponse.of(line);
+    }
+
+    public void deleteByName(String name) {
+        Line line = checkExistLine(name);
+        lineRepository.delete(line);
+    }
+
+    private Line checkExistLine(String name) {
         Optional<Line> byName = lineRepository.findByName(name);
         if (!byName.isPresent()) {
             throw new IllegalArgumentException("해당 노선을 찾을 수 없습니다.");
         }
-        return LineResponse.of(byName.get());
+
+        return byName.get();
     }
+
+
 }

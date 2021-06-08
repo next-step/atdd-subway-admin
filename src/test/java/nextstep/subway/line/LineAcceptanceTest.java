@@ -101,10 +101,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// 지하철_노선_응답됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-		String resultLineName = response.jsonPath()
-				.getString("name");
+		String resultLineName = response.jsonPath().getString("name");
 
-		assertThat(resultLineName.contains(name)).isTrue();
+		assertThat(resultLineName).isEqualTo(name);
 	}
 
 	@DisplayName("지하철 노선을 수정한다.")
@@ -124,16 +123,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		params.put("name", name);
 		params.put("color", newColor);
 
-		RestAssured.given().log().all()
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
 				.body(params)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when()
-				.patch("/lines/" + name)
+				.patch("/lines")
 				.then().log().all()
 				.extract();
 
 		// then
 		// 지하철_노선_수정됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	@DisplayName("지하철 노선을 제거한다.")
@@ -141,13 +141,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLine() {
 		// given
 		// 지하철_노선_등록되어_있음
-		ExtractableResponse<Response> response = 노선정보세팅_메소드("잠실역", "yellow");
+		String name = "잠실역";
+		노선정보세팅_메소드(name, "yellow");
 
 		// when
 		// 지하철_노선_제거_요청
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when()
+				.delete("/lines/" + name)
+				.then().log().all()
+				.extract();
 
 		// then
 		// 지하철_노선_삭제됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
 	private ExtractableResponse<Response> 노선정보세팅_메소드(String name, String color){

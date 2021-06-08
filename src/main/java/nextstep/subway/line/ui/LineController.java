@@ -35,4 +35,16 @@ public class LineController {
         LineResponse line = lineService.findByName(name);
         return ResponseEntity.ok().body(line);
     }
+
+    @PatchMapping("/")
+    public ResponseEntity<LineResponse> updateLine(@RequestBody LineRequest lineRequest) {
+        LineResponse line = lineService.updateByName(lineRequest);
+        return ResponseEntity.ok().body(line);
+    }
+
+    @DeleteMapping("/{name}")
+    public ResponseEntity deleteLine(@PathVariable String name) {
+        lineService.deleteByName(name);
+        return ResponseEntity.noContent().build();
+    }
 }
