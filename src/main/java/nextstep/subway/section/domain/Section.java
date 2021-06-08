@@ -35,7 +35,8 @@ public class Section extends BaseEntity {
   @JoinColumn(name = "line_id")
   private Line line;
 
-  protected Section() {}
+  protected Section() {
+  }
 
   public Section(Station upStation, Station downStation, int distance) {
     this.upStation = upStation;
@@ -69,12 +70,12 @@ public class Section extends BaseEntity {
 
   public List<Station> getUpAndDownStations() {
     return Stream.of(this.getUpStation(), this.getDownStation())
-            .collect(Collectors.toList());
+        .collect(Collectors.toList());
   }
 
   public boolean isSameEdges(Section other) {
     return this.getUpStation().equals(other.getUpStation()) &&
-            this.getDownStation().equals(other.getDownStation());
+        this.getDownStation().equals(other.getDownStation());
   }
 
   public boolean isSameDownStation(Section other) {
@@ -122,8 +123,8 @@ public class Section extends BaseEntity {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if(o == null) return false;
-    if(!(o instanceof Section)) return false;
+    if (o == null) return false;
+    if (!(o instanceof Section)) return false;
     Section section = (Section) o;
     return this.getId().equals(section.getId()) &&
         this.getUpStation().equals(section.getUpStation()) &&
