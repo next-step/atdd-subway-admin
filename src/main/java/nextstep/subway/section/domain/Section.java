@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.Entity;
@@ -16,6 +17,10 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section extends BaseEntity {
+
+    public static final int UP_STATION_INDEX = 0;
+    public static final int DOWN_STATION_INDEX = 1;
+    public static final int VALID_STATIONS_SIZE = 2;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +41,20 @@ public class Section extends BaseEntity {
     private Line line;
 
     protected Section() {
+    }
+
+    public Section(final List<Station> stations, final int distance, final Line line) {
+        final List<Station> validStations = validStations(stations);
+        upStation = validStations.get(UP_STATION_INDEX);
+        downStation = validStations.get(DOWN_STATION_INDEX);
+        this.distance = validDistance(distance);
+        this.line = line;
+    }
+
+    private List<Station> validStations(final List<Station> stations) {
+        return Optional.ofNullable(stations)
+            .filter(list -> list.size() == VALID_STATIONS_SIZE)
+            .orElseThrow(IllegalArgumentException::new);
     }
 
     public Section(final Station upStation, final Station downStation, final int distance, final Line line) {

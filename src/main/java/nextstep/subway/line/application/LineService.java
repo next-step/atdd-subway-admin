@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -29,19 +30,26 @@ public class LineService {
     }
 
     public LineResponse saveLine(final LineRequest request) {
-        final Station station = station(request.getUpStationId());
-        final Station station1 = station(request.getDownStationId());
-        final Line line = request.toLine();
-        final Section section = new Section(station, station1, request.getDistance(), line);
-        line.addSection(section);
-        final Line persistLine = lineRepository.save(line);
-
-        return lineResponse(persistLine);
+        return lineResponse(persistLine(initializeLine(request)));
     }
 
-    private Station station(final Long upStationId) {
-        return stationRepository.findById(upStationId)
-            .orElseThrow(NotFoundException::new);
+    private Line initializeLine(final LineRequest request) {
+        final Line line = request.toLine();
+        line.addSection(new Section(stations(ids(request)), request.getDistance(), line));
+
+        return line;
+    }
+
+    private Line persistLine(final Line line) {
+        return lineRepository.save(line);
+    }
+
+    private List<Long> ids(final LineRequest request) {
+        return Arrays.asList(request.getUpStationId(), request.getDownStationId());
+    }
+
+    private List<Station> stations(final List<Long> ids) {
+        return stationRepository.findByIdIn(ids);
     }
 
     private LineResponse lineResponse(final Line line) {
@@ -74,9 +82,8 @@ public class LineService {
     public LineResponse updateLine(final Long id, final LineRequest lineRequest) {
         final Line line = findById(id);
         line.update(lineRequest.toLine());
-        final Line savedLIne = lineRepository.save(line);
 
-        return LineResponse.of(savedLIne);
+        return LineResponse.of(persistLine(line));
     }
 
     public void deleteLineById(final Long id) {
