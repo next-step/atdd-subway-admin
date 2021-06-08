@@ -33,7 +33,21 @@ class LineTest {
         final Section targetSection = new Section(A_Station, originStation, -40);
         sut.addSection(targetSection);
 
-        assertThat(sut.getSections().getValues().stream().map(Section::getDistance)).containsExactly(40,60);
+        assertThat(sut.getSections().getValues().stream()
+                .map(Section::getDistance)).containsExactly(40, 60);
+        assertThat(sut.getStations()).containsExactly(A_Station, originStation, C_Station);
+    }
+
+    @Test
+    void targetSection이_중앙에_위치할_경우2() {
+        assertThat(sut.getStations()).containsExactly(A_Station, C_Station);
+
+        Station originStation = new Station(3L, "B");
+        final Section targetSection = new Section(originStation, C_Station, 40);
+        sut.addSection(targetSection);
+
+        assertThat(sut.getSections().getValues().stream()
+                .map(Section::getDistance)).containsExactly(60, 40);
         assertThat(sut.getStations()).containsExactly(A_Station, originStation, C_Station);
     }
 

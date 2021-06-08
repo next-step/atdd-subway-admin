@@ -45,7 +45,7 @@ public class Sections {
         final Station downStation = targetSection.getDownStation();
         final int distance = targetSection.getDistance();
 
-        if (s.getUpStation().equals(upStation) && s.getDistance() > distance) {
+        if (s.getUpStation().equals(upStation) && distance < 0 && s.getDistance() > distance) {
             final Section section1 = new Section(s.getUpStation(), downStation, Math.abs(distance));
             section1.toLine(line);
             final Section section2 = new Section(downStation, s.getDownStation(), s.getDistance() + distance);
@@ -53,7 +53,17 @@ public class Sections {
 
             temp.add(section1);
             temp.add(section2);
-        } else if (s.getUpStation().equals(downStation) && distance > 0) {
+        } else if (s.getDownStation().equals(downStation) && distance > 0 && s.getDistance() > distance){
+
+            final Section section1 = new Section(s.getUpStation(), upStation, s.getDistance() - distance);
+            section1.toLine(line);
+            final Section section2 = new Section(upStation, s.getDownStation(), Math.abs(distance));
+            section2.toLine(line);
+
+            temp.add(section1);
+            temp.add(section2);
+
+        } else if (s.getUpStation().equals(downStation) && distance > 0) { //TODO distance 의 조건 제약 필요함
 
             final Section section1 = new Section(upStation, downStation, Math.abs(distance));
             section1.toLine(line);
@@ -72,6 +82,7 @@ public class Sections {
 
             temp.add(section1);
             temp.add(section2);
+
         } else {
             temp.add(targetSection);
         }
