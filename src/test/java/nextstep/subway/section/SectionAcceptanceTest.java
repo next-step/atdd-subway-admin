@@ -40,11 +40,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSection() {
         // given
-        ExtractableResponse<Response> createResponse = LineAcceptanceTest.지하철_노선_등록되어_있음(LineAcceptanceTest.line5);
+        ExtractableResponse<Response> createResponse = LineAcceptanceTest.지하철_노선_등록되어_있음_두_종점역_포함(LineAcceptanceTest.line5, new Section(aeogaeStation.getId(), chungjeongnoStation.getId(), 10));
         Long lineId = createResponse.jsonPath().getLong("id");
 
         // when
-        Section section = new Section(lineId, aeogaeStation.getId(), chungjeongnoStation.getId(), 1000);
+        Section section = new Section(lineId, chungjeongnoStation.getId(), seodaemunStation.getId(), 4);
         ExtractableResponse<Response> sectionResponse = 지하철_구간_등록되어_있음(section);
 
         // then
@@ -178,7 +178,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void case3FailsWhenCreateSection() {
         // given
-        ExtractableResponse<Response> createResponse = LineAcceptanceTest.지하철_노선_등록되어_있음(LineAcceptanceTest.line5);
+        ExtractableResponse<Response> createResponse = LineAcceptanceTest.지하철_노선_등록되어_있음_두_종점역_포함(LineAcceptanceTest.line5, new Section(aeogaeStation.getId(), gwanghwamunStation.getId(), 10));
         Long lineId = createResponse.jsonPath().getLong("id");
         지하철_구간_등록되어_있음(new Section(lineId, aeogaeStation.getId(), chungjeongnoStation.getId(), 3));
         지하철_구간_등록되어_있음(new Section(lineId, chungjeongnoStation.getId(), seodaemunStation.getId(), 4));
