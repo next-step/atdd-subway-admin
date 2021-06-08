@@ -8,6 +8,8 @@ import nextstep.subway.line.exception.AlreadyExistLineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,5 +28,16 @@ public class LineService {
         }
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    public List<LineResponse> findAll() {
+        List<Line> lines = lineRepository.findAll();
+
+        List<LineResponse> lineResponses = new ArrayList<>();
+        for (Line line: lines) {
+            lineResponses.add(LineResponse.of(line));
+        }
+
+        return lineResponses;
     }
 }
