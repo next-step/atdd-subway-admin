@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class LineService {
     public static final String LINE_DUPLICATED_EXCEPTION_MESSAGE = "해당 이름으로 등록된 지하철 노선이 있습니다.";
     public static final String LINE_NOT_FOUND_EXCEPTION_MESSAGE = "해당 ID로 된 지하철 노선이 존재하지 않습니다.";
+
     private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
