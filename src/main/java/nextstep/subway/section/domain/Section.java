@@ -24,7 +24,7 @@ public class Section extends BaseEntity {
         return stationId;
     }
 
-    public void getLine(Line line) {
+    public void setLine(Line line) {
         this.line = line;
     }
 }

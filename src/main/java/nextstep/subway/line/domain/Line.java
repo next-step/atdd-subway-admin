@@ -32,7 +32,7 @@ public class Line extends BaseEntity {
 
     private void addSection(Section section) {
         this.sections.add(section);
-        section.getLine(this);
+        section.setLine(this);
     }
 
     public void update(Line line) {
