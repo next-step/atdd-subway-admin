@@ -66,7 +66,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 
 # 인수테스트주도개발(ATDD) 3단계 - 구간 추가 기능
-- [ ] 기능 구현 전 인수 테스트 작성
-- [ ] 예외 케이스 처리 인수 테스트 작성
-- [ ] API 규격 변경
-- [ ] 기능구현
+- [x] 기능 구현 전 인수 테스트 작성
+- [x] 예외 케이스 처리 인수 테스트 작성
+- [x] API 규격 변경
+- [x] 기능구현
