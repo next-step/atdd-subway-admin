@@ -132,9 +132,10 @@ public class Sections implements Iterable<Section> {
         }
     }
 
-    public Section remove(Station element) {
-        validateRemovable(element);
-        Section removeTarget = selectRemoveTarget(element);
+    public Section remove(Station station) {
+        validateRemovable(station);
+        Section removeTarget = selectRemoveTarget(station);
+        mergeSection(removeTarget, station);
         remove(removeTarget);
         return removeTarget;
     }
@@ -159,14 +160,8 @@ public class Sections implements Iterable<Section> {
         return sections.get(index);
     }
 
-    private void remove(Section section) {
-        mergeSection(section);
-        sections.remove(section);
-        synchronizeSequence();
-    }
-
-    private void mergeSection(Section removeTarget) {
-        if (isEdge(removeTarget)) {
+    private void mergeSection(Section removeTarget, Station station) {
+        if (isEdge(station)) {
             return;
         }
         int removeIndex = sections.indexOf(removeTarget);
@@ -174,9 +169,13 @@ public class Sections implements Iterable<Section> {
         mergeTarget.mergeUpStation(removeTarget);
     }
 
-    private boolean isEdge(Section section) {
-        int index = sections.indexOf(section);
-        return index == FIRST_INDEX || index == lastIndex();
+    private boolean isEdge(Station station) {
+        return getFirstStation().equals(station) || getLastStation().equals(station);
+    }
+
+    private void remove(Section section) {
+        sections.remove(section);
+        synchronizeSequence();
     }
 
     private void synchronizeSequence() {
