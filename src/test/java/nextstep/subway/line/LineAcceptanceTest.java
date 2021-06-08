@@ -151,7 +151,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", section.getDownStation().getId());
         params.put("distance", section.getDistance());
 
-        return post(params, "/lines/withSection");
+        return post(params, "/lines");
     }
 
     @DisplayName("지하철 노선 생성 시 두 종점역 추가하기")
