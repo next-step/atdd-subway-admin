@@ -325,15 +325,49 @@ class SectionRepositoryTest {
         Station station2 = saveStation("판교");
         Station station3 = saveStation("양재");
 
-        Section section1 = saveSection(station2, station1, 5);
-        Section section2 = saveSection(station3, station2, 20);
+        Section down = saveSection(station2, station1, 5);
+        Section up = saveSection(station3, station2, 20);
 
         // when
-        section2.mergeDownStation(section1);
+        up.mergeDownStation(down);
 
         // then
-        assertThat(section2.getUpStation()).isSameAs(station3);
-        assertThat(section2.getDownStation()).isSameAs(station1);
+        assertThat(up.getUpStation()).isSameAs(station3);
+        assertThat(up.getDownStation()).isSameAs(station1);
+    }
+
+    @DisplayName("병합가능여부 검증 - 병합하고자 하는 구간의 상행역과 현재 구간의 하행역이 동일해야 함")
+    @Test
+    void validateMergeAble() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+
+        Station station4 = saveStation("광교");
+
+        Section down = saveSection(station4, station1, 5);
+        Section up = saveSection(station3, station2, 20);
+
+        // when then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> up.mergeDownStation(down))
+                .withMessageMatching("병합하고자 하는 구간의 상행역과 현재 구간의 하행역이 동일해야 합니다.");
+    }
+    
+    @DisplayName("병합가능여부 검증 - 병합 후 구간의 상 하행역은 동일할 수 없음")
+    void validateMergeAble_upAndDownStationAreSame() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+
+        Section down = saveSection(station2, station1, 5);
+        Section up = saveSection(station1, station2, 20);
+
+        // when then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> up.mergeDownStation(down))
+                .withMessageMatching("상행역과 하행역은 동일할 수 없습니다.");
     }
 
     private Section saveSection(Station upStation, Station downStation, int distance) {

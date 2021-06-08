@@ -95,8 +95,16 @@ public class Section extends BaseEntity {
     }
 
     public void mergeDownStation(Section section) {
+        validateMergeAble(this, section);
         this.distance += section.distance;
         this.downStation = section.downStation;
+        validateStations();
+    }
+
+    private void validateMergeAble(Section up, Section down) {
+        if (!up.downStation.equals(down.upStation)) {
+            throw new IllegalArgumentException("병합하고자 하는 구간의 상행역과 현재 구간의 하행역이 동일해야 합니다.");
+        }
     }
 
     public Long getId() {
