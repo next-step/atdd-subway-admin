@@ -35,6 +35,7 @@ public class Section extends BaseEntity {
         this.downStation = downStation;
         this.distance = distance;
     }
+
     public boolean hasSameUpStation(Station station) {
         return station == upStation;
     }

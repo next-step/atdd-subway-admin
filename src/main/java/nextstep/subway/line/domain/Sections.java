@@ -25,20 +25,24 @@ public class Sections {
             return;
         }
 
-        boolean isExistUpStation = isMatchWithUpStation(section);
-        boolean isExistDownStation = isMatchWithDownStation(section);
-
-        if (isExistUpStation && isExistDownStation) {
-            throw new IllegalArgumentException("상행역, 하행역 모두 등록되어 있습니다.");
-        }
-
-        if (!isExistUpStation && !isExistDownStation) {
-            throw new IllegalArgumentException("상행역, 하행역 모두 등록되어 있지 않습니다.");
-        }
+        checkExistEqualSection(section);
+        checkNotExistAnyEqualStation(section);
 
         addEqualUpStation(section);
         addEqualDownStation(section);
         sections.add(section);
+    }
+
+    private void checkExistEqualSection(Section section) {
+        if (isMatchWithUpStation(section) && isMatchWithDownStation(section)) {
+            throw new IllegalArgumentException("상행역, 하행역 모두 등록되어 있습니다.");
+        }
+    }
+
+    private void checkNotExistAnyEqualStation(Section section) {
+        if (!isMatchWithUpStation(section) && !isMatchWithDownStation(section)) {
+            throw new IllegalArgumentException("상행역, 하행역 모두 등록되어 있지 않습니다.");
+        }
     }
 
     private void addEqualUpStation(Section section) {
