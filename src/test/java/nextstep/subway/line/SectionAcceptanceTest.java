@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static nextstep.subway.line.LineSteps.*;
-import static nextstep.subway.line.StationSteps.*;
+import static nextstep.subway.line.SectionSteps.*;
 import static nextstep.subway.station.StationSteps.지하철역_등록_되어있음;
 
 @DisplayName("지하철 구간 관련 기능")
@@ -89,5 +89,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_구간_등록됨(response);
         지하철_노선_지하철역_정렬된_목록_포함됨(조회된_구간들, Arrays.asList(강남역, 정자역, 광교역));
+    }
+
+    @DisplayName("노선에 구간을 등록할 때 실패한다. (상행역, 하행역이 이미 노선에 등록되어 있다.)")
+    @Test
+    void addSection_fail_has_upstation_and_downstation() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 광교역, 5);
+
+        // then
+        지하철_노선_구간_생성_실패됨(response);
     }
 }

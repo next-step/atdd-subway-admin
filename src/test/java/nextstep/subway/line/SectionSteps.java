@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class StationSteps {
+public class SectionSteps {
 
     public static ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(LineResponse line, StationResponse upStation,
                                                                    StationResponse downStation, int distance) {
@@ -27,5 +27,9 @@ public class StationSteps {
 
     public static void 지하철_노선에_구간_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    public static void 지하철_노선_구간_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
