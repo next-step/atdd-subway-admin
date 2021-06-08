@@ -32,10 +32,8 @@ public class LineRequest {
     }
 
     public Line toLine(Station upStation, Station downStation) {
-        Line line = new Line(name, color);
         Section section = Section.of(upStation, downStation, this.distance);
-        line.changeSections(Arrays.asList(section));
-        return line;
+        return new Line(name, color, Arrays.asList(section));
     }
 
     public Long getUpStationId() {

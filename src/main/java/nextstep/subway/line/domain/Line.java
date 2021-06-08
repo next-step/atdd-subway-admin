@@ -32,9 +32,11 @@ public class Line extends BaseEntity {
 
     public Line() {}
 
-    public Line(String name, String color) {
+    public Line(String name, String color, List<Section> sections) {
         this.name = name;
         this.color = color;
+        this.sections = Sections.of(sections);
+        sections.forEach(section -> section.addLine(this));
     }
 
     public void update(Line line) {
@@ -52,11 +54,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public void changeSections(List<Section> sections) {
-        sections.forEach(section -> section.addLine(this));
-        this.sections = Sections.of(sections);
     }
 
     public List<StationResponse> getStationResponse() {
