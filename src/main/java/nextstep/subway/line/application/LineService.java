@@ -40,4 +40,12 @@ public class LineService {
 
         return lineResponses;
     }
+
+    public LineResponse findByName(String name) {
+        Optional<Line> byName = lineRepository.findByName(name);
+        if (!byName.isPresent()) {
+            throw new IllegalArgumentException("해당 노선을 찾을 수 없습니다.");
+        }
+        return LineResponse.of(byName.get());
+    }
 }

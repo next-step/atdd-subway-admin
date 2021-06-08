@@ -86,12 +86,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLine() {
 		// given
 		// 지하철_노선_등록되어_있음
+		String name = "잠실역";
+		노선정보세팅_메소드(name, "yellow");
 
 		// when
 		// 지하철_노선_조회_요청
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+				.when()
+				.get("/lines/" + name)
+				.then().log().all()
+				.extract();
 
 		// then
 		// 지하철_노선_응답됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+		String resultLineName = response.jsonPath().get().toString();
+
+		assertThat(resultLineName.contains(name)).isTrue(); // 더 좋은 방법은 없을까?
 	}
 
 	@DisplayName("지하철 노선을 수정한다.")
