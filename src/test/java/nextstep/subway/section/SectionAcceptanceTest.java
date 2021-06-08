@@ -200,22 +200,22 @@ class SectionAcceptanceTest extends AcceptanceTest {
     노선에서_역_제거_완료(result, 강남역_ID, 판교역_ID);
 
   }
-//
-//  @DisplayName("지하철 중간역을 제거한다. 거리는 두 구간 거리의 합이어야 한다.")
-//  @Test
-//  void removeStationNotEdge() {
-//    //given
-//    SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
-//    Long lineId = 신분당선.getId();
-//    지하철_구간_등록_요청(lineId, sectionParam);
-//
-//    //when
-//    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 판교역_ID);
-//
-//    //then
-//    노선에서_역_제거_완료(result);
-//  }
-//
+
+  @DisplayName("지하철 중간역을 제거한다. 거리는 두 구간 거리의 합이어야 한다.")
+  @Test
+  void removeStationNotEdge() {
+    //given
+    SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
+    Long lineId = 신분당선.getId();
+    지하철_구간_등록_요청(lineId, sectionParam);
+
+    //when
+    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 판교역_ID);
+
+    //then
+    노선에서_역_제거_완료(result, 강남역_ID, 광교역_ID);
+  }
+
   @DisplayName("등록되어 있지 않은 역은 제거할 수 없다.")
   @Test
   void canNotRemoveNoneRegisteredStation() {

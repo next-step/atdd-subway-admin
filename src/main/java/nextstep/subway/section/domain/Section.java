@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 @Entity
 public class Section extends BaseEntity {
 
-  private static final String NEW_SECTION_MUST_SHORTER_THAN_EXIST_SECTION = "새로 등록되는 구간 길이가 기존 역 사이 길이보다 크거나 같을 수 없습니다.";
+  private static final String ONLY_CONNECTED_SECTION_CAN_REMOVE_SHARED_STATION = "연속 된 구간에서 겹치는 역만 제거할 수 있습니다.";
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -136,5 +136,13 @@ public class Section extends BaseEntity {
   @Override
   public int hashCode() {
     return Objects.hash(this.getId(), this.getUpStation(), this.getDownStation(), this.getDistance(), this.getLine());
+  }
+
+  public void removeStationBetweenSections(Section other) {
+    if(!this.downStation.equals(other.upStation)) {
+      throw new IllegalArgumentException(ONLY_CONNECTED_SECTION_CAN_REMOVE_SHARED_STATION);
+    }
+    this.downStation = other.downStation;
+    this.distance = this.distance.add(other.distance);
   }
 }
