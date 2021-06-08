@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.exception.ValueOutOfBoundsException;

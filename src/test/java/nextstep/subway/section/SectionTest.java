@@ -2,6 +2,7 @@ package nextstep.subway.section;
 
 import nextstep.subway.exception.ValueOutOfBoundsException;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
     private static final String BASE_PATH = "/lines";
 
-    private String location;
+    public static String location;
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -112,7 +112,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(extractableResponse);
     }
 
-    private LineResponse 지하철_노선_생성(String name, String color, String upStationName, String downStationName) {
+    public static LineResponse 지하철_노선_생성(String name, String color, String upStationName, String downStationName) {
         StationResponse upStation = 역_생성(upStationName);
         StationResponse downStation = 역_생성(downStationName);
 
@@ -125,8 +125,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return extractableResponse.jsonPath().getObject(".", LineResponse.class);
     }
 
-    private Map<String, String> 지하철_노선_파라미터(String name, String color, String upStationId,
-                                            String downStationId, String distance) {
+    private static Map<String, String> 지하철_노선_파라미터(String name, String color, String upStationId,
+                                                   String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -145,7 +145,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return params;
     }
 
-    private void 지하철_노선_생성됨(ExtractableResponse<Response> extractableResponse) {
+    private static void 지하철_노선_생성됨(ExtractableResponse<Response> extractableResponse) {
         assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
@@ -188,7 +188,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청() {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청() {
         ExtractableResponse<Response> response =
                 given()
                         .log().all()
@@ -227,7 +227,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    private static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
         ExtractableResponse<Response> response =
                 given()
                         .log().all()
@@ -241,18 +241,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    public String getLocation() {
+    public static String getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public static void setLocation(String location) {
+        LineAcceptanceTest.location = location;
     }
 
-    private StationResponse 역_생성(String name) {
+    private static StationResponse 역_생성(String name) {
         Map<String, String> stationParams = StationAcceptanceTest.역_파라미터(name);
         ExtractableResponse<Response> stationExtractableResponse = StationAcceptanceTest.역_생성_요청(stationParams);
         StationAcceptanceTest.역_생성됨(stationExtractableResponse);
         return stationExtractableResponse.jsonPath().getObject(".", StationResponse.class);
+    }
+
+    public static LinesSubResponse 지하철_노선_조회() {
+        ExtractableResponse<Response> extractableResponse = 지하철_노선_조회_요청();
+        return extractableResponse.jsonPath().getObject(".", LinesSubResponse.class);
     }
 }

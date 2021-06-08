@@ -1,7 +1,7 @@
 package nextstep.subway.station_section;
 
 import nextstep.subway.exception.NoSuchDataException;
-import nextstep.subway.section.Section;
+import nextstep.subway.section.domain.Section;
 
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;

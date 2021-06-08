@@ -3,6 +3,8 @@ package nextstep.subway.section;
 import nextstep.subway.exception.NoSuchDataException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station_section.StationSection;
 import nextstep.subway.station_section.StationSectionRepository;

@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.section.domain;
 
 import nextstep.subway.exception.NoSuchDataException;
 import nextstep.subway.station.domain.Station;

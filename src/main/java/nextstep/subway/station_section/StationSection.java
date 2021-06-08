@@ -1,7 +1,7 @@
 package nextstep.subway.station_section;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.Section;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;

@@ -3,7 +3,7 @@ package nextstep.subway.station.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.exception.NoSuchDataException;
 import nextstep.subway.exception.ValueFormatException;
-import nextstep.subway.section.Section;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station_section.StationSection;
 import nextstep.subway.station_section.StationSectionsByStation;
 import org.apache.logging.log4j.util.Strings;
