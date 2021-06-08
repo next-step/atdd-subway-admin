@@ -356,6 +356,7 @@ class SectionRepositoryTest {
     }
     
     @DisplayName("병합가능여부 검증 - 병합 후 구간의 상 하행역은 동일할 수 없음")
+    @Test
     void validateMergeAble_upAndDownStationAreSame() {
         // given
         Station station1 = saveStation("정자");
@@ -365,7 +366,7 @@ class SectionRepositoryTest {
         Section up = saveSection(station1, station2, 20);
 
         // when then
-        assertThatIllegalArgumentException()
+        assertThatIllegalStateException()
                 .isThrownBy(() -> up.mergeDownStation(down))
                 .withMessageMatching("상행역과 하행역은 동일할 수 없습니다.");
     }
