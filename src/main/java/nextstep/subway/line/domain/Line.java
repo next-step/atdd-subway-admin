@@ -36,9 +36,10 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        this.sections.add(section);
         section.addLine(this);
+        sections.registerNewSection(section);
     }
+
 
     public List<Station> getEndToEndStations() {
         return new ArrayList<>(sections.getDistinctStations());

@@ -27,17 +27,17 @@ class SectionsTest {
 
   @BeforeEach
   void setUp() {
-    Section third = new Section(청계산입구역, 판교역, 2);
     Section first = new Section(강남역, 양재역, 2);
-    Section fifth = new Section(수지구청역, 광교역, 2);
     Section second = new Section(양재역, 청계산입구역, 2);
+    Section third = new Section(청계산입구역, 판교역, 2);
     Section fourth = new Section(판교역, 수지구청역, 2);
+    Section fifth = new Section(수지구청역, 광교역, 2);
     Sections prepared = new Sections();
-    prepared.add(third);
-    prepared.add(first);
-    prepared.add(fifth);
-    prepared.add(second);
-    prepared.add(fourth);
+    prepared.registerNewSection(first);
+    prepared.registerNewSection(second);
+    prepared.registerNewSection(third);
+    prepared.registerNewSection(fourth);
+    prepared.registerNewSection(fifth);
     this.sections = prepared;
   }
 
