@@ -101,6 +101,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     *   When 지하철 노선 제거 요청한다.
     *   Then 지하철 노선이 제거된다.
 
+<br>
+
+#### Feature: 지하철 노선 구간 관련 기능
 
 *   Scenario: 지하철 노선 구간을 등록한다.
     *   Given 지하철 노선이 등록되어 있다.
