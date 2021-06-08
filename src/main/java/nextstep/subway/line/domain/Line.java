@@ -1,9 +1,14 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.ValueFormatException;
+import nextstep.subway.section.Section;
+import nextstep.subway.section.Sections;
+import nextstep.subway.station.domain.Station;
+import org.apache.logging.log4j.util.Strings;
 
 import javax.persistence.*;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 public class Line extends BaseEntity {
@@ -14,10 +19,13 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    public Line() {
+    @Embedded
+    private Sections sections = new Sections(new HashSet<>());
+
+    protected Line() {
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
@@ -28,7 +36,24 @@ public class Line extends BaseEntity {
     }
 
     public static Line create(String name, String color) {
+        validate(name, color);
         return new Line(name, color);
+    }
+
+    public static Line create(String name, String color, Station upStation, Station downStation, int distance) {
+        Line line = Line.create(name, color);
+        Section.create(line, upStation, downStation, distance);
+        return line;
+    }
+
+    private static void validate(String name, String color) {
+        if (Strings.isBlank(name)) {
+            throw new ValueFormatException("노선의 이름이 존재하지 않습니다.", "name", name, null);
+        }
+
+        if (Strings.isBlank(color)) {
+            throw new ValueFormatException("노선의 색이 존재하지 않습니다.", "color", color, null);
+        }
     }
 
     public void change(String name, String color) {
@@ -36,9 +61,16 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+    public Station upEndStation() {
+        return sections().upEndStation();
+    }
+
+    public Station downEndStation() {
+        return sections().downEndStation();
+    }
+
+    public void addSections(Section section) {
+        sections.add(section);
     }
 
     @Override
@@ -64,5 +96,17 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public int sectionsSize() {
+        return sections.size();
+    }
+
+    public Sections sections() {
+        return sections;
+    }
+
+    public List<Station> stationsFromUpToDown() {
+        return sections.stationsFromUpToDown();
     }
 }
