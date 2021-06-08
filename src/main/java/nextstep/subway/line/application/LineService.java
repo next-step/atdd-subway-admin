@@ -6,7 +6,6 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
@@ -77,9 +76,8 @@ public class LineService {
     @Transactional
     public void removeSectionByStationId(Long lineId, Long stationId) {
         Line line = findById(lineId);
-        Sections sections = line.getSections();
         Station station = stationService.findById(stationId);
-        Section removeTarget = sections.remove(station);
+        Section removeTarget = line.remove(station);
         sectionService.deleteSection(removeTarget);
     }
 }
