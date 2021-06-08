@@ -16,6 +16,7 @@ import nextstep.subway.station.dto.StationResponse;
 @Service
 @Transactional
 public class StationService {
+	private static final String STATION_NOT_FOUND_MESSAGE = "id에 해당하는 Station을 찾을 수 없습니다.";
 	private StationRepository stationRepository;
 
 	public StationService(StationRepository stationRepository) {
@@ -42,6 +43,6 @@ public class StationService {
 
 	public Station getStation(Long upStationId) {
 		return this.stationRepository.findById(upStationId)
-			.orElseThrow(() -> new EntityNotFoundException("id에 해당하는 Station을 찾을 수 없습니다."));
+			.orElseThrow(() -> new EntityNotFoundException(STATION_NOT_FOUND_MESSAGE));
 	}
 }

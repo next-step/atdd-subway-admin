@@ -16,8 +16,9 @@ public class Line extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@Column(unique = true)
+	@Column(name = "name", unique = true)
 	private String name;
+	@Column(name = "color")
 	private String color;
 
 	@Embedded

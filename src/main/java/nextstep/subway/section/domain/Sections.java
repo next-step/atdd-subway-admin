@@ -15,6 +15,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
+	private static final String INVALID_SECTION_MESSAGE = "노선 설정이 잘못되었습니다.";
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
 	private final List<Section> sections = new ArrayList<>();
 
@@ -61,7 +62,7 @@ public class Sections {
 
 		return this.sections.stream()
 			.filter(section -> !downStations.contains(section.getUpStation()))
-			.findFirst().orElseThrow(() -> new SubwayLogicException("노선 설정이 잘못되었습니다."));
+			.findFirst().orElseThrow(() -> new SubwayLogicException(INVALID_SECTION_MESSAGE));
 	}
 
 }

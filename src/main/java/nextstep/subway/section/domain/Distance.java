@@ -10,6 +10,7 @@ import nextstep.subway.exception.SubwayLogicException;
 @Embeddable
 public class Distance {
 
+	private static final String DISTANCE_INVALID_MESSAGE = "distance는 0이상입력 해주세요";
 	@Column(name = "distance")
 	private int distance;
 
@@ -18,7 +19,7 @@ public class Distance {
 
 	public Distance(int distance) {
 		if (distance <= 0) {
-			throw new SubwayLogicException("distance는 0이상입력 해주세요");
+			throw new SubwayLogicException(DISTANCE_INVALID_MESSAGE);
 		}
 		this.distance = distance;
 	}
