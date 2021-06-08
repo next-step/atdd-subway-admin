@@ -108,12 +108,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     *   Then 지하철 노선 구간이 등록된다.   
 
 
-*   Scenario: 역 사이에 새로운 역을 등록한다.
-    *   Given 지하철 노선이 등록되어 있다.
-    *   When 등록된 지하철 노선 사이에 구간 등록 요청한다
-    *   Then 지하철 노선 구간이 등록된다.
-
-
 *   Scenario: 기존 역 사이 길이보다 큰 새로운 역을 등록한다.
     *   Given 지하철 노선이 등록되어 있다.
     *   When 등록된 지하철 노선 사이에 구간 등록 요청한다.
