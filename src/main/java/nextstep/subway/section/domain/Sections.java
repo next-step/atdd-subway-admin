@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
@@ -18,7 +17,6 @@ import nextstep.subway.station.domain.Station;
 public class Sections {
 
     public static final String SECTIONS_CANNOT_BE_NULL = "구간목록은 NULL이 될수 없습니다.";
-    public static final String CANNOT_FOUND_INDEX_OF_SECTION = "기준이 되는 구간을 찾을 수 없습니다.";
     public static final String SECTION_ALREADY_EXISTS = "이미 상행역과 하행역으로 연결되는 구간이 등록되어 있습니다.";
     public static final String THERE_IS_NO_STATION_INCLUDED_BETWEEN_UP_AND_DOWN_STATIONS = "상행역과 하행역 둘중 포함되는 역이 없습니다.";
     public static final int ONE = 1;
@@ -38,82 +36,36 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void add(Section section) {
+    public boolean add(Section newSection) {
+        if (!sections.isEmpty()) {
+            validationForAdd(newSection);
+        }
+        sections.stream()
+            .filter(section -> section.isBetween(newSection))
+            .findFirst()
+            .ifPresent(section -> section.reconnectStations(newSection));
+        return sections.add(newSection);
+    }
+
+    private void validationForAdd(Section section) {
         if (isPresent(section)) {
             throw new IllegalArgumentException(SECTION_ALREADY_EXISTS);
         }
-        if (!addInOrder(section)) {
+        if (!isPresentAnyStation(section)) {
             throw new IllegalArgumentException(THERE_IS_NO_STATION_INCLUDED_BETWEEN_UP_AND_DOWN_STATIONS);
         }
     }
 
-    private boolean addInOrder(Section section) {
-        if (isBefore(section)) {
-            return addLast(section);
-        }
-        Optional<Section> targetOptional = findTargetSectionForAdd(section);
-        if (targetOptional.isPresent()) {
-            return addBetween(targetOptional.get(), section);
-        }
-        if (isAfter(section)) {
-            return addFirst(section);
-        }
-        return false;
-    }
-
-    private boolean isBefore(Section findSection) {
-        if (sections.isEmpty()) {
-            return true;
-        }
-        return sections.stream()
-            .filter(section -> section.isBefore(findSection))
-            .findFirst().isPresent();
-    }
-
-    private boolean isAfter(Section findSection) {
-        if (sections.isEmpty()) {
-            return true;
-        }
-        return sections.stream()
-            .filter(section -> section.isAfter(findSection))
-            .findFirst().isPresent();
-    }
-
-    private boolean addFirst(Section section) {
-        sections.add(0, section);
-        return true;
-    }
-
-    private boolean addLast(Section section) {
-        sections.add(sections.size(), section);
-        return true;
-    }
-
     private boolean isPresent(Section section) {
         return sections.stream()
-            .filter(s -> s.isEqualUpAndDownStation(section))
+            .filter(s -> s.isEqualAllStation(section))
             .findFirst().isPresent();
     }
 
-    private Optional<Section> findTargetSectionForAdd(Section findSection) {
+    private boolean isPresentAnyStation(Section section) {
         return sections.stream()
-            .filter(section -> section.isBetween(findSection))
-            .findFirst();
-    }
-
-    private boolean addBetween(Section targetSection, Section newSection) {
-        targetSection.addIntoSection(newSection);
-        sections.add(indexOf(targetSection), newSection);
-        return true;
-    }
-
-    private int indexOf(Section section) {
-        return IntStream.range(0, sections.size())
-            .filter(i -> section.equals(sections.get(i)))
-            .findFirst()
-            .orElseThrow(() -> {
-                throw new RuntimeException(CANNOT_FOUND_INDEX_OF_SECTION);
-            }) + ONE;
+            .filter(s -> s.isPresentAnyStation(section))
+            .findFirst().isPresent();
     }
 
     public List<Station> findStationsInOrder() {

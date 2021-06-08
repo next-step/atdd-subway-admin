@@ -63,7 +63,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         Section section = new Section(lineResponse.getId(), aeogaeStation.getId(), chungjeongnoStation.getId(), 3);
-        //Section section = new Section(lineResponse.getId(), chungjeongnoStation.getId(), seodaemunStation.getId(), 3);
         ExtractableResponse<Response> response = 지하철_구간_등록되어_있음(section);
 
         // then

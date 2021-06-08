@@ -78,6 +78,10 @@ public class Section extends BaseEntity {
         return downStation.equals(section.getUpStation());
     }
 
+    protected boolean isAfter(Section section) {
+        return upStation.equals(section.getDownStation());
+    }
+
     protected boolean isBetween(Section section) {
         if (isBaseOnUpStation(section)) {
             return true;
@@ -89,48 +93,62 @@ public class Section extends BaseEntity {
     }
 
     private boolean isBaseOnUpStation(Section section) {
-        if (!isEqualUpStation(section)) {
+        if (!upStation.equals(section.getUpStation())) {
             return false;
         }
-        if (isEqualDownStation(section)) {
+        if (downStation.equals(section.getDownStation())) {
             return false;
         }
         return true;
-    }
-
-    private boolean isEqualDownStation(Section section) {
-        return downStation.equals(section.getDownStation());
     }
 
     private boolean isBaseOnDownStation(Section section) {
-        if (isEqualUpStation(section)) {
+        if (upStation.equals(section.getUpStation())) {
             return false;
         }
-        if (!isEqualDownStation(section)) {
+        if (!downStation.equals(section.getDownStation())) {
             return false;
         }
         return true;
     }
 
-    private boolean isEqualUpStation(Section section) {
-        return upStation.equals(section.getUpStation());
+    protected boolean isEqualAllStation(Section section) {
+        if (!upStation.equals(section.getUpStation())) {
+            return false;
+        }
+        if (!downStation.equals(section.getDownStation())) {
+            return false;
+        }
+        return true;
     }
 
-    protected boolean isAfter(Section section) {
-        return upStation.equals(section.getDownStation());
+    protected boolean isPresentAnyStation(Section section) {
+        if (contain(section.getUpStation())) {
+            return true;
+        }
+        if (contain(section.getDownStation())) {
+            return true;
+        }
+        return false;
     }
 
-    protected boolean isEqualUpAndDownStation(Section section) {
-        return isEqualUpStation(section) && isEqualDownStation(section);
+    private boolean contain(Station station) {
+        if (upStation.equals(station)) {
+            return true;
+        }
+        if (downStation.equals(station)) {
+            return true;
+        }
+        return false;
     }
 
-    protected void addIntoSection(Section newSection) {
+    protected void reconnectStations(Section newSection) {
         minusDistance(newSection.distance);
-        if (isEqualUpStation(newSection)) {
+        if (upStation.equals(newSection.getUpStation())) {
             reconnectStationsByUpStation(newSection);
             return;
         }
-        if (isEqualDownStation(newSection)) {
+        if (downStation.equals(newSection.getDownStation())) {
             reconnectStationsByDownStation(newSection);
             return;
         }

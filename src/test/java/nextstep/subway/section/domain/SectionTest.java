@@ -71,7 +71,7 @@ public class SectionTest {
     void isEqualUpAndDownStation() {
         Section preSection = new Section(1L, 3L, 7);
         Section newSection = new Section(1L, 3L, 4);
-        assertThat(newSection.isEqualUpAndDownStation(preSection)).isTrue();
+        assertThat(newSection.isEqualAllStation(preSection)).isTrue();
     }
 
     @DisplayName("구간에 새로운 구간을 추가할 경우 확인")
@@ -82,7 +82,7 @@ public class SectionTest {
         Section newSection = new Section(1L, 2L, 4);
 
         // when
-        preSection.addIntoSection(newSection);
+        preSection.reconnectStations(newSection);
 
         //then
         assertThat(preSection.getDownStation().getId()).isEqualTo(2L);
