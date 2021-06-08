@@ -22,11 +22,43 @@ public class Sections {
     public void add(Section section) {
         if (isFirstSection()) {
             sections.add(section);
+            return;
         }
 
         boolean isExistUpStation = isMatchWithUpStation(section);
         boolean isExistDownStation = isMatchWithDownStation(section);
+
+        addEqualUpStation(section);
+        addEqualDownStation(section);
         sections.add(section);
+    }
+
+    private void addEqualUpStation(Section section) {
+        sections.stream()
+                .filter(preSection -> preSection.isEqualsUpStation(section))
+                .findFirst()
+                .ifPresent(preSection -> {
+                    sections.add(makeNewAfterSection(preSection, section));
+                    sections.remove(preSection);
+                });
+    }
+
+    private Section makeNewAfterSection(Section preSection, Section section) {
+        return Section.makeAfterSection(preSection, section);
+    }
+
+    private void addEqualDownStation(Section section) {
+        sections.stream()
+                .filter(preSection -> preSection.isEqualsDownStation(section))
+                .findFirst()
+                .ifPresent(preSection -> {
+                    sections.add(makeNewBeforeSection(preSection, section));
+                    sections.remove(preSection);
+                });
+    }
+
+    private Section makeNewBeforeSection(Section preSection, Section section) {
+        return Section.makeBeforeSection(preSection, section);
     }
 
     public boolean isEmpty() {
@@ -61,14 +93,14 @@ public class Sections {
 
     public Section findSectionInDownStation(Station upStation) {
         return sections.stream()
-                .filter(section -> section.getDownStation() == upStation)
+                .filter(section -> section.hasSameDownStation(upStation))
                 .findFirst()
                 .orElse(null);
     }
 
     public Section findSectionInUpStation(Station downStation) {
         return sections.stream()
-                .filter(section -> section.getUpStation() == downStation)
+                .filter(section -> section.hasSameUpStation(downStation))
                 .findFirst()
                 .orElse(null);
     }
