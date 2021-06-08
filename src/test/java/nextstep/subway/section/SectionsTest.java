@@ -41,7 +41,7 @@ public class SectionsTest {
         sections.add(section1);
         sections.add(section3);
 
-        List<Section> actualSections = sections.getOrderedSections();
+        List<Section> actualSections = sections.orderFromTopToBottom();
         assertThat(actualSections.get(0).getUpStation().getName()).isEqualTo("1번역");
         assertThat(actualSections.get(1).getUpStation().getName()).isEqualTo("2번역");
         assertThat(actualSections.get(2).getUpStation().getName()).isEqualTo("3번역");

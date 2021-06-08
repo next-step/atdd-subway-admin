@@ -1,13 +1,13 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.station.domain.Station;
-import org.apache.commons.lang3.NotImplementedException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Embeddable
@@ -23,16 +23,15 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (section == null) {
-            throw new IllegalArgumentException("Section is null.");
-        }
         if (!this.contains(section)) {
             sections.add(section);
         }
     }
 
-    public List<Section> get() {
-        return sections;
+    public void add(int index, Section section) {
+        if (!this.contains(section)) {
+            sections.add(index, section);
+        }
     }
 
     public boolean contains(Section section) {
@@ -40,15 +39,15 @@ public class Sections {
     }
 
     public List<Station> getOrderedStations() {
-        throw new NotImplementedException();
+        return makeOrderedSectionsFrom(findTopSection()).stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .distinct()
+                .collect(Collectors.toList());
     }
 
-    public List<Section> getOrderedSections() {
-        Section topSection = findTopSection();
-
-        List<Section> orderedSections = makeOrderedSectionsFrom(topSection);
-
-        return orderedSections;
+     public List<Section> orderFromTopToBottom() {
+        sections = makeOrderedSectionsFrom(findTopSection());
+        return sections;
     }
 
     public Section findTopSection() {
@@ -66,31 +65,36 @@ public class Sections {
                 .isPresent();
     }
 
-    protected List<Section> makeOrderedSectionsFrom(Section topSection) {
+    private List<Section> makeOrderedSectionsFrom(Section topSection) {
         List<Section> orderedSections = new ArrayList<>();
         orderedSections.add(topSection);
 
-        Map<String, Section> upMap = new HashMap<>();
-        Map<String, Section> downMap = new HashMap<>();
-
+        Map<String, Section> upNameMap = new HashMap<>();
         for (Section it : this.sections) {
-            upMap.put(it.getUpStation().getName(), it);
-            downMap.put(it.getDownStation().getName(), it);
+            upNameMap.put(it.getUpStation().getName(), it);
         }
 
-        Section prevSection = null;
         while (topSection != null) {
-            prevSection = topSection;
+            topSection = upNameMap.get(topSection.getDownStation().getName());
 
-            topSection = upMap.get(topSection.getDownStation().getName());
-
-            if (topSection != null) {
-                orderedSections.add(topSection);
-            }
+            addNextSection(orderedSections, topSection);
         }
-
-        orderedSections.add(prevSection);
 
         return orderedSections;
     }
+
+    private void addNextSection(List<Section> orderedSections, Section section) {
+        if (section == null) {
+            return;
+        }
+        if (orderedSections.contains(section)) {
+            return;
+        }
+        orderedSections.add(section);
+    }
+
+    public boolean isEmpty() {
+        return sections.isEmpty();
+    }
+
 }
