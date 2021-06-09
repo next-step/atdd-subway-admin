@@ -1,13 +1,12 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
 
 public class LineResponse {
     private Long id;
@@ -30,17 +29,15 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stations = new ArrayList<>();
+        List<StationResponse> responseStations = new ArrayList<>();
 
-        SortedSet<Section> sections = line.getSections();
+        List<Station> stations = line.getStations();
 
-        stations.add(StationResponse.of(sections.first().getUpStation()));
-
-        for (Section section : sections) {
-            stations.add(StationResponse.of(section.getDownStation()));
+        for (Station station : stations) {
+            responseStations.add(StationResponse.of(station));
         }
 
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), stations);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), responseStations);
     }
 
     public Long getId() {

@@ -30,6 +30,6 @@ class LineTest {
 
         Section 구간 = Section.create(상행선, 하행선, 200);
         노선.addSection(구간);
-        assertThat(노선.getSections()).containsExactly(구간);
+        assertThat(노선.getSections().getSections()).containsExactly(구간);
     }
 }
