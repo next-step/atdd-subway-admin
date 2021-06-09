@@ -11,6 +11,7 @@ import nextstep.subway.exception.SubwayLogicException;
 public class Distance {
 
 	private static final String DISTANCE_INVALID_MESSAGE = "distance는 0이상입력 해주세요";
+
 	@Column(name = "distance")
 	private int distance;
 
