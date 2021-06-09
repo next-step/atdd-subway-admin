@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -56,9 +57,8 @@ public class Sections {
     }
 
     private void addIfMatchUpStation(Section addSection) {
-        Optional<Section> matchUpstation = sections.stream()
-                .filter(section -> section.equalsUpStation(addSection))
-                .findFirst();
+        Predicate<Section> sectionPredicate = (section -> section.equalsUpStation(addSection.getUpStation()));
+        Optional<Section> matchUpstation = getSection(sectionPredicate);
 
         if (matchUpstation.isPresent()) {
             Section section = matchUpstation.get();
@@ -68,14 +68,63 @@ public class Sections {
     }
 
     private void addIfMatchDownStation(Section addSection) {
-        Optional<Section> matchDownStation = sections.stream()
-                .filter(section -> section.equalsDownStation(addSection))
-                .findFirst();
+        Predicate<Section> sectionPredicate = (section -> section.equalsDownStation(addSection.getDownStation()));
+        Optional<Section> matchDownStation = getSection(sectionPredicate);
 
         if (matchDownStation.isPresent()) {
             Section section = matchDownStation.get();
 
             section.changeDownSection(addSection);
         }
+    }
+
+    public void delete(Station station) {
+        if (sections.size() < 2) {
+            throw new IndexOutOfBoundsException("노선에 역이 2개 이하 일때는 구간 삭제가 불가능합니다.");
+        }
+
+        Predicate<Section> sectionPredicate = (section -> section.equalsDownStation(station));
+        Optional<Section> prevSection = getSection(sectionPredicate);
+
+        sectionPredicate = (section -> section.equalsUpStation(station));
+        Optional<Section> nextSection = getSection(sectionPredicate);
+
+        mergeIfBetweenSection(prevSection, nextSection);
+        deleteSections(prevSection, nextSection);
+    }
+
+    private void mergeIfBetweenSection(Optional <Section> optionalPrevSection, Optional<Section> optionalNextSection) {
+        if (optionalPrevSection.isPresent() && optionalNextSection.isPresent()) {
+            Section prevSection = optionalPrevSection.get();
+            Section nextSection = optionalNextSection.get();
+            prevSection.mergeSection(nextSection);
+        }
+    }
+
+    private void deleteSections(Optional<Section> prevSection, Optional<Section> nextSection) {
+        if (nextSection.isPresent()) {
+            sections.remove(nextSection.get());
+        }
+
+        if (prevSection.isPresent() && !nextSection.isPresent()) {
+            sections.remove(prevSection.get());
+        }
+    }
+
+    private Optional<Section> getSection(Predicate<Section> sectionPredicate) {
+        return sections.stream()
+                .filter(sectionPredicate)
+                .findFirst();
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        stations.add(sections.first().getUpStation());
+
+        for (Section section : sections) {
+            stations.add(section.getDownStation());
+        }
+
+        return stations;
     }
 }

@@ -120,6 +120,55 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_생성실패(response);
     }
 
+    @DisplayName("지하철 노선도 구간제거(노선의 끝역)")
+    @Test
+    void deleteStation() {
+        //given
+        String 강남역 = 지하철_역_생성("강남역");
+        String 삼성역 = 지하철_역_생성("삼성역");
+        String 종합운동장역 = 지하철_역_생성("종합운동장역");
+        // 지하철_노선_생성_요청
+        String uri = 지하철_노선_생성_요청("bg-green-600", "2호선", 강남역, 종합운동장역, "100");
+        // 구간추가요청
+        구간_추가_요청(uri, 삼성역, 종합운동장역, "20");
+
+        ExtractableResponse<Response> response = 지하철노선_구간_제거_요청(uri, 강남역);
+
+        구간_제거성공(response);
+    }
+
+    @DisplayName("지하철 노선도 구간제거(노선 중간역)")
+    @Test
+    void deleteStationBetweenSection() {
+        //given
+        String 강남역 = 지하철_역_생성("강남역");
+        String 삼성역 = 지하철_역_생성("삼성역");
+        String 종합운동장역 = 지하철_역_생성("종합운동장역");
+        // 지하철_노선_생성_요청
+        String uri = 지하철_노선_생성_요청("bg-green-600", "2호선", 강남역, 종합운동장역, "100");
+        // 구간추가요청
+        구간_추가_요청(uri, 삼성역, 종합운동장역, "20");
+
+        ExtractableResponse<Response> response = 지하철노선_구간_제거_요청(uri, 삼성역);
+
+        구간_제거성공(response);
+    }
+
+    @DisplayName("지하철 노선도 구간제거 실패")
+    @Test
+    void deleteStationFail() {
+        //given
+        String 강남역 = 지하철_역_생성("강남역");
+        String 삼성역 = 지하철_역_생성("삼성역");
+
+        // 지하철_노선_생성_요청
+        String uri = 지하철_노선_생성_요청("bg-green-600", "2호선", 강남역, 삼성역, "100");
+
+        ExtractableResponse<Response> response = 지하철노선_구간_제거_요청(uri, 삼성역);
+
+        구간_제거실패(response);
+    }
+
     private ExtractableResponse<Response> 구간_추가_요청(String uri, String upStation, String downStation, String distance) {
         Map<String, String> param = createSectionParam(upStation, downStation, distance);
         return post(uri, param);
@@ -148,7 +197,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", downStationId);
         params.put("distance", distance);
 
-
         return params;
     }
 
@@ -159,11 +207,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return response.header("Location").split("/")[2];
     }
 
+    private ExtractableResponse<Response> 지하철노선_구간_제거_요청(String uri, String stationId) {
+        uri += "?stationId=" + stationId;
+        return delete(uri);
+    }
+
     private void 구간_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private void 구간_생성실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 구간_제거성공(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 구간_제거실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

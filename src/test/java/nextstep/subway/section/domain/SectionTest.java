@@ -51,7 +51,7 @@ class SectionTest {
         Section section = Section.create(강남역, 잠실역, 200);
         Section newSection = Section.create(강남역, 삼성역, 100);
 
-        assertTrue(section.equalsUpStation(newSection));
+        assertTrue(section.equalsUpStation(newSection.getUpStation()));
     }
 
     @DisplayName("상행선역과 동일한지 비교")
@@ -60,7 +60,7 @@ class SectionTest {
         Section section = Section.create(강남역, 잠실역, 200);
         Section newSection = Section.create(삼성역, 잠실역, 100);
 
-        assertTrue(section.equalsDownStation(newSection));
+        assertTrue(section.equalsDownStation(newSection.getDownStation()));
     }
 
     @DisplayName("상행선역과 하행선 사이 새로운역 추가됨 1")

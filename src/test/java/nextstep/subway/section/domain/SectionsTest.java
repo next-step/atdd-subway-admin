@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.SortedSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,6 +38,22 @@ class SectionsTest {
         SortedSet<Section> getSections = sections.getSections();
 
         assertThat(getSections).containsExactly(section);
+    }
+
+    @DisplayName("Section들의 리스트에서 역을 순서대로 출력")
+    @Test
+    void stationListTest() {
+        int 구간거리 = 200;
+
+        Section section = Section.create(강남역, 잠실역, 구간거리);
+        Section newSection = Section.create(잠실역, 종합운동장역, 구간거리);
+        Sections sections = new Sections();
+        sections.addSection(section);
+        sections.addSection(newSection);
+
+        List<Station> stations = sections.getStations();
+
+        assertThat(stations).containsExactly(강남역, 잠실역, 종합운동장역);
     }
 
     @DisplayName("추가하려는 모든역이 존재할때 구간 추가실패")
