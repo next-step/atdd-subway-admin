@@ -8,6 +8,10 @@ import javax.persistence.*;
 
 @Entity
 public class Section extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
@@ -21,6 +25,10 @@ public class Section extends BaseEntity {
 
     public Section(Station station) {
         this.station = station;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Station getStation() {
