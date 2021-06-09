@@ -37,18 +37,19 @@ public class LineService {
     }
 
     public LineResponse getLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 라인이 존재하지 않습니다."));
-
-        return LineResponse.of(line);
+        return LineResponse.of(findLineById(id));
     }
 
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 라인이 존재하지 않습니다."));
-        line.update(lineRequest.toLine());
-        return LineResponse.of(line);
+    public void updateLine(Long id, LineRequest lineRequest) {
+        findLineById(id).update(lineRequest.toLine());
     }
 
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("해당 라인이 존재하지 않습니다."));
     }
 }
