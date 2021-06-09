@@ -3,8 +3,10 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.wrappers.Sections;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -15,6 +17,7 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
     private String color;
@@ -46,6 +49,10 @@ public class Line extends BaseEntity {
             throw new IllegalArgumentException(NOT_FOUND_LINE_ERROR_MESSAGE);
         }
         return optionalLine.get();
+    }
+
+    public List<Station> stations() {
+        return sections.generateStations();
     }
 
     public Long getId() {

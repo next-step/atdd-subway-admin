@@ -35,7 +35,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String distance = "100";
 
         // when: 신분당선 지하철 노선 생성 요청 한다.
-        Map<String, String> defaultParams = createDefaultParams(upStationId, downStationId, distance);
+        Map<String, String> defaultParams = createDefaultParams("신분당선", upStationId, downStationId, distance);
         ExtractableResponse<Response> response = createTestLineData(defaultParams);
 
         // then: 지하철 노선이 생성된다.
@@ -59,7 +59,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String distance = "100";
 
         //given: 신분당선 지하철 노선이 등록되어 있다.
-        Map<String, String> params = createDefaultParams(upStationId, downStationId, distance);
+        Map<String, String> params = createDefaultParams("신분당선", upStationId, downStationId, distance);
         createTestLineData(params);
 
         // when: 신분당선 지하철 노선 생성 요청 한다.
@@ -76,6 +76,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given: 신분당선의 상행 종점 지하철역, 하행 종점 지하철역이 생성되어 있다.
         String upStationName = "강남역";
         String downStationName = "광교역";
+        String lineName = "신분당선";
         ExtractableResponse<Response> upStationResponse = createTestStationData(upStationName);
         ExtractableResponse<Response> downStationResponse = createTestStationData(downStationName);
         String upStationId = upStationResponse.header("Location").split("/")[2];
@@ -85,12 +86,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String distance = "100";
 
         //given: 신분당선 지하철 노선이 등록되어 있다.
-        Map<String, String> params = createDefaultParams(upStationId, downStationId, distance);
+        Map<String, String> params = createDefaultParams(lineName, upStationId, downStationId, distance);
         createTestLineData(params);
 
         //given: 2호선의 상행 종점 지하철역, 하행 종점 지하철역이 생성되어 있다.
         upStationName = "사당역";
         downStationName = "잠실역";
+        lineName = "2호선";
         upStationResponse = createTestStationData(upStationName);
         downStationResponse = createTestStationData(downStationName);
         upStationId = upStationResponse.header("Location").split("/")[2];
@@ -99,7 +101,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given: 구간 거리 값을 알고 있다.
         distance = "50";
         //given: 2호선 지하철 노선이 등록되어 있다.
-        params = createDefaultParams(upStationId, downStationId, distance);
+        params = createDefaultParams(lineName, upStationId, downStationId, distance);
         createTestLineData(params);
 
         //when: 지하철 노선 목록 조회를 요청 한다
@@ -123,8 +125,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then: 지하철 노선 목록에 신분당선, 2호선이 포함되어 있다.
         assertThat(lines.stream().map(LineResponse::getName).collect(Collectors.toList())).contains("신분당선", "2호선");
         // then: 지하철 노선 목록에 신분당선, 2호선의 상행, 하행 종점역 정보가 존재한다.
-        List<String> stationNames = response.body().jsonPath().getList("$.stations.name", String.class);
-        assertThat(stationNames).contains("강남역", "광교역", "사당역", "잠실역");
+        String expected = response.body().jsonPath().getString("$");
+        assertThat(expected).contains("강남역", "광교역", "사당역", "잠실역");
 
     }
 
@@ -143,7 +145,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String distance = "100";
 
         // given: 지하철 노선 신분당선이 등록되어 있다.
-        Map<String, String> params = createDefaultParams(upStationId, downStationId, distance);
+        Map<String, String> params = createDefaultParams("신분당선", upStationId, downStationId, distance);
         ExtractableResponse<Response> createResponse = createTestLineData(params);
         String createdId = createResponse.header("Location").split("/")[2];
 
@@ -180,7 +182,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = createDefaultParams(upStationId, downStationId, distance);
+        Map<String, String> params = createDefaultParams("신분당선", upStationId, downStationId, distance);
         createTestLineData(params);
 
         // when
@@ -212,7 +214,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = createDefaultParams(upStationId, downStationId, distance);
+        Map<String, String> params = createDefaultParams("신분당선", upStationId, downStationId, distance);
         ExtractableResponse<Response> createResponse = createTestLineData(params);
         String createdId = createResponse.header("Location").split("/")[2];
 
@@ -254,7 +256,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = createDefaultParams(upStationId, downStationId, distance);
+        Map<String, String> params = createDefaultParams("신분당선", upStationId, downStationId, distance);
         ExtractableResponse<Response> createResponse = createTestLineData(params);
         String createdId = createResponse.header("Location").split("/")[2];
 
@@ -271,10 +273,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private Map<String, String> createDefaultParams(String upStationId, String downStationId, String distance) {
+    private Map<String, String> createDefaultParams(String lineName, String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("color", "bg-red-600");
-        params.put("name", "신분당선");
+        params.put("name", lineName);
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
         params.put("distance", distance);

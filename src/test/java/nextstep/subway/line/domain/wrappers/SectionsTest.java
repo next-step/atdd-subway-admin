@@ -19,8 +19,8 @@ public class SectionsTest {
     void setUp() {
         sections = new ArrayList<>();
         Station upStation = new Station("강남역");
-        Station downStation = new Station("광교역");
-        sections.add(new Section(upStation, downStation, 100));
+        Station downStation = new Station("양재역");
+        sections.add(new Section(upStation, downStation, 10));
     }
 
     @Test
@@ -34,8 +34,8 @@ public class SectionsTest {
     @DisplayName("구간 정보 일급 컬렉션 add")
     void addSection() {
         Sections actual = new Sections(this.sections);
-        Station otherUpStation = new Station("강남역");
-        Station otherDownStation = new Station("양재역");
+        Station otherUpStation = new Station("양재역");
+        Station otherDownStation = new Station("시민의숲역");
         Section otherSection = new Section(otherUpStation, otherDownStation, 10);
 
         actual.addSection(otherSection);
@@ -49,8 +49,8 @@ public class SectionsTest {
     void addSection2() {
         Sections actual = new Sections(this.sections);
         Station otherUpStation = new Station("강남역");
-        Station otherDownStation = new Station("광교역");
-        Section otherSection = new Section(otherUpStation, otherDownStation, 100);
+        Station otherDownStation = new Station("양재역");
+        Section otherSection = new Section(otherUpStation, otherDownStation, 10);
 
         actual.addSection(otherSection);
 
@@ -61,16 +61,42 @@ public class SectionsTest {
     @DisplayName("구간 정보 포함 여부 확인")
     void contains() {
         Station upStation = new Station("강남역");
-        Station downStation = new Station("광교역");
-        Section section = new Section(upStation, downStation, 100);
+        Station downStation = new Station("양재역");
+        Section section = new Section(upStation, downStation, 10);
 
         Sections actual = new Sections(this.sections);
 
         Station otherUpStation = new Station("강남역");
-        Station otherDownStation = new Station("양재역");
+        Station otherDownStation = new Station("광교역");
         Section otherSection = new Section(otherUpStation, otherDownStation, 10);
 
         assertThat(actual.contains(section)).isTrue();
         assertThat(actual.contains(otherSection)).isFalse();
+    }
+
+    @Test
+    @DisplayName("구간 정보에 포함되어 있는 상, 하행 지하철역 리스트 생성")
+    void generateStations() {
+        Sections actual = new Sections(this.sections);
+        Station otherUpStation = new Station("양재역");
+        Station otherDownStation = new Station("시민의숲역");
+        Section otherSection = new Section(otherUpStation, otherDownStation, 10);
+        actual.addSection(otherSection);
+
+        List<Station> stations = actual.generateStations();
+
+        assertThat(stations.size()).isEqualTo(3);
+        assertThat(stations).containsExactly(new Station("강남역"), new Station("양재역"), new Station("시민의숲역"));
+    }
+
+    @Test
+    @DisplayName("구간 정보에 포함되어 있는 상, 하행 지하철역 리스트 생성 구간 하나")
+    void generateStations2() {
+        Sections actual = new Sections(this.sections);
+
+        List<Station> stations = actual.generateStations();
+
+        assertThat(stations.size()).isEqualTo(2);
+        assertThat(stations).containsExactly(new Station("강남역"), new Station("양재역"));
     }
 }

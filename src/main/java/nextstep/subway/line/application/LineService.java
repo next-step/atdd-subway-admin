@@ -42,11 +42,6 @@ public class LineService {
         }
     }
 
-    private Station findStation(Long stationId) {
-        return stationRepository.findById(stationId)
-                .orElseThrow(() ->  new IllegalArgumentException(String.format(NOT_FOUND_STATION_ERROR_MESSAGE)));
-    }
-
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
@@ -68,5 +63,10 @@ public class LineService {
         Optional<Line> findLine = lineRepository.findById(id);
         Line line = Line.getNotNullLine(findLine);
         lineRepository.delete(line);
+    }
+
+    private Station findStation(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() ->  new IllegalArgumentException(String.format(NOT_FOUND_STATION_ERROR_MESSAGE)));
     }
 }
