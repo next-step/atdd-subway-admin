@@ -2,6 +2,7 @@ package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.Section;
+import nextstep.subway.section.Sections;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
@@ -29,9 +30,9 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<Section> sections = line.getSections();
+        Sections sections = line.getSections();
         List<StationResponse> stations = new ArrayList<>();
-        for(Section section : sections){
+        for(Section section : sections.getAllSection()){
             addStation(stations, section);
         }
 
