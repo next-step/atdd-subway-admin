@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -31,12 +32,59 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public static final String 녹색 = "bg-green-100";
     public static final String PARAM_NAME = "name";
     public static final String PARAM_COLOR = "color";
+    private static final String PARAM_UP_STATION = "upStationId";
+    private static final String PARAM_DOWN_STATION = "downStationId";
+    private static final String PARAM_DISTANCE = "distance";
+    private static final String 시작_종점 = "1";
+    private static final String 도착_종점 = "2";
+    private static final String 거리 = "10";
+
+    @BeforeEach
+    void setup() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "강남역");
+
+        RestAssured.given()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then()
+                .extract();
+
+        params = new HashMap<>();
+        params.put("name", "양재역");
+
+        RestAssured.given()
+                .body(params)
+
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then()
+                .extract();
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
+
+        // when
+        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> 응답 = 노선생성_요청(신분당선);
+
+        // then
+        // 지하철_노선_생성됨
+        지하철_노선_생성됨(응답);
+    }
+
+    @DisplayName("지하철 노선을 생성한다.")
+    @Test
+    void createLineNew() {
+        // given
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
 
         // when
         // 지하철_노선_생성_요청
@@ -52,7 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineDuplicate() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
         노선생성_요청(신분당선);
 
         // when
@@ -70,10 +118,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
         ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
-        Map<String, String> 이호선 = 노선_파라미터_생성(LineAcceptanceTest.이호선, 녹색);
+        Map<String, String> 이호선 = 노선_파라미터_생성(LineAcceptanceTest.이호선, 녹색, 시작_종점, 도착_종점, 거리);
         ExtractableResponse<Response> 이호선_생성_응답 = 노선생성_요청(이호선);
 
         // when
@@ -92,7 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
         ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
         // when
@@ -109,10 +157,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
         ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
-        Map<String, String> 신분당선_수정 = 노선_파라미터_생성(분당선_이름, 노란색);
+        Map<String, String> 신분당선_수정 = 노선_파라미터_생성(분당선_이름, 노란색, 시작_종점, 도착_종점, 거리);
 
         // when
         // 지하철_노선_수정_요청
@@ -128,7 +176,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
         ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
         // when
@@ -141,10 +189,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         노선_삭제_검사(response, HttpStatus.NO_CONTENT);
     }
 
-    private Map<String, String> 노선_파라미터_생성(String name, String color) {
+    private Map<String, String> 노선_파라미터_생성(String name, String color, String upStationId, String downStationId, String distance) {
         Map<String, String> param = new HashMap<>();
         param.put(PARAM_NAME, name);
         param.put(PARAM_COLOR, color);
+        param.put(PARAM_UP_STATION, upStationId);
+        param.put(PARAM_DOWN_STATION, downStationId);
+        param.put(PARAM_DISTANCE, distance);
         return param;
     }
 
