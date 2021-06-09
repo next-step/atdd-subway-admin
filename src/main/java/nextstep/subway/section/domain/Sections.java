@@ -31,7 +31,7 @@ public class Sections {
 	}
 
 	public List<Station> getOrderedStations() {
-		Section currentSection = this.getFirstSection();
+		Section currentSection = this.findUpStationEndPointSection();
 		Stream<Station> stations = currentSection.toStationStream();
 		do {
 			currentSection = this.nextSection(currentSection);
@@ -55,7 +55,7 @@ public class Sections {
 
 	}
 
-	private Section getFirstSection() {
+	private Section findUpStationEndPointSection() {
 		List<Station> downStations = this.sections.stream()
 			.map(Section::getDownStation)
 			.collect(Collectors.toList());
