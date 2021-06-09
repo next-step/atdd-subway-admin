@@ -19,11 +19,11 @@ public class Section extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @ManyToOne(optional = false, fetch = FetchType.EAGER)
   @JoinColumn(name = "up_station_id")
   private Station upStation;
 
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @ManyToOne(optional = false, fetch = FetchType.EAGER)
   @JoinColumn(name = "down_station_id")
   private Station downStation;
 
@@ -94,16 +94,13 @@ public class Section extends BaseEntity {
     return this.getUpStation().equals(other.getDownStation());
   }
 
-  public List<Section> insertNewSection(Section newSection) {
+  public void insertNewSection(Section newSection) {
     if (this.isSameUpStation(newSection)) {
       this.updateUpStation(newSection);
-      return Stream.of(this, newSection).collect(Collectors.toList());
     }
     if (this.isSameDownStation(newSection)) {
       this.updateDownStation(newSection);
-      return Stream.of(this, newSection).collect(Collectors.toList());
     }
-    return Stream.of(this, newSection).collect(Collectors.toList());
   }
 
   public void updateDownStation(Section newSection) {

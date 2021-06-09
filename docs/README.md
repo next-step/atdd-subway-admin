@@ -29,3 +29,8 @@ host: localhost:52165
 - [x] 의미있는 이름으로 변경
 - [x] sections 정렬 메서드 리팩토링
 - [x] 중간에 구간 등록 테스트를 기존 상행 - 새로운 하행, 새로운 상행 - 기존 하행 케이스로 나눠 테스트
+
+
+### 코드리뷰 반영
+- [x] 거의 매번 조회하게 되는 Section의 upStation, downStation은 EAGER 조회
+
