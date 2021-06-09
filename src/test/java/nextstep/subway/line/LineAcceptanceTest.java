@@ -24,13 +24,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_생성_요청
         LineRequest request = new LineRequest("신분당선", "bg-red-600");
-        ExtractableResponse<Response> response = RestAssured
-            .given().log().all()
-            .body(request)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post(RESOURCES)
-            .then()
-            .log().all().extract();
+        ExtractableResponse<Response> response = createLineAsTestCase(request);
 
         // then
         // 지하철_노선_생성됨
@@ -39,17 +33,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getString("color")).isEqualTo(request.getColor());
     }
 
+    private ExtractableResponse<Response> createLineAsTestCase(LineRequest request) {
+        return RestAssured
+            .given().log().all()
+            .body(request)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post(RESOURCES)
+            .then()
+            .log().all().extract();
+    }
+
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-
+        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        createLineAsTestCase(request);
         // when
         // 지하철_노선_생성_요청
-
+        ExtractableResponse<Response> response = createLineAsTestCase(request);
         // then
         // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(response.body().jsonPath().getString("message")).isEqualTo("이미 존재하는 Line 입니다");
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
