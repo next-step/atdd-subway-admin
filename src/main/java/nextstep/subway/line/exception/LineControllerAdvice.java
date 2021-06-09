@@ -1,5 +1,7 @@
 package nextstep.subway.line.exception;
 
+import nextstep.subway.common.ErrorCode;
+import nextstep.subway.common.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
