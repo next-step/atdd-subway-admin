@@ -18,6 +18,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineAndStationResponse;
 import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -67,8 +68,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void 지하철_노선_등록되어_있음(Map<String, String> params) {
-        지하철_노선_생성_요청(params);
+    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> params) {
+        return 지하철_노선_생성_요청(params);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -94,8 +95,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_목록_포함됨(List<String> names, ExtractableResponse<Response> response) {
-        List<String> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getName)
+        List<String> resultLineIds = response.jsonPath().getList(".", LineAndStationResponse.class).stream()
+            .map(LineAndStationResponse::getName)
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(names);
     }

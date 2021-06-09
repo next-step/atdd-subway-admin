@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.dto.LineAndStationResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
@@ -32,7 +33,7 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LineResponse>> showLines() {
+    public ResponseEntity<List<LineAndStationResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
