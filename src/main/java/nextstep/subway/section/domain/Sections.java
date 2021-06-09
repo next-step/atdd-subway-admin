@@ -41,6 +41,41 @@ public class Sections {
         values.add(targetSection);
     }
 
+    private void makeSeqUpStationEquals(Section targetSection) {
+        values.stream().filter(s -> s.isUpStationEquals(targetSection))
+                .findFirst().ifPresent(
+                section -> {
+                    int sequence = section.getSequence();
+                    targetSection.setSequence(sequence);
+                    section.setSequence(sequence + 1);
+                    section.minusDistance(targetSection.getDistance());
+                    section.changeUpStation(targetSection.getDownStation());
+                }
+        );
+    }
+
+    private void makeSeqWhenDownStationEquals(Section targetSection) {
+        values.stream().filter(s -> s.isDownStationEquals(targetSection))
+                .findFirst().ifPresent(
+                section -> {
+                    targetSection.setSequence(section.getSequence() + 1);
+                    section.minusDistance(targetSection.getDistance());
+                    section.changeDownStation(targetSection.getUpStation());
+                }
+        );
+    }
+
+    private void makeSeqWhenUpStationAndTargetDownStationEquals(Section targetSection) {
+        values.stream().filter(s -> s.isUpStationAndTargetDownStationEquals(targetSection))
+                .findFirst().ifPresent(
+                section -> {
+                    int sequence = section.getSequence();
+                    targetSection.setSequence(sequence);
+                    section.setSequence(sequence + 1);
+                }
+        );
+    }
+
     private void makeSeqWhenDownStationAndTargetUpStationEquals(Section targetSection) {
         values.stream().filter(s -> s.isDownStationAndTargetUpStationEquals(targetSection))
                 .findFirst().ifPresent(
@@ -49,49 +84,6 @@ public class Sections {
                             targetSection.setSequence(sequence+1);
                         }
         );
-    }
-
-    private void makeSeqWhenUpStationAndTargetDownStationEquals(Section targetSection) {
-        values.stream().filter(s -> s.isUpStationAndTargetDownStationEquals(targetSection))
-                .findFirst().ifPresent(
-                        section -> {
-                            int sequence = section.getSequence();
-                            targetSection.setSequence(sequence);
-                            section.setSequence(++sequence);
-                        }
-                );
-    }
-
-    private void makeSeqWhenDownStationEquals(Section targetSection) {
-        values.stream().filter(s -> s.isDownStationEquals(targetSection))
-                .findFirst().ifPresent(
-                        section -> {
-                            targetSection.setSequence(section.getSequence() + 1);
-                            if (section.getDistance() > targetSection.getDistance()){
-                                section.minusDistance(targetSection.getDistance());
-                                section.changeDownStation(targetSection.getUpStation());
-                            } else {
-                                throw new IllegalArgumentException("등록할 수 없는 구간입니다.");
-                            }
-                        }
-        );
-    }
-
-    private void makeSeqUpStationEquals(Section targetSection) {
-        values.stream().filter(s -> s.isUpStationEquals(targetSection))
-                .findFirst().ifPresent(
-                        section -> {
-                            int sequence = section.getSequence();
-                            targetSection.setSequence(sequence);
-                            section.setSequence(++sequence);
-                            if (section.getDistance() > targetSection.getDistance()){
-                                section.minusDistance(targetSection.getDistance());
-                                section.changeUpStation(targetSection.getDownStation());
-                            } else {
-                                throw new IllegalArgumentException("등록할 수 없는 구간입니다.");
-                            }
-                        }
-                );
     }
 
     private void validateTargetStationContains(Section section, Line line) {
