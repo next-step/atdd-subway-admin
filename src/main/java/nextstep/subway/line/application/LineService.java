@@ -27,7 +27,6 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         List<Station> stations = stationRepository.findAllByIdIn(request.getStationIds());
         Line persistLine = lineRepository.save(request.toLine());
-        System.out.println(persistLine.getSections().get(0).getId());
         return LineResponse.of(persistLine, stations);
     }
 
