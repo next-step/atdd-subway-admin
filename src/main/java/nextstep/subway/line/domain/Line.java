@@ -74,20 +74,21 @@ public class Line extends BaseEntity {
 
 	public List<Station> getOrderedStations() {
 		Map<Station, Station> order = getStationOrder();
-		return convertToOrderList(order);
+		return convertToOrderedList(order);
 	}
 
 	private Map<Station, Station> getStationOrder() {
 		Map<Station, Station> order = new HashMap<>();
 
 		for (Section section : sections) {
-			order.put(section.getUpStation(), section.getDownStation());
+			order.put(section.
+				getUpStation(), section.getDownStation());
 		}
 
 		return order;
 	}
 
-	private List<Station> convertToOrderList(Map<Station, Station> order) {
+	private List<Station> convertToOrderedList(Map<Station, Station> order) {
 		List<Station> stations = new ArrayList<>();
 
 		Station key = startStation;
@@ -97,6 +98,7 @@ public class Line extends BaseEntity {
 			stations.add(order.get(key));
 			key = order.get(key);
 		}
+
 		return stations;
 	}
 
