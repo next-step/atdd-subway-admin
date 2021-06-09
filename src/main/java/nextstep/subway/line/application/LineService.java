@@ -31,4 +31,8 @@ public class LineService {
             .map(LineAndStationResponse::of)
             .collect(Collectors.toList());
     }
+	public LineAndStationResponse findByLine(Long id) {
+		return LineAndStationResponse.of(lineRepository.findById(id).orElseThrow(()
+			-> new IllegalArgumentException("조회 할 수 없습니다.")));
+	}
 }
