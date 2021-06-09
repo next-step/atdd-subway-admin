@@ -50,8 +50,6 @@ public class LineService {
 	}
 
 	public void deleteLineById(Long id) {
-		Line deleteLine = lines.findById(id).orElseThrow(EntityNotFoundException::new);
-		deleteLine.getSections().stream().forEach(section -> sections.delete(section));
 		lines.deleteById(id);
 	}
 

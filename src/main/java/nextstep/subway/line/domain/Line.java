@@ -1,17 +1,17 @@
 package nextstep.subway.line.domain;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -22,15 +22,18 @@ public class Line extends BaseEntity {
 
 	@Column(unique = true)
 	private String name;
+
 	private String color;
 
-	@OneToMany(mappedBy = "line")
-	private List<Section> sections = new LinkedList<>();
+	@Embedded
+	private Sections sections;
 
-	public Line() {
+	protected Line() {
+		sections = new Sections();
 	}
 
 	public Line(String name, String color) {
+		this();
 		this.name = name;
 		this.color = color;
 	}
@@ -57,14 +60,11 @@ public class Line extends BaseEntity {
 		section.setLine(this);
 	}
 
-	public List<Section> getSections() {
+	public Sections getSections() {
 		return this.sections;
 	}
 
 	public List<Station> getStations() {
-		List<Station> stations = new LinkedList<>();
-		this.sections.stream()
-			.forEach(section -> stations.addAll(section.toStations()));
-		return stations;
+		return this.sections.toStations();
 	}
 }
