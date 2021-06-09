@@ -61,8 +61,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
-                .then()
-                .log().all()
+                .then().log().all()
                 .extract();
 
         // then
