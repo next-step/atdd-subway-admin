@@ -31,7 +31,8 @@ public class LineService {
     public LineResponse saveLine(final LineRequest request) {
         final Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(EntityExistsException::new);
         final Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(EntityExistsException::new);
-        final Line persistLine = lineRepository.save(Line.of(upStation, downStation, request));
+        final Line line = request.toLine(upStation, downStation);
+        final Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
 
