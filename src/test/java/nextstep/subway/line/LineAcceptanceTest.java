@@ -102,7 +102,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청("경의선");
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(1L);
 
         // then
         // 지하철_노선_응답됨
@@ -114,15 +114,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(final String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(final Long id) {
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/{name}", name)
+                .when().get("/lines/{id}", id)
                 .then().log().all().extract();
         return response;
     }

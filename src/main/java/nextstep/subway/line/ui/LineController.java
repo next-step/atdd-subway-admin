@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/lines")
@@ -19,12 +20,12 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @GetMapping(value = "/{name}")
-    public ResponseEntity getLine(@PathVariable String name) {
+    @GetMapping(value = "/{id}")
+    public ResponseEntity getLine(@PathVariable Long id) {
         LineResponse line = null;
         try {
-            line = lineService.getLine(name);
-        } catch (NullPointerException e) {
+            line = lineService.getLine(id);
+        } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
 

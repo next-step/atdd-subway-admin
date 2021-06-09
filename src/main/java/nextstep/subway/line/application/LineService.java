@@ -57,8 +57,8 @@ public class LineService {
         return LineResponse.of(lineRepository.save(persistLine));
     }
 
-    public LineResponse getLine(String name) {
-        return LineResponse.of(this.findByName(name));
+    public LineResponse getLine(Long id) {
+        return LineResponse.of(lineRepository.findById(id).get());
     }
 
     public LineResponse deleteLine(LineRequest request) {
