@@ -76,22 +76,31 @@ public class Line extends BaseEntity {
 		section.setLine(this);
 	}
 
-	public List<Station> getStaions() {
-		Map<Station, Station> map = new HashMap<>();
-		List<Station> stations = new ArrayList<>();
+	public List<Station> getOrderedStations() {
+		Map<Station, Station> order = getStationOrder();
+		return convertToOrderList(order);
+	}
+
+	private Map<Station, Station> getStationOrder() {
+		Map<Station, Station> order = new HashMap<>();
 
 		for (Section section : sections) {
-			map.put(section.getUpStation(), section.getDownStation());
+			order.put(section.getUpStation(), section.getDownStation());
 		}
+
+		return order;
+	}
+
+	private List<Station> convertToOrderList(Map<Station, Station> order) {
+		List<Station> stations = new ArrayList<>();
 
 		Station key = startStation;
 		stations.add(key);
 
-		while (map.containsKey(key)) {
-			stations.add(map.get(key));
-			key = map.get(key);
+		while (order.containsKey(key)) {
+			stations.add(order.get(key));
+			key = order.get(key);
 		}
-
 		return stations;
 	}
 }

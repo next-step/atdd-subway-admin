@@ -30,22 +30,19 @@ public class LineService {
 	private SectionRepository sections;
 
 	public LineResponse saveLine(LineRequest request) {
-		Station startStation = stations.findById(request.getUpStationId()).get();
-		Station endStation = stations.findById(request.getDownStationId()).get();
+		Station startStation = getEndStation(request.getUpStationId());
+		Station endStation = getEndStation(request.getDownStationId());
 		Line persistLine = lines.save(request.toLine(startStation));
-		Section persistSections = sections.save(getSection(request, persistLine));
+
+		Section persistSections = sections.save(request.toSection(persistLine, startStation, endStation));
 		persistLine.addSections(persistSections);
 
 		return LineResponse.of(persistLine);
 	}
 
-	private Section getSection(LineRequest request, Line persistLine) {
-		return request.toSection(persistLine, getStation(request.getUpStationId()),
-			getStation(request.getDownStationId()));
-	}
-
-	private Station getStation(Long id) {
-		return stations.findById(id).get();
+	private Station getEndStation(Long id) {
+		return stations.findById(id)
+			.orElseThrow(() -> new NoSuchElementException("End station is needed"));
 	}
 
 	@Transactional(readOnly = true)
