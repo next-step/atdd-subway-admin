@@ -12,19 +12,26 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        Station upStaion = findStation(request.getUpStationId());
+        Station downStaion = findStation(request.getDownStationId());
+        Line line = request.toLine(upStaion, downStaion);
+
+        return LineResponse.of(lineRepository.save(line));
     }
 
     @Transactional(readOnly = true)
@@ -38,9 +45,16 @@ public class LineService {
         return lineRepository.findById(id).map(LineResponse::of).orElseThrow(EntityNotFoundException::new);
     }
 
+    @Transactional(readOnly = true)
+    public Station findStation(Long id) {
+        return stationRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
     public void updateLine(LineRequest lineRequest, Long id) {
         Line findedLine = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        findedLine.update(lineRequest.toLine());
+        Station upStaion = findStation(lineRequest.getUpStationId());
+        Station downStaion = findStation(lineRequest.getDownStationId());
+        findedLine.update(lineRequest.toLine(upStaion, downStaion));
     }
 
     public void deleteLine(Long id) {
