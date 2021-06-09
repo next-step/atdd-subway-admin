@@ -1,10 +1,10 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -78,14 +78,7 @@ public class Line extends BaseEntity {
 	}
 
 	private Map<Station, Station> getStationOrder() {
-		Map<Station, Station> order = new HashMap<>();
-
-		for (Section section : sections) {
-			order.put(section.
-				getUpStation(), section.getDownStation());
-		}
-
-		return order;
+		return sections.stream().collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
 	}
 
 	private List<Station> convertToOrderedList(Map<Station, Station> order) {
@@ -103,10 +96,7 @@ public class Line extends BaseEntity {
 	}
 
 	public Long delete() {
-		for (Section section : sections) {
-			section.setLine(null);
-		}
-
+		sections.stream().forEach(section -> section.setLine(null));
 		sections = null;
 		startStation = null;
 
