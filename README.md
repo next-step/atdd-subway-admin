@@ -136,6 +136,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 *   지하철 노선 수정
 *   지하철 노선 삭제
 *   노선의 역 목록을 조회하는 기능
+*   지하철 구간 등록 기능
 
 
 ## DDL
