@@ -149,34 +149,52 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines")
+                .post("/lines")
                 .then().log().all()
                 .extract();
 
         // when
         // 지하철_노선_수정_요청
-        LineResponse savedLine = responseByCreate.jsonPath().getObject(".", LineResponse.class);
+        //LineResponse savedLine = responseByCreate.jsonPath().getObject(".", LineResponse.class);
+        params.clear();
+        String expectedColor = "blue";
+        params.put("name","1호선");
+        params.put("color",expectedColor);
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/1")
                 .then().log().all().extract();
         // then
         // 지하철_노선_수정됨
-        System.out.println(response.jsonPath());
+        String actualColor = response.jsonPath().get("color").toString();
+        assertThat(actualColor).isEqualTo(expectedColor);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
-        // given
-        // 지하철_노선_등록되어_있음
+        // given 지하철_노선_등록되어_있음
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "1호선");
+        params.put("color", "black");
+        ExtractableResponse<Response> responseByCreate = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all()
+                .extract();
 
-        // when
-        // 지하철_노선_제거_요청
+        // when 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().delete("/lines/1")
+                .then().log().all().extract();
 
-        // then
-        // 지하철_노선_삭제됨
+        // then 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
