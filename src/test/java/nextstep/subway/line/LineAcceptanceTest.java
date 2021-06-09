@@ -47,6 +47,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선에_역_목록_포함됨(Arrays.asList(stationResponse1, stationResponse2), response);
     }
 
+    @DisplayName("구간 정보가 없는 지하철 노선을 생성한다.")
+    @Test
+    void createLineWithoutStation() {
+        // given
+        LineRequest params = new LineRequest("신분당선", "bg-red-660");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
+
+        // then
+        지하철_노선_생성_실패됨(response);
+    }
+
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
