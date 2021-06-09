@@ -2,7 +2,6 @@ package nextstep.subway.line.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +13,7 @@ public class LineRequest {
     private long downStationId;
     private int distance;
 
-    public LineRequest() {
+    private LineRequest() {
     }
 
     public LineRequest(String name, String color) {
@@ -46,18 +45,16 @@ public class LineRequest {
         return downStationId;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     @JsonIgnore
     public List<Long> getStationIds() {
         return Arrays.asList(upStationId, downStationId);
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
     public Line toLine() {
-        Line line = new Line(name, color);
-        line.addSection(new Section(distance));
-        return line;
+        return new Line(name, color);
     }
 }

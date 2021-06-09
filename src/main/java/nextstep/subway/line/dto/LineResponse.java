@@ -13,31 +13,26 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private final List<StationResponse> stations = new ArrayList<>();
+    private List<StationResponse> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
-    public LineResponse() {
-    }
+    private LineResponse(){}
 
-    private LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    private LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
+        this.stations = stations;
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
-    }
-
-    public static LineResponse of(Line line, List<Station> stations) {
-        LineResponse lineResponse = of(line);
-        lineResponse.addStations(stations.stream()
+        List<StationResponse> stations = line.getStations().stream()
                 .map(StationResponse::of)
-                .collect(Collectors.toList()));
-        return lineResponse;
+                .collect(Collectors.toList());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate(), stations);
     }
 
     public Long getId() {
@@ -62,9 +57,5 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
-    }
-
-    private void addStations(List<StationResponse> stations) {
-        this.stations.addAll(stations);
     }
 }

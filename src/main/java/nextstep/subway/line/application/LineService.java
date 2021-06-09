@@ -5,8 +5,10 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.NotFoundLineException;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.exception.NotFoundStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +27,13 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        List<Station> stations = stationRepository.findAllByIdIn(request.getStationIds());
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine, stations);
+        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFoundStationException::new);
+        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NotFoundStationException::new);
+
+        Line line = request.toLine();
+        line.addSection(new Section(upStation, downStation, request.getDistance()));
+        Line persistLine = lineRepository.save(line);
+        return LineResponse.of(persistLine);
     }
 
     @Transactional(readOnly = true)

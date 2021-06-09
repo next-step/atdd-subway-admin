@@ -24,37 +24,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private LineRequest params;
+    ExtractableResponse<Response> stationResponse1;
+    ExtractableResponse<Response> stationResponse2;
 
     @BeforeEach
     void setUpLine() {
+
         params = new LineRequest("신분당선", "bg-red-660", 1L, 2L, 10);
+        stationResponse1 = 지하철_역_등록되어_있음(new StationRequest("강남역"));
+        stationResponse2 = 지하철_역_등록되어_있음(new StationRequest("광교역"));
     }
+
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // given
-        ExtractableResponse<Response> stationResponse1 = 지하철_역_등록되어_있음(new StationRequest("강남역"));
-        ExtractableResponse<Response> stationResponse2 = 지하철_역_등록되어_있음(new StationRequest("광교역"));
-
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
         지하철_노선_생성됨(response);
         지하철_노선에_역_목록_포함됨(Arrays.asList(stationResponse1, stationResponse2), response);
-    }
-
-    private void 지하철_노선에_역_목록_포함됨(List<ExtractableResponse<Response>> stationResponseList, ExtractableResponse<Response> response) {
-        List<Long> resultStationIds = response.jsonPath().getObject(".", LineResponse.class).getStations().stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-
-        List<Long> expectedStationIds = stationResponseList.stream()
-                .map(this::getIdFromCreateResponse)
-                .collect(Collectors.toList());
-
-        assertThat(resultStationIds).containsAll(expectedStationIds);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -75,7 +65,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음(params);
-        ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음(new LineRequest("2호선", "bg-green-660"));
+        ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음(new LineRequest("2호선", "bg-green-660", 1L, 2L, 6));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -123,6 +113,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_삭제됨(response);
+    }
+
+    private void 지하철_노선에_역_목록_포함됨(List<ExtractableResponse<Response>> stationResponseList, ExtractableResponse<Response> response) {
+        List<Long> resultStationIds = response.jsonPath().getObject(".", LineResponse.class).getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        List<Long> expectedStationIds = stationResponseList.stream()
+                .map(this::getIdFromCreateResponse)
+                .collect(Collectors.toList());
+
+        assertThat(resultStationIds).containsAll(expectedStationIds);
     }
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {

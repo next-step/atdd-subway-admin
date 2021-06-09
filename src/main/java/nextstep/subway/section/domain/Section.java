@@ -1,8 +1,11 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 public class Section {
@@ -14,13 +17,27 @@ public class Section {
     @JoinColumn(name = "line_id")
     private Line line;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
+
     private int distance;
 
     protected Section() {
     }
 
-    public Section(int distance) {
+    public Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public List<Station> getStations() {
+        return Arrays.asList(upStation, downStation);
     }
 
     public Line getLine() {
