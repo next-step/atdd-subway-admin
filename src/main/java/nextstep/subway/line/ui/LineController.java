@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
-import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.application.LineCommandUseCase;
+import nextstep.subway.line.application.LineQueryUseCase;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.MediaType;
@@ -13,10 +14,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    private final LineService lineService;
+    private final LineQueryUseCase lineQueryUseCase;
+    private final LineCommandUseCase lineCommandUseCase;
 
-    public LineController(final LineService lineService) {
-        this.lineService = lineService;
+    public LineController(LineQueryUseCase lineQueryUseCase, LineCommandUseCase lineCommandUseCase) {
+        this.lineQueryUseCase = lineQueryUseCase;
+        this.lineCommandUseCase = lineCommandUseCase;
     }
 
     /**
@@ -24,7 +27,7 @@ public class LineController {
      */
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLine(lineRequest);
+        LineResponse line = lineCommandUseCase.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
@@ -33,7 +36,7 @@ public class LineController {
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> getLines() {
-        return ResponseEntity.ok().body(lineService.findAllLines());
+        return ResponseEntity.ok().body(lineQueryUseCase.findAllLines());
     }
 
     /**
@@ -41,15 +44,15 @@ public class LineController {
      */
     @GetMapping(value = "/{id:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.findLine(id));
+        return ResponseEntity.ok().body(lineQueryUseCase.findLine(id));
     }
 
     /**
      * 지하철 노선 수정
      */
     @PutMapping(value = "/{id:\\d+}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateLine(id, lineRequest);
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineCommandUseCase.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -57,8 +60,8 @@ public class LineController {
      * 지하철 노선 삭제
      */
     @DeleteMapping(value = "/{id:\\d+}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
-        lineService.deleteLine(id);
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+        lineCommandUseCase.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static nextstep.subway.line.application.LineService.LINE_DUPLICATED_EXCEPTION_MESSAGE;
+import static nextstep.subway.line.application.LineQueryService.LINE_NAME_DUPLICATED_EXCEPTION_MESSAGE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceStep {
@@ -46,7 +46,7 @@ public class LineAcceptanceStep {
     public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
         assertThat(response.jsonPath().getObject("", ErrorResponse.class).getMessage())
-                .isEqualTo(LINE_DUPLICATED_EXCEPTION_MESSAGE);
+                .isEqualTo(LINE_NAME_DUPLICATED_EXCEPTION_MESSAGE);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
