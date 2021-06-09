@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,51 +20,29 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        validateDuplicate(request);
+        Line persistLine = lineRepository.save(request.toLine());
 
-        Line persistLine = lineRepository.save(request.toLine()) ;
         return LineResponse.of(persistLine);
     }
 
-    private void validateDuplicate(LineRequest request) {
-        Line line = request.toLine();
-
-        if (Objects.nonNull(lineRepository.findByName(line.getName()))) {
-            throw new IllegalArgumentException("노선이름이 이미 존재합니다.");
-        }
-    }
-
-    public List<LineResponse> findAll() {
+    public List<LineResponse> getLines() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
     }
 
-    private Line findByName(String name) {
-        Line line = lineRepository.findByName(name);
+    public void updateLine(Long id, LineRequest request) {
+        Line persistLine = lineRepository.findById(id).get();
+        persistLine.update(request.toLine());
 
-        return Optional.ofNullable(line).orElseThrow(() -> new NullPointerException("존재하지 않는 노선입니다."));
-    }
-
-    public LineResponse updateLine(LineRequest request) {
-        Line line = request.toLine();
-        Line persistLine = this.findByName(line.getName());
-
-        persistLine.update(line);
-
-        return LineResponse.of(lineRepository.save(persistLine));
+        lineRepository.save(persistLine);
     }
 
     public LineResponse getLine(Long id) {
         return LineResponse.of(lineRepository.findById(id).get());
     }
 
-    public LineResponse deleteLine(LineRequest request) {
-        Line line = request.toLine();
-        Line persistLine = this.findByName(line.getName());
-
-        lineRepository.delete(persistLine);
-
-        return LineResponse.of(persistLine);
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
     }
 }

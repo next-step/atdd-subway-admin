@@ -131,19 +131,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청("경의선", "red");
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(1L, "경의선", "blue");
 
         // then
         // 지하철_노선_수정됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         Assertions.assertThat(response.statusCode()).isNotEqualTo(HttpStatus.NOT_FOUND.value());
-        // 값 검증
-        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
-        Assertions.assertThat(lineResponse.getName()).isEqualTo("경의선");
-        Assertions.assertThat(lineResponse.getColor()).isEqualTo("red");
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(final String name, final String colorToModify) {
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(final Long id, final String name, final String colorToModify) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", colorToModify);
@@ -152,7 +148,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines")
+                .when().put("/lines/{id}", id)
                 .then().log().all().extract();
         return response;
     }
@@ -166,7 +162,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_제거_요청
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청("경의선");
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(1L);
 
         // then
         // 지하철_노선_삭제됨
@@ -174,15 +170,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(response.statusCode()).isNotEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선_제거_요청(final String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(final Long id) {
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines")
+                .when().delete("/lines/{id}", id)
                 .then().log().all().extract();
         return response;
     }

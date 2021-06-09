@@ -3,6 +3,8 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +36,7 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity getLines() {
-        List<LineResponse> lines = lineService.findAll();
+        List<LineResponse> lines = lineService.getLines();
 
         return ResponseEntity.ok().body(lines);
     }
@@ -44,33 +46,31 @@ public class LineController {
         LineResponse line = null;
         try {
             line = lineService.saveLine(lineRequest);
-        } catch (IllegalArgumentException e) {
+        } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
 
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @PutMapping
-    public ResponseEntity updateLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = null;
+    @PutMapping(value = "/{id}")
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         try {
-            line = lineService.updateLine(lineRequest);
-        } catch (NullPointerException e) {
+            lineService.updateLine(id, lineRequest);
+        } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok().body(line);
+        return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping
-    public ResponseEntity deleteLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = null;
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
         try {
-            line = lineService.deleteLine(lineRequest);
-        } catch (NullPointerException e) {
+            lineService.deleteLine(id);
+        } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok().body(line);
+        return ResponseEntity.ok().build();
     }
 }
