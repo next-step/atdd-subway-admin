@@ -149,6 +149,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> searchUpdateLine = 지하철_노선_조회(1L);
         color = searchUpdateLine.jsonPath().getString("color");
         assertThat(color).isEqualTo("Green");
+        assertThat(searchUpdateLine.jsonPath().getString("stations[1].name")).isEqualTo("영등포역");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
