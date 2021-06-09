@@ -13,6 +13,8 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private int sequence;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Line line;
 
@@ -47,11 +49,47 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public void changeUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void changeDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
     public int getDistance() {
         return distance;
     }
 
-    public void toLine(Line line) {
+    public void minusDistance(int distance){
+        this.distance = this.distance - distance;
+    }
+
+    public boolean isUpStationEquals(Section section){
+        return this.getUpStation().equals(section.getUpStation());
+    }
+
+    public boolean isDownStationEquals(Section section){
+        return this.getDownStation().equals(section.getDownStation());
+    }
+
+    public boolean isUpStationAndTargetDownStationEquals(Section section){
+        return this.getUpStation().equals(section.getDownStation());
+    }
+
+    public boolean isDownStationAndTargetUpStationEquals(Section section){
+        return this.getDownStation().equals(section.getUpStation());
+    }
+
+    public void setLine(Line line) {
         this.line = line;
+    }
+
+    public int getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
     }
 }

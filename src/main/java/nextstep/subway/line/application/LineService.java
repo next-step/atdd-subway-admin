@@ -1,10 +1,12 @@
 package nextstep.subway.line.application;
 
+import com.google.common.collect.Lists;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -13,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,32 +29,32 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<LineResponse> findAllStations() {
+    public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
                 .map(LineResponse::of).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findById(final Long lineId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new DataIntegrityViolationException("Not Found lineId" + lineId));
-
-        return LineResponse.of(line);
+        return LineResponse.of(getLine(lineId));
     }
 
     public LineResponse saveLine(final LineRequest request) {
 
-        Line line = request.toLine();
-        line.addSection(new Section(getStation(request.getUpStationId()), getStation(request.getDownStationId()),
-                request.getDistance()));
+        Section section = new Section(
+                getStation(request.getUpStationId()),
+                getStation(request.getDownStationId()),
+                request.getDistance()
+        );
+        section.setSequence(0);
 
-        Line save = lineRepository.save(line);
+        Line save = lineRepository.save(new Line(request.getName(), request.getColor(),
+                Sections.of(Lists.newArrayList(section))));
         return LineResponse.of(save);
     }
 
     public LineResponse updateById(final Long lineId, final LineRequest lineRequest) {
-        Line originLine = lineRepository.findById(lineId)
-                .orElseThrow(() -> new DataIntegrityViolationException("Not Found lineId" + lineId));
+        Line originLine = getLine(lineId);
 
         Section section = new Section(getStation(lineRequest.getUpStationId()), getStation(lineRequest.getDownStationId()),
                 lineRequest.getDistance());
@@ -62,12 +63,17 @@ public class LineService {
         return LineResponse.of(originLine);
     }
 
-    public Line addSection(Long lineId, Long upStationId, Long downStationId, int distance){
-        Line find = lineRepository.findById(lineId).orElseThrow(() -> new DataIntegrityViolationException("Not Found lineId" + lineId));
-        Section section = new Section(getStation(upStationId), getStation(downStationId),
-                distance);
-        find.addSection(section);
-        return find;
+    public Line addSection(Long lineId, SectionRequest request) {
+        Line line = getLine(lineId);
+        Section section = new Section(getStation(request.getUpStationId()), getStation(request.getDownStationId()),
+                request.getDistance());
+        line.addSection(section);
+        return line;
+    }
+
+    private Line getLine(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new DataIntegrityViolationException("Not Found lineId" + lineId));
     }
 
     private Station getStation(Long stationId) {
@@ -76,9 +82,5 @@ public class LineService {
 
     public void deleteLineById(final Long id) {
         lineRepository.deleteById(id);
-    }
-
-    public Line addSection(SectionRequest request) {
-        throw new UnsupportedOperationException("LineService#addSection not implemented yet !!");
     }
 }

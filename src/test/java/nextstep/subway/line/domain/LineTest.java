@@ -7,9 +7,31 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ *  // A --- B, 100
+ *         // A --- C,  50 target
+ *         // AC50, CB50,
+ *         // > UpStation 이 동일
+ *
+ *         // A --- B, 100
+ *         // C --- B,  50 target
+ *         // AC 50, CB 50 ,
+ *         // > DownStation 이 동일
+ *
+ * //         A --- B, 100
+ * //   C --- A,       50  // 해당하는
+ *         // AC 50 , AB 100
+ *         // > Up, Target's DownStation 이 동일
+ *
+ *         // A --- B, 100
+ *         //       B --- C, 50
+ *         // AB 100 , AC50
+ *         // > Down, Target's UpStation 이 동일
+ */
 class LineTest {
 
     Line sut;
@@ -20,9 +42,10 @@ class LineTest {
     void setUp() {
         A_Station = new Station(1L, "A");
         C_Station = new Station(2L, "C");
-        sut = new Line(1L, "신분당역", "빨강", Sections.of(new ArrayList<>()));
+        List<Section> sections = new ArrayList<>();
         Section section = new Section(A_Station, C_Station, 100);
-        sut.addSection(section);
+        sections.add(section);
+        sut = new Line(1L, "신분당역", "빨강", Sections.of(sections));
     }
 
     @Test
@@ -30,11 +53,11 @@ class LineTest {
         assertThat(sut.getStations()).containsExactly(A_Station, C_Station);
 
         Station originStation = new Station(3L, "B");
-        final Section targetSection = new Section(A_Station, originStation, -40);
+
+
+        final Section targetSection = new Section(A_Station, originStation, 40);
         sut.addSection(targetSection);
 
-        assertThat(sut.getSections().getValues().stream()
-                .map(Section::getDistance)).containsExactly(40, 60);
         assertThat(sut.getStations()).containsExactly(A_Station, originStation, C_Station);
     }
 

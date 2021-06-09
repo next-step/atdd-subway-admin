@@ -3,26 +3,22 @@ package nextstep.subway.section.domain;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
+import javax.persistence.*;
 import java.util.List;
 
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    @Column(name = "sections")
-    private final List<Section> values;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "line_id")
+    private List<Section> values;
 
     private Sections(List<Section> values) {
         this.values = values;
     }
 
     protected Sections() {
-        throw new IllegalStateException();
+
     }
 
     public List<Section> getValues() {
@@ -34,60 +30,81 @@ public class Sections {
     }
 
     public void add(Section targetSection, Line line) {
-        if (this.values.isEmpty()) {
-            values.add(targetSection);
-            return;
-        }
+        validateTargetStationContains(targetSection, line);
+        targetSection.setLine(line);
 
-        List<Section> temp = new ArrayList<>();
-        final Section s = values.get(0);
-        final Station upStation = targetSection.getUpStation();
-        final Station downStation = targetSection.getDownStation();
-        final int distance = targetSection.getDistance();
+        makeSeqUpStationEquals(targetSection);
+        makeSeqWhenDownStationEquals(targetSection);
+        makeSeqWhenUpStationAndTargetDownStationEquals(targetSection);
+        makeSeqWhenDownStationAndTargetUpStationEquals(targetSection);
 
-        if (s.getUpStation().equals(upStation) && distance < 0 && s.getDistance() > distance) {
-            final Section section1 = new Section(s.getUpStation(), downStation, Math.abs(distance));
-            section1.toLine(line);
-            final Section section2 = new Section(downStation, s.getDownStation(), s.getDistance() + distance);
-            section2.toLine(line);
+        values.add(targetSection);
+    }
 
-            temp.add(section1);
-            temp.add(section2);
-        } else if (s.getDownStation().equals(downStation) && distance > 0 && s.getDistance() > distance){
+    private void makeSeqWhenDownStationAndTargetUpStationEquals(Section targetSection) {
+        values.stream().filter(s -> s.isDownStationAndTargetUpStationEquals(targetSection))
+                .findFirst().ifPresent(
+                        section -> {
+                            int sequence = section.getSequence();
+                            targetSection.setSequence(sequence+1);
+                        }
+        );
+    }
 
-            final Section section1 = new Section(s.getUpStation(), upStation, s.getDistance() - distance);
-            section1.toLine(line);
-            final Section section2 = new Section(upStation, s.getDownStation(), Math.abs(distance));
-            section2.toLine(line);
+    private void makeSeqWhenUpStationAndTargetDownStationEquals(Section targetSection) {
+        values.stream().filter(s -> s.isUpStationAndTargetDownStationEquals(targetSection))
+                .findFirst().ifPresent(
+                        section -> {
+                            int sequence = section.getSequence();
+                            targetSection.setSequence(sequence);
+                            section.setSequence(++sequence);
+                        }
+                );
+    }
 
-            temp.add(section1);
-            temp.add(section2);
+    private void makeSeqWhenDownStationEquals(Section targetSection) {
+        values.stream().filter(s -> s.isDownStationEquals(targetSection))
+                .findFirst().ifPresent(
+                        section -> {
+                            targetSection.setSequence(section.getSequence() + 1);
+                            if (section.getDistance() > targetSection.getDistance()){
+                                section.minusDistance(targetSection.getDistance());
+                                section.changeDownStation(targetSection.getUpStation());
+                            } else {
+                                throw new IllegalArgumentException("등록할 수 없는 구간입니다.");
+                            }
+                        }
+        );
+    }
 
-        } else if (s.getUpStation().equals(downStation) && distance > 0) { //TODO distance 의 조건 제약 필요함
+    private void makeSeqUpStationEquals(Section targetSection) {
+        values.stream().filter(s -> s.isUpStationEquals(targetSection))
+                .findFirst().ifPresent(
+                        section -> {
+                            int sequence = section.getSequence();
+                            targetSection.setSequence(sequence);
+                            section.setSequence(++sequence);
+                            if (section.getDistance() > targetSection.getDistance()){
+                                section.minusDistance(targetSection.getDistance());
+                                section.changeUpStation(targetSection.getDownStation());
+                            } else {
+                                throw new IllegalArgumentException("등록할 수 없는 구간입니다.");
+                            }
+                        }
+                );
+    }
 
-            final Section section1 = new Section(upStation, downStation, Math.abs(distance));
-            section1.toLine(line);
-            final Section section2 = new Section(s.getUpStation(), s.getDownStation(), s.getDistance());
-            section2.toLine(line);
+    private void validateTargetStationContains(Section section, Line line) {
+        List<Station> stations = line.getStations();
+        if (stations.contains(section.getUpStation()) == false &&
+                stations.contains(section.getDownStation()) == false){
+            throw new IllegalArgumentException("상행, 종행 역 모두가 포함되지 않았습니다.");
+        };
 
-            temp.add(section1);
-            temp.add(section2);
-        } else if (s.getDownStation().equals(upStation) && distance < 0) {
+        if (stations.contains(section.getUpStation()) &&
+                stations.contains(section.getDownStation())){
+            throw new IllegalArgumentException("상행, 종행 역 모두가 포함되어있습니다..");
+        };
 
-            final int abs = Math.abs(distance);
-            final Section section1 = new Section(s.getUpStation(), s.getDownStation(), s.getDistance());
-            section1.toLine(line);
-            final Section section2 = new Section(s.getDownStation(), downStation, abs);
-            section2.toLine(line);
-
-            temp.add(section1);
-            temp.add(section2);
-
-        } else {
-            temp.add(targetSection);
-        }
-
-        values.clear();
-        values.addAll(temp);
     }
 }

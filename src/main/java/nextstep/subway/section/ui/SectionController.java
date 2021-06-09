@@ -1,14 +1,12 @@
 package nextstep.subway.section.ui;
 
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping
 public class SectionController {
 
     private final LineService lineService;
@@ -17,22 +15,26 @@ public class SectionController {
         this.lineService = lineService;
     }
 
-    @PostMapping(name = "lines/{lineId}/sections")
+    @PostMapping(value = "/lines/{lineId}/sections")
     public ResponseEntity<LineResponse> registerSections(
             @PathVariable Long lineId,
             @RequestBody SectionRequest request
     ) {
-        final Line line = lineService.addSection(request);
-        return ResponseEntity.ok(LineResponse.of(line));
+        return ResponseEntity.ok(LineResponse.of(lineService.addSection(lineId, request)));
     }
 
-    @DeleteMapping(name = "lines/{lineId}/sections/{sectionId}")
+    @DeleteMapping(value = "/lines/{lineId}/sections/{sectionId}")
     public ResponseEntity<LineResponse> deleteSection(
             @PathVariable Long lineId,
             @PathVariable Long sectionId,
             @RequestBody SectionRequest request
     ) {
+        //TODO
         return null;
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<LineResponse> handleIllegalArgsException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().build();
+    }
 }
