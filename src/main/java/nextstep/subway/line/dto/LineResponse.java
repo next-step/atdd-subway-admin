@@ -31,7 +31,7 @@ public class LineResponse {
 		return new LineResponse(line.getId(),
 			line.getName(),
 			line.getColor(),
-			line.getStations(),
+			line.getStaions(),
 			line.getCreatedDate(),
 			line.getModifiedDate());
 	}

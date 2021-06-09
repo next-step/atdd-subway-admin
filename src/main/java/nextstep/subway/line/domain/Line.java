@@ -1,7 +1,10 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,8 +12,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -26,14 +31,23 @@ public class Line extends BaseEntity {
 	private String color;
 
 	@OneToMany(mappedBy = "line")
-	private List<Station> stations = new ArrayList<>();
+	private List<Section> sections = new LinkedList<>();
 
-	public Line() {
+	@OneToOne
+	private Station startStation;
+
+	protected Line() {
 	}
 
 	public Line(String name, String color) {
 		this.name = name;
 		this.color = color;
+	}
+
+	public Line(String name, String color, Station startStation) {
+		this.name = name;
+		this.color = color;
+		this.startStation = startStation;
 	}
 
 	public void update(Line line) {
@@ -53,7 +67,31 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public List<Station> getStations() {
-		return this.stations;
+	public List<Section> getSections() {
+		return this.sections;
+	}
+
+	public void addSections(Section section) {
+		sections.add(section);
+		section.setLine(this);
+	}
+
+	public List<Station> getStaions() {
+		Map<Station, Station> map = new HashMap<>();
+		List<Station> stations = new ArrayList<>();
+
+		for (Section section : sections) {
+			map.put(section.getUpStation(), section.getDownStation());
+		}
+
+		Station key = startStation;
+		stations.add(key);
+
+		while (map.containsKey(key)) {
+			stations.add(map.get(key));
+			key = map.get(key);
+		}
+
+		return stations;
 	}
 }
