@@ -112,11 +112,18 @@ public class Section extends BaseEntity implements Serializable {
             return false;
         }
         Section section = (Section) o;
-        return Objects.equals(id, section.id);
+
+        if (id != null && section.id != null) {
+            return Objects.equals(id, section.id);
+        }
+
+        return Objects.equals(upStation, section.upStation)
+            && Objects.equals(downStation, section.downStation)
+            && Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 }

@@ -70,7 +70,6 @@ public class SectionCommandService {
 
     public void delete(Long lineId, Long stationId) {
         Line line = lineQueryService.findById(lineId);
-        LineSections lineSections = line.getSections();
-        lineSections.deleteSection(stationQueryService.findById(stationId));
+        line.deleteSection(stationQueryService.findById(stationId));
     }
 }
