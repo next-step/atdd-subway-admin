@@ -113,8 +113,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        Map<String, String> params1 = createLineParams("신분당선", "bg-red-600");
-        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(params1);
+        Map<String, String> params = createLineParams("신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(params);
         Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
 
         // when
@@ -142,13 +142,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        Map<String, String> params = createLineParams("신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(params);
+        Long id = response.jsonPath().getObject(".", LineResponse.class).getId();
 
         // when
-        // 지하철_노선_수정_요청
+        Map<String, String> updateParams = createLineParams("구분당선", "bg-blue-600");
+        response = 지하철_노선_수정_요청(id, updateParams);
 
         // then
-        // 지하철_노선_수정됨
+        지하철_노선_수정됨(response);
+    }
+
+    private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Map<String, String> updateParams) {
+        return RestAssured.given().log().all()
+            .body(updateParams)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/" + id)
+            .then().log().all()
+            .extract();
     }
 
     @DisplayName("지하철 노선을 제거한다.")

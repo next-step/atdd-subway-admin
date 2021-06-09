@@ -35,4 +35,10 @@ public class LineService {
 		return LineAndStationResponse.of(lineRepository.findById(id).orElseThrow(()
 			-> new IllegalArgumentException("조회 할 수 없습니다.")));
 	}
+
+	public void updateLineById(Long id, LineRequest lineRequest) {
+		Line line = lineRepository.findById(id).orElseThrow(()
+			-> new IllegalArgumentException("조회 할 수 없습니다."));
+		line.update(lineRequest.toLine());
+	}
 }
