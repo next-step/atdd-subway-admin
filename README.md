@@ -63,3 +63,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [x] 노선 생성 시 종점역(상행,하행)정보를 요청 파라미터에 함께 추가하기
 - [x] 상행하행은 구간의 형태로 관리
 - [x] 노선 조회시 응답결과에 역 목록 추가하기
+
+
+# 인수테스트주도개발(ATDD) 3단계 - 구간 추가 기능
+- [x] 기능 구현 전 인수 테스트 작성
+- [x] 예외 케이스 처리 인수 테스트 작성
+- [x] API 규격 변경
+- [x] 기능구현

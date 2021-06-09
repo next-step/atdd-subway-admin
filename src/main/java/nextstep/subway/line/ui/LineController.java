@@ -4,14 +4,14 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.apache.coyote.Response;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/lines")
@@ -50,8 +50,18 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity addSection(@PathVariable long lineId, @RequestBody SectionRequest sectionRequest) {
+        LineResponse lineResponse = lineService.addSection(lineId, sectionRequest);
+
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class,
+            NoSuchElementException.class,
+            IllegalArgumentException.class
+    })
+    public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
 }
