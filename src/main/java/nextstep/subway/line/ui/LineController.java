@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -67,6 +68,12 @@ public class LineController {
     @GetMapping("/{lineId}/sections")
     public ResponseEntity<List<SectionResponse>> showSections(@PathVariable Long lineId) {
         return ResponseEntity.ok().body(lineService.findAllSections(lineId));
+    }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<Void> deleteLineStation(@PathVariable Long lineId, @RequestParam("stationId") Long stationId) {
+        lineService.deleteStation(lineId, stationId);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

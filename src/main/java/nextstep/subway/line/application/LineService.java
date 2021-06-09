@@ -11,6 +11,7 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,5 +67,10 @@ public class LineService {
     public List<SectionResponse> findAllSections(Long lineId) {
         Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
         return SectionResponse.toSectionResponses(line.getSections());
+    }
+
+    public void deleteStation(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+        line.deleteStation(new Station(stationId));
     }
 }

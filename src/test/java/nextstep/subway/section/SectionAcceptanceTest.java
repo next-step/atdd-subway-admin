@@ -66,9 +66,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> findLineResponse = findLine(lineResponse);
-        assertThat(findSectionResponses(findLineResponse)).hasSize(2);
-        assertThat(sumDistancesSections(findLineResponse)).isEqualTo(7);
+        checkStationSizeAndDistance(lineResponse.getId(), 2, 7);
     }
 
     @DisplayName("역 사이에 새로운 역을 등록 (하행역기준)")
@@ -84,9 +82,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> findLineResponse = findLine(lineResponse);
-        assertThat(findSectionResponses(findLineResponse)).hasSize(2);
-        assertThat(sumDistancesSections(findLineResponse)).isEqualTo(7);
+        checkStationSizeAndDistance(lineResponse.getId(), 2, 7);
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록")
@@ -102,9 +98,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> findLineResponse = findLine(lineResponse);
-        assertThat(findSectionResponses(findLineResponse)).hasSize(2);
-        assertThat(sumDistancesSections(findLineResponse)).isEqualTo(11);
+        checkStationSizeAndDistance(lineResponse.getId(), 2, 11);
 
     }
 
@@ -121,9 +115,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> findLineResponse = findLine(lineResponse);
-        assertThat(findSectionResponses(findLineResponse)).hasSize(2);
-        assertThat(sumDistancesSections(findLineResponse)).isEqualTo(10);
+        checkStationSizeAndDistance(lineResponse.getId(), 2, 10);
     }
 
     @DisplayName("예외케이스1 - 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
@@ -174,6 +166,78 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("구간에서 중간역 삭제")
+    @Test
+    void deleteMiddleStation() {
+        // Given
+        LineResponse lineResponse = LineAcceptanceTest.지하철_노선_등록되어_있음_두_종점역_포함(LineAcceptanceTest.line5, new Section(aeogaeStation, seodaemunStation, 7)).as(LineResponse.class);
+        지하철_구간_등록되어_있음(new Section(lineResponse.getId(), aeogaeStation, chungjeongnoStation, 3));
+
+        // When
+        ExtractableResponse<Response> response = delete("/lines/" + lineResponse.getId() + "/sections?stationId=" + chungjeongnoStation.getId());
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        checkStationSizeAndDistance(lineResponse.getId(), 1, 7);
+    }
+
+    @DisplayName("구간에서 상행역 삭제")
+    @Test
+    void deleteUpStation() {
+        // Given
+        LineResponse lineResponse = LineAcceptanceTest.지하철_노선_등록되어_있음_두_종점역_포함(LineAcceptanceTest.line5, new Section(aeogaeStation, chungjeongnoStation, 3)).as(LineResponse.class);
+        지하철_구간_등록되어_있음(new Section(lineResponse.getId(), chungjeongnoStation, seodaemunStation, 4));
+
+        // When
+        ExtractableResponse<Response> response = delete("/lines/" + lineResponse.getId() + "/sections?stationId=" + aeogaeStation.getId());
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        checkStationSizeAndDistance(lineResponse.getId(), 1, 4);
+    }
+
+    @DisplayName("구간에서 하행역 삭제")
+    @Test
+    void deleteDownStation() {
+        // Given
+        LineResponse lineResponse = LineAcceptanceTest.지하철_노선_등록되어_있음_두_종점역_포함(LineAcceptanceTest.line5, new Section(aeogaeStation, chungjeongnoStation, 3)).as(LineResponse.class);
+        지하철_구간_등록되어_있음(new Section(lineResponse.getId(), chungjeongnoStation, seodaemunStation, 4));
+
+        // When
+        ExtractableResponse<Response> response = delete("/lines/" + lineResponse.getId() + "/sections?stationId=" + seodaemunStation.getId());
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        checkStationSizeAndDistance(lineResponse.getId(), 1, 3);
+    }
+
+    @DisplayName("노선에 등록되지 않은 역을 삭제 시도시 예외발생")
+    @Test
+    void failCase1_when_deleteStation() {
+        // Given
+        LineResponse lineResponse = LineAcceptanceTest.지하철_노선_등록되어_있음_두_종점역_포함(LineAcceptanceTest.line5, new Section(aeogaeStation, chungjeongnoStation, 3)).as(LineResponse.class);
+        지하철_구간_등록되어_있음(new Section(lineResponse.getId(), chungjeongnoStation, seodaemunStation, 4));
+
+        // When
+        ExtractableResponse<Response> response = delete("/lines/" + lineResponse.getId() + "/sections?stationId=" + gwanghwamunStation.getId());
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간이 1개만 남았을 경우 삭제 시도시 예외발생")
+    @Test
+    void failCase2_when_deleteStation() {
+        // Given
+        LineResponse lineResponse = LineAcceptanceTest.지하철_노선_등록되어_있음_두_종점역_포함(LineAcceptanceTest.line5, new Section(aeogaeStation, chungjeongnoStation, 3)).as(LineResponse.class);
+
+        // When
+        ExtractableResponse<Response> response = delete("/lines/" + lineResponse.getId() + "/sections?stationId=" + aeogaeStation.getId());
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     public static ExtractableResponse<Response> 지하철_구간_등록되어_있음(Section section) {
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", section.getUpStation().getId());
@@ -183,8 +247,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return post(params, "/lines/" + section.getLine().getId() + "/sections");
     }
 
-    private ExtractableResponse<Response> findLine(LineResponse lineResponse) {
-        return get("/lines/" + lineResponse.getId() + "/sections");
+    private ExtractableResponse<Response> findLine(Long lineId) {
+        return get("/lines/" + lineId + "/sections");
     }
 
     private List<SectionResponse> findSectionResponses(ExtractableResponse<Response> findLineResponse) {
@@ -195,5 +259,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return findSectionResponses(findLineResponse).stream()
             .mapToInt(SectionResponse::getDistance)
             .sum();
+    }
+
+    void checkStationSizeAndDistance(Long lineId, int stationSize, int distance) {
+        ExtractableResponse<Response> findLineResponse = findLine(lineId);
+        assertThat(findSectionResponses(findLineResponse)).hasSize(stationSize);
+        assertThat(sumDistancesSections(findLineResponse)).isEqualTo(distance);
     }
 }
