@@ -5,6 +5,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.application.StationQueryUseCase;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,16 +29,24 @@ class LineCommandServiceTest {
 
     @Mock
     private LineQueryUseCase lineQueryUseCase;
+
+    @Mock
+    private StationQueryUseCase stationQueryUseCase;
+
     private LineRequest lineRequest1;
     private LineRequest lineRequest2;
     private Line line1;
+    private Station upStation;
+    private Station downStation;
 
     @BeforeEach
     void setUp() {
-        lineCommandService = new LineCommandService(lineRepository, lineQueryUseCase);
-        lineRequest1 = new LineRequest("1호선", "blue");
-        lineRequest2 = new LineRequest("2호선", "green");
+        lineCommandService = new LineCommandService(lineRepository, lineQueryUseCase, stationQueryUseCase);
+        lineRequest1 = new LineRequest("1호선", "blue", 1L, 2L, 10);
+        lineRequest2 = new LineRequest("2호선", "green", 1L, 2L, 10);
         line1 = new Line("1호선", "blue");
+        upStation = new Station("용산역");
+        downStation = new Station("서울역");
     }
 
     @DisplayName("요청한 지하철 노선을 저장하고 저장된 지하철 노선을 리턴한다.")
@@ -44,6 +54,8 @@ class LineCommandServiceTest {
     void saveLine() {
         //given
         when(lineRepository.save(any(Line.class))).thenReturn(line1);
+        when(stationQueryUseCase.findById(lineRequest1.getUpStationId())).thenReturn(upStation);
+        when(stationQueryUseCase.findById(lineRequest1.getDownStationId())).thenReturn(downStation);
 
         //when
         LineResponse actual = lineCommandService.saveLine(lineRequest1);

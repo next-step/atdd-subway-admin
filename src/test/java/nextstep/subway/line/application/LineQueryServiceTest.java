@@ -4,7 +4,6 @@ import nextstep.subway.line.application.exception.LineDuplicatedException;
 import nextstep.subway.line.application.exception.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +23,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class LineQueryServiceTest {
-    private LineQueryService lineQueryUseCase;
+    private LineQueryService lineQueryService;
 
     @Mock
     private LineRepository lineRepository;
@@ -33,7 +32,7 @@ class LineQueryServiceTest {
 
     @BeforeEach
     void setUp() {
-        lineQueryUseCase = new LineQueryService(lineRepository);
+        lineQueryService = new LineQueryService(lineRepository);
         line1 = new Line("1호선", "blue");
         line2 = new Line("2호선", "green");
     }
@@ -45,7 +44,7 @@ class LineQueryServiceTest {
         when(lineRepository.findAll()).thenReturn(Arrays.asList(line1, line2));
 
         //when
-        List<LineResponse> actual = lineQueryUseCase.findAllLines();
+        List<LineResponse> actual = lineQueryService.findAllLines();
 
         //then
         assertThat(actual).containsAll(Arrays.asList(LineResponse.of(line1), LineResponse.of(line2)));
@@ -58,7 +57,7 @@ class LineQueryServiceTest {
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line1));
 
         //when
-        LineResponse actual = lineQueryUseCase.findLine(anyLong());
+        LineResponse actual = lineQueryService.findLine(anyLong());
 
         //then
         assertThat(actual.getName()).isEqualTo(line1.getName());
@@ -72,7 +71,7 @@ class LineQueryServiceTest {
         when(lineRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         //when
-        assertThatThrownBy(() -> lineQueryUseCase.findLine(anyLong()))
+        assertThatThrownBy(() -> lineQueryService.findLine(anyLong()))
                 .isInstanceOf(LineNotFoundException.class)
                 .hasMessage(LineQueryService.LINE_ID_NOT_FOUND_EXCEPTION_MESSAGE);
     }
@@ -84,7 +83,7 @@ class LineQueryServiceTest {
         when(lineRepository.findByName(anyString())).thenReturn(Optional.of(line1));
 
         //when
-        assertThatThrownBy(() -> lineQueryUseCase.checkDuplicatedLineName(anyString()))
+        assertThatThrownBy(() -> lineQueryService.checkDuplicatedLineName(anyString()))
                 .isInstanceOf(LineDuplicatedException.class)
                 .hasMessage(LineQueryService.LINE_NAME_DUPLICATED_EXCEPTION_MESSAGE);
     }
