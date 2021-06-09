@@ -58,11 +58,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 지하철_노선_목록_조회_요청
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
-				.when()
-				.get("/lines")
-				.then().log().all()
-				.extract();
+		ExtractableResponse<Response> response = get메소드호출("/lines");
 
 		// then
 		// 지하철_노선_목록_응답됨
@@ -81,6 +77,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(resultLineIds).containsAll(expectedLineIds);
 	}
 
+
+
 	@DisplayName("지하철 노선을 조회한다.")
 	@Test
 	void getLine() {
@@ -91,11 +89,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 지하철_노선_조회_요청
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
-				.when()
-				.get("/lines/" + name)
-				.then().log().all()
-				.extract();
+		ExtractableResponse<Response> response = get메소드호출("/lines/" + name);
 
 		// then
 		// 지하철_노선_응답됨
@@ -168,6 +162,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when()
 				.post("/lines")
+				.then().log().all()
+				.extract();
+	}
+
+	public ExtractableResponse<Response> get메소드호출(String path) {
+		return RestAssured.given().log().all()
+				.when()
+				.get(path)
 				.then().log().all()
 				.extract();
 	}
