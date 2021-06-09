@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
@@ -38,7 +39,7 @@ public class SectionRepositoryTest {
 		sungSuStation = new Station("성수역");
 		gunDaeStation = new Station("건대입구역");
 		twiceLine = new Line("2호선", "Green");
-		section = new Section(twiceLine, sungSuStation, gunDaeStation, 10);
+		section = new Section(twiceLine, sungSuStation, gunDaeStation, new Distance(10));
 		stations.save(sungSuStation);
 		stations.save(gunDaeStation);
 		lines.save(twiceLine);
@@ -49,6 +50,9 @@ public class SectionRepositoryTest {
 	void 구간_조회() {
 		Section findSection = sections.findById(section.getId()).get();
 		assertThat(findSection).isSameAs(section);
+		assertThat(findSection.getDistance()).isEqualTo(section.getDistance());
+		assertThat(findSection.getUpStation().getName()).isEqualTo(sungSuStation.getName());
+		assertThat(findSection.getDownStation().getName()).isEqualTo(gunDaeStation.getName());
 	}
 
 	@Test

@@ -12,6 +12,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
@@ -34,7 +35,7 @@ public class LineService {
 		Line persistLine = lines.save(request.toLine());
 		Station upStation = stations.findById(request.getUpStationId()).orElseThrow(EntityNotFoundException::new);
 		Station downStation = stations.findById(request.getDownStationId()).orElseThrow(EntityNotFoundException::new);
-		Section persistSection = sections.save(new Section(persistLine, upStation, downStation, request.getDistance()));
+		Section persistSection = sections.save(new Section(persistLine, upStation, downStation, new Distance(request.getDistance())));
 		persistLine.addSection(persistSection);
 		return LineResponse.of(persistLine);
 	}
