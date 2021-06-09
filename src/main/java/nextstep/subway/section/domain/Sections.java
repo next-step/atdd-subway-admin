@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.station.dto.StationResponse;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections;
 
     public Sections() {
