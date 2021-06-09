@@ -55,6 +55,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ## 구현 기능 목록
 
+### step1 - 지하철 노선도 관리
 -[x] 노선 생성 인수 테스트 작성
 -[x] 노선 이름 중복 인수 테스트 작성 & 노선 생성 기능 구현
 -[x] 노선 목록 조회 인수 테스트 작성
@@ -66,3 +67,15 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 -[x] 노선 삭제 인수 테스트 작성
 -[x] 노선 삭제 기능 구현
 -[x] 인수 테스트 리팩터링
+
+### step2 - 인수 테스트 리팩터링
+-[x] 노선 생성 시 종점역 정보를 요청 파라미터에 추가
+    -[x] 테스트 코드 변경
+    -[x] 프로덕션 코드 변경
+      -[x] Line 저장 시 종점역 정보가 없다면 저장할 수 없다.
+      -[x] Line 저장 시 Section 을 함께 저장해야 한다. 
+      -[x] Section 은 자신의 Line 과 상행방향역 하행방향역 정보를 갖는다.
+-[x] 노선 조회 시 응답 결과에 역 목록 추가하기
+    -[x] 테스트 코드 변경
+    -[x] 프로덕션 코드 변경
+    -[x] N+1 문제 해결

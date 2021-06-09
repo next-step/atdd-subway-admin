@@ -1,18 +1,13 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Line;
+import static java.util.Objects.*;
 
 public class LineRequest {
     private String name;
     private String color;
-
-    public LineRequest() {
-    }
-
-    public LineRequest(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
+    private Long upStationId;
+    private Long downStationId;
+    private int distance;
 
     public String getName() {
         return name;
@@ -22,7 +17,21 @@ public class LineRequest {
         return color;
     }
 
-    public Line toLine() {
-        return new Line(name, color);
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void validateSaveRequest() {
+        if (isNull(name) || isNull(color) || isNull(upStationId) || isNull(downStationId) || distance <= 0) {
+            throw new IllegalArgumentException("노선 저장요청이 유효하지 않습니다.");
+        }
     }
 }

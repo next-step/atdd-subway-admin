@@ -5,6 +5,7 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,26 +34,26 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        Line line = lineService.saveLine(lineRequest.toLine());
-        LineResponse lineResponse = LineResponse.of(line);
+        LineResponse lineResponse = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> findLines() {
-        List<LineResponse> lineResponses = LineResponse.allOf(lineService.findAllLines());
+        List<LineResponse> lineResponses = LineResponse.list(lineService.findAllLines());
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping(value = "/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> findLine(@PathVariable Long lineId) {
         Line line = lineService.findLineById(lineId);
-        return ResponseEntity.ok().body(LineResponse.of(line));
+        List<StationResponse> stationResponses = StationResponse.list(line.orderedStations());
+        return ResponseEntity.ok().body(LineResponse.of(line, stationResponses));
     }
 
     @PutMapping(value = "/{lineId}")
     public ResponseEntity<?> updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
-        lineService.updateLineById(lineId, lineRequest.toLine());
+        lineService.updateLineById(lineId, lineRequest);
         return ResponseEntity.ok().build();
     }
 
