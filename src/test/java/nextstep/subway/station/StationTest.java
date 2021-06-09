@@ -1,7 +1,7 @@
 package nextstep.subway.station;
 
+import nextstep.subway.domain.Station;
 import nextstep.subway.exception.ValueFormatException;
-import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ public class StationTest {
         Station station = Station.create("미사역");
 
         //then
-        assertThat(station.getName()).isEqualTo("미사역");
+        assertThat(station.name()).isEqualTo("미사역");
     }
 
     @DisplayName("역 생성시 유효성 검사")

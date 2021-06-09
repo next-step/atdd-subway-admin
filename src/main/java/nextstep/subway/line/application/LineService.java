@@ -1,14 +1,15 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import nextstep.subway.exception.DuplicateDataException;
 import nextstep.subway.exception.NoSuchDataException;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.domain.Line;
+import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesSubResponse;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,17 +28,19 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId())
-                .orElseThrow(() -> new NoSuchDataException("상행역이 존재하지 않습니다.", "upStationId",
-                        String.valueOf(request.getUpStationId()), request.getClass().getName()));
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+        Section section = Section.create(request.getDistance());
 
-        Station downStation = stationRepository.findById(request.getDownStationId())
-                .orElseThrow(() -> new NoSuchDataException("하행역이 존재하지 않습니다.", "downStationId",
-                        String.valueOf(request.getDownStationId()), request.getClass().getName()));
+        Line line = Line.createWithSectionAndStation(request.getName(), request.getColor(), section, upStation, downStation);
+        Line savedLine = lineRepository.save(line);
+        return LineResponse.of(savedLine);
+    }
 
-        Line line = Line.create(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
-        Line persistLine = lineRepository.save(line);
-        return LineResponse.of(persistLine);
+    private Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new NoSuchDataException("역이 존재하지 않습니다.", "upStationId",
+                        String.valueOf(stationId), null));
     }
 
     public void changeLine(Long lineId, LineRequest lineRequest) {

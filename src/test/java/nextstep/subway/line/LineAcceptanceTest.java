@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.exception.ErrorDto;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesSubResponse;
 import nextstep.subway.station.StationAcceptanceTest;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -96,7 +98,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> extractableResponse = 지하철_노선_수정_요청(params);
 
         // then
-        지하철_노선_수정됨(extractableResponse);
+        지하철_노선_수정됨(extractableResponse, params);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -146,30 +148,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private static void 지하철_노선_생성됨(ExtractableResponse<Response> extractableResponse) {
-        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(extractableResponse.statusCode()).isEqualTo(CREATED.value());
     }
 
     private void 지하철_노선_이름충돌로_생성되지_않음(ExtractableResponse<Response> extractableResponse) {
-        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(extractableResponse.statusCode()).isEqualTo(CONFLICT.value());
     }
 
-    private void 지하철_노선_수정됨(ExtractableResponse<Response> extractableResponse) {
-        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    private void 지하철_노선_수정됨(ExtractableResponse<Response> extractableResponse, Map<String, String> params) {
+        assertThat(extractableResponse.statusCode()).isEqualTo(OK.value());
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청();
+        LinesSubResponse linesSubResponse = response.jsonPath().getObject(".", LinesSubResponse.class);
+        assertThat(linesSubResponse.getName()).isEqualTo(params.get("name"));
+        assertThat(linesSubResponse.getColor()).isEqualTo(params.get("color"));
     }
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> extractableResponse) {
-        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(extractableResponse.statusCode()).isEqualTo(NO_CONTENT.value());
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청();
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
     }
 
     private void 지하철_노선_목록_조회됨(ExtractableResponse<Response> extractableResponse, LineResponse... lineResponses) {
-        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(extractableResponse.statusCode()).isEqualTo(OK.value());
         List<LinesSubResponse> list = extractableResponse.jsonPath().getList(".");
         assertThat(list.size()).isEqualTo(lineResponses.length);
     }
 
     private void 지하철_노선_조회됨(ExtractableResponse<Response> extractableResponse, LineResponse lineResponse) {
         LinesSubResponse linesSubResponse = extractableResponse.jsonPath().getObject(".", LinesSubResponse.class);
-        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(extractableResponse.statusCode()).isEqualTo(OK.value());
         assertThat(linesSubResponse.getName()).isEqualTo(lineResponse.getName());
         assertThat(linesSubResponse.getColor()).isEqualTo(lineResponse.getColor());
         assertThat(linesSubResponse.getStations().size()).isEqualTo(2);

@@ -1,4 +1,4 @@
-package nextstep.subway.line.ui;
+package nextstep.subway.line.controller;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;

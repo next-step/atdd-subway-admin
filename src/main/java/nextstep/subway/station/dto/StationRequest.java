@@ -1,6 +1,6 @@
 package nextstep.subway.station.dto;
 
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.domain.Station;
 
 public class StationRequest {
     private String name;
