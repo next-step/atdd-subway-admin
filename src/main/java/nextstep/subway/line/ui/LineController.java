@@ -33,14 +33,20 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity getLine(@PathVariable Long id) {
-        LineResponse line = lineService.getLine(id);
+        LineResponse line = lineService.findLine(id);
         return new ResponseEntity(line, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@RequestBody LineRequest lineRequest) {
-//        LineResponse line = lineService.updateLine();
-        return null;
+        LineResponse line = lineService.updateLine(lineRequest);
+        return new ResponseEntity(line, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.deleteLine(id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

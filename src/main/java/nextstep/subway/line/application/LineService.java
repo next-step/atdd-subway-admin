@@ -24,7 +24,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public LineResponse getLine(Long id) {
+    public LineResponse findLine(Long id) {
         Line line = lineRepository.findById(id).get();
         return LineResponse.of(line);
     }
@@ -35,5 +35,16 @@ public class LineService {
         return lines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse updateLine(LineRequest lineRequest) {
+        Line line = lineRepository.findByName(lineRequest.getName()).get();
+        line.changeName(lineRequest.getName());
+        line.changeColor(lineRequest.getColor());
+        return LineResponse.of(line);
+    }
+
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
     }
 }
