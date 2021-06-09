@@ -1,7 +1,5 @@
 package nextstep.subway.section.domain;
 
-import java.util.stream.Stream;
-
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -62,10 +60,6 @@ public class Section extends BaseEntity {
 
 	public int getDistance() {
 		return this.distance.getDistance();
-	}
-
-	public Stream<Station> toStationStream() {
-		return Stream.of(this.getUpStation(), this.getDownStation());
 	}
 
 	@Override

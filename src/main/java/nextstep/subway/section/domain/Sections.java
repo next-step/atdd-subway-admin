@@ -2,6 +2,8 @@ package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,15 +34,20 @@ public class Sections {
 
 	public List<Station> getOrderedStations() {
 		Section currentSection = this.findUpStationEndPointSection();
-		Stream<Station> stations = currentSection.toStationStream();
+		Stream<Station> stations = this.getStationStream(currentSection);
 		do {
 			currentSection = this.nextSection(currentSection);
 			stations = Stream.concat(stations,
-				currentSection.toStationStream())
+				Optional.of(this.getStationStream(currentSection)).orElse(Stream.empty()))
+				.filter(Objects::nonNull)
 				.distinct();
 		} while (hasNext(currentSection));
 
 		return stations.collect(Collectors.toList());
+	}
+
+	private Stream<Station> getStationStream(Section section) {
+		return Stream.of(section.getUpStation(), section.getDownStation());
 	}
 
 	private boolean hasNext(Section currentSection) {
@@ -51,7 +58,7 @@ public class Sections {
 	private Section nextSection(Section currentSection) {
 		return this.sections.stream()
 			.filter(section -> section.getUpStation().equals(currentSection.getDownStation()))
-			.findAny().orElse(currentSection);
+			.findAny().orElse(new Section());
 
 	}
 
