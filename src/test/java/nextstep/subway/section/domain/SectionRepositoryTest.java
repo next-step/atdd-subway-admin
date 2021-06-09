@@ -15,8 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 class SectionRepositoryTest {
@@ -273,6 +272,190 @@ class SectionRepositoryTest {
                 .collect(Collectors.toList());
         assertThat(stationNames.size()).isEqualTo(5);
         assertThat(stationNames).isEqualTo(Arrays.asList("정자", "판교", "청계산입구", "양재", "강남"));
+    }
+
+    @DisplayName("역 제거 검증 - 구간이 하나만 존재하는 경우")
+    @Test
+    void removeStation_sizeIsOne() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Section section = saveSection(station2, station1, 5);
+        Sections sections = new Sections();
+        sections.add(section);
+
+        // when then
+        assertThatIllegalStateException()
+                .isThrownBy(() -> sections.remove(station1))
+                .withMessageMatching("구간은 최소 한 개 이상 존재해야 합니다.");
+    }
+
+    @DisplayName("역 제거 검증 - 구간에 존재하지 않는 역 제거")
+    @Test
+    void removeStation_stationIsNotExist() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+        Station station4 = saveStation("강남");
+
+        Section section1 = saveSection(station2, station1, 5);
+        Section section2 = saveSection(station3, station2, 20);
+        Section section3 = saveSection(station4, station3, 7);
+
+        Sections sections = new Sections();
+        sections.add(section1);
+        sections.add(section2);
+        sections.add(section3);
+
+        // when
+        Station station5 = saveStation("청계산입구");
+
+        // then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> sections.remove(station5))
+                .withMessageMatching("삭제하고자 하는 역 정보가 존재하지 않습니다. 입력정보를 확인해주세요.");
+    }
+
+    @DisplayName("구간 병합 - 하행선 추가")
+    @Test
+    void mergeDownStation() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+
+        Section down = saveSection(station2, station1, 5);
+        Section up = saveSection(station3, station2, 20);
+
+        // when
+        up.mergeDownStation(down);
+
+        // then
+        assertThat(up.getUpStation()).isSameAs(station3);
+        assertThat(up.getDownStation()).isSameAs(station1);
+    }
+
+    @DisplayName("병합가능여부 검증 - 병합하고자 하는 구간의 상행역과 현재 구간의 하행역이 동일해야 함")
+    @Test
+    void validateMergeAble() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+
+        Station station4 = saveStation("광교");
+
+        Section down = saveSection(station4, station1, 5);
+        Section up = saveSection(station3, station2, 20);
+
+        // when then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> up.mergeDownStation(down))
+                .withMessageMatching("병합하고자 하는 구간의 상행역과 현재 구간의 하행역이 동일해야 합니다.");
+    }
+    
+    @DisplayName("병합가능여부 검증 - 병합 후 구간의 상 하행역은 동일할 수 없음")
+    @Test
+    void validateMergeAble_upAndDownStationAreSame() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+
+        Section down = saveSection(station2, station1, 5);
+        Section up = saveSection(station1, station2, 20);
+
+        // when then
+        assertThatIllegalStateException()
+                .isThrownBy(() -> up.mergeDownStation(down))
+                .withMessageMatching("상행역과 하행역은 동일할 수 없습니다.");
+    }
+
+    @DisplayName("역 제거 - 시착역 제거")
+    @Test
+    void removeStation_firstStop() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+        Station station4 = saveStation("강남");
+
+        Section section1 = saveSection(station2, station1, 5);
+        Section section2 = saveSection(station3, station2, 20);
+        Section section3 = saveSection(station4, station3, 7);
+
+        Sections sections = new Sections();
+        sections.add(section1);
+        sections.add(section2);
+        sections.add(section3);
+
+        // when
+        sections.remove(station1);
+
+        // then
+        List<String> stationNames = sections.getStations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(stationNames.size()).isEqualTo(3);
+        assertThat(stationNames).isEqualTo(Arrays.asList("판교", "양재", "강남"));
+    }
+
+    @DisplayName("역 제거 - 종착역 제거")
+    @Test
+    void removeStation_lastStop() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+        Station station4 = saveStation("강남");
+
+        Section section1 = saveSection(station2, station1, 5);
+        Section section2 = saveSection(station3, station2, 20);
+        Section section3 = saveSection(station4, station3, 7);
+
+        Sections sections = new Sections();
+        sections.add(section1);
+        sections.add(section2);
+        sections.add(section3);
+
+        // when
+        sections.remove(station4);
+
+        // then
+        List<String> stationNames = sections.getStations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(stationNames.size()).isEqualTo(3);
+        assertThat(stationNames).isEqualTo(Arrays.asList("정자", "판교", "양재"));
+    }
+
+    @DisplayName("역 제거 - 중간역 제거")
+    @Test
+    void removeStation_middle() {
+        // given
+        Station station1 = saveStation("정자");
+        Station station2 = saveStation("판교");
+        Station station3 = saveStation("양재");
+        Station station4 = saveStation("강남");
+
+        Section section1 = saveSection(station2, station1, 5);
+        Section section2 = saveSection(station3, station2, 20);
+        Section section3 = saveSection(station4, station3, 7);
+
+        Sections sections = new Sections();
+        sections.add(section1);
+        sections.add(section2);
+        sections.add(section3);
+
+        // when
+        sections.remove(station2);
+
+        // then
+        List<String> stationNames = sections.getStations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(stationNames.size()).isEqualTo(3);
+        assertThat(stationNames).isEqualTo(Arrays.asList("정자", "양재", "강남"));
     }
 
     private Section saveSection(Station upStation, Station downStation, int distance) {

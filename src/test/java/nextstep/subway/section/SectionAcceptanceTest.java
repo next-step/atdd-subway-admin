@@ -75,11 +75,75 @@ public class SectionAcceptanceTest extends RestAcceptanceTest {
         assertThat(expected.getStations().get(expected.getStations().size() - 1).getName()).isEqualTo(lastStop.getName());
     }
 
+    @DisplayName("구간에서 역 제거 - 시착역 제거")
+    @Test
+    void removeStation_firstStop() {
+        // given
+        LineResponse lineResponse = LineAcceptanceTest.saveShinBundangLine().jsonPath().getObject(".", LineResponse.class);
+        StationResponse stationResponse = StationAcceptanceTest.saveStation("양재").jsonPath().getObject(".", StationResponse.class);
+        StationResponse firstStop = lineResponse.getStations().get(0);
+        StationResponse lastStop = lineResponse.getStations().get(lineResponse.getStations().size() - 1);
+        saveSection(lineResponse.getId(), lastStop.getId(), stationResponse.getId(), 5);
+
+        // when
+        removeSectionByStationId(lineResponse.getId(), firstStop.getId());
+        LineResponse expected = LineAcceptanceTest.findLine(lineResponse.getId()).jsonPath().getObject(".", LineResponse.class);
+
+        // then
+        assertThat(expected.getStations().size()).isEqualTo(2);
+        assertThat(expected.getStations().get(0).getName()).isEqualTo(stationResponse.getName());
+        assertThat(expected.getStations().get(expected.getStations().size() - 1).getName()).isEqualTo(lastStop.getName());
+    }
+
+    @DisplayName("구간에서 역 제거 - 종착역 제거")
+    @Test
+    void removeStation_lastStop() {
+        // given
+        LineResponse lineResponse = LineAcceptanceTest.saveShinBundangLine().jsonPath().getObject(".", LineResponse.class);
+        StationResponse stationResponse = StationAcceptanceTest.saveStation("양재").jsonPath().getObject(".", StationResponse.class);
+        StationResponse firstStop = lineResponse.getStations().get(0);
+        StationResponse lastStop = lineResponse.getStations().get(lineResponse.getStations().size() - 1);
+        saveSection(lineResponse.getId(), lastStop.getId(), stationResponse.getId(), 5);
+
+        // when
+        removeSectionByStationId(lineResponse.getId(), lastStop.getId());
+        LineResponse expected = LineAcceptanceTest.findLine(lineResponse.getId()).jsonPath().getObject(".", LineResponse.class);
+
+        // then
+        assertThat(expected.getStations().size()).isEqualTo(2);
+        assertThat(expected.getStations().get(0).getName()).isEqualTo(firstStop.getName());
+        assertThat(expected.getStations().get(expected.getStations().size() - 1).getName()).isEqualTo(stationResponse.getName());
+    }
+
+    @DisplayName("구간에서 역 제거 - 중간역 제거")
+    @Test
+    void removeStation_middleStop() {
+        // given
+        LineResponse lineResponse = LineAcceptanceTest.saveShinBundangLine().jsonPath().getObject(".", LineResponse.class);
+        StationResponse stationResponse = StationAcceptanceTest.saveStation("양재").jsonPath().getObject(".", StationResponse.class);
+        StationResponse firstStop = lineResponse.getStations().get(0);
+        StationResponse lastStop = lineResponse.getStations().get(lineResponse.getStations().size() - 1);
+        saveSection(lineResponse.getId(), lastStop.getId(), stationResponse.getId(), 5);
+
+        // when
+        removeSectionByStationId(lineResponse.getId(), stationResponse.getId());
+        LineResponse expected = LineAcceptanceTest.findLine(lineResponse.getId()).jsonPath().getObject(".", LineResponse.class);
+
+        // then
+        assertThat(expected.getStations().size()).isEqualTo(2);
+        assertThat(expected.getStations().get(0).getName()).isEqualTo(firstStop.getName());
+        assertThat(expected.getStations().get(expected.getStations().size() - 1).getName()).isEqualTo(lastStop.getName());
+    }
+
     public static ExtractableResponse<Response> saveSection(Long lineId, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId.toString());
         params.put("downStationId", downStationId.toString());
         params.put("distance", String.valueOf(distance));
         return executePost("lines/" + lineId.toString() + "/sections", params);
+    }
+
+    public static ExtractableResponse<Response> removeSectionByStationId(Long lineId, Long stationId) {
+        return executeDelete("lines/" + lineId.toString() + "/sections?stationId=" + stationId.toString());
     }
 }

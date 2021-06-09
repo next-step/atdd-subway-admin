@@ -36,6 +36,14 @@ public class Sections implements Iterable<Section> {
         return sections.get(lastIndex()).getUpStation();
     }
 
+    private boolean isFirstStop(Station station) {
+        return getFirstStation().equals(station);
+    }
+
+    private boolean isLastStop(Station station) {
+        return getLastStation().equals(station);
+    }
+
     private int lastIndex() {
         return sections.size() - 1;
     }
@@ -84,13 +92,13 @@ public class Sections implements Iterable<Section> {
     }
 
     private int selectDivisionIndex(Section element) {
-        if (getFirstStation().equals(element.getUpStation())) {
+        if (isFirstStop(element.getUpStation())) {
             return FRONT_OF_SECTIONS;
         }
-        if (getLastStation().equals(element.getUpStation())) {
+        if (isLastStop(element.getUpStation())) {
             return lastIndex();
         }
-        if (getLastStation().equals(element.getDownStation())) {
+        if (isLastStop(element.getDownStation())) {
             return sections.size();
         }
         if (getUpStations().contains(element.getDownStation())) {
@@ -100,14 +108,14 @@ public class Sections implements Iterable<Section> {
     }
 
     private void add(int index, Section element) {
-        if (isEdge(index)) {
+        if (isOutOfEdge(index)) {
             addEdge(index, element);
             return;
         }
         divideSection(index, element);
     }
 
-    private boolean isEdge(int index) {
+    private boolean isOutOfEdge(int index) {
         return index == FRONT_OF_SECTIONS || index == sections.size();
     }
 
@@ -130,6 +138,52 @@ public class Sections implements Iterable<Section> {
             divisionTarget.modifyDownStation(element.getUpStation());
             sections.add(index, element);
         }
+    }
+
+    public Section remove(Station station) {
+        validateRemovable(station);
+        Section removeTarget = selectRemoveTarget(station);
+        mergeSection(removeTarget, station);
+        remove(removeTarget);
+        return removeTarget;
+    }
+
+    private void validateRemovable(Station element) {
+        if (sections.size() == 1) {
+            throw new IllegalStateException("구간은 최소 한 개 이상 존재해야 합니다.");
+        }
+        if (!getStations().contains(element)) {
+            throw new IllegalArgumentException("삭제하고자 하는 역 정보가 존재하지 않습니다. 입력정보를 확인해주세요.");
+        }
+    }
+
+    private Section selectRemoveTarget(Station element) {
+        if (isFirstStop(element)) {
+            return sections.get(FIRST_INDEX);
+        }
+        if (isLastStop(element)) {
+            return sections.get(lastIndex());
+        }
+        int index = getDownStations().indexOf(element);
+        return sections.get(index);
+    }
+
+    private void mergeSection(Section removeTarget, Station station) {
+        if (isEdge(station)) {
+            return;
+        }
+        int removeIndex = sections.indexOf(removeTarget);
+        Section mergeTarget = sections.get(removeIndex - 1);
+        mergeTarget.mergeUpStation(removeTarget);
+    }
+
+    private boolean isEdge(Station station) {
+        return isFirstStop(station) || isLastStop(station);
+    }
+
+    private void remove(Section section) {
+        sections.remove(section);
+        synchronizeSequence();
     }
 
     private void synchronizeSequence() {

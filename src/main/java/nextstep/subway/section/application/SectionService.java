@@ -27,4 +27,9 @@ public class SectionService {
     public void deleteSections(Sections sections) {
         sectionRepository.deleteAll(sections);
     }
+
+    @Transactional
+    public void deleteSection(Section section) {
+        sectionRepository.delete(section);
+    }
 }

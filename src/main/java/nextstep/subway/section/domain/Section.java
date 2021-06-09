@@ -94,6 +94,26 @@ public class Section extends BaseEntity {
         this.sequence = sequence;
     }
 
+    public void mergeDownStation(Section section) {
+        validateMergeAble(this, section);
+        this.distance += section.distance;
+        this.downStation = section.downStation;
+        validateStations();
+    }
+
+    public void mergeUpStation(Section section) {
+        validateMergeAble(section, this);
+        this.distance += section.distance;
+        this.upStation = section.upStation;
+        validateStations();
+    }
+
+    private void validateMergeAble(Section up, Section down) {
+        if (!up.downStation.equals(down.upStation)) {
+            throw new IllegalArgumentException("병합하고자 하는 구간의 상행역과 현재 구간의 하행역이 동일해야 합니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }
