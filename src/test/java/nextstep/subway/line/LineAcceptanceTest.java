@@ -24,8 +24,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        지하철역_생성(new StationRequest("신도림역"));
-        지하철역_생성(new StationRequest("신림역"));
+        지하철역_여러_생성();
         LineRequest lineRequest = new LineRequest("1호선", "blue", 1L, 2L, 10);
 
         // when
@@ -44,8 +43,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철역_생성(new StationRequest("신도림역"));
-        지하철역_생성(new StationRequest("신림역"));
+        지하철역_여러_생성();
         LineRequest lineRequest = new LineRequest("잠실역", "Green", 1L, 2L, 10);
         지하철_노선_등록(lineRequest);
 
@@ -66,12 +64,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 // 지하철_노선_등록되어_있음
                 DynamicTest.dynamicTest("여러 노선을 생성한다.", () -> {
                     //when
-                    지하철역_생성(new StationRequest("신도림역"));
-                    지하철역_생성(new StationRequest("신림역"));
-                    지하철역_생성(new StationRequest("화곡역"));
-                    지하철역_생성(new StationRequest("까치역"));
-                    지하철역_생성(new StationRequest("강남역"));
-                    지하철역_생성(new StationRequest("교대역"));
+                    지하철역_여러_생성();
                     ExtractableResponse<Response> createFirstLine = 지하철_노선_등록(new LineRequest("1호선", "blue", 1L, 2L, 10));
                     ExtractableResponse<Response> createSecondLine = 지하철_노선_등록(new LineRequest("2호선", "green", 3L, 4L, 10));
                     ExtractableResponse<Response> createThirdLine = 지하철_노선_등록(new LineRequest("3호선", "orange", 5L, 6L, 10));
@@ -108,8 +101,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철역_생성(new StationRequest("신도림역"));
-        지하철역_생성(new StationRequest("신림역"));
+        지하철역_여러_생성();
         지하철_노선_등록(new LineRequest("1호선", "Purple", 1L, 2L, 10));
 
         // when
@@ -128,9 +120,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철역_생성(new StationRequest("신도림역"));
-        지하철역_생성(new StationRequest("신림역"));
-        지하철역_생성(new StationRequest("영등포역"));
+        지하철역_여러_생성();
         지하철_노선_등록(new LineRequest("화곡역", "Purple", 1L, 2L, 10));
         // 지하철_노선_조회
         ExtractableResponse<Response> response = 지하철_노선_조회(1L);
@@ -157,8 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철역_생성(new StationRequest("신도림역"));
-        지하철역_생성(new StationRequest("신림역"));
+        지하철역_여러_생성();
         지하철_노선_등록(new LineRequest("화곡역", "Purple", 1L, 2L, 10));
 
         // when
@@ -168,6 +157,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    void 지하철역_여러_생성() {
+        지하철역_생성(new StationRequest("신도림역"));
+        지하철역_생성(new StationRequest("신림역"));
+        지하철역_생성(new StationRequest("화곡역"));
+        지하철역_생성(new StationRequest("까치역"));
+        지하철역_생성(new StationRequest("강남역"));
+        지하철역_생성(new StationRequest("교대역"));
     }
 
     ExtractableResponse<Response> 지하철_노선_등록(LineRequest lineRequest) {
