@@ -12,7 +12,7 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stations;
+    private List<StationResponse> stationResponses;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
@@ -23,7 +23,7 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
+        this.stationResponses = stations;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
@@ -61,8 +61,8 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStations() {
-        return stations;
+    public List<StationResponse> getStationResponses() {
+        return stationResponses;
     }
 
     public LocalDateTime getCreatedDate() {

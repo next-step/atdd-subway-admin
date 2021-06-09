@@ -6,6 +6,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,20 +27,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final LineRequest newLine = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
     private static final String ROOT_REQUEST_URI = "/lines";
 
-    private final  StationAcceptanceTest stationAcceptanceTest = new StationAcceptanceTest();
-    
+    private final StationAcceptanceTest stationAcceptanceTest = new StationAcceptanceTest();
+
     private StationRequest 강남역;
     private StationRequest 광교역;
-    
+    private Station upStation;
+    private Station downStation;
+
     @BeforeEach
-    void setVariables(){
+    void setVariables() {
         강남역 = new StationRequest("강남역");
         광교역 = new StationRequest("광교역");
 
         stationAcceptanceTest.지하철_역_등록되어_있음(강남역);
         stationAcceptanceTest.지하철_역_등록되어_있음(광교역);
+
+        upStation = 강남역.toStation();
+        downStation = 광교역.toStation();
     }
-    
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -155,12 +161,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineWithSections() {
         // given : 지하철_노선_등록되어_있음 - 종점역 포함
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(newLine);
+        Long expectedLineId = Long.parseLong(createResponse.header("Location").split("/")[2]);
 
         // when : 지하철_노선_조회_요청
+        ExtractableResponse<Response> readResponse = 지하철_노선_조회_요청(expectedLineId);
+        Long respondedLineId = readResponse.jsonPath().getLong("id");
 
         // then
-        // 지하철_노선_응답됨
+        // 지하철_노선_OK_응답
+        지하철_노선_OK_응답(readResponse);
+        assertThat(respondedLineId).isEqualTo(expectedLineId);
+
         // 지하철_노선의_역목록_조회됨 (상행 → 하행 순정렬)
+        List<StationResponse> stationResponses = readResponse.jsonPath()
+                .getObject("$.", LineResponse.class)
+                .getStationResponses();
+        assertThat(stationResponses.get(0).getName()).isEqualTo("강남역");
+        assertThat(stationResponses.get(1).getName()).isEqualTo("광교역");
     }
 
     private ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest request) {
