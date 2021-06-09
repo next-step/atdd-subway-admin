@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval=true)
     private List<Section> sections = new ArrayList<>();
 
     public Sections() { }
@@ -80,4 +80,30 @@ public class Sections {
         return sections.isEmpty();
     }
 
+    public void delete(Station station) {
+        List<Section> sections = this.sections;
+        for (int i = 0; i < sections.size(); ++i) {
+            Section section = sections.get(i);
+
+            if (section.getUpStation().getName().equals(station.getName())) {
+                if (i > 0 && i < sections.size() - 1) {
+                    sections.get(i-1).setDownStation(sections.get(i+1).getUpStation());
+                }
+                sections.remove(i);
+                break;
+            }
+
+            if (section.getDownStation().getName().equals(station.getName())) {
+                if (i == 0 && i < sections.size() - 1) {
+                    sections.get(i+1).setUpStation(sections.get(i).getUpStation());
+                }
+                if (i > 0 && i < sections.size() - 1) {
+                    sections.get(i-1).setDownStation(sections.get(i+1).getUpStation());
+                }
+                sections.remove(i);
+                break;
+            }
+        }
+        this.sections = sections;
+    }
 }
