@@ -75,8 +75,8 @@ public class Sections {
     }
 
      public OrderedSections orderedSections() {
-        return OrderedSections.of(makeOrderedSectionsFromTop(findTopSection()));
-//        return sections;
+//        return OrderedSections.of(makeOrderedSectionsFromTop(findTopSection()));
+        return OrderedSections.of(this.sections);
     }
 
     public Section findTopSection() {
