@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StationQueryService implements StationQueryUseCase {
+    public static final String STATION_ID_NOT_FOUND_EXCEPTION_MESSAGE = "해당 ID로 된 지하철 역이 존재하지 않습니다.";
+
     private final StationRepository stationRepository;
 
     public StationQueryService(StationRepository stationRepository) {
@@ -24,5 +26,11 @@ public class StationQueryService implements StationQueryUseCase {
                 .stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Station findById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new StationNotFoundException(STATION_ID_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 }
