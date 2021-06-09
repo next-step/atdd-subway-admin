@@ -71,5 +71,10 @@ public class Line extends BaseEntity {
     public void updateLine(Line updateLine) {
         this.name = updateLine.getName();
         this.color = updateLine.getColor();
+        this.sections.getSection().clear();
+        updateLine.getSections().getSection()
+                .stream()
+                .forEach(station -> this.addSection(station));
+        this.distance = updateLine.getDistance();
     }
 }

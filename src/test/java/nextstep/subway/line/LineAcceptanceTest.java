@@ -130,6 +130,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         지하철역_생성(new StationRequest("신도림역"));
         지하철역_생성(new StationRequest("신림역"));
+        지하철역_생성(new StationRequest("영등포역"));
         지하철_노선_등록(new LineRequest("화곡역", "Purple", 1L, 2L, 10));
         // 지하철_노선_조회
         ExtractableResponse<Response> response = 지하철_노선_조회(1L);
@@ -140,7 +141,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> updateResponse = 지하철_노선_수정(new LineRequest("화곡역", "Green", 1L, 2L, 10), lineId);
+        ExtractableResponse<Response> updateResponse = 지하철_노선_수정(new LineRequest("화곡역", "Green", 1L, 3L, 10), lineId);
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then

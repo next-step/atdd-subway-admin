@@ -8,6 +8,7 @@ import nextstep.subway.station.dto.StationResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class LineResponse {
     private Long id;

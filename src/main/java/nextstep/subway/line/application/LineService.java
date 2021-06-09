@@ -33,12 +33,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(NoSuchElementException::new);
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(NoSuchElementException::new);
-        Line saveLine = lineRequest.toLine(upStation, downStation);
-        saveLine.getSections().getSection().stream()
-                .forEach(
-                        section -> sectionRepository.save(section)
-                );
-        Line persistLine = lineRepository.save(saveLine);
+        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
