@@ -5,8 +5,6 @@ import nextstep.subway.section.Section;
 import nextstep.subway.section.Sections;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
