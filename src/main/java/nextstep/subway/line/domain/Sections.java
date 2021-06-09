@@ -53,13 +53,9 @@ public class Sections {
                 .filter(preSection -> preSection.isEqualsUpStation(section))
                 .findFirst()
                 .ifPresent(preSection -> {
-                    sections.add(makeNewAfterSection(preSection, section));
+                    sections.add(Section.makeAfterSection(preSection, section));
                     sections.remove(preSection);
                 });
-    }
-
-    private Section makeNewAfterSection(Section preSection, Section section) {
-        return Section.makeAfterSection(preSection, section);
     }
 
     private void addEqualDownStation(Section section) {
@@ -67,13 +63,9 @@ public class Sections {
                 .filter(preSection -> preSection.isEqualsDownStation(section))
                 .findFirst()
                 .ifPresent(preSection -> {
-                    sections.add(makeNewBeforeSection(preSection, section));
+                    sections.add(Section.makeBeforeSection(preSection, section));
                     sections.remove(preSection);
                 });
-    }
-
-    private Section makeNewBeforeSection(Section preSection, Section section) {
-        return Section.makeBeforeSection(preSection, section);
     }
 
     public boolean isEmpty() {
