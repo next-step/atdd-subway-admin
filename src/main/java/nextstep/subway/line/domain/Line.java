@@ -60,6 +60,10 @@ public class Line extends BaseEntity {
         return sections;
     }
 
+    public List<Section> getSectionsList(){
+        return sections.getSection();
+    }
+
     public int getDistance() {
         return distance;
     }
