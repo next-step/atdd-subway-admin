@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -56,7 +57,8 @@ public class Sections {
     }
 
     private void addIfMatchUpStation(Section addSection) {
-        Optional<Section> matchUpstation = getNextSection(addSection.getUpStation());
+        Predicate<Section> sectionPredicate = (section -> section.equalsUpStation(addSection.getUpStation()));
+        Optional<Section> matchUpstation = getSection(sectionPredicate);
 
         if (matchUpstation.isPresent()) {
             Section section = matchUpstation.get();
@@ -66,7 +68,8 @@ public class Sections {
     }
 
     private void addIfMatchDownStation(Section addSection) {
-        Optional<Section> matchDownStation = getPrevSection(addSection.getDownStation());
+        Predicate<Section> sectionPredicate = (section -> section.equalsDownStation(addSection.getDownStation()));
+        Optional<Section> matchDownStation = getSection(sectionPredicate);
 
         if (matchDownStation.isPresent()) {
             Section section = matchDownStation.get();
@@ -80,14 +83,17 @@ public class Sections {
             throw new IndexOutOfBoundsException("노선에 역이 2개 이하 일때는 구간 삭제가 불가능합니다.");
         }
 
-        Optional<Section> prevSection = getPrevSection(station);
-        Optional<Section> nextSection = getNextSection(station);
+        Predicate<Section> sectionPredicate = (section -> section.equalsDownStation(station));
+        Optional<Section> prevSection = getSection(sectionPredicate);
+
+        sectionPredicate = (section -> section.equalsUpStation(station));
+        Optional<Section> nextSection = getSection(sectionPredicate);
 
         mergeIfBetweenSection(prevSection, nextSection);
         deleteSections(prevSection, nextSection);
     }
 
-    private void mergeIfBetweenSection(Optional<Section> optionalPrevSection, Optional<Section> optionalNextSection) {
+    private void mergeIfBetweenSection(Optional <Section> optionalPrevSection, Optional<Section> optionalNextSection) {
         if (optionalPrevSection.isPresent() && optionalNextSection.isPresent()) {
             Section prevSection = optionalPrevSection.get();
             Section nextSection = optionalNextSection.get();
@@ -95,25 +101,19 @@ public class Sections {
         }
     }
 
-    private void deleteSections(Optional<Section> optionalPrevSection, Optional<Section> optionalNextSection) {
-        if (optionalNextSection.isPresent()) {
-            sections.remove(optionalNextSection.get());
+    private void deleteSections(Optional<Section> prevSection, Optional<Section> nextSection) {
+        if (nextSection.isPresent()) {
+            sections.remove(nextSection.get());
         }
 
-        if (optionalPrevSection.isPresent() && !optionalNextSection.isPresent()) {
-            sections.remove(optionalPrevSection.get());
+        if (prevSection.isPresent() && !nextSection.isPresent()) {
+            sections.remove(prevSection.get());
         }
     }
 
-    private Optional<Section> getNextSection(Station station) {
+    private Optional<Section> getSection(Predicate<Section> sectionPredicate) {
         return sections.stream()
-                .filter(section -> section.equalsUpStation(station))
-                .findFirst();
-    }
-
-    private Optional<Section> getPrevSection(Station station) {
-        return sections.stream()
-                .filter(section -> section.equalsDownStation(station))
+                .filter(sectionPredicate)
                 .findFirst();
     }
 
