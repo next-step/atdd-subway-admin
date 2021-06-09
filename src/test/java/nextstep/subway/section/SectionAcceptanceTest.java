@@ -26,6 +26,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private StationResponse 강남역;
     private StationResponse 광교역;
+    private StationResponse 분짜역;
     private LineResponse 신분당선;
     private Map<String, String> createParams;
 
@@ -36,6 +37,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         강남역 = StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
         광교역 = StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
+        분짜역 = StationAcceptanceTest.지하철역_등록되어_있음("분짜역").as(StationResponse.class);
 
         createParams = new HashMap<>();
         createParams.put("name", "신분당선");
@@ -44,6 +46,34 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("downStationId", 광교역.getId() + "");
         createParams.put("distance", 10 + "");
         신분당선 = LineAcceptanceTest.지하철_노선_등록되어_있음(createParams).as(LineResponse.class);
+    }
+
+    @DisplayName("역(Station)을 id 로 삭제하면서 해당 구간(Section)이 없어지는 Happy case")
+    @Test
+    void delete_1() {
+        // given
+        // 라인에 역이 3개 있다. 즉, 구간이 2개 있는 상태이다. (강남역 - 분짜역 - 광교역)
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 분짜역.getId() + "");
+        createParams.put("downStationId", 광교역.getId() + "");
+        createParams.put("distance", 5 + "");
+        RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+
+        // when
+        // 중간에 있는 역 1개를 지운다.
+        ExtractableResponse<Response> response = RestAssuredCRUD
+                .delete("/lines/"+신분당선.getId()+"/sections?stationId="+분짜역.getId());
+
+        // then
+        // 라인에 역이 2개로 줄고, 구간도 1개로 줄어든다.
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        LineResponse 구간등록_후_신분당선 = get("/lines/"+신분당선.getId())
+                .body()
+                .as(LineResponse.class);
+        List<String> stations = 구간등록_후_신분당선.getStations().stream()
+                .map(stationResponse -> stationResponse.getName())
+                .collect(Collectors.toList());
+        assertThat(stations).containsExactly("강남역", "광교역");
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
