@@ -51,7 +51,6 @@ public class Line extends BaseEntity {
 		if (this.sections.contain(section)) {
 			return;
 		}
-
 		this.sections.add(section);
 		section.toLine(this);
 	}

@@ -5,9 +5,10 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.application.SectionService;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,35 +16,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.exception.ApiExceptionMessge.NOT_FOUND_LINE;
-import static nextstep.subway.exception.ApiExceptionMessge.NOT_FOUND_STATION;
 
 @Service
 @Transactional
 public class LineService {
-	private final LineRepository lineRepository;
-	private final StationRepository stationRepository;
 
-	public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
+	private final LineRepository lineRepository;
+
+	private final StationService stationService;
+	private final SectionService sectionService;
+
+	public LineService(final LineRepository lineRepository, final StationService stationService, final SectionService sectionService) {
 		this.lineRepository = lineRepository;
-		this.stationRepository = stationRepository;
+		this.stationService = stationService;
+		this.sectionService = sectionService;
 	}
 
 	public LineResponse saveLine(final LineRequest request) {
-		Line persistLine = lineRepository.save(createLine(request));
+		Station upStation = stationService.findStationById(request.getUpStationId());
+		Station downStation = stationService.findStationById(request.getDownStationId());
+		Line persistLine = lineRepository.save(request.toLine());
+		sectionService.registerSection(persistLine, upStation, downStation, request.getDistance());
 		return LineResponse.of(persistLine);
-	}
-
-	private Line createLine(final LineRequest request) {
-		Station upStation = findStationById(request.getUpStationId());
-		Station downStation = findStationById(request.getDownStationId());
-
-		Line line = request.toLine();
-		line.addSection(new Section(upStation, downStation, request.getDistance()));
-		return line;
-	}
-
-	private Station findStationById(final Long id) {
-		return stationRepository.findById(id).orElseThrow(() -> new ApiException(NOT_FOUND_STATION));
 	}
 
 	@Transactional(readOnly = true)
@@ -57,10 +51,13 @@ public class LineService {
 					.collect(Collectors.toList());
 	}
 
-	@Transactional(readOnly = true)
 	public LineResponse getLine(final Long id) {
+		return LineResponse.of(findById(id));
+	}
+
+	@Transactional(readOnly = true)
+	public Line findById(final Long id) {
 		return lineRepository.findById(id)
-							 .map(LineResponse::of)
 							 .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
 	}
 
@@ -73,5 +70,14 @@ public class LineService {
 
 	public void deleteLine(final Long id) {
 		lineRepository.deleteById(id);
+	}
+
+	public LineResponse registerSection(final Long id, final SectionRequest request) {
+		Line line = findById(id);
+		Station upStation = stationService.findStationById(request.getUpStationId());
+		Station downStation = stationService.findStationById(request.getDownStationId());
+
+		sectionService.registerSection(line, upStation, downStation, request.getDistance());
+		return LineResponse.of(line);
 	}
 }

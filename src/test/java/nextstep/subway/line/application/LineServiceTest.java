@@ -45,7 +45,7 @@ class LineServiceTest {
 		Station 강남역 = new Station("강남역");
 		Station 역삼역 = new Station("역삼역");
 		Line 신분당선 = new Line("신분당선", "bg-red-600");
-		신분당선.addSection(new Section(강남역, 역삼역, 10));
+		신분당선.addSection(Section.of(강남역, 역삼역, 10));
 
 		LineRequest request = new LineRequest("신분당선", "bg-red-600", 1l, 2l, 10);
 		Mockito.when(stations.findById(1l)).thenReturn(Optional.of(강남역));
@@ -75,7 +75,7 @@ class LineServiceTest {
 		Station 강남역 = new Station("강남역");
 		Station 역삼역 = new Station("역삼역");
 		Line 신분당선 = new Line("신분당선", "bg-red-600");
-		신분당선.addSection(new Section(강남역, 역삼역, 10));
+		신분당선.addSection(Section.of(강남역, 역삼역, 10));
 
 		LineRequest request = new LineRequest("신분당선", "bg-red-600", 1l, 2l, 10);
 		Mockito.when(stations.findById(1l)).thenReturn(Optional.of(강남역));

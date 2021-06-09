@@ -1,5 +1,6 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.exception.ApiException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -9,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static nextstep.subway.exception.ApiExceptionMessge.NOT_FOUND_STATION;
 
 @Service
 @Transactional
@@ -22,6 +25,12 @@ public class StationService {
 	public StationResponse saveStation(StationRequest stationRequest) {
 		Station persistStation = stationRepository.save(stationRequest.toStation());
 		return StationResponse.of(persistStation);
+	}
+
+	@Transactional(readOnly = true)
+	public Station findStationById(final Long id) {
+		return stationRepository.findById(id)
+								.orElseThrow(() -> new ApiException(NOT_FOUND_STATION));
 	}
 
 	@Transactional(readOnly = true)

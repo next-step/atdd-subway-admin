@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.ApiException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -8,8 +9,13 @@ import javax.persistence.*;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static nextstep.subway.exception.ApiExceptionMessge.DISTANCE_NOT_UNDER_ZERO;
+import static nextstep.subway.exception.ApiExceptionMessge.OVER_DISTANCE;
+
 @Entity
 public class Section extends BaseEntity {
+
+	private final static int DISTANCE_NONE = 0;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,10 +39,21 @@ public class Section extends BaseEntity {
 		// empty
 	}
 
-	public Section(final Station upStation, final Station downStation, final int distance) {
+	private Section(final Station upStation, final Station downStation, final int distance) {
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
+	}
+
+	public static Section of(final Station upStation, final Station downStation, final int distance) {
+		checkDistance(distance);
+		return new Section(upStation, downStation, distance);
+	}
+
+	private static void checkDistance(final int distance) {
+		if (distance <= DISTANCE_NONE) {
+			throw new ApiException(DISTANCE_NOT_UNDER_ZERO);
+		}
 	}
 
 	public void toLine(final Line line) {
@@ -46,6 +63,31 @@ public class Section extends BaseEntity {
 
 	public Stream<Station> streamOfStation() {
 		return Stream.of(this.upStation, this.downStation);
+	}
+
+	public Station upStation() {
+		return this.upStation;
+	}
+
+	public void connectUpStationToDownStation(final Section section) {
+		updateDistance(section.distance);
+		this.upStation = section.downStation;
+	}
+
+	public Station downStation() {
+		return this.downStation;
+	}
+
+	public void connectDownStationToUpStation(final Section section) {
+		updateDistance(section.distance);
+		this.downStation = section.upStation;
+	}
+
+	private void updateDistance(final int distance) {
+		if (this.distance <= distance) {
+			throw new ApiException(OVER_DISTANCE);
+		}
+		this.distance -= distance;
 	}
 
 	@Override
