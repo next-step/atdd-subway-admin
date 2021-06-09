@@ -1,7 +1,5 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +39,7 @@ public class SectionsTest {
         sections.add(section1);
         sections.add(section3);
 
-        List<Section> actualSections = sections.orderFromTopToBottom();
+        List<Section> actualSections = sections.orderedSections().get();
         assertThat(actualSections.get(0).getUpStation().getName()).isEqualTo("1번역");
         assertThat(actualSections.get(1).getUpStation().getName()).isEqualTo("2번역");
         assertThat(actualSections.get(2).getUpStation().getName()).isEqualTo("3번역");

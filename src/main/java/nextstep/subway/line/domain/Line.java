@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.OrderedSections;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -84,10 +85,20 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section sectionIn) {
-        // validate
-        // 1. upStation과 downStation이 둘다 있으면 안됨
-        // 2. upStation, downStation 둘 중에 하나라도 있어야함
+        if (sections.isEmpty()) {
+            sections.add(sectionIn);
+            return;
+        }
 
+        sections.checkIfValid(sectionIn);
+
+//        addOnProperLocation(sectionIn);
+        checkConnectingPositionThroughOrderedSections(sectionIn);
+
+        sectionIn.setLine(this);
+    }
+
+    private void addOnProperLocation(Section sectionIn) {
         // sections 돌면서 확인한다.
         // 1) downStation이 이번 section의 앞에 있는지 확인한다.
         //  맞으면 -> 앞에 붙인다.
@@ -102,61 +113,59 @@ public class Line extends BaseEntity {
         // 4) sections 의 마지막 section 이었다면,
         //  upStation이 이번 section의 뒤에 있는지 확인한다.
         //   맞으면 -> 뒤에 붙인다.
-
-        if (sections.isEmpty()) {
-            sections.add(sectionIn);
-            return;
-        }
-
-        sections.checkIfValid(sectionIn);
-
-        Station upStationIn = sectionIn.getUpStation();
-        Station downStationIn = sectionIn.getDownStation();
-
-        List<Section> orderedSections = sections.orderFromTopToBottom();
-
-        for (int i = 0; i < orderedSections.size(); ++i) {
-            Section section = orderedSections.get(i);
-
-            // 1)
-            if (downStationIn.equals(section.getUpStation())) {
-                sections.add(i, sectionIn);
-                break;
-            }
-            // 4)
-            if (i == orderedSections.size() - 1) {
-                if (upStationIn.equals(section.getDownStation())) {
-                    sections.add(sectionIn);
-                    break;
-                }
-            }
-
-            // 2)
-            if (upStationIn.equals(section.getUpStation())) {
-                validateDistance(sectionIn.getDistance(), section.getDistance());
-
-                section.setDistance(section.getDistance() - sectionIn.getDistance());
-                section.setUpStation(downStationIn);
-                sections.add(i, sectionIn);
-                break;
-            }
-            // 3)
-            if (downStationIn.equals(section.getDownStation())) {
-                validateDistance(sectionIn.getDistance(), section.getDistance());
-
-                section.setDistance(section.getDistance() - sectionIn.getDistance());
-                section.setDownStation(upStationIn);
-                sections.add(i+1, sectionIn);
-                break;
-            }
-        }
-
-        sectionIn.setLine(this);
     }
 
-    private void validateDistance(int inputDistance, int existDistance) {
-        if (inputDistance >= existDistance) {
-            throw new IllegalArgumentException();
-        }
+    private void checkConnectingPositionThroughOrderedSections(Section sectionIn) {
+        OrderedSections orderedSections = sections.orderedSections();
+//        int position = orderedSections.checkConnectingPositionThroughOrderedSections(sectionIn);
+//        sections.add(position, sectionIn);
+        orderedSections.connectThroughOrderedSections(sectionIn);
+        sections.add(sectionIn);
+
+//        boolean isConnected = false;
+//        for (int i = 0; !isConnected && i < orderedSections.size(); ++i) {
+//            Section section = orderedSections.get(i);
+//
+//            // 1)
+//            isConnected = checkFrontConnection(sectionIn, section);
+//            if (downStationIn.equals(section.getUpStation())) {
+//                sections.add(i, sectionIn);
+//                break;
+//            }
+//            // 2)
+//            if (upStationIn.equals(section.getUpStation())) {
+//                validateDistance(sectionIn.getDistance(), section.getDistance());
+//
+//                section.setDistance(section.getDistance() - sectionIn.getDistance());
+//                section.setUpStation(downStationIn);
+//                sections.add(i, sectionIn);
+//                break;
+//            }
+//            // 3)
+//            if (downStationIn.equals(section.getDownStation())) {
+//                validateDistance(sectionIn.getDistance(), section.getDistance());
+//
+//                section.setDistance(section.getDistance() - sectionIn.getDistance());
+//                section.setDownStation(upStationIn);
+//                sections.add(i+1, sectionIn);
+//                break;
+//            }
+//            // 4)
+//            if (i == orderedSections.size() - 1) {
+//                if (upStationIn.equals(section.getDownStation())) {
+//                    sections.add(sectionIn);
+//                    break;
+//                }
+//            }
+//        }
     }
+
+//    private boolean checkFrontConnection(Section sectionIn, Section section) {
+//        if (sectionIn.getDownStation().equals(section.getUpStation())) {
+//            sections.add(i, sectionIn);
+//            break;
+//        }
+//    }
+
+
 }

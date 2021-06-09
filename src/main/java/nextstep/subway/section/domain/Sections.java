@@ -23,15 +23,17 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (!this.contains(section)) {
-            sections.add(section);
+        if (this.contains(section)) {
+            return;
         }
+        sections.add(section);
     }
 
     public void add(int index, Section section) {
-        if (!this.contains(section)) {
-            sections.add(index, section);
+        if (this.contains(section)) {
+            return;
         }
+        sections.add(index, section);
     }
 
     public boolean contains(Section section) {
@@ -66,15 +68,15 @@ public class Sections {
     }
 
     public List<Station> orderedStations() {
-        return makeOrderedSectionsFrom(findTopSection()).stream()
+        return makeOrderedSectionsFromTop(findTopSection()).stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-     public List<Section> orderFromTopToBottom() {
-        sections = makeOrderedSectionsFrom(findTopSection());
-        return sections;
+     public OrderedSections orderedSections() {
+        return OrderedSections.of(makeOrderedSectionsFromTop(findTopSection()));
+//        return sections;
     }
 
     public Section findTopSection() {
@@ -92,22 +94,26 @@ public class Sections {
                 .isPresent();
     }
 
-    private List<Section> makeOrderedSectionsFrom(Section topSection) {
+    private List<Section> makeOrderedSectionsFromTop(Section topSection) {
         List<Section> orderedSections = new ArrayList<>();
         orderedSections.add(topSection);
 
-        Map<String, Section> upNameMap = new HashMap<>();
-        for (Section it : this.sections) {
-            upNameMap.put(it.getUpStation().getName(), it);
-        }
+        Map<String, Section> stationMap = makeStationMap(sections);
 
         while (topSection != null) {
-            topSection = upNameMap.get(topSection.getDownStation().getName());
-
+            topSection = stationMap.get(topSection.getDownStation().getName());
             addNextSection(orderedSections, topSection);
         }
 
         return orderedSections;
+    }
+
+    private Map<String, Section> makeStationMap(List<Section> sections) {
+        Map<String, Section> sectionMap = new HashMap<>();
+        for (Section it : this.sections) {
+            sectionMap.put(it.getUpStation().getName(), it);
+        }
+        return sectionMap;
     }
 
     private void addNextSection(List<Section> orderedSections, Section section) {
