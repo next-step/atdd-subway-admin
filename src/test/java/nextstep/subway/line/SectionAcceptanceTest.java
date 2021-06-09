@@ -12,6 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.StringJoiner;
+
 import static nextstep.subway.line.SectionAcceptanceTestUtils.createSectionRequest;
 import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_생성_요청_및_성공_체크;
 import static nextstep.subway.line.LineAcceptanceTestUtils.createLineRequest;
@@ -46,11 +48,50 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	}
 
 
-	@DisplayName("지하철 노선 구간을 등록한다.")
+	@DisplayName("지하철 노선 구간을 등록한다. (새로운 역을 하행 종점으로 등록)")
 	@Test
-	void registSection() {
+	void registSectionWithEnd() {
 		// given
 		SectionRequest request = createSectionRequest(역삼역, 구디역, 5);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_구간_등록_요청(line_신분당선.getId(), request);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	@DisplayName("지하철 노선 구간을 등록한다. (새로운 역을 상행 종점으로 등록할 경우)")
+	@Test
+	void registSectionWithBegin() {
+		// given
+		SectionRequest request = createSectionRequest(구디역, 강남역, 5);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_구간_등록_요청(line_신분당선.getId(), request);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	@DisplayName("지하철 노선 구간을 등록한다. (역 사이에 새로운 역을 등록할 경우, 상행에 연결)")
+	@Test
+	void registSectionWithConnectedBegin() {
+		// given
+		SectionRequest request = createSectionRequest(강남역, 구디역, 5);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_구간_등록_요청(line_신분당선.getId(), request);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	@DisplayName("지하철 노선 구간을 등록한다. (역 사이에 새로운 역을 등록할 경우, 하행에 연결)")
+	@Test
+	void registSectionWithConnectedEnd() {
+		// given
+		SectionRequest request = createSectionRequest(구디역, 역삼역, 5);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_구간_등록_요청(line_신분당선.getId(), request);
@@ -63,7 +104,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void registSectionWithBiggerThanOriginalDistance() {
 		// given
-		SectionRequest request = createSectionRequest(역삼역, 구디역, 20);
+		SectionRequest request = createSectionRequest(강남역, 구디역, 20);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_구간_등록_요청(line_신분당선.getId(), request);
@@ -100,6 +141,18 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
 	public static ExtractableResponse<Response> 지하철_구간_등록_요청(final long lineId, final SectionRequest params) {
 		// when
-		return post(String.format("%s/%d/%s", BASE_LINE_URL, lineId, BASE_SECTION_URL), params);
+		String url = String.format("%s/%d%s", BASE_LINE_URL, lineId, BASE_SECTION_URL);
+		return post(url, params);
+	}
+
+	@Override
+	public String toString() {
+		return new StringJoiner(", ", SectionAcceptanceTest.class.getSimpleName() + "[", "]")
+			.add("강남역=" + 강남역)
+			.add("역삼역=" + 역삼역)
+			.add("구디역=" + 구디역)
+			.add("판교역=" + 판교역)
+			.add("line_신분당선=" + line_신분당선)
+			.toString();
 	}
 }
