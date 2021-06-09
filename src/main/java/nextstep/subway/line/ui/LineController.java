@@ -1,6 +1,5 @@
 package nextstep.subway.line.ui;
 
-import nextstep.subway.exception.DuplicateDataExistsException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;

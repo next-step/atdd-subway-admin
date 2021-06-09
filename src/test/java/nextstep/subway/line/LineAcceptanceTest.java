@@ -7,7 +7,6 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationRequest;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,15 +29,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private StationRequest 강남역;
     private StationRequest 광교중앙역;
+    private StationRequest 광교역;
 
 
     @BeforeEach
     void setVariables() {
         강남역 = new StationRequest("강남역");
         광교중앙역 = new StationRequest("광교중앙역");
+        광교역 = new StationRequest("광교역");
 
         stationAcceptanceTest.지하철_역_등록되어_있음(강남역);
         stationAcceptanceTest.지하철_역_등록되어_있음(광교중앙역);
+        stationAcceptanceTest.지하철_역_등록되어_있음(광교역);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -75,7 +77,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> readAllResponse = 지하철_노선_목록_조회_요청();
 
         // then : 지하철_노선_목록_응답됨
-        지하철_노선_OK_응답(readAllResponse);
+        지하철_OK_응답(readAllResponse);
 
         // 지하철_노선_목록_포함됨
         List<Long> expectedLineIds = Stream.of(firstCreatedResponse, secondCreatedResponse)
@@ -99,7 +101,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long respondedLineId = readResponse.jsonPath().getLong("id");
 
         // then : 지하철_노선_응답됨
-        지하철_노선_OK_응답(readResponse);
+        지하철_OK_응답(readResponse);
         assertThat(respondedLineId).isEqualTo(expectedLineId);
     }
 
@@ -116,7 +118,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> updateResponse = 지하철_노선_수정_요청(createdLineId, request);
 
         // then : 지하철_노선_수정됨
-        지하철_노선_OK_응답(updateResponse);
+        지하철_OK_응답(updateResponse);
         assertThat(updateResponse.jsonPath().getString("color")).isEqualTo("red");
 
     }
@@ -159,15 +161,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_OK_응답
-        지하철_노선_OK_응답(readResponse);
+        지하철_OK_응답(readResponse);
         assertThat(respondedLineId).isEqualTo(expectedLineId);
-
-        // 지하철_노선의_역목록_조회됨 (상행 → 하행 순정렬)
-        List<StationResponse> stationResponses = readResponse.jsonPath()
-                .getObject("$.", LineResponse.class)
-                .getStationResponses();
-        assertThat(stationResponses.get(0).getName()).isEqualTo("강남역");
-        assertThat(stationResponses.get(1).getName()).isEqualTo("광교중앙역");
     }
 
     private ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest request) {
@@ -190,7 +185,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return httpPut(ROOT_REQUEST_URI + "/" + id, request);
     }
 
-    private void 지하철_노선_OK_응답(ExtractableResponse<Response> response) {
+    private void 지하철_OK_응답(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
