@@ -57,9 +57,18 @@ public class LineController {
         return ResponseEntity.ok().body(lineResponse);
     }
 
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity removeLineStation(
+            @PathVariable Long lineId,
+            @RequestParam Long stationId) {
+        lineService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler({DataIntegrityViolationException.class,
             NoSuchElementException.class,
-            IllegalArgumentException.class
+            IllegalArgumentException.class,
+            IndexOutOfBoundsException.class
     })
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
