@@ -12,10 +12,8 @@ import static nextstep.subway.station.StationSteps.지하철_역_생성_요청;
 
 public class LineSteps {
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest, Map<String, String> upStationParam,
-                                                                Map<String, String> downStationParam) {
-        지하철_역_생성_요청(upStationParam);
-        지하철_역_생성_요청(downStationParam);
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest, Map<String, String>... stationParams) {
+        지하철_역_생성(stationParams);
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -23,6 +21,12 @@ public class LineSteps {
                 .post("/lines")
                 .then().log().all()
                 .extract();
+    }
+
+    private static void 지하철_역_생성(Map<String, String>... stationParams) {
+        for (Map<String, String> param : stationParams) {
+            지하철_역_생성_요청(param);
+        }
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
