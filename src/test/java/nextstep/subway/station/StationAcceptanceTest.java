@@ -25,6 +25,29 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	private StationRequest gangNamStation;
 	private StationRequest sungSuStation;
 
+	public static ExtractableResponse<Response> 지하철역_생성하기(StationRequest stationRequest) {
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+			.body(stationRequest)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/stations")
+			.then().log().all()
+			.extract();
+		return response;
+	}
+
+	public static void 지하철역_생성됨(ExtractableResponse<Response> response, StationRequest stationRequest) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(response.header("Location")).isNotBlank();
+		assertThat(response.body().jsonPath().getString("name")).isEqualTo(stationRequest.getName());
+	}
+
+	public static ExtractableResponse<Response> 지하철역_생성되어_있음(StationRequest stationRequest) {
+		ExtractableResponse<Response> response = 지하철역_생성하기(stationRequest);
+		지하철역_생성됨(response, stationRequest);
+		return response;
+	}
+
 	@BeforeEach
 	void stationSetUp() {
 		gangNamStation = new StationRequest("강남역");
@@ -74,29 +97,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_역_삭제하기(id);
 		// then
 		지하철_역_삭제_확인(response);
-	}
-
-	public static ExtractableResponse<Response> 지하철역_생성하기(StationRequest stationRequest) {
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
-			.body(stationRequest)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/stations")
-			.then().log().all()
-			.extract();
-		return response;
-	}
-
-	public static void 지하철역_생성됨(ExtractableResponse<Response> response, StationRequest stationRequest) {
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-		assertThat(response.header("Location")).isNotBlank();
-		assertThat(response.body().jsonPath().getString("name")).isEqualTo(stationRequest.getName());
-	}
-
-	public static ExtractableResponse<Response> 지하철역_생성되어_있음(StationRequest stationRequest) {
-		ExtractableResponse<Response> response = 지하철역_생성하기(stationRequest);
-		지하철역_생성됨(response, stationRequest);
-		return response;
 	}
 
 	void 지하철_역_목록_응답됨(ExtractableResponse<Response> response) {

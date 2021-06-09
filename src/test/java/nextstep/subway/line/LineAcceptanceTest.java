@@ -41,8 +41,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Long sungSuStationId = createSungSuStationResponse.body().jsonPath().getLong("id");
 		Long seoulStationId = createSeoulStationResponse.body().jsonPath().getLong("id");
 		Long sindorimStationId = createSindorimStationResponse.body().jsonPath().getLong("id");
-		lineNumber1 = new LineRequest("1호선", "Blue",seoulStationId, sindorimStationId, 15);
-		lineNumber2 = new LineRequest("2호선", "Green",gangNameStationId, sungSuStationId, 10);
+		lineNumber1 = new LineRequest("1호선", "Blue", seoulStationId, sindorimStationId, 15);
+		lineNumber2 = new LineRequest("2호선", "Green", gangNameStationId, sungSuStationId, 10);
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")

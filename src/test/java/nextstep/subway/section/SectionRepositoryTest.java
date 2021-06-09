@@ -2,7 +2,6 @@ package nextstep.subway.section;
 
 import static org.assertj.core.api.Assertions.*;
 
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
 import org.junit.jupiter.api.BeforeEach;

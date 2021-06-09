@@ -56,7 +56,7 @@ public class Section {
 	}
 
 	public void setLine(Line line) {
-		if(Objects.nonNull(this.line)) {
+		if (Objects.nonNull(this.line)) {
 			this.line.getSections().remove(this);
 		}
 		this.line = line;
