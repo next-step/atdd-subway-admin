@@ -67,12 +67,12 @@ public class Section extends BaseEntity implements Comparable<Section> {
         return -1;
     }
 
-    public boolean equalsUpStation(Section addSection) {
-        return this.upStation.equals(addSection.getUpStation());
+    public boolean equalsUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
-    public boolean equalsDownStation(Section addSection) {
-        return this.downStation.equals(addSection.getDownStation());
+    public boolean equalsDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public void changeUpSection(Section addSection) {
@@ -80,7 +80,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
             throw new IllegalArgumentException("동일한 거리에 역이 존재합니다.");
         }
 
-        reSizeDistance(addSection);
+        reSizeDivideDistance(addSection);
         this.upStation = addSection.downStation;
     }
 
@@ -89,11 +89,20 @@ public class Section extends BaseEntity implements Comparable<Section> {
             throw new IllegalArgumentException("동일한 거리에 역이 존재합니다.");
         }
 
-        reSizeDistance(addSection);
+        reSizeDivideDistance(addSection);
         this.downStation = addSection.upStation;
     }
 
-    private void reSizeDistance(Section addSection) {
+    private void reSizeDivideDistance(Section addSection) {
         this.distance -= addSection.distance;
+    }
+
+    private void reSizeMergeDistance(Section addSection) {
+        this.distance += addSection.distance;
+    }
+
+    public void mergeSection(Section nextSection) {
+        this.downStation = nextSection.downStation;
+        reSizeMergeDistance(nextSection);
     }
 }
