@@ -25,6 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine() {
 		// gciven, when 지하철_노선_생성_요청
+		// + 상행, 하행 정보 요청 파라미터에 함께 추가
 		ExtractableResponse<Response> response = 노선정보세팅_메소드("잠실역", "yellow");
 		// then 지하철_노선_생성됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -34,6 +35,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine2() {
 		// given 지하철_노선_등록되어_있음
+		// + 상행, 하행 정보 요청 파라미터에 함께 추가
 		String dupName = "잠실역";
 		String dupColor = "yellow";
 		노선정보세팅_메소드(dupName, dupColor);
@@ -51,13 +53,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLines() {
 		// given
 		// 지하철_노선_등록되어_있음
+		// + 상행, 하행 정보 요청 파라미터에 함께 추가
 		ExtractableResponse<Response> createdResponse1 = 노선정보세팅_메소드("잠실역", "yellow");
 
 		// 지하철_노선_등록되어_있음
+		// + 상행, 하행 정보 요청 파라미터에 함께 추가
 		ExtractableResponse<Response> createdResponse2 = 노선정보세팅_메소드("강남역", "green");
 
 		// when
 		// 지하철_노선_목록_조회_요청
+		// + 상행 -> 하행역 순으로 정렬되어야 함
 		ExtractableResponse<Response> response = get메소드호출("/lines");
 
 		// then
@@ -77,13 +82,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(resultLineIds).containsAll(expectedLineIds);
 	}
 
-
-
 	@DisplayName("지하철 노선을 조회한다.")
 	@Test
 	void getLine() {
 		// given
 		// 지하철_노선_등록되어_있음
+		// + 상행, 하행 정보 요청 파라미터에 함께 추가
 		String name = "잠실역";
 		노선정보세팅_메소드(name, "yellow");
 
@@ -105,6 +109,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void updateLine() {
 		// given
 		// 지하철_노선_등록되어_있음
+		// + 상행, 하행 정보 요청 파라미터에 함께 추가
 		String name = "잠실역";
 		String originColor = "yellow";
 		노선정보세팅_메소드(name, originColor);
@@ -135,6 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLine() {
 		// given
 		// 지하철_노선_등록되어_있음
+		// + 상행, 하행 정보 요청 파라미터에 함께 추가
 		String name = "잠실역";
 		노선정보세팅_메소드(name, "yellow");
 
