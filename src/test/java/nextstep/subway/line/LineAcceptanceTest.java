@@ -172,14 +172,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        Map<String, String> params = createLineParams("신분당선", "bg-red-600");
+        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(params);
+        Long id = response.jsonPath().getObject(".", LineResponse.class).getId();
 
         // when
-        // 지하철_노선_제거_요청
+        response = 지하철_노선_제거_요청(id);
 
         // then
-        // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response);
     }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
+        return RestAssured.given().log().all()
+            .when()
+            .delete("/lines/" + id)
+            .then().log().all()
+            .extract();
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
 
     private Map<String, String> createLineParams(String name, String color) {
         Map<String, String> params = new HashMap<>();
