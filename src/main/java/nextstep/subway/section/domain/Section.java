@@ -55,7 +55,7 @@ public class Section extends BaseEntity implements Serializable {
         this.distance = distance;
     }
 
-    public void toLine(Line line) {
+    public void belongTo(Line line) {
         this.line = line;
     }
 

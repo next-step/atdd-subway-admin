@@ -47,7 +47,7 @@ public class Line extends BaseEntity implements Serializable {
 
     public void addSection(Section section) {
         lineSections.add(section);
-        section.toLine(this);
+        section.belongTo(this);
     }
 
     public void updateSections(LineSections lineSections) {

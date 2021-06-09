@@ -106,7 +106,7 @@ public class LineSections implements Serializable {
     }
 
     public void updateLine(Line line) {
-        sections.forEach(section -> section.toLine(line));
+        sections.forEach(section -> section.belongTo(line));
     }
 
     public void deleteSection(Station station) {
@@ -119,12 +119,12 @@ public class LineSections implements Serializable {
 
         verifyNotFoundDeleteTarget(targets);
 
-        if (targets.size() == 1) {
-            deleteSingleSection(targets);
+        if (isTerminusSection(targets)) {
+            deleteTerminusSection(targets);
             return;
         }
 
-        deleteDoubleSectionAndUpdate(station, targets);
+        deleteAndUpdateSection(station, targets);
     }
 
     private void verifyHasSingleSection() {
@@ -133,7 +133,7 @@ public class LineSections implements Serializable {
         }
     }
 
-    private void deleteSingleSection(List<Section> targets) {
+    private void deleteTerminusSection(List<Section> targets) {
         targets.forEach(sections::remove);
     }
 
@@ -143,7 +143,11 @@ public class LineSections implements Serializable {
         }
     }
 
-    private void deleteDoubleSectionAndUpdate(Station station, List<Section> targets) {
+    private boolean isTerminusSection(List<Section> targets) {
+        return targets.size() == 1;
+    }
+
+    private void deleteAndUpdateSection(Station station, List<Section> targets) {
 
         Section upSection = targets.stream()
                                    .filter(target -> target.equalsDownStation(station))
