@@ -76,7 +76,7 @@ public class Sections {
     }
 
     public void delete(Station station) {
-        if (sections.size() < 2 ) {
+        if (sections.size() < 2) {
             throw new IndexOutOfBoundsException("노선에 역이 2개 이하 일때는 구간 삭제가 불가능합니다.");
         }
 
@@ -88,7 +88,7 @@ public class Sections {
     }
 
     private void mergeIfBetweenSection(Optional<Section> optionalPrevSection, Optional<Section> optionalNextSection) {
-        if(optionalPrevSection.isPresent() && optionalNextSection.isPresent()) {
+        if (optionalPrevSection.isPresent() && optionalNextSection.isPresent()) {
             Section prevSection = optionalPrevSection.get();
             Section nextSection = optionalNextSection.get();
             prevSection.mergeSection(nextSection);
@@ -96,11 +96,11 @@ public class Sections {
     }
 
     private void deleteSections(Optional<Section> optionalPrevSection, Optional<Section> optionalNextSection) {
-        if(optionalNextSection.isPresent()) {
+        if (optionalNextSection.isPresent()) {
             sections.remove(optionalNextSection.get());
         }
 
-        if(optionalPrevSection.isPresent() && !optionalNextSection.isPresent()) {
+        if (optionalPrevSection.isPresent() && !optionalNextSection.isPresent()) {
             sections.remove(optionalPrevSection.get());
         }
     }
