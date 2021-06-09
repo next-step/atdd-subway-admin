@@ -15,7 +15,6 @@ public class LineAcceptanceTestUtils {
 		// empty
 	}
 
-
 	static LineRequest createLineRequest(final String name, final String color, final StationResponse upStation, final StationResponse downStation, final int distance) {
 		return new LineRequest(name, color, upStation.getId(), downStation.getId(), distance);
 	}

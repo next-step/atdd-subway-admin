@@ -47,7 +47,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		line_신분당선 = 지하철_노선_생성_요청_및_성공_체크(params);
 	}
 
-
 	@DisplayName("지하철 노선 구간을 등록한다. (새로운 역을 하행 종점으로 등록)")
 	@Test
 	void registSectionWithEnd() {

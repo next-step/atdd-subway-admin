@@ -53,7 +53,7 @@ public class LineController {
 	@PostMapping("/{id}/sections")
 	public ResponseEntity<LineResponse> registerSection(@PathVariable Long id,
 														@RequestBody SectionRequest request) {
-	    LineResponse line = lineService.registerSection(id, request);
-	    return ResponseEntity.ok(line);
+		LineResponse line = lineService.registerSection(id, request);
+		return ResponseEntity.ok(line);
 	}
 }

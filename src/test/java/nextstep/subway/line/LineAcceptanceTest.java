@@ -115,8 +115,6 @@ class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
-
-
 	public static ExtractableResponse<Response> 지하철_노선_생성_요청(final LineRequest params) {
 		// when
 		return post(BASE_LINE_URL, params);
