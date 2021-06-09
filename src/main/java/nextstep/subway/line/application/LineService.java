@@ -66,6 +66,6 @@ public class LineService {
 
 	public void deleteLineById(Long id) {
 		Line line = lines.findById(id).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
-		lines.deleteById(line.getId());
+		lines.deleteById(line.delete());
 	}
 }

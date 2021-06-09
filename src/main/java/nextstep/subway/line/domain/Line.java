@@ -99,4 +99,15 @@ public class Line extends BaseEntity {
 		}
 		return stations;
 	}
+
+	public Long delete() {
+		for (Section section : sections) {
+			section.setLine(null);
+		}
+
+		sections = null;
+		startStation = null;
+
+		return id;
+	}
 }
