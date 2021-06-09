@@ -24,11 +24,14 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id).get();
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선아이디 입니다."));
         return LineResponse.of(line);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -37,14 +40,16 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse updateLine(LineRequest lineRequest) {
-        Line line = lineRepository.findByName(lineRequest.getName()).get();
-        line.changeName(lineRequest.getName());
-        line.changeColor(lineRequest.getColor());
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선아이디 입니다."));
+        line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
 
     public void deleteLine(Long id) {
-        lineRepository.deleteById(id);
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선아이디 입니다."));
+        lineRepository.deleteById(line.getId());
     }
 }
