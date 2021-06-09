@@ -78,8 +78,7 @@ public class Sections {
     }
 
     public List<Station> findOthersStations(Section section) {
-        List<Station> stations = section.findStationsByFirstSection(this);
-        return new ArrayList<>(stations);
+        return new ArrayList<>(section.findStationsByFirstSection(this));
     }
 
     public Section findFirstSection() {
