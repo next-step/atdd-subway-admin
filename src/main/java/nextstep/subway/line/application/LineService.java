@@ -71,6 +71,10 @@ public class LineService {
         return line;
     }
 
+    public void deleteLineById(final Long id) {
+        lineRepository.deleteById(id);
+    }
+
     private Line getLine(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new DataIntegrityViolationException("Not Found lineId" + lineId));
@@ -78,9 +82,5 @@ public class LineService {
 
     private Station getStation(Long stationId) {
         return stationRepository.findById(stationId).orElseThrow(() -> new DataIntegrityViolationException("Not Fount downStationId" + stationId));
-    }
-
-    public void deleteLineById(final Long id) {
-        lineRepository.deleteById(id);
     }
 }
