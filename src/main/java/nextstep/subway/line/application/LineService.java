@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.exception.ConflictException;
+import nextstep.subway.exception.NotExistLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -42,5 +43,11 @@ public class LineService {
         return lineRepository.findAll().stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
+    }
+
+    public LineResponse getLine(Long id) {
+        return lineRepository.findById(id).orElseThrow(
+            NotExistLineException::new
+        ).toResponse();
     }
 }
