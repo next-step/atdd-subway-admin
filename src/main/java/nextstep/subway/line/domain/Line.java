@@ -63,10 +63,8 @@ public class Line extends BaseEntity {
 
 	public List<Station> getStations() {
 		List<Station> stations = new LinkedList<>();
-		this.sections.stream().forEach(section -> {
-			stations.add(section.getUpStation());
-			stations.add(section.getDownStation());
-		});
+		this.sections.stream()
+			.forEach(section -> stations.addAll(section.toStations()));
 		return stations;
 	}
 }

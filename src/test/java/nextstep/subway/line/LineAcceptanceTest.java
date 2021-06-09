@@ -209,8 +209,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		assertThat(response.body().jsonPath().getString("name")).isEqualTo(lineRequest.getName());
 		assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineRequest.getColor());
-		assertThat(response.body().jsonPath().getList("sections")).hasSize(2);
-		assertThat(response.body().jsonPath().getLong("$.sections[0].id")).isEqualTo(lineRequest.getUpStationId());
-		assertThat(response.body().jsonPath().getLong("$.sections[1].id")).isEqualTo(lineRequest.getDownStationId());
+		assertThat(response.body().jsonPath().getList("stations")).hasSize(2);
+		assertThat(response.body().jsonPath().getLong("stations[0].id")).isEqualTo(lineRequest.getUpStationId());
+		assertThat(response.body().jsonPath().getLong("stations[1].id")).isEqualTo(lineRequest.getDownStationId());
 	}
 }

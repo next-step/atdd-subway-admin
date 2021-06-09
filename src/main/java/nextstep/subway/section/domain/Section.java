@@ -1,5 +1,9 @@
 package nextstep.subway.section.domain;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
@@ -55,11 +59,19 @@ public class Section {
 		return this.downStation;
 	}
 
+	public int getDistance() {
+		return this.distance;
+	}
+
 	public void setLine(Line line) {
 		if (Objects.nonNull(this.line)) {
 			this.line.getSections().remove(this);
 		}
 		this.line = line;
 		line.getSections().add(this);
+	}
+
+	public List<Station> toStations() {
+		return new LinkedList<>(Arrays.asList(this.upStation, this.downStation));
 	}
 }
