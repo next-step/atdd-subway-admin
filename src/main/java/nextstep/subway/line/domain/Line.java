@@ -67,10 +67,6 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public List<Section> getSections() {
-		return this.sections;
-	}
-
 	public void addSections(Section section) {
 		sections.add(section);
 		section.setLine(this);
