@@ -30,6 +30,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAll() {
         List<Line> lines = lineRepository.findAll();
 
@@ -56,8 +57,9 @@ public class LineService {
     }
 
     public void deleteByName(String name) {
-        Line line = checkExistLine(name);
-        lineRepository.delete(line);
+        Optional<Line> line = lineRepository.findByName(name);
+
+        line.ifPresent(value -> lineRepository.delete(value));
     }
 
     private Line checkExistLine(String name) {
