@@ -51,24 +51,6 @@ public class SectionsTest {
     }
 
     @Test
-    void Sections에서_최상위_Section을_찾는다() {
-        Sections sections = new Sections();
-
-        Section section4 = Section을_두개역과_만든다("4번역", "5번역", 5);
-        Section section2 = Section을_두개역과_만든다("2번역", "3번역", 5);
-        Section section1 = Section을_두개역과_만든다("1번역", "2번역", 5);
-        Section section3 = Section을_두개역과_만든다("3번역", "4번역", 5);
-
-        sections.add(section4);
-        sections.add(section2);
-        sections.add(section1);
-        sections.add(section3);
-
-        Section actualSection = sections.findTopSection();
-        assertThat(actualSection.getUpStation().getName()).isEqualTo("1번역");
-    }
-
-    @Test
     void Section을_추가한다() {
         Sections sections = new Sections();
 

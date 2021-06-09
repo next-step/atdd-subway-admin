@@ -4,9 +4,7 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,7 +38,7 @@ public class Sections {
         return sections.contains(section);
     }
 
-    public boolean checkIfValid(Section sectionIn) {
+    public boolean validateAbout(Section sectionIn) {
         alreadyInBoth(sectionIn);
         nothingInBoth(sectionIn);
         return true;
@@ -68,62 +66,14 @@ public class Sections {
     }
 
     public List<Station> orderedStations() {
-        return makeOrderedSectionsFromTop(findTopSection()).stream()
+        return OrderedSections.of(this.sections).get().stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .distinct()
                 .collect(Collectors.toList());
     }
 
      public OrderedSections orderedSections() {
-//        return OrderedSections.of(makeOrderedSectionsFromTop(findTopSection()));
         return OrderedSections.of(this.sections);
-    }
-
-    public Section findTopSection() {
-        return sections.stream()
-                .filter(section -> isTop(section))
-                .findFirst()
-                .orElseThrow(NullPointerException::new);
-    }
-
-    private boolean isTop(Section section) {
-        return !sections.stream()
-                .filter(it -> it.getDownStation().getName()
-                        .equals(section.getUpStation().getName()))
-                .findAny()
-                .isPresent();
-    }
-
-    private List<Section> makeOrderedSectionsFromTop(Section topSection) {
-        List<Section> orderedSections = new ArrayList<>();
-        orderedSections.add(topSection);
-
-        Map<String, Section> stationMap = makeStationMap(sections);
-
-        while (topSection != null) {
-            topSection = stationMap.get(topSection.getDownStation().getName());
-            addNextSection(orderedSections, topSection);
-        }
-
-        return orderedSections;
-    }
-
-    private Map<String, Section> makeStationMap(List<Section> sections) {
-        Map<String, Section> sectionMap = new HashMap<>();
-        for (Section it : this.sections) {
-            sectionMap.put(it.getUpStation().getName(), it);
-        }
-        return sectionMap;
-    }
-
-    private void addNextSection(List<Section> orderedSections, Section section) {
-        if (section == null) {
-            return;
-        }
-        if (orderedSections.contains(section)) {
-            return;
-        }
-        orderedSections.add(section);
     }
 
     public boolean isEmpty() {

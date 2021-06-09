@@ -90,7 +90,7 @@ public class Line extends BaseEntity {
             return;
         }
 
-        sections.checkIfValid(sectionIn);
+        sections.validateAbout(sectionIn);
 
         checkConnectingPositionThroughOrderedSections(sectionIn);
 
