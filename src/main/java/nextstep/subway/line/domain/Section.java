@@ -51,27 +51,25 @@ public class Section extends BaseEntity {
     }
 
     public static Section makeAfterSection(Section preSection, Section section) {
-        int calculatedDistance = calculateNewDistance(preSection, section);
-        checkDistance(calculatedDistance);
         return new Section(preSection.line, section.downStation, preSection.downStation,
-                calculatedDistance);
+                calculateDistance(preSection, section));
     }
 
     public static Section makeBeforeSection(Section preSection, Section section) {
-        int calculatedDistance = calculateNewDistance(preSection, section);
-        checkDistance(calculatedDistance);
         return new Section(preSection.line, preSection.upStation, section.upStation,
-                calculatedDistance);
+                calculateDistance(preSection, section));
     }
 
-    private static int calculateNewDistance(Section preSection, Section section) {
-        return preSection.distance - section.distance;
-    }
-
-    private static void checkDistance(int calculatedDistance) {
-        if (calculatedDistance <= MINIMUN_NEW_DISTANCE) {
+    private static int calculateDistance(Section preSection, Section section) {
+        int calculatedDistance = preSection.distance - section.distance;
+        if (isIllegalDistance(calculatedDistance)) {
             throw new IllegalArgumentException(EXCEPTION_FOR_DISTANCE);
         }
+        return calculatedDistance;
+    }
+
+    private static boolean isIllegalDistance(int calculatedDistance) {
+        return calculatedDistance <= MINIMUN_NEW_DISTANCE;
     }
 
     public boolean isEqualsUpStation(Section section) {
