@@ -50,11 +50,9 @@ public class Sections {
 
   private void registerNewSectionToNotEmptySections(Section newSection) {
     validateNewSection(newSection);
-    List<Section> newLineSections = this.lineSections.stream()
-        .flatMap(lineSection -> lineSection.insertNewSection(newSection).stream())
-        .collect(Collectors.toList());
-    this.lineSections.clear();
-    this.lineSections.addAll(newLineSections);
+    this.lineSections
+        .forEach(lineSection -> lineSection.insertNewSection(newSection));
+    this.lineSections.add(newSection);
   }
 
   private void validateNewSection(Section newSection) {
