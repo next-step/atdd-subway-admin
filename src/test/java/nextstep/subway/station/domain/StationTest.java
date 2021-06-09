@@ -1,10 +1,7 @@
-package nextstep.subway.station;
+package nextstep.subway.station.domain;
 
-import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
