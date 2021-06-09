@@ -1,9 +1,8 @@
 package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -84,43 +83,51 @@ public class Sections {
     }
 
     public List<Station> findStationsInOrder() {
-        Optional<Section> preSectionOptional = Optional.ofNullable(findFirstSection());
-        List<Section> sortedSections = new ArrayList<>();
-        while (preSectionOptional.isPresent()) {
-            Section preSection = preSectionOptional.get();
-            sortedSections.add(preSection);
-            preSectionOptional = sections.stream()
-                .filter(section -> section.isAfter(preSection))
-                .findFirst();
+        List<Station> results = new ArrayList<>();
+
+        //첫번째 구간 찾기
+        if (findFirstSection().isPresent()) {
+            Section firstSection = findFirstSection().get();
+            List<Section> sortSections = new ArrayList<>(Arrays.asList(firstSection));
+
+            //재귀호출하여 구간 이어붙히기
+            recursiveSort(sortSections, firstSection);
+
+            //정렬된 역 목록 만들어서 반환하기
+            results.add(firstSection.getUpStation());
+            results.addAll(getDownStations(sortSections));
         }
-        List<Station> resultStations = getUpStations(sortedSections);
-        if (!sortedSections.isEmpty()) {
-            resultStations.add(getLastStation(sortedSections));
-        }
-        return resultStations;
+        return results;
     }
 
-    private Section findFirstSection() {
-        Map<Boolean, Section> map = new HashMap<>();
-        sections.forEach(section -> {
-            map.put(existUpStation(section), section);
-        });
-        return map.get(NOT_EXIST_UPSTATION);
+    private void recursiveSort(List<Section> sortSections, Section beforeSection) {
+        this.sections.stream()
+            .filter(section -> section.isAfter(beforeSection))
+            .findFirst()
+            .ifPresent(section -> {
+                //뒤에 붙히기
+                sortSections.add(section);
+
+                //재귀호출
+                recursiveSort(sortSections, section);
+            });
     }
 
-    private boolean existUpStation(Section destSection) {
+    private Optional<Section> findFirstSection() {
         return sections.stream()
-            .anyMatch(section -> section.isBefore(destSection));
+            .filter(this::notExistPrevious)
+            .findFirst();
     }
 
-    private List<Station> getUpStations(List<Section> sections) {
+    private boolean notExistPrevious(Section dest) {
         return sections.stream()
-            .map(Section::getUpStation)
+            .noneMatch(section -> section.isBefore(dest));
+    }
+
+    private List<Station> getDownStations(List<Section> list) {
+        return list.stream()
+            .map(Section::getDownStation)
             .collect(Collectors.toList());
-    }
-
-    private Station getLastStation(List<Section> sections) {
-        return sections.get(sections.size() - ONE).getDownStation();
     }
 
     public List<Section> getSections() {
