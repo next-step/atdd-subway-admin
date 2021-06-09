@@ -13,8 +13,8 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceMethod;
 import nextstep.subway.station.dto.StationRequest;
 
@@ -96,7 +96,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.map(it -> Long.parseLong(LineAcceptanceMethod.getLineID(it)))
 			.collect(Collectors.toList());
 
-		List<Long> resultLineIds = response.jsonPath().getList(".", Line.class).stream()
+		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
 			.map(it -> it.getId())
 			.collect(Collectors.toList());
 
@@ -124,7 +124,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
 		// 지하철_노선_동일함
-		Line line = response.jsonPath().getObject(".", Line.class);
+		LineResponse line = response.jsonPath().getObject(".", LineResponse.class);
 		assertThat(String.valueOf(line.getId())).isEqualTo(id);
 	}
 
@@ -168,7 +168,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// 지하철_노선_수정됨
 		ExtractableResponse<Response> response = LineAcceptanceMethod.findLine(
 			LineAcceptanceMethod.getLineID(createResponse));
-		Line line = response.jsonPath().getObject(".", Line.class);
+		LineResponse line = response.jsonPath().getObject(".", LineResponse.class);
 		assertThat(line.getName()).isEqualTo("구분당선");
 	}
 
