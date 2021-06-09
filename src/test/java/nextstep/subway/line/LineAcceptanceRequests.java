@@ -3,23 +3,21 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.line.dto.LineRequest;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class LineAcceptanceRequests {
-    static final String NEW_BUNDANG_LINE_COLOR = "bg-red-600";
-    static final String NEW_BUNDANG_LINE_NAME = "신분당선";
-    static final String SECOND_LINE_COLOR = "bg-green-600";
-    static final String SECOND_LINE_NAME = "2호선";
-    static final String OLD_BUNDANG_LINE_COLOR = "bg-blue-600";
-    static final String OLD_BUNDANG_LINE_NAME = "구분당선";
 
-    static ExtractableResponse<Response> requestCreateLine(String color, String name) {
+
+    static ExtractableResponse<Response> requestCreateLine(LineRequest lineRequest) {
         Map<String, String> params = new HashMap<>();
-        params.put("color", color);
-        params.put("name", name);
+        params.put("color", lineRequest.getColor());
+        params.put("name", lineRequest.getName());
+        //params.put("upStationId", upStationId);
+
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
@@ -48,10 +46,10 @@ public class LineAcceptanceRequests {
                 .extract();
     }
 
-    static ExtractableResponse<Response> requestUpdateLine(String uri, String color, String name) {
+    static ExtractableResponse<Response> requestUpdateLine(String uri, LineRequest lineRequest) {
         Map<String, String> params = new HashMap<>();
-        params.put("color", color);
-        params.put("name", name);
+        params.put("color", lineRequest.getColor());
+        params.put("name", lineRequest.getName());
 
         return RestAssured.given().log().all()
                 .body(params)
