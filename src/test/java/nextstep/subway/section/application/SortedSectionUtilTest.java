@@ -18,7 +18,6 @@ class SortedSectionUtilTest {
 	private Station 사당역;
 	private Station 판교역;
 
-
 	@BeforeEach
 	void setUp() {
 		강남역 = new Station("강남역");
@@ -26,7 +25,6 @@ class SortedSectionUtilTest {
 		사당역 = new Station("사당역");
 		판교역 = new Station("판교역");
 	}
-
 
 	@Test
 	@DisplayName("등록된 지하철 구간 정렬 테스트")
