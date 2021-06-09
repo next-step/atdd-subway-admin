@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
@@ -34,7 +35,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_등록되어_있음(gwanghwamunStation);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertResponseCode(response, HttpStatus.CREATED);
         assertThat(response.header("Location")).isNotBlank();
     }
 
@@ -48,7 +49,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_등록되어_있음(gwanghwamunStation);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertResponseCode(response, HttpStatus.BAD_REQUEST);
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -62,12 +63,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = get("/stations");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        assertResponseCode(response, HttpStatus.OK);
+        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-            .map(it -> it.getId())
+            .map(StationResponse::getId)
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -83,7 +84,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = delete(uri);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertResponseCode(response, HttpStatus.NO_CONTENT);
     }
 
     public static ExtractableResponse<Response> 지하철역_등록되어_있음(Station station) {
