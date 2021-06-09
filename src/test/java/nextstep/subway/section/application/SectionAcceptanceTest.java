@@ -26,7 +26,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private long existedLineUpStationId;
     private long existedLineDownStationId;
     private long tryRegisterStationId;
-    private ExtractableResponse<Response> lineId;
+    private ExtractableResponse<Response> response;
+    private String linesId;
+    private long notIncludedUpStationId;
+    private long notIncludedDownStationId;
 
     @Override
     @BeforeEach
@@ -35,8 +38,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         existedLineUpStationId = 지하철_역_생성_후_ID_반환("광교");
         existedLineDownStationId = 지하철_역_생성_후_ID_반환("강남");
         tryRegisterStationId = 지하철_역_생성_후_ID_반환("양재");
+        notIncludedUpStationId = 지하철_역_생성_후_ID_반환("구리");
+        notIncludedDownStationId = 지하철_역_생성_후_ID_반환("도농");
 
-        lineId = 지하철_노선_등록("신분당선", "g-123", existedLineUpStationId, existedLineDownStationId, 100);
+        response = 지하철_노선_등록("신분당선", "g-123", existedLineUpStationId, existedLineDownStationId, 100);
+        linesId = response.header("Location").split("/")[2];
     }
 
     @Test
@@ -49,10 +55,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params.put("distance", 50);
 
         ExtractableResponse<Response> response = given().log().all()
+                .when()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("lines/" + lineId + "/sections")
-                .then().log().all().extract();
+                .post("/lines/" + linesId + "/sections")
+                .then()
+                .log().all()
+                .extract();
 
         // then
         List<Long> stations = response.body().jsonPath().getObject(".", LineResponse.class).getStations().stream()
@@ -74,7 +83,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("lines/" + lineId + "/sections")
+                .when().post("lines/" + linesId + "/sections")
                 .then().log().all().extract();
 
         List<Long> stations = response.body().jsonPath().getObject(".", LineResponse.class).getStations().stream()
@@ -95,7 +104,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("lines/" + lineId + "/sections")
+                .when().post("lines/" + linesId + "/sections")
                 .then().log().all().extract();
 
         List<Long> stations = response.body().jsonPath().getObject(".", LineResponse.class).getStations().stream()
@@ -103,6 +112,66 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         assertThat(stations).containsExactly(existedLineUpStationId, existedLineDownStationId, tryRegisterStationId);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void 역_사이에_새로운_역을_등록할_경우_기존_역_사이_길이보다_크거나_같으면_등록을_할_수_없음() {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", existedLineUpStationId);
+        params.put("downStationId", tryRegisterStationId);
+        params.put("distance", 100);
+
+        ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .post("/lines/" + linesId + "/sections")
+                .then()
+                .log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", existedLineUpStationId);
+        params.put("downStationId", existedLineDownStationId);
+        params.put("distance", 100);
+
+        ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .post("/lines/" + linesId + "/sections")
+                .then()
+                .log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 상행역과_하행역이_이미_노선에_모두_등록되어_있지_않다면_추가할_수_없음() {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", notIncludedUpStationId);
+        params.put("downStationId", notIncludedDownStationId);
+        params.put("distance", 100);
+
+        ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .post("/lines/" + linesId + "/sections")
+                .then()
+                .log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선_등록(String 이름, String 색깔, Long 상행종착역ID, Long 하행종착역ID, int 거리) {
