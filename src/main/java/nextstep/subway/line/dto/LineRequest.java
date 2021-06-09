@@ -53,8 +53,4 @@ public class LineRequest {
     public List<Long> getStationIds() {
         return Arrays.asList(upStationId, downStationId);
     }
-
-    public Line toLine() {
-        return new Line(name, color);
-    }
 }
