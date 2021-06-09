@@ -5,6 +5,10 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -22,6 +26,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final LineRequest newLine = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
     private static final String ROOT_REQUEST_URI = "/lines";
 
+    private final  StationAcceptanceTest stationAcceptanceTest = new StationAcceptanceTest();
+    
+    private StationRequest 강남역;
+    private StationRequest 광교역;
+    
+    @BeforeEach
+    void setVariables(){
+        강남역 = new StationRequest("강남역");
+        광교역 = new StationRequest("광교역");
+
+        stationAcceptanceTest.지하철_역_등록되어_있음(강남역);
+        stationAcceptanceTest.지하철_역_등록되어_있음(광교역);
+    }
+    
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -108,7 +126,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     }
 
-
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
@@ -127,15 +144,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("종점역 정보와 함께 지하철 노선을 생성한다.")
     @Test
     void createLineWithSection() {
-        // given
-        // 지하철_역_등록되어_있음
-        // 지하철_역_등록되어_있음
+        // when : 지하철_노선_등록되어_있음 : 종점역포함
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(newLine);
 
-        // when : 지하철_노선_등록되어_있음 - 종점역 포함
-
-        // then
-        // 지하철_노선_생성됨 - 종점역 포함
-        // 지하철_구간_생성됨
+        // then : 지하철_노선_생성됨 - 종점역 포함
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     @DisplayName("지하철역 정보들과 함께 지하철 노선을 조회한다.")
