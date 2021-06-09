@@ -65,6 +65,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_포함됨(response, createResponse1, createResponse2);
     }
 
+    @DisplayName("상/하행선 정보를 포함하는 지하철 노선 목록을 조회한다.")
+    @Test
+    void getLinesWithEndpoints() {
+        // given
+        // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음_종점포함(신분당선_종점있음);
+
+        // when
+        // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response
+            = 지하철_노선_목록_조회_요청();
+
+        // then
+        // 지하철_노선_목록_응답됨
+        지하철_노선_목록_응답됨_종점포함(신분당선_종점있음, response);
+    }
+
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {

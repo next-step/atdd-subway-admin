@@ -4,7 +4,9 @@ import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,14 +15,53 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineRequestWithEndpoints;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineResponseWithEndpoints;
+import nextstep.subway.station.dto.StationResponse;
 
 public class LineAcceptanceTool {
+
+    public static final StationResponse 강남역 = getStation("강남역");
+    public static final StationResponse 광교역 = getStation("광교역");
 
     public static final LineRequest 신분당선 = new LineRequest("신분당선", "red darken-1");
     public static final LineRequest 분당선 = new LineRequest("분당선", "yellow darken-1");
 
+    public static final LineRequestWithEndpoints 신분당선_종점있음 = new LineRequestWithEndpoints("신분당선", "red darken-1", 강남역.getId(), 광교역.getId(), 10);
+
+    private static StationResponse getStation(String name) {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", name);
+
+        // when
+        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
+            .then().log().all()
+            .extract();
+
+        return response1.jsonPath().getObject(".", StationResponse.class);
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
+        return RestAssured
+            .given().log().all()
+            .body(lineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음_종점포함(LineRequestWithEndpoints lineRequest) {
+        return 지하철_노선_생성_요청_종점포함(lineRequest);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청_종점포함(LineRequestWithEndpoints lineRequest) {
         return RestAssured
             .given().log().all()
             .body(lineRequest)
@@ -84,6 +125,22 @@ public class LineAcceptanceTool {
     public static void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+    }
+
+    public static void 지하철_노선_목록_응답됨_종점포함(LineRequestWithEndpoints lineRequest, ExtractableResponse<Response> response) {
+        LineResponseWithEndpoints lineResponse = response.jsonPath()
+            .getList(".", LineResponseWithEndpoints.class)
+            .get(0);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        assertThat(lineResponse.getId()).isNotNull();
+        assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
+        assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
+        assertThat(lineResponse.getStations()).isNotNull();
+        assertThat(lineResponse.getStations().size()).isNotZero();
+        assertThat(lineResponse.getStations().get(0).getId()).isEqualTo(lineRequest.getUpStationId());
+        assertThat(lineResponse.getStations().get(1).getId()).isEqualTo(lineRequest.getDownStationId());
     }
 
     public static void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response,
