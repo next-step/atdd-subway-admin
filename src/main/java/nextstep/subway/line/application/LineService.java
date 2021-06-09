@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -11,20 +12,44 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(final LineRepository lineRepository) {
+    public LineService(final LineRepository lineRepository,
+        final StationRepository stationRepository) {
+
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(final LineRequest request) {
-        final Line persistLine = lineRepository.save(request.toLine());
+        return lineResponse(persistLine(initializeLine(request)));
+    }
 
-        return lineResponse(persistLine);
+    private Line initializeLine(final LineRequest request) {
+        final Line line = request.toLine();
+        line.addSection(new Section(stations(ids(request)), request.getDistance(), line));
+
+        return line;
+    }
+
+    private Line persistLine(final Line line) {
+        return lineRepository.save(line);
+    }
+
+    private List<Long> ids(final LineRequest request) {
+        return Arrays.asList(request.getUpStationId(), request.getDownStationId());
+    }
+
+    private List<Station> stations(final List<Long> ids) {
+        return stationRepository.findByIdIn(ids);
     }
 
     private LineResponse lineResponse(final Line line) {
@@ -57,9 +82,8 @@ public class LineService {
     public LineResponse updateLine(final Long id, final LineRequest lineRequest) {
         final Line line = findById(id);
         line.update(lineRequest.toLine());
-        final Line savedLIne = lineRepository.save(line);
 
-        return LineResponse.of(savedLIne);
+        return LineResponse.of(persistLine(line));
     }
 
     public void deleteLineById(final Long id) {
