@@ -1,4 +1,4 @@
-package nextstep.subway.line.exception;
+package nextstep.subway.common;
 
 public enum ErrorCode {
     NOT_FOUND_LINE_MESSAGE("0001", "해당 id의 노선이 존재하지 않습니다.");
