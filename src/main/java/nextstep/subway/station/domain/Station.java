@@ -1,6 +1,7 @@
 package nextstep.subway.station.domain;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,6 +23,7 @@ public class Station extends BaseEntity {
     }
 
     public Station(String name) {
+        validateStationName(name);
         this.name = name;
     }
 
@@ -31,6 +33,10 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isEqualNameByStation(Station station) {
+        return name.equals(Optional.ofNullable(station).map(Station::getName).orElse(""));
     }
 
     @Override
@@ -53,5 +59,11 @@ public class Station extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    private void validateStationName(String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("역 이름이 입력되지 않았습니다.");
+        }
     }
 }

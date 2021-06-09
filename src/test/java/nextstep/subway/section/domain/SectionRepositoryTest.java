@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import java.util.Arrays;
@@ -33,17 +34,48 @@ public class SectionRepositoryTest {
 
     private Station upStation;
     private Station downStation;
+    private Station newStation;
     private List<Station> stations;
     private Line greenLine;
 
+    private Line line;
+    private Station station1;
+    private Station station2;
+    private Station station3;
+    private Station station4;
+    private Station station5;
+    private Station station6;
+    private List<Station> lineStations;
+    private Section section1;
+    private Section section2;
+    private Section section3;
+    private Section section4;
+    private Sections sections;
+
     @BeforeEach
     void setUp() {
-        this.upStation = new Station("강남역");
-        this.downStation = new Station("역삼역");
-        this.greenLine = new Line("2호선", "green");
+        upStation = new Station("서울역");
+        downStation = new Station("삼각지역");
+        newStation = new Station("숙대입구역");
+        greenLine = new Line("4호선", "blue");
         lineRepository.save(greenLine);
-        this.stations = stationRepository.saveAll(Arrays.asList(upStation, downStation));
+        stations = stationRepository.saveAll(Arrays.asList(upStation, downStation, newStation));
 
+        station1 = new Station("서초역");
+        station2 = new Station("방배역");
+        station3 = new Station("사당역");
+        station4 = new Station("낙성대역");
+        station5 = new Station("서울대입구역");
+        station6 = new Station("봉천역");
+        lineStations = Arrays.asList(station2, station3, station1, station4, station5, station6);
+        stationRepository.saveAll(lineStations);
+        line = new Line("2호선", "green");
+        section1 = new Section(station1, station2, 3, line);
+        section2 = new Section(station2, station3, 5, line);
+        section3 = new Section(station3, station4, 2, line);
+        section4 = new Section(station4, station5, 4, line);
+        sections = new Sections(Arrays.asList(section1, section2, section3, section4));
+        lineRepository.save(line);
     }
 
     @Test
@@ -103,5 +135,24 @@ public class SectionRepositoryTest {
         // then
         List<Section> resultSections = sectionRepository.findByLineId(this.greenLine.getId());
         assertThat(resultSections.isEmpty()).isTrue();
+    }
+
+    @Test
+    @DisplayName("구간 추가 등록")
+    void save_newSection() {
+        // given
+        Sections sections = new Sections(sectionRepository.findByLineId(line.getId()));
+        Section section = new Section(station1, station6, 9, line);
+        Section appendedSection = sections.appendNewSection(section);
+
+        // when
+        Section savedSection = sectionRepository.save(appendedSection);
+
+        // then
+        assertAll(
+                () -> assertThat(savedSection.getUpStation()).isSameAs(station3),
+                () -> assertThat(savedSection.getDownStation()).isSameAs(station6),
+                () -> assertThat(savedSection.getDistance()).isSameAs(1)
+        );
     }
 }
