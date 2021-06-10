@@ -29,20 +29,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	@BeforeEach
 	void lineSetUp() {
-		ExtractableResponse<Response> createGangNamStationResponse = StationAcceptanceTest.지하철역_생성되어_있음(
-			new StationRequest("강남역"));
-		ExtractableResponse<Response> createSungSuStationResponse = StationAcceptanceTest.지하철역_생성되어_있음(
-			new StationRequest("성수역"));
-		ExtractableResponse<Response> createSeoulStationResponse = StationAcceptanceTest.지하철역_생성되어_있음(
-			new StationRequest("서울역"));
-		ExtractableResponse<Response> createSindorimStationResponse = StationAcceptanceTest.지하철역_생성되어_있음(
-			new StationRequest("신도림역"));
-		Long gangNameStationId = createGangNamStationResponse.body().jsonPath().getLong("id");
-		Long sungSuStationId = createSungSuStationResponse.body().jsonPath().getLong("id");
-		Long seoulStationId = createSeoulStationResponse.body().jsonPath().getLong("id");
-		Long sindorimStationId = createSindorimStationResponse.body().jsonPath().getLong("id");
+		Long gangNamStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("강남역"));
+		Long sungSuStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("성수역"));
+		Long seoulStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("서울역"));
+		Long sindorimStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("신도림역"));
 		lineNumber1 = new LineRequest("1호선", "Blue", seoulStationId, sindorimStationId, 15);
-		lineNumber2 = new LineRequest("2호선", "Green", gangNameStationId, sungSuStationId, 10);
+		lineNumber2 = new LineRequest("2호선", "Green", gangNamStationId, sungSuStationId, 10);
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")

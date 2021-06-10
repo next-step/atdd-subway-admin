@@ -42,10 +42,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		assertThat(response.body().jsonPath().getString("name")).isEqualTo(stationRequest.getName());
 	}
 
-	public static ExtractableResponse<Response> 지하철역_생성되어_있음(StationRequest stationRequest) {
+	public static Long 지하철역_생성되어_있음(StationRequest stationRequest) {
 		ExtractableResponse<Response> response = 지하철역_생성하기(stationRequest);
 		지하철역_생성됨(response, stationRequest);
-		return response;
+		return response.body().jsonPath().getLong("id");
 	}
 
 	@BeforeEach
@@ -78,23 +78,22 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getStations() {
 		/// given
-		ExtractableResponse<Response> createResponse1 = 지하철역_생성되어_있음(gangNamStation);
-		ExtractableResponse<Response> createResponse2 = 지하철역_생성되어_있음(sungSuStation);
+		Long gangNamStationId = 지하철역_생성되어_있음(gangNamStation);
+		Long sungSuStationId = 지하철역_생성되어_있음(sungSuStation);
 		// when
 		ExtractableResponse<Response> response = 지하철_역_목록_조회하기();
 		// then
 		지하철_역_목록_응답됨(response);
-		지하철_역_목록_포함됨(response, Arrays.asList(createResponse1, createResponse2));
+		지하철_역_목록_포함됨(response, Arrays.asList(gangNamStationId, sungSuStationId));
 	}
 
 	@DisplayName("지하철역을 제거한다.")
 	@Test
 	void deleteStation() {
 		// given
-		ExtractableResponse<Response> createResponse = 지하철역_생성되어_있음(gangNamStation);
+		Long gangNamStationId = 지하철역_생성되어_있음(gangNamStation);
 		// when
-		Long id = createResponse.jsonPath().getLong("id");
-		ExtractableResponse<Response> response = 지하철_역_삭제하기(id);
+		ExtractableResponse<Response> response = 지하철_역_삭제하기(gangNamStationId);
 		// then
 		지하철_역_삭제_확인(response);
 	}
@@ -103,10 +102,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
-	void 지하철_역_목록_포함됨(ExtractableResponse<Response> response, List<ExtractableResponse<Response>> createResponses) {
-		List<Long> expectedLineIds = createResponses.stream()
-			.map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-			.collect(Collectors.toList());
+	void 지하철_역_목록_포함됨(ExtractableResponse<Response> response, List<Long> expectedLineIds) {
 		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
 			.map(it -> it.getId())
 			.collect(Collectors.toList());
