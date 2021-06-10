@@ -6,8 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import nextstep.subway.common.BaseEntity;
 
 @Entity
@@ -33,5 +31,19 @@ public class Station extends BaseEntity {
 
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Station) {
+			Station targetStation = (Station)obj;
+			return this.name.equals(targetStation.name);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.name.hashCode();
 	}
 }

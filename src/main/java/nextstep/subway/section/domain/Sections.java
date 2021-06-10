@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -28,10 +29,11 @@ public class Sections {
 	}
 
 	public List<Station> toStations() {
-		List<Station> stations = new LinkedList<>();
-		this.sections.stream()
-			.forEach(section -> stations.addAll(section.toStations()));
-		return stations;
+		return this.sections.stream()
+			.map(section -> section.toStations())
+			.flatMap(station -> station.stream())
+			.distinct()
+			.collect(Collectors.toList());
 	}
 
 }
