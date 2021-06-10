@@ -12,7 +12,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
-	@OneToMany(mappedBy = "line", cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
 	List<Section> sections = new LinkedList<>();
 
 	public Sections() {

@@ -23,26 +23,21 @@ import nextstep.subway.station.domain.StationRepository;
 public class LineService {
 
 	@Autowired
-	private LineRepository lines;
+	private LineRepository lineRepository;
 
 	@Autowired
-	private SectionRepository sections;
-
-	@Autowired
-	private StationRepository stations;
+	private StationRepository stationRepository;
 
 	public LineResponse saveLine(LineRequest request) {
-		Line persistLine = lines.save(request.toLine());
-		Station upStation = stations.findById(request.getUpStationId()).orElseThrow(EntityNotFoundException::new);
-		Station downStation = stations.findById(request.getDownStationId()).orElseThrow(EntityNotFoundException::new);
-		Section persistSection = sections.save(new Section(persistLine, upStation, downStation, new Distance(request.getDistance())));
-		persistLine.addSection(persistSection);
+		Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(EntityNotFoundException::new);
+		Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(EntityNotFoundException::new);
+		Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
 		return LineResponse.of(persistLine);
 	}
 
 	@Transactional(readOnly = true)
 	public List<LineResponse> findAllLines() {
-		return LineResponse.ofList(lines.findAll());
+		return LineResponse.ofList(lineRepository.findAll());
 	}
 
 	@Transactional(readOnly = true)
@@ -51,17 +46,19 @@ public class LineService {
 	}
 
 	public void deleteLineById(Long id) {
-		lines.deleteById(id);
+		lineRepository.deleteById(id);
 	}
 
 	public LineResponse updateLine(Long id, LineRequest request) {
 		Line line = findByIdLine(id);
-		line.update(request.toLine());
+		Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(EntityNotFoundException::new);
+		Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(EntityNotFoundException::new);
+		line.update(request.toLine(upStation, downStation));
 		return LineResponse.of(line);
 	}
 
 	private Line findByIdLine(Long id) {
-		return lines.findById(id).orElseThrow(EntityNotFoundException::new);
+		return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 	}
 
 }

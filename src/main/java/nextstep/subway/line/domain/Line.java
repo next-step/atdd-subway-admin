@@ -26,10 +26,10 @@ public class Line extends BaseEntity {
 	private String color;
 
 	@Embedded
-	private Sections sections;
+	private Sections sections = new Sections();
 
 	protected Line() {
-		sections = new Sections();
+
 	}
 
 	public Line(String name, String color) {

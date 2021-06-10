@@ -1,6 +1,9 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.Distance;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 public class LineRequest {
 	private String name;
@@ -40,7 +43,10 @@ public class LineRequest {
 		return this.distance;
 	}
 
-	public Line toLine() {
-		return new Line(name, color);
+	public Line toLine(Station upStation, Station downStation) {
+		Section section = new Section(null, upStation, downStation, new Distance(distance));
+		Line line =new Line(name, color);
+		line.addSection(section);
+		return line;
 	}
 }
