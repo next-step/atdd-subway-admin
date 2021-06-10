@@ -8,6 +8,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +26,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections = Sections.of(new ArrayList<>());
+    private Sections sections = Sections.of(new LinkedList<>());
 
     public Line() {
     }

@@ -14,6 +14,7 @@ import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,9 +48,11 @@ public class LineService {
                 request.getDistance()
         );
         section.setSequence(0);
+        LinkedList<Section> sections = new LinkedList<>();
+        sections.add(section);
 
         Line save = lineRepository.save(new Line(request.getName(), request.getColor(),
-                Sections.of(Lists.newArrayList(section))));
+                Sections.of(sections)));
         return LineResponse.of(save);
     }
 

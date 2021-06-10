@@ -7,16 +7,16 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import java.util.List;
+import java.util.LinkedList;
 
 @Embeddable
 public class Sections {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
-    private List<Section> values;
+    private LinkedList<Section> values;
 
-    private Sections(List<Section> values) {
+    private Sections(LinkedList<Section> values) {
         this.values = values;
     }
 
@@ -24,83 +24,71 @@ public class Sections {
 
     }
 
-    public List<Section> getValues() {
+    public LinkedList<Section> getValues() {
         return values;
     }
 
-    public static Sections of(List<Section> sections) {
+    public static Sections of(LinkedList<Section> sections) {
         return new Sections(sections);
     }
 
     public void add(Section targetSection, Line line) {
         validateStationsContains(targetSection, line);
-
         targetSection.setLine(line);
 
-        makeSeqUpStationEquals(targetSection);
-        makeSeqWhenDownStationEquals(targetSection);
-        makeSeqWhenUpStationAndTargetDownStationEquals(targetSection);
-        makeSeqWhenDownStationAndTargetUpStationEquals(targetSection);
+        for (Section original : values) {
+            if (original.isUpStationEquals(targetSection)) {
+                addSectionOriginalIndex(targetSection, original);
+                original.minusDistance(targetSection.getDistance());
+                original.changeUpStation(targetSection.getDownStation());
+                return;
+            }
 
-        values.add(targetSection);
+            if (original.isDownStationEquals(targetSection)) {
+                original.minusDistance(targetSection.getDistance());
+                original.changeDownStation(targetSection.getUpStation());
+                addSectionBehindOfOriginal(targetSection, original);
+                return;
+            }
+
+            if (original.isUpStationAndTargetDownStationEquals(targetSection)) {
+                addSectionOriginalIndex(targetSection, original);
+                return;
+            }
+
+            if (original.isDownStationAndTargetUpStationEquals(targetSection)) {
+                addSectionBehindOfOriginal(targetSection, original);
+                return;
+            }
+        }
     }
 
-    private void makeSeqUpStationEquals(Section targetSection) {
-        values.stream().filter(s -> s.isUpStationEquals(targetSection))
-                .findFirst().ifPresent(
-                section -> {
-                    int sequence = section.getSequence();
-                    targetSection.setSequence(sequence);
-                    section.setSequence(sequence + 1);
-                    section.minusDistance(targetSection.getDistance());
-                    section.changeUpStation(targetSection.getDownStation());
-                }
-        );
+    private void addSectionBehindOfOriginal(Section targetSection, Section original) {
+        values.add(values.indexOf(original) + 1, targetSection);
     }
 
-    private void makeSeqWhenDownStationEquals(Section targetSection) {
-        values.stream().filter(s -> s.isDownStationEquals(targetSection))
-                .findFirst().ifPresent(
-                section -> {
-                    targetSection.setSequence(section.getSequence() + 1);
-                    section.minusDistance(targetSection.getDistance());
-                    section.changeDownStation(targetSection.getUpStation());
-                }
-        );
-    }
-
-    private void makeSeqWhenUpStationAndTargetDownStationEquals(Section targetSection) {
-        values.stream().filter(s -> s.isUpStationAndTargetDownStationEquals(targetSection))
-                .findFirst().ifPresent(
-                section -> {
-                    int sequence = section.getSequence();
-                    targetSection.setSequence(sequence);
-                    section.setSequence(sequence + 1);
-                }
-        );
-    }
-
-    private void makeSeqWhenDownStationAndTargetUpStationEquals(Section targetSection) {
-        values.stream().filter(s -> s.isDownStationAndTargetUpStationEquals(targetSection))
-                .findFirst().ifPresent(
-                section -> {
-                    int sequence = section.getSequence();
-                    targetSection.setSequence(sequence + 1);
-                }
-        );
+    private void addSectionOriginalIndex(Section targetSection, Section original) {
+        values.add(values.indexOf(original), targetSection);
     }
 
     private void validateStationsContains(Section section, Line line) {
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
-        if (line.isContainingStation(upStation) == false &&
-                line.isContainingStation(downStation) == false) {
-            throw new IllegalArgumentException("상행, 종행 역 모두가 포함되지 않았습니다.");
-        }
+        checkNotContainingStations(line, upStation, downStation);
+        checkContainingStations(line, upStation, downStation);
+    }
 
+    private void checkContainingStations(Line line, Station upStation, Station downStation) {
         if (line.isContainingStation(upStation) &&
                 line.isContainingStation(downStation)) {
             throw new IllegalArgumentException("상행, 종행 역 모두가 포함되어있습니다..");
+        }
+    }
+
+    private void checkNotContainingStations(Line line, Station upStation, Station downStation) {
+        if (line.isContainingStation(upStation) == false &&
+                line.isContainingStation(downStation) == false) {
+            throw new IllegalArgumentException("상행, 종행 역 모두가 포함되지 않았습니다.");
         }
     }
 }

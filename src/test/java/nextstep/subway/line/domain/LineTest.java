@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +23,7 @@ class LineTest {
     void setUp() {
         A_Station = new Station(1L, "A");
         C_Station = new Station(2L, "C");
-        List<Section> sections = new ArrayList<>();
+        LinkedList<Section> sections = new LinkedList<>();
         Section section = Section.of(A_Station, C_Station, 100);
         sections.add(section);
         sut = new Line(1L, "신분당역", "빨강", Sections.of(sections));
