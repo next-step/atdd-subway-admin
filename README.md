@@ -179,3 +179,7 @@ public class Line {
 * section 과 station 관계 설정
 * (수정) section 에 upStation과 downStation, distance가 상태값으로 있는 구조로 수정
   * 1호선엔 a-b 구간 b-c 구간 으로 관리 되어야함
+
+---
+
+## 3단계
