@@ -6,9 +6,7 @@ import org.springframework.data.annotation.ReadOnlyProperty;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -27,15 +25,11 @@ public class Sections {
     }
 
     public List<Station> getSortedStations() {
-        List<Station> upStations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-        upStations.addAll(sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList()));
-        return Collections.unmodifiableList(upStations.stream()
+        return sections.stream()
+                .map(Section::toStations)
+                .flatMap(Collection::stream)
                 .distinct()
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
     }
 
     public void add(Section section) {

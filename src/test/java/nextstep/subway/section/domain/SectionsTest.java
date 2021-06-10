@@ -14,22 +14,24 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionsTest {
 
-    private Station upStation1;
-    private Station upStation2;
-    private Station downStation1;
-    private Station downStation2;
+    private Station stationA;
+    private Station stationB;
+    private Station stationC;
+    private Station stationD;
+    private Station stationE;
     private Sections sections;
 
     @BeforeEach
     void setUp() {
-        upStation1 = new Station("상행1");
-        upStation2 = new Station("상행2");
-        downStation1 = new Station("하행1");
-        downStation2 = new Station("하행2");
+        stationA = new Station("A");
+        stationB = new Station("B");
+        stationC = new Station("C");
+        stationD = new Station("D");
+        stationE = new Station("E");
         sections = new Sections(new ArrayList<>(Arrays.asList(
-                new Section(upStation1, downStation1, 10),
-                new Section(upStation1, downStation2, 10),
-                new Section(upStation1, downStation2, 10)
+                new Section(stationA, stationC, 10),
+                new Section(stationA, stationD, 10),
+                new Section(stationB, stationE, 10)
         )));
     }
 
@@ -41,17 +43,19 @@ class SectionsTest {
 
         //then
         assertAll(() -> {
-            assertThat(actual.size()).isEqualTo(3);
-            assertThat(actual.get(0)).isEqualTo(upStation1);
-            assertThat(actual.get(1)).isEqualTo(downStation1);
-            assertThat(actual.get(2)).isEqualTo(downStation2);
+            assertThat(actual.size()).isEqualTo(5);
+            assertThat(actual.get(0)).isEqualTo(stationA);
+            assertThat(actual.get(1)).isEqualTo(stationC);
+            assertThat(actual.get(2)).isEqualTo(stationD);
+            assertThat(actual.get(3)).isEqualTo(stationB);
+            assertThat(actual.get(4)).isEqualTo(stationE);
         });
     }
 
     @Test
     void add() {
         //given
-        Section section = new Section(upStation2, downStation2, 10);
+        Section section = new Section(stationB, stationD, 10);
 
         //when
         sections.add(section);
