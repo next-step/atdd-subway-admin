@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionControllerAdvice {
 
     @ExceptionHandler(DuplicateDataExistsException.class)
-    public <T> ResponseEntity<T> handleDuplicateDataExistsException(DuplicateDataExistsException e) {
+    public ResponseEntity<Void> handleDuplicateDataExistsException(DuplicateDataExistsException e) {
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(DataNotFoundException.class)
-    public <T> ResponseEntity<T> handleDataNotFoundException(DataNotFoundException e) {
+    public ResponseEntity<Void> handleDataNotFoundException(DataNotFoundException e) {
         return ResponseEntity.notFound().build();
     }
 }
