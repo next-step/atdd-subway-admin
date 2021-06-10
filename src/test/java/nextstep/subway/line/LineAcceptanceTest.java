@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,13 +27,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	@BeforeEach
 	void setBeforeEach() {
+		StationAcceptanceTest stationAcceptanceTest = new StationAcceptanceTest();
+		stationAcceptanceTest.지하철역을_생성한다("강남역");
+		stationAcceptanceTest.지하철역을_생성한다("역삼역");
+		stationAcceptanceTest.지하철역을_생성한다("테스트역1");
+		stationAcceptanceTest.지하철역을_생성한다("테스트역2");
+
 		params = new HashMap<>();
 		params.put("color", "br-red-600");
 		params.put("name", "신분당선");
+		params.put("upStationId", "1");
+		params.put("downStationId", "2");
+		params.put("distance", "10");
 
 		params2 = new HashMap<>();
 		params2.put("color", "bg-blue-600");
 		params2.put("name", "구분당선");
+		params2.put("upStationId", "3");
+		params2.put("downStationId", "4");
+		params2.put("distance", "20");
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
@@ -98,6 +111,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
 				.get("/lines")
 				.then().log().all()
 				.extract();
+	}
+
+	@DisplayName("지하철 노선 목록을 조회하면 포함 된 역도 함께 조회된다")
+	@Test
+	void getLinesWithStations() {
+		// given
+		노선을_생성한다(params);
+
+		// when
+		ExtractableResponse<Response> response = 노선목록을_조회한다();
+
+		// then
+		노선목록을_역과_함께_조회한다(response);
+	}
+
+	private void 노선목록을_역과_함께_조회한다(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		List<String> responseStationNames = (List<String>) response.jsonPath().getList("stations.name").get(0);
+		assertThat(responseStationNames).containsExactly("강남역", "역삼역");
 	}
 
 	@DisplayName("지하철 노선을 조회한다.")
