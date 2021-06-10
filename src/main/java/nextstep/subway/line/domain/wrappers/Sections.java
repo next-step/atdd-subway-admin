@@ -34,8 +34,21 @@ public class Sections {
         return sections.contains(section);
     }
 
+    public List<Station> generateStations() {
+        List<Station> responseStations = new LinkedList<>();
+        Station startStation = this.calcStartSection();
+        responseStations.add(startStation);
+        Section section = findSectionByUpStation(startStation);
+        while (section != null) {
+            Station downStation = section.downStation();
+            responseStations.add(downStation);
+            section = findSectionByUpStation(downStation);
+        }
+        return responseStations;
+    }
+
     private Station calcStartSection() {
-        Station startStation = new Station();
+        Station startStation = null;
         for (Section section : sections) {
             startStation = section.calcUpStation(startStation);
         }
@@ -57,18 +70,5 @@ public class Sections {
     @Override
     public int hashCode() {
         return Objects.hash(sections);
-    }
-
-    public List<Station> generateStations() {
-        List<Station> responseStations = new LinkedList<>();
-        Station startStation = this.calcStartSection();
-        responseStations.add(startStation);
-        Section section = findSectionByUpStation(startStation);
-        while (section != null) {
-            Station downStation = section.downStation();
-            responseStations.add(downStation);
-            section = findSectionByUpStation(downStation);
-        }
-        return responseStations;
     }
 }

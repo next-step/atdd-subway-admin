@@ -118,9 +118,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<LineResponse> lines = response
                 .body()
                 .jsonPath()
-                .getList("$", LineResponse.class)
-                .stream()
-                .collect(Collectors.toList());
+                .getList("$", LineResponse.class);
 
         // then: 지하철 노선 목록에 신분당선, 2호선이 포함되어 있다.
         assertThat(lines.stream().map(LineResponse::getName).collect(Collectors.toList())).contains("신분당선", "2호선");
