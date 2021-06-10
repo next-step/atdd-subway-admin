@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.exception.CommonExceptionMessage.EXISTS_ALL_STATIONS;
@@ -52,17 +53,19 @@ public class Sections {
 	}
 
 	private void connectIfExistsUpStation(final Section section) {
-		this.sections.stream()
-					 .filter(value -> value.upStation().equals(section.upStation()))
-					 .findFirst()
-					 .ifPresent(value -> value.connectUpStationToDownStation(section));
+		findSectionUsingFilter(value -> value.upStation().equals(section.upStation()))
+			.ifPresent(value -> value.connectUpStationToDownStation(section));
 	}
 
 	private void connectIfExistsDownStation(final Section section) {
-		this.sections.stream()
-					 .filter(value -> value.downStation().equals(section.downStation()))
-					 .findFirst()
-					 .ifPresent(value -> value.connectDownStationToUpStation(section));
+		findSectionUsingFilter(value -> value.downStation().equals(section.downStation()))
+			.ifPresent(value -> value.connectDownStationToUpStation(section));
+	}
+
+	private Optional<Section> findSectionUsingFilter(Predicate<Section> filterToSections) {
+		return this.sections.stream()
+							.filter(filterToSections)
+							.findFirst();
 	}
 
 	private boolean containUpStation(final Section section) {
