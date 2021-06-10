@@ -36,6 +36,14 @@ public class Distance {
     this.number = number;
   }
 
+  public Distance subtract(Distance other) {
+    return from(this.number - other.number);
+  }
+
+  public Distance add(Distance other) {
+    return from(this.number + other.number);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

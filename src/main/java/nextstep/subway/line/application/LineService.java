@@ -6,7 +6,6 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
@@ -33,11 +32,10 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Line persistLine = request.toLine();
         Section section = initializeSection(request.toSectionRequest());
         persistLine.addSection(section);
-        sectionRepository.save(section);
-        return LineResponse.of(persistLine);
+        return LineResponse.of(lineRepository.save(persistLine));
     }
 
     @Transactional(readOnly = true)
@@ -62,13 +60,12 @@ public class LineService {
         sectionRepository.deleteAllByLine(savedLine);
         lineRepository.delete(savedLine);
     }
-    public void addSectionToLine(Long id, SectionRequest sectionRequest) {
+
+    public LineResponse addSectionToLine(Long id, SectionRequest sectionRequest) {
         Section newSection = initializeSection(sectionRequest);
         Line toAddLine = findLineById(id);
-        newSection.addLine(toAddLine);
-        Sections lineSections = toAddLine.getSections();
-        lineSections.registerNewSection(newSection);
-        sectionRepository.saveAll(lineSections.getLineSections());
+        toAddLine.addSection(newSection);
+        return LineResponse.of(lineRepository.save(toAddLine));
     }
 
 
@@ -81,5 +78,11 @@ public class LineService {
         Station upStation = stationService.findStationById(request.getUpStationId());
         Station downStation = stationService.findStationById(request.getDownStationId());
         return new Section(upStation, downStation, request.getDistance());
+    }
+
+    public LineResponse deleteStationFromLine(Long lineId, Long stationId) {
+        Line removeStationTarget = findLineById(lineId);
+        removeStationTarget.removeStation(stationService.findStationById(stationId));
+        return LineResponse.of(removeStationTarget);
     }
 }

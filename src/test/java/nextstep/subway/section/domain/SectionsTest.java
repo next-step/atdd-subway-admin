@@ -27,17 +27,17 @@ class SectionsTest {
 
   @BeforeEach
   void setUp() {
-    Section third = new Section(청계산입구역, 판교역, 2);
     Section first = new Section(강남역, 양재역, 2);
-    Section fifth = new Section(수지구청역, 광교역, 2);
     Section second = new Section(양재역, 청계산입구역, 2);
+    Section third = new Section(청계산입구역, 판교역, 2);
     Section fourth = new Section(판교역, 수지구청역, 2);
+    Section fifth = new Section(수지구청역, 광교역, 2);
     Sections prepared = new Sections();
-    prepared.add(third);
-    prepared.add(first);
-    prepared.add(fifth);
-    prepared.add(second);
-    prepared.add(fourth);
+    prepared.registerNewSection(first);
+    prepared.registerNewSection(second);
+    prepared.registerNewSection(third);
+    prepared.registerNewSection(fourth);
+    prepared.registerNewSection(fifth);
     this.sections = prepared;
   }
 
@@ -50,11 +50,11 @@ class SectionsTest {
   @DisplayName("이미 등록된 역 구간을 등록할 수 없다.")
   @Test
   void addFailTest() {
-    Section given1 = new Section(청계산입구역, 판교역, 8);
-    Section given2 = new Section(강남역, 광교역, 8);
+    Section alreadyExistEdgesSection = new Section(청계산입구역, 판교역, 8);
+    Section alreadyContainsEachStationsSection = new Section(강남역, 광교역, 8);
     assertAll(
-        () -> assertThatThrownBy(() -> sections.registerNewSection(given1)).isInstanceOf(IllegalArgumentException.class),
-        () -> assertThatThrownBy(() -> sections.registerNewSection(given2)).isInstanceOf(IllegalArgumentException.class)
+        () -> assertThatThrownBy(() -> sections.registerNewSection(alreadyExistEdgesSection)).isInstanceOf(IllegalArgumentException.class),
+        () -> assertThatThrownBy(() -> sections.registerNewSection(alreadyContainsEachStationsSection)).isInstanceOf(IllegalArgumentException.class)
     );
   }
 

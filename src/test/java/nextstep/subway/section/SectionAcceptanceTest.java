@@ -23,7 +23,7 @@ import static nextstep.subway.station.StationAcceptanceTest.지하철_역_등록
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+class SectionAcceptanceTest extends AcceptanceTest {
 
   private Long 압구정역_ID;
 
@@ -53,11 +53,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
   }
 
 
-  @DisplayName("지하철 노선 중간에 구간 등록한다.")
+  @DisplayName("지하철 노선 중간에 구간 등록한다. -> 기존 상행역 - 새로운 하행역")
   @Test
-  void addSectionInMiddle() {
+  void addSectionInMiddleWithExistUpStationNewDownStation() {
     // given
     SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
+    Long lineId = 신분당선.getId();
+
+    //when
+    ExtractableResponse<Response> result = 지하철_구간_등록_요청(lineId, sectionParam);
+
+    //then
+    지하철_구간_등록됨(result, lineId, 강남역_ID, 판교역_ID, 광교역_ID);
+  }
+
+  @DisplayName("지하철 노선 중간에 구간 등록한다. -> 새로운 상행역 - 기존 하행역")
+  @Test
+  void addSectionInMiddleWithNewUpStationExistDownStation() {
+    // given
+    SectionRequest sectionParam = new SectionRequest(판교역_ID, 광교역_ID, 5);
     Long lineId = 신분당선.getId();
 
     //when
@@ -169,6 +183,79 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     지하철_구간_등록_실패함(result);
   }
 
+  @DisplayName("지하철 상행 종점을 제거한다.")
+  @Test
+  void removeUpStationEdge() {
+    //given
+    SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
+    Long lineId = 신분당선.getId();
+    지하철_구간_등록_요청(lineId, sectionParam);
+
+    //when
+    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 강남역_ID);
+
+    //then
+    노선에서_역_제거_완료(result, 판교역_ID, 광교역_ID);
+
+  }
+
+  @DisplayName("지하철 하행 종점을 제거한다.")
+  @Test
+  void removeDownStationEdge() {
+    //given
+    SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
+    Long lineId = 신분당선.getId();
+    지하철_구간_등록_요청(lineId, sectionParam);
+
+    //when
+    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 광교역_ID);
+
+    //then
+    노선에서_역_제거_완료(result, 강남역_ID, 판교역_ID);
+
+  }
+
+  @DisplayName("지하철 중간역을 제거한다. 거리는 두 구간 거리의 합이어야 한다.")
+  @Test
+  void removeStationNotEdge() {
+    //given
+    SectionRequest sectionParam = new SectionRequest(강남역_ID, 판교역_ID, 5);
+    Long lineId = 신분당선.getId();
+    지하철_구간_등록_요청(lineId, sectionParam);
+
+    //when
+    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 판교역_ID);
+
+    //then
+    노선에서_역_제거_완료(result, 강남역_ID, 광교역_ID);
+  }
+
+  @DisplayName("등록되어 있지 않은 역은 제거할 수 없다.")
+  @Test
+  void canNotRemoveNoneRegisteredStation() {
+    //given
+    Long lineId = 신분당선.getId();
+
+    //when
+    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 동탄역_ID);
+
+    //then
+    노선에서_역_제거_실패(result);
+  }
+
+  @DisplayName("상행 종점 - 하행 종점으로 이루어진 하나의 구간만 있을 때는 역을 제거할 수 없다.")
+  @Test
+  void canNotRemoveOnlySingleSectionStation() {
+    //given
+    Long lineId = 신분당선.getId();
+
+    //when
+    ExtractableResponse<Response> result = 노선에서_역_제거(lineId, 강남역_ID);
+
+    //then
+    노선에서_역_제거_실패(result);
+  }
+
   private ExtractableResponse<Response> 지하철_구간_등록_요청(Long lineId, SectionRequest sectionParam) {
     return RestAssured.given().log().all()
         .body(sectionParam)
@@ -191,4 +278,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
   private void 지하철_구간_등록_실패함(ExtractableResponse<Response> result) {
     assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
+  private ExtractableResponse<Response> 노선에서_역_제거(Long lineId, Long stationId) {
+    return RestAssured.given().log().all()
+        .pathParam("id", lineId)
+        .queryParam("stationId", stationId)
+        .when()
+        .delete("/lines/{id}/sections")
+        .then().log().all()
+        .extract();
+  }
+
+  private void 노선에서_역_제거_완료(ExtractableResponse<Response> result, Long... expectStationIds) {
+    assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
+    LineResponse responseBody = result.as(LineResponse.class);
+    List<Long> lineStationIds = 노선_응답에서_역_ID들을_얻는다(responseBody);
+    assertThat(lineStationIds).containsExactly(expectStationIds);
+  }
+
+  private void 노선에서_역_제거_실패(ExtractableResponse<Response> result) {
+    assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+  }
+
 }
