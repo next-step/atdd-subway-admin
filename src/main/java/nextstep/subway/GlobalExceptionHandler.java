@@ -21,8 +21,11 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(exception.status()).build();
 	}
 
-	@ExceptionHandler(value = DataIntegrityViolationException.class)
-	public ResponseEntity<Void> badRequest(DataIntegrityViolationException exception) {
+	@ExceptionHandler(value = {
+		DataIntegrityViolationException.class,
+		IllegalArgumentException.class
+	})
+	public ResponseEntity<Void> badRequest(Exception exception) {
 		log.error(exception.getMessage(), exception);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}

@@ -1,19 +1,17 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.exception.ApiException;
-import nextstep.subway.section.application.SortedSectionUtil;
 import nextstep.subway.station.domain.Station;
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.exception.ApiExceptionMessge.EXISTS_ALL_STATIONS;
-import static nextstep.subway.exception.ApiExceptionMessge.NOT_EXISTS_STATIONS;
+import static nextstep.subway.exception.CommonExceptionMessage.EXISTS_ALL_STATIONS;
+import static nextstep.subway.exception.CommonExceptionMessage.NOT_EXISTS_STATIONS;
 
 @Embeddable
 public class Sections {
@@ -22,12 +20,20 @@ public class Sections {
 	private List<Section> sections = new ArrayList<>();
 
 	public void add(final Section section) {
-		if (CollectionUtils.isEmpty(sections) == false) {
+		if (!CollectionUtils.isEmpty(sections)) {
 			validateStations(section);
 			connectIfExistsUpStation(section);
 			connectIfExistsDownStation(section);
 		}
 		this.sections.add(section);
+	}
+
+	public List<Station> stationsBySorted() {
+		Optional<Section> firstSection = findFirstSection();
+		if (!firstSection.isPresent()) {
+			return Collections.emptyList();
+		}
+		return getSortedStations(firstSection.get());
 	}
 
 	public boolean contain(final Section section) {
@@ -38,10 +44,10 @@ public class Sections {
 		boolean isExistsUpStation = containUpStation(section);
 		boolean isExistsDownStation = containDownStation(section);
 		if (isExistsUpStation && isExistsDownStation) {
-			throw new ApiException(EXISTS_ALL_STATIONS);
+			throw new IllegalArgumentException(EXISTS_ALL_STATIONS.message());
 		}
-		if (isExistsUpStation == false && isExistsDownStation == false) {
-			throw new ApiException(NOT_EXISTS_STATIONS);
+		if (!isExistsUpStation && !isExistsDownStation) {
+			throw new IllegalArgumentException(NOT_EXISTS_STATIONS.message());
 		}
 	}
 
@@ -60,23 +66,47 @@ public class Sections {
 	}
 
 	private boolean containUpStation(final Section section) {
-		return stations().contains(section.upStation());
+		return stationsNotSorted().contains(section.upStation());
 	}
 
 	private boolean containDownStation(final Section section) {
-		return stations().contains(section.downStation());
+		return stationsNotSorted().contains(section.downStation());
 	}
 
-	private List<Station> stations() {
+	private List<Station> stationsNotSorted() {
 		return this.sections.stream()
 							.flatMap(Section::streamOfStation)
 							.distinct()
 							.collect(Collectors.toList());
 	}
 
-	public List<Station> stationsBySorted() {
-		return SortedSectionUtil.of(this.sections)
-								.sorted();
+	private Map<Station, Section> groupByUpStation() {
+		return sections.stream()
+					   .collect(Collectors.toMap(section -> section.upStation(), Function.identity()));
+	}
+
+	private List<Station> downStations() {
+		return sections.stream()
+					   .map(section -> section.downStation())
+					   .collect(Collectors.toList());
+	}
+
+	private Optional<Section> findFirstSection() {
+		List<Station> downStations = downStations();
+		return sections.stream()
+					   .filter(section -> downStations.contains(section.upStation()) == false)
+					   .findFirst();
+	}
+
+	private List<Station> getSortedStations(Section nextSection) {
+		Map<Station, Section> upStationMap = groupByUpStation();
+		List<Station> stations = new ArrayList<>();
+		stations.add(nextSection.upStation());
+		do {
+			stations.add(nextSection.downStation());
+			nextSection = upStationMap.get(nextSection.downStation());
+		} while (nextSection != null);
+		return stations;
 	}
 
 }

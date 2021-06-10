@@ -1,7 +1,6 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.exception.ApiException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -9,8 +8,8 @@ import javax.persistence.*;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static nextstep.subway.exception.ApiExceptionMessge.DISTANCE_NOT_UNDER_ZERO;
-import static nextstep.subway.exception.ApiExceptionMessge.OVER_DISTANCE;
+import static nextstep.subway.exception.CommonExceptionMessage.DISTANCE_NOT_UNDER_ZERO;
+import static nextstep.subway.exception.CommonExceptionMessage.OVER_DISTANCE;
 
 @Entity
 public class Section extends BaseEntity {
@@ -52,7 +51,7 @@ public class Section extends BaseEntity {
 
 	private static void checkDistance(final int distance) {
 		if (distance <= DISTANCE_NONE) {
-			throw new ApiException(DISTANCE_NOT_UNDER_ZERO);
+			throw new IllegalArgumentException(DISTANCE_NOT_UNDER_ZERO.message());
 		}
 	}
 
@@ -85,7 +84,7 @@ public class Section extends BaseEntity {
 
 	private void updateDistance(final int distance) {
 		if (this.distance <= distance) {
-			throw new ApiException(OVER_DISTANCE);
+			throw new IllegalArgumentException(OVER_DISTANCE.message());
 		}
 		this.distance -= distance;
 	}
