@@ -80,21 +80,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성됨(응답);
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
-    @Test
-    void createLineNew() {
-        // given
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
-
-        // when
-        // 지하철_노선_생성_요청
-        ExtractableResponse<Response> 응답 = 노선생성_요청(신분당선);
-
-        // then
-        // 지하철_노선_생성됨
-        지하철_노선_생성됨(응답);
-    }
-
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLineDuplicate() {

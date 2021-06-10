@@ -48,4 +48,8 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         sections.addSection(section);
     }
+
+    public Sections getSections() {
+        return sections;
+    }
 }

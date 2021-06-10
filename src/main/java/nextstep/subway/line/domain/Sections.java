@@ -15,4 +15,8 @@ public class Sections {
     public void addSection(Section section) {
         sections.add(section);
     }
+
+    public List<Section> getSections() {
+        return sections;
+    }
 }

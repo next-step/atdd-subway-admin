@@ -72,6 +72,12 @@ public class LineService {
     }
 
     public void deleteLineById(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException("노선을 찾을 수 없습니다."));
+        Sections sections = line.getSections();
+        sections.getSections().forEach(section -> {
+            sectionRepository.delete(section);
+        });
+
         lineRepository.deleteById(id);
     }
 
