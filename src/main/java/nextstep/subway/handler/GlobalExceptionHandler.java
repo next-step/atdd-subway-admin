@@ -56,15 +56,9 @@ public class GlobalExceptionHandler {
         return ErrorCode.INVALID_INPUT_VALUE.createResponseEntity(e);
     }
 
-    @ExceptionHandler(DuplicateValueException.class)
-    public ResponseEntity<ErrorMessageResponse> handleDuplicateValueException(DuplicateValueException e) {
+    @ExceptionHandler(value = {DuplicateValueException.class, DataIntegrityViolationException.class})
+    public ResponseEntity<ErrorMessageResponse> handleDuplicateValueException(DataIntegrityViolationException e) {
         logger.error("handleDuplicateValueException", e);
         return ErrorCode.INVALID_INPUT_VALUE.createResponseEntity(e);
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorMessageResponse> handleIllegalArgsException(DataIntegrityViolationException e) {
-        logger.error("handleIllegalArgsException", e);
-        return ErrorCode.INVALID_INPUT_VALUE.createResponseEntity();
     }
 }
