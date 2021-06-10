@@ -17,6 +17,7 @@ import nextstep.subway.line.dto.LineRequest;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final String RESOURCES = "/lines";
+    private static final String PATH_FROM_HEADER = "LOCATION";
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -92,7 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                .when().get(expected.header("LOCATION"))
+                .when().get(expected.header(PATH_FROM_HEADER))
                 .then().log().all().extract();
         // then
         // 지하철_노선_응답됨
@@ -112,7 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .body(updateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(expected.header("LOCATION"))
+                .when().put(expected.header(PATH_FROM_HEADER))
                 .then().log().all().extract();
 
         // then
@@ -131,7 +132,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                .when().delete(expected.header("LOCATION"))
+                .when().delete(expected.header(PATH_FROM_HEADER))
                 .then().log().all().extract();
         // then
         // 지하철_노선_삭제됨
