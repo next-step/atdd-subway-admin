@@ -9,12 +9,11 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.LineTestData;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationRequest;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -46,7 +45,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> createLineRequestTest() {
         return Stream.of(
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_1))
+            dynamicTest("인천 1호선 노선 생성", createLineSuccess(INCHEON_SUBWAY_LINE_1))
         );
     }
 
@@ -54,15 +53,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> createLineRequestTest02() {
         return Stream.of(
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_1)),
-            dynamicTest("인천 1호선 노선 다시 생성 시 실패", () -> {
-                ExtractableResponse<Response> response = createLineRequest(INCHEON_SUBWAY_LINE_1);
-
-                // then
-                // 지하철_노선_생성_실패됨
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                assertThat(response.header("Location")).isBlank();
-            })
+            dynamicTest("인천 1호선 노선 생성", createLineSuccess(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 1호선 노선 다시 생성 시 실패", createLineFail(INCHEON_SUBWAY_LINE_1))
         );
     }
 
@@ -70,10 +62,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> findLinesTest() {
         return Stream.of(
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_1)),
-            dynamicTest("인천 2호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_2)),
-            dynamicTest("지하철 노선 목록 조회 및 검증", () ->
-                fineLinesSuccess(INCHEON_SUBWAY_LINE_1, INCHEON_SUBWAY_LINE_2))
+            dynamicTest("인천 1호선 노선 생성", createLineSuccess(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 2호선 노선 생성", createLineSuccess(INCHEON_SUBWAY_LINE_2)),
+            dynamicTest("지하철 노선 목록 조회 성공", fineLinesSuccess(INCHEON_SUBWAY_LINE_1, INCHEON_SUBWAY_LINE_2))
         );
     }
 
@@ -81,11 +72,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> getLineFailTest() {
         return Stream.of(
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_1)),
-            dynamicTest("지하철 노선 조회 요청", () -> {
-                ExtractableResponse<Response> response = findLine(100L);
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-            })
+            dynamicTest("인천 1호선 노선 생성", createLineSuccess(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("지하철 노선 조회 요청 시 조회 실패", fineLinesFail(10_000L)),
+            dynamicTest("지하철 노선 조회 요청 시 조회 실패", fineLinesFail(20_000L))
         );
     }
 
@@ -93,8 +82,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> updateLineTest() {
         return Stream.of(
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_1)),
-            dynamicTest("인천 1호선 노선을 인천 2호선 노선으로 수정 및 검증", () -> updateLineTo(INCHEON_SUBWAY_LINE_2))
+            dynamicTest("인천 1호선 노선 생성", createLineSuccess(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("인천 1호선 노선을 인천 2호선 노선으로 수정 및 검증", updateLineTo(INCHEON_SUBWAY_LINE_2))
         );
     }
 
@@ -102,11 +91,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> deleteLineTest() {
         return Stream.of(
-            dynamicTest("인천 1호선 노선 생성", () -> createLineRequestSuccess(INCHEON_SUBWAY_LINE_1)),
-            dynamicTest("생성된 노선 삭제 및 검증", () -> {
-                ExtractableResponse<Response> response = deleteLineRequest();
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-            })
+            dynamicTest("인천 1호선 노선 생성", createLineSuccess(INCHEON_SUBWAY_LINE_1)),
+            dynamicTest("생성된 노선 삭제 및 검증", deleteLineSuccess())
         );
     }
 
@@ -142,44 +128,65 @@ class LineAcceptanceTest extends AcceptanceTest {
                           .extract();
     }
 
-    private void createLineRequestSuccess(LineTestData data) {
+    private Executable createLineSuccess(LineTestData data) {
+        return () -> {
+            LineRequest lineRequest = data.getLine();
+            ExtractableResponse<Response> response = createLineRequest(data);
 
-        LineRequest lineRequest = data.getLine();
-        ExtractableResponse<Response> response = createLineRequest(data);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(response.header("Location")).startsWith("/lines");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).startsWith("/lines");
+            assertThat(response.body().jsonPath().getString("name"))
+                .isEqualTo(lineRequest.getName());
 
-        assertThat(response.body().jsonPath().getString("name"))
-            .isEqualTo(lineRequest.getName());
-
-        assertThat(response.body().jsonPath().getString("color"))
-            .isEqualTo(lineRequest.getColor());
+            assertThat(response.body().jsonPath().getString("color"))
+                .isEqualTo(lineRequest.getColor());
+        };
     }
 
-    private void fineLinesSuccess(LineTestData data1, LineTestData data2) {
-        // when
-        // 지하철_노선_목록_조회_요청
-        // when
-        ExtractableResponse<Response> response = findLines();
+    private Executable createLineFail(LineTestData line) {
+        return () -> {
+            ExtractableResponse<Response> response = createLineRequest(line);
 
-        LineRequest line1 = data1.getLine();
-        LineRequest line2 = data2.getLine();
+            // then
+            // 지하철_노선_생성_실패됨
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.header("Location")).isBlank();
+        };
+    }
 
-        // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    private Executable fineLinesSuccess(LineTestData data1, LineTestData data2) {
+        return () -> {
+            // when
+            // 지하철_노선_목록_조회_요청
+            // when
+            ExtractableResponse<Response> response = findLines();
 
-        List<LineResponse> lines = response.body().jsonPath().getList("$", LineResponse.class);
-        assertThat(lines.size()).isEqualTo(2);
-        assertThat(lines).extracting(LineResponse::getName)
-                         .contains(line1.getName(), line2.getName());
-        assertThat(lines).extracting(LineResponse::getColor)
-                         .contains(line1.getColor(), line2.getColor());
+            LineRequest line1 = data1.getLine();
+            LineRequest line2 = data2.getLine();
 
-        assertThat(lines.get(0).getStations()).hasSameElementsAs(data1.getStations());
-        assertThat(lines.get(1).getStations()).hasSameElementsAs(data2.getStations());
+            // then
+            // 지하철_노선_목록_응답됨
+            // 지하철_노선_목록_포함됨
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+            List<LineResponse> lines = response.body().jsonPath().getList("$", LineResponse.class);
+            assertThat(lines.size()).isEqualTo(2);
+            assertThat(lines).extracting(LineResponse::getName)
+                             .contains(line1.getName(), line2.getName());
+            assertThat(lines).extracting(LineResponse::getColor)
+                             .contains(line1.getColor(), line2.getColor());
+
+            assertThat(lines.get(0).getStations()).hasSameElementsAs(data1.getStations());
+            assertThat(lines.get(1).getStations()).hasSameElementsAs(data2.getStations());
+        };
+    }
+
+    private Executable fineLinesFail(Long lineId) {
+        return () -> {
+            ExtractableResponse<Response> response = findLine(lineId);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        };
     }
 
     private ExtractableResponse<Response> findLines() {
@@ -199,21 +206,29 @@ class LineAcceptanceTest extends AcceptanceTest {
                           .extract();
     }
 
-    private void updateLineTo(LineTestData data) {
-        ExtractableResponse<Response> response = updateLineRequest(data);
-        ExtractableResponse<Response> actual = findSavedLine();
+    private Executable updateLineTo(LineTestData data) {
+        return () -> {
+            ExtractableResponse<Response> response = updateLineRequest(data);
+            ExtractableResponse<Response> actual = findSavedLine();
 
-        // then
-        // 지하철_노선_수정됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            // then
+            // 지하철_노선_수정됨
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        LineRequest line = data.getLine();
+            LineRequest line = data.getLine();
 
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actual.body().jsonPath().getString("name"))
-            .isEqualTo(line.getName());
-        assertThat(actual.body().jsonPath().getString("color"))
-            .isEqualTo(line.getColor());
+            assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(actual.body().jsonPath().getString("name"))
+                .isEqualTo(line.getName());
+            assertThat(actual.body().jsonPath().getString("color"))
+                .isEqualTo(line.getColor());
+        };
     }
 
+    private Executable deleteLineSuccess() {
+        return () -> {
+            ExtractableResponse<Response> response = deleteLineRequest();
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        };
+    }
 }

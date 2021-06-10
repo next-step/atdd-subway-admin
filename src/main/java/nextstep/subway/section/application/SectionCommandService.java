@@ -1,6 +1,8 @@
 package nextstep.subway.section.application;
 
 import java.util.Optional;
+import nextstep.subway.line.application.LineQueryService;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.LineSections;
 import nextstep.subway.section.domain.Section;
@@ -14,13 +16,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SectionCommandService {
 
+    private final LineQueryService lineQueryService;
     private final StationQueryService stationQueryService;
     private final SectionQueryService sectionQueryService;
+
     private final SectionRepository sectionRepository;
 
-    public SectionCommandService(StationQueryService stationQueryService,
+    public SectionCommandService(LineQueryService lineQueryService,
+                                 StationQueryService stationQueryService,
                                  SectionQueryService sectionQueryService,
                                  SectionRepository sectionRepository) {
+        this.lineQueryService = lineQueryService;
         this.stationQueryService = stationQueryService;
         this.sectionQueryService = sectionQueryService;
         this.sectionRepository = sectionRepository;
@@ -60,5 +66,10 @@ public class SectionCommandService {
         sections.add(newSection);
 
         return sections;
+    }
+
+    public void delete(Long lineId, Long stationId) {
+        Line line = lineQueryService.findById(lineId);
+        line.deleteSection(stationQueryService.findById(stationId));
     }
 }
