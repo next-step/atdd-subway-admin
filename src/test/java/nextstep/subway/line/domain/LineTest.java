@@ -43,7 +43,7 @@ class LineTest {
         A_Station = new Station(1L, "A");
         C_Station = new Station(2L, "C");
         List<Section> sections = new ArrayList<>();
-        Section section = new Section(A_Station, C_Station, 100);
+        Section section = Section.of(A_Station, C_Station, 100);
         sections.add(section);
         sut = new Line(1L, "신분당역", "빨강", Sections.of(sections));
     }
@@ -55,7 +55,7 @@ class LineTest {
         Station originStation = new Station(3L, "B");
 
 
-        final Section targetSection = new Section(A_Station, originStation, 40);
+        final Section targetSection = Section.of(A_Station, originStation, 40);
         sut.addSection(targetSection);
 
         assertThat(sut.getStations()).containsExactly(A_Station, originStation, C_Station);
@@ -66,7 +66,7 @@ class LineTest {
         assertThat(sut.getStations()).containsExactly(A_Station, C_Station);
 
         Station originStation = new Station(3L, "B");
-        final Section targetSection = new Section(originStation, C_Station, 40);
+        final Section targetSection = Section.of(originStation, C_Station, 40);
         sut.addSection(targetSection);
 
         assertThat(sut.getSections().getValues().stream()
@@ -79,7 +79,7 @@ class LineTest {
         assertThat(sut.getStations()).containsExactly(A_Station, C_Station);
 
         Station B_Station = new Station(3L, "B");
-        final Section targetSection = new Section(B_Station, A_Station, 40);
+        final Section targetSection = Section.of(B_Station, A_Station, 40);
         sut.addSection(targetSection);
 
         assertThat(sut.getStations()).containsExactly(B_Station, A_Station, C_Station);
@@ -90,7 +90,7 @@ class LineTest {
         assertThat(sut.getStations()).containsExactly(A_Station, C_Station);
 
         Station B_Station = new Station(3L, "B");
-        final Section targetSection = new Section(C_Station, B_Station, -40);
+        final Section targetSection = Section.of(C_Station, B_Station, -40);
         sut.addSection(targetSection);
 
         assertThat(sut.getStations()).containsExactly(A_Station, C_Station, B_Station);

@@ -41,7 +41,7 @@ public class LineService {
 
     public LineResponse saveLine(final LineRequest request) {
 
-        Section section = new Section(
+        Section section = Section.of(
                 getStation(request.getUpStationId()),
                 getStation(request.getDownStationId()),
                 request.getDistance()
@@ -56,7 +56,7 @@ public class LineService {
     public LineResponse updateById(final Long lineId, final LineRequest lineRequest) {
         Line originLine = getLine(lineId);
 
-        Section section = new Section(getStation(lineRequest.getUpStationId()), getStation(lineRequest.getDownStationId()),
+        Section section = Section.of(getStation(lineRequest.getUpStationId()), getStation(lineRequest.getDownStationId()),
                 lineRequest.getDistance());
         originLine.update(lineRequest.getName(), lineRequest.getColor(), section);
 
@@ -65,7 +65,7 @@ public class LineService {
 
     public Line addSection(Long lineId, SectionRequest request) {
         Line line = getLine(lineId);
-        Section section = new Section(getStation(request.getUpStationId()), getStation(request.getDownStationId()),
+        Section section = Section.of(getStation(request.getUpStationId()), getStation(request.getDownStationId()),
                 request.getDistance());
         line.addSection(section);
         return line;

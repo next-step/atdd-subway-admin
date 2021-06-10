@@ -31,10 +31,14 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public static Section of(Station upStation, Station downStation, int distance){
+        return new Section(upStation, downStation, distance);
     }
 
     public Line getLine() {
