@@ -52,4 +52,12 @@ public class LineService {
             NotExistLineException::new
         ).toResponse();
     }
+
+    @Transactional
+    public void updateLine(Long id, LineRequest updateRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(
+            NotExistLineException::new
+        );
+        line.update(updateRequest);
+    }
 }
