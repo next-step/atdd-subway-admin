@@ -24,12 +24,7 @@ public class LineController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity getLine(@PathVariable Long id) {
-        LineResponse line = null;
-        try {
-            line = lineService.getLine(id);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        }
+        LineResponse line = lineService.getLine(id);
 
         return ResponseEntity.ok().body(line);
     }
@@ -55,22 +50,20 @@ public class LineController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        try {
-            lineService.updateLine(id, lineRequest);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        }
+        lineService.updateLine(id, lineRequest);
 
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
-        try {
-            lineService.deleteLine(id);
-        } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.notFound().build();
-        }
+        lineService.deleteLine(id);
+
         return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler({NoSuchElementException.class, EmptyResultDataAccessException.class})
+    public Object notFound(Exception e) {
+        return ResponseEntity.notFound().build();
     }
 }

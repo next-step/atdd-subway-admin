@@ -45,7 +45,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void createLine_exception() {
         // given
         // 지하철_노선_등록되어_있음
         지하철_노선_등록되어_있음("경의선", "blue");
@@ -76,7 +76,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_목록_응답됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        Assertions.assertThat(response.statusCode()).isNotEqualTo(HttpStatus.NOT_FOUND.value());
+
         // 값 검증
         List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
         Assertions.assertThat(lineResponses)
@@ -111,7 +111,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 값 검증
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
         Assertions.assertThat(lineResponse.getName()).isEqualTo("경의선");
+    }
 
+    @DisplayName("등록되지않은 지하철 노선을 조회한다.")
+    @Test
+    void getLine_exception() {
+        // given
+        // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("경의선", "blue");
+        지하철_노선_등록되어_있음("4호선", "green");
+
+        // when
+        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(3L);
+
+        // then
+        // 지하철_노선_응답됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        Assertions.assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회_요청(final Long id) {
@@ -137,6 +154,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_수정됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         Assertions.assertThat(response.statusCode()).isNotEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("등록되지않은 지하철 노선을 수정한다.")
+    @Test
+    void updateLine_exception() {
+        // given
+        // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("경의선", "blue");
+
+        // when
+        // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(3L, "경의선", "red");
+
+        // then
+        // 지하철_노선_수정됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        Assertions.assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(final Long id, final String name, final String colorToModify) {
@@ -168,6 +202,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_삭제됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         Assertions.assertThat(response.statusCode()).isNotEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("등록되지않은 지하철 노선을 제거한다.")
+    @Test
+    void deleteLine_exception() {
+        // given
+        // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("경의선", "blue");
+
+        // when
+        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(3L);
+
+        // then
+        // 지하철_노선_삭제됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        Assertions.assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선_제거_요청(final Long id) {
