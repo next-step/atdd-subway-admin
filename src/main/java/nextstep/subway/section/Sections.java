@@ -29,7 +29,7 @@ public class Sections {
     }
 
     public List<Station> sortedStations() {
-        LinkedList<Station> stations = new LinkedList<>();
+        List<Station> stations = new ArrayList<>();
 
         for (Section section : sections) {
             addStation(stations, section);
@@ -37,7 +37,7 @@ public class Sections {
         return stations;
     }
 
-    private LinkedList<Station> addStation(LinkedList<Station> stations, Section section) {
+    private List<Station> addStation(List<Station> stations, Section section) {
         if (!stations.contains(section.getUpStation())) {
             stations.add(section.getUpStation());
             stations.add(section.getDownStation());
