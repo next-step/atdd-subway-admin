@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
@@ -205,5 +207,48 @@ class LineServiceTest {
         assertThatThrownBy(() -> service.deleteLineById(1L))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("삭제 대상 노선이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("기존 노선에 신규구간 추가")
+    void createNewSection_toLine() {
+        // given -
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("교대역");
+        Station station3 = new Station("서초역");
+        Station station4 = new Station("방배역");
+        Station station5 = new Station("사당역");
+        // 기존에 저장된 노선과 구간들
+        Line greenLine = new Line("2호선", "green");
+        new Section(station1, station2, 3, greenLine);
+        new Section(station2, station3, 3, greenLine);
+        new Section(station3, station4, 3, greenLine);
+
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 7);
+        LineResponse line = LineResponse.of(greenLine);
+
+        given(lineRepository.findById(anyLong())).willReturn(Optional.of(greenLine));
+        given(stationRepository.findById(1L)).willReturn(Optional.of(station1));
+        given(stationRepository.findById(2L)).willReturn(Optional.of(station5));
+
+        LineResponse lineResponse = service.appendNewSectionToLine(1L, sectionRequest);
+        System.out.println(lineResponse.toString());
+
+        // then
+        List<String> resultStationNames = lineResponse.getStations()
+                .stream()
+                .map(res -> res.getName())
+                .collect(Collectors.toList());
+        List<String> comparisonTargetStationNames = Arrays.asList(station1, station2, station3, station5, station4)
+                .stream()
+                .map(station -> station.getName())
+                .collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(lineResponse.getName()).isEqualTo(line.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(line.getColor()),
+                () -> assertThat(lineResponse.getStations().size()).isEqualTo(5),
+                () -> assertThat(Arrays.equals(resultStationNames.toArray(), comparisonTargetStationNames.toArray()))
+                        .isTrue()
+        );
     }
 }

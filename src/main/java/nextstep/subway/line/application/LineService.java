@@ -9,6 +9,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
@@ -72,6 +74,26 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException("요청한 하행역은 등록되지 않은 역입니다. 역 ID : "
                         + request.getDownStationId()));
         return new Section(upStation, downStation, request.getDistance(), request.toLine()).getLine();
+    }
+
+    public LineResponse appendNewSectionToLine(long id, SectionRequest sectionRequest) {
+        Line line = findLineByIdOrThrow(id, "조회된 노선이 없습니다.");
+        Sections sections = new Sections(line.getSections());
+        Section section = makeSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+                sectionRequest.getDistance(), line);
+        sectionRepository.save(sections.appendNewSection(section));
+        return LineResponse.of(line);
+    }
+
+    private Section makeSection(Long upStationId, Long downStationId, int distance, Line line) {
+        Station upStation = findStationByIdOrThrow(upStationId, "요청한 상행역은 등록되지 않은 역입니다.");
+        Station downStation = findStationByIdOrThrow(downStationId, "요청한 하행역은 등록되지 않은 역입니다.");
+        return new Section(upStation, downStation, distance, line);
+    }
+
+    private Station findStationByIdOrThrow(Long stationId, String throwMessage) {
+        return this.stationRepository.findById(stationId)
+                .orElseThrow(() -> new NoSuchElementException(throwMessage + " 역 ID : " + stationId));
     }
 
     private Line findLineByIdOrThrow(Long id, String throwMessage) {
