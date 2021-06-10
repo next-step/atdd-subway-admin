@@ -89,9 +89,6 @@ public class OrderedSections {
 
     private boolean checkFrontMid(Section sectionInput, Section sectionFromExist) {
         if (sectionInput.isInMidFrontOf(sectionFromExist)) {
-            validateDistance(sectionInput.distance(), sectionFromExist.distance());
-
-            sectionFromExist.setDistance(sectionFromExist.distance() - sectionInput.distance());
             sectionFromExist.connectBehindOf(sectionInput);
             return true;
         }
@@ -100,9 +97,6 @@ public class OrderedSections {
 
     private boolean checkRearMid(Section sectionInput, Section sectionFromExist) {
         if (sectionInput.isInMidRearOf(sectionFromExist)) {
-            validateDistance(sectionInput.distance(), sectionFromExist.distance());
-
-            sectionFromExist.setDistance(sectionFromExist.distance() - sectionInput.distance());
             sectionFromExist.connectInFrontOf(sectionInput);
             return true;
         }
@@ -111,12 +105,6 @@ public class OrderedSections {
 
     private boolean checkRear(Section sectionInput, Section sectionFromExist) {
         return sectionInput.isBehindOf(sectionFromExist);
-    }
-
-    private void validateDistance(int inputDistance, int existDistance) {
-        if (inputDistance >= existDistance) {
-            throw new IllegalArgumentException();
-        }
     }
 
 }

@@ -27,27 +27,29 @@ public class Section extends BaseEntity {
     @JoinColumn
     private Station downStation;
 
-    @Column(nullable = false)
-    private int distance;
+//    @Column(nullable = false)
+//    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section() { }
 
     private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = validDistance(distance);
+        this.distance = Distance.valueOf(distance);
     }
 
     public static Section of(Station upStation, Station downStation, int distance) {
         return new Section(upStation, downStation, distance);
     }
 
-    private int validDistance(int distance) {
-        if (distance < 1 || distance >= Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("유효하지 않은 Section 의 역들 사이거리 입니다.");
-        }
-        return distance;
-    }
+//    private int validDistance(Distance distance) {
+////        if (distance < 1 || distance >= Integer.MAX_VALUE) {
+////            throw new IllegalArgumentException("유효하지 않은 Section 의 역들 사이거리 입니다.");
+////        }
+//        return distance;
+//    }
 
     public boolean isInFrontOf(Section section) {
         return this.downStation.compareName(section.upStation());
@@ -66,11 +68,21 @@ public class Section extends BaseEntity {
     }
 
     public void connectBehindOf(Section section) {
+        shortenDistanceUsing(section);
         this.upStation = section.downStation();
     }
 
     public void connectInFrontOf(Section section) {
+        shortenDistanceUsing(section);
         this.downStation = section.upStation();
+    }
+
+    private void shortenDistanceUsing(Section sectionInput) {
+        this.shortenDistance(sectionInput.distance());
+    }
+
+    private void shortenDistance(int distance) {
+        this.distance.shorten(distance);
     }
 
     public Long getId() {
@@ -124,7 +136,7 @@ public class Section extends BaseEntity {
     }
 
     public int distance() {
-        return distance;
+        return distance.get();
     }
 
     public void setLine(Line line) {
@@ -132,7 +144,7 @@ public class Section extends BaseEntity {
     }
 
     public void setDistance(int distance) {
-        this.distance = distance;
+        this.distance.set(distance);
     }
 
     @Override
