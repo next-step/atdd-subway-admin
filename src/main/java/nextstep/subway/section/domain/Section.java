@@ -62,7 +62,7 @@ public class Section extends BaseEntity {
     }
 
     public void minusDistance(int distance){
-        if (this.getDistance() > distance){
+        if (this.getDistance() <= distance){
             throw new IllegalArgumentException("등록할 수 없는 구간입니다.");
         }
         this.distance = this.distance - distance;
