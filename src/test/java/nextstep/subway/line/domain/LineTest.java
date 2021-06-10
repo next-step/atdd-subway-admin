@@ -1,8 +1,11 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
 
@@ -16,8 +19,29 @@ class LineTest {
         Line actual = new Line(expectedName, expectedColor);
 
         //then
-        assertThat(actual.getName()).isEqualTo(expectedName);
-        assertThat(actual.getColor()).isEqualTo(expectedColor);
+        assertAll(() -> {
+            assertThat(actual.getName()).isEqualTo(expectedName);
+            assertThat(actual.getColor()).isEqualTo(expectedColor);
+        });
+    }
+
+    @Test
+    void createWithSection() {
+        //given
+        String expectedName = "1호선";
+        String expectedColor = "blue";
+        Station upStation1 = new Station("상행1");
+        Station downStation1 = new Station("하행1");
+
+        //when
+        Line actual = new Line(expectedName, expectedColor, new Section(upStation1, downStation1, 10));
+
+        //then
+        assertAll(() ->{
+            assertThat(actual.getName()).isEqualTo(expectedName);
+            assertThat(actual.getColor()).isEqualTo(expectedColor);
+            assertThat(actual.getStations()).contains(upStation1, downStation1);
+        });
     }
 
     @Test
@@ -30,8 +54,10 @@ class LineTest {
         line.update(newLine);
 
         //then
-        assertThat(line.getName()).isEqualTo(newLine.getName());
-        assertThat(line.getColor()).isEqualTo(newLine.getColor());
+        assertAll(() -> {
+            assertThat(line.getName()).isEqualTo(newLine.getName());
+            assertThat(line.getColor()).isEqualTo(newLine.getColor());
+        });
     }
 
     @Test

@@ -25,7 +25,8 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
@@ -33,7 +34,7 @@ public class Section extends BaseEntity {
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Station getUpStation() {
@@ -46,5 +47,9 @@ public class Section extends BaseEntity {
 
     public void toLine(Line line) {
         this.line = line;
+    }
+
+    public Line getLine() {
+        return line;
     }
 }

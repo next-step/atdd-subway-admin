@@ -2,11 +2,10 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
-import org.springframework.data.annotation.ReadOnlyProperty;
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -20,9 +19,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    @ReadOnlyProperty
-    private final List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     protected Line() {
     }
@@ -32,7 +30,7 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, Section section){
+    public Line(String name, String color, Section section) {
         this(name, color);
         addSection(section);
     }
@@ -42,7 +40,7 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public boolean isDifferentName(String name){
+    public boolean isDifferentName(String name) {
         return !this.name.equals(name);
     }
 
@@ -60,10 +58,10 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         section.toLine(this);
-        this.sections.add(section);
+        sections.add(section);
     }
 
-    public List<Section> getSections(){
-        return Collections.unmodifiableList(sections);
+    public List<Station> getStations(){
+        return sections.getSortedStations();
     }
 }
