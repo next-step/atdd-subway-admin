@@ -22,7 +22,7 @@ public class Distance {
     }
 
     private void validate(int distance) {
-        if (distance <= 0) {
+        if (distance < 0) {
             throw new IllegalArgumentException(INVALID_DISTANCE);
         }
     }

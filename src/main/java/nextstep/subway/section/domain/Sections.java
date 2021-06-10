@@ -9,10 +9,11 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.Stack;
 
 import static java.util.stream.Collectors.toList;
 
@@ -128,28 +129,42 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
+    public Optional<Section> findFirstSection() {
+        Stack<Section> stack = new Stack<>();
+        stack.addAll(sections);
+        Section firstSection = null;
+
+        while (!stack.isEmpty()) {
+            Section finalPop = stack.pop();
+            Optional<Section> upStation = sections.stream()
+                    .filter(v -> v.getDownStation().equals(finalPop.getUpStation()))
+                    .findFirst();
+            if (!upStation.isPresent()) {
+                firstSection = finalPop;
+                break;
+            }
+        }
+        return Optional.ofNullable(firstSection);
+    }
+
     public List<Station> getStations() {
-        LinkedList<Section> result = new LinkedList<>();
-        Deque<Section> queue = new LinkedList<>(sections);
-        result.add(queue.pop());
+        Optional<Section> firstSection = findFirstSection();
+        if (!firstSection.isPresent()) {
+            return new LinkedList<>();
+        }
+        Section first = firstSection.get();
+        LinkedList<Section> result = new LinkedList<>(Collections.singletonList(first));
+        Queue<Section> queue = new LinkedList<>(sections);
+        queue.remove(first);
 
         while (!queue.isEmpty()) {
-            Section section = queue.pop();
-
-            result.stream()
-                    .map(Section::getUpStation)
-                    .filter(v -> Objects.nonNull(section.getDownStation()) && v.equals(section.getDownStation()))
+            sections.stream().
+                    filter(v -> v.getUpStation().equals(result.getLast().getDownStation()))
                     .findFirst()
-                    .ifPresent(
-                            v -> result.addFirst(section)
-                    );
-            result.stream()
-                    .map(Section::getDownStation)
-                    .filter(v -> Objects.nonNull(section.getUpStation()) && v.equals(section.getUpStation()))
-                    .findFirst()
-                    .ifPresent(
-                            v -> result.addLast(section)
-                    );
+                    .ifPresent(v -> {
+                        result.add(v);
+                        queue.poll();
+                    });
         }
         return collectStations(result);
     }
