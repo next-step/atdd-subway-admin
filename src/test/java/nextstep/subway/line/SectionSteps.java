@@ -27,7 +27,7 @@ public class SectionSteps {
 
     public static ExtractableResponse<Response> 지하철_노선_구간_삭제_요청(ExtractableResponse<Response> response,
                                                                 StationResponse removeStation) {
-        String uri = response.header("Location");
+        String uri = "/lines/" + response.header("Location");
         return RestAssured.given().log().all()
                 .param("stationId", removeStation.getId())
                 .when()

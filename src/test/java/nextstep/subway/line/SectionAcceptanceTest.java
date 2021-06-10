@@ -127,11 +127,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSection_at_boundary_upstation() {
         // given
-        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선에_구간_등록_요청(신분당선, 광교역, 판교역, 15);
+        ExtractableResponse<Response> 구간_등록된_신분당선 = 지하철_노선에_구간_등록_요청(신분당선, 광교역, 판교역, 15);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(생성된_신분당선, 강남역);
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(구간_등록된_신분당선, 강남역);
+        ExtractableResponse<Response> 조회된_구간들 = 지하철_노선_조회_요청(신분당선.getId());
 
         지하철_노선_구간_삭제됨(response);
+        지하철_노선_지하철역_정렬된_목록_포함됨(조회된_구간들, Arrays.asList(광교역, 판교역));
     }
 }
