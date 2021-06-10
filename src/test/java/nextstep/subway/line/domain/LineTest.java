@@ -11,27 +11,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- *  // A --- B, 100
- *         // A --- C,  50 target
- *         // AC50, CB50,
- *         // > UpStation 이 동일
- *
- *         // A --- B, 100
- *         // C --- B,  50 target
- *         // AC 50, CB 50 ,
- *         // > DownStation 이 동일
- *
- * //         A --- B, 100
- * //   C --- A,       50  // 해당하는
- *         // AC 50 , AB 100
- *         // > Up, Target's DownStation 이 동일
- *
- *         // A --- B, 100
- *         //       B --- C, 50
- *         // AB 100 , AC50
- *         // > Down, Target's UpStation 이 동일
- */
+
 class LineTest {
 
     Line sut;

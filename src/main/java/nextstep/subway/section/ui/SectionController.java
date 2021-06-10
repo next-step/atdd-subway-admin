@@ -37,4 +37,9 @@ public class SectionController {
     public ResponseEntity<LineResponse> handleIllegalArgsException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().build();
     }
+
+//    @ExceptionHandler(NotFoundEntity.class)
+//    public ResponseEntity<LineResponse> handleNotFoundException(NotFoundEntity e) {
+//        return ResponseEntity.badRequest().build();
+//    }
 }

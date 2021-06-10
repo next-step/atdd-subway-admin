@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import com.google.common.collect.Lists;
+import nextstep.subway.exception.NotFoundEntityException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -10,7 +11,6 @@ import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,10 +77,11 @@ public class LineService {
 
     private Line getLine(Long lineId) {
         return lineRepository.findById(lineId)
-                .orElseThrow(() -> new DataIntegrityViolationException("Not Found lineId" + lineId));
+                .orElseThrow(() -> new NotFoundEntityException("Not Found lineId" + lineId));
     }
 
     private Station getStation(Long stationId) {
-        return stationRepository.findById(stationId).orElseThrow(() -> new DataIntegrityViolationException("Not Fount downStationId" + stationId));
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new NotFoundEntityException("Not Fount downStationId" + stationId));
     }
 }
