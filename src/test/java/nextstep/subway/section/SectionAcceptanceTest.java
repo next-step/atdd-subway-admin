@@ -37,9 +37,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         신분당선 = 지하철_노선_등록되어_있음(params).as(LineResponse.class);
     }
 
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("새로운 역을 하행 종점으로 등록한다")
     @Test
-    void createLine() {
+    void addSectionLast() {
 
         // given
         StationResponse 판교역 = 지하철_역_등록되어_있음(new StationRequest("판교역")).as(StationResponse.class);
@@ -52,10 +52,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_구간_등록됨(response);
     }
 
+    @DisplayName("새로운 역을 상행 종점으로 등록한다")
+    @Test
+    void addSectionFirst() {
+
+        // given
+        StationResponse 정자역 = 지하철_역_등록되어_있음(new StationRequest("정자역")).as(StationResponse.class);
+        SectionRequest params = new SectionRequest(정자역.getId(), 강남역.getId(), 3);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(params, 신분당선.getId());
+
+        // then
+        지하철_노선에_구간_등록됨(response);
+    }
+
     private void 지하철_노선에_구간_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        assertThat(response.as(SectionResponse.class).getStations()).hasSize(2);
-
     }
 }
