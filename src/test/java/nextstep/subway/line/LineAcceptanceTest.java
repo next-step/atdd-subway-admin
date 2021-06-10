@@ -106,7 +106,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return 지하철_노선_생성_요청(name, color, getIdFrom(createdUpStation), getIdFrom(createdDownStation), distance);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, long upStationId, long downStationId, int distance) {
+    static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, long upStationId, long downStationId, int distance) {
         return RestAssured
             .given().log().all()
             .body(createBody(name, color, upStationId, downStationId, distance))
@@ -205,14 +205,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(findResponse.jsonPath().getList("stations.name", String.class)).containsExactly(stations);
     }
 
-    private Map<String, Object> createBody(String name, String color) {
+    private static Map<String, Object> createBody(String name, String color) {
         Map<String, Object> params = new HashMap<>();
         params.put("color", color);
         params.put("name", name);
         return params;
     }
 
-    private Map<String, Object> createBody(String name, String color, long upStationId,
+    private static Map<String, Object> createBody(String name, String color, long upStationId,
         long downStationId, int distance) {
         Map<String, Object> params = createBody(name, color);
         params.put("upStationId", upStationId);
