@@ -131,7 +131,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(1L, "경의선", "blue");
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(1L, "경의선", "red");
 
         // then
         // 지하철_노선_수정됨

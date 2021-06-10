@@ -34,8 +34,6 @@ public class LineService {
     public void updateLine(Long id, LineRequest request) {
         Line persistLine = lineRepository.findById(id).get();
         persistLine.update(request.toLine());
-
-        lineRepository.save(persistLine);
     }
 
     public LineResponse getLine(Long id) {
