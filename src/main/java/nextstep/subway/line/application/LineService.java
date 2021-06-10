@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import nextstep.subway.line.domain.Sections;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +21,30 @@ import nextstep.subway.line.dto.LineResponse;
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
+    private SectionRepository sectionRepository;
+    private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
+        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다"));
+        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다"));
+
         Line persistLine = lineRepository.save(request.toLine());
+
+        Section section = new Section();
+        section.setLine(persistLine);
+        section.setPrevStation(upStation);
+        section.setNextStation(downStation);
+        section.setDistance(request.getDistance());
+
+        sectionRepository.save(section);
+        persistLine.addSection(section);
+
         return LineResponse.of(persistLine);
     }
 
