@@ -16,11 +16,56 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    private static final String EXCEPTION_FOR_EQUAL_SECTION = "상행역, 하행역 모두 등록되어 있습니다.";
+    private static final String EXCEPTION_FOR_HAS_NOT_STATIONS = "상행역, 하행역 모두 등록되어 있지 않습니다.";
+
     protected Sections() {
     }
 
     public void add(Section section) {
+        if (isFirstSection()) {
+            sections.add(section);
+            return;
+        }
+
+        checkExistEqualSection(section);
+        checkNotExistAnyEqualStation(section);
+
+        addEqualUpStation(section);
+        addEqualDownStation(section);
         sections.add(section);
+    }
+
+    private void checkExistEqualSection(Section section) {
+        if (isMatchWithUpStation(section) && isMatchWithDownStation(section)) {
+            throw new IllegalArgumentException(EXCEPTION_FOR_EQUAL_SECTION);
+        }
+    }
+
+    private void checkNotExistAnyEqualStation(Section section) {
+        if (!isMatchWithUpStation(section) && !isMatchWithDownStation(section)) {
+            throw new IllegalArgumentException(EXCEPTION_FOR_HAS_NOT_STATIONS);
+        }
+    }
+
+    private void addEqualUpStation(Section section) {
+        sections.stream()
+                .filter(preSection -> preSection.isEqualsUpStation(section))
+                .findFirst()
+                .ifPresent(preSection -> {
+                    sections.add(Section.makeAfterSection(preSection, section));
+                    sections.remove(preSection);
+                });
+    }
+
+    private void addEqualDownStation(Section section) {
+        sections.stream()
+                .filter(preSection -> preSection.isEqualsDownStation(section))
+                .findFirst()
+                .ifPresent(preSection -> {
+                    sections.add(Section.makeBeforeSection(preSection, section));
+                    sections.remove(preSection);
+                });
     }
 
     public boolean isEmpty() {
@@ -28,42 +73,44 @@ public class Sections {
     }
 
     public List<Station> findStationInSections() {
-        List<Station> stations = new ArrayList<>();
         Section firstSection = findFirstSection();
-        stations.add(firstSection.getUpStation());
-        stations.addAll(findOthersStations(firstSection.getDownStation()));
-        return stations;
+        return firstSection.findAllStations(this);
     }
 
-    public List<Station> findOthersStations(Station downStation) {
-        List<Station> stations = new ArrayList<>();
-        stations.add(downStation);
-        Section nextSection = findSectionInUpStation(downStation);
-        while (!Objects.isNull(nextSection)) {
-            stations.add(nextSection.getDownStation());
-            nextSection = findSectionInUpStation(nextSection.getDownStation());
-        }
-        return new ArrayList<>(stations);
+    public List<Station> findOthersStations(Section section) {
+        return new ArrayList<>(section.findStationsByFirstSection(this));
     }
 
     public Section findFirstSection() {
         return sections.stream()
-                .filter(section -> Objects.isNull(findSectionInDownStation(section.getUpStation())))
+                .filter(section -> Objects.isNull(findSectionInDownStation(section)))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
 
-    public Section findSectionInDownStation(Station upStation) {
+    public Section findSectionInDownStation(Section newSection) {
         return sections.stream()
-                .filter(section -> section.getDownStation() == upStation)
+                .filter(section -> section.hasSameDownStation(newSection))
                 .findFirst()
                 .orElse(null);
     }
 
-    public Section findSectionInUpStation(Station downStation) {
+    public Section findSectionInUpStation(Section newSection) {
         return sections.stream()
-                .filter(section -> section.getUpStation() == downStation)
+                .filter(section -> section.hasSameUpStation(newSection))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public boolean isFirstSection() {
+        return sections.isEmpty();
+    }
+
+    public boolean isMatchWithUpStation(Section section) {
+        return findStationInSections().stream().anyMatch(section::isMatchUpStation);
+    }
+
+    public boolean isMatchWithDownStation(Section section) {
+        return findStationInSections().stream().anyMatch(section::isMatchDownStation);
     }
 }
