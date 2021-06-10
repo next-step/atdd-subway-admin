@@ -122,4 +122,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_구간_생성_실패됨(response);
     }
+
+    @DisplayName("노선의 구간을 제거한다. - 상행 종점이 제거될 경우 다음 구간 상행역이 상행 종점이 된다.")
+    @Test
+    void removeSection_at_boundary_upstation() {
+        // given
+        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선에_구간_등록_요청(신분당선, 광교역, 판교역, 15);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(생성된_신분당선, 강남역);
+
+        지하철_노선_구간_삭제됨(response);
+    }
 }
