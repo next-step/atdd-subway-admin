@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section extends BaseEntity implements Comparable<Section> {
 
   private static final String ONLY_CONNECTED_SECTION_CAN_REMOVE_SHARED_STATION = "연속 된 구간에서 겹치는 역만 제거할 수 있습니다.";
 
@@ -73,11 +73,6 @@ public class Section extends BaseEntity {
         .collect(Collectors.toList());
   }
 
-  public boolean isSameEdges(Section other) {
-    return this.getUpStation().equals(other.getUpStation()) &&
-        this.getDownStation().equals(other.getDownStation());
-  }
-
   public boolean isSameDownStation(Section other) {
     Station thisDownStation = this.getDownStation();
     Station otherDownStation = other.getDownStation();
@@ -88,10 +83,6 @@ public class Section extends BaseEntity {
     Station thisUpStation = this.getUpStation();
     Station otherUpStation = other.getUpStation();
     return thisUpStation.equals(otherUpStation);
-  }
-
-  public boolean isNextSection(Section other) {
-    return this.getUpStation().equals(other.getDownStation());
   }
 
   public void insertNewSection(Section newSection) {
@@ -117,22 +108,12 @@ public class Section extends BaseEntity {
     return upStation.equals(station) || downStation.equals(station);
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null) return false;
-    if (!(o instanceof Section)) return false;
-    Section section = (Section) o;
-    return this.getId().equals(section.getId()) &&
-        this.getUpStation().equals(section.getUpStation()) &&
-        this.getDownStation().equals(section.getDownStation()) &&
-        this.getDistance().equals(section.getDistance()) &&
-        this.getLine().equals(section.getLine());
+  public boolean containsAsUpStation(Station station) {
+    return upStation.equals(station);
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(this.getId(), this.getUpStation(), this.getDownStation(), this.getDistance(), this.getLine());
+  public boolean containsAsDownStation(Station station) {
+    return downStation.equals(station);
   }
 
   public void removeStationBetweenSections(Section other) {
@@ -141,5 +122,36 @@ public class Section extends BaseEntity {
     }
     this.downStation = other.downStation;
     this.distance = this.distance.add(other.distance);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null) return false;
+    if (!(o instanceof Section)) return false;
+    Section section = (Section) o;
+    return Objects.equals(this.getId(), section.getId()) &&
+            Objects.equals(this.getUpStation(), section.getUpStation()) &&
+            Objects.equals(this.getDownStation(), section.getDownStation()) &&
+            Objects.equals(this.getDistance(), section.getDistance()) &&
+            Objects.equals(this.getLine(), section.getLine());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.getId(), this.getUpStation(), this.getDownStation(), this.getDistance(), this.getLine());
+  }
+
+  @Override
+  public int compareTo(Section o) {
+    if (this.downStation.equals(o.upStation)) {
+      return -1;
+    }
+
+    if (this.equals(o)) {
+      return 0;
+    }
+
+    return 1;
   }
 }

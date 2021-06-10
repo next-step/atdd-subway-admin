@@ -34,4 +34,5 @@ host: localhost:52165
 ### 코드리뷰 반영
 - [x] 거의 매번 조회하게 되는 Section의 upStation, downStation은 EAGER 조회
 - [x] 불필요하게 중복된 section을 갖게 되는 구간 추가 로직 수정
+- [x] 삭제 로직 리팩토링 && 정렬 방법 변경
  
