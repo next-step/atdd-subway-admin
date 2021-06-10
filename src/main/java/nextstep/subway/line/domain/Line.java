@@ -1,40 +1,47 @@
 package nextstep.subway.line.domain;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@ToString(callSuper = true)
+@Getter @NoArgsConstructor
+@Table(uniqueConstraints = @UniqueConstraint(name = "unique_line_name", columnNames={"name"}))
 public class Line extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
+
     private String name;
+
     private String color;
 
-    public Line() {
-    }
+    @Embedded
+    private Sections sections = new Sections();
 
-    public Line(String name, String color) {
+    public Line(final String name, final String color) {
         this.name = name;
         this.color = color;
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+    public Line appendSection(Section section) {
+        sections.add(section);
+        return this;
     }
 
-    public Long getId() {
-        return id;
+    public void update(final Line line) {
+        this.name = line.name;
+        this.color = line.color;
+        this.sections = line.sections;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
+    public List<Station> lineUp() {
+        return new ArrayList<>(sections.lineUp());
     }
 }

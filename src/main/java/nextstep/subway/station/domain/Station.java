@@ -1,29 +1,26 @@
 package nextstep.subway.station.domain;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
 
 @Entity
+@ToString(callSuper = true)
+@Getter @NoArgsConstructor
+@Table(uniqueConstraints = @UniqueConstraint(name = "unique_station_name", columnNames={"name"}))
 public class Station extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
+
     private String name;
 
-    public Station() {
+    public Station(final String name) {
+        this(null, name);
     }
 
-    public Station(String name) {
+    public Station(final Long id, final String name) {
+        this.id = id;
         this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 }

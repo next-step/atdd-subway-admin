@@ -1,42 +1,29 @@
 package nextstep.subway.station.dto;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(of = "id")
+@Getter @NoArgsConstructor
 public class StationResponse {
     private Long id;
     private String name;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
-    public static StationResponse of(Station station) {
+    public static StationResponse of(final Station station) {
         return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
     }
 
-    public StationResponse() {
-    }
-
-    public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public StationResponse(final Long id, final String name, final LocalDateTime createdDate, final LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
 }
