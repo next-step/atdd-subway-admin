@@ -39,12 +39,14 @@ public class LineService {
         );
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> getList() {
         return lineRepository.findAll().stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse getLine(Long id) {
         return lineRepository.findById(id).orElseThrow(
             NotExistLineException::new
