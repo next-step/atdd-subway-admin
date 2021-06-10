@@ -16,8 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,8 +61,10 @@ class LineCommandServiceTest {
         LineResponse actual = lineCommandService.saveLine(lineRequest1);
 
         //then
-        assertThat(actual.getName()).isEqualTo("1호선");
-        assertThat(actual.getColor()).isEqualTo("blue");
+        assertAll(() -> {
+            assertThat(actual.getName()).isEqualTo("1호선");
+            assertThat(actual.getColor()).isEqualTo("blue");
+        });
     }
 
     @DisplayName("요청한 지하철 노선 이름이 이미 존재하면 예외를 발생시킨다.")
@@ -86,8 +88,10 @@ class LineCommandServiceTest {
         lineCommandService.updateLine(anyLong(), lineRequest2);
 
         //then
-        assertThat(line1.getName()).isEqualTo(lineRequest2.getName());
-        assertThat(line1.getColor()).isEqualTo(lineRequest2.getColor());
+        assertAll(() -> {
+            assertThat(line1.getName()).isEqualTo(lineRequest2.getName());
+            assertThat(line1.getColor()).isEqualTo(lineRequest2.getColor());
+        });
     }
 
     @DisplayName("요청한 ID에 해당하는 노선의 대체할 이름이 이미 존재할 경우 예외를 발생시킨다.")

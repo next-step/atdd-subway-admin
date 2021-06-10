@@ -29,7 +29,7 @@ public class LineCommandService implements LineCommandUseCase {
         Station downStation = stationQueryUseCase.findById(lineRequest.getDownStationId());
 
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
+        return LineResponse.of(persistLine, persistLine.getStations());
     }
 
     @Override

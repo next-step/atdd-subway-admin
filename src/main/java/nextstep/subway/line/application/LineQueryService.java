@@ -25,15 +25,16 @@ public class LineQueryService implements LineQueryUseCase {
 
     @Override
     public List<LineResponse> findAllLines() {
-        List<Line> lines = lineRepository.findAll();
-        return lines.stream()
-                .map(LineResponse::of)
+        return lineRepository.findAll()
+                .stream()
+                .map(line -> LineResponse.of(line, line.getStations()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public LineResponse findLine(Long id) {
-        return LineResponse.of(findById(id));
+        Line line = findById(id);
+        return LineResponse.of(line, line.getStations());
     }
 
     @Override
