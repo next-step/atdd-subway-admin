@@ -31,4 +31,15 @@ public class Distance {
     public boolean isGreaterThanOrEqualTo(int distance) {
         return this.distance >= distance;
     }
+
+    public int calculateDistance(Section appendSection, Section baseSection) {
+        return appendSection.getDistance() - (this.distance - baseSection.getDistance());
+    }
+
+    public int calculateDistance(Section appendSection) {
+        if (this.isGreaterThan(appendSection.getDistance())) {
+            return this.distance - appendSection.getDistance();
+        }
+        return appendSection.getDistance() - this.distance;
+    }
 }
