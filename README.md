@@ -74,7 +74,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 </details>
 
 ---
-## 1단계 - 지하철 노선 관리
+
+<details>
+<summary style="font-Weight:bold;font-size=25px;">1단계 - 지하철 노선 관리 </summary>
+<div>
 
 ### 요구 사항
 * 지하철 노선 관련 기능의 인수 테스트를 작성하기
@@ -129,3 +132,50 @@ DELETE /lines/1 HTTP/1.1
 accept: */*
 host: localhost:49468
 ```
+</div>
+</details>
+
+---
+
+## 2단계 - 인수 테스트 리팩터링
+
+### 요구사항
+
+* 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
+  * 두 종점역은 구간의 형태로 관리되어야 함
+* 노선 조회 시 응답 결과에 역 목록 추가하기
+  * 상행역 부터 하행역 순으로 정렬되어야 함
+  
+### 요구사항 설명
+#### 노선 생성 시 두 종점역 추가하기
+* 인수 테스트와 DTO 등 수정
+```java
+public class LineRequest {
+    private String name;
+    private String color;
+    private Long upStationId;       // 추가
+    private Long downStationId;     // 추가
+    private int distance;           // 추가
+    ...
+}
+```
+#### 노선 객체에서 구간 정보를 관리하기
+* 노선 생성시 전달되는 두 종점역은 노선의 상태로 관리되는 것이 아니라 구간으로 관리되어야 함
+```java
+public class Line {
+    ...
+    private List<Section> sections;
+    ...
+}
+```
+
+#### 노선의 역 목록을 조회하는 기능 구현하기
+* 노선 조회 시 역 목록을 함께 응답할 수 있도록 변경
+* 노선에 등록된 구간을 순서대로 정렬하여 상행 종점부터 하행 종점까지 목록을 응답하기
+* 필요시 노선과 구간(혹은 역)의 관계를 새로 맺기
+
+### 추가 구현 list
+* Sections 일급컬렙션 생성
+* section 과 station 관계 설정
+* (수정) section 에 upStation과 downStation, distance가 상태값으로 있는 구조로 수정
+  * 1호선엔 a-b 구간 b-c 구간 으로 관리 되어야함
