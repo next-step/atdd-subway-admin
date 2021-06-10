@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import nextstep.subway.common.BaseEntity;
 
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Station extends BaseEntity {
 
 	@Id
