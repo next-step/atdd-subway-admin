@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class LineResponse {
@@ -32,9 +34,10 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stationResponses = new ArrayList<>();
-        line.getSectionsList().stream()
-                .forEach(section ->  stationResponses.addAll(Arrays.asList(StationResponse.of(section.getUpStation()), (StationResponse.of(section.getDownStation())))));
+        List<StationResponse> stationResponses = line.getSectionsList().stream()
+                .map(section -> Arrays.asList(StationResponse.of(section.getUpStation()), (StationResponse.of(section.getDownStation()))))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses, line.getCreatedDate(), line.getModifiedDate());
     }
 

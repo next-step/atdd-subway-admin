@@ -65,7 +65,6 @@ public class Line extends BaseEntity {
         this.color = updateLine.getColor();
         this.sections.getSection().clear();
         updateLine.getSections().getSection()
-                .stream()
                 .forEach(station -> this.addSection(station));
     }
 }
