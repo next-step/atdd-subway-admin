@@ -1,41 +1,79 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.dto.LineRequest;
+import java.util.Objects;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+
+import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 
 @Entity
 public class Line extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
-    private String name;
-    private String color;
 
-    public Line() {
-    }
+	@Column(name = "name", unique = true)
+	private String name;
+	@Column(name = "color")
+	private String color;
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
+	@Embedded
+	private Sections sections = new Sections();
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
+	protected Line() {
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Line(String name, String color) {
+		this.name = name;
+		this.color = color;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void update(Line line) {
+		this.name = line.getName();
+		this.color = line.getColor();
+	}
 
-    public String getColor() {
-        return color;
-    }
+	public String getName() {
+		return name;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public Sections getSections() {
+		return sections;
+	}
+
+	public void addSection(Section section) {
+		this.sections.addSection(section);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Line line = (Line)o;
+		return Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects
+			.equals(sections, line.sections);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, color, sections);
+	}
+
+	@Override
+	public String toString() {
+		return "Line{" +
+			"id=" + id +
+			", createdDate=" + createdDate +
+			", modifiedDate=" + modifiedDate +
+			", name='" + name + '\'' +
+			", color='" + color + '\'' +
+			'}';
+	}
 }
