@@ -36,8 +36,8 @@ public class SectionTest {
 
         Section section = Section.of(upStation, downStation, distance);
 
-        Station expectUpStation = section.getUpStation();
-        Station expectDownStation = section.getDownStation();
+        Station expectUpStation = section.upStation();
+        Station expectDownStation = section.downStation();
 
         assertThat(expectUpStation.getName()).isEqualTo(upStation.getName());
         assertThat(expectDownStation.getName()).isEqualTo(downStation.getName());

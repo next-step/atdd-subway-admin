@@ -5,6 +5,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -47,6 +49,30 @@ public class Section extends BaseEntity {
         return distance;
     }
 
+    public boolean isInFrontOf(Section section) {
+        return this.downStation.compareName(section.upStation());
+    }
+
+    public boolean isInMidFrontOf(Section section) {
+        return this.upStation.compareName(section.upStation());
+    }
+
+    public boolean isInMidRearOf(Section section) {
+        return this.downStation.compareName(section.downStation());
+    }
+
+    public boolean isBehindOf(Section section) {
+        return this.upStation.compareName(section.downStation());
+    }
+
+    public void connectBehindOf(Section section) {
+        this.upStation = section.downStation();
+    }
+
+    public void connectInFrontOf(Section section) {
+        this.downStation = section.upStation();
+    }
+
     public Long getId() {
         return id;
     }
@@ -55,28 +81,54 @@ public class Section extends BaseEntity {
         return line;
     }
 
-    public Station getUpStation() {
+    protected Station upStation() {
         return upStation;
     }
 
-    public Station getDownStation() {
+    protected Station downStation() {
         return downStation;
     }
 
-    public int getDistance() {
+    public List<Station> upDownStations() {
+        return Arrays.asList(upStation, downStation);
+    }
+
+    public Long upStationId() {
+        return upStation.getId();
+    }
+
+    public Long downStationId() {
+        return downStation.getId();
+    }
+
+    public Long lineId() {
+        return line.getId();
+    }
+
+    public String upStationName() {
+        return upStation.getName();
+    }
+
+    public String downStationName() {
+        return downStation.getName();
+    }
+
+    public boolean bothStationsAreAlreadyIn(List<Station> stations) {
+        return stations.contains(this.upStation)
+                && stations.contains(this.downStation);
+    }
+
+    public boolean bothStationsAreNotIn(List<Station> stations) {
+        return !stations.contains(this.upStation)
+                && !stations.contains(this.downStation);
+    }
+
+    public int distance() {
         return distance;
     }
 
     public void setLine(Line line) {
         this.line = line;
-    }
-
-    public void setUpStation(Station station) {
-        this.upStation = station;
-    }
-
-    public void setDownStation(Station station) {
-        this.downStation = station;
     }
 
     public void setDistance(int distance) {

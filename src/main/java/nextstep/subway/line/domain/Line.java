@@ -8,8 +8,6 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
@@ -57,13 +55,6 @@ public class Line extends BaseEntity {
         return this.sections;
     }
 
-    public List<Station> getStations() {
-        return sections.stream()
-                .flatMap(station -> Stream.of(station.getUpStation(), station.getDownStation()))
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
     public List<Station> getOrderedStations() {
         return sections.orderedStations();
     }
@@ -78,10 +69,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public boolean contains(Section section) {
-        return sections.contains(section);
     }
 
     public void addSection(Section sectionIn) {

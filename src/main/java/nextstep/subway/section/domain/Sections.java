@@ -27,13 +27,6 @@ public class Sections {
         sections.add(section);
     }
 
-    public void add(int index, Section section) {
-        if (this.contains(section)) {
-            return;
-        }
-        sections.add(index, section);
-    }
-
     public boolean contains(Section section) {
         return sections.contains(section);
     }
@@ -45,29 +38,27 @@ public class Sections {
     }
 
     private void alreadyInBoth(Section sectionIn) {
-        if (stations().contains(sectionIn.getUpStation())
-                && stations().contains(sectionIn.getDownStation())) {
+        if (sectionIn.bothStationsAreAlreadyIn(stations())) {
             throw new IllegalArgumentException("둘 다 이미 들어있는 역.");
         }
     }
 
     private void nothingInBoth(Section sectionIn) {
-        if (!stations().contains(sectionIn.getUpStation())
-                && !stations().contains(sectionIn.getDownStation())) {
+        if (sectionIn.bothStationsAreNotIn(stations())) {
             throw new IllegalArgumentException("둘 다 들어있지 않은 역.");
         }
     }
 
     public List<Station> stations() {
         return this.sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .flatMap(section -> section.upDownStations().stream())
                 .distinct()
                 .collect(Collectors.toList());
     }
 
     public List<Station> orderedStations() {
         return OrderedSections.of(this.sections).get().stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .flatMap(section -> section.upDownStations().stream())
                 .distinct()
                 .collect(Collectors.toList());
     }

@@ -40,14 +40,14 @@ public class SectionsTest {
         sections.add(section3);
 
         List<Section> actualSections = sections.orderedSections().get();
-        assertThat(actualSections.get(0).getUpStation().getName()).isEqualTo("1번역");
-        assertThat(actualSections.get(1).getUpStation().getName()).isEqualTo("2번역");
-        assertThat(actualSections.get(2).getUpStation().getName()).isEqualTo("3번역");
-        assertThat(actualSections.get(3).getUpStation().getName()).isEqualTo("4번역");
-        assertThat(actualSections.get(0).getDownStation().getName()).isEqualTo("2번역");
-        assertThat(actualSections.get(1).getDownStation().getName()).isEqualTo("3번역");
-        assertThat(actualSections.get(2).getDownStation().getName()).isEqualTo("4번역");
-        assertThat(actualSections.get(3).getDownStation().getName()).isEqualTo("5번역");
+        assertThat(actualSections.get(0).upStationName()).isEqualTo("1번역");
+        assertThat(actualSections.get(1).upStationName()).isEqualTo("2번역");
+        assertThat(actualSections.get(2).upStationName()).isEqualTo("3번역");
+        assertThat(actualSections.get(3).upStationName()).isEqualTo("4번역");
+        assertThat(actualSections.get(0).downStationName()).isEqualTo("2번역");
+        assertThat(actualSections.get(1).downStationName()).isEqualTo("3번역");
+        assertThat(actualSections.get(2).downStationName()).isEqualTo("4번역");
+        assertThat(actualSections.get(3).downStationName()).isEqualTo("5번역");
     }
 
     @Test

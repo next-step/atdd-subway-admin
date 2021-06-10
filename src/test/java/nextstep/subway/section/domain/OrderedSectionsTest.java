@@ -49,8 +49,8 @@ public class OrderedSectionsTest {
     void findTopSection() {
         Section topSection = OrderedSections.of(sections).findTopSection();
 
-        assertThat(topSection.getUpStation().getName()).isEqualTo(section1.getUpStation().getName());
-        assertThat(topSection.getDownStation().getName()).isEqualTo(section1.getDownStation().getName());
+        assertThat(topSection.upStationName()).isEqualTo(section1.upStationName());
+        assertThat(topSection.downStationName()).isEqualTo(section1.downStationName());
     }
 
     @DisplayName("정렬된 Sections를 만들어, 정렬된 것을 확인한다.")
@@ -59,11 +59,11 @@ public class OrderedSectionsTest {
         OrderedSections orderedSections = OrderedSections.of(sections);
 
         // actual 1 - 2 - 4 - 3 - 6
-        assertThat(orderedSections.get().get(0).getUpStation().getName()).isEqualTo(section1.getUpStation().getName());
-        assertThat(orderedSections.get().get(1).getUpStation().getName()).isEqualTo(section2.getUpStation().getName());
-        assertThat(orderedSections.get().get(2).getUpStation().getName()).isEqualTo(section3.getUpStation().getName());
-        assertThat(orderedSections.get().get(3).getUpStation().getName()).isEqualTo(section4.getUpStation().getName());
-        assertThat(orderedSections.get().get(4).getUpStation().getName()).isEqualTo(section5.getUpStation().getName());
+        assertThat(orderedSections.get().get(0).upStationName()).isEqualTo(section1.upStationName());
+        assertThat(orderedSections.get().get(1).upStationName()).isEqualTo(section2.upStationName());
+        assertThat(orderedSections.get().get(2).upStationName()).isEqualTo(section3.upStationName());
+        assertThat(orderedSections.get().get(3).upStationName()).isEqualTo(section4.upStationName());
+        assertThat(orderedSections.get().get(4).upStationName()).isEqualTo(section5.upStationName());
     }
 
 }

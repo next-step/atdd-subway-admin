@@ -4,7 +4,7 @@ import java.util.*;
 
 public class OrderedSections {
 
-    List<Section> orderedSections;
+    private List<Section> orderedSections;
 
     private OrderedSections(List<Section> orderedSections) {
         this.orderedSections = orderedSections;
@@ -27,11 +27,8 @@ public class OrderedSections {
     }
 
     private boolean isTop(Section section) {
-        return !orderedSections.stream()
-                .filter(it -> it.getDownStation().getName()
-                        .equals(section.getUpStation().getName()))
-                .findAny()
-                .isPresent();
+        return orderedSections.stream()
+                .noneMatch(it -> it.isInFrontOf(section));
     }
 
     private void makeOrderedSectionsFromTop(Section topSection) {
@@ -41,7 +38,7 @@ public class OrderedSections {
         Map<String, Section> stationMap = makeStationMap();
 
         while (topSection != null) {
-            topSection = stationMap.get(topSection.getDownStation().getName());
+            topSection = stationMap.get(topSection.downStationName());
             addNextSection(tempSections, topSection);
         }
 
@@ -51,7 +48,7 @@ public class OrderedSections {
     private Map<String, Section> makeStationMap() {
         Map<String, Section> sectionMap = new HashMap<>();
         for (Section it : orderedSections) {
-            sectionMap.put(it.getUpStation().getName(), it);
+            sectionMap.put(it.upStationName(), it);
         }
         return sectionMap;
     }
@@ -87,36 +84,33 @@ public class OrderedSections {
     }
 
     private boolean checkFront(Section sectionInput, Section sectionFromExist) {
-        return sectionInput.getDownStation().equals(sectionFromExist.getUpStation());
+        return sectionInput.isInFrontOf(sectionFromExist);
     }
 
     private boolean checkFrontMid(Section sectionInput, Section sectionFromExist) {
-        if (sectionInput.getUpStation().equals(sectionFromExist.getUpStation())) {
-            validateDistance(sectionInput.getDistance(), sectionFromExist.getDistance());
+        if (sectionInput.isInMidFrontOf(sectionFromExist)) {
+            validateDistance(sectionInput.distance(), sectionFromExist.distance());
 
-            sectionFromExist.setDistance(sectionFromExist.getDistance() - sectionInput.getDistance());
-            sectionFromExist.setUpStation(sectionInput.getDownStation());
+            sectionFromExist.setDistance(sectionFromExist.distance() - sectionInput.distance());
+            sectionFromExist.connectBehindOf(sectionInput);
             return true;
         }
         return false;
     }
 
     private boolean checkRearMid(Section sectionInput, Section sectionFromExist) {
-        if (sectionInput.getDownStation().equals(sectionFromExist.getDownStation())) {
-            validateDistance(sectionInput.getDistance(), sectionFromExist.getDistance());
+        if (sectionInput.isInMidRearOf(sectionFromExist)) {
+            validateDistance(sectionInput.distance(), sectionFromExist.distance());
 
-            sectionFromExist.setDistance(sectionFromExist.getDistance() - sectionInput.getDistance());
-            sectionFromExist.setDownStation(sectionInput.getUpStation());
+            sectionFromExist.setDistance(sectionFromExist.distance() - sectionInput.distance());
+            sectionFromExist.connectInFrontOf(sectionInput);
             return true;
         }
         return false;
     }
 
     private boolean checkRear(Section sectionInput, Section sectionFromExist) {
-        if (sectionInput.getUpStation().equals(sectionFromExist.getDownStation())) {
-            return true;
-        }
-        return false;
+        return sectionInput.isBehindOf(sectionFromExist);
     }
 
     private void validateDistance(int inputDistance, int existDistance) {
