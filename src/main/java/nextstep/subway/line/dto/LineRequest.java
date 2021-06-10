@@ -4,10 +4,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public class LineRequest {
     private String name;
     private String color;
@@ -47,6 +43,6 @@ public class LineRequest {
     }
 
     public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, Arrays.asList(new Section(upStation), new Section(downStation)), distance);
+        return new Line(name, color, new Section(upStation, downStation, distance));
     }
 }

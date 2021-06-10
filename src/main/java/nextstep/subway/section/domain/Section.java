@@ -17,29 +17,53 @@ public class Section extends BaseEntity {
     private Line line;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "station_id", foreignKey = @ForeignKey(name = "fk_section_to_station"))
-    private Station station = new Station();
+    @JoinColumn(name = "upStation_id", foreignKey = @ForeignKey(name = "fk_section_to_upStation"))
+    private Station upStation = new Station();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "downStation_id", foreignKey = @ForeignKey(name = "fk_section_to_downStation"))
+    private Station downStation = new Station();
+
+    private int distance;
 
     protected Section() {
     }
 
-    public Section(Station station) {
-        this.station = station;
+    public Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
     public Long getId() {
         return id;
     }
 
-    public Station getStation() {
-        return station;
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     public void setLine(Line line) {
         this.line = line;
     }
 
-    public void setStation(Station station) {
-        this.station = station;
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 }

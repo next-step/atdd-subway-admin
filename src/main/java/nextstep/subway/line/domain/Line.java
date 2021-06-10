@@ -21,17 +21,13 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
-    private int distance;
-
     protected Line() {
     }
 
-    public Line(String name, String color, List<Section> sections, int distance) {
+    public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        sections.stream()
-                .forEach(section -> addSection(section));
-        this.distance = distance;
+        this.addSection(section);
     }
 
     private void addSection(Section section) {
@@ -64,10 +60,6 @@ public class Line extends BaseEntity {
         return sections.getSection();
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
     public void updateLine(Line updateLine) {
         this.name = updateLine.getName();
         this.color = updateLine.getColor();
@@ -75,6 +67,5 @@ public class Line extends BaseEntity {
         updateLine.getSections().getSection()
                 .stream()
                 .forEach(station -> this.addSection(station));
-        this.distance = updateLine.getDistance();
     }
 }

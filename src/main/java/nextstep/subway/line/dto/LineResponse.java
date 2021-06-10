@@ -7,6 +7,7 @@ import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -15,19 +16,17 @@ public class LineResponse {
     private String name;
     private String color;
     private List<StationResponse> sections;
-    private int distance;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> sections, int distance, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public LineResponse(Long id, String name, String color, List<StationResponse> sections, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.sections = sections;
-        this.distance = distance;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
@@ -35,8 +34,8 @@ public class LineResponse {
     public static LineResponse of(Line line) {
         List<StationResponse> stationResponses = new ArrayList<>();
         line.getSectionsList().stream()
-                .forEach(section -> stationResponses.add(StationResponse.of(section.getStation())));
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses, line.getDistance(), line.getCreatedDate(), line.getModifiedDate());
+                .forEach(section ->  stationResponses.addAll(Arrays.asList(StationResponse.of(section.getUpStation()), (StationResponse.of(section.getDownStation())))));
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses, line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
@@ -53,10 +52,6 @@ public class LineResponse {
 
     public List getStations() {
         return sections;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     public LocalDateTime getCreatedDate() {

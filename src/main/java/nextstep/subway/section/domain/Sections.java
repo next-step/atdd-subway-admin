@@ -30,12 +30,13 @@ public class Sections {
         return this.sections;
     }
 
-    public List<StationResponse> getStations() {
+    /*public List<StationResponse> getStations() {
         List<StationResponse> stationResponses = new ArrayList<>();
         sections.stream()
-                .forEach(
-                        section -> stationResponses.add(StationResponse.of(section.getStation()))
+                .forEach(section -> {stationResponses.add(StationResponse.of(section.getUpStation()));
+                                    stationResponses.add(StationResponse.of(section.getDownStation()));
+                        }
                 );
         return stationResponses;
-    }
+    }*/
 }
