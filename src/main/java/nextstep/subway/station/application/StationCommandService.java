@@ -11,9 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class StationCommandService implements StationCommandUseCase{
     private final StationRepository stationRepository;
+    private final StationQueryUseCase stationQueryUseCase;
 
-    public StationCommandService(StationRepository stationRepository) {
+    public StationCommandService(StationRepository stationRepository, StationQueryUseCase stationQueryUseCase) {
         this.stationRepository = stationRepository;
+        this.stationQueryUseCase = stationQueryUseCase;
     }
 
     @Override
@@ -24,6 +26,7 @@ public class StationCommandService implements StationCommandUseCase{
 
     @Override
     public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
+        Station station = stationQueryUseCase.findById(id);
+        stationRepository.delete(station);
     }
 }
