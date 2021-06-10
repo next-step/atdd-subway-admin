@@ -4,6 +4,9 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesSubResponse;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
+import nextstep.subway.section.service.SectionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,16 +19,26 @@ import java.util.List;
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(final LineService lineService) {
+    public LineController(final LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) throws NoSuchFieldException {
         lineService.validateDuplicatedName(lineRequest);
-        LineResponse line = lineService.saveLine(lineRequest);
+        SectionResponse sectionResponse = sectionService.createSection(new SectionRequest(lineRequest.getDistance()));
+        LineResponse line = lineService.saveLine(lineRequest, sectionResponse);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+    }
+
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity createSectionAndRegisterWithLine(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        Long sectionId = sectionService.createSection(new SectionRequest(sectionRequest.getDistance())).getId();
+        SectionResponse sectionResponse = lineService.registerWithLine(lineId, sectionRequest, sectionId);
+        return ResponseEntity.created(URI.create("/sections/" + sectionResponse.getId())).body(sectionResponse);
     }
 
     @GetMapping("/{lineId}")

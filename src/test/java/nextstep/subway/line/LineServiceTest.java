@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.domain.Section;
 import nextstep.subway.exception.DuplicateDataException;
 import nextstep.subway.exception.NoSuchDataException;
 import nextstep.subway.line.application.LineService;
@@ -44,11 +45,14 @@ public class LineServiceTest {
                 .isInstanceOf(DuplicateDataException.class);
     }
 
-    /*@DisplayName("노선 조회")
+    @DisplayName("노선 조회")
     @Test
     public void 노선조회시_노선확인() {
         //given
-        Line line = Line.create("testName", "testColor", Station.create("up"), Station.create("down"), 100);
+        Station upStation = new Station(1L, "upStation");
+        Station downStation = new Station(2L, "downStation");
+        Section section = new Section(1L, 100);
+        Line line = Line.createWithSectionAndStation("testName", "testColor", section, upStation, downStation);
         when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(line));
 
         //when
@@ -74,8 +78,11 @@ public class LineServiceTest {
     @Test
     public void 노선목록조회시_노선목록확인() {
         //given
-        Line line1 = Line.create("testName1", "testColor1", Station.create("up1"), Station.create("down1"), 100);
-        Line line2 = Line.create("testName2", "testColor2", Station.create("up2"), Station.create("down2"), 100);
+        Station upStation = new Station(1L, "upStation");
+        Station downStation = new Station(2L, "downStation");
+        Section section = new Section(1L, 100);
+        Line line1 = Line.createWithSectionAndStation("testName1", "testColor1", section, upStation, downStation);
+        Line line2 = Line.createWithSectionAndStation("testName2", "testColor2", section, upStation, downStation);
         List<Line> lines = new ArrayList<>(Arrays.asList(line1, line2));
         when(lineRepository.findAll()).thenReturn(lines);
 
@@ -100,5 +107,5 @@ public class LineServiceTest {
         //then
         when(lineRepository.findById(lineId)).thenThrow(NoSuchDataException.class);
         assertThatThrownBy(() -> lineService.readLine(lineId)).isInstanceOf(NoSuchDataException.class);
-    }*/
+    }
 }

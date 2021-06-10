@@ -35,8 +35,17 @@ public class LineRepositoryTest {
     @Test
     public void save() {
         //given
+        Station upStation = Station.create("upStation");
+        Station downStation = Station.create("downStation");
+        stationRepository.save(upStation);
+        stationRepository.save(downStation);
+
+        Section section = Section.create(100);
+        entityManager.flush();
+        entityManager.clear();
+
         //when
-        Line savedLine = 노선저장("새로운노선", "새로운색");
+        Line savedLine = 노선저장2("새로운노선", "새로운색", upStation, downStation, section);
 
         //then
         Line findLine = lineRepository.findById(savedLine.id()).orElseThrow(() -> new NoSuchDataException());
@@ -47,7 +56,16 @@ public class LineRepositoryTest {
     @Test
     public void update() {
         //given
-        Line savedLine = 노선저장("새로운노선", "새로운색");
+        Station upStation = Station.create("upStation");
+        Station downStation = Station.create("downStation");
+        stationRepository.save(upStation);
+        stationRepository.save(downStation);
+
+        Section section = Section.create(100);
+        entityManager.flush();
+        entityManager.clear();
+
+        Line savedLine = 노선저장2("새로운노선", "새로운색", upStation, downStation, section);
 
         //when
         savedLine.change("변경된노선이름", "변경된색이름");
@@ -64,7 +82,16 @@ public class LineRepositoryTest {
     @Test
     public void delete() {
         //given
-        Line savedLine = 노선저장("새로운노선", "새로운색");
+        Station upStation = Station.create("upStation");
+        Station downStation = Station.create("downStation");
+        stationRepository.save(upStation);
+        stationRepository.save(downStation);
+
+        Section section = Section.create(100);
+        entityManager.flush();
+        entityManager.clear();
+
+        Line savedLine = 노선저장2("새로운노선", "새로운색", upStation, downStation, section);
 
         //when
         lineRepository.delete(savedLine);
@@ -99,78 +126,12 @@ public class LineRepositoryTest {
         Station findDownStation = stationRepository.findById(savedDownStation.id()).orElseThrow(() -> new IllegalStateException());
 
         assertThat(findLine.sortedStationList()).containsExactly(findUpStation, findDownStation);
-        assertThat(findLine.sectionList()).contains(findSection);
-        assertThat(findSection.upStation()).isEqualTo(findUpStation);
+        assertThat(findLine.sections().contains(findSection)).isTrue();
         assertThat(findSection.downStation()).isEqualTo(findDownStation);
         assertThat(findUpStation.downSection()).isEqualTo(findSection);
         assertThat(findDownStation.upSection()).isEqualTo(findSection);
     }
 
-    /*@DisplayName("노선 저장시 구간 저장 확인")
-    @Test
-    public void save2() {
-        //given
-        Station upStation = Station.create("상행역");
-        Station downStation = Station.create("하행역");
-        stationRepository.save(upStation);
-        stationRepository.save(downStation);
-        entityManager.flush();
-        entityManager.clear();
-
-        //when
-        Line savedLine = 노선저장2("testName", "testColor", upStation, downStation, 10);
-        entityManager.flush();
-        entityManager.clear();
-
-        //then
-        Line line = lineRepository.findById(savedLine.id()).orElseThrow(() -> new NoSuchDataException());
-        assertThat(line.sectionsSize()).isEqualTo(1);
-    }
-
-    @DisplayName("노선 저장시 역구간 저장 확인")
-    @Test
-    public void save3() {
-        //given
-        Station upStation = Station.create("상행역");
-        Station downStation = Station.create("하행역");
-        stationRepository.save(upStation);
-        stationRepository.save(downStation);
-        entityManager.flush();
-        entityManager.clear();
-
-        //when
-        Line savedLine = 노선저장2("testName", "testColor", upStation, downStation, 10);
-        entityManager.flush();
-        entityManager.clear();
-
-        //then
-        Line line = lineRepository.findById(savedLine.id()).orElseThrow(() -> new NoSuchDataException());
-        Section section = line.sections().toList().get(0);
-
-        assertThat(section.stationSectionsSize()).isEqualTo(2);
-    }
-
-    @DisplayName("노선 삭제시 구간 삭제 확인")
-    @Test
-    public void delete() {
-        //given
-        Station upStation = Station.create("상행역");
-        Station downStation = Station.create("하행역");
-        stationRepository.save(upStation);
-        stationRepository.save(downStation);
-        Line savedLine = 노선저장2("testName", "testColor", upStation, downStation, 10);
-        Section section = savedLine.sections().toList().get(0);
-        entityManager.flush();
-        entityManager.clear();
-
-        //when
-        lineRepository.deleteById(savedLine.id());
-        entityManager.flush();
-        entityManager.clear();
-
-        //then
-        assertThat(sectionRepository.findById(section.id())).isEqualTo(Optional.empty());
-    }
 
     @DisplayName("노선 이름 중복 확인: 중복인 경우")
     @Test
@@ -198,15 +159,15 @@ public class LineRepositoryTest {
         assertThat(isExits).isFalse();
     }
 
-    Line 노선저장2(String name, String color, Station upStation, Station downStation, int distance) {
-        Line line = Line.create(name, color, upStation, downStation, distance);
+    Line 노선저장2(String name, String color, Station upStation, Station downStation, Section section) {
+        Line line = Line.createWithSectionAndStation(name, color, section, upStation, downStation);
 
         Line savedLine = lineRepository.save(line);
         entityManager.flush();
         entityManager.clear();
 
         return savedLine;
-    }*/
+    }
 
     Line 노선저장(String name, String color) {
         Line line = Line.create(name, color);

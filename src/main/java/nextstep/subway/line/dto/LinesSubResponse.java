@@ -33,7 +33,7 @@ public class LinesSubResponse {
         line.sortedStationList().stream().forEach(station -> stationResponses.add(StationResponse.of(station)));
 
         return new LinesSubResponse(line.id(), line.name(), line.color(), stationResponses,
-                line.getCreatedDate(), line.getModifiedDate());
+                line.createdDate(), line.modifiedDate());
     }
 
     @Override

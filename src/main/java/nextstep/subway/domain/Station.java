@@ -4,9 +4,10 @@ import nextstep.subway.exception.ValueFormatException;
 import org.apache.logging.log4j.util.Strings;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static javax.persistence.FetchType.LAZY;
 
 @Entity
 public class Station extends BaseEntity {
@@ -17,14 +18,14 @@ public class Station extends BaseEntity {
     private String name;
 
     @JoinColumn(name = "down_section_id", foreignKey = @ForeignKey(name = "fk_station_down_section"))
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = LAZY)
     private Section downSection;
 
-    @OneToOne(mappedBy = "downStation", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "downStation", fetch = LAZY, cascade = CascadeType.ALL)
     private Section upSection;
 
     @OneToMany(mappedBy = "station", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LineStation> lineStations = new ArrayList<>();
+    private List<LineStation> lineStations;
 
     /**
      * 생성자
@@ -59,27 +60,14 @@ public class Station extends BaseEntity {
     /**
      * 연관관계 메소드
      */
-    public void addLineStation(LineStation lineStation) {
-        lineStations.add(lineStation);
-    }
 
     public void registerDownSection(Section downSection) {
         this.downSection = downSection;
-        downSection.setUpStation(this);
     }
 
     public void setUpSection(Section upSection) {
         this.upSection = upSection;
     }
-
-    /**
-     * 비즈니스 메소드
-     */
-    public void registerLine(Line line) {
-        LineStation lineStation = LineStation.create(line, this);
-        lineStation.setStation(this);
-    }
-
 
     /**
      * 그 밖의 메소드

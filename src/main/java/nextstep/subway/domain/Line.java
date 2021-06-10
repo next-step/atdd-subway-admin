@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.NoSuchDataException;
 import nextstep.subway.exception.ValueFormatException;
 import org.apache.logging.log4j.util.Strings;
 
@@ -7,7 +8,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -18,11 +18,11 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections(new ArrayList<>());
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LineStation> lineStations = new ArrayList<>();
+    @Embedded
+    private LineStations lineStations = new LineStations(new ArrayList<>());
 
     /**
      * 생성자
@@ -55,8 +55,8 @@ public class Line extends BaseEntity {
         upStation.registerDownSection(section);
         section.registerDownStation(downStation);
         section.registerLine(line);
-        upStation.registerLine(line);
-        downStation.registerLine(line);
+        line.registerStation(upStation);
+        line.registerStation(downStation);
         return line;
     }
 
@@ -75,11 +75,10 @@ public class Line extends BaseEntity {
      */
     public void addSections(Section section) {
         sections.add(section);
-
     }
 
     public void addLineStation(LineStation lineStation) {
-        lineStations.add(lineStation);
+        lineStations.addLineStation(lineStation);
     }
 
     /**
@@ -91,15 +90,13 @@ public class Line extends BaseEntity {
     }
 
     public void registerStation(Station station) {
-        LineStation lineStation = LineStation.create(this, station);
-        lineStation.setStation(station);
+        if (!lineStations.contains(station)) {
+            LineStation lineStation = LineStation.create(this, station);
+            lineStation.setStation(station);
+        }
     }
 
-    public List<Station> stationList() {
-        return lineStations.stream().map(lineStation -> lineStation.station()).collect(Collectors.toList());
-    }
-
-    public List<Section> sectionList() {
+    public Sections sections() {
         return sections;
     }
 
@@ -122,11 +119,33 @@ public class Line extends BaseEntity {
     }
 
     public Station upEndStation() {
-        return lineStations.stream()
-                .map(lineStation -> lineStation.station())
-                .filter(station -> station.upSection() == null)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("상행종점역이 존재하지 않습니다."));
+        return lineStations.upEndStation();
+    }
+
+    public void register(Station upStation, Station downStation, Section section) {
+        Station existsStation = findExistsStation(upStation, downStation);
+        Section existsSection = findExistsSection(existsStation, upStation);
+        if (isEndStation(existsSection)) {
+            connectAsEndStation(upStation, downStation, section);
+            return;
+        }
+
+        existsSection.resetDistance(section.distance());
+
+        if (isUpStation(existsStation, upStation)) {
+            connectAsMiddleStationByUpStation(upStation, downStation, section, existsSection);
+            return;
+        }
+
+        connectAsMiddleStationByDownStation(upStation, downStation, section);
+    }
+
+    public boolean contains(Station station) {
+        return lineStations.contains(station);
+    }
+
+    public boolean contains(Section section) {
+        return sections.contains(section);
     }
 
     /**
@@ -157,15 +176,68 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public int sectionsSize() {
-        return sections.size();
-    }
-
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    private void connectAsMiddleStationByDownStation(Station upStation, Station downStation, Section section) {
+        downStation.upSection().registerDownStation(upStation);
+        connect(upStation, downStation, section);
+        registerStation(upStation);
+    }
+
+    private void connectAsMiddleStationByUpStation(Station upStation, Station downStation, Section section, Section existsSection) {
+        downStation.registerDownSection(existsSection);
+        connect(upStation, downStation, section);
+        registerStation(downStation);
+    }
+
+    private void connectAsEndStation(Station upStation, Station downStation, Section section) {
+        connect(upStation, downStation, section);
+        registerStation(upStation);
+    }
+
+    private boolean isEndStation(Section existsSection) {
+        return existsSection == null;
+    }
+
+    private void connect(Station upStation, Station downStation, Section section) {
+        upStation.registerDownSection(section);
+        section.registerDownStation(downStation);
+        section.registerLine(this);
+    }
+
+    private Section findExistsSection(Station existsStation, Station upStation) {
+        if (isUpStation(existsStation, upStation)) {
+            return existsStation.downSection();
+        }
+        return existsStation.upSection();
+    }
+
+    private boolean isUpStation(Station existsStation, Station upStation) {
+        return existsStation.equals(upStation);
+    }
+
+    private Station findExistsStation(Station upStation, Station downStation) {
+        boolean isExistsUpStation = contains(upStation);
+        boolean isExistsDownStation = contains(downStation);
+
+        validate(isExistsUpStation, isExistsDownStation);
+
+        if (isExistsUpStation) {
+            return upStation;
+        }
+
+        return downStation;
+    }
+
+    private void validate(boolean isExistsUpStation, boolean isExistsDownStation) {
+        if (isExistsUpStation && isExistsDownStation) {
+            throw new IllegalStateException("등록하려는 두 역이 이미 모두 노선에 포함되어 있습니다.");
+        }
+
+        if (!isExistsUpStation && !isExistsDownStation) {
+            throw new IllegalStateException("등록하려는 두 역이 노선에 모두 포함되어 있지 않습니다.");
+        }
     }
 }

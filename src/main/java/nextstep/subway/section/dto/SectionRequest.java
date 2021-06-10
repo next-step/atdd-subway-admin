@@ -1,23 +1,29 @@
 package nextstep.subway.section.dto;
 
 public class SectionRequest {
-    private String upStationId;
-    private String downStationId;
+    private Long upStationId;
+    private Long downStationId;
     private int distance;
 
-    public String getUpStationId() {
+    public SectionRequest() {}
+
+    public SectionRequest(int distance) {
+        this.distance = distance;
+    }
+
+    public Long getUpStationId() {
         return upStationId;
     }
 
-    public void setUpStationId(String upStationId) {
+    public void setUpStationId(Long upStationId) {
         this.upStationId = upStationId;
     }
 
-    public String getDownStationId() {
+    public Long getDownStationId() {
         return downStationId;
     }
 
-    public void setDownStationId(String downStationId) {
+    public void setDownStationId(Long downStationId) {
         this.downStationId = downStationId;
     }
 

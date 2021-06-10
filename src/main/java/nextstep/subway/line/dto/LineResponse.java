@@ -3,6 +3,7 @@ package nextstep.subway.line.dto;
 import nextstep.subway.domain.Line;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class LineResponse {
     private Long id;
@@ -23,7 +24,10 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.id(), line.name(), line.color(), line.getCreatedDate(), line.getModifiedDate());
+        if (Objects.isNull(line)) {
+            return null;
+        }
+        return new LineResponse(line.id(), line.name(), line.color(), line.createdDate(), line.modifiedDate());
     }
 
     public Long getId() {

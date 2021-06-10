@@ -24,7 +24,7 @@ public class Section extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
-    @OneToOne(mappedBy = "downSection", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "downSection", cascade = CascadeType.ALL)
     private Station upStation;
 
     /**
@@ -61,32 +61,35 @@ public class Section extends BaseEntity {
     /**
      * 연관관계 메소드
      */
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
     public void registerDownStation(Station downStation) {
         this.downStation = downStation;
         downStation.setUpSection(this);
     }
 
     public void registerLine(Line line) {
-        this.line = line;
-        line.addSections(this);
+        if (!isRegisterAlreadyWithSameLine(line)) {
+            this.line = line;
+            line.addSections(this);
+        }
     }
 
+    private boolean isRegisterAlreadyWithSameLine(Line line) {
+        return line.contains(this);
+    }
 
     /**
      * 비즈니스 메소드
      */
-
+    public void resetDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new IllegalStateException("새로 등록될 구간의 길이는 기존에 존재하는 구간의 길이보다 작아야합니다.");
+        }
+        this.distance -= distance;
+    }
 
     /**
      * 그 밖의 메소드
      */
-    public Long id() {
-        return id;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -101,11 +104,19 @@ public class Section extends BaseEntity {
         return Objects.hash(id());
     }
 
-    public Station upStation() {
-        return upStation;
+    public Long id() {
+        return id;
     }
 
     public Station downStation() {
         return downStation;
+    }
+
+    public int distance() {
+        return distance;
+    }
+
+    public Line line() {
+        return line;
     }
 }

@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.Objects;
 
+@Table(uniqueConstraints={@UniqueConstraint(columnNames={"line_id","station_id"})})
 @Entity
 public class LineStation {
     @Id
@@ -50,13 +51,8 @@ public class LineStation {
      */
     public void setStation(Station station) {
         this.station = station;
-        this.station.addLineStation(this);
         this.line.addLineStation(this);
     }
-
-    /**
-     * 비즈니스 메소드
-     */
 
     /**
      * 기타 메소드

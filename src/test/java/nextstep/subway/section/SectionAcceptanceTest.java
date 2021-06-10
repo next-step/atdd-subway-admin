@@ -3,69 +3,64 @@ package nextstep.subway.section;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LinesSubResponse;
+import nextstep.subway.section.dto.SectionResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static nextstep.subway.line.LineAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.CREATED;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
     public static final String BASE_PATH = "/sections";
 
-    @DisplayName("구간등록 - 역 사이에 새로운 역(새로운 구간)을 등록하는 경우")
+    @DisplayName("구간생성")
     @Test
-    public void 역사이에새로운역을_등록하는경우_등록확인() throws Exception {
+    public void 구간생성시_구간생성확인() throws Exception {
         //given
-        LineResponse lineResponse = 지하철_노선_생성("5호선", "보라색", "방화역", "하남검단산역");
-        LinesSubResponse linesSubResponse = 지하철_노선_조회();
+        Map<String, String> params = 구간생성파라미터(1000);
 
-        // when
-        ExtractableResponse<Response> response = 구간등록(linesSubResponse);
+        //when
+        ExtractableResponse<Response> extractableResponse = 구간생성요청(params);
 
-        // then
-        구간등록됨(response);
+        //then
+        구간생성됨(extractableResponse);
     }
 
-    private ExtractableResponse<Response> 구간등록(LinesSubResponse linesSubResponse) {
-        Map<String, String> params = 구간등록_파라미터(linesSubResponse);
-        ExtractableResponse<Response> response = 구간등록_요청(params);
-        return response;
+    public static SectionResponse 구간_생성(int distance) {
+        Map<String, String> params = 구간생성파라미터(distance);
+        ExtractableResponse<Response> response = 구간생성요청(params);
+        구간생성됨(response);
+
+        return response.jsonPath().getObject(".", SectionResponse.class);
     }
 
-    private void 구간등록됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LinesSubResponse linesSubResponse = 지하철_노선_조회();
-        assertThat(linesSubResponse.getStations().size()).isEqualTo(3);
-    }
-
-    private ExtractableResponse<Response> 구간등록_요청(Map<String, String> params) {
-         return given()
-                    .log().all()
-                    .body(params)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                    .post(location + BASE_PATH)
-                .then()
-                    .log().all()
-                    .extract();
-    }
-
-    private Map<String, String> 구간등록_파라미터(LinesSubResponse linesSubResponse) {
-        Long upStationId = linesSubResponse.getStations().get(0).getId();
-        Long downStationId = linesSubResponse.getStations().get(1).getId();
+    private static Map<String, String> 구간생성파라미터(int distance) {
         Map<String, String> params = new HashMap<>();
-        params.put("downStationId", String.valueOf(downStationId));
-        params.put("upStationId", String.valueOf(upStationId));
-        params.put("distance", "10");
+        params.put("distance", String.valueOf(distance));
         return params;
+    }
+
+    private static void 구간생성됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(CREATED.value());
+    }
+
+    private static ExtractableResponse<Response> 구간생성요청(Map<String, String> params) {
+        ExtractableResponse<Response> response =
+                given()
+                        .log().all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                        .post(BASE_PATH)
+                .then()
+                        .log().all()
+                        .extract();
+        return response;
     }
 }

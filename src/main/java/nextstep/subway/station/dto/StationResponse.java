@@ -11,7 +11,7 @@ public class StationResponse {
     private LocalDateTime modifiedDate;
 
     public static StationResponse of(Station station) {
-        return new StationResponse(station.id(), station.name(), station.getCreatedDate(), station.getModifiedDate());
+        return new StationResponse(station.id(), station.name(), station.createdDate(), station.modifiedDate());
     }
 
     public StationResponse() {
