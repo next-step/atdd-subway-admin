@@ -1,7 +1,6 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -11,6 +10,7 @@ public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
 
@@ -46,7 +46,4 @@ public class Station extends BaseEntity {
         return Objects.hash(id, name);
     }
 
-    public StationResponse toStationResponse() {
-        return StationResponse.of(this);
-    }
 }
