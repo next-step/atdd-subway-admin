@@ -15,9 +15,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineRequestWithEndpoints;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineResponseWithEndpoints;
 import nextstep.subway.station.dto.StationResponse;
 
 public class LineAcceptanceTool {
@@ -28,7 +26,7 @@ public class LineAcceptanceTool {
     public static final LineRequest 신분당선 = new LineRequest("신분당선", "red darken-1");
     public static final LineRequest 분당선 = new LineRequest("분당선", "yellow darken-1");
 
-    public static final LineRequestWithEndpoints 신분당선_종점있음 = new LineRequestWithEndpoints("신분당선", "red darken-1", 강남역.getId(), 광교역.getId(), 10);
+    public static final LineRequest 신분당선_종점있음 = new LineRequest("신분당선", "red darken-1", 강남역.getId(), 광교역.getId(), 10);
 
     private static StationResponse getStation(String name) {
         // given
@@ -57,11 +55,11 @@ public class LineAcceptanceTool {
             .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음_종점포함(LineRequestWithEndpoints lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음_종점포함(LineRequest lineRequest) {
         return 지하철_노선_생성_요청_종점포함(lineRequest);
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청_종점포함(LineRequestWithEndpoints lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청_종점포함(LineRequest lineRequest) {
         return RestAssured
             .given().log().all()
             .body(lineRequest)
@@ -127,9 +125,9 @@ public class LineAcceptanceTool {
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
     }
 
-    public static void 지하철_노선_목록_응답됨_종점포함(LineRequestWithEndpoints lineRequest, ExtractableResponse<Response> response) {
-        LineResponseWithEndpoints lineResponse = response.jsonPath()
-            .getList(".", LineResponseWithEndpoints.class)
+    public static void 지하철_노선_목록_응답됨_종점포함(LineRequest lineRequest, ExtractableResponse<Response> response) {
+        LineResponse lineResponse = response.jsonPath()
+            .getList(".", LineResponse.class)
             .get(0);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
