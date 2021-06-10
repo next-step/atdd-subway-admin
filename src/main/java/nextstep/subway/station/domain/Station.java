@@ -1,6 +1,7 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.domain.Section;
 
 import javax.persistence.*;
 
@@ -11,6 +12,12 @@ public class Station extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
+
+    @OneToOne(mappedBy = "nextStation")
+    private Section prevSection;
+
+    @OneToOne(mappedBy = "prevStation")
+    private Section nextSection;
 
     public Station() {
     }
