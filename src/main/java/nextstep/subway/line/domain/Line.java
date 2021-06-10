@@ -84,4 +84,9 @@ public class Line extends BaseEntity {
         values.clear();
         values.add(section);
     }
+
+    public boolean isContainingStation(Station station){
+        return getStations().contains(station);
+    };
+
 }

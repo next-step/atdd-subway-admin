@@ -3,7 +3,10 @@ package nextstep.subway.section.domain;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import java.util.List;
 
 @Embeddable
@@ -30,7 +33,8 @@ public class Sections {
     }
 
     public void add(Section targetSection, Line line) {
-        validateTargetStationContains(targetSection, line);
+        validateStationsContains(targetSection, line);
+
         targetSection.setLine(line);
 
         makeSeqUpStationEquals(targetSection);
@@ -79,24 +83,24 @@ public class Sections {
     private void makeSeqWhenDownStationAndTargetUpStationEquals(Section targetSection) {
         values.stream().filter(s -> s.isDownStationAndTargetUpStationEquals(targetSection))
                 .findFirst().ifPresent(
-                        section -> {
-                            int sequence = section.getSequence();
-                            targetSection.setSequence(sequence+1);
-                        }
+                section -> {
+                    int sequence = section.getSequence();
+                    targetSection.setSequence(sequence + 1);
+                }
         );
     }
 
-    private void validateTargetStationContains(Section section, Line line) {
-        List<Station> stations = line.getStations();
-        if (stations.contains(section.getUpStation()) == false &&
-                stations.contains(section.getDownStation()) == false){
+    private void validateStationsContains(Section section, Line line) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        if (line.isContainingStation(upStation) == false &&
+                line.isContainingStation(downStation) == false) {
             throw new IllegalArgumentException("상행, 종행 역 모두가 포함되지 않았습니다.");
-        };
+        }
 
-        if (stations.contains(section.getUpStation()) &&
-                stations.contains(section.getDownStation())){
+        if (line.isContainingStation(upStation) &&
+                line.isContainingStation(downStation)) {
             throw new IllegalArgumentException("상행, 종행 역 모두가 포함되어있습니다..");
-        };
-
+        }
     }
 }
