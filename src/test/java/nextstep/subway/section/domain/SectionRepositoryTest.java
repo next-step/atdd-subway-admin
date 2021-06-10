@@ -143,7 +143,7 @@ public class SectionRepositoryTest {
         // given
         Sections sections = new Sections(sectionRepository.findByLineId(line.getId()));
         Section section = new Section(station1, station6, 9, line);
-        Section appendedSection = sections.appendNewSection(section);
+        Section appendedSection = sections.addSection(section);
 
         // when
         Section savedSection = sectionRepository.save(appendedSection);

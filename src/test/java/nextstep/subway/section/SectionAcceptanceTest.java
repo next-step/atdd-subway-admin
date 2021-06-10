@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,17 +44,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        강남역 = StationAcceptanceTest.지하철_역_등록되어_있음_공용("강남역");
-        교대역 = StationAcceptanceTest.지하철_역_등록되어_있음_공용("교대역");
-        서초역 = StationAcceptanceTest.지하철_역_등록되어_있음_공용("서초역");
-        방배역 = StationAcceptanceTest.지하철_역_등록되어_있음_공용("방배역");
-        사당역 = StationAcceptanceTest.지하철_역_등록되어_있음_공용("사당역");
-        낙성대역 = StationAcceptanceTest.지하철_역_등록되어_있음_공용("낙성대역");
-        서울대입구역 = StationAcceptanceTest.지하철_역_등록되어_있음_공용("서울대입구역");
-        봉천역 = StationAcceptanceTest.지하철_역_등록되어_있음_공용("봉천역");
-        신림역 = StationAcceptanceTest.지하철_역_등록되어_있음_공용("신림역");
-        신대방역 = StationAcceptanceTest.지하철_역_등록되어_있음_공용("신대방역");
-        대림역 = StationAcceptanceTest.지하철_역_등록되어_있음_공용("대림역");
+        List<String> stations = Arrays.asList("강남역", "교대역", "서초역", "방배역", "사당역", "낙성대역", "서울대입구역", "봉천역",
+                "신림역", "신대방역", "대림역");
+        Map<String, StationResponse> responses = StationAcceptanceTest.지하철_역들이_등록되어_있음_공용(stations).stream()
+                .collect(Collectors.toMap(res -> res.getName(), res -> res));
+        강남역 = responses.get("강남역");
+        교대역 = responses.get("교대역");
+        서초역 = responses.get("서초역");
+        방배역 = responses.get("방배역");
+        사당역 = responses.get("사당역");
+        낙성대역 = responses.get("낙성대역");
+        서울대입구역 = responses.get("서울대입구역");
+        봉천역 = responses.get("봉천역");
+        신림역 = responses.get("신림역");
+        신대방역 = responses.get("신대방역");
+        대림역 = responses.get("대림역");
         LineRequest lineRequest = new LineRequest("2호선", "green", 강남역.getId(), 교대역.getId(), 4);
         greenLineResponse = LineAcceptanceTest.지하철_노선_등록되어_있음_공용(lineRequest);
         지하철_구간_생성되어_있음(greenLineResponse, 교대역, 서초역, 3);

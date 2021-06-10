@@ -81,7 +81,7 @@ public class LineService {
         Sections sections = new Sections(line.getSections());
         Section section = makeSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance(), line);
-        sectionRepository.save(sections.appendNewSection(section));
+        sectionRepository.save(sections.addSection(section));
         return LineResponse.of(line);
     }
 

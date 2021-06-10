@@ -87,7 +87,7 @@ class LineRepositoryTest {
         Station resultStation1 = stationRepository.findById(station1.getId()).get();
         Station resultStation2 = stationRepository.findById(station6.getId()).get();
         Sections sections = new Sections(line.getSections());
-        Section section = sections.appendNewSection(new Section(resultStation1, resultStation2, 12, line));
+        Section section = sections.addSection(new Section(resultStation1, resultStation2, 12, line));
 
         // when
         Section save = sectionRepository.save(section);

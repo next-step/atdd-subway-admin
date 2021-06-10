@@ -128,6 +128,19 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .getObject(".", StationResponse.class);
     }
 
+    public static List<StationResponse> 지하철_역들이_등록되어_있음_공용(List<String> stationNames) {
+        List<StationRequest> stationRequests = stationNames.stream().map(StationRequest::new).collect(Collectors.toList());
+        return RestAssured.given().log().all()
+                .body(stationRequests)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations/all")
+                .then().log().all()
+                .extract()
+                .jsonPath()
+                .getList(".", StationResponse.class);
+    }
+
     private ExtractableResponse<Response> 지하철_역_생성_요청(String stationName) {
         return RestAssured.given().log().all()
                 .body(new StationRequest(stationName))
