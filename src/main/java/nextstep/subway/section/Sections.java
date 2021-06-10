@@ -19,15 +19,13 @@ public class Sections {
     }
 
     public void add(Section section) {
-        sections.add(section);
+        if (!sections.contains(section)) {
+            sections.add(section);
+        }
     }
 
     public boolean contains(Section section) {
         return sections.contains(section);
-    }
-
-    public List<Section> getAllSection() {
-        return sections;
     }
 
     public List<Station> sortedStations() {
@@ -40,7 +38,7 @@ public class Sections {
     }
 
     private LinkedList<Station> addStation(LinkedList<Station> stations, Section section) {
-        if(!stations.contains(section.getUpStation())){
+        if (!stations.contains(section.getUpStation())) {
             stations.add(section.getUpStation());
             stations.add(section.getDownStation());
             return stations;

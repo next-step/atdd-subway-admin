@@ -49,8 +49,7 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         section.addLine(this);
-        if (!sections.contains(section)) {
-            sections.add(section);
-        }
+        sections.add(section);
+
     }
 }
