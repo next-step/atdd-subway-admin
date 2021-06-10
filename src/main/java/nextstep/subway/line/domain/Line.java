@@ -59,4 +59,9 @@ public class Line extends BaseEntity {
     public List<StationResponse> getStationResponse() {
         return Collections.unmodifiableList(sections.toResponseList());
     }
+
+    public void addSection(Section section) {
+        section.addLine(this);
+        sections.add(section);
+    }
 }

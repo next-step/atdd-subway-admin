@@ -2,17 +2,23 @@ package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.NoSuchElementException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.exception.InvalidDistanceException;
+import nextstep.subway.exception.StationsAlreadyExistException;
+import nextstep.subway.exception.StationsNoExistException;
 import nextstep.subway.station.dto.StationResponse;
 
 @Embeddable
 public class Sections {
+
+    private static final String ALREADY_EXIST = "이미 구간이 등록된 역입니다.";
+    private static final String NO_EXIST = "구간에 없는 역들입니다.";
+    private static final String OVER_DISTANCE = "기존 구간의 거리보다 작아야 합니다.";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.ALL})
     private List<Section> sections = new ArrayList<Section>();
@@ -28,10 +34,85 @@ public class Sections {
     }
 
     public List<StationResponse> toResponseList() {
+        List<StationResponse> list = new ArrayList<>();
+
+        if (sections == null) {
+            return list;
+        }
+
+        Section nextSection = findStartStation();
+        list.add(nextSection.upStationToReponse());
+        while (nextSection != null) {
+            list.add(nextSection.downStationToReponse());
+            nextSection = findEndStatoin(nextSection);
+        }
+
+        return list;
+    }
+
+    private Section findEndStatoin(Section nextSection) {
+        return sections.stream().filter(section -> section.isStartStation(nextSection))
+            .findFirst().orElse(null);
+    }
+
+    private Section findStartStation() {
+        return sections.stream().filter(section -> findUpStation(section) == null)
+            .findFirst().orElseThrow(NoSuchElementException::new);
+    }
+
+    private Section findUpStation(Section findSection) {
         return sections.stream()
-            .map(section -> Stream.of(section.upStationToReponse(), section.downStationToReponse()))
-            .flatMap(Stream::distinct)
-            .collect(Collectors.toList());
+            .filter(section -> section.isEndStation(findSection))
+            .findFirst()
+            .orElse(null);
+    }
+
+    public void add(Section section) {
+        validateAlreadyOrNoExist(section);
+        updateIfUpStaionMatch(section);
+        updateIfDownStationMatch(section);
+        sections.add(section);
+    }
+
+    private void updateIfDownStationMatch(Section compareSection) {
+        sections.stream()
+            .filter(compareSection::sameDownStaion)
+            .findFirst()
+            .ifPresent(findedSection -> {
+                validateDistance(findedSection, compareSection);
+                findedSection.updateDownStation(compareSection);
+                findedSection.updateDistance(compareSection);
+            });
+
+    }
+
+    private void updateIfUpStaionMatch(Section compareSection) {
+        sections.stream()
+            .filter(compareSection::sameUpStaion)
+            .findFirst()
+            .ifPresent(findedSection -> {
+                validateDistance(findedSection, compareSection);
+                findedSection.updateUpStation(compareSection);
+                findedSection.updateDistance(compareSection);
+            });
+    }
+
+    private void validateDistance(Section findSection, Section compareSection) {
+        if (findSection.isOverDistance(compareSection)) {
+            throw new InvalidDistanceException(OVER_DISTANCE);
+        }
+    }
+
+    private void validateAlreadyOrNoExist(Section compareSection) {
+        boolean hasUpStation = sections.stream().anyMatch(compareSection::hasUpStation);
+        boolean hasDownStation = sections.stream().anyMatch(compareSection::hasDownStation);
+
+        if (!hasUpStation && !hasDownStation) {
+            throw new StationsNoExistException(NO_EXIST);
+        }
+        if (hasUpStation && hasDownStation) {
+            throw new StationsAlreadyExistException(ALREADY_EXIST);
+        }
     }
 
 }

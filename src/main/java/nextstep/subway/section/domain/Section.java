@@ -56,4 +56,44 @@ public class Section {
         this.line = line;
     }
 
+    public boolean hasDownStation(Section compareSection) {
+        return this.downStation.equals(compareSection.upStation) || this.downStation.equals(compareSection.downStation);
+    }
+
+    public boolean hasUpStation(Section compareSection) {
+        return this.upStation.equals(compareSection.upStation) || this.upStation.equals(compareSection.downStation);
+    }
+
+    public boolean sameUpStaion(Section compareSection) {
+        return compareSection.upStation.equals(this.upStation);
+    }
+
+    public boolean sameDownStaion(Section compareSection) {
+        return compareSection.downStation.equals(this.downStation);
+    }
+
+    public boolean isOverDistance(Section compareSection) {
+        return this.distance <= compareSection.distance;
+    }
+
+    public void updateUpStation(Section compareSection) {
+        this.upStation = compareSection.downStation;
+    }
+
+    public void updateDistance(Section compareSection) {
+        this.distance -= compareSection.distance;
+    }
+
+    public void updateDownStation(Section compareSection) {
+        this.downStation = compareSection.upStation;
+    }
+
+    public boolean isStartStation(Section startSection) {
+        return this.upStation.equals(startSection.downStation);
+    }
+
+    public boolean isEndStation(Section findSection) {
+        return this.downStation.equals(findSection.upStation);
+    }
+
 }

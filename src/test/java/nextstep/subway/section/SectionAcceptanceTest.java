@@ -28,6 +28,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private Long downStationId;
     private Long newStationId;
     private Long newStationId2;
+    private Long newStationId3;
 
     @Override
     @BeforeEach
@@ -39,11 +40,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createdStationResponse2 = 생성_요청(new StationRequest("역삼역"), "/stations");
         ExtractableResponse<Response> createdStationResponse3 = 생성_요청(new StationRequest("판교역"), "/stations");
         ExtractableResponse<Response> createdStationResponse4 = 생성_요청(new StationRequest("은계역"), "/stations");
+        ExtractableResponse<Response> createdStationResponse5 = 생성_요청(new StationRequest("장미역"), "/stations");
 
         upStationId = createdStationResponse1.as(StationResponse.class).getId();
         downStationId = createdStationResponse2.as(StationResponse.class).getId();
         newStationId = createdStationResponse3.as(StationResponse.class).getId();
         newStationId2 = createdStationResponse4.as(StationResponse.class).getId();
+        newStationId3 = createdStationResponse5.as(StationResponse.class).getId();
 
         //지하철 line이 등록되어 있다.
         ExtractableResponse<Response> createdLineResponse = 생성_요청(
@@ -57,15 +60,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionUp() {
         // when
         // 지하철_노선에_지하철역_등록_요청
-        ExtractableResponse<Response> createdSectionResponse = 생성_요청(
-            new SectionRequest(upStationId, newStationId, 10),
-            String.format("/lines/%d/sections", lineId));
+        생성_요청(new SectionRequest(upStationId, newStationId, 10), String.format("/lines/%d/sections", lineId));
 
+        ExtractableResponse<Response> createdSectionResponse = 생성_요청(
+            new SectionRequest(newStationId, newStationId2, 5),
+            String.format("/lines/%d/sections", lineId));
         // then
         // 지하철_노선에_지하철역_등록됨
         List<Long> stationIds = 지하철역_ID_추출(createdSectionResponse);
         assertThat(createdSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(stationIds).containsExactly(upStationId, newStationId, downStationId);
+        assertThat(stationIds).containsExactly(upStationId, newStationId, newStationId2, downStationId);
     }
 
     @Test
@@ -122,7 +126,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선에_지하철역_등록_요청
         ExtractableResponse<Response> createdSectionResponse = 생성_요청(
-            new SectionRequest(downStationId, newStationId, 20),
+            new SectionRequest(upStationId, newStationId, 20),
             String.format("/lines/%d/sections", lineId));
 
         assertThat(createdSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
