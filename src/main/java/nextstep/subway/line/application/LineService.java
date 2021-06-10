@@ -34,7 +34,7 @@ public class LineService {
             throw new DuplicateDataExistsException("해당 이름을 가진 노선이 이미 존재합니다.");
         }
         //2. Section 데이터 추출
-        Section section = extractSection(request);
+        Section section = getSection(request);
 
         //3. Line에 Section 데이터 추가
         persistLine.addSection(section);
@@ -45,7 +45,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    private Section extractSection(LineRequest request) {
+    private Section getSection(LineRequest request) {
 
         Station upStation = stationRepository.findById(request.getUpStationId())
                 .orElseThrow(() -> new DataNotFoundException("등록되지 않은 지하철 역입니다."));
