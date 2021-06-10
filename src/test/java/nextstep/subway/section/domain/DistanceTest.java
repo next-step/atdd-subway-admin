@@ -26,7 +26,7 @@ class DistanceTest {
     @DisplayName("0보다 작은 값으로 거리 생성시 예외를 던진다.")
     @Test
     void createWithZeroDistance() {
-        assertThatThrownBy(() -> new Distance(0))
+        assertThatThrownBy(() -> new Distance(-1))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

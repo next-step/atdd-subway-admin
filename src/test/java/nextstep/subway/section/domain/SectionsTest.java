@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.persistence.EntityNotFoundException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionsTest {
@@ -19,6 +17,7 @@ class SectionsTest {
     private Station station2;
     private Station station3;
     private Station station4;
+    private Station station5;
     private Section section;
     Sections sections;
 
@@ -41,35 +40,33 @@ class SectionsTest {
         station4 = new Station("역삼역");
         ReflectionTestUtils.setField(station4, "id", 4L);
 
-        sections.addSection(new Section(station1, station4, 5));
-        sections.addSection(new Section(station4, station3, 5));
-        sections.addSection(new Section(station3, station2, 3));
+        station5 = new Station("종합운동장");
+        ReflectionTestUtils.setField(station5, "id", 5L);
 
 
-        section = new Section(line, upStation, downStation, 10);
     }
 
     @Test
-    void addSection() {
+    void addSection2() {
         Sections sections = new Sections();
 
-        sections.addSection(section);
+        sections.addSection(new Section(station1, station2, 20));
+        sections.addSection(new Section(station1, station4, 10));
+        sections.addSection(new Section(station3, station2, 5));
+        sections.addSection(new Section(station3, station5, 5));
 
-        assertThat(sections.getSections()).containsExactly(section);
+        assertThat(sections.getStations()).containsExactly(station1, station4, station3, station5, station2);
     }
 
     @Test
     void getStations() {
+        sections.addSection(new Section(station1, station4, 5));
+        sections.addSection(new Section(station4, station3, 5));
+        sections.addSection(new Section(station3, station2, 3));
+
+        section = new Section(line, upStation, downStation, 10);
+
         assertThat(sections.getStations())
                 .containsExactly(station1, station4, station3, station2);
-    }
-
-    @Test
-    void getFirstSection() {
-        Section firstSection = sections.findFirstSection()
-                .orElseThrow(() -> new EntityNotFoundException());
-
-        assertThat(firstSection.getStations())
-                .containsExactly(station1, station4);
     }
 }
