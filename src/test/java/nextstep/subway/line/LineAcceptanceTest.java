@@ -125,11 +125,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-
+        ExtractableResponse<Response> expected = createLineAsTestCase(new LineRequest("3호선", "bg-orange-100"));
         // when
         // 지하철_노선_제거_요청
-
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().delete(expected.header("LOCATION"))
+                .then().log().all().extract();
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
