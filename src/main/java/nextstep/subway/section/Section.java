@@ -42,7 +42,7 @@ public class Section extends BaseEntity {
         }
     }
 
-    public void ofLine(Line line) {
+    public void addLine(Line line) {
         this.line = line;
         /* 연관관계의 주인인 Section에서 Line에 Section을 연결시켜준다 */
         line.getSections().add(this);

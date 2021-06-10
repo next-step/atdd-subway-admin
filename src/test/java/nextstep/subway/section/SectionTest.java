@@ -31,7 +31,7 @@ public class SectionTest {
 
         //When
         Line line = new Line("신분당선", "red");
-        section.ofLine(line);
+        section.addLine(line);
 
         //Then
         assertThat(line.getSections().contains(section)).isTrue();

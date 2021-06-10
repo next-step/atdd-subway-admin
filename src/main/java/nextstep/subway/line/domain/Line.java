@@ -48,7 +48,7 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        section.ofLine(this);
+        section.addLine(this);
         if (!sections.contains(section)) {
             sections.add(section);
         }
