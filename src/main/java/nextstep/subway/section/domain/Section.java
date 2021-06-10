@@ -52,6 +52,10 @@ public class Section {
         return id;
     }
 
+    public Long getLineId() {
+        return line.getId();
+    }
+
     public void addLine(Line line) {
         this.line = line;
     }
