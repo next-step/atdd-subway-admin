@@ -7,16 +7,16 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import java.util.LinkedList;
+import java.util.List;
 
 @Embeddable
 public class Sections {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
-    private LinkedList<Section> values;
+    private List<Section> values;
 
-    private Sections(LinkedList<Section> values) {
+    private Sections(List<Section> values) {
         this.values = values;
     }
 
@@ -24,11 +24,11 @@ public class Sections {
 
     }
 
-    public LinkedList<Section> getValues() {
+    public List<Section> getValues() {
         return values;
     }
 
-    public static Sections of(LinkedList<Section> sections) {
+    public static Sections of(List<Section> sections) {
         return new Sections(sections);
     }
 
