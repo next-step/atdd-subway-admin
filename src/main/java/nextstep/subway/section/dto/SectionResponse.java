@@ -1,7 +1,10 @@
 package nextstep.subway.section.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 
 public class SectionResponse {
 
@@ -57,6 +60,13 @@ public class SectionResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    public static List<SectionResponse> toSectionResponses(Sections sections) {
+        return sections.getSections()
+            .stream()
+            .map(SectionResponse::of)
+            .collect(Collectors.toList());
     }
 
     @Override

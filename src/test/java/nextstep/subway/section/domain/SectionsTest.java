@@ -33,7 +33,6 @@ public class SectionsTest {
     @DisplayName("생성자를 이용하여 구간을 생성시 지하철역 정렬 확인")
     @Test
     void findStationsInOrder() {
-
         // given
         List<Section> sectionList = new ArrayList<>(Arrays.asList(firstSection, secondSection, thirdSection, forthSection, fifthSection, sixthSection));
         Collections.shuffle(sectionList); //섞기

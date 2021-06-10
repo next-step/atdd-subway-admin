@@ -111,30 +111,21 @@ public class Section extends BaseEntity {
         if (!upStation.equals(section.getUpStation())) {
             return false;
         }
-        if (!downStation.equals(section.getDownStation())) {
-            return false;
-        }
-        return true;
+        return downStation.equals(section.getDownStation());
     }
 
     protected boolean isPresentAnyStation(Section section) {
         if (contain(section.getUpStation())) {
             return true;
         }
-        if (contain(section.getDownStation())) {
-            return true;
-        }
-        return false;
+        return contain(section.getDownStation());
     }
 
-    private boolean contain(Station station) {
+    protected boolean contain(Station station) {
         if (upStation.equals(station)) {
             return true;
         }
-        if (downStation.equals(station)) {
-            return true;
-        }
-        return false;
+        return downStation.equals(station);
     }
 
     protected void updateUpStationTo(Station newStation) {
@@ -143,6 +134,10 @@ public class Section extends BaseEntity {
 
     protected void updateDownStationTo(Station newStation) {
         downStation = newStation;
+    }
+
+    protected void plusDistance(int distance) {
+        this.distance += distance;
     }
 
     protected void minusDistance(int distance) {
@@ -157,7 +152,7 @@ public class Section extends BaseEntity {
     }
 
     private void validationDistance(int distance) {
-        if (distance == MIN_DISTANCE) {
+        if (distance <= MIN_DISTANCE) {
             throw new IllegalArgumentException(String.format(DISTANCE_MUST_BE_AT_LEAST_MIN_DISTANCE, MIN_DISTANCE));
         }
     }
