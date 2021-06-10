@@ -49,14 +49,4 @@ public class LineController {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(DuplicateValueException.class)
-    public ResponseEntity handleIllegalArgsException(DuplicateValueException e) {
-        return ResponseEntity.badRequest().body(new ErrorMessageResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity handleIllegalIdException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(new ErrorMessageResponse(e.getMessage()));
-    }
 }

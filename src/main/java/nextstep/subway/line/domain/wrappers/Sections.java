@@ -34,6 +34,18 @@ public class Sections {
         return sections.contains(section);
     }
 
+    private Station calcStartSection() {
+        Station startStation = new Station();
+        for (Section section : sections) {
+            startStation = section.calcUpStation(startStation);
+        }
+        return startStation;
+    }
+
+    private Section findSectionByUpStation(Station station) {
+        return sections.stream().filter(section -> section.isEqualUpStation(station)).findFirst().orElse(null);
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -58,17 +70,5 @@ public class Sections {
             section = findSectionByUpStation(downStation);
         }
         return responseStations;
-    }
-
-    private Station calcStartSection() {
-        Station startStation = null;
-        for (Section section : sections) {
-            startStation = section.calcUpStation(startStation);
-        }
-        return startStation;
-    }
-
-    private Section findSectionByUpStation(Station station) {
-        return sections.stream().filter(section -> section.isEqualUpStation(station)).findFirst().orElse(null);
     }
 }
