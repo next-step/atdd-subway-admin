@@ -57,4 +57,15 @@ class LineServiceTest {
         assertThat(updated.getColor()).isEqualTo("bg-blue-100");
     }
 
+    @Test
+    @DisplayName(value = "Line 을 제거하는 service 를 실행하면 DB에 반영된다")
+    void deleteLine() {
+        LineRequest request = new LineRequest("1호선", "blue");
+        LineResponse line = lineService.saveLine(request);
+
+        lineService.delete(line.getId());
+
+        assertThat(lineRepository.findById(line.getId()).isPresent()).isFalse();
+    }
+
 }
