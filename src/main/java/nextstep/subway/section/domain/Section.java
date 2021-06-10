@@ -24,12 +24,13 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "downStation_id", foreignKey = @ForeignKey(name = "fk_section_to_downStation"))
     private Station downStation = new Station();
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -47,7 +48,7 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
@@ -63,7 +64,7 @@ public class Section extends BaseEntity {
         this.downStation = downStation;
     }
 
-    public void setDistance(int distance) {
+    public void setDistance(Distance distance) {
         this.distance = distance;
     }
 }

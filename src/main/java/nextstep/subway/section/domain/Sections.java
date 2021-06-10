@@ -1,7 +1,5 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.station.dto.StationResponse;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
@@ -29,14 +27,4 @@ public class Sections {
     public List<Section> getSection() {
         return this.sections;
     }
-
-    /*public List<StationResponse> getStations() {
-        List<StationResponse> stationResponses = new ArrayList<>();
-        sections.stream()
-                .forEach(section -> {stationResponses.add(StationResponse.of(section.getUpStation()));
-                                    stationResponses.add(StationResponse.of(section.getDownStation()));
-                        }
-                );
-        return stationResponses;
-    }*/
 }
