@@ -16,4 +16,11 @@ public class SectionSteps {
                 .when().post("/lines/{lineId}/sections", lineId)
                 .then().log().all().extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선의_구간_목록_조회됨(long lineId) {
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines/{lineId}/sections", lineId)
+                .then().log().all().extract();
+    }
 }

@@ -9,13 +9,13 @@ import java.util.stream.Collectors;
 public class SectionResponse {
     private long id;
     private long lineId;
-    private long distance;
+    private int distance;
     private List<StationResponse> stations;
 
     private SectionResponse() {
     }
 
-    public SectionResponse(long id, long lineId, long distance, List<StationResponse> stations) {
+    public SectionResponse(long id, long lineId, int distance, List<StationResponse> stations) {
         this.id = id;
         this.lineId = lineId;
         this.distance = distance;
@@ -42,7 +42,7 @@ public class SectionResponse {
         return lineId;
     }
 
-    public long getDistance() {
+    public int getDistance() {
         return distance;
     }
 
