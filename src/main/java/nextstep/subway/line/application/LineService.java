@@ -1,10 +1,11 @@
 package nextstep.subway.line.application;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Sections;
+import nextstep.subway.line.dto.StationResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
@@ -59,8 +60,15 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line = getLine(id);
-        return LineResponse.of(line);
+        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException("노선을 찾을 수 없습니다."));
+
+        List<Section> sections = sectionRepository.findByLineId(id);
+        List<StationResponse> stationResponses = new ArrayList<>();
+        for (Section section : sections) {
+            addStationResponse(stationResponses, section);
+        }
+
+        return LineResponse.of(line, stationResponses);
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
@@ -83,5 +91,16 @@ public class LineService {
 
     private Line getLine(Long id) {
         return lineRepository.findById(id).orElseThrow(() -> new RuntimeException("노선을 찾을 수 없습니다."));
+    }
+
+    private void addStationResponse(List<StationResponse> stationResponses, Section section) {
+        addResponse(stationResponses, StationResponse.of(section.getPrevStation()));
+        addResponse(stationResponses, StationResponse.of(section.getNextStation()));
+    }
+
+    private void addResponse(List<StationResponse> stationResponses, StationResponse stationResponse) {
+        if (!stationResponses.contains(stationResponse)) {
+            stationResponses.add(stationResponse);
+        }
     }
 }

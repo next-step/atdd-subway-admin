@@ -12,6 +12,9 @@ public class Sections {
     @OneToMany(mappedBy = "line")
     private final List<Section> sections = new ArrayList<>();
 
+    public Sections() {
+    }
+
     public void addSection(Section section) {
         sections.add(section);
     }
