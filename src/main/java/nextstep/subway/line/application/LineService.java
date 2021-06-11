@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.dto.StationResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -24,9 +24,9 @@ public class LineService {
     public static final String NOT_FOUND_LINE = "노선을 찾을 수 없습니다.";
     public static final String NOT_FOUND_STATION = "존재하지 않는 역입니다";
 
-    private LineRepository lineRepository;
-    private SectionRepository sectionRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final SectionRepository sectionRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
@@ -85,7 +85,7 @@ public class LineService {
     public void deleteLineById(Long id) {
         Line line = getLine(id);
         Sections sections = line.getSections();
-        sections.getSections().forEach(section -> sectionRepository.delete(section));
+        sections.getSections().forEach(sectionRepository::delete);
 
         lineRepository.deleteById(id);
     }
