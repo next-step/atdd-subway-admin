@@ -15,6 +15,7 @@ public class Sections {
 
     private static final String EXCEPTION_FOR_EQUAL_SECTION = "상행역, 하행역 모두 등록되어 있습니다.";
     private static final String EXCEPTION_FOR_HAS_NOT_STATIONS = "상행역, 하행역 모두 등록되어 있지 않습니다.";
+    private static final String EXCEPTION_FOR_LAST_SECTION = "구간이 1개일 경우 제거할 수 없습니다.";
 
     protected Sections() {
     }
@@ -111,6 +112,7 @@ public class Sections {
     }
 
     public void removeStation(Station station) {
+        checkLastSection();
         if (isMatchLastSectionDownStation(station)) {
             sections.removeIf(section -> section.isMatchDownStation(station));
             return;
@@ -120,6 +122,12 @@ public class Sections {
             return;
         }
         ifRemoveInside(station);
+    }
+
+    private void checkLastSection() {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException(EXCEPTION_FOR_LAST_SECTION);
+        }
     }
 
     private void ifRemoveInside(Station station) {
