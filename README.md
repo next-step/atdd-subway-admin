@@ -15,7 +15,6 @@
 # 지하철 노선도 미션
 [ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션
 
-
 ## 요구사항 정리
 
 ### 1단계 - 지하철 노선 관리
@@ -37,6 +36,12 @@
 - [ ] 구간 삭제 시 예외 케이스를 고려하기
 
 <br>
+
+## 👁‍ Reference Documentation
+
+* [Spring Boot - Testing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/2.2.6.RELEASE/reference/html/spring-boot-features.html#boot-features-testing-spring-boot-applications)
+* [Testing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.testing.spring-boot-applications)
+* [REST-assured](https://rest-assured.io/)
 
 ## 🚀 Getting Started
 
