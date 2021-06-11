@@ -72,12 +72,24 @@ public class Section extends BaseEntity {
         this.distance = this.distance - distance;
     }
 
+    public void plusDistance(int distance) {
+        this.distance = this.distance + distance;
+    }
+
     public boolean isUpStationEquals(Section section){
         return this.getUpStation().equals(section.getUpStation());
     }
 
+    public boolean isUpStationEquals(Station station){
+        return this.getUpStation().equals(station);
+    }
+
     public boolean isDownStationEquals(Section section){
         return this.getDownStation().equals(section.getDownStation());
+    }
+
+    public boolean isDownStationEquals(Station station){
+        return this.getDownStation().equals(station);
     }
 
     public boolean isUpStationAndTargetDownStationEquals(Section section){
@@ -99,4 +111,6 @@ public class Section extends BaseEntity {
     public void setSequence(int sequence) {
         this.sequence = sequence;
     }
+
+
 }

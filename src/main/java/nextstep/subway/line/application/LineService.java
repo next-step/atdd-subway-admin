@@ -87,4 +87,9 @@ public class LineService {
         return stationRepository.findById(stationId)
                 .orElseThrow(() -> new NotFoundEntityException("Not Fount downStationId" + stationId));
     }
+
+    public void removeStation(Long lineId, Long stationId) {
+        Line line = getLine(lineId);
+        line.removeStation(getStation(stationId));
+    }
 }

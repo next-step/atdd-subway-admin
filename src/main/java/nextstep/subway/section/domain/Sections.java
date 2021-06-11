@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.exception.InvalidSectionException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -8,6 +9,9 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -91,4 +95,26 @@ public class Sections {
             throw new IllegalArgumentException("상행, 종행 역 모두가 포함되지 않았습니다.");
         }
     }
+
+    public void removeStation(Station station) {
+        List<Section> adjacentSections = getSectionsContainingStation(station);
+        if (adjacentSections.size() != 2){
+            throw new InvalidSectionException("adjacentSections size: " + adjacentSections.size());
+        }
+
+        Section section = adjacentSections.get(0);
+        Section nextSection = adjacentSections.get(1);
+        section.changeDownStation(nextSection.getDownStation());
+        section.plusDistance(nextSection.getDistance());
+        getValues().remove(nextSection);
+    }
+
+    private List<Section> getSectionsContainingStation(Station station) {
+        return getValues().stream()
+                .filter(section -> section.isUpStationEquals(station) || section.isDownStationEquals(station))
+                .collect(Collectors.toList());
+    }
+
+
+
 }

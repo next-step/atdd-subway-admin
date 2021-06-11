@@ -19,4 +19,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<LineResponse> handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(InvalidSectionException.class)
+    public ResponseEntity<LineResponse> handleInvalidSectionException(InvalidSectionException e) {
+        return ResponseEntity.badRequest().build();
+    }
 }

@@ -90,4 +90,7 @@ public class Line extends BaseEntity {
         return getStations().contains(station);
     };
 
+    public void removeStation(Station station) {
+        this.sections.removeStation(station);
+    }
 }
