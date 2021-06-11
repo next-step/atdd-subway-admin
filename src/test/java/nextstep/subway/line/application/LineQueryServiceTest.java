@@ -5,7 +5,7 @@ import nextstep.subway.line.application.exception.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

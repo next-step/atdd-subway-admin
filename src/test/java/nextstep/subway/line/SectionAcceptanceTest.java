@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.line.LineAcceptanceStep.*;
-import static nextstep.subway.section.SectionAcceptanceStep.*;
+import static nextstep.subway.line.SectionAcceptanceStep.*;
 import static nextstep.subway.station.StationAcceptanceStep.지하철역_등록되어_있음;
 
 @DisplayName("지하철 구간 관련 기능")
