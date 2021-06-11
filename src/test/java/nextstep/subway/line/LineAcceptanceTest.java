@@ -76,7 +76,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class)
 				.stream()
-				.map(it -> it.getId())
+				.map(it -> it.id())
 				.collect(Collectors.toList());
 
 		assertThat(resultLineIds).containsAll(expectedLineIds);

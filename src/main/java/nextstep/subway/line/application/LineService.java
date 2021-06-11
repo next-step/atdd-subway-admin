@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.AlreadyExistLineException;
+import nextstep.subway.line.exception.NoneExistLineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,11 +23,26 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Optional<Line> findLine = lineRepository.findByName(request.getName());
+        Optional<Line> findLine = lineRepository.findByName(request.name());
         if (findLine.isPresent()) {
             throw new AlreadyExistLineException("이미 등록된 노선 정보입니다.");
         }
-        Line persistLine = lineRepository.save(request.toLine());
+
+        Line line = request.toLine();
+//
+//        Optional<Line> downStation = lineRepository.findById(request.downStationId());
+//        if (!downStation.isPresent()) {
+//            throw new NoneExistLineException("잘못된 하행선 정보입니다.");
+//        }
+//        line.setDownStation(downStation.get());
+//
+//        Optional<Line> upStation = lineRepository.findById(request.upStationId());
+//        if (!upStation.isPresent()) {
+//            throw new NoneExistLineException("잘못된 상행선 정보입니다.");
+//        }
+//        line.setUpStation(upStation.get());
+
+        Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
 
@@ -49,9 +65,9 @@ public class LineService {
     }
 
     public LineResponse updateByName(LineRequest req) {
-        Line line = checkExistLine(req.getName());
+        Line line = checkExistLine(req.name());
 
-        line.updateColor(req.getColor());
+        line.updateColor(req.color());
 
         return LineResponse.of(line);
     }
