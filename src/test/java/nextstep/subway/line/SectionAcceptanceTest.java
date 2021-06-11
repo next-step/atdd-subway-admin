@@ -94,6 +94,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	}
 
 	@DisplayName("상행역 하행역 모두 노선에 존재하는 구간을 등록한다.")
+	@Test
 	void addSectionAlreadyExist() {
 		// given
 		StationResponse 강남역 = 지하철역_생성_요청("강남역").as(StationResponse.class);
@@ -109,6 +110,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	}
 
 	@DisplayName("상행역 하행역 모두 노선에 존재 하지 않는 구간을 등록한다.")
+	@Test
 	void addSectionNotExist() {
 		// given
 		StationResponse 강남역 = 지하철역_생성_요청("강남역").as(StationResponse.class);
@@ -129,7 +131,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		StationResponse downStation, int distance) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("downStationId", downStation.getId());
-		params.put("upStation", upStation.getId());
+		params.put("upStationId", upStation.getId());
 		params.put("distance", distance);
 
 		return RestAssured

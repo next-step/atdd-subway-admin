@@ -42,4 +42,17 @@ public class Distance {
 	public int hashCode() {
 		return Objects.hash(distance);
 	}
+
+	public boolean isLessThan(Distance other) {
+		return this.distance <= other.distance;
+	}
+
+	public Distance minus(Distance otherSection) {
+		return Distance.valueOf(this.distance - otherSection.distance);
+	}
+
+	@Override
+	public String toString() {
+		return "Distance{" + "distance=" + distance + '}';
+	}
 }

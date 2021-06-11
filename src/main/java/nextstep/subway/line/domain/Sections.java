@@ -6,6 +6,7 @@ import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -29,11 +30,15 @@ public class Sections {
 	}
 
 	static Sections of(Section... sections) {
-		return new Sections(asList(sections));
+		return new Sections(new ArrayList<>(asList(sections)));
 	}
 
-	void add(Section section) {
-		this.sections.add(section);
+	void add(Section otherSection) {
+		checkValidation(otherSection);
+		for (Section section : sections) {
+			section.addSection(otherSection);
+		}
+		sections.add(otherSection);
 	}
 
 	List<Station> orderedStations() {
@@ -73,6 +78,20 @@ public class Sections {
 		return nextSection
 			.map(section -> Stream.concat(current, findNextSectionsClosed(section)))
 			.orElse(current);
+	}
+
+	private void checkValidation(Section otherSection) {
+		if (exists(otherSection)) {
+			throw new IllegalArgumentException("해당 구간은 이미 존재합니다.");
+		}
+	}
+
+	private boolean exists(Section otherSection) {
+		boolean existsSameUpStation = sections.stream()
+			.anyMatch(section -> section.isSameUpStation(otherSection));
+
+		return sections.stream()
+			.anyMatch(section -> existsSameUpStation && section.isSameDownStation(otherSection));
 	}
 }
 
