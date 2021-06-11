@@ -45,6 +45,15 @@ public class LineAcceptanceStep {
         return 지하철_노선_생성_요청(name, color, upStationId, downStationId, distance);
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> params) {
+        return 지하철_노선_생성_요청(
+                params.get("name"),
+                params.get("color"),
+                Long.parseLong(params.get("upStationId")),
+                Long.parseLong(params.get("downStationId")),
+                Integer.parseInt(params.get("distance")));
+    }
+
     public static void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -83,6 +92,13 @@ public class LineAcceptanceStep {
         return RestAssured
                 .given().log().all()
                 .when().get(expected.header(LOCATION))
+                .then().log().all().extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines/" + lineId)
                 .then().log().all().extract();
     }
 
