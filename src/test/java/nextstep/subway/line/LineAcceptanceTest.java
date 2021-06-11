@@ -121,6 +121,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("지하철 노선을 수정요청시 해당하는 노선이 없는 경우")
+    @Test
+    void updateLineNotExist() {
+        // given
+        //
+        // when
+        // DB에 없는 노선에 수정 요청
+        LineRequest updateRequest = new LineRequest("3호선", "bg-orange-300");
+        ExtractableResponse<Response> response = RestAssured
+            .given().log().all()
+            .body(updateRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put("/lines/1")
+            .then().log().all().extract();
+
+        // then
+        // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
@@ -137,5 +157,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("지하철 노선을 제거할때 해당하는 노선이 없는 경우")
+    @Test
+    void deleteLineNotExist() {
+        // given
+        //
+        // when
+        // DB에 없는 노선 삭제 요청
+        // when
+        ExtractableResponse<Response> response = RestAssured
+            .given().log().all()
+            .when().delete("/lines/1")
+            .then().log().all().extract();
+        // then
+        // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
