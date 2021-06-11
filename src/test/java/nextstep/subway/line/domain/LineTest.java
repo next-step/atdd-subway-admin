@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.line.domain.wrappers.Sections;
+import nextstep.subway.lineStation.domain.LineStation;
+import nextstep.subway.lineStation.domain.wrappers.LineStations;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
@@ -40,5 +42,14 @@ class LineTest {
         Section section = new Section(upStation, downStation, 100);
         line.addSection(section);
         assertThat(line).isEqualTo(new Line("신분당선", "bg - red - 600", new Sections(Arrays.asList(section))));
+    }
+
+    @Test
+    void 노선_정보에_노선_지하철역_연결_테이블_정보_추가() {
+        Line line = new Line("신분당선", "bg - red - 600");
+        LineStation lineStation = new LineStation(2L, 1L, 10);
+        line.addLineStation(lineStation);
+
+        assertThat(line).isEqualTo(new Line("신분당선", "bg - red - 600", new LineStations(Arrays.asList(lineStation))));
     }
 }

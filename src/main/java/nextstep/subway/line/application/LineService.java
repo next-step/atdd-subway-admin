@@ -6,8 +6,8 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,19 +20,20 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     public static final String DUPLICATE_VALUE_ERROR_MESSAGE = "%s 라인은 이미 등록된 라인 합니다.";
-    public static final String NOT_FOUND_STATION_ERROR_MESSAGE = "아이디 %s와 일치하는 역 정보가 존재하지 않습니다.";
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    private final LineRepository lineRepository;
+    private final StationService stationService;
+
+
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse saveLine(LineRequest request) {
         try {
-            Station upStation = findStation(request.getUpStationId());
-            Station downStation = findStation(request.getDownStationId());
+            Station upStation = stationService.findStationById(request.getUpStationId());
+            Station downStation = stationService.findStationById(request.getDownStationId());
             Section section = request.toSection(upStation, downStation);
             Line line = request.toLine();
             line.addSection(section);
@@ -65,8 +66,5 @@ public class LineService {
         lineRepository.delete(line);
     }
 
-    private Station findStation(Long stationId) {
-        return stationRepository.findById(stationId)
-                .orElseThrow(() ->  new IllegalArgumentException(String.format(NOT_FOUND_STATION_ERROR_MESSAGE)));
-    }
+
 }

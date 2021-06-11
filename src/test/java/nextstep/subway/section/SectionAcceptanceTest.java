@@ -48,7 +48,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = 신규_구간_생성_파라미터(양재역.getId(), 판교역.getId(), 4);
 
         // when: 양재역, 판교역 구간 등록을 요청한다.
-        ExtractableResponse<Response> response = 신규_구간_등록(params);
+        ExtractableResponse<Response> response = 신규_구간_등록(params, 신분당선.getId());
 
         // then: 양재역, 판교역 구간이 등록된다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -65,7 +65,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = 신규_구간_생성_파라미터(강남역.getId(), 양재역.getId(), 3);
 
         // when: 강남역, 양재역 구간 등록을 요청한다.
-        ExtractableResponse<Response> response = 신규_구간_등록(params);
+        ExtractableResponse<Response> response = 신규_구간_등록(params, 신분당선.getId());
 
         // then: 강남역, 양재역 구간이 등록된다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -83,7 +83,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = 신규_구간_생성_파라미터(정자역.getId(), 미금역.getId(), 4);
 
         // when: 정자역, 미금역이 구간 등록을 요청한다.
-        ExtractableResponse<Response> response = 신규_구간_등록(params);
+        ExtractableResponse<Response> response = 신규_구간_등록(params, 신분당선.getId());
 
         // then: 정자역, 미금역 구간이 등록된다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -93,12 +93,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(stationNames).containsExactly("양재역", "정자역", "미금역");
     }
 
-    private ExtractableResponse<Response> 신규_구간_등록(Map<String, String> params) {
+    private ExtractableResponse<Response> 신규_구간_등록(Map<String, String> params, Long 신분당선_노선_아이디) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/sections")
+                .post(String.format("lines/%s/sections", 신분당선_노선_아이디))
                 .then().log().all()
                 .extract();
     }

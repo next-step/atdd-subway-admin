@@ -2,6 +2,8 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.wrappers.Sections;
+import nextstep.subway.lineStation.domain.LineStation;
+import nextstep.subway.lineStation.domain.wrappers.LineStations;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
@@ -25,6 +27,9 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
+    @Embedded
+    private LineStations lineStations = new LineStations();
+
     public Line() {
     }
 
@@ -37,6 +42,12 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
         this.sections = sections;
+    }
+
+    public Line(String name, String color, LineStations lineStations) {
+        this.name = name;
+        this.color = color;
+        this.lineStations = lineStations;
     }
 
     public void update(Line line) {
@@ -70,6 +81,11 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         sections.addSection(section);
         section.lineBy(this);
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        lineStations.addLineStation(lineStation);
+        lineStation.lineBy(this);
     }
 
     @Override

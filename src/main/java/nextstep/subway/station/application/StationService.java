@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class StationService {
+
+    public static final String NOT_FOUND_STATION_ERROR_MESSAGE = "아이디 %s와 일치하는 역 정보가 존재하지 않습니다.";
+
     private StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -35,5 +38,10 @@ public class StationService {
 
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() ->  new IllegalArgumentException(String.format(NOT_FOUND_STATION_ERROR_MESSAGE)));
     }
 }
