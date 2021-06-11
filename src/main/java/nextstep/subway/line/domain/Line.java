@@ -55,8 +55,8 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public List<Section> getSections() {
-        return this.sections;
+    public Sections createSections() {
+        return new Sections(this.sections);
     }
 
     public LineResponse toLineResponse() {

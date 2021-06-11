@@ -78,7 +78,7 @@ public class LineService {
 
     public LineResponse appendNewSectionToLine(long id, SectionRequest sectionRequest) {
         Line line = findLineByIdOrThrow(id, "조회된 노선이 없습니다.");
-        Sections sections = new Sections(line.getSections());
+        Sections sections = line.createSections();
         Section section = makeSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance(), line);
         sectionRepository.save(sections.addSection(section));

@@ -121,23 +121,6 @@ public class SectionRepositoryTest {
     }
 
     @Test
-    @DisplayName("노선ID 기준 구간 전체 삭제")
-    void delete_by_lineId() {
-        // given
-        Section section = new Section(this.upStation, this.downStation, 10, this.greenLine);
-        Section section1 = new Section(this.upStation, this.downStation, 10, this.greenLine);
-        sectionRepository.saveAll(Arrays.asList(section, section1));
-
-        // when
-        this.greenLine.removeAllSections();
-        sectionRepository.deleteAllByLineId(this.greenLine.getId());
-
-        // then
-        List<Section> resultSections = sectionRepository.findByLineId(this.greenLine.getId());
-        assertThat(resultSections.isEmpty()).isTrue();
-    }
-
-    @Test
     @DisplayName("구간 추가 등록")
     void save_newSection() {
         // given
