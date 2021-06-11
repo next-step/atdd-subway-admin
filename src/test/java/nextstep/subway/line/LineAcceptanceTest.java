@@ -44,7 +44,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨(response);
     }
 
-    @DisplayName("지하철 노선 목록을 조회한다.") //Scenario
+    @DisplayName("지하철 노선 목록은 상행역 부터 하행역 순으로 정렬된 역 목록과 함께 조회한다.") //Scenario
     @Test
     void getLines() {
         // given
@@ -59,7 +59,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_포함됨(expected1, expected2, response);
     }
 
-    @DisplayName("지하철 노선을 조회한다.") //Scenario
+    @DisplayName("지하철 노선은 상행역 부터 하행역 순으로 정렬된 역 목록과 함께 조회한다.") //Scenario
     @Test
     void getLine() {
         // given
