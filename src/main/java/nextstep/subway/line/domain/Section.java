@@ -29,9 +29,6 @@ public class Section extends BaseEntity {
 
     private int distance;
 
-    private static final int MINIMUN_NEW_DISTANCE = 0;
-    private static final String EXCEPTION_FOR_DISTANCE = "기존 구간 안에 구간 등록시 distance는 기존 구간보다 작아야 합니다.";
-
     protected Section() {
     }
 
@@ -52,29 +49,17 @@ public class Section extends BaseEntity {
 
     public static Section makeAfterSection(Section preSection, Section section) {
         return new Section(preSection.line, section.downStation, preSection.downStation,
-                calculateDistance(preSection, section));
+                CalculatorType.SUBTRACT.calculateDistance(preSection.distance, section.distance));
     }
 
     public static Section makeBeforeSection(Section preSection, Section section) {
         return new Section(preSection.line, preSection.upStation, section.upStation,
-                calculateDistance(preSection, section));
+                CalculatorType.SUBTRACT.calculateDistance(preSection.distance, section.distance));
     }
 
     public static Section makeInsideSection(Section preSection, Section section) {
         return new Section(preSection.line, preSection.upStation, section.downStation,
-                preSection.distance + section.distance);
-    }
-
-    private static int calculateDistance(Section preSection, Section section) {
-        int calculatedDistance = preSection.distance - section.distance;
-        if (isIllegalDistance(calculatedDistance)) {
-            throw new IllegalArgumentException(EXCEPTION_FOR_DISTANCE);
-        }
-        return calculatedDistance;
-    }
-
-    private static boolean isIllegalDistance(int calculatedDistance) {
-        return calculatedDistance <= MINIMUN_NEW_DISTANCE;
+                CalculatorType.ADD.calculateDistance(preSection.distance, section.distance));
     }
 
     public boolean isEqualsUpStation(Section section) {
@@ -117,16 +102,5 @@ public class Section extends BaseEntity {
 
     public boolean findNotHasUpStation(List<Section> sections) {
         return sections.stream().noneMatch(section -> section.hasSameUpStation(this));
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", line=" + line +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", distance=" + distance +
-                '}';
     }
 }
