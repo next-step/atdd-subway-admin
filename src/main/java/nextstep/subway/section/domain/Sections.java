@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 import nextstep.subway.station.domain.Station;
 
 public class Sections {
-    private final List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
     public Sections(List<Section> sections) {
         validateSectionsSize(sections);
-        this.sections = new ArrayList<>(sections);
+        initSectionsWithSort(sections);
     }
 
     public List<Section> getSections() {
@@ -23,7 +23,7 @@ public class Sections {
 
     public List<Station> getSortedStations() {
         Set<Station> stations = new LinkedHashSet<>();
-        for (Section section : getSortedSectionsFrom(getBeginSection().getUpStation())) {
+        for (Section section : this.sections) {
             stations.addAll(section.getStations());
         }
         return new ArrayList<>(stations);
@@ -33,15 +33,29 @@ public class Sections {
         validateExistBothUpStationAndDownStation(newSection);
         validateNotExistBothUpStationAndDownStation(newSection);
         if (isPlacedInFrontOrRearFor(newSection)) {
-            this.sections.add(newSection);
+            addSectionWithSort(newSection);
             return newSection;
         }
         return addSectionPlacedInMiddle(newSection);
     }
 
     private boolean isPlacedInFrontOrRearFor(Section newSection) {
-        return getBeginSection().getUpStation().isEqualNameByStation(newSection.getDownStation())
-                || getEndSection().getDownStation().isEqualNameByStation(newSection.getUpStation());
+        return getBeginSection().getUpStation().equals(newSection.getDownStation())
+                || getEndSection().getDownStation().equals(newSection.getUpStation());
+    }
+
+    private void initSectionsWithSort(List<Section> newSections) {
+        Map<Station, Section> sectionsByUpStation = getSectionsByUpStation(newSections);
+        Station nextStation = getBeginSection(newSections).getUpStation();
+        while (sectionsByUpStation.containsKey(nextStation)) {
+            this.sections.add(sectionsByUpStation.get(nextStation));
+            nextStation = sectionsByUpStation.get(nextStation).getDownStation();
+        }
+    }
+
+    private void addSectionWithSort(Section newSection) {
+        this.sections.add(newSection);
+        procSortSections();
     }
 
     private Section addSectionPlacedInMiddle(Section newSection) {
@@ -65,7 +79,7 @@ public class Sections {
     private Section replaceStationsByMatchedUpStationForNew(Section newSection, Section baseSection, Distance totalDistance) {
         Section updateAppendSection = new Section(baseSection.getDownStation(), newSection.getDownStation(),
                 totalDistance.calculateDistance(newSection));
-        this.sections.add(newSection.updateSection(updateAppendSection));
+        addSectionWithSort(newSection, updateAppendSection);
         return newSection;
     }
 
@@ -76,7 +90,7 @@ public class Sections {
         Section updateBaseSection = new Section(newSection.getDownStation(), baseSection.getDownStation(),
                 totalDistance.calculateDistance(newSection));
         baseSection.updateSection(updateBaseSection);
-        this.sections.add(newSection.updateSection(updateAppendSection));
+        addSectionWithSort(newSection, updateAppendSection);
         return newSection;
     }
 
@@ -100,7 +114,7 @@ public class Sections {
                                                               Distance totalDistance) {
         Section updateAppendSection = new Section(newSection.getUpStation(), baseSection.getUpStation(),
                 totalDistance.calculateDistance(newSection));
-        this.sections.add(newSection.updateSection(updateAppendSection));
+        addSectionWithSort(newSection, updateAppendSection);
         return newSection;
     }
 
@@ -111,30 +125,8 @@ public class Sections {
         Section updateAppendSection = new Section(newSection.getUpStation(), baseSection.getDownStation(),
                 totalDistance.calculateDistance(newSection, baseSection));
         baseSection.updateSection(updateBaseSection);
-        this.sections.add(newSection.updateSection(updateAppendSection));
+        addSectionWithSort(newSection, updateAppendSection);
         return newSection;
-    }
-
-    private List<Section> getSortedSectionsFrom(Station upStation) {
-        Map<String, Section> sectionsByUpStationName = getSectionsByUpStationName();
-        List<Section> sections = new ArrayList<>();
-        String nextStationName = upStation.getName();
-        while (sectionsByUpStationName.containsKey(nextStationName)) {
-            sections.add(sectionsByUpStationName.get(nextStationName));
-            nextStationName = sectionsByUpStationName.get(nextStationName).getDownStationName();
-        }
-        return sections;
-    }
-
-    private List<Section> getReverseOrderSectionsFrom(Station downStation) {
-        Map<String, Section> sectionsByDownStationName = getSectionsByDownStationName();
-        List<Section> sections = new ArrayList<>();
-        String nextStationName = downStation.getName();
-        while (sectionsByDownStationName.containsKey(nextStationName)) {
-            sections.add(sectionsByDownStationName.get(nextStationName));
-            nextStationName = sectionsByDownStationName.get(nextStationName).getUpStationName();
-        }
-        return sections;
     }
 
     private Section getBaseSection(Section newSection, Distance totalDistance, List<Section> sections) {
@@ -145,49 +137,84 @@ public class Sections {
                 .orElse(sections.get(sections.size() - 1));
     }
 
-    private boolean isIncludedInUpStations(Section newSection) {
-        return getSectionsByUpStationName().containsKey(newSection.getUpStationName());
+    private Section getBeginSection() {
+        return getBeginSection(this.sections);
     }
 
-    private Section getBeginSection() {
-        return this.sections.stream()
-                .filter(section -> !getSectionsByDownStationName().containsKey(section.getUpStationName()))
-                .findFirst().orElse(this.sections.stream().findFirst().get());
+    private Section getBeginSection(List<Section> sections) {
+        Map<Station, Section> sectionsByDownStation = getSectionsByDownStation(sections);
+        return sections.stream()
+                .filter(section -> !sectionsByDownStation.containsKey(section.getUpStation()))
+                .findFirst().orElse(sections.stream().findFirst().get());
     }
 
     private Section getEndSection() {
         return this.sections.stream()
-                .filter(section -> !getSectionsByUpStationName().containsKey(section.getDownStationName()))
+                .filter(section -> !getSectionsByUpStation().containsKey(section.getDownStation()))
                 .findFirst().orElse(this.sections.stream().findFirst().get());
     }
 
-    private Map<String, Section> getSectionsByUpStationName() {
-        return this.sections.stream()
-                .collect(Collectors.toMap(section -> section.getUpStationName(), section -> section));
+    private List<Section> getSortedSectionsFrom(Station upStation) {
+        Map<Station, Section> sectionsByUpStationName = getSectionsByUpStation();
+        List<Section> sections = new ArrayList<>();
+        Station nextStation = upStation;
+        while (sectionsByUpStationName.containsKey(nextStation)) {
+            sections.add(sectionsByUpStationName.get(nextStation));
+            nextStation = sectionsByUpStationName.get(nextStation).getDownStation();
+        }
+        return sections;
     }
 
-    private Map<String, Section> getSectionsByDownStationName() {
-        return this.sections.stream()
-                .collect(Collectors.toMap(section -> section.getDownStationName(), section -> section));
+    private List<Section> getReverseOrderSectionsFrom(Station downStation) {
+        Map<Station, Section> sectionsByDownStationName = getSectionsByDownStation();
+        List<Section> sections = new ArrayList<>();
+        Station nextStation = downStation;
+        while (sectionsByDownStationName.containsKey(nextStation)) {
+            sections.add(sectionsByDownStationName.get(nextStation));
+            nextStation = sectionsByDownStationName.get(nextStation).getUpStation();
+        }
+        return sections;
+    }
+
+    private Map<Station, Section> getSectionsByUpStation() {
+        return getSectionsByUpStation(this.sections);
+    }
+
+    private Map<Station, Section> getSectionsByUpStation(List<Section> sections) {
+        return sections.stream()
+                .collect(Collectors.toMap(section -> section.getUpStation(), section -> section));
+    }
+
+    private Map<Station, Section> getSectionsByDownStation() {
+        return getSectionsByDownStation(this.sections);
+    }
+
+    private Map<Station, Section> getSectionsByDownStation(List<Section> sections) {
+        return sections.stream()
+                .collect(Collectors.toMap(section -> section.getDownStation(), section -> section));
+    }
+
+    private boolean isIncludedInUpStations(Section newSection) {
+        return getSectionsByUpStation().containsKey(newSection.getUpStation());
+    }
+
+    private void addSectionWithSort(Section newSection, Section updateAppendSection) {
+        addSectionWithSort(newSection.updateSection(updateAppendSection));
+    }
+
+    private void procSortSections() {
+        this.sections = getSortedSectionsFrom(getBeginSection().getUpStation());
     }
 
     private void validateNotExistBothUpStationAndDownStation(Section newSection) {
-        List<String> stationNames = getSortedStations().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
-        if (!stationNames.contains(newSection.getUpStation().getName())
-                && !stationNames.contains(newSection.getDownStation().getName())) {
+        if (!getSortedStations().contains(newSection.getUpStation())
+                && !getSortedStations().contains(newSection.getDownStation())) {
             throw new IllegalArgumentException("상,하행역 모두 기존 노선에 포함된 역이 아닙니다.");
         }
     }
 
     private void validateExistBothUpStationAndDownStation(Section newSection) {
-        List<String> stationNames = getSortedStations().stream()
-                .map(Station::getName).collect(Collectors.toList());
-        List<String> appendStationNames = newSection.getStations().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
-        if (stationNames.containsAll(appendStationNames)) {
+        if (getSortedStations().containsAll(newSection.getStations())) {
             throw new IllegalArgumentException("상행역, 하행역이 이미 존재합니다.");
         }
     }

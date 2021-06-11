@@ -241,7 +241,7 @@ class LineServiceTest {
                 .collect(Collectors.toList());
         List<String> comparisonTargetStationNames = Arrays.asList(station1, station2, station3, station5, station4)
                 .stream()
-                .map(station -> station.getName())
+                .map(station -> station.toStationResponse().getName())
                 .collect(Collectors.toList());
         assertAll(
                 () -> assertThat(lineResponse.getName()).isEqualTo(line.getName()),

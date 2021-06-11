@@ -1,7 +1,6 @@
 package nextstep.subway.station.domain;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.dto.StationResponse;
 
 @Entity
 public class Station extends BaseEntity {
@@ -31,12 +31,8 @@ public class Station extends BaseEntity {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public boolean isEqualNameByStation(Station station) {
-        return name.equals(Optional.ofNullable(station).map(Station::getName).orElse(""));
+    public StationResponse toStationResponse() {
+        return new StationResponse(this.id, this.name, this.getCreatedDate(), this.getModifiedDate());
     }
 
     @Override

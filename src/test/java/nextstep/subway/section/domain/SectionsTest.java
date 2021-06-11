@@ -137,8 +137,12 @@ public class SectionsTest {
         sections.addSection(endSection);
 
         // then
-        List<String> resultStationNames = sections.getSortedStations().stream().map(Station::getName).collect(Collectors.toList());
-        List<String> targetStationNames = Arrays.asList(station4, station1, station2, station3, station5).stream().map(Station::getName).collect(Collectors.toList());
+        List<String> resultStationNames = sections.getSortedStations()
+                .stream()
+                .map(station -> station.toStationResponse().getName()).collect(Collectors.toList());
+        List<String> targetStationNames = Arrays.asList(station4, station1, station2, station3, station5)
+                .stream()
+                .map(station -> station.toStationResponse().getName()).collect(Collectors.toList());
         assertThat(Arrays.equals(resultStationNames.toArray(), targetStationNames.toArray())).isTrue();
     }
 
@@ -157,11 +161,11 @@ public class SectionsTest {
 
         // then
         assertAll(
-                () -> assertThat(section.getUpStationName()).isEqualTo(station3.getName()),
-                () -> assertThat(section.getDownStationName()).isEqualTo(station5.getName()),
+                () -> assertThat(section.getUpStation()).isSameAs(station3),
+                () -> assertThat(section.getDownStation()).isSameAs(station5),
                 () -> assertThat(section.getDistance()).isEqualTo(1),
-                () -> assertThat(section3.getUpStationName()).isEqualTo(station5.getName()),
-                () -> assertThat(section3.getDownStationName()).isEqualTo(station4.getName()),
+                () -> assertThat(section3.getUpStation()).isSameAs(station5),
+                () -> assertThat(section3.getDownStation()).isSameAs(station4),
                 () -> assertThat(section3.getDistance()).isEqualTo(3)
         );
     }
@@ -181,11 +185,11 @@ public class SectionsTest {
 
         // then
         assertAll(
-                () -> assertThat(resultSection.getUpStationName()).isEqualTo(station4.getName()),
-                () -> assertThat(resultSection.getDownStationName()).isEqualTo(station5.getName()),
+                () -> assertThat(resultSection.getUpStation()).isSameAs(station4),
+                () -> assertThat(resultSection.getDownStation()).isSameAs(station5),
                 () -> assertThat(resultSection.getDistance()).isEqualTo(3),
-                () -> assertThat(section3.getUpStationName()).isEqualTo(station3.getName()),
-                () -> assertThat(section3.getDownStationName()).isEqualTo(station4.getName()),
+                () -> assertThat(section3.getUpStation()).isSameAs(station3),
+                () -> assertThat(section3.getDownStation()).isSameAs(station4),
                 () -> assertThat(section3.getDistance()).isEqualTo(4)
         );
     }
@@ -205,11 +209,11 @@ public class SectionsTest {
 
         // then
         assertAll(
-                () -> assertThat(resultSection.getUpStationName()).isEqualTo(station5.getName()),
-                () -> assertThat(resultSection.getDownStationName()).isEqualTo(station2.getName()),
+                () -> assertThat(resultSection.getUpStation()).isSameAs(station5),
+                () -> assertThat(resultSection.getDownStation()).isSameAs(station2),
                 () -> assertThat(resultSection.getDistance()).isEqualTo(1),
-                () -> assertThat(section1.getUpStationName()).isEqualTo(station1.getName()),
-                () -> assertThat(section1.getDownStationName()).isEqualTo(station5.getName()),
+                () -> assertThat(section1.getUpStation()).isSameAs(station1),
+                () -> assertThat(section1.getDownStation()).isSameAs(station5),
                 () -> assertThat(section1.getDistance()).isEqualTo(1)
         );
     }
@@ -229,11 +233,11 @@ public class SectionsTest {
 
         // then
         assertAll(
-                () -> assertThat(resultSection.getUpStationName()).isEqualTo(station5.getName()),
-                () -> assertThat(resultSection.getDownStationName()).isEqualTo(station1.getName()),
+                () -> assertThat(resultSection.getUpStation()).isSameAs(station5),
+                () -> assertThat(resultSection.getDownStation()).isSameAs(station1),
                 () -> assertThat(resultSection.getDistance()).isEqualTo(6),
-                () -> assertThat(section1.getUpStationName()).isEqualTo(station1.getName()),
-                () -> assertThat(section1.getDownStationName()).isEqualTo(station2.getName()),
+                () -> assertThat(section1.getUpStation()).isSameAs(station1),
+                () -> assertThat(section1.getDownStation()).isSameAs(station2),
                 () -> assertThat(section1.getDistance()).isEqualTo(2)
         );
     }

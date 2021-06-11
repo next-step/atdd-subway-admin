@@ -26,7 +26,7 @@ public class StationService {
     public StationResponse saveStation(StationRequest stationRequest) {
         try {
             Station persistStation = stationRepository.save(stationRequest.toStation());
-            return StationResponse.of(persistStation);
+            return persistStation.toStationResponse();
         } catch (DataIntegrityViolationException exception) {
             throw new DuplicateKeyException("역 생성에 실패했습니다. 이미 존재하는 역입니다.");
         }
@@ -38,7 +38,7 @@ public class StationService {
                 .collect(Collectors.toList());
         return this.stationRepository.saveAll(stations)
                 .stream()
-                .map(StationResponse::of)
+                .map(Station::toStationResponse)
                 .collect(Collectors.toList());
     }
 
@@ -47,7 +47,7 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
+                .map(station -> station.toStationResponse())
                 .collect(Collectors.toList());
     }
 

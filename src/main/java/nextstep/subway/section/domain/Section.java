@@ -71,14 +71,6 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public String getUpStationName() {
-        return this.upStation.getName();
-    }
-
-    public String getDownStationName() {
-        return this.downStation.getName();
-    }
-
     public int getDistance() {
         return distance;
     }
@@ -131,7 +123,7 @@ public class Section extends BaseEntity {
     }
 
     private void validateSameStations(Station upStation, Station downStation) {
-        if (upStation.isEqualNameByStation(downStation)) {
+        if (upStation.equals(downStation)) {
             throw new IllegalArgumentException("상행, 하행역은 동일한 역일 수 없습니다.");
         }
     }
