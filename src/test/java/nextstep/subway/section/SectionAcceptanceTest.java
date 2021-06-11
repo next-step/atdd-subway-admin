@@ -1,6 +1,7 @@
 package nextstep.subway.section;
 
 import static nextstep.subway.utils.CommonSettings.생성_요청;
+import static nextstep.subway.utils.CommonSettings.조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
@@ -65,11 +67,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createdSectionResponse = 생성_요청(
             new SectionRequest(newStationId, newStationId2, 5),
             String.format("/lines/%d/sections", lineId));
+        // 지하철 목록 조회
+        ExtractableResponse<Response> existsLineList = 조회_요청("/lines/" + lineId);
+
         // then
         // 지하철_노선에_지하철역_등록됨
         List<Long> stationIds = 지하철역_ID_추출(createdSectionResponse);
+        // 지하철_노선_목록_포함됨
+        List<Long> resultLineIds = LineAcceptanceTest.찾은_노선에서_Sations_ID추출(existsLineList);
+
         assertThat(createdSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(stationIds).containsExactly(upStationId, newStationId, newStationId2, downStationId);
+        assertThat(stationIds).containsExactlyElementsOf(resultLineIds);
     }
 
     @Test
