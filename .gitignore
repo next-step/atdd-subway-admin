@@ -40,3 +40,7 @@ out/
 frontend/node_modules
 fronted/.prttierrc.js
 fronted/.eslintrc.js
+
+### user
+pom.xml
+target/
