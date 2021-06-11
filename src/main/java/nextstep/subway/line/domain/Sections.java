@@ -13,6 +13,7 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    private static final int MINIMUN_SECTION_SIZE = 1;
     private static final String EXCEPTION_FOR_EQUAL_SECTION = "상행역, 하행역 모두 등록되어 있습니다.";
     private static final String EXCEPTION_FOR_HAS_NOT_STATIONS = "상행역, 하행역 모두 등록되어 있지 않습니다.";
     private static final String EXCEPTION_FOR_LAST_SECTION = "구간이 1개일 경우 제거할 수 없습니다.";
@@ -125,7 +126,7 @@ public class Sections {
     }
 
     private void checkLastSection() {
-        if (sections.size() <= 1) {
+        if (sections.size() <= MINIMUN_SECTION_SIZE) {
             throw new IllegalArgumentException(EXCEPTION_FOR_LAST_SECTION);
         }
     }
