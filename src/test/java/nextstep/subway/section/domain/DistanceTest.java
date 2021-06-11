@@ -30,7 +30,7 @@ public class DistanceTest {
         // given
         Distance distance = Distance.of(5);
         // when
-        distance.updateDiffDistance(3);
+        distance.subtractDiffDistance(3);
         // then
         assertThat(distance.toNumber()).isEqualTo(2);
     }
@@ -41,7 +41,7 @@ public class DistanceTest {
         // given
         Distance distance = Distance.of(5);
         // when & then
-        Assertions.assertThrows(IllegalArgumentException.class, () -> distance.updateDiffDistance(10));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> distance.updateDiffDistance(5));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> distance.subtractDiffDistance(10));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> distance.subtractDiffDistance(5));
     }
 }

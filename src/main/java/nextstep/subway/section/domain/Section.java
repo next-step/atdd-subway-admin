@@ -67,7 +67,7 @@ public class Section extends BaseEntity {
     }
 
     public void updateSection(Section newSection) {
-        distance.updateDiffDistance(newSection.getDistance());
+        distance.subtractDiffDistance(newSection.getDistance());
         if (upStation.isSame(newSection.upStation)) {
             upStation = newSection.downStation;
             return;

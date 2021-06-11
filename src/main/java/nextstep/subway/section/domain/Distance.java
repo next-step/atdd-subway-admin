@@ -28,7 +28,7 @@ public class Distance {
         }
     }
 
-    public void updateDiffDistance(int distance) {
+    public void subtractDiffDistance(int distance) {
         int diff = this.distance - distance;
         if (diff <= MINIMUM_DISTANCE) {
             throw new IllegalArgumentException(NOT_ADD_ENOUGH_DISTANCE);
