@@ -20,7 +20,7 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (isFirstSection()) {
+        if (isEmptySection()) {
             sections.add(section);
             return;
         }
@@ -67,35 +67,31 @@ public class Sections {
 
     public List<Station> findStationInSections() {
         Section firstSection = findFirstSection();
-        return firstSection.findAllStations(this);
-    }
-
-    public List<Station> findOthersStations(Section section) {
-        return new ArrayList<>(section.findStationsByFirstSection(this));
+        List<Station> othersStations = firstSection.findStations(this);
+        return firstSection.findAllStations(othersStations);
     }
 
     public Section findFirstSection() {
         return sections.stream()
-                .filter(section -> Objects.isNull(findSectionInDownStation(section)))
+                .filter(section -> section.findNotHasDownStation(sections))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
 
-    public Section findSectionInDownStation(Section newSection) {
+    public Section findLastSection() {
         return sections.stream()
-                .filter(section -> section.hasSameDownStation(newSection))
+                .filter(section -> section.findNotHasUpStation(sections))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(NoSuchElementException::new);
     }
 
-    public Section findSectionInUpStation(Section newSection) {
+    public Optional<Section> findSectionInUpStation(Section newSection) {
         return sections.stream()
                 .filter(section -> section.hasSameUpStation(newSection))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
-    public boolean isFirstSection() {
+    public boolean isEmptySection() {
         return sections.isEmpty();
     }
 
@@ -115,9 +111,39 @@ public class Sections {
     }
 
     public void removeStation(Station station) {
-       sections.stream()
-               .filter(section -> section.isMatchUpStation(station) || section.isMatchDownStation(station))
-               .findFirst()
-               .ifPresent(sections::remove);
+        ifRemoveFirstSectionUpStation(station);
+        ifRemoveLastSectionDownStation(station);
+       // ifRemoveInside(station);
+    }
+
+    private void ifRemoveFirstSectionUpStation(Station station) {
+        if (isMatchLastSectionDownStation(station)) {
+            sections.removeIf(section -> section.isMatchDownStation(station));
+        }
+    }
+
+    private void ifRemoveLastSectionDownStation(Station station) {
+        if (isMatchFirstSectionUpStation(station)) {
+            sections.removeIf(section -> section.isMatchUpStation(station));
+        }
+    }
+
+    /*private void ifRemoveInside(Station station) {
+        Section afterSection = findSectionByDownStation(station);
+    }*/
+
+    /*private Section findSectionByDownStation(Station station) {
+        sections.stream()
+                .findFirst()
+    }*/
+
+    private boolean isMatchFirstSectionUpStation(Station station) {
+        Section firstSection = findFirstSection();
+        return firstSection.isMatchUpStation(station);
+    }
+
+    private boolean isMatchLastSectionDownStation(Station station) {
+        Section lastSection = findLastSection();
+        return lastSection.isMatchDownStation(station);
     }
 }

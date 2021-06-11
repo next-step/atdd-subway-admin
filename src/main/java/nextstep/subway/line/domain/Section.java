@@ -6,7 +6,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class Section extends BaseEntity {
@@ -80,20 +80,20 @@ public class Section extends BaseEntity {
         return this.downStation.equals(section.downStation);
     }
 
-    public List<Station> findAllStations(Sections sections) {
+    public List<Station> findAllStations(List<Station> otherStations) {
         List<Station> stations = new ArrayList<>();
         stations.add(upStation);
-        stations.addAll(sections.findOthersStations(this));
+        stations.addAll(otherStations);
         return stations;
     }
 
-    public List<Station> findStationsByFirstSection(Sections sections) {
+    public List<Station> findStations(Sections sections) {
         List<Station> stations = new ArrayList<>();
         stations.add(downStation);
-        Section nextSection = sections.findSectionInUpStation(this);
-        while (!Objects.isNull(nextSection)) {
-            stations.add(nextSection.downStation);
-            nextSection = sections.findSectionInUpStation(nextSection);
+        Optional<Section> nextSection = sections.findSectionInUpStation(this);
+        while (nextSection.isPresent()) {
+            stations.add(nextSection.get().downStation);
+            nextSection = sections.findSectionInUpStation(nextSection.get());
         }
         return stations;
     }
@@ -104,5 +104,13 @@ public class Section extends BaseEntity {
 
     public boolean isMatchDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    public boolean findNotHasDownStation(List<Section> sections) {
+        return sections.stream().noneMatch(section -> section.hasSameDownStation(this));
+    }
+
+    public boolean findNotHasUpStation(List<Section> sections) {
+        return sections.stream().noneMatch(section -> section.hasSameUpStation(this));
     }
 }
