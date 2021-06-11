@@ -32,4 +32,11 @@ public class ExceptionAdvisor {
         log.error("OutOfBoundsException", exception);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.createErrorDto());
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorDto> handleIllegalStateException(IllegalStateException exception) {
+        log.error("IllegalStateException", exception);
+        ErrorDto errorDto = new ErrorDto(null, null, null, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+    }
 }

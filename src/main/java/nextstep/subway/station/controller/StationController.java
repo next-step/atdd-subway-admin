@@ -1,4 +1,4 @@
-package nextstep.subway.station.ui;
+package nextstep.subway.station.controller;
 
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;

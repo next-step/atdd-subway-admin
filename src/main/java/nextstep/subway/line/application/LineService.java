@@ -1,14 +1,18 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import nextstep.subway.exception.DuplicateDataException;
 import nextstep.subway.exception.NoSuchDataException;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.domain.Line;
+import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesSubResponse;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
+import nextstep.subway.section.repository.SectionRepository;
+import nextstep.subway.station.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,30 +22,40 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId())
-                .orElseThrow(() -> new NoSuchDataException("상행역이 존재하지 않습니다.", "upStationId",
-                        String.valueOf(request.getUpStationId()), request.getClass().getName()));
+    public LineResponse saveLine(LineRequest request, SectionResponse sectionResponse) {
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+        Section section = findSectionById(sectionResponse.getId());
 
-        Station downStation = stationRepository.findById(request.getDownStationId())
-                .orElseThrow(() -> new NoSuchDataException("하행역이 존재하지 않습니다.", "downStationId",
-                        String.valueOf(request.getDownStationId()), request.getClass().getName()));
+        Line line = Line.createWithSectionAndStation(request.getName(), request.getColor(), section, upStation, downStation);
+        Line savedLine = lineRepository.save(line);
+        return LineResponse.of(savedLine);
+    }
 
-        Line line = Line.create(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
-        Line persistLine = lineRepository.save(line);
-        return LineResponse.of(persistLine);
+    private Section findSectionById(Long sectionId) {
+        return sectionRepository.findById(sectionId)
+                .orElseThrow(() -> new NoSuchDataException("구간이 존재하지 않습니다.", "sectionId",
+                        String.valueOf(sectionId), null));
+    }
+
+    private Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new NoSuchDataException("역이 존재하지 않습니다.", "upStationId",
+                        String.valueOf(stationId), null));
     }
 
     public void changeLine(Long lineId, LineRequest lineRequest) {
-        Line line = findById(lineId);
+        Line line = findLineById(lineId);
         line.change(lineRequest.getName(), lineRequest.getColor());
     }
 
@@ -60,7 +74,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LinesSubResponse readLine(Long lineId) {
-        Line line = findById(lineId);
+        Line line = findLineById(lineId);
         return LinesSubResponse.of(line);
     }
 
@@ -73,8 +87,17 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    private Line findById(Long lineId) {
+    private Line findLineById(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선입니다.",
                 "lineId", String.valueOf(lineId), null));
+    }
+
+    public SectionResponse registerWithLine(Long lineId, SectionRequest sectionRequest, Long sectionId) {
+        Line line = findLineById(lineId);
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+        Section section = findSectionById(sectionId);
+        line.register(upStation, downStation, section);
+        return SectionResponse.of(section);
     }
 }
