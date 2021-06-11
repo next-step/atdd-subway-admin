@@ -72,13 +72,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // given
         StationResponse 정자역 = 지하철_역_등록되어_있음(new StationRequest("정자역")).as(StationResponse.class);
-        SectionRequest params = new SectionRequest(강남역.getId(), 정자역.getId(), 10);
+        SectionRequest params1 = new SectionRequest(강남역.getId(), 정자역.getId(), 10);
+        SectionRequest params2 = new SectionRequest(정자역.getId(), 광교역.getId(),10);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(params, 신분당선.getId());
+        ExtractableResponse<Response> response1 = 지하철_노선에_지하철역_등록_요청(params1, 신분당선.getId());
+        ExtractableResponse<Response> response2 = 지하철_노선에_지하철역_등록_요청(params2, 신분당선.getId());
 
         // then
-        지하철_노선에_구간_등록_실패됨(response);
+        지하철_노선에_구간_등록_실패됨(response1);
+        지하철_노선에_구간_등록_실패됨(response2);
     }
 
     private void 지하철_노선에_구간_등록_실패됨(ExtractableResponse<Response> response) {

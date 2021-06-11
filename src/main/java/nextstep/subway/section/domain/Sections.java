@@ -29,7 +29,7 @@ public class Sections {
 
     public void validateSection(Section newSection) {
         boolean match = sections.stream()
-                .anyMatch(section -> section.hasSameUpStation(newSection) && section.getDistance() == newSection.getDistance());
+                .anyMatch(section -> (section.hasSameUpStation(newSection) || section.hasSameDownStation(newSection)) && section.getDistance() == newSection.getDistance());
 
         if (match) {
             throw new NotUnderSectionDistanceException();
