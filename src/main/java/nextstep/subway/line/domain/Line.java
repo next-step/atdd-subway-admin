@@ -58,6 +58,10 @@ public class Line extends BaseEntity {
         return sections.stations();
     }
 
+    public List<Station> orderedStations() {
+        return sections.orderedStations();
+    }
+
     public Long getId() {
         return id;
     }
@@ -82,8 +86,7 @@ public class Line extends BaseEntity {
 
     private void connect(Section sectionIn) {
         sections.validateConnectionWith(sectionIn);
-        sections.adjustConnectPositionOf(sectionIn);
-        sections.add(sectionIn);
+        sections.addOnOrdered(sectionIn);
     }
 
 }

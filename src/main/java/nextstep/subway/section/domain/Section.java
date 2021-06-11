@@ -126,33 +126,29 @@ public class Section extends BaseEntity {
                 && !stations.contains(this.downStation);
     }
 
-    public boolean canBeConnectedWith(Section section) {
-        return dockingCheck(section);
-    }
-
-    private boolean dockingCheck(Section section) {
+    public DockingPosition dockingCheck(Section section) {
         if (this.canBeDockedOnFront(section)) {
-            return true;
+            return DockingPosition.FRONT;
         }
         if (this.canBeDockedOnRear(section)) {
-            return true;
+            return DockingPosition.REAR;
         }
-        return false;
+        return DockingPosition.NONE;
     }
 
-    private boolean canBeDockedOnFront(Section section) {
-        return checkFront(section) || checkMidFront(section);
+    public boolean canBeDockedOnFront(Section section) {
+        return checkFront(section) || checkMidFront(section) || checkMidRear(section);
     }
 
-    private boolean canBeDockedOnRear(Section section) {
-        return checkMidRear(section) || checkRear(section);
+    public boolean canBeDockedOnRear(Section section) {
+        return checkRear(section);
     }
 
-    private boolean checkFront(Section section) {
+    public boolean checkFront(Section section) {
         return this.isInFrontOf(section);
     }
 
-    private boolean checkMidFront(Section section) {
+    public boolean checkMidFront(Section section) {
         if (this.isInMidFrontOf(section)) {
             section.connectBehindOf(this);
             return true;
@@ -160,7 +156,7 @@ public class Section extends BaseEntity {
         return false;
     }
 
-    private boolean checkMidRear(Section section) {
+    public boolean checkMidRear(Section section) {
         if (this.isInMidRearOf(section)) {
             section.connectInFrontOf(this);
             return true;
@@ -168,7 +164,7 @@ public class Section extends BaseEntity {
         return false;
     }
 
-    private boolean checkRear(Section section) {
+    public boolean checkRear(Section section) {
         return this.isBehindOf(section);
     }
 

@@ -56,8 +56,9 @@ public class LineTest {
         assertThat(line2.stations()).containsExactly(station1, station2, station4, station3, station6, station5);
     }
 
+    @DisplayName("1~ 5 사이에, 1~ 2, 4~ 5, 3~ 4 순서대로 추가해서 정렬없이 1-2-3-4-5 가 나오는 것을 확인한다.")
     @Test
-    void Sections_의_사이사이에_여러개를_추가한다() {
+    void Line_의_Section_을_사이사이_넣으면서_바로_정렬되는_것_테스트() {
         Sections sections = new Sections();
 
         Section section2 = Section을_두개역과_만든다("1번역", "5번역", 100);
@@ -66,44 +67,11 @@ public class LineTest {
         Section section4 = Section을_두개역과_만든다("3번역", "4번역", 5);
 
         line2.addSection(section2);
-        List<Station> actualStations = line2.stations();
-        List<Section> actualSections = line2.sections().get();
-        for (Station actualStation : actualStations) {
-            System.out.print(actualStation.getName() + " ");
-        } System.out.println("\n========================");
-        for (Section actualSection : actualSections) {
-            System.out.print(actualSection.upStationName() + " " + actualSection.downStationName() + "\t");
-        }System.out.println("\n========================");
-        System.out.println("\n========================");
         line2.addSection(section1);
-        actualStations = line2.stations();
-        for (Station actualStation : actualStations) {
-            System.out.print(actualStation.getName() + " ");
-        } System.out.println("\n========================");
-        for (Section actualSection : actualSections) {
-            System.out.print(actualSection.upStationName() + " " + actualSection.downStationName() + "\t");
-        }System.out.println("\n========================");
-        System.out.println("\n========================");
         line2.addSection(section3);
-        actualStations = line2.stations();
-        for (Station actualStation : actualStations) {
-            System.out.print(actualStation.getName() + " ");
-        } System.out.println("\n========================");
-        for (Section actualSection : actualSections) {
-            System.out.print(actualSection.upStationName() + " " + actualSection.downStationName() + "\t");
-        }System.out.println("\n========================");
-        System.out.println("\n========================");
         line2.addSection(section4);
 
-        actualStations = line2.stations();
-        for (Station actualStation : actualStations) {
-            System.out.print(actualStation.getName() + " ");
-        } System.out.println("========================");
-        for (Section actualSection : actualSections) {
-            System.out.print(actualSection.upStationName() + " " + actualSection.downStationName() + "\t");
-        }System.out.println("\n========================");
-        System.out.println("\n========================");
-
+        List<Station> actualStations = line2.stations();
         assertThat(actualStations.get(0).getName()).isEqualTo("1번역");
         assertThat(actualStations.get(1).getName()).isEqualTo("2번역");
         assertThat(actualStations.get(2).getName()).isEqualTo("3번역");

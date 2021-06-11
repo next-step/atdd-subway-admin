@@ -27,6 +27,25 @@ public class Sections {
         sections.add(section);
     }
 
+    public void addOnOrdered(Section sectionIn) {
+        if (this.contains(sectionIn)) {
+            return;
+        }
+
+        DockingPosition position = findPosition(sectionIn);
+        sections.add(position.index(), sectionIn);
+    }
+
+    private DockingPosition findPosition(Section section) {
+        int i = 0;
+        DockingPosition type = DockingPosition.NONE;
+        while (type == DockingPosition.NONE) {
+            type = section.dockingCheck(sections.get(i));
+            ++i;
+        }
+        return type.setIndex(--i);
+    }
+
     public boolean contains(Section section) {
         return sections.contains(section);
     }
@@ -50,8 +69,14 @@ public class Sections {
     }
 
     public List<Station> stations() {
+        return this.sections.stream()
+                .flatMap(section -> section.upDownStations().stream())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public List<Station> orderedStations() {
         return OrderedSections.of(this.sections).get().stream()
-//        return this.sections.stream()
                 .flatMap(section -> section.upDownStations().stream())
                 .distinct()
                 .collect(Collectors.toList());
@@ -65,9 +90,4 @@ public class Sections {
         return sections.isEmpty();
     }
 
-    public void adjustConnectPositionOf(Section sectionIn) {
-        sections.stream()
-                .filter(section -> sectionIn.canBeConnectedWith(section))
-                .findFirst();
-    }
 }
