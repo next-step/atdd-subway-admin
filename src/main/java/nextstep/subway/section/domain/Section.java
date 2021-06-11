@@ -19,11 +19,11 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_to_up_station"))
     private Station upStation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
 
@@ -54,14 +54,14 @@ public class Section extends BaseEntity {
     }
 
     public Station calcUpStation(Station station) {
-        if (station == null || this.downStation.equals(station)) {
+        if (station == null || this.downStation.getId() == station.getId()) {
             return upStation;
         }
         return station;
     }
 
     public boolean isEqualUpStation(Station station) {
-        return upStation.equals(station);
+        return upStation.getId() == station.getId();
     }
 
     @Override
