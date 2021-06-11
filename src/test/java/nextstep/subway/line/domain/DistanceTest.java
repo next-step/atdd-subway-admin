@@ -1,5 +1,6 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
+import nextstep.subway.line.domain.Distance;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
