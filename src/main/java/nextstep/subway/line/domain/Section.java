@@ -60,6 +60,11 @@ public class Section extends BaseEntity {
                 calculateDistance(preSection, section));
     }
 
+    public static Section makeInsideSection(Section preSection, Section section) {
+        return new Section(preSection.line, preSection.upStation, section.downStation,
+                preSection.distance + section.distance);
+    }
+
     private static int calculateDistance(Section preSection, Section section) {
         int calculatedDistance = preSection.distance - section.distance;
         if (isIllegalDistance(calculatedDistance)) {
@@ -112,5 +117,16 @@ public class Section extends BaseEntity {
 
     public boolean findNotHasUpStation(List<Section> sections) {
         return sections.stream().noneMatch(section -> section.hasSameUpStation(this));
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
     }
 }

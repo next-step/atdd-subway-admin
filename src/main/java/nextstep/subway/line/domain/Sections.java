@@ -34,13 +34,13 @@ public class Sections {
     }
 
     private void checkExistEqualSection(Section section) {
-        if (isMatchWithUpStation(section) && isMatchWithDownStation(section)) {
+        if (hasMatchingUpStation(section) && hasMatchingDownStation(section)) {
             throw new IllegalArgumentException(EXCEPTION_FOR_EQUAL_SECTION);
         }
     }
 
     private void checkNotExistAnyEqualStation(Section section) {
-        if (!isMatchWithUpStation(section) && !isMatchWithDownStation(section)) {
+        if (!hasMatchingUpStation(section) && !hasMatchingDownStation(section)) {
             throw new IllegalArgumentException(EXCEPTION_FOR_HAS_NOT_STATIONS);
         }
     }
@@ -95,11 +95,11 @@ public class Sections {
         return sections.isEmpty();
     }
 
-    public boolean isMatchWithUpStation(Section section) {
+    public boolean hasMatchingUpStation(Section section) {
         return findStationInSections().stream().anyMatch(section::isMatchUpStation);
     }
 
-    public boolean isMatchWithDownStation(Section section) {
+    public boolean hasMatchingDownStation(Section section) {
         return findStationInSections().stream().anyMatch(section::isMatchDownStation);
     }
 
@@ -111,31 +111,39 @@ public class Sections {
     }
 
     public void removeStation(Station station) {
-        ifRemoveFirstSectionUpStation(station);
-        ifRemoveLastSectionDownStation(station);
-       // ifRemoveInside(station);
-    }
-
-    private void ifRemoveFirstSectionUpStation(Station station) {
         if (isMatchLastSectionDownStation(station)) {
             sections.removeIf(section -> section.isMatchDownStation(station));
+            return;
         }
-    }
-
-    private void ifRemoveLastSectionDownStation(Station station) {
         if (isMatchFirstSectionUpStation(station)) {
             sections.removeIf(section -> section.isMatchUpStation(station));
+            return;
         }
+        ifRemoveInside(station);
     }
 
-    /*private void ifRemoveInside(Station station) {
-        Section afterSection = findSectionByDownStation(station);
-    }*/
+    private void ifRemoveInside(Station station) {
+        Section preSection = findSectionForDownStation(station);
+        Section postSection = findSectionForUpStation(station);
 
-    /*private Section findSectionByDownStation(Station station) {
-        sections.stream()
+        sections.remove(preSection);
+        sections.remove(postSection);
+        sections.add(Section.makeInsideSection(preSection, postSection));
+    }
+
+    private Section findSectionForUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isMatchUpStation(station))
                 .findFirst()
-    }*/
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    private Section findSectionForDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isMatchDownStation(station))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+    }
 
     private boolean isMatchFirstSectionUpStation(Station station) {
         Section firstSection = findFirstSection();
