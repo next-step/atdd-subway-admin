@@ -18,14 +18,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private static final StationRequest request = new StationRequest("강남역");
     private static final String ROOT_STATION_REQUEST_URI = "/stations";
 
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 지하철_역_등록되어_있음(request);
+        ExtractableResponse<Response> response = 지하철_역_등록되어_있음("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -36,10 +35,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        지하철_역_등록되어_있음(request);
+        지하철_역_등록되어_있음("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_역_등록되어_있음(request);
+        ExtractableResponse<Response> response = 지하철_역_등록되어_있음("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -49,10 +48,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = 지하철_역_등록되어_있음(request);
-
-        StationRequest anotherRequest = new StationRequest("역삼역");
-        ExtractableResponse<Response> createResponse2 = 지하철_역_등록되어_있음(anotherRequest);
+        ExtractableResponse<Response> createResponse1 = 지하철_역_등록되어_있음("강남역");
+        ExtractableResponse<Response> createResponse2 = 지하철_역_등록되어_있음("역삼역");
 
         // when
         ExtractableResponse<Response> response = httpGet("/stations");
@@ -72,7 +69,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_역_등록되어_있음(request);
+        ExtractableResponse<Response> createResponse = 지하철_역_등록되어_있음("강남역");
 
         // when
         String uri = createResponse.header("Location");
@@ -82,7 +79,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    public ExtractableResponse<Response> 지하철_역_등록되어_있음(StationRequest request) {
-        return httpPost(ROOT_STATION_REQUEST_URI, request);
+    public ExtractableResponse<Response> 지하철_역_등록되어_있음(String name) {
+        return httpPost(ROOT_STATION_REQUEST_URI, new StationRequest(name));
     }
 }
