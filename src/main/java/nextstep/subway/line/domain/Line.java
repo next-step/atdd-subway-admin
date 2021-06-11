@@ -50,13 +50,14 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return new ArrayList<>(sections.findStationInSections());
+        return sections.getAllStations();
     }
 
     public void addSection(Section section) {
         sections.add(section);
+    }
+
+    public void removeStation(Station station) {
+        sections.removeStation(station);
     }
 }

@@ -5,10 +5,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 @Embeddable
 public class Sections {
@@ -68,10 +65,6 @@ public class Sections {
                 });
     }
 
-    public boolean isEmpty() {
-        return sections.isEmpty();
-    }
-
     public List<Station> findStationInSections() {
         Section firstSection = findFirstSection();
         return firstSection.findAllStations(this);
@@ -112,5 +105,19 @@ public class Sections {
 
     public boolean isMatchWithDownStation(Section section) {
         return findStationInSections().stream().anyMatch(section::isMatchDownStation);
+    }
+
+    public List<Station> getAllStations() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return new ArrayList<>(findStationInSections());
+    }
+
+    public void removeStation(Station station) {
+       sections.stream()
+               .filter(section -> section.isMatchUpStation(station) || section.isMatchDownStation(station))
+               .findFirst()
+               .ifPresent(sections::remove);
     }
 }
