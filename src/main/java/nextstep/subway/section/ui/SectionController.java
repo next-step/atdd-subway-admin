@@ -23,14 +23,14 @@ public class SectionController {
         return ResponseEntity.ok(LineResponse.of(lineService.addSection(lineId, request)));
     }
 
-    @DeleteMapping(value = "/lines/{lineId}/sections/{sectionId}")
+    @DeleteMapping(value = "/lines/{lineId}/sections")
     public ResponseEntity<LineResponse> deleteSection(
             @PathVariable Long lineId,
-            @PathVariable Long sectionId,
-            @RequestBody SectionRequest request
+            @RequestParam(name = "sectionId") String sectionId
     ) {
-        //TODO
-        return null;
+        System.out.println("lineId = " + lineId);
+        System.out.println("sectionId = " + sectionId);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
