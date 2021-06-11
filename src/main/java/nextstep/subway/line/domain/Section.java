@@ -85,6 +85,10 @@ public class Section {
 		}
 	}
 
+	boolean contains(Station station) {
+		return upStation.equals(station) || downStation.equals(station);
+	}
+
 	private void addToDownDirection(Section otherSection) {
 		validateLongerThan(otherSection);
 		this.downStation = otherSection.upStation;
@@ -131,9 +135,5 @@ public class Section {
 			", downStation=" + downStation +
 			", distance=" + distance +
 			'}';
-	}
-
-	boolean contains(Station station) {
-		return upStation.equals(station) || downStation.equals(station);
 	}
 }
