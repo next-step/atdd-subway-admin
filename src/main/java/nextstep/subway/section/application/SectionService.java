@@ -2,6 +2,7 @@ package nextstep.subway.section.application;
 
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +21,8 @@ public class SectionService {
 
     @Transactional(readOnly = true)
     public List<SectionResponse> getSectionsByLineId(Long lineId) {
-        List<Section> lines = sectionRepository.findAllByLine_Id(lineId);
-        return lines.stream()
+        List<Section> sections = sectionRepository.findAllByLine_Id(lineId);
+        return Sections.of(sections).getOrderedSections().stream()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
     }

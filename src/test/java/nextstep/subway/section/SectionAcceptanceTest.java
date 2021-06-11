@@ -14,9 +14,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineSteps.지하철_노선_등록되어_있음;
+import static nextstep.subway.line.LineSteps.지하철_노선_조회_요청;
 import static nextstep.subway.section.SectionSteps.지하철_노선에_지하철역_등록_요청;
 import static nextstep.subway.section.SectionSteps.지하철_노선의_구간_목록_조회됨;
 import static nextstep.subway.station.StationSteps.지하철_역_등록되어_있음;
@@ -75,7 +78,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("역 사이에 새로운 역을 상행역과 연결하여 등록한다")
     @Test
-    void addSectionIn() {
+    void addSectionIn1() {
 
         // given
         StationResponse 정자역 = 지하철_역_등록되어_있음(new StationRequest("정자역")).as(StationResponse.class);
@@ -89,13 +92,44 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         역사이에_구간_등록됨(sectionResponse);
     }
 
-    private void 역사이에_구간_등록됨(ExtractableResponse<Response> sectionResponse) {
-        SectionResponse section = sectionResponse.as(SectionResponse.class);
-        List<SectionResponse> sections = 지하철_노선의_구간_목록_조회됨(section.getLineId()).jsonPath().getList(".", SectionResponse.class);
-        int distance = sections.stream().mapToInt(SectionResponse::getDistance).sum();
+    @DisplayName("역 사이에 새로운 역을 하행역과 연결하여 등록한다")
+    @Test
+    void addSectionIn2() {
 
-        assertThat(sections).hasSize(2);
-        assertThat(distance).isEqualTo(params.getDistance());
+        // given
+        StationResponse 정자역 = 지하철_역_등록되어_있음(new StationRequest("정자역")).as(StationResponse.class);
+        SectionRequest params = new SectionRequest(정자역.getId(), 광교역.getId(), 3);
+
+        // when
+        ExtractableResponse<Response> sectionResponse = 지하철_노선에_지하철역_등록_요청(params, 신분당선.getId());
+
+        // then
+        지하철_노선에_구간_등록됨(sectionResponse);
+        역사이에_구간_등록됨(sectionResponse);
+    }
+
+    @DisplayName("지하철 노선에 여러개의 역을 등록한다.")
+    @Test
+    void addLineStationInAnyOrder() {
+        // given
+        StationResponse 정자역 = 지하철_역_등록되어_있음(new StationRequest("정자역")).as(StationResponse.class);
+        StationResponse 양재역 = 지하철_역_등록되어_있음(new StationRequest("양재역")).as(StationResponse.class);
+        SectionRequest params1 = new SectionRequest(강남역.getId(), 정자역.getId(), 3);
+        SectionRequest params2 = new SectionRequest(광교역.getId(), 양재역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> lineStationResponse = 지하철_노선에_지하철역_등록_요청(params1, 신분당선.getId());
+        지하철_노선에_지하철역_등록_요청(params2, 신분당선.getId());
+
+        // then
+        assertThat(lineStationResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선.getId());
+
+        // then
+        지하철_노선_정보_응답됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(1L, 3L, 2L, 4L));
     }
 
     @DisplayName("역 사이에 기존 역 사이 길이보다 크거나 같은 새로운 역을 등록한다")
@@ -142,6 +176,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록_실패됨(response);
+    }
+
+    private void 지하철_노선에_지하철역_순서_정렬됨(ExtractableResponse<Response> response, List<Long> expectedStationIds) {
+        LineResponse line = response.as(LineResponse.class);
+        List<Long> stationIds = line.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
+    }
+
+    private void 지하철_노선_정보_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 역사이에_구간_등록됨(ExtractableResponse<Response> sectionResponse) {
+        SectionResponse section = sectionResponse.as(SectionResponse.class);
+        List<SectionResponse> sections = 지하철_노선의_구간_목록_조회됨(section.getLineId()).jsonPath().getList(".", SectionResponse.class);
+        int distance = sections.stream().mapToInt(SectionResponse::getDistance).sum();
+
+        assertThat(sections).hasSize(2);
+        assertThat(distance).isEqualTo(params.getDistance());
     }
 
     private void 지하철_노선에_구간_등록_실패됨(ExtractableResponse<Response> response) {

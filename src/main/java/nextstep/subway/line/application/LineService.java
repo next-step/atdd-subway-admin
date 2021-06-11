@@ -52,24 +52,24 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse getLine(Long id) {
         return lineRepository
-                .findById(id)
+                .findByIdFetch(id)
                 .map(LineResponse::of)
                 .orElseThrow(NotFoundLineException::new)
                 ;
     }
 
     public void modifyLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
+        Line line = lineRepository.findByIdFetch(id).orElseThrow(NotFoundLineException::new);
         line.update(new Line(lineRequest.getName(), lineRequest.getColor()));
     }
 
     public void deleteLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
+        Line line = lineRepository.findByIdFetch(id).orElseThrow(NotFoundLineException::new);
         lineRepository.delete(line);
     }
 
     public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
+        Line line = lineRepository.findByIdFetch(lineId).orElseThrow(NotFoundLineException::new);
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(NotFoundStationException::new);
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(NotFoundStationException::new);
 

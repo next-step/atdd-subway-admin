@@ -11,6 +11,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -29,26 +30,65 @@ public class Sections {
         this.sections.add(newSection);
     }
 
+    public List<Station> getStations() {
+        return getOrderedSections().stream()
+                .flatMap(section -> section.getStations().stream())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public static Sections of(List<Section> sections) {
+        Sections newSections = new Sections();
+        sections.forEach(newSections::add);
+        return newSections;
+    }
+
     private void connectIfExistSameDownStation(Section newSection) {
         sections.stream()
-                .filter(section -> section.hasSameDownStation(newSection))
+                .filter(section -> section.hasSameDownStation(newSection.getDownStation()))
                 .findFirst()
                 .ifPresent(section -> section.updateDownStationToUpStation(newSection));
     }
 
     private void connectIfExistSameUpStation(Section newSection) {
         sections.stream()
-                .filter(section -> section.hasSameUpStation(newSection))
+                .filter(section -> section.hasSameUpStation(newSection.getUpStation()))
                 .findFirst()
                 .ifPresent(section -> section.updateUpStationToDownStation(newSection));
     }
 
-    public List<Station> getStations() {
-        return this.sections.stream()
-                .flatMap(section -> section.getStations().stream())
-                .distinct()
-                .collect(Collectors.toList());
+    public List<Section> getOrderedSections() {
 
+        Optional<Section> firstSection = findFirstSection();
+
+        List<Section> result = new ArrayList<>();
+        while (firstSection.isPresent()) {
+            Section section = firstSection.get();
+            result.add(section);
+            firstSection = sections.stream()
+                    .filter(nextSection -> nextSection.getUpStation().equals(section.getDownStation()))
+                    .findFirst();
+        }
+
+        return result;
+    }
+
+    private Optional<Section> findFirstSection() {
+        return this.sections.stream()
+                .filter(section -> !getDownStations().contains(section.getUpStation()))
+                .findFirst();
+    }
+
+    private List<Station> getUpStations() {
+        return this.sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> getDownStations() {
+        return this.sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
     }
 
     private void validateSection(Section newSection) {
@@ -56,33 +96,37 @@ public class Sections {
             throw new NotUnderSectionDistanceException();
         }
 
-        if (containsUpStation(newSection) && containsDownStation(newSection)) {
+        boolean containsUpStation = containsUpStation(newSection.getUpStation());
+        boolean containsDownStation = containsDownStation(newSection.getDownStation());
+
+        if (containsUpStation && containsDownStation) {
             throw new ExistSameStationsException();
         }
 
-        if (!containsUpStation(newSection) && !containsDownStation(newSection)) {
+        if (!containsUpStation && !containsDownStation) {
             throw new NotExistAnySameStationException();
         }
     }
 
-    private boolean containsDownStation(Section newSection) {
-        return getStations().contains(newSection.getDownStation());
+    private boolean containsDownStation(Station station) {
+        return getStations().contains(station);
     }
 
-    private boolean containsUpStation(Section newSection) {
-        return getStations().contains(newSection.getUpStation());
+    private boolean containsUpStation(Station station) {
+        return getStations().contains(station);
     }
 
     private boolean isNotValidDistance(Section newSection) {
         return sections.stream()
-                .anyMatch(section -> (isSameUpStation(newSection, section) || isSameDownStation(newSection, section)) && section.getDistance() == newSection.getDistance());
+                .anyMatch(section -> (isSameUpStation(newSection, section) || isSameDownStation(newSection, section))
+                        && section.getDistance() == newSection.getDistance());
     }
 
     private boolean isSameDownStation(Section newSection, Section section) {
-        return section.hasSameDownStation(newSection);
+        return section.hasSameDownStation(newSection.getDownStation());
     }
 
     private boolean isSameUpStation(Section newSection, Section section) {
-        return section.hasSameUpStation(newSection);
+        return section.hasSameUpStation(newSection.getUpStation());
     }
 }

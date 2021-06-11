@@ -65,12 +65,12 @@ public class Section {
         return downStation;
     }
 
-    public boolean hasSameUpStation(Section section) {
-        return upStation.equals(section.getUpStation());
+    public boolean hasSameUpStation(Station station) {
+        return upStation.equals(station);
     }
 
-    public boolean hasSameDownStation(Section section) {
-        return downStation.equals(section.getDownStation());
+    public boolean hasSameDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public void addLine(Line line) {

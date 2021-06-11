@@ -92,10 +92,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(params);
+        LineResponse 신분당선 = 지하철_노선_등록되어_있음(params).as(LineResponse.class);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선.getId());
 
         // then
         지하철_노선_응답됨(response);
