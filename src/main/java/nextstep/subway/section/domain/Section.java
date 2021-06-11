@@ -107,6 +107,14 @@ public class Section extends BaseEntity {
         return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
     }
 
+    public boolean isSameUpStation(Section section) {
+        return this.upStation.equals(section.upStation);
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return this.downStation.equals(section.downStation);
+    }
+
     public boolean containsNoneStations(Section section) {
         return getStations().stream()
                 .noneMatch(v -> v.equals(section.downStation) || v.equals(section.upStation));

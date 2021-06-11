@@ -72,12 +72,12 @@ public class Sections {
     private void addMiddleSection(Section section, LinkedList<Section> result) {
         int foundIndex = 0;
         for (int i = 0; i < result.size(); i++) {
-            if (isUpStationMatch(section, result, i)) {
+            if (isUpStationMatch(section, result.get(i))) {
                 result.get(i).changeUpStation(section);
                 foundIndex = i;
                 break;
             }
-            if (isDownStationMatch(section, result, i)) {
+            if (isDownStationMatch(section, result.get(i))) {
                 result.get(i).changeDownStation(section);
                 foundIndex = i;
                 break;
@@ -87,12 +87,12 @@ public class Sections {
         sections = new ArrayList<>(result);
     }
 
-    private boolean isDownStationMatch(Section section, LinkedList<Section> result, int i) {
-        return section.getDownStation().equals(result.get(i).getDownStation());
+    private boolean isDownStationMatch(Section section, Section foundSection) {
+        return foundSection.isSameDownStation(section);
     }
 
-    private boolean isUpStationMatch(Section section, LinkedList<Section> result, int i) {
-        return section.getUpStation().equals(result.get(i).getUpStation());
+    private boolean isUpStationMatch(Section section, Section foundSection) {
+        return foundSection.isSameUpStation(section);
     }
 
     private void addLastSectionBefore(Section section, LinkedList<Section> result, Section last) {

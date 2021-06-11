@@ -53,6 +53,7 @@ class SectionsTest {
         sections.addSection(new Section(station3, station2, 2));
         sections.addSection(new Section(station3, station5, 1));
 
+
         assertThat(sections.getStations()).containsExactly(station1, station4, station3, station5, station2);
     }
 
