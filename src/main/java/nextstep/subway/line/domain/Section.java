@@ -132,4 +132,8 @@ public class Section {
 			", distance=" + distance +
 			'}';
 	}
+
+	boolean contains(Station station) {
+		return upStation.equals(station) || downStation.equals(station);
+	}
 }

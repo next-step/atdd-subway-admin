@@ -47,6 +47,18 @@ class SectionsTest {
 	}
 
 	@Test
+	@DisplayName("상행역 하행역 모두 노선에 존재하지 않는 구간은 등록할 수 없다.")
+	void addSectionNotExist() {
+		// given
+		Sections 강남_양재_양재시민의숲 = Sections.of(강남_양재_구간);
+
+		// when
+		assertThatThrownBy(() -> 강남_양재_양재시민의숲.add(양재시민의숲_청계산입구_구간))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("상행역 하행역 모두 노선에 존재하지 않는 구간은 등록할 수 없다.");
+	}
+
+	@Test
 	@DisplayName("역 사이에 역을 추가할 수 있다.")
 	void addSectionBetweenStation() {
 		// given

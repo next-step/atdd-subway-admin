@@ -6,7 +6,6 @@ import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -81,8 +80,14 @@ public class Sections {
 	}
 
 	private void checkValidation(Section otherSection) {
+		if (sections.isEmpty()) {
+			return;
+		}
 		if (exists(otherSection)) {
 			throw new IllegalArgumentException("해당 구간은 이미 존재합니다.");
+		}
+		if (notExistsUpAndDownStations(otherSection)) {
+			throw new IllegalArgumentException("상행역 하행역 모두 노선에 존재하지 않는 구간은 등록할 수 없다.");
 		}
 	}
 
@@ -93,5 +98,10 @@ public class Sections {
 		return sections.stream()
 			.anyMatch(section -> existsSameUpStation && section.isSameDownStation(otherSection));
 	}
-}
 
+	private boolean notExistsUpAndDownStations(Section otherSection) {
+		return sections.stream()
+			.flatMap(Section::getStreamOfStations)
+			.noneMatch(otherSection::contains);
+	}
+}

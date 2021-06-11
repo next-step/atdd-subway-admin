@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,6 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
 
-@Disabled("아직 구현코드가 없음")
 @DisplayName("지하철 노선 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
