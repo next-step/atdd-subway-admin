@@ -32,7 +32,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void 지하철＿중복＿노선＿생성＿예외() {
+    void 지하철_중복_노선_생성_예외() {
         // given
         ExtractableResponse<Response> firstResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000"));
 
@@ -43,9 +43,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(secondResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철＿노선＿목록＿조회")
+    @DisplayName("지하철_노선_목록_조회")
     @Test
-    void 지하철＿노선＿목록＿조회() {
+    void 지하철_노선_목록_조회() {
         // given
         LineRequest firstRequest = new LineRequest("1호선", "FF0000");
         LineRequest secondRequest = new LineRequest("2호선", "00FF00");
@@ -66,9 +66,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
     }
 
-    @DisplayName("지하철＿노선＿조회＿성공")
+    @DisplayName("지하철_노선_조회_성공")
     @Test
-    void 지하철＿노선＿조회＿성공() {
+    void 지하철_노선_조회_성공() {
         // given
         LineRequest firstRequest = new LineRequest("1호선", "FF0000");
         LineRequest secondRequest = new LineRequest("2호선", "00FF00");
@@ -86,7 +86,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
-    void 지하철＿노선＿수정＿성공() {
+    void 지하철_노선_수정_성공() {
         // given
         LineRequest saveRequest = new LineRequest("1호선", "FF0000");
         ExtractableResponse createResponse1 = 지하철_노선_생성_요청(saveRequest);
@@ -103,7 +103,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
-    void 지하철＿노선＿제거＿성공() {
+    void 지하철_노선_제거_성공() {
         // given
         LineRequest saveRequest = new LineRequest("1호선", "FF0000");
         ExtractableResponse createResponse1 = 지하철_노선_생성_요청(saveRequest);
