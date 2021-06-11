@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,9 +21,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        Long upStationId = 역을_생성하여_아이디제공("오송역");
+        Long downStationId = 역을_생성하여_아이디제공("대전역");
+
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("경의선", "blue");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("경의선", "blue", upStationId, downStationId, 7);
 
         // then
         // 지하철_노선_생성됨
@@ -30,10 +34,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(response.statusCode()).isNotEqualTo(HttpStatus.CONFLICT.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(final String name, final String color) {
+    private Long 역을_생성하여_아이디제공(String stationName) {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all().extract();
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // 값 검증
+        StationResponse stationResponse = response.jsonPath().getObject(".", StationResponse.class);
+        Assertions.assertThat(stationResponse).extracting("name").isEqualTo(stationName);
+
+        return stationResponse.getId();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(final String name, final String color, final Long upStationId, final Long downStationId, final int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", upStationId.toString());
+        params.put("downStationId", downStationId.toString());
+        params.put("distance", Integer.toString(distance));
 
         return RestAssured
                 .given().log().all()
@@ -48,11 +77,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine_exception() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("경의선", "blue");
+        지하철_노선_등록되어_있음("경의선", "blue", "광명역", "오송역", 8);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("경의선", "blue");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("경의선", "blue", 1L, 2L, 7);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -65,9 +94,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("경의선", "blue");
+        지하철_노선_등록되어_있음("경의선", "blue","광명역", "오송역", 8);
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("4호선", "green");
+        지하철_노선_등록되어_있음("4호선", "green","서울역", "회현역", 4);
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -97,8 +126,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("경의선", "blue");
-        지하철_노선_등록되어_있음("4호선", "green");
+        지하철_노선_등록되어_있음("경의선", "blue", "광명역", "오송역", 8);
+        지하철_노선_등록되어_있음("4호선", "green", "서울역", "회현역", 4);
 
         // when
         // 지하철_노선_조회_요청
@@ -118,8 +147,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine_exception() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("경의선", "blue");
-        지하철_노선_등록되어_있음("4호선", "green");
+        지하철_노선_등록되어_있음("경의선", "blue", "광명역", "오송역", 8);
+        지하철_노선_등록되어_있음("4호선", "green", "서울역", "회현역", 4);
 
         // when
         // 지하철_노선_조회_요청
@@ -144,7 +173,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("경의선", "blue");
+        지하철_노선_등록되어_있음("경의선", "blue", "광명역", "오송역", 8);
 
         // when
         // 지하철_노선_수정_요청
@@ -161,7 +190,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine_exception() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("경의선", "blue");
+        지하철_노선_등록되어_있음("경의선", "blue", "광명역", "오송역", 8);
 
         // when
         // 지하철_노선_수정_요청
@@ -192,7 +221,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("경의선", "blue");
+        지하철_노선_등록되어_있음("경의선", "blue", "광명역", "오송역", 8);
 
         // when
         // 지하철_노선_제거_요청
@@ -209,7 +238,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine_exception() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("경의선", "blue");
+        지하철_노선_등록되어_있음("경의선", "blue", "광명역", "오송역", 8);
 
         // when
         // 지하철_노선_제거_요청
@@ -229,10 +258,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response;
     }
 
-    void 지하철_노선_등록되어_있음(final String name, final String color) {
+    void 지하철_노선_등록되어_있음(final String name, final String color, final String upStationName, final String downStationName, int distance) {
+        Long upStationId = 역을_생성하여_아이디제공(upStationName);
+        Long downStationId = 역을_생성하여_아이디제공(downStationName);
+
         Map<String, String> alreadyParams = new HashMap<>();
         alreadyParams.put("name", name);
         alreadyParams.put("color", color);
+        alreadyParams.put("upStationId", upStationId.toString());
+        alreadyParams.put("downStationId", downStationId.toString());
+        alreadyParams.put("distance", Integer.toString(distance));
 
         ExtractableResponse<Response> alreadyResponse = RestAssured
                 .given().log().all()
