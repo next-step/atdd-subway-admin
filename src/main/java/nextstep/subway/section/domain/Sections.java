@@ -11,7 +11,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
-import nextstep.subway.exception.SubwayLogicException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -33,8 +32,9 @@ public class Sections {
 	}
 
 	public List<Station> getOrderedStations() {
-		Section currentSection = this.findUpStationEndPointSection();
+		Optional<Section> currentSection = this.findUpStationEndPointSection();
 		Stream<Station> stations = this.getStationStream(currentSection);
+
 		do {
 			currentSection = this.nextSection(currentSection);
 			stations = Stream.concat(stations,
@@ -46,30 +46,30 @@ public class Sections {
 		return stations.collect(Collectors.toList());
 	}
 
-	private Stream<Station> getStationStream(Section section) {
-		return Stream.of(section.getUpStation(), section.getDownStation());
+	private Stream<Station> getStationStream(Optional<Section> section) {
+		return section.map(value -> Stream.of(value.getUpStation(), value.getDownStation())).orElseGet(Stream::empty);
 	}
 
-	private boolean hasNext(Section currentSection) {
-		return this.sections.stream()
-			.anyMatch(section -> section.getUpStation().equals(currentSection.getDownStation()));
+	private boolean hasNext(Optional<Section> currentSection) {
+		return currentSection.filter(value -> this.sections.stream()
+			.anyMatch(section -> section.getUpStation().equals(value.getDownStation()))).isPresent();
 	}
 
-	private Section nextSection(Section currentSection) {
-		return this.sections.stream()
-			.filter(section -> section.getUpStation().equals(currentSection.getDownStation()))
-			.findAny().orElse(new Section());
+	private Optional<Section> nextSection(Optional<Section> currentSection) {
+		return currentSection.flatMap(value -> this.sections.stream()
+			.filter(section -> section.getUpStation().equals(value.getDownStation()))
+			.findAny());
 
 	}
 
-	private Section findUpStationEndPointSection() {
+	private Optional<Section> findUpStationEndPointSection() {
 		List<Station> downStations = this.sections.stream()
 			.map(Section::getDownStation)
 			.collect(Collectors.toList());
 
 		return this.sections.stream()
 			.filter(section -> !downStations.contains(section.getUpStation()))
-			.findFirst().orElseThrow(() -> new SubwayLogicException(INVALID_SECTION_MESSAGE));
+			.findFirst();
 	}
 
 }
