@@ -97,6 +97,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_구간_등록_실패됨(response);
     }
 
+    @DisplayName("노선에 상행역과 하행역 둘 중 하나라도 포함하지 않는 구간을 등록한다")
+    @Test
+    void addSectionException3() {
+        // given
+        StationResponse 판교역 = 지하철_역_등록되어_있음(new StationRequest("판교역")).as(StationResponse.class);
+        StationResponse 정자역 = 지하철_역_등록되어_있음(new StationRequest("정자역")).as(StationResponse.class);
+        SectionRequest params = new SectionRequest(판교역.getId(), 정자역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(params, 신분당선.getId());
+
+        // then
+        지하철_노선에_구간_등록_실패됨(response);
+    }
+
     private void 지하철_노선에_구간_등록_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

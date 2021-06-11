@@ -1,8 +1,10 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.section.exception.ExistSameStationsException;
+import nextstep.subway.section.exception.NotExistAnySameStationException;
 import nextstep.subway.section.exception.NotUnderSectionDistanceException;
 import nextstep.subway.station.domain.Station;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -17,6 +19,9 @@ public class Sections {
     private final List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
+        if (!CollectionUtils.isEmpty(sections)) {
+            validateSection(section);
+        }
         this.sections.add(section);
     }
 
@@ -28,14 +33,26 @@ public class Sections {
 
     }
 
-    public void validateSection(Section newSection) {
+    private void validateSection(Section newSection) {
         if (isNotValidDistance(newSection)) {
             throw new NotUnderSectionDistanceException();
         }
 
-        if (getStations().contains(newSection.getUpStation()) && getStations().contains(newSection.getDownStation())) {
+        if (containsUpStation(newSection) && containsDownStation(newSection)) {
             throw new ExistSameStationsException();
         }
+
+        if (!containsUpStation(newSection) && !containsDownStation(newSection)) {
+            throw new NotExistAnySameStationException();
+        }
+    }
+
+    private boolean containsDownStation(Section newSection) {
+        return getStations().contains(newSection.getDownStation());
+    }
+
+    private boolean containsUpStation(Section newSection) {
+        return getStations().contains(newSection.getUpStation());
     }
 
     private boolean isNotValidDistance(Section newSection) {

@@ -3,6 +3,7 @@ package nextstep.subway.line.exception;
 import nextstep.subway.common.ErrorCode;
 import nextstep.subway.common.ErrorResponse;
 import nextstep.subway.section.exception.ExistSameStationsException;
+import nextstep.subway.section.exception.NotExistAnySameStationException;
 import nextstep.subway.section.exception.NotUnderSectionDistanceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,5 +29,11 @@ public class LineControllerAdvice {
     @ExceptionHandler(ExistSameStationsException.class)
     public ErrorResponse handleExistSameStationsException() {
         return new ErrorResponse(ErrorCode.EXIST_SAME_STATIONS_MESSAGE.getCode(), ErrorCode.EXIST_SAME_STATIONS_MESSAGE.getDescription());
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NotExistAnySameStationException.class)
+    public ErrorResponse handleNotExistAnySameStationException() {
+        return new ErrorResponse(ErrorCode.NOT_EXIST_ANY_SAME_STATION_MESSAGE.getCode(), ErrorCode.NOT_EXIST_ANY_SAME_STATION_MESSAGE.getDescription());
     }
 }
