@@ -13,14 +13,24 @@ import java.util.List;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    List<Section> sections = new ArrayList<>();
+    List<Section> sections = new LinkedList<>();
 
     public Sections() {
     }
 
     public void add(Section section) {
-        if (!sections.contains(section)) {
+        if (sections.isEmpty()) {
             sections.add(section);
+            return;
+        }
+        connectIfFront(section);
+    }
+
+    private void connectIfFront(Section section) {
+        Station currentFrontMostStation = sections.get(0).getUpStation();
+        Station downStationOfInputSection = section.getDownStation();
+        if (downStationOfInputSection.equals(currentFrontMostStation)) {
+            sections.add(0, section);
         }
     }
 
@@ -44,8 +54,7 @@ public class Sections {
             return stations;
         }
 
-        int index = stations.indexOf(section.getUpStation());
-        stations.add(index, section.getDownStation());
+        stations.add(section.getDownStation());
         return stations;
     }
 }

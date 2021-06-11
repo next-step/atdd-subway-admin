@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,17 +41,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        서울역 = stationAcceptanceTest.지하철_역_등록되어_있음("서울역").as(Station.class);
         회현역 = stationAcceptanceTest.지하철_역_등록되어_있음("회현역").as(Station.class);
         명동역 = stationAcceptanceTest.지하철_역_등록되어_있음("명동역").as(Station.class);
+        서울역 = stationAcceptanceTest.지하철_역_등록되어_있음("서울역").as(Station.class);
 
-        사호선_생성_응답 = lineAcceptanceTest.지하철_노선_등록되어_있음(new LineRequest("4호선", "bg-blue", 2L, 3L, 20))
+        사호선_생성_응답 = lineAcceptanceTest.지하철_노선_등록되어_있음(new LineRequest("4호선", "bg-blue", 회현역.getId(), 명동역.getId(), 20))
                 .as(LineResponse.class);
 
         사호선_ID = 사호선_생성_응답.getId();
-        서울_회현_요청 = new SectionRequest(1L, 2L, 10);
-        회현_명동_요청 = new SectionRequest(2L, 3L, 20);
-        서울_명동_요청 = new SectionRequest(1L, 3L, 30);
+        서울_회현_요청 = new SectionRequest(서울역.getId(), 회현역.getId(), 10);
+        회현_명동_요청 = new SectionRequest(회현역.getId(), 명동역.getId(), 20);
+        서울_명동_요청 = new SectionRequest(서울역.getId(), 명동역.getId(), 30);
     }
 
     @DisplayName("구간 등록")
@@ -73,9 +74,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 구간등록_when_상행역이_상행종점() {
         // when
         //구간을_노선에_등록_요청
+        ExtractableResponse<Response> response = 구간을_노선에_등록_요청(사호선_ID, 서울_회현_요청);
 
         // then
         //구간_등록_완료
+        구간_등록_OK_응답(response);
+        List<Long> expectedOrderId = Arrays.asList(서울역.getId(), 회현역.getId(), 명동역.getId());
+        노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
+
     }
 
     @DisplayName("구간 등록 : 구간의 하행역이 하행종점")
@@ -128,5 +134,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         assertThat(stationId).contains(station.getId());
+    }
+
+    private void 노선에_지하철이_순서대로_등록되었는지_점검(ExtractableResponse<Response> response, List<Long> stationIds) {
+        List<Long> actualIds = response.as(LineResponse.class).getStationResponses().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        assertThat(actualIds).containsExactlyElementsOf(stationIds);
     }
 }
