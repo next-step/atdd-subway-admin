@@ -6,7 +6,6 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,6 +64,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록됨(response);
+    }
+
+    @DisplayName("역 사이에 기존 역 사이 길이보다 크거나 같은 새로운 역을 등록한다")
+    @Test
+    void addSectionSameStations() {
+
+        // given
+        StationResponse 정자역 = 지하철_역_등록되어_있음(new StationRequest("정자역")).as(StationResponse.class);
+        SectionRequest params = new SectionRequest(강남역.getId(), 정자역.getId(), 10);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(params, 신분당선.getId());
+
+        // then
+        지하철_노선에_구간_등록_실패됨(response);
+    }
+
+    private void 지하철_노선에_구간_등록_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void 지하철_노선에_구간_등록됨(ExtractableResponse<Response> response) {

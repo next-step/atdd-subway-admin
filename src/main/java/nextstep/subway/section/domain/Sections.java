@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.exception.NotUnderSectionDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -24,5 +25,14 @@ public class Sections {
                 .distinct()
                 .collect(Collectors.toList());
 
+    }
+
+    public void validateSection(Section newSection) {
+        boolean match = sections.stream()
+                .anyMatch(section -> section.hasSameUpStation(newSection) && section.getDistance() == newSection.getDistance());
+
+        if (match) {
+            throw new NotUnderSectionDistanceException();
+        }
     }
 }

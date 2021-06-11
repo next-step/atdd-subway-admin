@@ -56,6 +56,18 @@ public class Section {
         return line.getId();
     }
 
+    public Long getUpStationId() {
+        return upStation.getId();
+    }
+
+    public Long getDownStationId() {
+        return downStation.getId();
+    }
+
+    public boolean hasSameUpStation(Section section) {
+        return upStation.getId().equals(section.getUpStationId());
+    }
+
     public void addLine(Line line) {
         this.line = line;
     }
