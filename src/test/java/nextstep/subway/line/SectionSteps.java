@@ -25,9 +25,9 @@ public class SectionSteps {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_구간_삭제_요청(ExtractableResponse<Response> response,
+    public static ExtractableResponse<Response> 지하철_노선_구간_삭제_요청(Long lineId,
                                                                 StationResponse removeStation) {
-        String uri = "/lines/" + response.header("Location");
+        String uri = "/lines/" + lineId + "/sections";
         return RestAssured.given().log().all()
                 .param("stationId", removeStation.getId())
                 .when()
@@ -46,5 +46,9 @@ public class SectionSteps {
 
     public static void 지하철_노선_구간_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static void 지하철_노선_구간_삭제_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

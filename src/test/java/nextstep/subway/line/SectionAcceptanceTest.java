@@ -130,7 +130,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 구간_등록된_신분당선 = 지하철_노선에_구간_등록_요청(신분당선, 광교역, 판교역, 15);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(구간_등록된_신분당선, 강남역);
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(신분당선.getId(), 강남역);
         ExtractableResponse<Response> 조회된_신분당선 = 지하철_노선_조회_요청(신분당선.getId());
 
         지하철_노선_구간_삭제됨(response);
@@ -144,7 +144,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 구간_등록된_신분당선 = 지하철_노선에_구간_등록_요청(신분당선, 광교역, 판교역, 15);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(구간_등록된_신분당선, 판교역);
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(신분당선.getId(), 판교역);
         ExtractableResponse<Response> 조회된_신분당선 = 지하철_노선_조회_요청(신분당선.getId());
 
         지하철_노선_구간_삭제됨(response);
@@ -158,10 +158,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 구간_등록된_신분당선 = 지하철_노선에_구간_등록_요청(신분당선, 광교역, 판교역, 15);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(구간_등록된_신분당선, 광교역);
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(신분당선.getId(), 광교역);
         ExtractableResponse<Response> 조회된_신분당선 = 지하철_노선_조회_요청(신분당선.getId());
 
         지하철_노선_구간_삭제됨(response);
         지하철_노선_지하철역_정렬된_목록_포함됨(조회된_신분당선, Arrays.asList(강남역, 판교역));
+    }
+
+    @DisplayName("노선의 구간 제거를 실패한다 - 구간이 한개 남았을때 구간 제거 요청시")
+    @Test
+    void removeSection_fail_case_last_section() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(신분당선.getId(), 광교역);
+
+        // then
+        지하철_노선_구간_삭제_실패됨(response);
     }
 }
