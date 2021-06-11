@@ -1,17 +1,21 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
-import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,9 +26,17 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections = Sections.of(new ArrayList<>());
+    private Sections sections = Sections.of(new LinkedList<>());
 
-    public Line() { }
+    public Line() {
+    }
+
+    public Line(Long id, String name, String color, Sections sections) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
+    }
 
     public Line(String name, String color, Sections sections) {
         this.name = name;
@@ -37,9 +49,8 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addSection(Section section){
-        this.sections.getValues().add(section);
-        section.toLine(this);
+    public void addSection(Section section) {
+        this.sections.add(section, this);
     }
 
     public Long getId() {
@@ -59,10 +70,12 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
+
         return this.sections.getValues().stream()
-                .map(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .flatMap(Stream::distinct)
-                .collect(Collectors.toList());
+                .sorted(Comparator.comparingInt(Section::getSequence))
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .collect(Collectors.toList())
+                .stream().distinct().collect(Collectors.toList());
     }
 
     public void update(String name, String color, Section section) {
@@ -72,4 +85,9 @@ public class Line extends BaseEntity {
         values.clear();
         values.add(section);
     }
+
+    public boolean isContainingStation(Station station){
+        return getStations().contains(station);
+    };
+
 }

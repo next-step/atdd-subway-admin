@@ -46,7 +46,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_등록("1호선", "빨강");
+        ExtractableResponse<Response> response = 지하철_노선_등록("1호선", "빨강", upStationId, downStationId, 50);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -62,10 +62,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        지하철_노선_등록("1호선", "빨강");
+        지하철_노선_등록("1호선", "빨강", upStationId, downStationId, 50);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_등록("1호선", "빨강");
+        ExtractableResponse<Response> response = 지하철_노선_등록("1호선", "빨강", upStationId, downStationId, 50);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -76,7 +76,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        ExtractableResponse<Response> createResponse1 = 지하철_노선_등록("1호선", "빨강");
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_등록("1호선", "빨강", upStationId, downStationId, 50);
         ExtractableResponse<Response> createResponse2 = 지하철_노선_등록("2호선", "초록", upStationId2, downStationId2,50);
 
         // when
@@ -100,7 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록("1호선", "빨강");
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록("1호선", "빨강", upStationId, downStationId, 50);
         // when
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
@@ -129,7 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void NotFoundGetLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록("1호선", "빨강");
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록("1호선", "빨강", upStationId, downStationId, 50);
         // when
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = 지하철_노선_조회_실패_요청(createResponse);
@@ -162,7 +162,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록("1호선", "빨강");
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록("1호선", "빨강", upStationId, downStationId, 50);
 
         // when
         // 지하철_노선_제거_요청
@@ -181,10 +181,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .get("/lines")
                 .then().log().all()
                 .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_등록(String 이름, String 색깔) {
-        return 지하철_노선_등록(이름, 색깔, upStationId, downStationId, 50);
     }
 
     private ExtractableResponse<Response> 지하철_노선_등록(String 이름, String 색깔, Long 상행종착역ID, Long 하행종착역ID, int 거리) {
