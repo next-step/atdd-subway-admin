@@ -35,9 +35,4 @@ public class StationController {
         stationService.deleteStationById(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
-    }
 }
