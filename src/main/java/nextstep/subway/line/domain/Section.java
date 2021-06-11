@@ -48,11 +48,11 @@ public class Section {
 		this.distance = distance;
 	}
 
-	boolean isPreviousOf(Section otherSection) {
+	boolean isUpDirectionOf(Section otherSection) {
 		return this.downStation.equals(otherSection.upStation);
 	}
 
-	boolean isNextOf(Section otherSection) {
+	boolean isDownDirectionOf(Section otherSection) {
 		return this.upStation.equals(otherSection.downStation);
 	}
 
@@ -76,7 +76,7 @@ public class Section {
 		return distance;
 	}
 
-	void addSection(Section otherSection) {
+	void addSectionBetween(Section otherSection) {
 		if (isSameDownStation(otherSection)) {
 			addToDownDirection(otherSection);
 		}

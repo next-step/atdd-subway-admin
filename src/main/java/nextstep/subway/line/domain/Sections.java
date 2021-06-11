@@ -35,7 +35,7 @@ public class Sections {
 	void add(Section otherSection) {
 		checkValidation(otherSection);
 		for (Section section : sections) {
-			section.addSection(otherSection);
+			section.addSectionBetween(otherSection);
 		}
 		sections.add(otherSection);
 	}
@@ -50,32 +50,32 @@ public class Sections {
 	private Stream<Section> orderedSections() {
 		Section currentSection = sections.get(ORDER_START_SECTION_IDX);
 		return Stream.concat(
-			findPreviousSectionsClosed(currentSection),
-			findNextSectionsClosed(currentSection))
+			findUpDirectionSectionsClosed(currentSection),
+			findDownDirectionSectionsClosed(currentSection))
 			.distinct();
 	}
 
-	private Stream<Section> findPreviousSectionsClosed(Section currentSection) {
+	private Stream<Section> findUpDirectionSectionsClosed(Section currentSection) {
 		Optional<Section> previousSection = sections.stream()
-			.filter(section -> section.isPreviousOf(currentSection))
+			.filter(section -> section.isUpDirectionOf(currentSection))
 			.findFirst();
 
 		Stream<Section> current = Stream.of(currentSection);
 
 		return previousSection
-			.map(section -> Stream.concat(findPreviousSectionsClosed(section), current))
+			.map(section -> Stream.concat(findUpDirectionSectionsClosed(section), current))
 			.orElse(current);
 	}
 
-	private Stream<Section> findNextSectionsClosed(Section currentSection) {
+	private Stream<Section> findDownDirectionSectionsClosed(Section currentSection) {
 		Optional<Section> nextSection = sections.stream()
-			.filter(section -> section.isNextOf(currentSection))
+			.filter(section -> section.isDownDirectionOf(currentSection))
 			.findFirst();
 
 		Stream<Section> current = Stream.of(currentSection);
 
 		return nextSection
-			.map(section -> Stream.concat(current, findNextSectionsClosed(section)))
+			.map(section -> Stream.concat(current, findDownDirectionSectionsClosed(section)))
 			.orElse(current);
 	}
 
