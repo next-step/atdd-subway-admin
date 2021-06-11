@@ -12,52 +12,63 @@ import org.springframework.http.MediaType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
-    @LocalServerPort
-    int port;
+	@LocalServerPort
+	int port;
 
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
+	@Autowired
+	private DatabaseCleanup databaseCleanup;
 
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-            databaseCleanup.afterPropertiesSet();
-        }
+	@BeforeEach
+	public void setUp() {
+		if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
+			RestAssured.port = port;
+			databaseCleanup.afterPropertiesSet();
+		}
 
-        databaseCleanup.execute();
-    }
+		databaseCleanup.execute();
+	}
 
+	protected static ExtractableResponse<Response> get(final String url) {
+		// when
+		return RestAssured
+			.given().log().all()
+			.when()
+			    .get(url)
+			.then().log().all()
+			    .extract();
+	}
 
-    protected static ExtractableResponse<Response> get(final String url) {
-        // when
-        return RestAssured.given().log().all()
-                .when().get(url)
-                .then().log().all().extract();
-    }
+	protected static ExtractableResponse<Response> post(final String url, final Object params) {
+		// when
+		return RestAssured
+			.given().log().all()
+			    .body(params)
+			    .contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			    .post(url)
+			.then().log().all()
+			    .extract();
+	}
 
-    protected static ExtractableResponse<Response> post(final String url, final Object params) {
-        // when
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(url)
-                .then().log().all().extract();
-    }
+	protected static ExtractableResponse<Response> put(final String url, final Object params) {
+		// when
+		return RestAssured
+			.given().log().all()
+			    .body(params)
+			    .contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			    .put(url)
+			.then().log().all()
+			    .extract();
+	}
 
-    protected static ExtractableResponse<Response> put(final String url, final Object params) {
-        // when
-        return RestAssured.given().log().all()
-                          .body(params)
-                          .contentType(MediaType.APPLICATION_JSON_VALUE)
-                          .when().put(url)
-                          .then().log().all().extract();
-    }
-
-    protected static ExtractableResponse<Response> delete(final String url) {
-        // when
-        return RestAssured.given().log().all()
-                          .when().delete(url)
-                          .then().log().all().extract();
-    }
+	protected static ExtractableResponse<Response> delete(final String url) {
+		// when
+		return RestAssured
+			.given().log().all()
+			.when()
+			    .delete(url)
+			.then().log().all()
+			    .extract();
+	}
 }

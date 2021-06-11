@@ -10,53 +10,52 @@ import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(unique = true)
-    private String name;
+	@Column(unique = true)
+	private String name;
 
-    private String color;
+	private String color;
 
-    @Embedded
-    private Sections sections = new Sections();
+	@Embedded
+	private Sections sections = new Sections();
 
-    protected Line() {
-    }
+	protected Line() {
+	}
 
-    public Line(final String name, final String color) {
-        this.name = name;
-        this.color = color;
-    }
+	public Line(final String name, final String color) {
+		this.name = name;
+		this.color = color;
+	}
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
+	public void update(Line line) {
+		this.name = line.getName();
+		this.color = line.getColor();
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getColor() {
-        return color;
-    }
+	public String getColor() {
+		return color;
+	}
 
-    public void addSection(final Section section) {
-        if(this.sections.contain(section)){
-            return;
-        }
+	public void addSection(final Section section) {
+		if (this.sections.contain(section)) {
+			return;
+		}
+		this.sections.add(section);
+		section.toLine(this);
+	}
 
-        this.sections.add(section);
-        section.toLine(this);
-    }
-
-    public List<Station> stations() {
-        return sections.stationsBySorted();
-    }
+	public List<Station> stations() {
+		return sections.stationsBySorted();
+	}
 }
