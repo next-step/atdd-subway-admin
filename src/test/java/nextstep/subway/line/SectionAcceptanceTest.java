@@ -9,6 +9,8 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -73,19 +75,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_구간_등록됨(response);
 	}
 
-	@DisplayName("기존 역 사이 길이와 같은 길이로 역을 등록한다.")
-	@Test
-	void addSectionEqualDistance() {
+	@ParameterizedTest
+	@DisplayName("기존 구간사이 길이와 같거나 더 긴 길이로 역을 등록한다.")
+	@ValueSource(ints = {10, 11})
+	void addSectionEqualDistance(int longDistance) {
 		// given
-		int distance = 5;
 		StationResponse 강남역 = 지하철역_생성_요청("강남역").as(StationResponse.class);
 		StationResponse 광교역 = 지하철역_생성_요청("광교역").as(StationResponse.class);
 		StationResponse 양재역 = 지하철역_생성_요청("양재역").as(StationResponse.class);
-		LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), distance)
+		LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10)
 			.as(LineResponse.class);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, distance);
+		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, longDistance);
 
 		// then
 		지하철_노선에_구간_등록_실패됨(response);
