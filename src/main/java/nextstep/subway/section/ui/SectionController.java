@@ -31,9 +31,4 @@ public class SectionController {
         lineService.removeStation(lineId, stationId);
         return ResponseEntity.ok().build();
     }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<LineResponse> handleIllegalArgsException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
-    }
 }
