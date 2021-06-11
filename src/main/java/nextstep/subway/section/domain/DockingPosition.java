@@ -10,7 +10,7 @@ public enum DockingPosition {
             return this.index;
         }
         if (this.equals(REAR)) {
-            return this.index+1;
+            return this.index + 1;
         }
         throw new IllegalStateException();
     }

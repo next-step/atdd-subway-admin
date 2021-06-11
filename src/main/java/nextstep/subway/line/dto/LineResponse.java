@@ -20,7 +20,7 @@ public class LineResponse {
     }
 
     private LineResponse(Long id, String name, String color,
-                        List<Station> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+                         List<Station> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;

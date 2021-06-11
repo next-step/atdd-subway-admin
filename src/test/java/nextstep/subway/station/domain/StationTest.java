@@ -10,7 +10,7 @@ public class StationTest {
 
     @Test
     void create() {
-        String name= "지하철역";
+        String name = "지하철역";
         Station station = Station.of(name);
 
         assertThat(station).isNotNull();

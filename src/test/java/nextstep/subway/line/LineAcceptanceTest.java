@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;

@@ -2,7 +2,9 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +16,8 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private List<Section> sections = new ArrayList<>();
 
-    public Sections() { }
+    public Sections() {
+    }
 
     public Stream<Section> stream() {
         return sections.stream();

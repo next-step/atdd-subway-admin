@@ -9,7 +9,8 @@ public class Distance {
     @Column(nullable = false)
     private int distance;
 
-    protected Distance() { }
+    protected Distance() {
+    }
 
     private Distance(int distance) {
         set(distance);

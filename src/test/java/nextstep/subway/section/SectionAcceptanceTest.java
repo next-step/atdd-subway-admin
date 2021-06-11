@@ -64,7 +64,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 5 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록_실패함
@@ -82,7 +82,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 5 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록_실패함
@@ -104,7 +104,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 10 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록_실패함
@@ -125,12 +125,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 5 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LineResponse 구간등록_후_신분당선 = get("/lines/"+신분당선.getId())
+        LineResponse 구간등록_후_신분당선 = get("/lines/" + 신분당선.getId())
                 .body()
                 .as(LineResponse.class);
         List<String> stations = 구간등록_후_신분당선.getStations().stream()
@@ -153,12 +153,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 5 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LineResponse 구간등록_후_신분당선 = get("/lines/"+신분당선.getId())
+        LineResponse 구간등록_후_신분당선 = get("/lines/" + 신분당선.getId())
                 .body()
                 .as(LineResponse.class);
         List<String> stations = 구간등록_후_신분당선.getStations().stream()
@@ -182,12 +182,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 5 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LineResponse 구간등록_후_신분당선 = get("/lines/"+신분당선.getId())
+        LineResponse 구간등록_후_신분당선 = get("/lines/" + 신분당선.getId())
                 .body()
                 .as(LineResponse.class);
         List<String> stations = 구간등록_후_신분당선.getStations().stream()
@@ -211,12 +211,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 5 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LineResponse 구간등록_후_신분당선 = get("/lines/"+신분당선.getId())
+        LineResponse 구간등록_후_신분당선 = get("/lines/" + 신분당선.getId())
                 .body()
                 .as(LineResponse.class);
         List<String> stations = 구간등록_후_신분당선.getStations().stream()
@@ -224,5 +224,5 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
         assertThat(stations).containsExactly("강남역", "강남역과_광교역_사이의_역", "광교역");
     }
-    
+
 }

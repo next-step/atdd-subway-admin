@@ -30,7 +30,8 @@ public class Section extends BaseEntity {
     @Embedded
     private Distance distance;
 
-    public Section() { }
+    public Section() {
+    }
 
     private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;

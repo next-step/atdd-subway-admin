@@ -6,7 +6,7 @@ import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -23,7 +23,8 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
-    public Line() { }
+    public Line() {
+    }
 
     private Line(String name, String color, Section section) {
         this.name = name;
