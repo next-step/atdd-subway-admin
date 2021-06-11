@@ -52,4 +52,12 @@ public class Section {
     public void setNextStation(Station nextStation) {
         this.nextStation = nextStation;
     }
+
+    public Station getPrevStation() {
+        return prevStation;
+    }
+
+    public Station getNextStation() {
+        return nextStation;
+    }
 }
