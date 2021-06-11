@@ -66,8 +66,8 @@ class LineServiceTest {
 
         // then
         assertAll(
-                () -> assertThat(lineResponse.getName()).isEqualTo(line.getName()),
-                () -> assertThat(lineResponse.getColor()).isEqualTo(line.getColor()),
+                () -> assertThat(lineResponse.getName()).isEqualTo(line.toLineResponse().getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(line.toLineResponse().getColor()),
                 () -> assertThat(lineResponse.getStations().size()).isEqualTo(2)
         );
     }
@@ -101,7 +101,7 @@ class LineServiceTest {
         LineResponse lineResponse = service.findLineById(1L);
 
         // then
-        assertThat(lineResponse.getName()).isEqualTo(line.getName());
+        assertThat(lineResponse.getName()).isEqualTo(line.toLineResponse().getName());
     }
 
     @Test
@@ -225,7 +225,7 @@ class LineServiceTest {
         new Section(station3, station4, 3, greenLine);
 
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, 7);
-        LineResponse line = LineResponse.of(greenLine);
+        LineResponse line = greenLine.toLineResponse();
 
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(greenLine));
         given(stationRepository.findById(1L)).willReturn(Optional.of(station1));

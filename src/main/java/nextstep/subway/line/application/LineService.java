@@ -35,7 +35,7 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         try {
-            return LineResponse.of(lineRepository.save(makeLine(request)));
+            return lineRepository.save(makeLine(request)).toLineResponse();
         } catch (DataIntegrityViolationException exception) {
             throw new DuplicateKeyException("노선 생성에 실패했습니다. 이미 존재하는 노선입니다.");
         }
@@ -44,12 +44,12 @@ public class LineService {
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll()
                 .stream()
-                .map(LineResponse::of)
+                .map(Line::toLineResponse)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLineById(long id) throws NoSuchElementException {
-        return LineResponse.of(findLineByIdOrThrow(id, "노선이 존재하지 않습니다."));
+        return findLineByIdOrThrow(id, "노선이 존재하지 않습니다.").toLineResponse();
     }
 
     public void updateLine(long id, LineRequest updateLineRequest) {
@@ -82,7 +82,7 @@ public class LineService {
         Section section = makeSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance(), line);
         sectionRepository.save(sections.addSection(section));
-        return LineResponse.of(line);
+        return line.toLineResponse();
     }
 
     private Section makeSection(Long upStationId, Long downStationId, int distance, Line line) {

@@ -61,10 +61,10 @@ public class SectionsTest {
 
         // then
         List<StationResponse> targetStationResponses = lineStations.stream()
-                .map(StationResponse::of)
+                .map(Station::toStationResponse)
                 .collect(Collectors.toList());
         List<StationResponse> resultStationResponses = createStations.stream()
-                .map(StationResponse::of)
+                .map(Station::toStationResponse)
                 .collect(Collectors.toList());
         assertThat(Arrays.equals(resultStationResponses.toArray(), targetStationResponses.toArray())).isTrue();
     }
