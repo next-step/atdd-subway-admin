@@ -41,7 +41,12 @@ public class LineService {
         Station downStation = stationRepository.findById(request.getDownStationId())
                 .orElseThrow(()->new StationNotFoundException());
 
-        sectionRepository.save(request.toSection(line, upStation, downStation));
+        Section section = Section.builder().line(line)
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(request.getDistance()).build();
+
+        sectionRepository.save(section);
     }
 
     @Transactional(readOnly = true)

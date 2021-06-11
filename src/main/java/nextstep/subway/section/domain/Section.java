@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
@@ -25,6 +26,12 @@ public class Section extends BaseEntity {
     private Station downStation;
 
     private int distance;
+
+    @Builder
+    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
+        this.registerLine(line);
+        this.registerStation(upStation, downStation, distance);
+    }
 
     public void registerStation(final Station upStation, final Station downStation, final int distance) {
         this.upStation = upStation;

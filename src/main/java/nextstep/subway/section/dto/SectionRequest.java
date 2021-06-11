@@ -27,12 +27,4 @@ public class SectionRequest extends BaseDTO<Section> {
     protected Section toEntity() {
         return new Section();
     }
-
-    public Section toSection(final Line line, final Station upStation, final Station downStation) {
-        Section section = toEntity();
-        section.registerStation(upStation, downStation, distance);
-        section.registerLine(line);
-
-        return section;
-    }
 }
