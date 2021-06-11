@@ -73,11 +73,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 판교역, 5);
 
-        ExtractableResponse<Response> 조회된_구간들 = 지하철_노선_조회_요청(신분당선.getId());
+        ExtractableResponse<Response> 조회된_신분당선 = 지하철_노선_조회_요청(신분당선.getId());
 
         // then
         지하철_노선에_구간_등록됨(response);
-        지하철_노선_지하철역_정렬된_목록_포함됨(조회된_구간들, Arrays.asList(강남역, 판교역, 광교역));
+        지하철_노선_지하철역_정렬된_목록_포함됨(조회된_신분당선, Arrays.asList(강남역, 판교역, 광교역));
     }
 
     @DisplayName("노선에 구간을 등록한다. (새로운 역을 기존 역사이에 등록할 경우[하행종점이 같을 때])")
@@ -86,11 +86,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 정자역, 광교역, 5);
 
-        ExtractableResponse<Response> 조회된_구간들 = 지하철_노선_조회_요청(신분당선.getId());
+        ExtractableResponse<Response> 조회된_신분당선 = 지하철_노선_조회_요청(신분당선.getId());
 
         // then
         지하철_노선에_구간_등록됨(response);
-        지하철_노선_지하철역_정렬된_목록_포함됨(조회된_구간들, Arrays.asList(강남역, 정자역, 광교역));
+        지하철_노선_지하철역_정렬된_목록_포함됨(조회된_신분당선, Arrays.asList(강남역, 정자역, 광교역));
     }
 
     @DisplayName("노선에 구간을 등록할 때 실패한다. (새로운 역을 기존 역사이에 등록할 때, 기존 구간 길이보다 같거나 클 경우")
@@ -131,10 +131,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(구간_등록된_신분당선, 강남역);
-        ExtractableResponse<Response> 조회된_구간들 = 지하철_노선_조회_요청(신분당선.getId());
+        ExtractableResponse<Response> 조회된_신분당선 = 지하철_노선_조회_요청(신분당선.getId());
 
         지하철_노선_구간_삭제됨(response);
-        지하철_노선_지하철역_정렬된_목록_포함됨(조회된_구간들, Arrays.asList(광교역, 판교역));
+        지하철_노선_지하철역_정렬된_목록_포함됨(조회된_신분당선, Arrays.asList(광교역, 판교역));
     }
 
     @DisplayName("노선의 구간을 제거한다. - 하행 종점이 제거될 경우 이전 구간 하행역이 하행 종점이 된다.")
@@ -145,9 +145,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(구간_등록된_신분당선, 판교역);
-        ExtractableResponse<Response> 조회된_구간들 = 지하철_노선_조회_요청(신분당선.getId());
+        ExtractableResponse<Response> 조회된_신분당선 = 지하철_노선_조회_요청(신분당선.getId());
 
         지하철_노선_구간_삭제됨(response);
-        지하철_노선_지하철역_정렬된_목록_포함됨(조회된_구간들, Arrays.asList(강남역, 광교역));
+        지하철_노선_지하철역_정렬된_목록_포함됨(조회된_신분당선, Arrays.asList(강남역, 광교역));
+    }
+
+    @DisplayName("노선의 구간을 제거한다. - 중간역 제거 될 경우 구간 재배치 된다. [A-B-C -> B 제거시 -> A-C]")
+    @Test
+    void removeSection_at_inside() {
+        // given
+        ExtractableResponse<Response> 구간_등록된_신분당선 = 지하철_노선에_구간_등록_요청(신분당선, 광교역, 판교역, 15);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(구간_등록된_신분당선, 광교역);
+        ExtractableResponse<Response> 조회된_신분당선 = 지하철_노선_조회_요청(신분당선.getId());
+
+        지하철_노선_구간_삭제됨(response);
+        지하철_노선_지하철역_정렬된_목록_포함됨(조회된_신분당선, Arrays.asList(강남역, 판교역));
     }
 }
