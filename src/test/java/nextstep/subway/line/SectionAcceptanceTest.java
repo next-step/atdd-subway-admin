@@ -12,7 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.StringJoiner;
+import java.util.HashMap;
+import java.util.Map;
 
 import static nextstep.subway.line.SectionAcceptanceTestUtils.createSectionRequest;
 import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_생성_요청_및_성공_체크;
@@ -138,20 +139,58 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
+	@DisplayName("지하철 구간을 제거한다.")
+	@Test
+	void removeSection() {
+		// given
+		지하철_구간_등록_요청_및_성공_체크(line_신분당선.getId(), createSectionRequest(역삼역, 구디역, 5));
+
+		// when
+		ExtractableResponse<Response> response = 지하철_구간_제거_요청(line_신분당선.getId(), 역삼역.getId());
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	@DisplayName("구간에 등록되지 않은 역을 제거한다.")
+	@Test
+	void removeSectionWithoutRegister() {
+		// when
+		ExtractableResponse<Response> response = 지하철_구간_제거_요청(line_신분당선.getId(), 판교역.getId());
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@DisplayName("마지막 구간을 제거한다.")
+	@Test
+	void removeLastSection() {
+		// when
+		ExtractableResponse<Response> response = 지하철_구간_제거_요청(line_신분당선.getId(), 강남역.getId());
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
 	public static ExtractableResponse<Response> 지하철_구간_등록_요청(final long lineId, final SectionRequest params) {
 		// when
 		String url = String.format("%s/%d%s", BASE_LINE_URL, lineId, BASE_SECTION_URL);
 		return post(url, params);
 	}
 
-	@Override
-	public String toString() {
-		return new StringJoiner(", ", SectionAcceptanceTest.class.getSimpleName() + "[", "]")
-			.add("강남역=" + 강남역)
-			.add("역삼역=" + 역삼역)
-			.add("구디역=" + 구디역)
-			.add("판교역=" + 판교역)
-			.add("line_신분당선=" + line_신분당선)
-			.toString();
+	public static LineResponse 지하철_구간_등록_요청_및_성공_체크(final long lineId, final SectionRequest params) {
+		String url = String.format("%s/%d%s", BASE_LINE_URL, lineId, BASE_SECTION_URL);
+		ExtractableResponse response = post(url, params);
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		return response.as(LineResponse.class);
+	}
+
+	public static ExtractableResponse<Response> 지하철_구간_제거_요청(final long lineId, final long stationId) {
+		// when
+		String url = String.format("%s/%d%s", BASE_LINE_URL, lineId, BASE_SECTION_URL);
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("stationId", stationId);
+		return deleteWithParams(url, params);
 	}
 }
