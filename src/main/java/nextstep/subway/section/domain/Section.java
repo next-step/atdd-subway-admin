@@ -93,4 +93,18 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
     }
+
+    public void updateUpStationToDownStation(Section newSection) {
+        this.upStation = newSection.getDownStation();
+        updateDistance(newSection.getDistance());
+    }
+
+    public void updateDownStationToUpStation(Section newSection) {
+        this.downStation = newSection.getUpStation();
+        updateDistance(newSection.getDistance());
+    }
+
+    private void updateDistance(int distance) {
+        this.distance -= distance;
+    }
 }

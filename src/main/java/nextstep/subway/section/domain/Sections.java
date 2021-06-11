@@ -18,11 +18,29 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private final List<Section> sections = new ArrayList<>();
 
-    public void add(Section section) {
+    public void add(Section newSection) {
         if (!CollectionUtils.isEmpty(sections)) {
-            validateSection(section);
+            validateSection(newSection);
         }
-        this.sections.add(section);
+
+        connectIfExistSameUpStation(newSection);
+        connectIfExistSameDownStation(newSection);
+
+        this.sections.add(newSection);
+    }
+
+    private void connectIfExistSameDownStation(Section newSection) {
+        sections.stream()
+                .filter(section -> section.hasSameDownStation(newSection))
+                .findFirst()
+                .ifPresent(section -> section.updateDownStationToUpStation(newSection));
+    }
+
+    private void connectIfExistSameUpStation(Section newSection) {
+        sections.stream()
+                .filter(section -> section.hasSameUpStation(newSection))
+                .findFirst()
+                .ifPresent(section -> section.updateUpStationToDownStation(newSection));
     }
 
     public List<Station> getStations() {
