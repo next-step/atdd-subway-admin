@@ -4,21 +4,21 @@ import nextstep.subway.station.domain.Station;
 
 public class StationRequest {
 
-    public StationRequest() {
+	private String name;
 
-    }
+	public StationRequest() {
 
-    public StationRequest(String name) {
-        this.name = name;
-    }
+	}
 
-    private String name;
+	public StationRequest(String name) {
+		this.name = name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Station toStation() {
-        return new Station(name);
-    }
+	public Station toStation() {
+		return new Station(name);
+	}
 }

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -17,18 +18,31 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-	private static final LineRequest lineNumber1 = new LineRequest("1호선", "Blue");
-	private static final LineRequest lineNumber2 = new LineRequest("2호선", "Green");
+	private LineRequest lineNumber1;
+	private LineRequest lineNumber2;
+
+	@BeforeEach
+	void lineSetUp() {
+		Long gangNamStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("강남역"));
+		Long sungSuStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("성수역"));
+		Long seoulStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("서울역"));
+		Long sindorimStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("신도림역"));
+		lineNumber1 = new LineRequest("1호선", "Blue", seoulStationId, sindorimStationId, 15);
+		lineNumber2 = new LineRequest("2호선", "Green", gangNamStationId, sungSuStationId, 10);
+	}
 
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
 		//when
 		ExtractableResponse<Response> response = 지하철_노선을_생성한다(lineNumber2);
+
 		// then
 		지하철_노선_생성됨(response, lineNumber2);
 	}
@@ -41,7 +55,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// when
 		ExtractableResponse<Response> response = 지하철_노선을_생성한다(lineNumber2);
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		지하철_노선_생성_실패됨(response);
 	}
 
 	@DisplayName("지하철 노선 목록을 조회한다.")
@@ -67,7 +81,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Long id = createResponse.jsonPath().getLong("id");
 		ExtractableResponse<Response> response = 단일_지하철_노선을_조회한다(id);
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		지하철_노선_조회_확인(response, lineNumber2);
 	}
 
 	@DisplayName("지하철 노선을 수정한다.")
@@ -79,7 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		long id = createResponse.jsonPath().getLong("id");
 		ExtractableResponse<Response> response = 지하철_노선을_수정한다(lineNumber1, id);
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		지하철_노선_수정_확인(response);
 	}
 
 	@DisplayName("지하철 노선을 제거한다.")
@@ -91,7 +105,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		long id = createResponse.jsonPath().getLong("id");
 		ExtractableResponse<Response> response = 지하철_노선을_제거한다(id);
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		지하철_노선_제거_확인(response);
 	}
 
 	ExtractableResponse<Response> 지하철_노선을_생성한다(LineRequest lineRequest) {
@@ -169,5 +183,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all()
 			.extract();
 		return response;
+	}
+
+	private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	void 지하철_노선_수정_확인(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	void 지하철_노선_제거_확인(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
+	void 지하철_노선_조회_확인(ExtractableResponse<Response> response, LineRequest lineRequest) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.body().jsonPath().getString("name")).isEqualTo(lineRequest.getName());
+		assertThat(response.body().jsonPath().getString("color")).isEqualTo(lineRequest.getColor());
+		assertThat(response.body().jsonPath().getList("stations")).hasSize(2);
+		assertThat(response.body().jsonPath().getLong("stations[0].id")).isEqualTo(lineRequest.getUpStationId());
+		assertThat(response.body().jsonPath().getLong("stations[1].id")).isEqualTo(lineRequest.getDownStationId());
 	}
 }
