@@ -30,7 +30,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         super.setUp();
 
         // given
-        강남역 = 지하철_역_등록되어_있음("교대역").as(StationResponse.class);
+        강남역 = 지하철_역_등록되어_있음("강남역").as(StationResponse.class);
         잠실역 = 지하철_역_등록되어_있음("잠실역").as(StationResponse.class);
         선릉역 = 지하철_역_등록되어_있음("선릉역").as(StationResponse.class);
         종로역 = 지하철_역_등록되어_있음("종로역").as(StationResponse.class);

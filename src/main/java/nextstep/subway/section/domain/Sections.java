@@ -33,16 +33,40 @@ public class Sections {
         validate(section);
         LinkedList<Section> result = new LinkedList(sections);
         Section first = result.getFirst();
-        if (isFirstSection(section, first)) {
-            addFirstSection(section, result, first);
+        if (isFirstSectionNext(section, first)) {
+            addFirstSectionNext(section, result, first);
+            return;
+        }
+        if (isFirstSectionBefore(section, first)) {
+            addFirstSectionBefore(section, result, first);
             return;
         }
         Section last = result.getLast();
-        if (isLastSection(section, last)) {
-            addLastSection(section, result, last);
+        if (isLastSectionNext(section, last)) {
+            addLastSectionNext(section, result, last);
+            return;
+        }
+        if (isLastSectionBefore(section, last)) {
+            addLastSectionBefore(section, result, last);
             return;
         }
         addMiddleSection(section, result);
+    }
+
+    private boolean isLastSectionBefore(Section section, Section last) {
+        return last.getDownStation().equals(section.getDownStation());
+    }
+
+    private boolean isLastSectionNext(Section section, Section last) {
+        return last.getDownStation().equals(section.getUpStation());
+    }
+
+    private boolean isFirstSectionBefore(Section section, Section first) {
+        return first.getUpStation().equals(section.getDownStation());
+    }
+
+    private boolean isFirstSectionNext(Section section, Section first) {
+        return first.getUpStation().equals(section.getUpStation());
     }
 
     private void addMiddleSection(Section section, LinkedList<Section> result) {
@@ -71,24 +95,28 @@ public class Sections {
         return section.getUpStation().equals(result.get(i).getUpStation());
     }
 
-    private void addLastSection(Section section, LinkedList<Section> result, Section last) {
+    private void addLastSectionBefore(Section section, LinkedList<Section> result, Section last) {
         last.changeDownStation(section);
         result.addLast(section);
         sections = new ArrayList<>(result);
     }
 
-    private void addFirstSection(Section section, LinkedList<Section> result, Section first) {
-        first.changeUpStation(section);
+    private void addLastSectionNext(Section section, LinkedList<Section> result, Section last) {
+        last.changeDownStationEdge(section);
+        result.addLast(section);
+        sections = new ArrayList<>(result);
+    }
+
+    private void addFirstSectionBefore(Section section, LinkedList<Section> result, Section first) {
+        first.changeUpStationEdge(section);
         result.addFirst(section);
         sections = new ArrayList<>(result);
     }
 
-    private boolean isLastSection(Section section, Section last) {
-        return last.getDownStation().equals(section.getUpStation()) || last.getDownStation().equals(section.getDownStation());
-    }
-
-    private boolean isFirstSection(Section section, Section first) {
-        return first.getUpStation().equals(section.getUpStation()) || first.getUpStation().equals(section.getDownStation());
+    private void addFirstSectionNext(Section section, LinkedList<Section> result, Section first) {
+        first.changeUpStation(section);
+        result.addFirst(section);
+        sections = new ArrayList<>(result);
     }
 
     private void validate(Section section) {

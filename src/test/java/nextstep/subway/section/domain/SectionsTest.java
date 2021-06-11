@@ -42,27 +42,45 @@ class SectionsTest {
 
         station5 = new Station("종합운동장");
         ReflectionTestUtils.setField(station5, "id", 5L);
-
-
     }
 
     @Test
-    void addSection2() {
+    void addSection() {
         Sections sections = new Sections();
 
         sections.addSection(new Section(station1, station2, 20));
         sections.addSection(new Section(station1, station4, 10));
-        sections.addSection(new Section(station3, station2, 5));
-        sections.addSection(new Section(station3, station5, 5));
+        sections.addSection(new Section(station3, station2, 2));
+        sections.addSection(new Section(station3, station5, 1));
 
         assertThat(sections.getStations()).containsExactly(station1, station4, station3, station5, station2);
     }
 
     @Test
+    void addFirst() {
+        Sections sections = new Sections();
+
+        sections.addSection(new Section(station3, station2, 20));
+        sections.addSection(new Section(station1, station3, 10));
+
+        assertThat(sections.getStations()).containsExactly(station1, station3, station2);
+    }
+
+    @Test
+    void addLast() {
+        Sections sections = new Sections();
+
+        sections.addSection(new Section(station1, station3, 20));
+        sections.addSection(new Section(station3, station2, 10));
+
+        assertThat(sections.getStations()).containsExactly(station1, station3, station2);
+    }
+
+    @Test
     void getStations() {
-        sections.addSection(new Section(station1, station4, 5));
-        sections.addSection(new Section(station4, station3, 5));
-        sections.addSection(new Section(station3, station2, 3));
+        sections.addSection(new Section(station1, station4, 20));
+        sections.addSection(new Section(station4, station3, 10));
+        sections.addSection(new Section(station3, station2, 2));
 
         section = new Section(line, upStation, downStation, 10);
 

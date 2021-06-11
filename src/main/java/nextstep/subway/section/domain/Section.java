@@ -93,6 +93,16 @@ public class Section extends BaseEntity {
         this.distance = this.distance.minus(section.distance);
     }
 
+    public void changeDownStationEdge(Section section) {
+        this.downStation = section.getUpStation();
+        this.distance = section.distance;
+    }
+
+    public void changeUpStationEdge(Section section) {
+        this.upStation = section.getDownStation();
+        this.distance = section.distance;
+    }
+
     public boolean containsAllStations(Section section) {
         return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
     }
