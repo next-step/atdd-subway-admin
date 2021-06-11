@@ -71,7 +71,7 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
 
-        return this.sections.getValues().stream()
+        return this.sections.stream()
                 .sorted(Comparator.comparingInt(Section::getSequence))
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .collect(Collectors.toList())
@@ -81,9 +81,8 @@ public class Line extends BaseEntity {
     public void update(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        List<Section> values = this.sections.getValues();
-        values.clear();
-        values.add(section);
+        this.sections.clear();
+        this.sections.add(section);
     }
 
     public boolean isContainingStation(Station station){

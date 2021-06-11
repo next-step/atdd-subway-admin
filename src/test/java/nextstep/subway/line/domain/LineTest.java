@@ -52,7 +52,7 @@ class LineTest {
         final Section targetSection = Section.of(originStation, C_Station, 40);
         sut.addSection(targetSection);
 
-        assertThat(sut.getSections().getValues().stream()
+        assertThat(sut.getSections().stream()
                 .map(Section::getDistance)).containsExactly(60, 40);
         assertThat(sut.getStations()).containsExactly(A_Station, originStation, C_Station);
     }
@@ -85,11 +85,11 @@ class LineTest {
         Station B_Station = new Station(3L, "B");
         sut.addSection(Section.of(B_Station, C_Station, 40));
 
-        assertThat(sut.getSections().getValues().stream().map(Section::getDistance)).containsExactly(60, 40);
+        assertThat(sut.getSections().stream().map(Section::getDistance)).containsExactly(60, 40);
         assertThat(sut.getStations()).containsExactly(A_Station, B_Station, C_Station);
 
         sut.removeStation(B_Station);
-        assertThat(sut.getSections().getValues().stream().map(Section::getDistance)).containsExactly(100);
+        assertThat(sut.getSections().stream().map(Section::getDistance)).containsExactly(100);
         assertThat(sut.getStations()).containsExactly(A_Station, C_Station);
     }
 
@@ -99,7 +99,7 @@ class LineTest {
         Station B_Station = new Station(3L, "B");
         sut.addSection(Section.of(B_Station, C_Station, 40));
 
-        assertThat(sut.getSections().getValues().stream().map(Section::getDistance)).containsExactly(60, 40);
+        assertThat(sut.getSections().stream().map(Section::getDistance)).containsExactly(60, 40);
         assertThat(sut.getStations()).containsExactly(A_Station, B_Station, C_Station);
 
         assertThatThrownBy(() -> sut.removeStation(NOT_INCLUDE_STATION))
@@ -114,7 +114,7 @@ class LineTest {
         Station B_Station = new Station(3L, "B");
         sut.addSection(Section.of(B_Station, C_Station, 40));
 
-        assertThat(sut.getSections().getValues().stream().map(Section::getDistance)).containsExactly(60, 40);
+        assertThat(sut.getSections().stream().map(Section::getDistance)).containsExactly(60, 40);
         assertThat(sut.getStations()).containsExactly(A_Station, B_Station, C_Station);
 
         assertThatThrownBy(() -> sut.removeStation(NOT_INCLUDE_STATION))

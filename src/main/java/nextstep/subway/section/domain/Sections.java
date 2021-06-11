@@ -9,7 +9,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,8 +27,12 @@ public class Sections {
 
     }
 
-    public List<Section> getValues() {
+    private List<Section> getValues() {
         return values;
+    }
+
+    public Stream<Section> stream(){
+        return values.stream();
     }
 
     public static Sections of(List<Section> sections) {
@@ -115,6 +118,11 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    public void add(Section section) {
+        this.values.add(section);
+    }
 
-
+    public void clear() {
+        values.clear();
+    }
 }
