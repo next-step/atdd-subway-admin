@@ -27,7 +27,8 @@ public class SectionService {
     }
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = findLineById(lineId);
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(EntityNotFoundException::new);
         List<Section> sections = line.getOrderLineSections();
         Section newSection = getSection(sectionRequest);
         Optional<Section> containSection = getContainsSection(sections, newSection);
@@ -39,25 +40,17 @@ public class SectionService {
     }
 
     private Section getSection(SectionRequest request) {
-        Station upStation = findStationById(request.getUpStationId());
-        Station downStation = findStationById(request.getDownStationId());
+        Station upStation = stationRepository.findById(request.getUpStationId())
+            .orElseThrow(EntityNotFoundException::new);
+        Station downStation = stationRepository.findById(request.getDownStationId())
+            .orElseThrow(EntityNotFoundException::new);
 
         return new Section(upStation, downStation, request.getDistance());
-    }
-
-    private Station findStationById(Long stationId) {
-        return stationRepository.findById(stationId)
-            .orElseThrow(EntityNotFoundException::new);
     }
 
     private Optional<Section> getContainsSection(List<Section> sections, Section newSection) {
         return sections.stream()
             .filter(section -> section.isContainSection(newSection))
             .findFirst();
-    }
-
-    private Line findLineById(Long lineId) {
-        return lineRepository.findById(lineId)
-            .orElseThrow(EntityNotFoundException::new);
     }
 }

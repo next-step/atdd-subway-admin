@@ -58,7 +58,8 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse getLine(Long id) {
-        Line line = findLineById(id);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(EntityNotFoundException::new);
         List<StationResponse> stationResponses = line.getOrderStation().stream()
             .map(StationResponse::of)
             .collect(Collectors.toList());
@@ -66,17 +67,14 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = findLineById(id);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(EntityNotFoundException::new);
         line.update(lineRequest.toLine());
     }
 
-    private Line findLineById(Long id) {
-        return lineRepository.findById(id)
-            .orElseThrow(EntityNotFoundException::new);
-    }
-
     public void deleteLineById(Long id) {
-        Line line = findLineById(id);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(EntityNotFoundException::new);
         lineRepository.delete(line);
     }
 }
