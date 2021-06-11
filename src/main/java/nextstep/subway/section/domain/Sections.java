@@ -30,15 +30,9 @@ public class Sections {
 	}
 
 	public List<Station> stationsBySorted() {
-		Optional<Section> firstSection = findFirstSection();
-		if (!firstSection.isPresent()) {
-			return Collections.emptyList();
-		}
-		return getSortedStations(firstSection.get());
-	}
-
-	public boolean contain(final Section section) {
-		return sections.contains(section);
+		return findFirstSection()
+			.map(this::getSortedStations)
+			.orElse(Collections.emptyList());
 	}
 
 	private void validateStations(final Section section) {
@@ -69,14 +63,14 @@ public class Sections {
 	}
 
 	private boolean containUpStation(final Section section) {
-		return stationsNotSorted().contains(section.upStation());
+		return stations().contains(section.upStation());
 	}
 
 	private boolean containDownStation(final Section section) {
-		return stationsNotSorted().contains(section.downStation());
+		return stations().contains(section.downStation());
 	}
 
-	private List<Station> stationsNotSorted() {
+	private List<Station> stations() {
 		return this.sections.stream()
 							.flatMap(Section::streamOfStation)
 							.distinct()
@@ -85,12 +79,12 @@ public class Sections {
 
 	private Map<Station, Section> groupByUpStation() {
 		return sections.stream()
-					   .collect(Collectors.toMap(section -> section.upStation(), Function.identity()));
+					   .collect(Collectors.toMap(Section::upStation, Function.identity()));
 	}
 
 	private List<Station> downStations() {
 		return sections.stream()
-					   .map(section -> section.downStation())
+					   .map(Section::downStation)
 					   .collect(Collectors.toList());
 	}
 
@@ -110,6 +104,10 @@ public class Sections {
 			nextSection = upStationMap.get(nextSection.downStation());
 		} while (nextSection != null);
 		return stations;
+	}
+
+	public boolean contains(final Section section) {
+		return this.sections.contains(section);
 	}
 
 }

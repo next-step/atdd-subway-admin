@@ -31,11 +31,9 @@ public class LineService {
 	}
 
 	public LineResponse saveLine(final LineRequest request) {
-		Station upStation = findStationById(request.getUpStationId());
-		Station downStation = findStationById(request.getDownStationId());
-		Line line = lineRepository.save(request.toLine());
-		line.addSection(Section.of(upStation, downStation, request.getDistance()));
-		return LineResponse.of(line);
+		Line line = request.toLine();
+		line.addSection(createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+		return LineResponse.of(lineRepository.save(line));
 	}
 
 	private Station findStationById(final Long id) {
@@ -77,9 +75,13 @@ public class LineService {
 
 	public LineResponse registerSection(final Long id, final SectionRequest request) {
 		Line line = findById(id);
-		Station upStation = findStationById(request.getUpStationId());
-		Station downStation = findStationById(request.getDownStationId());
-		line.addSection(Section.of(upStation, downStation, request.getDistance()));
+		line.addSection(createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
 		return LineResponse.of(line);
+	}
+
+	private Section createSection(final Long upStationId, final Long downStationId, final int distance) {
+		Station upStation = findStationById(upStationId);
+		Station downStation = findStationById(downStationId);
+		return Section.of(upStation, downStation, distance);
 	}
 }
