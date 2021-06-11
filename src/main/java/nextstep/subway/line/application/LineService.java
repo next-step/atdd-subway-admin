@@ -7,12 +7,12 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.Section;
+import nextstep.subway.section.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,10 +47,8 @@ public class LineService {
 
     private Section createSection(LineRequest request) {
 
-        Station upStation = stationRepository.findById(request.getUpStationId())
-                .orElseThrow(() -> new DataNotFoundException("등록되지 않은 지하철 역입니다."));
-        Station downStation = stationRepository.findById(request.getDownStationId())
-                .orElseThrow(() -> new DataNotFoundException("등록되지 않은 지하철 역입니다."));
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
 
         return new Section(upStation, downStation, request.getDistance());
     }
@@ -63,15 +61,11 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        Line foundLine = lineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("해당하는 지하철 노선을 찾을 수 없습니다."));
-        return LineResponse.of(foundLine);
+        return LineResponse.of(findById(id));
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line foundLine = lineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("해당하는 지하철 노선을 찾을 수 없습니다."));
-
+        Line foundLine = findById(id);
         foundLine.update(lineRequest.toLine());
 
         return LineResponse.of(foundLine);
@@ -79,5 +73,25 @@ public class LineService {
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public LineResponse addSection(Long id, SectionRequest request) {
+        Line foundLine = findById(id);
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+
+        foundLine.addSection(new Section(upStation, downStation, request.getDistance()));
+
+        return LineResponse.of(foundLine);
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("해당하는 지하철 노선을 찾을 수 없습니다."));
+    }
+
+    private Station findStationById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("등록되지 않은 지하철 역입니다."));
     }
 }
