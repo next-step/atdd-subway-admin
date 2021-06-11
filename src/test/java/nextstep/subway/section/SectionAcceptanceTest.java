@@ -112,7 +112,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 구간등록_when_상행역에_신규_역_연결() {
         // when
         //구간을_노선에_등록_요청
-        // [회현]==[충무로]에서 [회현]==[명동]==[충무로]
+        // [회현]==[충무로]에서 ([회현]==[명동])==[충무로]
         ExtractableResponse<Response> response = 구간을_노선에_등록_요청(사호선_ID, 회현_명동_요청);
 
         // then
@@ -126,12 +126,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 구간등록_when_하행역에_신규_역_연결() {
         // when
-        //구간_생성_요청
-
         //구간을_노선에_등록_요청
+        // [회현]==[충무로]에서 [회현]==([명동]==[충무로])
+        ExtractableResponse<Response> response = 구간을_노선에_등록_요청(사호선_ID, 명동_충무로_요청);
 
         // then
         //구간_등록_완료
+        구간_등록_OK_응답(response);
+        List<Long> expectedOrderId = Arrays.asList(회현역.getId(), 명동역.getId(), 충무로역.getId());
+        노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
     }
 
     private void 구간_등록_OK_응답(ExtractableResponse<Response> response) {

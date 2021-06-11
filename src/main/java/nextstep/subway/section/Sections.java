@@ -25,10 +25,29 @@ public class Sections {
         }
         connectIfFront(section);
         connectIfLast(section);
-        connectToExistingFront(section);
+        connectToExistingUpStation(section);
+        connectToExistingDownStation(section);
     }
 
-    private void connectToExistingFront(Section section) {
+    private void connectToExistingDownStation(Section section) {
+        if (sections.contains(section)) {
+            return;
+        }
+        Section existingSection = sections.stream()
+                .filter(it -> it.getDownStation().equals(section.getDownStation()))
+                .findFirst()
+                .orElse(null);
+        if (existingSection != null) {
+            int indexOfExisting = sections.indexOf(existingSection);
+            Section newFrontSection = new Section(existingSection.getUpStation(), section.getUpStation(),  existingSection.getDistance()-section.getDistance());
+            existingSection.update(section);
+            section.update(newFrontSection);
+
+            sections.add(indexOfExisting, section );
+        }
+    }
+
+    private void connectToExistingUpStation(Section section) {
         if (sections.contains(section)) {
             return;
         }
@@ -38,11 +57,11 @@ public class Sections {
                 .orElse(null);
         if (existingSection != null) {
             int indexOfExisting = sections.indexOf(existingSection);
-            Section newSection = new Section(section.getDownStation(), existingSection.getDownStation(), existingSection.getDistance()-section.getDistance());
+            Section newLaterSection = new Section(section.getDownStation(), existingSection.getDownStation(), existingSection.getDistance()-section.getDistance());
             existingSection.update(section);
-            section.update(newSection);
+            section.update(newLaterSection);
 
-            sections.add(indexOfExisting + 1, section );
+            sections.add(indexOfExisting + 1, section);
         }
     }
 
