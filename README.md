@@ -57,3 +57,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 1단계 - 지하철 노선 관리
 [바로가기](./markdown/step1.md)
+
+2단계 - 인수 테스트 리팩터링
+[바로가기](./markdown/step2.md)

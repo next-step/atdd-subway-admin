@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static nextstep.subway.line.application.LineService.LINE_DUPLICATED_EXCEPTION_MESSAGE;
+import static nextstep.subway.line.application.LineQueryService.LINE_NAME_DUPLICATED_EXCEPTION_MESSAGE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceStep {
@@ -22,11 +22,17 @@ public class LineAcceptanceStep {
     public static final String LOCATION = "Location";
     public static final String NAME = "name";
     public static final String COLOR = "color";
+    public static final String UP_STATION_ID = "upStationId";
+    public static final String DOWN_STATION_ID = "downStationId";
+    public static final String DISTANCE = "distance";
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put(NAME, name);
         params.put(COLOR, color);
+        params.put(UP_STATION_ID, String.valueOf(upStationId));
+        params.put(DOWN_STATION_ID, String.valueOf(downStationId));
+        params.put(DISTANCE, String.valueOf(distance));
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -35,8 +41,8 @@ public class LineAcceptanceStep {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color) {
-        return 지하철_노선_생성_요청(name, color);
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return 지하철_노선_생성_요청(name, color, upStationId, downStationId, distance);
     }
 
     public static void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
@@ -46,7 +52,7 @@ public class LineAcceptanceStep {
     public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
         assertThat(response.jsonPath().getObject("", ErrorResponse.class).getMessage())
-                .isEqualTo(LINE_DUPLICATED_EXCEPTION_MESSAGE);
+                .isEqualTo(LINE_NAME_DUPLICATED_EXCEPTION_MESSAGE);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
