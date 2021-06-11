@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -48,13 +47,13 @@ public class LineSections {
 
         for (int i=0; i<lineSections.size() - 1; i++) {
             Section curSection = orderedSections.get(orderedSections.size() - 1);
-            Section findSection = findSectionBySameUpStation(curSection.getDownStation());
+            Section findSection = findSameUpStationSection(curSection.getDownStation());
             orderedSections.add(findSection);
         }
         return orderedSections;
     }
 
-    private Section findSectionBySameUpStation(Station station) {
+    private Section findSameUpStationSection(Station station) {
         return lineSections.stream()
             .filter(section -> section.getUpStation().isSame(station))
             .findFirst()
@@ -76,11 +75,15 @@ public class LineSections {
     }
 
     public List<Station> getOrderStation() {
-        List<Section> sections = getOrderLineSections();
-        List<Station> stations = new ArrayList<>();
-        sections.forEach(section -> stations.add(section.getUpStation()));
-        stations.add(sections.get(sections.size() - 1).getDownStation());
+        List<Station> orderStations = new ArrayList<>();
+        Section curSection = findFirstSection();
+        orderStations.add(curSection.getUpStation());
+        orderStations.add(curSection.getDownStation());
 
-        return stations;
+        for (int i=0; i<lineSections.size() - 1; i++) {
+            curSection = findSameUpStationSection(curSection.getDownStation());
+            orderStations.add(curSection.getDownStation());
+        }
+        return orderStations;
     }
 }
