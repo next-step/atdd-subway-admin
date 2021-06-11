@@ -37,7 +37,7 @@ public class AcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> httpPost(String path, Object request) {
+    protected <T> ExtractableResponse<Response> httpPost(String path, T request) {
         return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -56,7 +56,7 @@ public class AcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> httpPut(String path, Object request) {
+    protected <T> ExtractableResponse<Response> httpPut(String path, T request) {
         return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

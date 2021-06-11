@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.Section;
+import nextstep.subway.section.Sections;
 
 import javax.persistence.*;
 
@@ -13,7 +15,10 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    public Line() {
+    @Embedded
+    Sections sections = new Sections();
+
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -36,5 +41,15 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public Sections getSections() {
+        return sections;
+    }
+
+    public void addSection(Section section) {
+        section.addLine(this);
+        sections.add(section);
+
     }
 }

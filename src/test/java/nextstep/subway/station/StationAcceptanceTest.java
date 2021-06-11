@@ -3,30 +3,29 @@ package nextstep.subway.station;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
+    private static final StationRequest request = new StationRequest("강남역");
+    private static final String ROOT_STATION_REQUEST_URI = "/stations";
+
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
         // when
-        ExtractableResponse<Response> response = httpPost("/stations", params);
+        ExtractableResponse<Response> response = 지하철_역_등록되어_있음(request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -37,12 +36,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        httpPost("/stations", params);
+        지하철_역_등록되어_있음(request);
 
         // when
-        ExtractableResponse<Response> response = httpPost("/stations", params);
+        ExtractableResponse<Response> response = 지하철_역_등록되어_있음(request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -52,13 +49,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
-        ExtractableResponse<Response> createResponse1 = httpPost("/stations", params1);
+        ExtractableResponse<Response> createResponse1 = 지하철_역_등록되어_있음(request);
 
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "역삼역");
-        ExtractableResponse<Response> createResponse2 = httpPost("/stations", params2);
+        StationRequest anotherRequest = new StationRequest("역삼역");
+        ExtractableResponse<Response> createResponse2 = 지하철_역_등록되어_있음(anotherRequest);
 
         // when
         ExtractableResponse<Response> response = httpGet("/stations");
@@ -69,7 +63,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -78,9 +72,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        ExtractableResponse<Response> createResponse = httpPost("/stations", params);
+        ExtractableResponse<Response> createResponse = 지하철_역_등록되어_있음(request);
 
         // when
         String uri = createResponse.header("Location");
@@ -88,5 +80,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public ExtractableResponse<Response> 지하철_역_등록되어_있음(StationRequest request) {
+        return httpPost(ROOT_STATION_REQUEST_URI, request);
     }
 }
