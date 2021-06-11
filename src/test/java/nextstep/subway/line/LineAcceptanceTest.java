@@ -193,7 +193,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getObject(".", LineResponse.class).getId()).isEqualTo(1);
         assertThat(response.jsonPath().getObject(".", LineResponse.class).getName()).isEqualTo("2호선");
-        assertThat(response.jsonPath().getObject(".", LineResponse.class).getColor()).isEqualTo("초록");
+        assertThat(response.jsonPath().getObject(".", LineResponse.class).getColor()).isEqualTo("녹색");
         assertThat(response.jsonPath().getObject(".", LineResponse.class).getCreatedDate()).isNotEqualTo(response.jsonPath().getObject(".", LineResponse.class).getModifiedDate());
     }
 
