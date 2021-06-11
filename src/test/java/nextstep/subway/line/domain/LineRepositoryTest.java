@@ -1,7 +1,5 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
@@ -52,7 +50,7 @@ public class LineRepositoryTest {
     void create() {
         Line persistLine = lineRepository.save(Line.of("2호선", "다크그린", section));
 
-        assertThat(persistLine.getOrderedStations()).contains(upStation, downStation);
+        assertThat(persistLine.stations()).contains(upStation, downStation);
     }
 
     @Test
@@ -64,7 +62,7 @@ public class LineRepositoryTest {
 
         Line persistLine = lineRepository.findById(line2.getId()).orElseThrow(NoSuchElementException::new);
 
-        List<String> names = persistLine.getOrderedStations().stream()
+        List<String> names = persistLine.stations().stream()
                 .map(station -> station.getName())
                 .collect(Collectors.toList());
         assertThat(names).contains("강남역", "역삼역");

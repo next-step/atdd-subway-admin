@@ -27,8 +27,6 @@ public class Section extends BaseEntity {
     @JoinColumn
     private Station downStation;
 
-//    @Column(nullable = false)
-//    private int distance;
     @Embedded
     private Distance distance;
 
@@ -43,13 +41,6 @@ public class Section extends BaseEntity {
     public static Section of(Station upStation, Station downStation, int distance) {
         return new Section(upStation, downStation, distance);
     }
-
-//    private int validDistance(Distance distance) {
-////        if (distance < 1 || distance >= Integer.MAX_VALUE) {
-////            throw new IllegalArgumentException("유효하지 않은 Section 의 역들 사이거리 입니다.");
-////        }
-//        return distance;
-//    }
 
     public boolean isInFrontOf(Section section) {
         return this.downStation.compareName(section.upStation());
@@ -135,6 +126,52 @@ public class Section extends BaseEntity {
                 && !stations.contains(this.downStation);
     }
 
+    public boolean canBeConnectedWith(Section section) {
+        return dockingCheck(section);
+    }
+
+    private boolean dockingCheck(Section section) {
+        if (this.canBeDockedOnFront(section)) {
+            return true;
+        }
+        if (this.canBeDockedOnRear(section)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean canBeDockedOnFront(Section section) {
+        return checkFront(section) || checkMidFront(section);
+    }
+
+    private boolean canBeDockedOnRear(Section section) {
+        return checkMidRear(section) || checkRear(section);
+    }
+
+    private boolean checkFront(Section section) {
+        return this.isInFrontOf(section);
+    }
+
+    private boolean checkMidFront(Section section) {
+        if (this.isInMidFrontOf(section)) {
+            section.connectBehindOf(this);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkMidRear(Section section) {
+        if (this.isInMidRearOf(section)) {
+            section.connectInFrontOf(this);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkRear(Section section) {
+        return this.isBehindOf(section);
+    }
+
     public int distance() {
         return distance.get();
     }
@@ -152,12 +189,11 @@ public class Section extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
+        return Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
     }
-
 }

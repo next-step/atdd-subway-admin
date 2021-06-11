@@ -31,7 +31,7 @@ public class Sections {
         return sections.contains(section);
     }
 
-    public boolean validateAbout(Section sectionIn) {
+    public boolean validateConnectionWith(Section sectionIn) {
         alreadyInBoth(sectionIn);
         nothingInBoth(sectionIn);
         return true;
@@ -50,25 +50,24 @@ public class Sections {
     }
 
     public List<Station> stations() {
-        return this.sections.stream()
-                .flatMap(section -> section.upDownStations().stream())
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    public List<Station> orderedStations() {
         return OrderedSections.of(this.sections).get().stream()
+//        return this.sections.stream()
                 .flatMap(section -> section.upDownStations().stream())
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-     public OrderedSections orderedSections() {
-        return OrderedSections.of(this.sections);
+    public List<Section> get() {
+        return sections;
     }
 
     public boolean isEmpty() {
         return sections.isEmpty();
     }
 
+    public void adjustConnectPositionOf(Section sectionIn) {
+        sections.stream()
+                .filter(section -> sectionIn.canBeConnectedWith(section))
+                .findFirst();
+    }
 }

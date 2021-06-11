@@ -1,12 +1,15 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
+import static nextstep.subway.section.domain.SectionsTest.Section을_두개역과_만든다;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Line 클래스 관련 테스트")
@@ -50,7 +53,62 @@ public class LineTest {
         line2.addSection(section5);
 
         // expect 1 - 2 - 4 - 3 - 6 - 5
-        assertThat(line2.getOrderedStations()).containsExactly(station1, station2, station4, station3, station6, station5);
+        assertThat(line2.stations()).containsExactly(station1, station2, station4, station3, station6, station5);
+    }
+
+    @Test
+    void Sections_의_사이사이에_여러개를_추가한다() {
+        Sections sections = new Sections();
+
+        Section section2 = Section을_두개역과_만든다("1번역", "5번역", 100);
+        Section section1 = Section을_두개역과_만든다("1번역", "2번역", 5);
+        Section section3 = Section을_두개역과_만든다("4번역", "5번역", 5);
+        Section section4 = Section을_두개역과_만든다("3번역", "4번역", 5);
+
+        line2.addSection(section2);
+        List<Station> actualStations = line2.stations();
+        List<Section> actualSections = line2.sections().get();
+        for (Station actualStation : actualStations) {
+            System.out.print(actualStation.getName() + " ");
+        } System.out.println("\n========================");
+        for (Section actualSection : actualSections) {
+            System.out.print(actualSection.upStationName() + " " + actualSection.downStationName() + "\t");
+        }System.out.println("\n========================");
+        System.out.println("\n========================");
+        line2.addSection(section1);
+        actualStations = line2.stations();
+        for (Station actualStation : actualStations) {
+            System.out.print(actualStation.getName() + " ");
+        } System.out.println("\n========================");
+        for (Section actualSection : actualSections) {
+            System.out.print(actualSection.upStationName() + " " + actualSection.downStationName() + "\t");
+        }System.out.println("\n========================");
+        System.out.println("\n========================");
+        line2.addSection(section3);
+        actualStations = line2.stations();
+        for (Station actualStation : actualStations) {
+            System.out.print(actualStation.getName() + " ");
+        } System.out.println("\n========================");
+        for (Section actualSection : actualSections) {
+            System.out.print(actualSection.upStationName() + " " + actualSection.downStationName() + "\t");
+        }System.out.println("\n========================");
+        System.out.println("\n========================");
+        line2.addSection(section4);
+
+        actualStations = line2.stations();
+        for (Station actualStation : actualStations) {
+            System.out.print(actualStation.getName() + " ");
+        } System.out.println("========================");
+        for (Section actualSection : actualSections) {
+            System.out.print(actualSection.upStationName() + " " + actualSection.downStationName() + "\t");
+        }System.out.println("\n========================");
+        System.out.println("\n========================");
+
+        assertThat(actualStations.get(0).getName()).isEqualTo("1번역");
+        assertThat(actualStations.get(1).getName()).isEqualTo("2번역");
+        assertThat(actualStations.get(2).getName()).isEqualTo("3번역");
+        assertThat(actualStations.get(3).getName()).isEqualTo("4번역");
+        assertThat(actualStations.get(4).getName()).isEqualTo("5번역");
     }
 
     @Test
@@ -62,8 +120,8 @@ public class LineTest {
 
         line2.addSection(section);
 
-        assertThat(line2.getSections().stream().count()).isOne();
-        assertThat(line2.getSections().stream().anyMatch(it -> it.equals(section))).isTrue();
+        assertThat(line2.sections().stream().count()).isOne();
+        assertThat(line2.sections().stream().anyMatch(it -> it.equals(section))).isTrue();
     }
 
     @Test

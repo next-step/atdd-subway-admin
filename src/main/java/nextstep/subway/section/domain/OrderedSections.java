@@ -63,48 +63,4 @@ public class OrderedSections {
         orderedSections.add(section);
     }
 
-    public void connectThroughOrderedSections(Section sectionIn) {
-        int i = 0;
-        boolean isConnected = false;
-        while (!isConnected) {
-            Section section = orderedSections.get(i);
-            isConnected = runningThrough(sectionIn, section);
-            ++i;
-        }
-    }
-
-    private boolean runningThrough(Section sectionIn, Section section) {
-        if (checkFront(sectionIn, section)
-        || checkFrontMid(sectionIn, section)
-        || checkRearMid(sectionIn, section)
-        || checkRear(sectionIn, section)) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean checkFront(Section sectionInput, Section sectionFromExist) {
-        return sectionInput.isInFrontOf(sectionFromExist);
-    }
-
-    private boolean checkFrontMid(Section sectionInput, Section sectionFromExist) {
-        if (sectionInput.isInMidFrontOf(sectionFromExist)) {
-            sectionFromExist.connectBehindOf(sectionInput);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean checkRearMid(Section sectionInput, Section sectionFromExist) {
-        if (sectionInput.isInMidRearOf(sectionFromExist)) {
-            sectionFromExist.connectInFrontOf(sectionInput);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean checkRear(Section sectionInput, Section sectionFromExist) {
-        return sectionInput.isBehindOf(sectionFromExist);
-    }
-
 }

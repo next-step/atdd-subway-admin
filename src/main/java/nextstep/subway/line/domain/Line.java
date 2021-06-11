@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.OrderedSections;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -51,12 +50,12 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public Sections getSections() {
+    public Sections sections() {
         return this.sections;
     }
 
-    public List<Station> getOrderedStations() {
-        return sections.orderedStations();
+    public List<Station> stations() {
+        return sections.stations();
     }
 
     public Long getId() {
@@ -77,16 +76,13 @@ public class Line extends BaseEntity {
             return;
         }
 
-        sections.validateAbout(sectionIn);
-
-        checkConnectingPositionThroughOrderedSections(sectionIn);
-
+        connect(sectionIn);
         sectionIn.setLine(this);
     }
 
-    private void checkConnectingPositionThroughOrderedSections(Section sectionIn) {
-        OrderedSections orderedSections = sections.orderedSections();
-        orderedSections.connectThroughOrderedSections(sectionIn);
+    private void connect(Section sectionIn) {
+        sections.validateConnectionWith(sectionIn);
+        sections.adjustConnectPositionOf(sectionIn);
         sections.add(sectionIn);
     }
 
