@@ -3,10 +3,11 @@ package nextstep.subway.line.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.IntStream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.section.domain.Section;
@@ -42,15 +43,36 @@ public class LineSections {
     }
 
     public List<Section> getOrderLineSections() {
-        Optional<Section> preSection = findFirstSection();
         List<Section> orderedSections = new ArrayList<>();
+        orderedSections.add(findFirstSection());
 
-        while (preSection.isPresent()) {
-            Section curSection = preSection.get();
-            orderedSections.add(curSection);
-            preSection = findSameUpStation(curSection.getDownStation());
+        for (int i=0; i<lineSections.size() - 1; i++) {
+            Section curSection = orderedSections.get(orderedSections.size() - 1);
+            Section findSection = findSectionBySameUpStation(curSection.getDownStation());
+            orderedSections.add(findSection);
         }
         return orderedSections;
+    }
+
+    private Section findSectionBySameUpStation(Station station) {
+        return lineSections.stream()
+            .filter(section -> section.getUpStation().isSame(station))
+            .findFirst()
+            .orElseThrow(() -> new EntityNotFoundException("해당 역을 가지는 노선이 존재하지 않습니다."));
+    }
+
+    private Section findFirstSection() {
+        return lineSections.stream()
+            .filter(section -> !isExistsDownStation(section.getUpStation()))
+            .findFirst()
+            .orElseThrow(() -> new EntityNotFoundException("노선의 시작역이 존재하지 않습니다."));
+    }
+
+    private boolean isExistsDownStation(Station station) {
+        return lineSections.stream()
+            .filter(section -> station.isSame(section.getDownStation()))
+            .findFirst()
+            .isPresent();
     }
 
     public List<Station> getOrderStation() {
@@ -60,24 +82,5 @@ public class LineSections {
         stations.add(sections.get(sections.size() - 1).getDownStation());
 
         return stations;
-    }
-
-    private Optional<Section> findFirstSection() {
-        return lineSections.stream()
-            .filter(section -> !isExistsDownStation(section.getUpStation()))
-            .findFirst();
-    }
-
-    private boolean isExistsDownStation(Station station) {
-        Optional<Section> findSection = lineSections.stream()
-            .filter(section -> station.isSame(section.getDownStation()))
-            .findFirst();
-        return findSection.isPresent();
-    }
-
-    private Optional<Section> findSameUpStation(Station station) {
-        return lineSections.stream()
-            .filter(section -> section.getUpStation().isSame(station))
-            .findFirst();
     }
 }
