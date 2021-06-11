@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -49,6 +49,12 @@ public class LineController {
     public ResponseEntity deleteLine(@PathVariable final Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        LineResponse line = lineService.appendSection(id, sectionRequest);
+        return ResponseEntity.created(URI.create(LINE + "/" + line.getId())).body(line);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

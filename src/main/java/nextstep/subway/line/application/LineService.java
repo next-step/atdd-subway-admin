@@ -34,12 +34,20 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public LineResponse appendSection(final Long id, final SectionRequest request) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException());
+
+        registerSection(request, line);
+
+        return LineResponse.of(line);
+    }
+
     private void registerSection(final SectionRequest request, final Line line) {
         Station upStation = stationRepository.findById(request.getUpStationId())
-                .orElseThrow(()->new StationNotFoundException());
+                .orElseThrow(() -> new StationNotFoundException());
 
         Station downStation = stationRepository.findById(request.getDownStationId())
-                .orElseThrow(()->new StationNotFoundException());
+                .orElseThrow(() -> new StationNotFoundException());
 
         Section section = Section.builder().line(line)
                 .upStation(upStation)

@@ -13,6 +13,8 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
+        //TODO : 작업
+
         sections.add(section);
     }
 
