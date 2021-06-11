@@ -174,4 +174,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_구간_삭제_실패됨(response);
     }
+
+    @DisplayName("노선의 구간 제거를 실패한다 - 구간 어디에도 없는 역 제거 요청시")
+    @Test
+    void removeSection_fail_case_has_not_station() {
+        // given
+        ExtractableResponse<Response> 구간_등록된_신분당선 = 지하철_노선에_구간_등록_요청(신분당선, 광교역, 판교역, 15);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(신분당선.getId(), 정자역);
+
+        // then
+        지하철_노선_구간_삭제_실패됨(response);
+    }
 }
