@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static nextstep.subway.line.SectionAcceptanceTestUtils.createSectionRequest;
 import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_생성_요청_및_성공_체크;
-import static nextstep.subway.line.LineAcceptanceTestUtils.createLineRequest;
+import static nextstep.subway.line.LineAcceptanceTestHelper.createLineRequest;
 import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성_요청_및_성공_체크;
 import static org.assertj.core.api.Assertions.assertThat;
 
