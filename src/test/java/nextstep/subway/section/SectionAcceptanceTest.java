@@ -4,7 +4,6 @@ import static nextstep.subway.section.SectionAcceptanceStep.*;
 
 import java.util.Arrays;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -20,24 +19,15 @@ import nextstep.subway.station.dto.StationRequest;
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-    private Long 판교역_ID;
-    private Long 수지역_ID;
-    private Long 신분당선_ID;
-
-    @BeforeEach
-    void setFields() {
-        // given
-        판교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("판교역"));
-        수지역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("수지역"));
-
-        LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", 판교역_ID, 수지역_ID, 4);
-        신분당선_ID = LineAcceptanceStep.지하철_노선_등록되어_있음(lineRequest);
-    }
-
     @DisplayName("노선에 구간을 등록한다.")
     @Test
     void addSection() {
         // given
+        Long 판교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("판교역"));
+        Long 수지역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("수지역"));
+        LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", 판교역_ID, 수지역_ID, 4);
+        Long 신분당선_ID = LineAcceptanceStep.지하철_노선_등록되어_있음(lineRequest);
+
         Long 정자역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("정자역"));
         SectionRequest sectionRequest = SectionRequest.of(판교역_ID, 정자역_ID, 1);
 
@@ -52,6 +42,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineWithStations() {
         // given
+        Long 판교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("판교역"));
+        Long 수지역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("수지역"));
+        LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", 판교역_ID, 수지역_ID, 4);
+        Long 신분당선_ID = LineAcceptanceStep.지하철_노선_등록되어_있음(lineRequest);
+
         Long 강남역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("강남역"));
         Long 정자역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("정자역"));
         SectionRequest sectionRequest1 = SectionRequest.of(판교역_ID, 정자역_ID, 1);
@@ -73,6 +68,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionOfUpPoint() {
         // given
+        Long 판교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("판교역"));
+        Long 수지역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("수지역"));
+        LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", 판교역_ID, 수지역_ID, 4);
+        Long 신분당선_ID = LineAcceptanceStep.지하철_노선_등록되어_있음(lineRequest);
+
         Long 강남역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("강남역"));
         SectionRequest sectionRequest = SectionRequest.of(강남역_ID, 판교역_ID, 3);
 
@@ -87,6 +87,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionOfEndPoint() {
         // given
+        Long 판교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("판교역"));
+        Long 수지역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("수지역"));
+        LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", 판교역_ID, 수지역_ID, 4);
+        Long 신분당선_ID = LineAcceptanceStep.지하철_노선_등록되어_있음(lineRequest);
+
         Long 광교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("광교역"));
         SectionRequest sectionRequest = SectionRequest.of(수지역_ID, 광교역_ID, 4);
 
@@ -101,6 +106,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionTooLongDistance() {
         // given
+        Long 판교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("판교역"));
+        Long 수지역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("수지역"));
+        LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", 판교역_ID, 수지역_ID, 4);
+        Long 신분당선_ID = LineAcceptanceStep.지하철_노선_등록되어_있음(lineRequest);
+
         Long 정자역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("정자역"));
         SectionRequest sectionRequest = SectionRequest.of(판교역_ID, 정자역_ID, 10);
 
@@ -115,6 +125,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionEqualsDistance() {
         // given
+        Long 판교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("판교역"));
+        Long 수지역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("수지역"));
+        LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", 판교역_ID, 수지역_ID, 4);
+        Long 신분당선_ID = LineAcceptanceStep.지하철_노선_등록되어_있음(lineRequest);
+
         Long 정자역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("정자역"));
         SectionRequest sectionRequest = SectionRequest.of(판교역_ID, 정자역_ID, 4);
 
@@ -128,6 +143,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 이미 존재하는 구간을 등록한다.")
     @Test
     void addSectionExistsSection() {
+        Long 판교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("판교역"));
+        Long 수지역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("수지역"));
+        LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", 판교역_ID, 수지역_ID, 4);
+        Long 신분당선_ID = LineAcceptanceStep.지하철_노선_등록되어_있음(lineRequest);
+
         // given
         SectionRequest sectionRequest = SectionRequest.of(판교역_ID, 수지역_ID, 4);
 
@@ -141,6 +161,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 상행/하행 정보가 없는 구간을 등록한다.")
     @Test
     void addSectionWithEmptyUpOrDownStation() {
+        Long 판교역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("판교역"));
+        Long 수지역_ID = StationAcceptanceStep.지하철_역_등록되어_있음(new StationRequest("수지역"));
+        LineRequest lineRequest = LineRequest.of("신분당선", "bg-red-600", 판교역_ID, 수지역_ID, 4);
+        Long 신분당선_ID = LineAcceptanceStep.지하철_노선_등록되어_있음(lineRequest);
+
         // given
         SectionRequest sectionRequest = SectionRequest.of(null, 수지역_ID, 4);
 
