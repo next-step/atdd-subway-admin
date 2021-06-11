@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/lines")
@@ -32,6 +33,11 @@ public class SectionController {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity handleIllegalArgsExceptionForSection(IllegalArgumentException exception) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity handleNoSuchElementExceptionForSection(NoSuchElementException exception) {
         return ResponseEntity.badRequest().build();
     }
 }
