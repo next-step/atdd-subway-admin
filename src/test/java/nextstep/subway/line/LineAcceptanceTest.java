@@ -243,7 +243,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return deleteResponse;
 	}
 
-	private ExtractableResponse<Response> 지하철노선을_생성_요청(LineRequest lineRequest) {
+	public static ExtractableResponse<Response> 지하철노선을_생성_요청(LineRequest lineRequest) {
 		return RestAssured.given().log().all()
 			.body(lineRequest)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)

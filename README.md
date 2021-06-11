@@ -80,7 +80,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 - [ ] 지하철 구간 등록기능 구현
 
-  - [ ] 역 사이에 새로운 역을 등록하는 경우
+  - [x] 역 사이에 새로운 역을 등록하는 경우
 
     길이가 동일하거나 크면 오류발생
 
