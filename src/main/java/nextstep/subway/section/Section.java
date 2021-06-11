@@ -42,6 +42,12 @@ public class Section extends BaseEntity {
         }
     }
 
+    public void update(Section section) {
+        this.upStation = section.getUpStation();
+        this.downStation = section.getDownStation();
+        this.distance = section.getDistance();
+    }
+
     public void addLine(Line line) {
         this.line = line;
         /* 연관관계의 주인인 Section에서 Line에 Section을 연결시켜준다 */
@@ -56,4 +62,18 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
+    }
 }

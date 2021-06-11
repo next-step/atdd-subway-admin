@@ -25,22 +25,42 @@ public class Sections {
         }
         connectIfFront(section);
         connectIfLast(section);
+        connectToExistingFront(section);
     }
+
+    private void connectToExistingFront(Section section) {
+        if (sections.contains(section)) {
+            return;
+        }
+        Section existingSection = sections.stream()
+                .filter(it -> it.getUpStation().equals(section.getUpStation()))
+                .findFirst()
+                .orElse(null);
+        if (existingSection != null) {
+            int indexOfExisting = sections.indexOf(existingSection);
+            Section newSection = new Section(section.getDownStation(), existingSection.getDownStation(), existingSection.getDistance()-section.getDistance());
+            existingSection.update(section);
+            section.update(newSection);
+
+            sections.add(indexOfExisting + 1, section );
+        }
+    }
+
 
     private void connectIfLast(Section section) {
         if (sections.contains(section)) {
             return;
         }
 
-        Station currentLastStation = sections.get(sections.size()-1).getDownStation();
+        Station currentLastStation = sections.get(sections.size() - 1).getDownStation();
         Station upStationOfInputSection = section.getUpStation();
-        if(upStationOfInputSection.equals(currentLastStation)){
+        if (upStationOfInputSection.equals(currentLastStation)) {
             sections.add(section);
         }
     }
 
     private void connectIfFront(Section section) {
-        if(sections.contains(section)){
+        if (sections.contains(section)) {
             return;
         }
 
