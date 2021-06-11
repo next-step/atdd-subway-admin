@@ -76,7 +76,7 @@ public class Section {
 		return distance;
 	}
 
-	void addSectionBetween(Section otherSection) {
+	void addInnerSection(Section otherSection) {
 		if (isSameDownStation(otherSection)) {
 			addToDownDirection(otherSection);
 		}

@@ -35,7 +35,7 @@ public class Sections {
 	void add(Section otherSection) {
 		checkValidation(otherSection);
 		for (Section section : sections) {
-			section.addSectionBetween(otherSection);
+			section.addInnerSection(otherSection);
 		}
 		sections.add(otherSection);
 	}

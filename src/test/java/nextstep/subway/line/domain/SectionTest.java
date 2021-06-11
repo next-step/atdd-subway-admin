@@ -40,7 +40,7 @@ class SectionTest {
 		Section 양재_양재시민의숲 = new Section(신분당선, 양재, 양재시민의숲, Distance.valueOf(3));
 
 		// when
-		강남_양재시민의숲.addSectionBetween(양재_양재시민의숲);
+		강남_양재시민의숲.addInnerSection(양재_양재시민의숲);
 
 		// then
 		assertThat(강남_양재시민의숲.getDistance()).isEqualTo(Distance.valueOf(7));
@@ -56,7 +56,7 @@ class SectionTest {
 		Section 강남_양재 = new Section(신분당선, 강남, 양재, Distance.valueOf(longDistance));
 
 		// when then
-		assertThatThrownBy(() -> 강남_양재시민의숲.addSectionBetween(강남_양재))
+		assertThatThrownBy(() -> 강남_양재시민의숲.addInnerSection(강남_양재))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("추가할 구간이 기존 구간 보다 같거나 길 수 없습니다.");
 	}
