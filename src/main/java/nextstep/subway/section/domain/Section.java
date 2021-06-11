@@ -6,6 +6,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -56,23 +57,40 @@ public class Section {
         return line.getId();
     }
 
-    public Long getUpStationId() {
-        return upStation.getId();
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStation.getId();
+    public Station getDownStation() {
+        return downStation;
     }
 
     public boolean hasSameUpStation(Section section) {
-        return upStation.getId().equals(section.getUpStationId());
+        return upStation.equals(section.getUpStation());
     }
 
     public boolean hasSameDownStation(Section section) {
-        return downStation.getId().equals(section.getDownStationId());
+        return downStation.equals(section.getDownStation());
     }
 
     public void addLine(Line line) {
         this.line = line;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance &&
+                Objects.equals(id, section.id) &&
+                Objects.equals(line, section.line) &&
+                Objects.equals(upStation, section.upStation) &&
+                Objects.equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.exception.ExistSameStationsException;
 import nextstep.subway.section.exception.NotUnderSectionDistanceException;
 import nextstep.subway.station.domain.Station;
 
@@ -28,11 +29,25 @@ public class Sections {
     }
 
     public void validateSection(Section newSection) {
-        boolean match = sections.stream()
-                .anyMatch(section -> (section.hasSameUpStation(newSection) || section.hasSameDownStation(newSection)) && section.getDistance() == newSection.getDistance());
-
-        if (match) {
+        if (isNotValidDistance(newSection)) {
             throw new NotUnderSectionDistanceException();
         }
+
+        if (getStations().contains(newSection.getUpStation()) && getStations().contains(newSection.getDownStation())) {
+            throw new ExistSameStationsException();
+        }
+    }
+
+    private boolean isNotValidDistance(Section newSection) {
+        return sections.stream()
+                .anyMatch(section -> (isSameUpStation(newSection, section) || isSameDownStation(newSection, section)) && section.getDistance() == newSection.getDistance());
+    }
+
+    private boolean isSameDownStation(Section newSection, Section section) {
+        return section.hasSameDownStation(newSection);
+    }
+
+    private boolean isSameUpStation(Section newSection, Section section) {
+        return section.hasSameUpStation(newSection);
     }
 }

@@ -68,7 +68,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("역 사이에 기존 역 사이 길이보다 크거나 같은 새로운 역을 등록한다")
     @Test
-    void addSectionSameStations() {
+    void addSectionException1() {
 
         // given
         StationResponse 정자역 = 지하철_역_등록되어_있음(new StationRequest("정자역")).as(StationResponse.class);
@@ -82,6 +82,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_구간_등록_실패됨(response1);
         지하철_노선에_구간_등록_실패됨(response2);
+    }
+
+    @DisplayName("노선에 이미 등록된 상행역과 하행역을 포함하는 구간을 등록한다")
+    @Test
+    void addSectionException2() {
+        // given
+        SectionRequest params = new SectionRequest(강남역.getId(), 광교역.getId(), 9);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(params, 신분당선.getId());
+
+        // then
+        지하철_노선에_구간_등록_실패됨(response);
     }
 
     private void 지하철_노선에_구간_등록_실패됨(ExtractableResponse<Response> response) {

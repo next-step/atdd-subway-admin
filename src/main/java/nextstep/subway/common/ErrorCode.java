@@ -2,7 +2,8 @@ package nextstep.subway.common;
 
 public enum ErrorCode {
     NOT_FOUND_LINE_MESSAGE("0001", "해당 id의 노선이 존재하지 않습니다."),
-    NOT_UNDER_SECTION_DISTANCE_MESSAGE("0002", "기존 역 사이 길이보다 작아야 합니다.");
+    NOT_UNDER_SECTION_DISTANCE_MESSAGE("0002", "기존 역 사이 길이보다 작아야 합니다."),
+    EXIST_SAME_STATIONS_MESSAGE("0003", "같은 상행역과 하행역이 이미 등록 되어있습니다.");
 
     private final String code;
     private final String description;

@@ -2,6 +2,7 @@ package nextstep.subway.line.exception;
 
 import nextstep.subway.common.ErrorCode;
 import nextstep.subway.common.ErrorResponse;
+import nextstep.subway.section.exception.ExistSameStationsException;
 import nextstep.subway.section.exception.NotUnderSectionDistanceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,5 +22,11 @@ public class LineControllerAdvice {
     @ExceptionHandler(NotUnderSectionDistanceException.class)
     public ErrorResponse handleNotAddSectionException() {
         return new ErrorResponse(ErrorCode.NOT_UNDER_SECTION_DISTANCE_MESSAGE.getCode(), ErrorCode.NOT_UNDER_SECTION_DISTANCE_MESSAGE.getDescription());
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ExistSameStationsException.class)
+    public ErrorResponse handleExistSameStationsException() {
+        return new ErrorResponse(ErrorCode.EXIST_SAME_STATIONS_MESSAGE.getCode(), ErrorCode.EXIST_SAME_STATIONS_MESSAGE.getDescription());
     }
 }
