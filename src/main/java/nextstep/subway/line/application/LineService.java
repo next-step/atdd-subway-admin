@@ -1,6 +1,5 @@
 package nextstep.subway.line.application;
 
-import com.google.common.collect.Lists;
 import nextstep.subway.exception.NotFoundEntityException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
