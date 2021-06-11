@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import nextstep.subway.exception.InvalidDistanceException;
 import nextstep.subway.exception.StationsAlreadyExistException;
 import nextstep.subway.exception.StationsNoExistException;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 @Embeddable
@@ -31,6 +32,12 @@ public class Sections {
 
     public static Sections of(List<Section> sections) {
         return new Sections(sections);
+    }
+
+    public int getDistanceWithStations(Station upStation, Station downStation) {
+        return sections.stream()
+            .filter(seciton -> seciton.sameUpStaion(upStation) && seciton.sameDownStaion(downStation)).findFirst()
+            .orElseThrow(NoSuchElementException::new).getDistance();
     }
 
     public List<StationResponse> toResponseList() {

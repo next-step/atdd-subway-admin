@@ -40,8 +40,20 @@ public class Section {
         this.distance = distance;
     }
 
+    private Section(Long id, Station upStation, Station downStation, Line line, int distance) {
+        this.id = id;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.line = line;
+        this.distance = distance;
+    }
+
     public static Section of(Station upStation, Station downStation, int distance) {
         return new Section(upStation, downStation, distance);
+    }
+
+    public static Section of(Long id, Station upStation, Station downStation, Line line, int distance) {
+        return new Section(id, upStation, downStation, line, distance);
     }
 
     public StationResponse upStationToReponse() {
@@ -54,6 +66,10 @@ public class Section {
 
     public void addLine(Line line) {
         this.line = line;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     public boolean hasDownStation(Section compareSection) {
@@ -94,6 +110,14 @@ public class Section {
 
     public boolean isEndStation(Section findSection) {
         return this.downStation.equals(findSection.upStation);
+    }
+
+    public boolean sameUpStaion(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean sameDownStaion(Station station) {
+        return this.downStation.equals(station);
     }
 
 }
