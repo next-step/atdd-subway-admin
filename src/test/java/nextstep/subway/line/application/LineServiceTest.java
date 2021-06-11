@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Name;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -57,11 +58,11 @@ class LineServiceTest {
     @BeforeEach
     void setUp() {
         lineService = new LineService(lineRepository, stationService);
-        line = new Line("2호선", "green");
         lineRequest = new LineRequest("2호선", "green", 1L, 2L, 10);
         updateRequest = new LineRequest("3호선", "orange");
         upStation = new Station("강남역");
         downStation = new Station("역삼역");
+        line = new Line("2호선", "green", new Section(upStation, downStation, 5));
     }
 
     @DisplayName("노선을 생성요청하면, 생성된 노선을 리턴한다.")
