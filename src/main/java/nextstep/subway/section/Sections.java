@@ -24,9 +24,26 @@ public class Sections {
             return;
         }
         connectIfFront(section);
+        connectIfLast(section);
+    }
+
+    private void connectIfLast(Section section) {
+        if (sections.contains(section)) {
+            return;
+        }
+
+        Station currentLastStation = sections.get(sections.size()-1).getDownStation();
+        Station upStationOfInputSection = section.getUpStation();
+        if(upStationOfInputSection.equals(currentLastStation)){
+            sections.add(section);
+        }
     }
 
     private void connectIfFront(Section section) {
+        if(sections.contains(section)){
+            return;
+        }
+
         Station currentFrontMostStation = sections.get(0).getUpStation();
         Station downStationOfInputSection = section.getDownStation();
         if (downStationOfInputSection.equals(currentFrontMostStation)) {
