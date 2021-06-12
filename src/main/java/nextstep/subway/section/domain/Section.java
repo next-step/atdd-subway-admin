@@ -1,7 +1,6 @@
 package nextstep.subway.section.domain;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,15 +18,15 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Line line;
 
     private int distance;
@@ -40,8 +39,20 @@ public class Section {
         this.distance = distance;
     }
 
+    private Section(Long id, Station upStation, Station downStation, Line line, int distance) {
+        this.id = id;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.line = line;
+        this.distance = distance;
+    }
+
     public static Section of(Station upStation, Station downStation, int distance) {
         return new Section(upStation, downStation, distance);
+    }
+
+    public static Section of(Long id, Station upStation, Station downStation, Line line, int distance) {
+        return new Section(id, upStation, downStation, line, distance);
     }
 
     public StationResponse upStationToReponse() {
@@ -54,6 +65,58 @@ public class Section {
 
     public void addLine(Line line) {
         this.line = line;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public boolean hasDownStation(Section compareSection) {
+        return this.downStation.equals(compareSection.upStation) || this.downStation.equals(compareSection.downStation);
+    }
+
+    public boolean hasUpStation(Section compareSection) {
+        return this.upStation.equals(compareSection.upStation) || this.upStation.equals(compareSection.downStation);
+    }
+
+    public boolean sameUpStaion(Section compareSection) {
+        return compareSection.upStation.equals(this.upStation);
+    }
+
+    public boolean sameDownStaion(Section compareSection) {
+        return compareSection.downStation.equals(this.downStation);
+    }
+
+    public boolean isOverDistance(Section compareSection) {
+        return this.distance <= compareSection.distance;
+    }
+
+    public void updateUpStation(Section compareSection) {
+        this.upStation = compareSection.downStation;
+    }
+
+    public void updateDistance(Section compareSection) {
+        this.distance -= compareSection.distance;
+    }
+
+    public void updateDownStation(Section compareSection) {
+        this.downStation = compareSection.upStation;
+    }
+
+    public boolean isStartStation(Section startSection) {
+        return this.upStation.equals(startSection.downStation);
+    }
+
+    public boolean isEndStation(Section findSection) {
+        return this.downStation.equals(findSection.upStation);
+    }
+
+    public boolean sameUpStaion(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean sameDownStaion(Station station) {
+        return this.downStation.equals(station);
     }
 
 }

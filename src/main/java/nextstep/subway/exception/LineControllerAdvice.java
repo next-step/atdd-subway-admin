@@ -17,6 +17,21 @@ public class LineControllerAdvice {
         return ResponseEntity.badRequest().build();
     }
 
+    @ExceptionHandler(StationsAlreadyExistException.class)
+    public ResponseEntity<LineResponse> stationsAlreadyExistException() {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(StationsNoExistException.class)
+    public ResponseEntity<LineResponse> stationsNoExistException() {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(InvalidDistanceException.class)
+    public ResponseEntity<LineResponse> ㅑnvalidDistanceException() {
+        return ResponseEntity.badRequest().build();
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<LineResponse> notFoundException() {
         return ResponseEntity.notFound().build();

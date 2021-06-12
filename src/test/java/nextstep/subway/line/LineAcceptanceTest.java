@@ -196,7 +196,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Long.parseLong(reponse.header("Location").split("/")[2]);
     }
 
-    private List<Long> 찾은_노선에서_Sations_ID추출(ExtractableResponse<Response> response) {
+    public static List<Long> 찾은_노선에서_Sations_ID추출(ExtractableResponse<Response> response) {
         return response.jsonPath().getObject(".", LineResponse.class).getStations().stream()
             .map(station -> station.getId()).collect(Collectors.toList());
     }

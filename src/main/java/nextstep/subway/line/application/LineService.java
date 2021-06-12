@@ -27,9 +27,9 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStaion = findStation(request.getUpStationId());
+        Station upStation = findStation(request.getUpStationId());
         Station downStaion = findStation(request.getDownStationId());
-        Line line = request.toLine(upStaion, downStaion);
+        Line line = request.toLine(upStation, downStaion);
 
         return LineResponse.of(lineRepository.save(line));
     }
@@ -52,9 +52,9 @@ public class LineService {
 
     public void updateLine(LineRequest lineRequest, Long id) {
         Line findedLine = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        Station upStaion = findStation(lineRequest.getUpStationId());
+        Station upStation = findStation(lineRequest.getUpStationId());
         Station downStaion = findStation(lineRequest.getDownStationId());
-        findedLine.update(lineRequest.toLine(upStaion, downStaion));
+        findedLine.update(lineRequest.toLine(upStation, downStaion));
     }
 
     public void deleteLine(Long id) {
