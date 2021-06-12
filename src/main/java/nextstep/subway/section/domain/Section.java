@@ -10,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
@@ -25,11 +24,11 @@ public class Section {
 	@JoinColumn(name = "line_id")
 	private Line line;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "up_station_id")
 	private Station upStation;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
