@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,9 +25,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(
                 "2호선",
                 "green",
-                "1",
-                "2",
-                "10");
+                1L,
+                2L,
+                10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -46,17 +44,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_등록되어_있음(
                 "2호선",
                 "green",
-                "1",
-                "2",
-                "10");
+                1L,
+                2L,
+                10);
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(
                 "2호선",
                 "green",
-                "1",
-                "2",
-                "10");
+                1L,
+                2L,
+                10);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -71,16 +69,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_등록되어_있음(
                 "1호선",
                 "blue",
-                "3",
-                "4",
-                "10");
+                3L,
+                4L,
+                10);
         // 지하철_노선_등록되어_있음
         지하철_노선_등록되어_있음(
                 "2호선",
                 "green",
-                "1",
-                "2",
-                "10");
+                1L,
+                2L,
+                10);
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = 지하철_노선목록_조회_요청();
@@ -100,9 +98,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_등록되어_있음(
                 "2호선",
                 "green",
-                "1",
-                "2",
-                "10");
+                1L,
+                2L,
+                10);
 
         // when
         // 지하철_노선_조회_요청
@@ -122,9 +120,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_등록되어_있음(
                 "1호선",
                 "blue",
-                "1",
-                "2",
-                "10");
+                1L,
+                2L,
+                10);
         // when
         // 지하철_노선_수정_요청
         Map<String, String> params = new HashMap<>();
@@ -149,9 +147,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_등록되어_있음(
                 "1호선",
                 "blue",
-                "1",
-                "2",
-                "10");
+                1L,
+                2L,
+                10);
         // when
         // 지하철_노선_제거_요청
         Map<String, String> pathParams = new HashMap<>();
@@ -183,10 +181,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name,
                                                          String color,
-                                                         String upStationId,
-                                                         String downStationId,
-                                                         String distance) {
-        Map<String, String> params = new HashMap<>();
+                                                         Long upStationId,
+                                                         Long downStationId,
+                                                         Integer distance) {
+        Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
         params.put("upStationId", upStationId);

@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
@@ -14,13 +15,17 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
+    private SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository,
+                       SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
+        sectionRepository.saveAll(persistLine.getSections());
         return LineResponse.of(persistLine);
     }
 
