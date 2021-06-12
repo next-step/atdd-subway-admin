@@ -9,7 +9,6 @@ import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -42,6 +41,8 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> lineUp() {
-        return new ArrayList<>(sections.lineUp());
+        return sections.sortedStations();
+    }
+
     }
 }

@@ -9,7 +9,6 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -49,10 +48,13 @@ public class LineService {
         Station downStation = stationRepository.findById(request.getDownStationId())
                 .orElseThrow(() -> new StationNotFoundException());
 
-        Section section = Section.builder().line(line)
+        Section section = Section.builder()
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(request.getDistance()).build();
+                .distance(request.getDistance())
+                .build();
+
+        section.registerLine(line);
 
         sectionRepository.save(section);
     }
