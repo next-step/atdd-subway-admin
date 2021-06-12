@@ -10,6 +10,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 public class LineAcceptanceFixture {
@@ -61,6 +62,32 @@ public class LineAcceptanceFixture {
         }
     }
 
+    enum SectionFixture {
+        SECTION("1", "2", "10");
+
+        private final String upStation;
+        private final String downStation;
+        private final String distance;
+
+        SectionFixture(final String upStation, final String downStation, final String distance) {
+            this.upStation = upStation;
+            this.downStation = downStation;
+            this.distance = distance;
+        }
+
+        public String getUpStation() {
+            return upStation;
+        }
+
+        public String getDownStation() {
+            return downStation;
+        }
+
+        public String getDistance() {
+            return distance;
+        }
+    }
+
     static ExtractableResponse<Response> NEW_지하철_노선_생성_요청(final String path, final LineFixture lineFixture) {
         final Map<String, String> params = new HashMap<>();
         params.put("name", lineFixture.getName());
@@ -76,6 +103,15 @@ public class LineAcceptanceFixture {
         final Map<String, String> params = new HashMap<>();
         params.put("name", lineFixture.getName());
         params.put("color", lineFixture.getColor());
+
+        return post(path, params);
+    }
+
+    static ExtractableResponse<Response> 지하철_구간에_지하철역_등록_요청(final String path, final SectionFixture sectionFixture) {
+        final Map<String, String> params = new HashMap<>();
+        params.put("downStationId", sectionFixture.getDownStation());
+        params.put("upStationId", sectionFixture.getUpStation());
+        params.put("distance", sectionFixture.getDistance());
 
         return post(path, params);
     }
@@ -106,5 +142,11 @@ public class LineAcceptanceFixture {
         final JsonPath jsonPath = response.jsonPath();
 
         return jsonPath.getList("stations", Station.class);
+    }
+
+    static Section toSection(final ExtractableResponse<Response> response) {
+        final JsonPath jsonPath = response.jsonPath();
+
+        return jsonPath.getObject(".", Section.class);
     }
 }
