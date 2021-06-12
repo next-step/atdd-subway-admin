@@ -3,8 +3,10 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,9 +45,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(secondResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철_노선_목록_조회")
+    @DisplayName("지하철_노선_목록_조회_성공")
     @Test
-    void 지하철_노선_목록_조회() {
+    void 지하철_노선_목록_조회_성공() {
         // given
         LineRequest firstRequest = new LineRequest("1호선", "FF0000");
         LineRequest secondRequest = new LineRequest("2호선", "00FF00");
@@ -56,14 +58,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse response = 지하철_노선_목록_조회_요청();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
 
-        List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
+        List<Long> resultLineIds = response.jsonPath().getList("lineResponses", LineResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
+
+        System.out.println("resultLineIds" + resultLineIds);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    @DisplayName("지하철_노선_목록_조회_성공_데이터없음")
+    @Test
+    void 지하철_노선_목록_조회_성공_데이터없음() {
+        // when
+        ExtractableResponse response = 지하철_노선_목록_조회_요청();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("지하철_노선_조회_성공")

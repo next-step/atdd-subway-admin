@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LinesResponse;
 import org.springframework.http.MediaType;
 
 public class LineControllerTest {
