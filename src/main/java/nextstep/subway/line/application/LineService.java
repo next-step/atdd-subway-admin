@@ -5,10 +5,15 @@ import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.DuplicateLineException;
 import nextstep.subway.line.exception.NoSuchLineException;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.exception.NoSuchStationException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,20 +21,38 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
+    private final SectionRepository sectionRepository;
+
+    private final StationRepository stationRepository;
+
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository,
+        StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        checkExistence(request.getName());
+        checkLineExistence(request.getName());
+        Station upStation = getStationById(request.getUpStationId());
+        Station downStation = getStationById(request.getDownStationId());
 
         Line persistLine = lineRepository.save(request.toLine());
+
+        sectionRepository.save(
+            new Section(persistLine, upStation, downStation, request.getDistance()));
+
         return LineResponse.of(persistLine);
     }
 
-    private void checkExistence(String name) {
+    private Station getStationById(Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(() -> new NoSuchStationException("해당 지하철역이 존재하지 않습니다."));
+    }
+
+    private void checkLineExistence(String name) {
         lineRepository.findByName(name)
             .ifPresent(line -> {
                 throw new DuplicateLineException("해당 노선이름이 이미 존재합니다.");
