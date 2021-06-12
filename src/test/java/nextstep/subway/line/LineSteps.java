@@ -40,12 +40,11 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> response, LineRequest request) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(long id) {
         return RestAssured
                 .given().log().all()
-                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(getLocation(response))
+                .when().get("lines/{id}", id)
                 .then().log().all().extract();
     }
 

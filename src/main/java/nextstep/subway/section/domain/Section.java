@@ -6,6 +6,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -52,7 +53,58 @@ public class Section {
         return id;
     }
 
+    public Long getLineId() {
+        return line.getId();
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public boolean hasSameUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean hasSameDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
     public void addLine(Line line) {
         this.line = line;
+    }
+
+    public void updateUpStationToDownStation(Section newSection) {
+        this.upStation = newSection.getDownStation();
+        updateDistance(newSection.getDistance());
+    }
+
+    public void updateDownStationToUpStation(Section newSection) {
+        this.downStation = newSection.getUpStation();
+        updateDistance(newSection.getDistance());
+    }
+
+    private void updateDistance(int distance) {
+        this.distance -= distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance &&
+                Objects.equals(id, section.id) &&
+                Objects.equals(line, section.line) &&
+                Objects.equals(upStation, section.upStation) &&
+                Objects.equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 }
