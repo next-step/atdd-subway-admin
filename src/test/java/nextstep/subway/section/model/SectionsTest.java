@@ -1,20 +1,20 @@
 package nextstep.subway.section.model;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.exception.StationsAlreadyExistException;
-import nextstep.subway.exception.StationsNoExistException;
+import nextstep.subway.exception.section.NotFoundSectionException;
+import nextstep.subway.exception.station.StationsAlreadyExistException;
+import nextstep.subway.exception.station.StationsNoExistException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
@@ -45,7 +45,7 @@ public class SectionsTest {
     @DisplayName("두 역 사이 거리 얻어오는 것 테스트")
     void getDistanceWithStationsTest() {
         assertThat(sections.getDistanceWithStations(upStation, downStation)).isEqualTo(20);
-        assertThrows(NoSuchElementException.class, () -> sections.getDistanceWithStations(upStation, newStation));
+        assertThrows(NotFoundSectionException.class, () -> sections.getDistanceWithStations(upStation, newStation));
 
     }
 

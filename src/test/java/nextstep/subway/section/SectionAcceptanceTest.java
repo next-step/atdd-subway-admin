@@ -1,8 +1,7 @@
 package nextstep.subway.section;
 
-import static nextstep.subway.utils.CommonSettings.생성_요청;
-import static nextstep.subway.utils.CommonSettings.조회_요청;
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.utils.CommonSettings.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,25 +29,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private Long downStationId;
     private Long newStationId;
     private Long newStationId2;
-    private Long newStationId3;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
-        //givn
+        //given
         //지하철 역이 등록되어 있다.
         ExtractableResponse<Response> createdStationResponse1 = 생성_요청(new StationRequest("강남역"), "/stations");
         ExtractableResponse<Response> createdStationResponse2 = 생성_요청(new StationRequest("역삼역"), "/stations");
         ExtractableResponse<Response> createdStationResponse3 = 생성_요청(new StationRequest("판교역"), "/stations");
         ExtractableResponse<Response> createdStationResponse4 = 생성_요청(new StationRequest("은계역"), "/stations");
-        ExtractableResponse<Response> createdStationResponse5 = 생성_요청(new StationRequest("장미역"), "/stations");
 
         upStationId = createdStationResponse1.as(StationResponse.class).getId();
         downStationId = createdStationResponse2.as(StationResponse.class).getId();
         newStationId = createdStationResponse3.as(StationResponse.class).getId();
         newStationId2 = createdStationResponse4.as(StationResponse.class).getId();
-        newStationId3 = createdStationResponse5.as(StationResponse.class).getId();
 
         //지하철 line이 등록되어 있다.
         ExtractableResponse<Response> createdLineResponse = 생성_요청(
@@ -138,6 +134,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             new SectionRequest(upStationId, newStationId, 20),
             String.format("/lines/%d/sections", lineId));
 
+        // then
+        // 에러가 발생한다
         assertThat(createdSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -150,6 +148,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             new SectionRequest(upStationId, downStationId, 5),
             String.format("/lines/%d/sections", lineId));
 
+        // then
+        // 에러가 발생한다
         assertThat(createdSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -161,7 +161,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createdSectionResponse = 생성_요청(
             new SectionRequest(newStationId, newStationId2, 5),
             String.format("/lines/%d/sections", lineId));
-
+        // then
+        // 에러가 발생한다
         assertThat(createdSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -170,4 +171,5 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .map(StationResponse::getId)
             .collect(Collectors.toList());
     }
+
 }

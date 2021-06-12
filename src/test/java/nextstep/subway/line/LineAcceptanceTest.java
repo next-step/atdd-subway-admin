@@ -1,10 +1,7 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.utils.CommonSettings.삭제_요청;
-import static nextstep.subway.utils.CommonSettings.생성_요청;
-import static nextstep.subway.utils.CommonSettings.수정_요청;
-import static nextstep.subway.utils.CommonSettings.조회_요청;
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.utils.CommonSettings.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -114,8 +111,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> findedLineResponse = 조회_요청("/lines/10");
 
         // then
-        // NOT_FOUND 생성
-        assertThat(findedLineResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        // BAD_REQUEST 생성
+        assertThat(findedLineResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
 
@@ -140,8 +137,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 수정_요청(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10), "/lines/10");
 
         // then
-        // NOT_FOUND 생성
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        // BAD_REQUEST 생성
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -164,8 +161,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> removedLineResponse = 삭제_요청("/lines/10");
 
         // then
-        // 지하철_노선_삭제됨
-        assertThat(removedLineResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        // BAD_REQUEST 에러 발생
+        assertThat(removedLineResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private String 생성된_노선에서_Path추출(ExtractableResponse<Response> response) {
