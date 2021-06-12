@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import static nextstep.subway.line.LineSteps.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.LineSteps.지하철_노선_조회_요청;
 import static nextstep.subway.section.SectionSteps.지하철_노선에_지하철역_등록_요청;
-import static nextstep.subway.section.SectionSteps.지하철_노선의_구간_목록_조회됨;
 import static nextstep.subway.station.StationSteps.지하철_역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -192,11 +191,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 역사이에_구간_등록됨(ExtractableResponse<Response> sectionResponse) {
-        SectionResponse section = sectionResponse.as(SectionResponse.class);
-        List<SectionResponse> sections = 지하철_노선의_구간_목록_조회됨(section.getLineId()).jsonPath().getList(".", SectionResponse.class);
-        int distance = sections.stream().mapToInt(SectionResponse::getDistance).sum();
+        LineResponse line = sectionResponse.as(LineResponse.class);
+        int distance = line.getSections().stream().mapToInt(SectionResponse::getDistance).sum();
 
-        assertThat(sections).hasSize(2);
+        assertThat(line.getSections()).hasSize(2);
         assertThat(distance).isEqualTo(params.getDistance());
     }
 

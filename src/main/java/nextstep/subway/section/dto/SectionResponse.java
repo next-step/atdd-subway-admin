@@ -15,8 +15,8 @@ public class SectionResponse {
     private SectionResponse() {
     }
 
-    public SectionResponse(long id, long lineId, int distance, List<StationResponse> stations) {
-        this.id = id;
+    public SectionResponse(long lineId, int distance, List<StationResponse> stations) {
+//        this.id = id;
         this.lineId = lineId;
         this.distance = distance;
         this.stations = stations;
@@ -28,7 +28,7 @@ public class SectionResponse {
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
         return new SectionResponse(
-                section.getId(),
+//                section.getId(),
                 section.getLineId(),
                 section.getDistance(),
                 stations);
