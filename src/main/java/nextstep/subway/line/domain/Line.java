@@ -8,6 +8,7 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -47,6 +48,13 @@ public class Line extends BaseEntity {
     public Line(String name, String color, LineStations lineStations) {
         this.name = name;
         this.color = color;
+        this.lineStations = lineStations;
+    }
+
+    public Line(String name, String color, Section section, LineStations lineStations) {
+        this.name = name;
+        this.color = color;
+        this.sections = new Sections(Arrays.asList(section));
         this.lineStations = lineStations;
     }
 
