@@ -8,7 +8,8 @@ import org.springframework.http.MediaType;
 
 public class SectionSteps {
 
-    public static ExtractableResponse<Response> 지하철_구간_생성_요청(SectionRequest sectionRequest, Integer lineId) {
+    public static ExtractableResponse<Response> 지하철_구간_생성_요청(ExtractableResponse<Response> response, SectionRequest sectionRequest) {
+        Integer lineId = response.jsonPath().get("id");
         return RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

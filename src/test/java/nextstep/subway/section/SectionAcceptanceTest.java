@@ -50,12 +50,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
 
         // when
-        Integer 신분당선_ID = 생성된_신분당선.jsonPath().get("id");
         SectionRequest sectionRequest = new SectionRequest(강남역_ID, 양재역_ID, 10);
-        ExtractableResponse<Response> 생성된_구간 = 지하철_구간_생성_요청(sectionRequest, 신분당선_ID);
+        ExtractableResponse<Response> 구간이_추가된_신분당선 = 지하철_구간_생성_요청(생성된_신분당선, sectionRequest);
 
         // then
-        assertThat(생성된_구간.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(구간이_추가된_신분당선.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
@@ -66,12 +65,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
 
         // when
-        Integer 신분당선_ID = 생성된_신분당선.jsonPath().get("id");
         SectionRequest sectionRequest = new SectionRequest(강남역_ID, 양재역_ID, 10);
-        ExtractableResponse<Response> 생성된_구간 = 지하철_구간_생성_요청(sectionRequest, 신분당선_ID);
+        ExtractableResponse<Response> 구간이_추가된_신분당선 = 지하철_구간_생성_요청(생성된_신분당선, sectionRequest);
 
         // then
-        assertThat(생성된_구간.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(구간이_추가된_신분당선.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
@@ -82,12 +80,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
 
         // when
-        Integer 신분당선_ID = 생성된_신분당선.jsonPath().get("id");
         SectionRequest sectionRequest = new SectionRequest(판교역_ID, 정자역_ID, 10);
-        ExtractableResponse<Response> 생성된_구간 = 지하철_구간_생성_요청(sectionRequest, 신분당선_ID);
+        ExtractableResponse<Response> 구간이_추가된_신분당선 = 지하철_구간_생성_요청(생성된_신분당선, sectionRequest);
 
         // then
-        assertThat(생성된_구간.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(구간이_추가된_신분당선.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
@@ -98,12 +95,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
 
         // when
-        Integer 신분당선_ID = 생성된_신분당선.jsonPath().get("id");
         SectionRequest sectionRequest = new SectionRequest(강남역_ID, 양재역_ID, 20);
-        ExtractableResponse<Response> 생성된_구간 = 지하철_구간_생성_요청(sectionRequest, 신분당선_ID);
+        ExtractableResponse<Response> 구간이_추가된_신분당선 = 지하철_구간_생성_요청(생성된_신분당선, sectionRequest);
 
         // then
-        assertThat(생성된_구간.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(구간이_추가된_신분당선.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
@@ -114,12 +110,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
 
         // when
-        Integer 신분당선_ID = 생성된_신분당선.jsonPath().get("id");
         SectionRequest sectionRequest = new SectionRequest(강남역_ID, 판교역_ID, 20);
-        ExtractableResponse<Response> 생성된_구간 = 지하철_구간_생성_요청(sectionRequest, 신분당선_ID);
+        ExtractableResponse<Response> 구간이_추가된_신분당선 = 지하철_구간_생성_요청(생성된_신분당선, sectionRequest);
 
         // then
-        assertThat(생성된_구간.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(구간이_추가된_신분당선.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
@@ -130,11 +125,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
 
         // when
-        Integer 신분당선_ID = 생성된_신분당선.jsonPath().get("id");
         SectionRequest sectionRequest = new SectionRequest(양재역_ID, 정자역_ID, 20);
-        ExtractableResponse<Response> 생성된_구간 = 지하철_구간_생성_요청(sectionRequest, 신분당선_ID);
+        ExtractableResponse<Response> 구간이_추가된_신분당선 = 지하철_구간_생성_요청(생성된_신분당선, sectionRequest);
 
         // then
-        assertThat(생성된_구간.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(구간이_추가된_신분당선.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
 }
