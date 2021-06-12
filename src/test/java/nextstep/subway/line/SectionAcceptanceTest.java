@@ -152,6 +152,32 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
+	@DisplayName("지하철 첫번째 구간을 제거한다.")
+	@Test
+	void removeFirstSection() {
+		// given
+		지하철_구간_등록_요청_및_성공_체크(line_신분당선.getId(), createSectionRequest(역삼역, 구디역, 5));
+
+		// when
+		ExtractableResponse<Response> response = 지하철_구간_제거_요청(line_신분당선.getId(), 강남역.getId());
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	@DisplayName("지하철 마지막 구간을 제거한다.")
+	@Test
+	void removeSectionLast() {
+		// given
+		지하철_구간_등록_요청_및_성공_체크(line_신분당선.getId(), createSectionRequest(역삼역, 구디역, 5));
+
+		// when
+		ExtractableResponse<Response> response = 지하철_구간_제거_요청(line_신분당선.getId(), 구디역.getId());
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
 	@DisplayName("구간에 등록되지 않은 역을 제거한다.")
 	@Test
 	void removeSectionWithoutRegister() {
@@ -162,7 +188,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	@DisplayName("마지막 구간을 제거한다.")
+	@DisplayName("하나 남은 구간을 제거한다.")
 	@Test
 	void removeLastSection() {
 		// when
