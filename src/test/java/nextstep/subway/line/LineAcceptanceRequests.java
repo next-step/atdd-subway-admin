@@ -11,13 +11,13 @@ import java.util.Map;
 
 public class LineAcceptanceRequests {
 
-
     static ExtractableResponse<Response> requestCreateLine(LineRequest lineRequest) {
         Map<String, String> params = new HashMap<>();
         params.put("color", lineRequest.getColor());
         params.put("name", lineRequest.getName());
-        //params.put("upStationId", upStationId);
-
+        params.put("upStationId", lineRequest.getUpStationId().toString());
+        params.put("downStationId", lineRequest.getDownStationId().toString());
+        params.put("distance", Integer.toString(lineRequest.getDistance()));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
@@ -37,8 +37,8 @@ public class LineAcceptanceRequests {
                 .extract();
     }
 
-    static ExtractableResponse<Response> requestShowLine(String lineId) {
-        String path = "/lines/" + lineId;
+    static ExtractableResponse<Response> requestShowLine(Long lineId) {
+        String path = "/lines/" + lineId.toString();
         return RestAssured.given().log().all()
                 .when()
                 .get(path)
@@ -50,6 +50,9 @@ public class LineAcceptanceRequests {
         Map<String, String> params = new HashMap<>();
         params.put("color", lineRequest.getColor());
         params.put("name", lineRequest.getName());
+        params.put("upStationId", lineRequest.getUpStationId().toString());
+        params.put("downStationId", lineRequest.getDownStationId().toString());
+        params.put("distance", Integer.toString(lineRequest.getDistance()));
 
         return RestAssured.given().log().all()
                 .body(params)
