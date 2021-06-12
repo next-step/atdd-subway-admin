@@ -12,35 +12,42 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_line_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_line"))
     private Line line;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_up_station_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station"))
     private Station upStation;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_down_station_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
 
     private int distance;
 
     protected Section() {
-
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public static Section newInstance(Station upStation, Station downStation, int distance) {
+    public static Section of(Station upStation, Station downStation, int distance) {
         return new Section(upStation, downStation, distance);
     }
 
     public void toLine(Line line) {
         this.line = line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 }
