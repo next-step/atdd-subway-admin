@@ -32,8 +32,7 @@ public class LineService {
 	public LineResponse saveLine(LineRequest request) {
 		Station startStation = getEndStation(request.getUpStationId());
 		Station endStation = getEndStation(request.getDownStationId());
-		Line persistLine = lines.save(request.toLine(startStation));
-
+		Line persistLine = lines.save(request.toLine());
 		Section persistSections = sections.save(request.toSection(persistLine, startStation, endStation));
 		persistLine.addSections(persistSections);
 

@@ -12,7 +12,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
@@ -33,21 +32,12 @@ public class Line extends BaseEntity {
 	@OneToMany(mappedBy = "line")
 	private List<Section> sections = new LinkedList<>();
 
-	@OneToOne
-	private Station startStation;
-
 	protected Line() {
 	}
 
 	public Line(String name, String color) {
 		this.name = name;
 		this.color = color;
-	}
-
-	public Line(String name, String color, Station startStation) {
-		this.name = name;
-		this.color = color;
-		this.startStation = startStation;
 	}
 
 	public void update(Line line) {
@@ -83,8 +73,8 @@ public class Line extends BaseEntity {
 
 	private List<Station> convertToOrderedList(Map<Station, Station> order) {
 		List<Station> stations = new ArrayList<>();
+		Station key = getStartStation(order);
 
-		Station key = startStation;
 		stations.add(key);
 
 		while (order.containsKey(key)) {
@@ -95,10 +85,20 @@ public class Line extends BaseEntity {
 		return stations;
 	}
 
+	private Station getStartStation(Map<Station, Station> order) {
+		Station key = null;
+
+		for (Station station : order.keySet()) {
+			if (!order.containsValue(station)) {
+				key = station;
+			}
+		}
+		return key;
+	}
+
 	public Long delete() {
 		sections.stream().forEach(section -> section.setLine(null));
 		sections = null;
-		startStation = null;
 
 		return id;
 	}
