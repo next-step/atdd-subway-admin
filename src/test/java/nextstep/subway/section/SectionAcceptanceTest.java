@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -175,8 +176,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //when
         //지하철 삭제요청을 보낸다
-        ExtractableResponse<Response> removedSectionResponse = 삭제_요청(
-            String.format("/lines/%d/sections?stationId=%d", lineId, upStationId));
+        ExtractableResponse<Response> removedSectionResponse = 역_삭제_요청(
+            String.format("/lines/%d/sections", lineId), upStationId);
 
         //then
         // 정상적으로 삭제가 된다
@@ -188,8 +189,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void removeOnlyOne() {
         //when
         //지하철 삭제요청을 보낸다
-        ExtractableResponse<Response> removedSectionResponse = 삭제_요청(
-            String.format("/lines/%d/sections?stationId=%d", lineId, upStationId));
+        ExtractableResponse<Response> removedSectionResponse = 역_삭제_요청(
+            String.format("/lines/%d/sections", lineId), upStationId);
 
         //then
         //삭제가 불가능하다.
@@ -201,8 +202,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void removeNoSection() {
         //when
         //지하철 삭제요청을 보낸다
-        ExtractableResponse<Response> removedSectionResponse = 삭제_요청(
-            String.format("/lines/%d/sections?stationId=%d", lineId, newStationId));
+        ExtractableResponse<Response> removedSectionResponse = 역_삭제_요청(
+            String.format("/lines/%d/sections", lineId), newStationId);
 
         //then
         //삭제가 불가능하다.
@@ -213,6 +214,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return createdSectionResponse.as(LineResponse.class).getStations().stream()
             .map(StationResponse::getId)
             .collect(Collectors.toList());
+    }
+
+    public static ExtractableResponse<Response> 역_삭제_요청(String path, Long stationId) {
+        return RestAssured.given().log().all()
+            .queryParam("stationId", stationId)
+            .when()
+            .delete(path)
+            .then().log().all()
+            .extract();
     }
 
 }
