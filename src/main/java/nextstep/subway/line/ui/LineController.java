@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,10 +53,10 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{lineId}/sections")
-    public ResponseEntity<SectionResponse> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        SectionResponse section = lineService.addSection(lineId, sectionRequest);
-        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + section.getId())).body(section);
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        LineResponse line = lineService.addSection(id, sectionRequest);
+        return ResponseEntity.ok(line);
     }
 
     @GetMapping("/{lineId}/sections")

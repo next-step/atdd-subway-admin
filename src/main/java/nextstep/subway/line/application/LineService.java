@@ -23,12 +23,10 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -68,13 +66,11 @@ public class LineService {
         lineRepository.delete(line);
     }
 
-    public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(NotFoundStationException::new);
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(NotFoundStationException::new);
-
-        Section savedSection = sectionRepository.save(new Section(upStation, downStation, sectionRequest.getDistance()));
-        line.addSection(savedSection);
-        return SectionResponse.of(savedSection);
+        line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
+        return LineResponse.of(line);
     }
 }

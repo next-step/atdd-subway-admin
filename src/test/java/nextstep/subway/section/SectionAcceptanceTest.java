@@ -122,7 +122,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_요청(params2, 신분당선.getId());
 
         // then
-        assertThat(lineStationResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(lineStationResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선.getId());
@@ -205,7 +205,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선에_구간_등록됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
