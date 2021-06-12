@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -110,6 +112,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().jsonPath().get("name").equals("2호선"));
         assertThat(response.body().jsonPath().get("color").equals("green"));
+        assertThat(response.body().jsonPath().getList("stations")).isNotEmpty();
+        assertThat(response.body().jsonPath().getList("stations", Station.class).stream().map(Station::getId).collect(Collectors.toList())).containsExactly(1L, 2L);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
