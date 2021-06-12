@@ -7,12 +7,12 @@ import javax.persistence.Converter;
 public class DistanceToLongConverter implements AttributeConverter<Distance, Long> {
 
     @Override
-    public Long convertToDatabaseColumn(Distance attribute) {
-        return null;
+    public Long convertToDatabaseColumn(Distance distance) {
+        return distance.get();
     }
 
     @Override
-    public Distance convertToEntityAttribute(Long dbData) {
-        return null;
+    public Distance convertToEntityAttribute(Long distance) {
+        return new Distance(distance);
     }
 }

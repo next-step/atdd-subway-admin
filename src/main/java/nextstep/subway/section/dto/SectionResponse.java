@@ -1,39 +1,26 @@
 package nextstep.subway.section.dto;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
-import java.time.LocalDateTime;
-
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SectionResponse {
-    private String upStationName;
-    private String downStationName;
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
+    private Station upStation;
+    private Station downStation;
+    private Long distance;
 
-    public SectionResponse(String upStationName, String downStationName, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        this.upStationName = upStationName;
-        this.downStationName = downStationName;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
+    public SectionResponse(Station upStation, Station downStation, Distance distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance.get();
     }
 
     public static SectionResponse of(Section section){
-        return new SectionResponse(section.getUpStation().getName(), section.getDownStation().getName(), section.getCreatedDate(), section.getModifiedDate());
-    }
-
-    public String getUpStationName() {
-        return upStationName;
-    }
-
-    public String getDownStationName() {
-        return downStationName;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
+        return new SectionResponse(section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 }
