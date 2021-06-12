@@ -1,7 +1,7 @@
 package nextstep.subway.section.model;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,33 +116,33 @@ public class SectionsTest {
     }
 
     @Test
-    @DisplayName("A-B-C 중 A-B 삭제 테스트")
+    @DisplayName("A-B-C 중 A 삭제 테스트")
     void removeAB() {
         Section section = Section.of(2L, upStation, newStation, line, 10);
         sections.add(section);
-        sections.remove(section);
+        sections.remove(upStation);
         assertThat(sections.getDistanceWithStations(newStation, downStation)).isEqualTo(10);
 
     }
 
     @Test
-    @DisplayName("A-B-C 중 B-C 삭제 테스트")
+    @DisplayName("A-B-C 중 B 삭제 테스트")
     void removeBC() {
         Section section = Section.of(2L, downStation, newStation, line, 10);
         sections.add(section);
-        sections.remove(section);
-        assertThat(sections.getDistanceWithStations(upStation, downStation)).isEqualTo(20);
+        sections.remove(downStation);
+        assertThat(sections.getDistanceWithStations(upStation, newStation)).isEqualTo(30);
     }
 
     @Test
-    @DisplayName("A-B-C-D 중 B-C 삭제 테스트")
+    @DisplayName("A-B-C-D 중 B 삭제 테스트")
     void removeBDInner() {
         Section sectionBC = Section.of(2L, downStation, newStation, line, 10);
         sections.add(sectionBC);
         Section sectionCD = Section.of(2L, newStation, newStation2, line, 10);
         sections.add(sectionCD);
 
-        sections.remove(sectionBC);
+        sections.remove(downStation);
         assertThat(sections.getDistanceWithStations(upStation, newStation)).isEqualTo(30);
     }
 
@@ -150,7 +150,7 @@ public class SectionsTest {
     @DisplayName("구간이 1개밖에 없을 때는 삭제가 불가능 하다.")
     void removeOnlyOne() {
         assertThrows(NotPossibleRemoveException.class, () -> {
-            sections.remove(sectionFirst);
+            sections.remove(upStation);
         });
     }
 
@@ -158,8 +158,8 @@ public class SectionsTest {
     @DisplayName("존재하지 않는 구간은 삭제 불가능 하다.")
     void removeNoSection() {
         assertThrows(NotPossibleRemoveException.class, () -> {
-            Section section = Section.of(2L, upStation, newStation, line, 10);
-            sections.remove(section);
+            Section.of(2L, upStation, newStation, line, 10);
+            sections.remove(newStation);
         });
     }
 

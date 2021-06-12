@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 @Entity
@@ -71,7 +72,7 @@ public class Line extends BaseEntity {
         sections.add(section);
     }
 
-    public void removeSection(Section section) {
-        sections.remove(section);
+    public void removeSection(Station station) {
+        sections.remove(station);
     }
 }

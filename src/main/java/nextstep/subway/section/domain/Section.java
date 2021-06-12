@@ -14,6 +14,8 @@ import nextstep.subway.station.dto.StationResponse;
 @Entity
 public class Section {
 
+    public static final Section EMPTY = new Section();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -121,6 +123,18 @@ public class Section {
 
     public void connectDistance(Section afterSection) {
         this.distance += afterSection.distance;
+    }
+
+    public Long upStaionId() {
+        return upStation.getId();
+    }
+
+    public Long downStationId() {
+        return downStation.getId();
+    }
+
+    public void updateDownStationToDown(Section afterSection) {
+        this.downStation = afterSection.downStation;
     }
 
 }
