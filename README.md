@@ -77,3 +77,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 * [x] 지하철 노선을 조회한다.
   * [x] 지하철역 목록을 함께 조회한다.
   * [x] 지하철역은 상행선에서 하행선으로 정렬한다.
+
+### Step 3
+
+#### 인수 테스트 작성
+
+* [ ] 지하철 구간을 등록한다.
