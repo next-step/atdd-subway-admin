@@ -23,40 +23,25 @@ public class Sections {
         return sections.stream();
     }
 
-    public void add(Section section) {
-        if (this.contains(section)) {
+    public void add(Section sectionIn) {
+        if (this.isEmpty()) {
+            sections.add(sectionIn);
             return;
         }
-        sections.add(section);
-    }
-
-    public void addOnOrdered(Section sectionIn) {
         if (this.contains(sectionIn)) {
             return;
         }
 
-        DockingPosition position = findPosition(sectionIn);
-        sections.add(position.index(), sectionIn);
-    }
-
-    private DockingPosition findPosition(Section section) {
-        int i = 0;
-        DockingPosition type = DockingPosition.NONE;
-        while (type == DockingPosition.NONE) {
-            type = section.dockingCheck(sections.get(i));
-            ++i;
-        }
-        return type.setIndex(--i);
+        sectionIn.positioningAt(sections);
     }
 
     public boolean contains(Section section) {
         return sections.contains(section);
     }
 
-    public boolean validateConnectionWith(Section sectionIn) {
+    public void validateConnectionWith(Section sectionIn) {
         alreadyInBoth(sectionIn);
         nothingInBoth(sectionIn);
-        return true;
     }
 
     private void alreadyInBoth(Section sectionIn) {

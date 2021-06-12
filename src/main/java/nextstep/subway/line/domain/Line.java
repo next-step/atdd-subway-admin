@@ -87,7 +87,7 @@ public class Line extends BaseEntity {
 
     private void connect(Section sectionIn) {
         sections.validateConnectionWith(sectionIn);
-        sections.addOnOrdered(sectionIn);
+        sections.add(sectionIn);
     }
 
 }

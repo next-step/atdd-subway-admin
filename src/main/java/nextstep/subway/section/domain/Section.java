@@ -59,12 +59,12 @@ public class Section extends BaseEntity {
         return this.upStation.compareName(section.downStation());
     }
 
-    public void connectBehindOf(Section section) {
+    public void handleAttributesToConnectBehindOf(Section section) {
         shortenDistanceUsing(section);
         this.upStation = section.downStation();
     }
 
-    public void connectInFrontOf(Section section) {
+    public void handleAttributesToConnectInFrontOf(Section section) {
         shortenDistanceUsing(section);
         this.downStation = section.upStation();
     }
@@ -127,46 +127,34 @@ public class Section extends BaseEntity {
                 && !stations.contains(this.downStation);
     }
 
-    public DockingPosition dockingCheck(Section section) {
-        if (this.canBeDockedOnFront(section)) {
-            return DockingPosition.FRONT;
+    public void positioningAt(List<Section> sections) {
+        int i = 0;
+        Position position = Position.isNone();
+        while (position.isNotDockedYet()) {
+            position = this.dockingPositionOn(sections.get(i));
+            ++i;
         }
-        if (this.canBeDockedOnRear(section)) {
-            return DockingPosition.REAR;
+        position.set(--i);
+
+        sections.add(position.index(), this);
+    }
+
+    public Position dockingPositionOn(Section section) {
+        if (this.isInFrontOf(section)) {
+            return Position.isFront();
         }
-        return DockingPosition.NONE;
-    }
-
-    public boolean canBeDockedOnFront(Section section) {
-        return checkFront(section) || checkMidFront(section) || checkMidRear(section);
-    }
-
-    public boolean canBeDockedOnRear(Section section) {
-        return checkRear(section);
-    }
-
-    public boolean checkFront(Section section) {
-        return this.isInFrontOf(section);
-    }
-
-    public boolean checkMidFront(Section section) {
         if (this.isInMidFrontOf(section)) {
-            section.connectBehindOf(this);
-            return true;
+            section.handleAttributesToConnectBehindOf(this);
+            return Position.isMidFront();
         }
-        return false;
-    }
-
-    public boolean checkMidRear(Section section) {
         if (this.isInMidRearOf(section)) {
-            section.connectInFrontOf(this);
-            return true;
+            section.handleAttributesToConnectInFrontOf(this);
+            return Position.isMidRear();
         }
-        return false;
-    }
-
-    public boolean checkRear(Section section) {
-        return this.isBehindOf(section);
+        if (this.isBehindOf(section)) {
+            return Position.isRear();
+        }
+        return Position.isNone();
     }
 
     public int distance() {
