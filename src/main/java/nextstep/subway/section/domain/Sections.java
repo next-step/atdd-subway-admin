@@ -40,6 +40,9 @@ public class Sections {
     }
 
     public void validateConnectionWith(Section sectionIn) {
+        if (sections.isEmpty()) {
+            return;
+        }
         alreadyInBoth(sectionIn);
         nothingInBoth(sectionIn);
     }
@@ -57,7 +60,7 @@ public class Sections {
     }
 
     public List<Station> stations() {
-        return this.sections.stream()
+        return OrderedSections.of(this.sections).get().stream()
                 .flatMap(section -> section.upDownStations().stream())
                 .distinct()
                 .collect(Collectors.toList());

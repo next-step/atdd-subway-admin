@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class Section extends BaseEntity {
@@ -47,24 +48,70 @@ public class Section extends BaseEntity {
         return this.downStation.compareName(section.upStation());
     }
 
-    public boolean isInMidFrontOf(Section section) {
+    public void positioningAt(List<Section> sections) {
+        int i = 0;
+        Position position = Position.isNone();
+        while (position.isNotDockedYet()) {
+            position = this.dockingPositionOn(sections, sections.get(i));
+            ++i;
+        }
+        position.set(--i);
+
+        sections.add(position.index(), this);
+    }
+
+    public Position dockingPositionOn(List<Section> sections, Section section) {
+        if (this.isInFrontOf(section)) {
+            handleAttributesOfFrontSection(sections, section);
+            return Position.isFront();
+        }
+        if (this.isInMidFrontOf(section)) {
+            section.handleAttributesToConnectBehindOf(this);
+            return Position.isMidFront();
+        }
+        if (this.isInMidRearOf(section)) {
+            section.handleAttributesToConnectInFrontOf(this);
+            return Position.isMidRear();
+        }
+        if (this.isBehindOf(section)) {
+            handleAttributesOfBackSection(sections, section);
+            return Position.isRear();
+        }
+        return Position.isNone();
+    }
+
+    private boolean isInMidFrontOf(Section section) {
         return this.upStation.compareName(section.upStation());
     }
 
-    public boolean isInMidRearOf(Section section) {
+    private boolean isInMidRearOf(Section section) {
         return this.downStation.compareName(section.downStation());
     }
 
-    public boolean isBehindOf(Section section) {
+    private boolean isBehindOf(Section section) {
         return this.upStation.compareName(section.downStation());
     }
 
-    public void handleAttributesToConnectBehindOf(Section section) {
+    private void handleAttributesOfFrontSection(List<Section> sections, Section sectionIn) {
+        sections.stream()
+                .filter(it -> it.downStationName().equals(sectionIn.upStationName()))
+                .findAny()
+                .ifPresent(it -> it.handleAttributesToConnectInFrontOf(this));
+    }
+
+    private void handleAttributesOfBackSection(List<Section> sections, Section section) {
+        sections.stream()
+                .filter(it -> it.upStationName().equals(section.downStationName()))
+                .findAny()
+                .ifPresent(it -> it.handleAttributesToConnectBehindOf(this));
+    }
+
+    private void handleAttributesToConnectBehindOf(Section section) {
         shortenDistanceUsing(section);
         this.upStation = section.downStation();
     }
 
-    public void handleAttributesToConnectInFrontOf(Section section) {
+    private void handleAttributesToConnectInFrontOf(Section section) {
         shortenDistanceUsing(section);
         this.downStation = section.upStation();
     }
@@ -125,36 +172,6 @@ public class Section extends BaseEntity {
     public boolean bothStationsAreNotIn(List<Station> stations) {
         return !stations.contains(this.upStation)
                 && !stations.contains(this.downStation);
-    }
-
-    public void positioningAt(List<Section> sections) {
-        int i = 0;
-        Position position = Position.isNone();
-        while (position.isNotDockedYet()) {
-            position = this.dockingPositionOn(sections.get(i));
-            ++i;
-        }
-        position.set(--i);
-
-        sections.add(position.index(), this);
-    }
-
-    public Position dockingPositionOn(Section section) {
-        if (this.isInFrontOf(section)) {
-            return Position.isFront();
-        }
-        if (this.isInMidFrontOf(section)) {
-            section.handleAttributesToConnectBehindOf(this);
-            return Position.isMidFront();
-        }
-        if (this.isInMidRearOf(section)) {
-            section.handleAttributesToConnectInFrontOf(this);
-            return Position.isMidRear();
-        }
-        if (this.isBehindOf(section)) {
-            return Position.isRear();
-        }
-        return Position.isNone();
     }
 
     public int distance() {

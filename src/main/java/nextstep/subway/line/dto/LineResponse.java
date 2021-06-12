@@ -32,7 +32,7 @@ public class LineResponse {
     }
 
     private LineResponse(Line line) {
-        this(line.getId(), line.getName(), line.getColor(), line.orderedStations(), line.getCreatedDate(), line.getModifiedDate());
+        this(line.getId(), line.getName(), line.getColor(), line.stations(), line.getCreatedDate(), line.getModifiedDate());
     }
 
     public static LineResponse of(Line line) {

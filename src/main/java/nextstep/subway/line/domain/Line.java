@@ -59,10 +59,6 @@ public class Line extends BaseEntity {
         return sections.stations();
     }
 
-    public List<Station> orderedStations() {
-        return sections.orderedStations();
-    }
-
     public Long getId() {
         return id;
     }
@@ -76,11 +72,6 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section sectionIn) {
-        if (sections.isEmpty()) {
-            sections.add(sectionIn);
-            return;
-        }
-
         connect(sectionIn);
         sectionIn.setLine(this);
     }
