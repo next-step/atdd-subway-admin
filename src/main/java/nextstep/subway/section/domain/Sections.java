@@ -2,15 +2,15 @@ package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
-import nextstep.subway.exception.InvalidDistanceException;
-import nextstep.subway.exception.StationsAlreadyExistException;
-import nextstep.subway.exception.StationsNoExistException;
+import nextstep.subway.exception.section.InvalidDistanceException;
+import nextstep.subway.exception.section.NotFoundSectionException;
+import nextstep.subway.exception.station.StationsAlreadyExistException;
+import nextstep.subway.exception.station.StationsNoExistException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -37,7 +37,7 @@ public class Sections {
     public int getDistanceWithStations(Station upStation, Station downStation) {
         return sections.stream()
             .filter(seciton -> seciton.sameUpStaion(upStation) && seciton.sameDownStaion(downStation)).findFirst()
-            .orElseThrow(NoSuchElementException::new).getDistance();
+            .orElseThrow(NotFoundSectionException::new).getDistance();
     }
 
     public List<StationResponse> toResponseList() {
@@ -64,7 +64,7 @@ public class Sections {
 
     private Section findStartStation() {
         return sections.stream().filter(section -> findUpStation(section) == null)
-            .findFirst().orElseThrow(NoSuchElementException::new);
+            .findFirst().orElseThrow(NotFoundSectionException::new);
     }
 
     private Section findUpStation(Section findSection) {

@@ -1,39 +1,24 @@
 package nextstep.subway.exception;
 
-import javax.persistence.EntityNotFoundException;
-
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.exception.dto.ErrorResponse;
+import nextstep.subway.exception.line.LineAlreadyExistException;
+import nextstep.subway.exception.line.NotFoundLineException;
 
 @RestControllerAdvice
-public class LineControllerAdvice {
+public class LineControllerAdvice extends ControllerAdvice {
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<LineResponse> noValidatedInputException() {
-        return ResponseEntity.badRequest().build();
+    @ExceptionHandler(LineAlreadyExistException.class)
+    public ResponseEntity<ErrorResponse> lineAlreadyExistException(LineAlreadyExistException e) {
+        return getBadResponse(e.getMessage());
     }
 
-    @ExceptionHandler(StationsAlreadyExistException.class)
-    public ResponseEntity<LineResponse> stationsAlreadyExistException() {
-        return ResponseEntity.badRequest().build();
+    @ExceptionHandler(NotFoundLineException.class)
+    public ResponseEntity<ErrorResponse> notFoundLineException(NotFoundLineException e) {
+        return getBadResponse(e.getMessage());
     }
 
-    @ExceptionHandler(StationsNoExistException.class)
-    public ResponseEntity<LineResponse> stationsNoExistException() {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(InvalidDistanceException.class)
-    public ResponseEntity<LineResponse> ㅑnvalidDistanceException() {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<LineResponse> notFoundException() {
-        return ResponseEntity.notFound().build();
-    }
 }
