@@ -37,12 +37,6 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public static Sections of(List<Section> sections) {
-        Sections newSections = new Sections();
-        sections.forEach(newSections::add);
-        return newSections;
-    }
-
     private void connectIfExistSameDownStation(Section newSection) {
         sections.stream()
                 .filter(section -> section.hasSameDownStation(newSection.getDownStation()))

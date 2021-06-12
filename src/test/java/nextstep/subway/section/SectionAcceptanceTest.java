@@ -6,7 +6,6 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,7 +87,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록됨(sectionResponse);
-        역사이에_구간_등록됨(sectionResponse);
     }
 
     @DisplayName("역 사이에 새로운 역을 하행역과 연결하여 등록한다")
@@ -104,7 +102,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록됨(sectionResponse);
-        역사이에_구간_등록됨(sectionResponse);
     }
 
     @DisplayName("지하철 노선에 여러개의 역을 등록한다.")
@@ -188,14 +185,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_정보_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private void 역사이에_구간_등록됨(ExtractableResponse<Response> sectionResponse) {
-        LineResponse line = sectionResponse.as(LineResponse.class);
-        int distance = line.getSections().stream().mapToInt(SectionResponse::getDistance).sum();
-
-        assertThat(line.getSections()).hasSize(2);
-        assertThat(distance).isEqualTo(params.getDistance());
     }
 
     private void 지하철_노선에_구간_등록_실패됨(ExtractableResponse<Response> response) {
