@@ -29,8 +29,8 @@ public class LineService {
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		Station startStation = getTerminalStation(request.getUpStationId());
-		Station endStation = getTerminalStation(request.getDownStationId());
+		Station startStation = getStation(request.getUpStationId());
+		Station endStation = getStation(request.getDownStationId());
 		Line line = request.toLine();
 		line.addSection(request.toSection(line, startStation, endStation));
 
@@ -38,7 +38,7 @@ public class LineService {
 		return LineResponse.of(persistLine);
 	}
 
-	private Station getTerminalStation(Long id) {
+	private Station getStation(Long id) {
 		return stations.findById(id)
 			.orElseThrow(() -> new NoSuchElementException("Terminal station is needed"));
 	}
