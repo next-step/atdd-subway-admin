@@ -46,7 +46,16 @@ public class Section extends BaseEntity {
     public void update(Section section) {
         this.upStation = section.getUpStation();
         this.downStation = section.getDownStation();
+        updateDistance(section.getDistance());
         this.distance = section.getDistance();
+    }
+
+    private void updateDistance(int newDistance) {
+        if (this.distance <= newDistance) {
+            throw new IllegalArgumentException("기존 역 사이의 길이와 같거나 긴 구간을 등록할 수 없습니다.");
+        }
+
+        this.distance = newDistance;
     }
 
     public void addLine(Line line) {

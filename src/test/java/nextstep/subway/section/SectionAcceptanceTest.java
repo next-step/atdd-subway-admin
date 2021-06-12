@@ -56,7 +56,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         사호선_ID = 사호선_생성_응답.getId();
         서울_회현_요청 = new SectionRequest(서울역.getId(), 회현역.getId(), 10);
-        회현_명동_요청 = new SectionRequest(회현역.getId(), 명동역.getId(), 10);
+        회현_명동_요청 = new SectionRequest(회현역.getId(), 명동역.getId(), 20);
         명동_충무로_요청 = new SectionRequest(명동역.getId(), 충무로역.getId(), 10);
         충무로_동역문_요청 = new SectionRequest(충무로역.getId(), 동역문역.getId(), 10);
         회현_충무로_요청 = new SectionRequest(회현역.getId(), 충무로역.getId(), 20);
@@ -144,9 +144,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 예외상황_when_상행하행_모두_이미_등록되어있음() {
         // when
         //구간을_노선에_등록_요청
+        ExtractableResponse<Response> response = 구간을_노선에_등록_요청(사호선_ID, 회현_충무로_요청);
 
         // then
         //구간_등록_BAD_REQUEST_응답
+        구간_등록_BAD_REQUEST_응답(response);
     }
 
     @DisplayName("예외 상황 : 상행/하행역 모두 등록되어 있지 않음")
@@ -154,9 +156,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 예외상황_when_상행하행_모두_등록되어_있지_않음() {
         // when
         //구간을_노선에_등록_요청
+        SectionRequest 서울_동역문_요청 = new SectionRequest(서울역.getId(), 동역문역.getId(), 40);
+        ExtractableResponse<Response> response = 구간을_노선에_등록_요청(사호선_ID, 서울_동역문_요청);
 
         // then
         //구간_등록_BAD_REQUEST_응답
+        구간_등록_BAD_REQUEST_응답(response);
     }
 
     @DisplayName("예외 상황 : 역사이에 추가하는 구간의 길이가 기존 길이와 같거나 긺")
@@ -164,13 +169,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 예외상황_when_역사이에_구간을_추가할때_구간길이가_기존_구간길이와_같거나_긴_경우() {
         // when
         //구간을_노선에_등록_요청
+        // [회현]==[충무로]에서 ([회현]==[명동])==[충무로]
+        // 이때 회현-충무로간 거리가 20인데 회현-명동의 거리도 20
+        ExtractableResponse<Response> response = 구간을_노선에_등록_요청(사호선_ID, 회현_명동_요청);
 
         // then
         //구간_등록_BAD_REQUEST_응답
+        구간_등록_BAD_REQUEST_응답(response);
     }
 
     private void 구간_등록_OK_응답(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 구간_등록_BAD_REQUEST_응답(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 구간을_노선에_등록_요청(Long lineId, SectionRequest request) {
