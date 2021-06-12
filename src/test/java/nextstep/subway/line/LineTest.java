@@ -275,4 +275,57 @@ public class LineTest {
         //then
         assertThat(line.sortedStationList()).containsExactly(upStation, newStation, downStation);
     }
+
+    @DisplayName("구간삭제 - 노선에 포함되어 있지 않은 역은 삭제할 수 없다.")
+    @Test
+    public void 구간삭제_예외발생1() throws Exception {
+        //given
+        Station upStation = new Station(1L, "상행종점역");
+        Station downStation = new Station(2L, "하행종점역");
+        Section section = new Section(1L, 100);
+        Line line = Line.createWithSectionAndStation("테스트노선", "테스트색", section, upStation, downStation);
+        Station newStation = new Station(3L, "새로운역");
+        Section newSection = new Section(2L, 50);
+        line.register(upStation, newStation, newSection);
+        Station deleteStation = new Station(4L, "삭제될역");
+
+        // when
+        // then
+        assertThatThrownBy(() -> line.validateDeletable(deleteStation)).isInstanceOf(IllegalStateException.class);
+    }
+
+    @DisplayName("구간삭제 - 노선에 구간이 하나만 포함되어 있으면 삭제할 수 없다.")
+    @Test
+    public void 구간삭제_예외발생2() throws Exception {
+        //given
+        Station upStation = new Station(1L, "상행종점역");
+        Station downStation = new Station(2L, "하행종점역");
+        Section section = new Section(1L, 100);
+        Line line = Line.createWithSectionAndStation("테스트노선", "테스트색", section, upStation, downStation);
+
+        // when
+        // then
+        assertThatThrownBy(() -> line.validateDeletable(upStation)).isInstanceOf(IllegalStateException.class);
+    }
+
+    @DisplayName("구간삭제 - 중간역을 삭제하는 경우 재연결확인")
+    @Test
+    public void 구간삭제_재연결확인1() throws Exception {
+        //given
+        Station upStation = new Station(1L, "상행종점역");
+        Station downStation = new Station(2L, "하행종점역");
+        Section section = new Section(1L, 100);
+        Line line = Line.createWithSectionAndStation("테스트노선", "테스트색", section, upStation, downStation);
+        Station newStation = new Station(3L, "새로운역");
+        Section newSection = new Section(2L, 50);
+        line.register(upStation, newStation, newSection);
+
+        // when
+        line.validateDeletable(newStation);
+        Section deletableSection = line.findDeletableSection(newStation);
+        line.reconnect(newStation, deletableSection);
+
+        // then
+        assertThat(line.sortedStationList()).containsExactly(upStation, downStation);
+    }
 }

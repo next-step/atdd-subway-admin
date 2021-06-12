@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -8,7 +7,7 @@ import java.util.List;
 
 @Embeddable
 public class LineStations {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", orphanRemoval = true)
     private List<LineStation> lineStations = new ArrayList<>();
 
     protected LineStations() {}
@@ -34,5 +33,9 @@ public class LineStations {
                 .filter(lineStation -> lineStation.station().equals(station))
                 .findFirst()
                 .isPresent();
+    }
+
+    public List<LineStation> list() {
+        return lineStations;
     }
 }

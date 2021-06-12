@@ -1,8 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.NoSuchDataException;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -10,7 +7,7 @@ import java.util.List;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {}
@@ -25,5 +22,13 @@ public class Sections {
 
     public boolean contains(Section section) {
         return sections.contains(section);
+    }
+
+    public int size() {
+        return sections.size();
+    }
+
+    public List<Section> list() {
+        return sections;
     }
 }

@@ -154,7 +154,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("구간등록 - " +
-            "역 사이에 새로운 역을 등록할 경우 - " +
             "노선에 존재하는 역 하나와 노선에 존재하지 않는 역 하나, 아직 생성되지않은 구간을 생성하여 노선에 등록한다" +
             "이미 존재하는 역이 상행종점역이고 새로 등록하는 역이 상행종점역이 되는 경우")
     @Test
@@ -173,7 +172,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("구간등록 - " +
-            "역 사이에 새로운 역을 등록할 경우 - " +
             "노선에 존재하는 역 하나와 노선에 존재하지 않는 역 하나, 아직 생성되지않은 구간을 생성하여 노선에 등록한다" +
             "이미 존재하는 역이 하행종점역이고 새로 등록하는 역이 하행종점역이 되는 경우")
     @Test
@@ -228,7 +226,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void 구간등록_등록확인4(int distance) throws Exception {
         //given
         지하철_노선_생성("테스트노선", "테스트색", "상행종점역", "하행종점역", 1000);
-
         StationResponse stationResponse = 역_생성("추가될역");
 
         //when
@@ -237,6 +234,79 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         구간_역_생성_및_노선등록안됨(extractableResponse);
+    }
+    
+    @DisplayName("구간삭제 - 노선에 포함되어 있지 않은 역은 삭제할 수 없다.")
+    @Test
+    public void 구간삭제_예외발생1() throws Exception {
+        //given
+        지하철_노선_생성("테스트노선", "테스트색", "상행종점역", "하행종점역", 1000);
+        StationResponse stationResponse = 역_생성("추가될역");
+
+        // when
+        ExtractableResponse<Response> response = 구간삭제_요청(stationResponse.getId());
+
+        // then
+        구간삭제안됨(response);
+    }
+
+    @DisplayName("구간삭제 - 구간이 하나만 존재할 때 역을 삭제할 수 없다.")
+    @Test
+    public void 구간삭제_예외발생2() throws Exception {
+        //given
+        지하철_노선_생성("테스트노선", "테스트색", "상행종점역", "하행종점역", 1000);
+        LinesSubResponse linesSubResponse = 지하철_노선_조회();
+
+        //when
+        ExtractableResponse<Response> response = 구간삭제_요청(linesSubResponse.getStations().get(0).getId());
+
+        //then
+        구간삭제안됨(response);
+    }
+
+    @DisplayName("구간삭제 - 상행종점역을 삭제하는 경우")
+    @Test
+    public void 구간삭제_구간확인1() throws Exception {
+        //given
+        지하철_노선_생성("테스트노선", "테스트색", "상행종점역", "하행종점역", 1000);
+        StationResponse stationResponse = 역_생성("추가될역");
+        구간_역_생성_및_노선등록(stationResponse.getId(), 1L, 500);
+
+        //when
+        ExtractableResponse<Response> response = 구간삭제_요청(stationResponse.getId());
+
+        //then
+        구간삭제됨(response);
+    }
+
+    @DisplayName("구간삭제 - 하행종점역을 삭제하는 경우")
+    @Test
+    public void 구간삭제_구간확인2() throws Exception {
+        //given
+        지하철_노선_생성("테스트노선", "테스트색", "상행종점역", "하행종점역", 1000);
+        StationResponse stationResponse = 역_생성("추가될역");
+        구간_역_생성_및_노선등록(2L, stationResponse.getId(), 500);
+
+        //when
+        ExtractableResponse<Response> response = 구간삭제_요청(stationResponse.getId());
+
+        //then
+        구간삭제됨(response);
+    }
+
+    @DisplayName("구간삭제 - 중간역을 삭제하는 경우")
+    @Test
+    public void 구간삭제_구간확인3() throws Exception {
+        //given
+        지하철_노선_생성("테스트노선", "테스트색", "상행종점역", "하행종점역", 1000);
+        StationResponse stationResponse = 역_생성("추가될역");
+        구간_역_생성_및_노선등록(1L, stationResponse.getId(), 500);
+
+        //when
+        ExtractableResponse<Response> response = 구간삭제_요청(stationResponse.getId());
+
+        //then
+        구간삭제됨(response);
     }
 
     private void 구간_역_생성_및_노선등록(Long upStationId, Long downStationId, int distance) {
@@ -432,5 +502,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public static LinesSubResponse 지하철_노선_조회() {
         ExtractableResponse<Response> extractableResponse = 지하철_노선_조회_요청();
         return extractableResponse.jsonPath().getObject(".", LinesSubResponse.class);
+    }
+
+    private void 구간삭제안됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> 구간삭제_요청(Long stationId) {
+        ExtractableResponse<Response> response =
+                given()
+                        .log().all()
+                        .queryParam("stationId", stationId)
+                        .when()
+                        .delete(location + SectionAcceptanceTest.BASE_PATH)
+                        .then()
+                        .log().all()
+                        .extract();
+        return response;
+    }
+
+    private void 구간삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+        LinesSubResponse linesSubResponse = 지하철_노선_조회();
+        assertThat(linesSubResponse.getStations().size()).isEqualTo(2);
     }
 }
