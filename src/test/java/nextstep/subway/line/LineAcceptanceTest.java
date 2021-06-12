@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.line.ui.LineControllerTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -79,21 +80,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("지하철_노선_조회_성공")
+    @DisplayName("지하철_노선_PK_조회_성공")
     @Test
-    void 지하철_노선_조회_성공() {
+    void 지하철_노선_PK_조회_성공() {
         // given
         LineRequest firstRequest = new LineRequest("1호선", "FF0000");
-        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(firstRequest);
-        Long savedId = Long.valueOf(createResponse1.header("Location").split("/")[2])
+        ExtractableResponse createResponse = 지하철_노선_생성_요청(firstRequest);
+        LineResponse expectedResult = createResponse.jsonPath().getObject(".", LineResponse.class);
+        Long savedId = Long.valueOf(createResponse.header("Location").split("/")[2]);
 
         // when
         ExtractableResponse response = 지하철_노선_조회_요청(savedId);
-        LineResponse expectedResult = response.jsonPath().getObject(".", LineResponse.class);
+        LineResponse actualResult = response.jsonPath().getObject(".", LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getObject(".", LineResponse.class)).isEqualTo(createResponse1.body());
+        assertAll(
+                () -> assertThat(actualResult.getId()).isEqualTo(expectedResult.getId()),
+                () -> assertThat(actualResult.getName()).isEqualTo(expectedResult.getName()),
+                () -> assertThat(actualResult.getColor()).isEqualTo(expectedResult.getColor())
+        );
+    }
+
+    @DisplayName("지하철_노선_조회_성공_데이터없음")
+    @Test
+    void 지하철_노선_조회_성공_데이터없음() {
+        // given
+        Long targetId = Long.MAX_VALUE;
+
+        // when
+        ExtractableResponse response = 지하철_노선_조회_요청(targetId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("지하철_노선_검색_성공")

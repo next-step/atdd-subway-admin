@@ -48,4 +48,19 @@ public class LineController {
 
         return response;
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
+        ResponseEntity<LineResponse> response = null;
+
+        try {
+            LineResponse linesResponse = lineService.getLineById(id);
+            response = ResponseEntity.ok().body(linesResponse);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            response = ResponseEntity.notFound().build();
+        }
+
+        return response;
+    }
 }

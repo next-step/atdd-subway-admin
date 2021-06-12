@@ -30,8 +30,7 @@ public class LineControllerTest {
     public static ExtractableResponse 지하철_노선_조회_요청(Long id) {
         return RestAssured.given().log().all()
                 .when()
-                .formParam("id", id)
-                .get("/lines")
+                .get("/lines/"+id)
                 .then().log().all()
                 .extract();
     }
