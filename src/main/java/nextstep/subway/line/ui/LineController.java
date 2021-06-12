@@ -40,6 +40,18 @@ public class LineController {
         return ResponseEntity.ok(line);
     }
 
+    @PutMapping("/{lineId}")
+    public ResponseEntity updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
+        lineService.updateLine(lineId, lineRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{lineId}")
+    public ResponseEntity deleteLine(@PathVariable Long lineId) {
+        lineService.deleteLine(lineId);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity handleIllegalArgsException(RuntimeException e) {
         return ResponseEntity.badRequest().build();

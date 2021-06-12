@@ -26,12 +26,6 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public void validateCheck(LineRequest lineRequest) {
-        if (lineRepository.existsByName(lineRequest.getName())) {
-            throw new DuplicateNameException("이미 존재하는 노선 이름입니다.");
-        }
-    }
-
     public List<LineResponse> searchLineAll() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
@@ -43,4 +37,20 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선 ID입니다."));
         return LineResponse.of(line);
     }
+
+    public void updateLine(Long lineId, LineRequest lineRequest) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선 ID입니다."));
+        line.update(lineRequest.toLine());
+    }
+
+    public void deleteLine(Long lineId) {
+        lineRepository.deleteById(lineId);
+    }
+
+    public void validateCheck(LineRequest lineRequest) {
+        if (lineRepository.existsByName(lineRequest.getName())) {
+            throw new DuplicateNameException("이미 존재하는 노선 이름입니다.");
+        }
+    }
+
 }
