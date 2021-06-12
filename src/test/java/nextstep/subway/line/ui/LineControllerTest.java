@@ -27,7 +27,16 @@ public class LineControllerTest {
                 .extract();
     }
 
-    public static ExtractableResponse 지하철_노선_조회_요청(String name) {
+    public static ExtractableResponse 지하철_노선_조회_요청(Long id) {
+        return RestAssured.given().log().all()
+                .when()
+                .formParam("id", id)
+                .get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse 지하철_노선_검색_요청(String name) {
         return RestAssured.given().log().all()
                 .when()
                 .formParam("name", name)

@@ -3,11 +3,8 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LinesResponse;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -87,12 +84,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선_조회_성공() {
         // given
         LineRequest firstRequest = new LineRequest("1호선", "FF0000");
+        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(firstRequest);
+        Long savedId = Long.valueOf(createResponse1.header("Location").split("/")[2])
+
+        // when
+        ExtractableResponse response = 지하철_노선_조회_요청(savedId);
+        LineResponse expectedResult = response.jsonPath().getObject(".", LineResponse.class);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getObject(".", LineResponse.class)).isEqualTo(createResponse1.body());
+    }
+
+    @DisplayName("지하철_노선_검색_성공")
+    @Test
+    void 지하철_노선_검색_성공() {
+        // given
+        LineRequest firstRequest = new LineRequest("1호선", "FF0000");
         LineRequest secondRequest = new LineRequest("2호선", "00FF00");
         ExtractableResponse createResponse1 = 지하철_노선_생성_요청(firstRequest);
         ExtractableResponse createResponse2 = 지하철_노선_생성_요청(secondRequest);
 
         // when
-        ExtractableResponse response = 지하철_노선_조회_요청(firstRequest.getName());
+        ExtractableResponse response = 지하철_노선_검색_요청(firstRequest.getName());
         LineResponse expectedResult = response.jsonPath().getObject(".", LineResponse.class);
 
         // then
@@ -131,6 +145,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
-
-
 }
