@@ -97,27 +97,27 @@ class LineRepositoryTest {
                 () -> assertAll(
                         () -> assertThat(sections.getSections().get(0).getUpStation()).isSameAs(station1),
                         () -> assertThat(sections.getSections().get(0).getDownStation()).isSameAs(station2),
-                        () -> assertThat(sections.getSections().get(0).getDistance()).isSameAs(3)
+                        () -> assertThat(sections.getSections().get(0).getDistance().isEqualTo(3)).isTrue()
                 ),
                 () -> assertAll(
                         () -> assertThat(sections.getSections().get(1).getUpStation()).isSameAs(station2),
                         () -> assertThat(sections.getSections().get(1).getDownStation()).isSameAs(station3),
-                        () -> assertThat(sections.getSections().get(1).getDistance()).isSameAs(5)
+                        () -> assertThat(sections.getSections().get(1).getDistance().isEqualTo(5)).isTrue()
                 ),
                 () -> assertAll(
                         () -> assertThat(sections.getSections().get(2).getUpStation()).isSameAs(station3),
                         () -> assertThat(sections.getSections().get(2).getDownStation()).isSameAs(station4),
-                        () -> assertThat(sections.getSections().get(2).getDistance()).isSameAs(2)
+                        () -> assertThat(sections.getSections().get(2).getDistance().isEqualTo(2)).isTrue()
                 ),
                 () -> assertAll(
                         () -> assertThat(sections.getSections().get(3).getUpStation()).isSameAs(station4),
                         () -> assertThat(sections.getSections().get(3).getDownStation()).isSameAs(station6),
-                        () -> assertThat(sections.getSections().get(3).getDistance()).isSameAs(2)
+                        () -> assertThat(sections.getSections().get(3).getDistance().isEqualTo(2)).isTrue()
                 ),
                 () -> assertAll(
                         () -> assertThat(sections.getSections().get(4).getUpStation()).isSameAs(station6),
                         () -> assertThat(sections.getSections().get(4).getDownStation()).isSameAs(station5),
-                        () -> assertThat(sections.getSections().get(4).getDistance()).isSameAs(2)
+                        () -> assertThat(sections.getSections().get(4).getDistance().isEqualTo(2)).isTrue()
                 )
         );
     }

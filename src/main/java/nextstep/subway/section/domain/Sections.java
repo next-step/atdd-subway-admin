@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.utils.DistanceCalculator;
 
 public class Sections {
     private List<Section> sections = new ArrayList<>();
@@ -54,88 +53,90 @@ public class Sections {
         }
     }
 
+    private Section addSectionPlacedInMiddle(Section newSection) {
+        if (isIncludedInUpStations(newSection)) {
+            return addSectionByMatchedUpStation(newSection);
+        }
+        return addSectionByMatchedDownStation(newSection);
+    }
+
+    private Section addSectionByMatchedUpStation(Section newSection) {
+        List<Section> sections = getSortedSectionsFrom(newSection.getUpStation());
+        Distance totalDistance = Distance.copy(getSectionsByUpStation().get(newSection.getUpStation()).getDistance());
+        validateSameDistance(newSection.getDistance(), totalDistance);
+        Section targetSection = findTargetSection(newSection, sections, totalDistance);
+        if (newSection.getDistance().isGreaterThan(totalDistance)) {
+            return replaceStationsByMatchedUpStationForNew(newSection, targetSection, totalDistance);
+        }
+        return replaceStationsByMatchedUpStationForNewAndBase(newSection, targetSection, totalDistance);
+    }
+
+    private Section addSectionByMatchedDownStation(Section newSection) {
+        List<Section> sections = getReverseOrderSectionsFrom(newSection.getDownStation());
+        Distance totalDistance = Distance.copy(getSectionsByDownStation().get(newSection.getDownStation()).getDistance());
+        Section targetSection = findTargetSection(newSection, sections, totalDistance);
+        if (newSection.getDistance().isGreaterThan(totalDistance)) {
+            return replaceStationsByMatchedDownStationForNew(newSection, targetSection, totalDistance);
+        }
+        return replaceStationsByMatchedDownStationForNewAndBase(newSection, targetSection, totalDistance);
+    }
+
+    private Section replaceStationsByMatchedUpStationForNew(Section newSection, Section baseSection, Distance totalDistance) {
+        newSection.getDistance().minusDistance(totalDistance);
+        Section updateAppendSection = new Section(baseSection.getDownStation(), newSection.getDownStation(), newSection.getDistance());
+        newSection.updateSection(updateAppendSection);
+        addSectionWithSort(newSection);
+        return newSection;
+    }
+
+    private Section replaceStationsByMatchedUpStationForNewAndBase(Section newSection, Section baseSection, Distance totalDistance) {
+        newSection.getDistance().plusDistance(baseSection.getDistance()).minusDistance(totalDistance);
+        baseSection.getDistance().minusDistance(newSection.getDistance());
+        Section baseUpdateSection = new Section(newSection.getDownStation(), baseSection.getDownStation(), baseSection.getDistance());
+        Section newUpdateSection = new Section(baseSection.getUpStation(), newSection.getDownStation(), newSection.getDistance());
+        baseSection.updateSection(baseUpdateSection);
+        newSection.updateSection(newUpdateSection);
+        addSectionWithSort(newSection);
+        return newSection;
+    }
+
+    private Section replaceStationsByMatchedDownStationForNew(Section newSection, Section baseSection, Distance totalDistance) {
+        newSection.getDistance().minusDistance(totalDistance);
+        Section updateAppendSection = new Section(newSection.getUpStation(), baseSection.getUpStation(), newSection.getDistance());
+        newSection.updateSection(updateAppendSection);
+        addSectionWithSort(newSection);
+        return newSection;
+    }
+
+    private Section replaceStationsByMatchedDownStationForNewAndBase(Section newSection, Section baseSection, Distance totalDistance) {
+        newSection.getDistance().plusDistance(baseSection.getDistance()).minusDistance(totalDistance);
+        baseSection.getDistance().minusDistance(newSection.getDistance());
+        Section baseUpdateSection = new Section(baseSection.getUpStation(), newSection.getUpStation(), baseSection.getDistance());
+        Section newUpdateSection = new Section(newSection.getUpStation(), baseSection.getDownStation(), newSection.getDistance());
+        baseSection.updateSection(baseUpdateSection);
+        newSection.updateSection(newUpdateSection);
+        addSectionWithSort(newSection);
+        return newSection;
+    }
+
     private void addSectionWithSort(Section newSection) {
         this.sections.add(newSection);
         procSortSections();
     }
 
-    private Section addSectionPlacedInMiddle(Section newSection) {
-        DistanceCalculator totalDistanceCalculator = new DistanceCalculator();
-        if (isIncludedInUpStations(newSection)) {
-            return addSectionByMatchedUpStation(newSection, totalDistanceCalculator);
-        }
-        return addSectionByMatchedDownStation(newSection, totalDistanceCalculator);
-    }
-
-    private Section addSectionByMatchedUpStation(Section newSection, DistanceCalculator totalDistanceCalculator) {
-        List<Section> sortedSections = getSortedSectionsFrom(newSection.getUpStation());
-        Section baseSection = getBaseSection(newSection, totalDistanceCalculator, sortedSections);
-        validateSameDistance(newSection, totalDistanceCalculator);
-        if (totalDistanceCalculator.isGreaterThan(newSection.getDistance())) {
-            return replaceStationsByMatchedUpStationForNewAndBase(newSection, baseSection, totalDistanceCalculator);
-        }
-        return replaceStationsByMatchedUpStationForNew(newSection, baseSection, totalDistanceCalculator);
-    }
-
-    private Section replaceStationsByMatchedUpStationForNew(Section newSection, Section baseSection, DistanceCalculator totalDistanceCalculator) {
-        Section updateAppendSection = new Section(baseSection.getDownStation(), newSection.getDownStation(),
-                totalDistanceCalculator.calculateDistance(newSection));
-        addSectionWithSort(newSection, updateAppendSection);
-        return newSection;
-    }
-
-    private Section replaceStationsByMatchedUpStationForNewAndBase(Section newSection, Section baseSection,
-                                                                   DistanceCalculator totalDistanceCalculator) {
-        Section updateAppendSection = new Section(baseSection.getUpStation(), newSection.getDownStation(),
-                totalDistanceCalculator.calculateDistance(newSection, baseSection));
-        Section updateBaseSection = new Section(newSection.getDownStation(), baseSection.getDownStation(),
-                totalDistanceCalculator.calculateDistance(newSection));
-        baseSection.updateSection(updateBaseSection);
-        addSectionWithSort(newSection, updateAppendSection);
-        return newSection;
-    }
-
-    private void validateSameDistance(Section newSection, DistanceCalculator totalDistanceCalculator) {
-        if (totalDistanceCalculator.isEqualTo(newSection.getDistance())) {
+    private void validateSameDistance(Distance newSectionDistance, Distance totalDistance) {
+        if (newSectionDistance.isEqualTo(totalDistance)) {
             throw new IllegalArgumentException("같은 길이의 구간이 존재합니다.");
         }
     }
 
-    private Section addSectionByMatchedDownStation(Section newSection, DistanceCalculator totalDistanceCalculator) {
-        Section baseSection = getBaseSection(newSection, totalDistanceCalculator,
-                getReverseOrderSectionsFrom(newSection.getDownStation()));
-        validateSameDistance(newSection, totalDistanceCalculator);
-        if (totalDistanceCalculator.isGreaterThan(newSection.getDistance())) {
-            return replaceStationsByMatchedDownStationForNewAndBase(newSection, baseSection, totalDistanceCalculator);
-        }
-        return replaceStationsByMatchedDownStationForNew(newSection, baseSection, totalDistanceCalculator);
-    }
-
-    private Section replaceStationsByMatchedDownStationForNew(Section newSection, Section baseSection,
-                                                              DistanceCalculator totalDistanceCalculator) {
-        Section updateAppendSection = new Section(newSection.getUpStation(), baseSection.getUpStation(),
-                totalDistanceCalculator.calculateDistance(newSection));
-        addSectionWithSort(newSection, updateAppendSection);
-        return newSection;
-    }
-
-    private Section replaceStationsByMatchedDownStationForNewAndBase(Section newSection, Section baseSection,
-                                                                     DistanceCalculator totalDistanceCalculator) {
-        Section updateBaseSection = new Section(baseSection.getUpStation(), newSection.getUpStation(),
-                totalDistanceCalculator.calculateDistance(newSection));
-        Section updateAppendSection = new Section(newSection.getUpStation(), baseSection.getDownStation(),
-                totalDistanceCalculator.calculateDistance(newSection, baseSection));
-        baseSection.updateSection(updateBaseSection);
-        addSectionWithSort(newSection, updateAppendSection);
-        return newSection;
-    }
-
-    private Section getBaseSection(Section newSection, DistanceCalculator totalDistanceCalculator, List<Section> sections) {
-        return sections.stream()
-                .filter(section -> totalDistanceCalculator.addDistance(section.getDistance())
-                        .isGreaterThanOrEqualTo(newSection.getDistance()))
+    private Section findTargetSection(Section newSection, List<Section> sections, Distance totalDistance) {
+        Section targetSection = sections.stream().skip(1).filter(section ->
+                totalDistance.plusDistance(section.getDistance()).isGreaterThanOrEqualTo(newSection.getDistance()))
                 .findAny()
                 .orElse(sections.get(sections.size() - 1));
+        validateSameDistance(newSection.getDistance(), totalDistance);
+        return targetSection;
     }
 
     private Section getBeginSection() {
@@ -197,10 +198,6 @@ public class Sections {
 
     private boolean isIncludedInUpStations(Section newSection) {
         return getSectionsByUpStation().containsKey(newSection.getUpStation());
-    }
-
-    private void addSectionWithSort(Section newSection, Section updateAppendSection) {
-        addSectionWithSort(newSection.updateSection(updateAppendSection));
     }
 
     private void procSortSections() {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -33,23 +34,29 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
 
-    public Section() {
+    protected Section() {
+    }
+
+    public Section(Station upStation, Station downStation, Distance distance, Line line) {
+        this(upStation, downStation, distance);
+        this.line = line;
+    }
+
+    public Section(Station upStation, Station downStation, Distance distance) {
+        this(upStation, downStation);
+        this.distance = distance;
     }
 
     public Section(Station upStation, Station downStation, int distance) {
-        this.upStation = Optional.ofNullable(upStation).orElseThrow(() ->
-                new IllegalArgumentException("상행역으로 Null을 입력할 수 없습니다."));
-        this.downStation = Optional.ofNullable(downStation).orElseThrow(() ->
-                new IllegalArgumentException("하행역으로 Null을 입력할 수 없습니다."));
-        validateSameStations(upStation, downStation);
-        validateDistance(distance);
-        this.distance = distance;
+        this(upStation, downStation);
+        this.distance = new Distance(distance);
     }
 
     public Section(Station upStation, Station downStation, int distance, Line line) {
@@ -57,6 +64,14 @@ public class Section extends BaseEntity {
         this.line = Optional.ofNullable(line).orElseThrow(() ->
                 new IllegalArgumentException("노선으로 Null을 입력할 수 없습니다."));
         this.line.addSection(this);
+    }
+
+    private Section(Station upStation, Station downStation) {
+        this.upStation = Optional.ofNullable(upStation).orElseThrow(() ->
+                new IllegalArgumentException("상행역으로 Null을 입력할 수 없습니다."));
+        this.downStation = Optional.ofNullable(downStation).orElseThrow(() ->
+                new IllegalArgumentException("하행역으로 Null을 입력할 수 없습니다."));
+        validateSameStations(upStation, downStation);
     }
 
     public Long getId() {
@@ -71,8 +86,8 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance;
+    public Distance getDistance() {
+        return this.distance;
     }
 
     public Line getLine() {
@@ -88,9 +103,9 @@ public class Section extends BaseEntity {
     }
 
     public Section updateSection(Section section) {
-        this.upStation = section.getUpStation();
-        this.downStation = section.getDownStation();
-        this.distance = section.getDistance();
+        this.upStation = section.upStation;
+        this.downStation = section.downStation;
+        this.distance = section.distance;
         return this;
     }
 
@@ -125,12 +140,6 @@ public class Section extends BaseEntity {
     private void validateSameStations(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException("상행, 하행역은 동일한 역일 수 없습니다.");
-        }
-    }
-
-    private void validateDistance(int distance) {
-        if (distance <= 0) {
-            throw new IllegalArgumentException("구간의 거리는 1 이상이어야 합니다.");
         }
     }
 }
