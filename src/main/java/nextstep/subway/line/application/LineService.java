@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,14 +19,15 @@ import nextstep.subway.station.domain.StationRepository;
 @Service
 @Transactional
 public class LineService {
-	@Autowired
 	private LineRepository lines;
-
-	@Autowired
 	private StationRepository stations;
-
-	@Autowired
 	private SectionRepository sections;
+
+	public LineService(LineRepository lines, StationRepository stations, SectionRepository sections) {
+		this.lines = lines;
+		this.stations = stations;
+		this.sections = sections;
+	}
 
 	public LineResponse saveLine(LineRequest request) {
 		Station startStation = getEndStation(request.getUpStationId());
