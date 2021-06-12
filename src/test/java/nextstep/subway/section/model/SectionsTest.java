@@ -116,18 +116,34 @@ public class SectionsTest {
     }
 
     @Test
-    @DisplayName("구간 삭제 시 삭제된 나머지 역이 연결된다")
-    void remove() {
+    @DisplayName("A-B-C 중 A-B 삭제 테스트")
+    void removeAB() {
         Section section = Section.of(2L, upStation, newStation, line, 10);
         sections.add(section);
         sections.remove(section);
-        assertThat(sections.getDistanceWithStations(upStation, downStation)).isEqualTo(20);
+        assertThat(sections.getDistanceWithStations(newStation, downStation)).isEqualTo(10);
 
-        section = Section.of(2L, downStation, newStation, line, 10);
+    }
+
+    @Test
+    @DisplayName("A-B-C 중 B-C 삭제 테스트")
+    void removeBC() {
+        Section section = Section.of(2L, downStation, newStation, line, 10);
         sections.add(section);
         sections.remove(section);
         assertThat(sections.getDistanceWithStations(upStation, downStation)).isEqualTo(20);
+    }
 
+    @Test
+    @DisplayName("A-B-C-D 중 B-C 삭제 테스트")
+    void removeBDInner() {
+        Section sectionBC = Section.of(2L, downStation, newStation, line, 10);
+        sections.add(sectionBC);
+        Section sectionCD = Section.of(2L, newStation, newStation2, line, 10);
+        sections.add(sectionCD);
+
+        sections.remove(sectionBC);
+        assertThat(sections.getDistanceWithStations(upStation, newStation)).isEqualTo(30);
     }
 
     @Test
