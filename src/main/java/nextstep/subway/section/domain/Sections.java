@@ -17,7 +17,6 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
-	private static final String INVALID_SECTION_MESSAGE = "노선 설정이 잘못되었습니다.";
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
 	private final List<Section> sections = new ArrayList<>();
 
@@ -30,12 +29,30 @@ public class Sections {
 			return;
 		}
 
-		//TODO
-		// 새 구간의 역들이 이미 구간에 추가되어있는경우
-		// 새 구간의 역들이 어디에도 추가되어있지 않는경우
 		this.validateAlreadyExistSection(newSection);
 		this.validateStationsNotContained(newSection);
 
+		this.rebuildSectionByUpStation(newSection);
+		this.rebuildSectionByDownStation(newSection);
+		this.sections.add(newSection);
+	}
+
+	private void rebuildSectionByUpStation(Section newSection) {
+		this.sections.stream()
+			.filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+			.findAny().ifPresent(section -> {
+			section.validateSectionDistance(newSection);
+			section.rebuildUpstation(newSection);
+		});
+	}
+
+	private void rebuildSectionByDownStation(Section newSection) {
+		this.sections.stream()
+			.filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+			.findAny().ifPresent(section -> {
+			section.validateSectionDistance(newSection);
+			section.rebuildDownStation(newSection);
+		});
 	}
 
 	private boolean isEntryPointSection(Section newSection) {

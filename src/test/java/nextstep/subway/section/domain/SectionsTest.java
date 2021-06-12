@@ -38,6 +38,24 @@ class SectionsTest {
 		Section section3 = new Section(line, this.선릉역, this.종합운동장역, 1);
 		Section section4 = new Section(line, this.종합운동장역, this.잠실역, 1);
 
+		sections.addSection(section2);
+		sections.addSection(section1);
+		sections.addSection(section3);
+		sections.addSection(section4);
+
+		List<Station> orderedStations = sections.getOrderedStations();
+		Assertions.assertThat(orderedStations).containsExactly(강남역, 역삼역, 선릉역, 종합운동장역, 잠실역);
+	}
+
+	@Test
+	@DisplayName("Section 목록으로 부터 Station을 상행에서 하행순으로 정렬하는지 테스트")
+	void orderedSections2() {
+		Sections sections = new Sections();
+		Section section1 = new Section(line, this.강남역, this.잠실역, 20);
+		Section section2 = new Section(line, this.강남역, this.선릉역, 15);
+		Section section3 = new Section(line, this.선릉역, this.종합운동장역, 3);
+		Section section4 = new Section(line, this.역삼역, this.선릉역, 5);
+
 		sections.addSection(section1);
 		sections.addSection(section2);
 		sections.addSection(section3);

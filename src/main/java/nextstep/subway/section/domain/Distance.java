@@ -50,4 +50,12 @@ public class Distance {
 			"distance=" + distance +
 			'}';
 	}
+
+	public boolean isShorter(Distance distance) {
+		return this.distance < distance.getDistance();
+	}
+
+	public Distance minus(Distance distance) {
+		return new Distance(this.distance - distance.getDistance());
+	}
 }
