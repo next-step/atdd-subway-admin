@@ -31,7 +31,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stations = line.getStations().stream()
+        List<StationResponse> stations = line.getSortedStations().stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
 

@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.*;
+
 @Embeddable
 public class Sections {
     private static final String DUPLICATED_STATIONS = "이미 등록된 역 구간을 다시 등록 할 수 없습니다.";
@@ -28,14 +30,18 @@ public class Sections {
     }
 
     public void registerNewSection(Section newSection) {
-        if (this.sections.size() == 0) {
+        if (isFirstAdd()) {
             add(newSection);
             return;
         }
         validateNewSection(newSection);
         this.sections = sections.stream()
                 .flatMap(section -> section.insertNewSection(newSection).stream())
-                .collect(Collectors.toList());
+                .collect(toList());
+    }
+
+    private boolean isFirstAdd() {
+        return this.sections.size() == 0;
     }
 
     private void validateNewSection(Section newSection) {
@@ -57,21 +63,10 @@ public class Sections {
         return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
     }
 
-    private List<Section> getSortedSections() {
-        List<Section> sortedSections = new ArrayList<>();
-        Section currentSection = findFirstSection();
-        sortedSections.add(currentSection);
-        addNextSectionIfExist(findNextSection(currentSection), sortedSections);
-        return sortedSections;
-    }
-
-    private void addNextSectionIfExist(Optional<Section> maybeNextSection, List<Section> sortedSections) {
-        if (!maybeNextSection.isPresent()) {
-            return;
-        }
-        Section section = maybeNextSection.get();
-        sortedSections.add(section);
-        addNextSectionIfExist(findNextSection(section), sortedSections);
+    private Set<Station> getStations() {
+        return this.sections.stream()
+                .flatMap(section -> section.getUpAndDownStations().stream())
+                .collect(toSet());
     }
 
     private Section findFirstSection() {
@@ -94,10 +89,23 @@ public class Sections {
                 .findFirst();
     }
 
-    public Set<Station> getStations() {
-        return this.getSortedSections().stream()
+    public Set<Station> getSortedStations() {
+        List<Section> sortedSections = new ArrayList<>();
+        Section currentSection = findFirstSection();
+        sortedSections.add(currentSection);
+        addNextSectionIfExist(findNextSection(currentSection), sortedSections);
+        return sortedSections.stream()
                 .flatMap(section -> section.getUpAndDownStations()
                         .stream())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private void addNextSectionIfExist(Optional<Section> maybeNextSection, List<Section> sortedSections) {
+        if (!maybeNextSection.isPresent()) {
+            return;
+        }
+        Section section = maybeNextSection.get();
+        sortedSections.add(section);
+        addNextSectionIfExist(findNextSection(section), sortedSections);
     }
 }

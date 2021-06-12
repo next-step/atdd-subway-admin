@@ -82,8 +82,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
-        return new ArrayList<>(sections.getStations());
+    public List<Station> getSortedStations() {
+        return new ArrayList<>(sections.getSortedStations());
     }
 
     @Override
