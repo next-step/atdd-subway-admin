@@ -57,7 +57,7 @@ public class LineRequest {
     }
 
     public Line toLine(Section section, LineStations lineStations) {
-        return new Line(name, color, section, lineStations);
+        return new Line(name, color).addSection(section).lineStationsBy(lineStations);
     }
 
     public Section toSection(Station upStation, Station downStation) {

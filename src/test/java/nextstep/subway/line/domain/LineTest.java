@@ -40,8 +40,8 @@ class LineTest {
         Station upStation = new Station("강남역");
         Station downStation = new Station("광교역");
         Section section = new Section(upStation, downStation, 100);
-        line.addSection(section);
-        assertThat(line).isEqualTo(new Line("신분당선", "bg - red - 600", new Sections(Arrays.asList(section))));
+        Line actual = line.addSection(section);
+        assertThat(actual).isEqualTo(new Line("신분당선", "bg - red - 600", new Sections(Arrays.asList(section))));
     }
 
     @Test
@@ -52,6 +52,6 @@ class LineTest {
         LineStation lineStation = new LineStation(station, preStation, 10);
         line.addLineStation(lineStation);
 
-        assertThat(line).isEqualTo(new Line("신분당선", "bg - red - 600", new LineStations(Arrays.asList(lineStation))));
+        assertThat(line).isEqualTo(new Line("신분당선", "bg - red - 600").lineStationsBy(new LineStations(Arrays.asList(lineStation))));
     }
 }

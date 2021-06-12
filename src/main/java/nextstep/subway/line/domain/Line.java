@@ -8,7 +8,6 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,17 +44,21 @@ public class Line extends BaseEntity {
         this.sections = sections;
     }
 
-    public Line(String name, String color, LineStations lineStations) {
-        this.name = name;
-        this.color = color;
+    public Line lineStationsBy(LineStations lineStations) {
         this.lineStations = lineStations;
+        lineStations.addLine(this);
+        return this;
     }
 
-    public Line(String name, String color, Section section, LineStations lineStations) {
-        this.name = name;
-        this.color = color;
-        this.sections = new Sections(Arrays.asList(section));
-        this.lineStations = lineStations;
+    public Line addSection(Section section) {
+        sections.addSection(section);
+        section.lineBy(this);
+        return this;
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        lineStations.addLineStation(lineStation);
+        lineStation.lineBy(this);
     }
 
     public void update(Line line) {
@@ -84,16 +87,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public void addSection(Section section) {
-        sections.addSection(section);
-        section.lineBy(this);
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        lineStations.addLineStation(lineStation);
-        lineStation.lineBy(this);
     }
 
     @Override

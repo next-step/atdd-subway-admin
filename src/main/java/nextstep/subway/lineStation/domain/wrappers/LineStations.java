@@ -1,5 +1,6 @@
 package nextstep.subway.lineStation.domain.wrappers;
 
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.lineStation.domain.LineStation;
 
 import javax.persistence.CascadeType;
@@ -32,6 +33,12 @@ public class LineStations {
         return lineStations.contains(lineStation);
     }
 
+    public void addLine(Line line) {
+        for (LineStation lineStation : lineStations) {
+            lineStation.lineBy(line);
+        }
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -44,4 +51,5 @@ public class LineStations {
     public int hashCode() {
         return Objects.hash(lineStations);
     }
+
 }
