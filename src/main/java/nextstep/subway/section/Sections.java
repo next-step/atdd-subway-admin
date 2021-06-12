@@ -13,7 +13,7 @@ import java.util.List;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    List<Section> sections = new LinkedList<>();
+    private List<Section> sections = new LinkedList<>();
 
     public Sections() {
     }
@@ -35,7 +35,7 @@ public class Sections {
     }
 
     private void validateStations(Section section) {
-        List<Station> stations = sortedStations();
+        List<Station> stations = getStations();
         checkUpAndDownStationAlreadyContained(stations, section);
         checkUpandDownStationNotContained(stations, section);
     }
@@ -110,7 +110,7 @@ public class Sections {
         return sections.contains(section);
     }
 
-    public List<Station> sortedStations() {
+    public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
 
         for (Section section : sections) {
