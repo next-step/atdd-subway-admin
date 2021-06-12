@@ -4,7 +4,7 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,13 +13,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Table(name = "section")
 @Entity
 public class Section extends BaseEntity {
+    private static final String NEW_SECTION_MUST_SHORTER_THAN_EXIST_SECTION = "새로 등록되는 구간 길이가 기존 역 사이 길이보다 크거나 같을 수 없습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,20 +39,99 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    @Column(name = "distance", nullable = false)
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        this(null, upStation, downStation, distance);
     }
 
-    public List<Station> getStation() {
-        return Arrays.asList(upStation, downStation);
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = Distance.from(distance);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance.getDistance();
+    }
+
+    public List<Station> getUpAndDownStations() {
+        return Stream.of(this.getUpStation(), this.getDownStation())
+                .collect(Collectors.toList());
+    }
+
+    public boolean isSameEdges(Section other) {
+        return this.getUpStation().equals(other.getUpStation()) &&
+                this.getDownStation().equals(other.getDownStation());
+    }
+
+    public boolean isSameDownStation(Section other) {
+        Station thisDownStation = this.downStation;
+        Station otherDownStation = other.getDownStation();
+        return thisDownStation.equals(otherDownStation);
+    }
+
+    private boolean isSameUpStation(Section other) {
+        Station thisUpStation = this.upStation;
+        Station otherUpStation = other.getUpStation();
+        return thisUpStation.equals(otherUpStation);
+    }
+
+    public boolean isAfter(Section other) {
+        return this.getUpStation().equals(other.getDownStation());
+    }
+
+    public List<Section> insertNewSection(Section newSection) {
+        if (isSameUpStation(newSection)) {
+            updateUpStation(newSection);
+            return Stream.of(this, newSection).collect(Collectors.toList());
+        }
+        if (isSameDownStation(newSection)) {
+            updateDownStation(newSection);
+            return Stream.of(this, newSection).collect(Collectors.toList());
+        }
+        return Stream.of(this, newSection).collect(Collectors.toList());
+    }
+
+    private void updateDownStation(Section newSection) {
+        int distanceDiff = distanceDiffWithNewSection(newSection.distance);
+        this.downStation = newSection.upStation;
+        this.distance = Distance.from(distanceDiff);
+    }
+
+    private void updateUpStation(Section newSection) {
+        int distanceDiff = distanceDiffWithNewSection(newSection.distance);
+        this.upStation = newSection.downStation;
+        this.distance = Distance.from(distanceDiff);
+    }
+
+    private int distanceDiffWithNewSection(Distance newSectionDistacne) {
+        int distanceDiff = this.distance.getDistance() - newSectionDistacne.getDistance();
+        if (distanceDiff <= 0) {
+            throw new IllegalArgumentException(NEW_SECTION_MUST_SHORTER_THAN_EXIST_SECTION);
+        }
+        return distanceDiff;
     }
 
     public void setLine(Line line) {
@@ -62,21 +143,11 @@ public class Section extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return Objects.equals(id, section.id);
+        return Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", distance=" + distance +
-                '}';
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 }

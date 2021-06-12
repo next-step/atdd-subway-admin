@@ -20,7 +20,13 @@ public class ExceptionAdvice {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(LineNotFoundException.class)
-    public ExceptionResponse handleLineNotFound(final LineNotFoundException exception) {
-        return new ExceptionResponse(exception.getMessage());
+    public ExceptionResponse handleLineNotFound(LineNotFoundException e) {
+        return new ExceptionResponse(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    public ExceptionResponse handleIllegalArgumentException(IllegalArgumentException e) {
+        return new ExceptionResponse(e.getMessage());
     }
 }
