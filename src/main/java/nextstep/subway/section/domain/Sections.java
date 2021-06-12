@@ -10,6 +10,8 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -70,20 +72,28 @@ public class Sections {
     }
 
     private void addMiddleSection(Section section, LinkedList<Section> result) {
-        int foundIndex = 0;
-        for (int i = 0; i < result.size(); i++) {
-            if (isUpStationMatch(section, result.get(i))) {
-                result.get(i).changeUpStation(section);
-                foundIndex = i;
-                break;
-            }
-            if (isDownStationMatch(section, result.get(i))) {
-                result.get(i).changeDownStation(section);
-                foundIndex = i;
-                break;
-            }
-        }
-        result.add(foundIndex, section);
+        AtomicInteger foundIndex = new AtomicInteger();
+        IntStream.range(0, result.size())
+                .filter(i -> isUpStationMatch(section, result.get(i)))
+                .findFirst()
+                .ifPresent(
+                        i -> {
+                            result.get(i).changeUpStation(section);
+                            foundIndex.set(i);
+                        }
+                );
+
+        IntStream.range(0, result.size())
+                .filter(i -> isDownStationMatch(section, result.get(i)))
+                .findFirst()
+                .ifPresent(
+                        i -> {
+                            result.get(i).changeDownStation(section);
+                            foundIndex.set(i);
+                        }
+                );
+
+        result.add(foundIndex.get(), section);
         sections = new ArrayList<>(result);
     }
 
