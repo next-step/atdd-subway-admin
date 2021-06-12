@@ -65,7 +65,7 @@ public class Sections {
 
     private Set<Station> getStations() {
         return this.sections.stream()
-                .flatMap(section -> section.getUpAndDownStations().stream())
+                .flatMap(section -> section.getUpAndDownStation().stream())
                 .collect(toSet());
     }
 
@@ -95,8 +95,7 @@ public class Sections {
         sortedSections.add(currentSection);
         addNextSectionIfExist(findNextSection(currentSection), sortedSections);
         return sortedSections.stream()
-                .flatMap(section -> section.getUpAndDownStations()
-                        .stream())
+                .flatMap(section -> section.getUpAndDownStation().stream())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 

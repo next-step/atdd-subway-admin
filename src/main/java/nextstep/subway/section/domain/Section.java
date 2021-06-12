@@ -15,8 +15,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 @Table(name = "section")
 @Entity
@@ -76,42 +77,37 @@ public class Section extends BaseEntity {
         return distance.getDistance();
     }
 
-    public List<Station> getUpAndDownStations() {
-        return Stream.of(this.getUpStation(), this.getDownStation())
-                .collect(Collectors.toList());
+    public List<Station> getUpAndDownStation() {
+        return Stream.of(upStation, downStation)
+                .collect(toList());
     }
 
     public boolean isSameEdges(Section other) {
-        return this.getUpStation().equals(other.getUpStation()) &&
-                this.getDownStation().equals(other.getDownStation());
+        return this.upStation.equals(other.getUpStation()) && this.downStation.equals(other.getDownStation());
     }
 
     public boolean isSameDownStation(Section other) {
-        Station thisDownStation = this.downStation;
-        Station otherDownStation = other.getDownStation();
-        return thisDownStation.equals(otherDownStation);
+        return this.downStation.equals(other.getDownStation());
     }
 
     private boolean isSameUpStation(Section other) {
-        Station thisUpStation = this.upStation;
-        Station otherUpStation = other.getUpStation();
-        return thisUpStation.equals(otherUpStation);
+        return this.upStation.equals(other.getUpStation());
     }
 
     public boolean isAfter(Section other) {
-        return this.getUpStation().equals(other.getDownStation());
+        return this.upStation.equals(other.getDownStation());
     }
 
     public List<Section> insertNewSection(Section newSection) {
         if (isSameUpStation(newSection)) {
             updateUpStation(newSection);
-            return Stream.of(this, newSection).collect(Collectors.toList());
+            return Stream.of(this, newSection).collect(toList());
         }
         if (isSameDownStation(newSection)) {
             updateDownStation(newSection);
-            return Stream.of(this, newSection).collect(Collectors.toList());
+            return Stream.of(this, newSection).collect(toList());
         }
-        return Stream.of(this, newSection).collect(Collectors.toList());
+        return Stream.of(this, newSection).collect(toList());
     }
 
     private void updateDownStation(Section newSection) {
