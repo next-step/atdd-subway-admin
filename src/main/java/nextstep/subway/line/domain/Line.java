@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -48,5 +47,11 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return sections.getStations();
+    }
+
+    public Section addSection(Station upStation, Station downStation, Long distance) {
+        Section section = new Section(this, upStation, downStation, distance);
+        addSection(section);
+        return section;
     }
 }
