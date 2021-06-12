@@ -34,7 +34,7 @@ public class LineService {
 		Station endStation = getEndStation(request.getDownStationId());
 		Line persistLine = lines.save(request.toLine());
 		Section persistSections = sections.save(request.toSection(persistLine, startStation, endStation));
-		persistLine.addSections(persistSections);
+		persistLine.addSection(persistSections);
 
 		return LineResponse.of(persistLine);
 	}
@@ -65,6 +65,6 @@ public class LineService {
 
 	public void deleteLineById(Long id) {
 		Line line = lines.findById(id).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
-		lines.deleteById(line.delete());
+		lines.delete(line);
 	}
 }

@@ -51,10 +51,6 @@ public class LineRequest {
 		return new Line(name, color);
 	}
 
-	public Line toLine(Station startStation) {
-		return new Line(name, color, startStation);
-	}
-
 	public Section toSection(Line line, Station upStation, Station downStation) {
 		return new Section(line, upStation, downStation, distance);
 	}
