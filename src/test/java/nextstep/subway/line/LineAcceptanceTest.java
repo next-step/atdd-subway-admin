@@ -103,6 +103,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actualResult).containsAll(expectedResult);
     }
 
+    @DisplayName("지하철_노선_검색_성공_데이터없음")
+    @Test
+    void 지하철_노선_검색_성공_데이터없음() {
+        // when
+        ExtractableResponse response = 지하철_노선_검색_요청(new LineRequest("", "00FF00"));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
     @DisplayName("지하철_노선_PK_조건_조회_성공")
     @Test
     void 지하철_노선_PK_조건_조회_성공() {
@@ -114,7 +124,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse response = 지하철_노선_PK_조건_조회_요청(savedId);
-        LineResponse actualResult = response.jsonPath().getObject(".lineResponses", LineResponse.class);
+        LineResponse actualResult = response.jsonPath().getObject(".", LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
