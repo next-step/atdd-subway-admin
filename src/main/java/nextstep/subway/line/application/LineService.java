@@ -3,10 +3,12 @@ package nextstep.subway.line.application;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.DuplicatedSectionException;
 import nextstep.subway.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -107,7 +109,32 @@ public class LineService {
     private Section section(final SectionRequest sectionRequest, final Line line) {
         final List<Long> ids = Arrays.asList(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
         final List<Station> stations = stationRepository.findByIdIn(ids);
+        checkSectionExistOrNot(sectionRequest, line, stations);
 
         return Section.of(stations, sectionRequest.getDistance(), line);
+    }
+
+    private void checkSectionExistOrNot(final SectionRequest sectionRequest, final Line line,
+        final List<Station> stations) {
+        final Station upStation = getStation(sectionRequest.getUpStationId(), stations)
+            .orElseThrow(NotFoundException::new);
+        final Station downStation = getStation(sectionRequest.getDownStationId(), stations)
+            .orElseThrow(NotFoundException::new);
+
+        final Section section = sectionRepository.findIdByStationsAndLine(upStation, downStation, line);
+
+        if (section != null) {
+            throw new DuplicatedSectionException();
+        }
+    }
+
+    private Optional<Station> getStation(final Long id, final List<Station> stations) {
+        for (final Station station : stations) {
+            if (station.getId().equals(id)) {
+                return Optional.of(station);
+            }
+        }
+
+        return Optional.empty();
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import nextstep.subway.DuplicatedSectionException;
 import nextstep.subway.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
@@ -86,8 +87,8 @@ public class LineController {
             .build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<LineResponse> handleIllegalArgsException(final DataIntegrityViolationException e) {
+    @ExceptionHandler({DataIntegrityViolationException.class, DuplicatedSectionException.class})
+    public ResponseEntity<LineResponse> handleIllegalArgsException(final RuntimeException e) {
         return ResponseEntity.badRequest()
             .build();
     }
