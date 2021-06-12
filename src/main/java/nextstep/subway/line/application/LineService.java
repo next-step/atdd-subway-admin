@@ -26,6 +26,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> searchLineAll() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
@@ -33,6 +34,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse searchLine(Long lineId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선 ID입니다."));
         return LineResponse.of(line);
@@ -47,6 +49,7 @@ public class LineService {
         lineRepository.deleteById(lineId);
     }
 
+    @Transactional(readOnly = true)
     public void validateCheck(LineRequest lineRequest) {
         if (lineRepository.existsByName(lineRequest.getName())) {
             throw new DuplicateNameException("이미 존재하는 노선 이름입니다.");
