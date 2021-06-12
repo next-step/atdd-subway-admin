@@ -49,14 +49,17 @@ public class Line extends BaseEntity {
 	}
 
 	public void addSection(final Section section) {
-		if (this.sections.contains(section)) {
+		if (!this.sections.add(section)) {
 			return;
 		}
-		this.sections.add(section);
 		section.toLine(this);
 	}
 
 	public List<Station> stations() {
 		return sections.stationsBySorted();
+	}
+
+	public void removeSection(Station station) {
+		this.sections.removeStation(station);
 	}
 }

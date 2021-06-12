@@ -36,34 +36,23 @@ public class LineService {
 		return LineResponse.of(lineRepository.save(line));
 	}
 
-	private Station findStationById(final Long id) {
-		return stationRepository.findById(id)
-								.orElseThrow(() -> new ApiException(NOT_FOUND_STATION));
-	}
-
 	@Transactional(readOnly = true)
 	public List<LineResponse> getLineRepository() {
 		return convertLineResponse(lineRepository.findAll());
 	}
 
-	private List<LineResponse> convertLineResponse(List<Line> lines) {
-		return lines.stream()
-					.map(LineResponse::of)
-					.collect(Collectors.toList());
-	}
-
-	public LineResponse getLine(final Long id) {
-		return LineResponse.of(findById(id));
+	public LineResponse getLine(final Long lineId) {
+		return LineResponse.of(findById(lineId));
 	}
 
 	@Transactional(readOnly = true)
-	public Line findById(final Long id) {
-		return lineRepository.findById(id)
+	public Line findById(final Long lineId) {
+		return lineRepository.findById(lineId)
 							 .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
 	}
 
-	public LineResponse updateLine(final Long id, final LineRequest request) {
-		Line line = lineRepository.findById(id)
+	public LineResponse updateLine(final Long lineId, final LineRequest request) {
+		Line line = lineRepository.findById(lineId)
 								  .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
 		line.update(request.toLine());
 		return LineResponse.of(line);
@@ -73,9 +62,16 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
-	public LineResponse registerSection(final Long id, final SectionRequest request) {
-		Line line = findById(id);
+	public LineResponse registerSection(final Long lineId, final SectionRequest request) {
+		Line line = findById(lineId);
 		line.addSection(createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+		return LineResponse.of(line);
+	}
+
+	public LineResponse removeSectionByStationId(final Long lineId, final Long stationId) {
+		Line line = findById(lineId);
+		Station station = findStationById(stationId);
+		line.removeSection(station);
 		return LineResponse.of(line);
 	}
 
@@ -83,5 +79,16 @@ public class LineService {
 		Station upStation = findStationById(upStationId);
 		Station downStation = findStationById(downStationId);
 		return Section.of(upStation, downStation, distance);
+	}
+
+	private List<LineResponse> convertLineResponse(List<Line> lines) {
+		return lines.stream()
+					.map(LineResponse::of)
+					.collect(Collectors.toList());
+	}
+
+	private Station findStationById(final Long stationId) {
+		return stationRepository.findById(stationId)
+								.orElseThrow(() -> new ApiException(NOT_FOUND_STATION));
 	}
 }

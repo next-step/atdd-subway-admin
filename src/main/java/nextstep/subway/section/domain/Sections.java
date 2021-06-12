@@ -11,28 +11,48 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.exception.CommonExceptionMessage.EXISTS_ALL_STATIONS;
-import static nextstep.subway.exception.CommonExceptionMessage.NOT_EXISTS_STATIONS;
+import static nextstep.subway.exception.CommonExceptionMessage.*;
 
 @Embeddable
 public class Sections {
 
+	private static final int SECTION_MIN_SIZE = 1;
+
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
-	public void add(final Section section) {
+	public boolean add(final Section section) {
+		if (this.sections.contains(section)) {
+			return false;
+		}
 		if (!CollectionUtils.isEmpty(sections)) {
 			validateStations(section);
 			connectIfExistsUpStation(section);
 			connectIfExistsDownStation(section);
 		}
-		this.sections.add(section);
+		return this.sections.add(section);
 	}
 
 	public List<Station> stationsBySorted() {
 		return findFirstSection()
 			.map(this::getSortedStations)
 			.orElse(Collections.emptyList());
+	}
+
+	public void removeStation(final Station station) {
+		checkPossibleRemoveByStation(station);
+		Optional<Section> s1 = findSectionUsingFilter(value -> value.downStation().equals(station));
+		Optional<Section> s2 = findSectionUsingFilter(value -> value.upStation().equals(station));
+		if (s1.isPresent() && !s2.isPresent()) { // 첫번째 Section일 경우, s1만 지우면 된다.
+			this.sections.remove(s1.get());
+		}
+		if (s1.isPresent() && s2.isPresent()) { // 중간 인경우, s1의 downStation을 s2의 downStation으로 s2는 리스트에서 remove
+			s2.get().disconnectStation(s1.get());
+			this.sections.remove(s1.get());
+		}
+		if (!s1.isPresent() && s2.isPresent()) { // 맨 마지막 Section일 경우, s2만 지우면 된다.
+			this.sections.remove(s2.get());
+		}
 	}
 
 	private void validateStations(final Section section) {
@@ -63,11 +83,15 @@ public class Sections {
 	}
 
 	private boolean containUpStation(final Section section) {
-		return stations().contains(section.upStation());
+		return containStationInSection(section.upStation());
 	}
 
 	private boolean containDownStation(final Section section) {
-		return stations().contains(section.downStation());
+		return containStationInSection(section.downStation());
+	}
+
+	private boolean containStationInSection(final Station station) {
+		return stations().contains(station);
 	}
 
 	private List<Station> stations() {
@@ -106,8 +130,17 @@ public class Sections {
 		return stations;
 	}
 
-	public boolean contains(final Section section) {
-		return this.sections.contains(section);
+	private void checkPossibleRemoveByStation(final Station station) {
+		if (!isPossibleRemoveSize()) { // Sections의 최소 갯수는 삭제할 수 없다.
+			throw new IllegalArgumentException(CANNOT_DELETE_LAST_SECTION.message());
+		}
+		if (!containStationInSection(station)) { // 구간에 포함되어 있지 않으면 삭제 불가
+			throw new IllegalArgumentException(NOT_EXISTS_STATIONS.message());
+		}
+	}
+
+	private boolean isPossibleRemoveSize() {
+		return this.sections.size() > SECTION_MIN_SIZE;
 	}
 
 }

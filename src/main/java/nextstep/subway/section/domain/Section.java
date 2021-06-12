@@ -60,6 +60,21 @@ public class Section extends BaseEntity {
 		line.addSection(this);
 	}
 
+	public void connectUpStationToDownStation(final Section section) {
+		reduceDistance(section.distance);
+		this.upStation = section.downStation;
+	}
+
+	public void connectDownStationToUpStation(final Section section) {
+		reduceDistance(section.distance);
+		this.downStation = section.upStation;
+	}
+
+	public void disconnectStation(final Section section) {
+		unionDistance(section.distance);
+		this.upStation = section.upStation;
+	}
+
 	public Stream<Station> streamOfStation() {
 		return Stream.of(this.upStation, this.downStation);
 	}
@@ -68,21 +83,15 @@ public class Section extends BaseEntity {
 		return this.upStation;
 	}
 
-	public void connectUpStationToDownStation(final Section section) {
-		updateDistance(section.distance);
-		this.upStation = section.downStation;
-	}
-
 	public Station downStation() {
 		return this.downStation;
 	}
 
-	public void connectDownStationToUpStation(final Section section) {
-		updateDistance(section.distance);
-		this.downStation = section.upStation;
+	private void unionDistance(final int distance) {
+		this.distance += distance;
 	}
 
-	private void updateDistance(final int distance) {
+	private void reduceDistance(final int distance) {
 		if (this.distance <= distance) {
 			throw new IllegalArgumentException(OVER_DISTANCE.message());
 		}

@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static nextstep.subway.exception.CommonExceptionMessage.EXISTS_ALL_STATIONS;
-import static nextstep.subway.exception.CommonExceptionMessage.NOT_EXISTS_STATIONS;
+import static nextstep.subway.exception.CommonExceptionMessage.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -71,6 +70,87 @@ class SectionsTest {
 		assertThatThrownBy(() -> sections.add(Section.of(구디역, 강남역, 3)))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining(EXISTS_ALL_STATIONS.message());
+	}
+
+	@Test
+	@DisplayName("지하철 구간 중간지점 삭제 테스트")
+	void removeSectionTest() {
+		// given
+		Sections sections = new Sections();
+		sections.add(Section.of(강남역, 구디역, 10));
+		sections.add(Section.of(구디역, 판교역, 5));
+
+		// when
+		sections.removeStation(구디역);
+
+		// then
+		assertThat(sections.stationsBySorted())
+			.isNotEmpty()
+			.containsExactly(강남역, 판교역);
+
+	}
+
+	@Test
+	@DisplayName("지하철 첫 구간 삭제 테스트")
+	void removeFirstSectionTest() {
+		// given
+		Sections sections = new Sections();
+		sections.add(Section.of(강남역, 구디역, 10));
+		sections.add(Section.of(구디역, 판교역, 5));
+
+		// when
+		sections.removeStation(강남역);
+
+		// then
+		assertThat(sections.stationsBySorted())
+			.isNotEmpty()
+			.containsExactly(구디역, 판교역);
+
+	}
+
+	@Test
+	@DisplayName("지하철 마지막 구간 삭제 테스트")
+	void removeLastSectionTest() {
+		// given
+		Sections sections = new Sections();
+		sections.add(Section.of(강남역, 구디역, 10));
+		sections.add(Section.of(구디역, 판교역, 5));
+
+		// when
+		sections.removeStation(판교역);
+
+		// then
+		assertThat(sections.stationsBySorted())
+			.isNotEmpty()
+			.containsExactly(강남역, 구디역);
+
+	}
+
+	@Test
+	@DisplayName("지하철 하나뿐인 구간 삭제 테스트")
+	void removeOnlyOneSectionTest() {
+		// given
+		Sections sections = new Sections();
+		sections.add(Section.of(강남역, 구디역, 10));
+
+		// when
+		assertThatThrownBy(() -> sections.removeStation(강남역))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining(CANNOT_DELETE_LAST_SECTION.message());
+	}
+
+	@Test
+	@DisplayName("지하철 없는 구간 삭제 테스트")
+	void removeNotExistsSectionTest() {
+		// given
+		Sections sections = new Sections();
+		sections.add(Section.of(강남역, 구디역, 10));
+		sections.add(Section.of(구디역, 판교역, 5));
+
+		// when
+		assertThatThrownBy(() -> sections.removeStation(사당역))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining(NOT_EXISTS_STATIONS.message());
 	}
 
 }
