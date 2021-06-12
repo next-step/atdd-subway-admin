@@ -103,12 +103,12 @@ public class Section {
         this.downStation = compareSection.upStation;
     }
 
-    public boolean isStartStation(Section startSection) {
-        return this.upStation.equals(startSection.downStation);
+    public boolean isUpStationWithDown(Section beforeSection) {
+        return this.upStation.equals(beforeSection.downStation);
     }
 
-    public boolean isEndStation(Section findSection) {
-        return this.downStation.equals(findSection.upStation);
+    public boolean isDownStationWithUp(Section beforeSection) {
+        return this.downStation.equals(beforeSection.upStation);
     }
 
     public boolean sameUpStaion(Station station) {
