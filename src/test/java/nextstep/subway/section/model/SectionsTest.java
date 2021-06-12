@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.exception.section.NotFoundSectionException;
+import nextstep.subway.exception.station.NotFoundStationException;
 import nextstep.subway.exception.station.StationsAlreadyExistException;
 import nextstep.subway.exception.station.StationsNoExistException;
 import nextstep.subway.line.domain.Line;
@@ -110,6 +111,29 @@ public class SectionsTest {
         assertThrows(StationsNoExistException.class, () -> {
             Section section = Section.of(2L, newStation, newStation2, line, 10);
             sections.add(section);
+        });
+    }
+
+    @Test
+    @DisplayName("구간 삭제 시 삭제된 나머지 역이 연결된다")
+    void remove() {
+        Section section = Section.of(2L, upStation, newStation, line, 10);
+        sections.add(section);
+        sections.remove(newStation);
+        assertThat(sections.getDistanceWithStations(upStation, downStation)).isEqualTo(20);
+
+        section = Section.of(2L, downStation, newStation, line, 10);
+        sections.add(section);
+        sections.remove(newStation);
+        assertThat(sections.getDistanceWithStations(upStation, downStation)).isEqualTo(20);
+
+    }
+
+    @Test
+    @DisplayName("구간이 1개밖에 없을 때는 삭제가 불가능 하다.")
+    void removeOnlyOne() {
+        assertThrows(NotFoundStationException.class, () -> {
+            sections.remove(upStation);
         });
     }
 
