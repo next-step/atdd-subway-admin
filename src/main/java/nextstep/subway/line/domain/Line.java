@@ -67,6 +67,10 @@ public class Line extends BaseEntity {
         return unmodifiableList(stations);
     }
 
+    public List<Section> getSections() {
+        return unmodifiableList(sections);
+    }
+
     public Long getId() {
         return id;
     }

@@ -78,6 +78,8 @@ public class LineService {
 
     public void deleteLine(Long id) {
         Line line = getLineById(id);
+        line.getSections()
+            .forEach(sectionRepository::delete);
         lineRepository.delete(line);
     }
 

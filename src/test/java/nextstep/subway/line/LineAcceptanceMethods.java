@@ -139,7 +139,12 @@ public class LineAcceptanceMethods {
         ExtractableResponse<Response> retryResponse, LineRequest lineRequest) {
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        지하철_노선_응답됨(retryResponse, lineRequest);
+        LineResponse lineResponse = retryResponse.as(LineResponse.class);
+        assertThat(retryResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(retryResponse.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        assertThat(lineResponse.getId()).isNotNull();
+        assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
+        assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
     }
 
     public static void 지하철_노선_삭제됨(ExtractableResponse<Response> response,
