@@ -43,11 +43,14 @@ public class Section extends BaseEntity {
         }
     }
 
-    public void update(Section section) {
-        this.upStation = section.getUpStation();
-        this.downStation = section.getDownStation();
+    public void updateDownStation(Section section) {
         updateDistance(section.getDistance());
-        this.distance = section.getDistance();
+        this.downStation = section.upStation;
+    }
+
+    public void updateUpStation(Section section) {
+        updateDistance(section.getDistance());
+        this.upStation = section.downStation;
     }
 
     private void updateDistance(int newDistance) {
@@ -55,7 +58,7 @@ public class Section extends BaseEntity {
             throw new IllegalArgumentException("기존 역 사이의 길이와 같거나 긴 구간을 등록할 수 없습니다.");
         }
 
-        this.distance = newDistance;
+        this.distance -= newDistance;
     }
 
     public void addLine(Line line) {

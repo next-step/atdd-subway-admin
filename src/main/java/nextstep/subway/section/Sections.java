@@ -19,7 +19,7 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (sections.contains(section)){
+        if (sections.contains(section)) {
             return;
         }
 
@@ -41,13 +41,13 @@ public class Sections {
     }
 
     private void checkUpandDownStationNotContained(List<Station> stations, Section section) {
-        if(!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())){
+        if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
             throw new IllegalArgumentException("구간의 상하행역중 하나라도 등록이 되어 있어야 합니다.");
         }
     }
 
     private void checkUpAndDownStationAlreadyContained(List<Station> stations, Section section) {
-        if(stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())){
+        if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
             throw new IllegalArgumentException("구간의 상하행역이 이미 모두 등록되어있습니다.");
         }
     }
@@ -62,11 +62,8 @@ public class Sections {
                 .orElse(null);
         if (existingSection != null) {
             int indexOfExisting = sections.indexOf(existingSection);
-            Section newFrontSection = new Section(existingSection.getUpStation(), section.getUpStation(), existingSection.getDistance() - section.getDistance());
-            existingSection.update(section);
-            section.update(newFrontSection);
-
-            sections.add(indexOfExisting, section);
+            existingSection.updateDownStation(section);
+            sections.add(indexOfExisting + 1, section);
         }
     }
 
@@ -80,14 +77,10 @@ public class Sections {
                 .orElse(null);
         if (existingSection != null) {
             int indexOfExisting = sections.indexOf(existingSection);
-            Section newLaterSection = new Section(section.getDownStation(), existingSection.getDownStation(), existingSection.getDistance() - section.getDistance());
-            existingSection.update(section);
-            section.update(newLaterSection);
-
-            sections.add(indexOfExisting + 1, section);
+            existingSection.updateUpStation(section);
+            sections.add(indexOfExisting, section);
         }
     }
-
 
     private void connectIfLast(Section section) {
         if (sections.contains(section)) {
