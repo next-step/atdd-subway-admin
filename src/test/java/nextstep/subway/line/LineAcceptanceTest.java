@@ -140,6 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 값 검증
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
         Assertions.assertThat(lineResponse.getName()).isEqualTo("경의선");
+        Assertions.assertThat(lineResponse.getStations()).extracting("name").contains("광명역", "오송역");
     }
 
     @DisplayName("등록되지않은 지하철 노선을 조회한다.")
