@@ -34,17 +34,18 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity<LinesResponse> getLines() {
+    public ResponseEntity<LinesResponse> getLines(
+            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(required = false, defaultValue = "") String color) {
+        LineRequest lineRequest = new LineRequest(name, color);
         ResponseEntity<LinesResponse> response = null;
 
-        LinesResponse linesResponse = lineService.getLines();
+        LinesResponse linesResponse = lineService.getLines(lineRequest);
         if (linesResponse.isEmpty()) {
             response = ResponseEntity.noContent().build();
         } else if (!linesResponse.isEmpty()) {
             response = ResponseEntity.ok().body(linesResponse);
         }
-
-        System.out.println(response.toString());
 
         return response;
     }

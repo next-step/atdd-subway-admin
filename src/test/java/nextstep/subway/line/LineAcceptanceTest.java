@@ -64,8 +64,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
 
-        System.out.println("resultLineIds" + resultLineIds);
-
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -80,9 +78,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("지하철_노선_PK_조회_성공")
+    @DisplayName("지하철_노선_검색_성공")
     @Test
-    void 지하철_노선_PK_조회_성공() {
+    void 지하철_노선_검색_성공() {
+        // given
+        LineRequest firstRequest = new LineRequest("1호선", "FF0000");
+        LineRequest secondRequest = new LineRequest("2호선", "00FF00");
+        LineRequest thirdRequest = new LineRequest("3호선", "00FF00");
+        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(firstRequest);
+        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(secondRequest);
+        ExtractableResponse createResponse3 = 지하철_노선_생성_요청(thirdRequest);
+        List<Long> expectedResult = Arrays.asList(createResponse2, createResponse3).stream()
+                .map(it -> it.jsonPath().getObject(".", LineResponse.class).getId())
+                .collect(Collectors.toList());
+
+        // when
+        ExtractableResponse response = 지하철_노선_검색_요청(new LineRequest("", "00FF00"));
+        List<Long> actualResult = response.jsonPath().getList("lineResponses", LineResponse.class).stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actualResult).containsAll(expectedResult);
+    }
+
+    @DisplayName("지하철_노선_PK_조건_조회_성공")
+    @Test
+    void 지하철_노선_PK_조건_조회_성공() {
         // given
         LineRequest firstRequest = new LineRequest("1호선", "FF0000");
         ExtractableResponse createResponse = 지하철_노선_생성_요청(firstRequest);
@@ -90,8 +113,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long savedId = Long.valueOf(createResponse.header("Location").split("/")[2]);
 
         // when
-        ExtractableResponse response = 지하철_노선_조회_요청(savedId);
-        LineResponse actualResult = response.jsonPath().getObject(".", LineResponse.class);
+        ExtractableResponse response = 지하철_노선_PK_조건_조회_요청(savedId);
+        LineResponse actualResult = response.jsonPath().getObject(".lineResponses", LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -102,35 +125,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    @DisplayName("지하철_노선_조회_성공_데이터없음")
+    @DisplayName("지하철_노선_PK_조건_조회_성공_데이터없음")
     @Test
-    void 지하철_노선_조회_성공_데이터없음() {
+    void 지하철_노선_PK_조건_조회_성공_데이터없음() {
         // given
         Long targetId = Long.MAX_VALUE;
 
         // when
-        ExtractableResponse response = 지하철_노선_조회_요청(targetId);
+        ExtractableResponse response = 지하철_노선_PK_조건_조회_요청(targetId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    }
-
-    @DisplayName("지하철_노선_검색_성공")
-    @Test
-    void 지하철_노선_검색_성공() {
-        // given
-        LineRequest firstRequest = new LineRequest("1호선", "FF0000");
-        LineRequest secondRequest = new LineRequest("2호선", "00FF00");
-        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(firstRequest);
-        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(secondRequest);
-
-        // when
-        ExtractableResponse response = 지하철_노선_검색_요청(firstRequest.getName());
-        LineResponse expectedResult = response.jsonPath().getObject(".", LineResponse.class);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getObject(".", LineResponse.class)).isEqualTo(createResponse1.body());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
