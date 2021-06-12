@@ -1,11 +1,7 @@
 package nextstep.subway.line.ui;
 
-import nextstep.subway.line.application.exceptions.AlreadyExistsLineNameException;
-import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
+import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,8 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-import java.util.List;
+import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.application.exceptions.AlreadyExistsLineNameException;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @RestController
 @RequestMapping("/lines")
@@ -63,10 +64,22 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity<?> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        lineService.addSection(lineId, sectionRequest);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler({AlreadyExistsLineNameException.class})
     public ResponseEntity<String> handleDuplicateException(
         AlreadyExistsLineNameException alreadyExistsLineNameException) {
         String message = alreadyExistsLineNameException.getMessage();
         return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException illegalArgumentException) {
+        String message = illegalArgumentException.getMessage();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 }

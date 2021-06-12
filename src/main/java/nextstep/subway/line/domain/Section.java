@@ -41,28 +41,74 @@ public class Section {
 
 	protected Section() { }
 
-	Section(Line line, Station upStation, Station downStation, Integer distance) {
-		this(null, line, upStation, downStation, distance);
-	}
-
-	Section(Long id, Line line, Station upStation, Station downStation, Integer distance) {
-		this.id = id;
+	Section(Line line, Station upStation, Station downStation, Distance distance) {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = Distance.valueOf(distance);
+		this.distance = distance;
 	}
 
-	boolean isPreviousOf(Section otherSection) {
+	boolean isUpDirectionOf(Section otherSection) {
 		return this.downStation.equals(otherSection.upStation);
 	}
 
-	boolean isNextOf(Section otherSection) {
+	boolean isDownDirectionOf(Section otherSection) {
 		return this.upStation.equals(otherSection.downStation);
+	}
+
+	boolean isSameDownStation(Section otherSection) {
+		return this.downStation.equals(otherSection.downStation);
+	}
+
+	boolean isSameUpStation(Section otherSection) {
+		return this.upStation.equals(otherSection.upStation);
 	}
 
 	Stream<Station> getStreamOfStations() {
 		return Stream.of(upStation, downStation);
+	}
+
+	Long getId() {
+		return id;
+	}
+
+	Distance getDistance() {
+		return distance;
+	}
+
+	void addInnerSection(Section otherSection) {
+		if (isSameDownStation(otherSection)) {
+			addToDownDirection(otherSection);
+		}
+		if (isSameUpStation(otherSection)) {
+			addToUpDirection(otherSection);
+		}
+	}
+
+	boolean contains(Station station) {
+		return upStation.equals(station) || downStation.equals(station);
+	}
+
+	private void addToDownDirection(Section otherSection) {
+		validateLongerThan(otherSection);
+		this.downStation = otherSection.upStation;
+		this.distance = distance.minus(otherSection.distance);
+	}
+
+	private void addToUpDirection(Section otherSection) {
+		validateLongerThan(otherSection);
+		this.upStation = otherSection.downStation;
+		this.distance = distance.minus(otherSection.distance);
+	}
+
+	private void validateLongerThan(Section otherSection) {
+		if (isEqualOrShorterThan(otherSection)) {
+			throw new IllegalArgumentException("추가할 구간이 기존 구간 보다 같거나 길 수 없습니다.");
+		}
+	}
+
+	private boolean isEqualOrShorterThan(Section otherSection) {
+		return distance.isLessThan(otherSection.distance);
 	}
 
 	@Override
@@ -72,11 +118,22 @@ public class Section {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		Section section = (Section)o;
-		return Objects.equals(id, section.id);
+		return Objects.equals(getId(), section.getId());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public String toString() {
+		return "Section{" +
+			"id=" + id +
+			", line=" + line +
+			", upStation=" + upStation +
+			", downStation=" + downStation +
+			", distance=" + distance +
+			'}';
 	}
 }

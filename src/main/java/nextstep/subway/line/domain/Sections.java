@@ -29,11 +29,15 @@ public class Sections {
 	}
 
 	static Sections of(Section... sections) {
-		return new Sections(asList(sections));
+		return new Sections(new ArrayList<>(asList(sections)));
 	}
 
-	void add(Section section) {
-		this.sections.add(section);
+	void add(Section otherSection) {
+		checkValidation(otherSection);
+		for (Section section : sections) {
+			section.addInnerSection(otherSection);
+		}
+		sections.add(otherSection);
 	}
 
 	List<Station> orderedStations() {
@@ -46,33 +50,58 @@ public class Sections {
 	private Stream<Section> orderedSections() {
 		Section currentSection = sections.get(ORDER_START_SECTION_IDX);
 		return Stream.concat(
-			findPreviousSectionsClosed(currentSection),
-			findNextSectionsClosed(currentSection))
+			findUpDirectionSectionsClosed(currentSection),
+			findDownDirectionSectionsClosed(currentSection))
 			.distinct();
 	}
 
-	private Stream<Section> findPreviousSectionsClosed(Section currentSection) {
+	private Stream<Section> findUpDirectionSectionsClosed(Section currentSection) {
 		Optional<Section> previousSection = sections.stream()
-			.filter(section -> section.isPreviousOf(currentSection))
+			.filter(section -> section.isUpDirectionOf(currentSection))
 			.findFirst();
 
 		Stream<Section> current = Stream.of(currentSection);
 
 		return previousSection
-			.map(section -> Stream.concat(findPreviousSectionsClosed(section), current))
+			.map(section -> Stream.concat(findUpDirectionSectionsClosed(section), current))
 			.orElse(current);
 	}
 
-	private Stream<Section> findNextSectionsClosed(Section currentSection) {
+	private Stream<Section> findDownDirectionSectionsClosed(Section currentSection) {
 		Optional<Section> nextSection = sections.stream()
-			.filter(section -> section.isNextOf(currentSection))
+			.filter(section -> section.isDownDirectionOf(currentSection))
 			.findFirst();
 
 		Stream<Section> current = Stream.of(currentSection);
 
 		return nextSection
-			.map(section -> Stream.concat(current, findNextSectionsClosed(section)))
+			.map(section -> Stream.concat(current, findDownDirectionSectionsClosed(section)))
 			.orElse(current);
 	}
-}
 
+	private void checkValidation(Section otherSection) {
+		if (sections.isEmpty()) {
+			return;
+		}
+		if (exists(otherSection)) {
+			throw new IllegalArgumentException("해당 구간은 이미 존재합니다.");
+		}
+		if (notExistsUpAndDownStations(otherSection)) {
+			throw new IllegalArgumentException("상행역 하행역 모두 노선에 존재하지 않는 구간은 등록할 수 없다.");
+		}
+	}
+
+	private boolean exists(Section otherSection) {
+		boolean existsSameUpStation = sections.stream()
+			.anyMatch(section -> section.isSameUpStation(otherSection));
+
+		return sections.stream()
+			.anyMatch(section -> existsSameUpStation && section.isSameDownStation(otherSection));
+	}
+
+	private boolean notExistsUpAndDownStations(Section otherSection) {
+		return sections.stream()
+			.flatMap(Section::getStreamOfStations)
+			.noneMatch(otherSection::contains);
+	}
+}

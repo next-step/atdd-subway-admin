@@ -79,3 +79,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     -[x] 테스트 코드 변경
     -[x] 프로덕션 코드 변경
     -[x] N+1 문제 해결
+-[ ] 구간 추가하기 기능
+    -[x] 구간 추가에 대한 인수 테스트 작성
+    -[x] 구간 추가 기능 프로덕션 코드에 구현

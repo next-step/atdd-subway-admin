@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -47,7 +48,8 @@ public class LineService {
     }
 
     public void updateLineById(Long lineId, LineRequest lineRequest) {
-        Line line = findLineById(lineId);
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(() -> new NotFoundLineException(String.format("노선이 존재하지 않습니다.[%s]", lineId)));
         line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
@@ -59,5 +61,12 @@ public class LineService {
 
     public void deleteLineById(Long lineId) {
         lineRepository.deleteById(lineId);
+    }
+
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        Line line = findLineById(lineId);
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 }
