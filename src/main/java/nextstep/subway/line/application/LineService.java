@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import nextstep.subway.exception.NotFoundLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineAndStationResponse;
@@ -26,20 +27,20 @@ public class LineService {
     }
 
     public List<LineAndStationResponse> findAllLines() {
-        List<Line> stations = lineRepository.findAll();
-        return stations.stream()
+        List<Line> lines = lineRepository.findAll();
+        return lines.stream()
             .map(LineAndStationResponse::of)
             .collect(Collectors.toList());
     }
+
 	public LineAndStationResponse findByLine(Long id) {
-		return LineAndStationResponse.of(lineRepository.findById(id).orElseThrow(()
-			-> new IllegalArgumentException("조회 할 수 없습니다.")));
+		return LineAndStationResponse.of(lineRepository.findById(id).orElseThrow(NotFoundLineException::new));
 	}
 
 	public void updateLineById(Long id, LineRequest lineRequest) {
-		Line line = lineRepository.findById(id).orElseThrow(()
-			-> new IllegalArgumentException("조회 할 수 없습니다."));
-		line.update(lineRequest.toLine());
+		lineRepository
+			.findById(id)
+			.ifPresent(line -> line.update(lineRequest.toLine()));
 	}
 
 	public void deleteStationById(Long id) {
