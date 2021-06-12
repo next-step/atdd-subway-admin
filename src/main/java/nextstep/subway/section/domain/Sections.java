@@ -122,4 +122,8 @@ public class Sections {
         }
     }
 
+    public void remove(Station upStation) {
+
+    }
+
 }
