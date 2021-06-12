@@ -1,16 +1,36 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.line.LineAcceptanceTool.*;
+import static nextstep.subway.line.LineAcceptanceMethods.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    LineRequest 신분당선;
+    LineRequest 분당선;
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+
+        StationResponse 강남역 = createStation("강남역");
+        StationResponse 광교역 = createStation("광교역");
+        StationResponse 왕십리역 = createStation("왕십리역");
+        StationResponse 수원역 = createStation("수원역");
+
+        신분당선 = new LineRequest("신분당선", "red darken-1", 강남역.getId(), 광교역.getId(), 120);
+        분당선 = new LineRequest("분당선", "yellow light-1", 왕십리역.getId(), 수원역.getId(), 150);
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -60,26 +80,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_목록_응답됨
-        지하철_노선_목록_응답됨(response);
+        지하철_노선_목록_응답됨(신분당선, response);
         // 지하철_노선_목록_포함됨
         지하철_노선_목록_포함됨(response, createResponse1, createResponse2);
-    }
-
-    @DisplayName("상/하행선 정보를 포함하는 지하철 노선 목록을 조회한다.")
-    @Test
-    void getLinesWithEndpoints() {
-        // given
-        // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음_종점포함(신분당선_종점있음);
-
-        // when
-        // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response
-            = 지하철_노선_목록_조회_요청();
-
-        // then
-        // 지하철_노선_목록_응답됨
-        지하철_노선_목록_응답됨_종점포함(신분당선_종점있음, response);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -113,12 +116,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> updateResponse
             = 지하철_노선_수정_요청(createResponse, 분당선);
 
-        ExtractableResponse<Response> changedResponse
+        ExtractableResponse<Response> retryResponse
             = 지하철_노선_조회_요청(createResponse);
 
         // then
         // 지하철_노선_수정됨
-        지하철_노선_수정됨(updateResponse, changedResponse, 분당선);
+        지하철_노선_수정됨(updateResponse, retryResponse, 분당선);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
