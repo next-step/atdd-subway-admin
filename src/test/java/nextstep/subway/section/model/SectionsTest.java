@@ -30,6 +30,7 @@ public class SectionsTest {
     private Station newStation;
     private Line line;
     private Station newStation2;
+    private Section sectionFirst;
 
     @BeforeEach
     void setup() {
@@ -38,8 +39,8 @@ public class SectionsTest {
         newStation = Station.of(3L, "선릉역");
         newStation2 = Station.of(4L, "전장역");
         line = new Line(1L, "2호선", "green");
-        Section section = Section.of(1L, upStation, downStation, line, 20);
-        sections = Sections.of(new ArrayList<Section>(Arrays.asList(section)));
+        sectionFirst = Section.of(1L, upStation, downStation, line, 20);
+        sections = Sections.of(new ArrayList<Section>(Arrays.asList(sectionFirst)));
     }
 
     @Test
@@ -119,12 +120,12 @@ public class SectionsTest {
     void remove() {
         Section section = Section.of(2L, upStation, newStation, line, 10);
         sections.add(section);
-        sections.remove(newStation);
+        sections.remove(section);
         assertThat(sections.getDistanceWithStations(upStation, downStation)).isEqualTo(20);
 
         section = Section.of(2L, downStation, newStation, line, 10);
         sections.add(section);
-        sections.remove(newStation);
+        sections.remove(section);
         assertThat(sections.getDistanceWithStations(upStation, downStation)).isEqualTo(20);
 
     }
@@ -133,7 +134,16 @@ public class SectionsTest {
     @DisplayName("구간이 1개밖에 없을 때는 삭제가 불가능 하다.")
     void removeOnlyOne() {
         assertThrows(NotFoundStationException.class, () -> {
-            sections.remove(upStation);
+            sections.remove(sectionFirst);
+        });
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 구간은 삭제 불가능 하다.")
+    void removeNoSection() {
+        assertThrows(NotFoundStationException.class, () -> {
+            Section section = Section.of(2L, upStation, newStation, line, 10);
+            sections.remove(section);
         });
     }
 

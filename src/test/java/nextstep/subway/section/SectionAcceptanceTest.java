@@ -196,6 +196,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(removedSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Test
+    @DisplayName("없는 구간은 제거할 수없다.")
+    void removeNoSection() {
+        //when
+        //지하철 삭제요청을 보낸다
+        ExtractableResponse<Response> removedSectionResponse = 삭제_요청(
+            String.format("/lines/%d/sections?stationId=%d", lineId, newStationId));
+
+        //then
+        //삭제가 불가능하다.
+        assertThat(removedSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private List<Long> 지하철역_ID_추출(ExtractableResponse<Response> createdSectionResponse) {
         return createdSectionResponse.as(LineResponse.class).getStations().stream()
             .map(StationResponse::getId)
