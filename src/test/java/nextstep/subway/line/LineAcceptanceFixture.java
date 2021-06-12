@@ -63,7 +63,8 @@ public class LineAcceptanceFixture {
     }
 
     enum SectionFixture {
-        SECTION("1", "2", "10");
+        SECTION("2", "3", "50"),
+        DUPLICATED_SECTION("1", "2", "50");
 
         private final String upStation;
         private final String downStation;

@@ -12,6 +12,7 @@ import static org.springframework.http.HttpStatus.*;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -27,11 +28,24 @@ import nextstep.subway.station.domain.Station;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private Station 강남역;
+    private Station 역삼역;
+    private Station 선릉역;
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+
+        강남역 = 지하철역_생성_요청("강남역", StationAcceptanceFixture::toStation);
+        역삼역 = 지하철역_생성_요청("역삼역", StationAcceptanceFixture::toStation);
+        선릉역 = 지하철역_생성_요청("선릉역", StationAcceptanceFixture::toStation);
+    }
+
+    @DisplayName("지하철 구간을 추가한다.")
     @Test
-    void addSection() {
+    void given_Line_when_AddSection_then_ReturnOk() {
         // given
-        final Station 강남역 = 지하철역_생성_요청("강남역", StationAcceptanceFixture::toStation);
-        final Station 역삼역 = 지하철역_생성_요청("역삼역", StationAcceptanceFixture::toStation);
         NEW_지하철_노선_생성_요청(PATH, FIRST);
 
         // when
@@ -41,18 +55,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final Section section = toSection(response);
         assertAll(
             () -> assertThat(statusCode(response)).isEqualTo(statusCode(OK)),
-            () -> assertThat(section.getUpStation()).isEqualTo(강남역),
-            () -> assertThat(section.getDownStation()).isEqualTo(역삼역),
+            () -> assertThat(section.getUpStation()).isEqualTo(역삼역),
+            () -> assertThat(section.getDownStation()).isEqualTo(선릉역),
             () -> assertThat(section.getDistance()).isEqualTo(Integer.parseInt(SECTION.getDistance()))
         );
+    }
+
+    @DisplayName("기존에 존재하는 구간을 추가한다.")
+    @Test
+    void given_LineAndSection_when_AddExistingSection_then_ReturnBadRequest() {
+        // given
+        NEW_지하철_노선_생성_요청(PATH, FIRST);
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_구간에_지하철역_등록_요청(PATH + "/1/sections", DUPLICATED_SECTION);
+
+        // then
+        assertThat(statusCode(response)).isEqualTo(statusCode(BAD_REQUEST));
     }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void given_NoExisingLine_when_CreateLineWithStation_then_ReturnLine() {
         // when
-        final Station station1 = 지하철역_생성_요청("강남역", StationAcceptanceFixture::toStation);
-        final Station station2 = 지하철역_생성_요청("역삼역", StationAcceptanceFixture::toStation);
         final ExtractableResponse<Response> response = NEW_지하철_노선_생성_요청(PATH, FIRST);
 
         // then
@@ -60,7 +85,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             () -> assertThat(statusCode(response)).isEqualTo(statusCode(CREATED)),
             () -> assertThat(response.header("Location")).isNotBlank(),
             () -> assertThat(toLine(response)).isEqualTo(FIRST.line()),
-            () -> assertThat(toStations(response)).isEqualTo(Arrays.asList(station1, station2))
+            () -> assertThat(toStations(response)).isEqualTo(Arrays.asList(강남역, 역삼역))
         );
     }
 
