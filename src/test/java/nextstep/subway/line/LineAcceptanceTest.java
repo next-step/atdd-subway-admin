@@ -226,7 +226,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void 구간등록_등록확인4(int distance) throws Exception {
         //given
         지하철_노선_생성("테스트노선", "테스트색", "상행종점역", "하행종점역", 1000);
-
         StationResponse stationResponse = 역_생성("추가될역");
 
         //when
@@ -271,9 +270,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         지하철_노선_생성("테스트노선", "테스트색", "상행종점역", "하행종점역", 1000);
         StationResponse stationResponse = 역_생성("추가될역");
-        Map<String, String> params = 구간_역_생성_및_노선등록_파라미터(stationResponse.getId(), 1L, 500);
-        ExtractableResponse<Response> extractableResponse = 구간_역_생성_및_노선등록_요청(params);
-        구간_역_생성_및_노선등록됨(extractableResponse);
+        구간_역_생성_및_노선등록(stationResponse.getId(), 1L, 500);
 
         //when
         ExtractableResponse<Response> response = 구간삭제_요청(stationResponse.getId());
@@ -288,9 +285,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         지하철_노선_생성("테스트노선", "테스트색", "상행종점역", "하행종점역", 1000);
         StationResponse stationResponse = 역_생성("추가될역");
-        Map<String, String> params = 구간_역_생성_및_노선등록_파라미터(2L, stationResponse.getId(), 500);
-        ExtractableResponse<Response> extractableResponse = 구간_역_생성_및_노선등록_요청(params);
-        구간_역_생성_및_노선등록됨(extractableResponse);
+        구간_역_생성_및_노선등록(2L, stationResponse.getId(), 500);
 
         //when
         ExtractableResponse<Response> response = 구간삭제_요청(stationResponse.getId());
@@ -305,9 +300,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         지하철_노선_생성("테스트노선", "테스트색", "상행종점역", "하행종점역", 1000);
         StationResponse stationResponse = 역_생성("추가될역");
-        Map<String, String> params = 구간_역_생성_및_노선등록_파라미터(1L, stationResponse.getId(), 500);
-        ExtractableResponse<Response> extractableResponse = 구간_역_생성_및_노선등록_요청(params);
-        구간_역_생성_및_노선등록됨(extractableResponse);
+        구간_역_생성_및_노선등록(1L, stationResponse.getId(), 500);
 
         //when
         ExtractableResponse<Response> response = 구간삭제_요청(stationResponse.getId());

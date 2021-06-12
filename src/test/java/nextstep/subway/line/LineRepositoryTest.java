@@ -40,14 +40,9 @@ public class LineRepositoryTest {
     @Test
     public void save() {
         //given
-        Station upStation = Station.create("upStation");
-        Station downStation = Station.create("downStation");
-        stationRepository.save(upStation);
-        stationRepository.save(downStation);
-
-        Section section = Section.create(100);
-        entityManager.flush();
-        entityManager.clear();
+        Station upStation = stationRepository.save(Station.create("upStation"));
+        Station downStation = stationRepository.save(Station.create("downStation"));
+        Section section = sectionRepository.save(Section.create(100));
 
         //when
         Line savedLine = 노선저장2("새로운노선", "새로운색", upStation, downStation, section);
@@ -61,15 +56,9 @@ public class LineRepositoryTest {
     @Test
     public void update() {
         //given
-        Station upStation = Station.create("upStation");
-        Station downStation = Station.create("downStation");
-        stationRepository.save(upStation);
-        stationRepository.save(downStation);
-
-        Section section = Section.create(100);
-        entityManager.flush();
-        entityManager.clear();
-
+        Station upStation = stationRepository.save(Station.create("upStation"));
+        Station downStation = stationRepository.save(Station.create("downStation"));
+        Section section = sectionRepository.save(Section.create(100));
         Line savedLine = 노선저장2("새로운노선", "새로운색", upStation, downStation, section);
 
         //when
@@ -90,8 +79,6 @@ public class LineRepositoryTest {
         Station saveUpStation = stationRepository.save(Station.create("upStation"));
         Station saveDownStation = stationRepository.save(Station.create("downStation"));
         Section saveSection = sectionRepository.save(Section.create(100));
-        entityManager.flush();
-        entityManager.clear();
 
         Line line = 노선저장2("새로운노선", "새로운색", saveUpStation, saveDownStation, saveSection);
         Line findLine = lineRepository.findById(line.id()).orElseThrow(() -> new IllegalStateException());
@@ -113,12 +100,9 @@ public class LineRepositoryTest {
     @Test
     public void 역과구간과함께노선생성시_연관관계확인() throws Exception {
         //given
-        Station upStation = Station.create("상행종점역");
-        Station downStation = Station.create("하행종점역");
-        Section section = Section.create(100);
-        Station savedUpStation = stationRepository.save(upStation);
-        Station savedDownStation = stationRepository.save(downStation);
-        Section savedSection = sectionRepository.save(section);
+        Station savedUpStation = stationRepository.save(Station.create("상행종점역"));
+        Station savedDownStation = stationRepository.save(Station.create("하행종점역"));
+        Section savedSection = sectionRepository.save(Section.create(100));
 
         //when
         Line line = Line.createWithSectionAndStation("테스트노선", "테스트색", savedSection, savedUpStation, savedDownStation);

@@ -1,14 +1,14 @@
 package nextstep.subway.line;
 
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import nextstep.subway.exception.DuplicateDataException;
 import nextstep.subway.exception.NoSuchDataException;
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.domain.Line;
-import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LinesSubResponse;
-import nextstep.subway.domain.Station;
+import nextstep.subway.line.repository.LineRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +23,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
