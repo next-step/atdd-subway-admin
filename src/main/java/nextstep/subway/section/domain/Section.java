@@ -64,6 +64,10 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
+    public static Section of(final List<Station> stations, final int distance, final Line line) {
+        return new Section(stations, distance, line);
+    }
+
     private Station validStation(final Station station) {
         return Optional.ofNullable(station)
             .orElseThrow(IllegalArgumentException::new);

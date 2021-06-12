@@ -13,6 +13,9 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -21,12 +24,15 @@ import nextstep.subway.station.domain.StationRepository;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
     public LineService(final LineRepository lineRepository,
-        final StationRepository stationRepository) {
+        final StationRepository stationRepository, final SectionRepository sectionRepository,
+        final SectionRepository sectionRepository1) {
 
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository1;
     }
 
     public LineResponse saveLine(final LineRequest request) {
@@ -88,5 +94,20 @@ public class LineService {
 
     public void deleteLineById(final Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public SectionResponse addSection(final Long lineId, final SectionRequest sectionRequest) {
+        return SectionResponse.of(persistSection(lineId, sectionRequest));
+    }
+
+    private Section persistSection(final Long lineId, final SectionRequest sectionRequest) {
+        return sectionRepository.save(section(sectionRequest, findById(lineId)));
+    }
+
+    private Section section(final SectionRequest sectionRequest, final Line line) {
+        final List<Long> ids = Arrays.asList(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
+        final List<Station> stations = stationRepository.findByIdIn(ids);
+
+        return Section.of(stations, sectionRequest.getDistance(), line);
     }
 }

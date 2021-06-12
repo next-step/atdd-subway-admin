@@ -14,7 +14,7 @@ import nextstep.subway.station.dto.StationResponse;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private final List<Section> sections = new ArrayList<>();
 
     public void add(final Section section) {

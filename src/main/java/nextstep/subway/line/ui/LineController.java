@@ -19,6 +19,8 @@ import nextstep.subway.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 
 @RestController
 @RequestMapping("/lines")
@@ -44,6 +46,13 @@ public class LineController {
 
     private URI createUri(final LineResponse line) {
         return URI.create("/lines/" + line.getId());
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<SectionResponse> addSection(@PathVariable final Long id,
+        @RequestBody final SectionRequest sectionRequest) {
+
+        return ResponseEntity.ok(lineService.addSection(id, sectionRequest));
     }
 
     @GetMapping
