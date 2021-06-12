@@ -29,8 +29,8 @@ public class LineService {
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		Station startStation = getEndStation(request.getUpStationId());
-		Station endStation = getEndStation(request.getDownStationId());
+		Station startStation = getTerminalStation(request.getUpStationId());
+		Station endStation = getTerminalStation(request.getDownStationId());
 		Line line = request.toLine();
 		line.addSection(request.toSection(line, startStation, endStation));
 
@@ -38,9 +38,9 @@ public class LineService {
 		return LineResponse.of(persistLine);
 	}
 
-	private Station getEndStation(Long id) {
+	private Station getTerminalStation(Long id) {
 		return stations.findById(id)
-			.orElseThrow(() -> new NoSuchElementException("End station is needed"));
+			.orElseThrow(() -> new NoSuchElementException("Terminal station is needed"));
 	}
 
 	@Transactional(readOnly = true)
