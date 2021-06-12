@@ -31,6 +31,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private Station 강남역;
     private Station 역삼역;
     private Station 선릉역;
+    private Station 잠실역;
 
     @Override
     @BeforeEach
@@ -40,6 +41,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         강남역 = 지하철역_생성_요청("강남역", StationAcceptanceFixture::toStation);
         역삼역 = 지하철역_생성_요청("역삼역", StationAcceptanceFixture::toStation);
         선릉역 = 지하철역_생성_요청("선릉역", StationAcceptanceFixture::toStation);
+        잠실역 = 지하철역_생성_요청("잠실역", StationAcceptanceFixture::toStation);
     }
 
     @DisplayName("지하철 구간을 추가한다.")
@@ -63,12 +65,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 구간을 추가한다.")
     @Test
-    void given_LineAndSection_when_AddExistingSection_then_ReturnBadRequest() {
+    void given_DuplicatedSection_when_AddExistingSection_then_ReturnBadRequest() {
         // given
         NEW_지하철_노선_생성_요청(PATH, FIRST);
 
         // when
         final ExtractableResponse<Response> response = 지하철_구간에_지하철역_등록_요청(PATH + "/1/sections", DUPLICATED_SECTION);
+
+        // then
+        assertThat(statusCode(response)).isEqualTo(statusCode(BAD_REQUEST));
+    }
+
+    @DisplayName("기존 노선에 존재하지 않는 상행역과 하행역이 포함된 구간을 추가한다.")
+    @Test
+    void given_SectionHasStationsLineNotContain_when_AddExistingSection_then_ReturnBadRequest() {
+        // given
+        NEW_지하철_노선_생성_요청(PATH, FIRST);
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_구간에_지하철역_등록_요청(PATH + "/1/sections", SECTION_NEW_STATION);
 
         // then
         assertThat(statusCode(response)).isEqualTo(statusCode(BAD_REQUEST));
