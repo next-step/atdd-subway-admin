@@ -54,4 +54,5 @@ public class Line extends BaseEntity {
         addSection(section);
         return section;
     }
+
 }
