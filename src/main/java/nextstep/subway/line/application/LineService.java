@@ -14,6 +14,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -67,5 +68,14 @@ public class LineService {
 	public void deleteLine(long lineId) {
 		this.lineRepository.findById(lineId).orElseThrow(this.getEntityNotFoundExceptionSupplier());
 		this.lineRepository.deleteById(lineId);
+	}
+
+	public void addSection(long lineId, SectionRequest sectionRequest) {
+		Line line = this.lineRepository.findById(lineId).orElseThrow(this.getEntityNotFoundExceptionSupplier());
+		Station upStation = this.stationService.getStation(sectionRequest.getUpStationId());
+		Station downStation = this.stationService.getStation(sectionRequest.getDownStationId());
+		Section newSection = new Section(line, upStation, downStation, sectionRequest.getDistance());
+		line.addSection(newSection);
+
 	}
 }

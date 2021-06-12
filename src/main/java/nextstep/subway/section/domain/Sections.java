@@ -11,6 +11,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.exception.SubwayLogicException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -23,8 +24,40 @@ public class Sections {
 	public Sections() {
 	}
 
-	public void addSection(Section section) {
-		this.sections.add(section);
+	public void addSection(Section newSection) {
+		if (this.sections.isEmpty() || this.isEntryPointSection(newSection)) {
+			this.sections.add(newSection);
+			return;
+		}
+
+		//TODO
+		// 새 구간의 역들이 이미 구간에 추가되어있는경우
+		// 새 구간의 역들이 어디에도 추가되어있지 않는경우
+		this.validateAlreadyExistSection(newSection);
+		this.validateStationsNotContained(newSection);
+
+	}
+
+	private boolean isEntryPointSection(Section newSection) {
+		List<Station> orderedStations = this.getOrderedStations();
+		return orderedStations.get(0).equals(newSection.getDownStation()) || orderedStations.get(
+			orderedStations.size() - 1).equals(newSection.getUpStation());
+	}
+
+	private void validateAlreadyExistSection(Section newSection) {
+		List<Station> orderedStations = this.getOrderedStations();
+		if (orderedStations.contains(newSection.getDownStation()) && orderedStations.contains(
+			newSection.getUpStation())) {
+			throw new SubwayLogicException("해당구간은 이미 구성되어있어 추가할 수 없습니다.");
+		}
+	}
+
+	private void validateStationsNotContained(Section newSection) {
+		List<Station> orderedStations = this.getOrderedStations();
+		if (!orderedStations.contains(newSection.getDownStation()) && !orderedStations.contains(
+			newSection.getUpStation())) {
+			throw new SubwayLogicException("해당 구간은 연결 가능한 상행, 하행역이 없습니다.");
+		}
 	}
 
 	public void removeSection(Section section) {

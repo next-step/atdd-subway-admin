@@ -63,6 +63,7 @@ public class LineController {
 	@PostMapping("/{lineId}/sections")
 	public ResponseEntity addSection(@PathVariable("lineId") long lineId, @RequestBody SectionRequest sectionRequest) {
 		//TODO 기능 구현
+		this.lineService.addSection(lineId, sectionRequest);
 		return ResponseEntity.created(URI.create("/lines/" + lineId + "/stations")).body(null);
 	}
 
