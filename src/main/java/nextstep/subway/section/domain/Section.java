@@ -95,7 +95,7 @@ public class Section {
         this.upStation = compareSection.downStation;
     }
 
-    public void updateDistance(Section compareSection) {
+    public void updateMinusDistance(Section compareSection) {
         this.distance -= compareSection.distance;
     }
 
@@ -117,6 +117,10 @@ public class Section {
 
     public boolean sameDownStaion(Station station) {
         return this.downStation.equals(station);
+    }
+
+    public void connectDistance(Section afterSection) {
+        this.distance += afterSection.distance;
     }
 
 }

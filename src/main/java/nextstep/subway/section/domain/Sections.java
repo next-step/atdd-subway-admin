@@ -69,9 +69,16 @@ public class Sections {
         sections.add(section);
     }
 
-    public Section remove(Section section) {
+    public void remove(Section section) {
         validationRemove(section);
-        return section;
+        Section beforeSection = findSectionIsAnotherDownStation(section);
+        Section afterSection = findNextSection(section);
+        if (beforeSection == null || afterSection == null) {
+            sections.remove(section);
+            return;
+        }
+        beforeSection.updateDownStation(afterSection);
+        beforeSection.connectDistance(section);
     }
 
     private void validationRemove(Section section) {
@@ -112,7 +119,7 @@ public class Sections {
             .ifPresent(findedSection -> {
                 validateDistance(findedSection, compareSection);
                 findedSection.updateDownStation(compareSection);
-                findedSection.updateDistance(compareSection);
+                findedSection.updateMinusDistance(compareSection);
             });
 
     }
@@ -124,7 +131,7 @@ public class Sections {
             .ifPresent(findedSection -> {
                 validateDistance(findedSection, compareSection);
                 findedSection.updateUpStation(compareSection);
-                findedSection.updateDistance(compareSection);
+                findedSection.updateMinusDistance(compareSection);
             });
     }
 
