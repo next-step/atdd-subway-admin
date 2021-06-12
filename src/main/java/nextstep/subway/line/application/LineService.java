@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.DuplicateDataException;
@@ -9,6 +10,7 @@ import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesSubResponse;
+import nextstep.subway.linestation.LineStationRepository;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.section.repository.SectionRepository;
@@ -25,11 +27,13 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
     private final SectionRepository sectionRepository;
+    private final LineStationRepository lineStationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository, LineStationRepository lineStationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
         this.sectionRepository = sectionRepository;
+        this.lineStationRepository = lineStationRepository;
     }
 
     public LineResponse saveLine(LineRequest request, SectionResponse sectionResponse) {
@@ -38,6 +42,8 @@ public class LineService {
         Section section = findSectionById(sectionResponse.getId());
 
         Line line = Line.createWithSectionAndStation(request.getName(), request.getColor(), section, upStation, downStation);
+        lineStationRepository.save(LineStation.create(line, upStation));
+        lineStationRepository.save(LineStation.create(line, downStation));
         Line savedLine = lineRepository.save(line);
         return LineResponse.of(savedLine);
     }
@@ -60,6 +66,11 @@ public class LineService {
     }
 
     public void removeLine(Long lineId) {
+        Line line = findLineById(lineId);
+        line.disconnectAll();
+        line.sections().list().forEach(section -> sectionRepository.delete(section));
+        line.lineStations().list().forEach(lineStation -> lineStationRepository.delete(lineStation));
+        line.lineStations().list().forEach(lineStation -> stationRepository.delete(lineStation.station()));
         lineRepository.deleteById(lineId);
     }
 
@@ -97,7 +108,27 @@ public class LineService {
         Station upStation = findStationById(sectionRequest.getUpStationId());
         Station downStation = findStationById(sectionRequest.getDownStationId());
         Section section = findSectionById(sectionId);
+
+        Station newStation = line.findNewStation(upStation, downStation);
         line.register(upStation, downStation, section);
+
+        lineStationRepository.save(LineStation.create(line, newStation));
+
         return SectionResponse.of(section);
+    }
+
+    public void removeStation(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStationById(stationId);
+
+        line.validateDeletable(station);
+        Section section = line.findDeletableSection(station);
+        line.reconnect(station, section);
+
+        station.lineStations().stream()
+                .filter(lineStation -> lineStation.line().equals(line))
+                .forEach(lineStation -> lineStationRepository.delete(lineStation));
+        stationRepository.delete(station);
+        sectionRepository.delete(section);
     }
 }

@@ -52,6 +52,7 @@ public class LineStation {
     public void setStation(Station station) {
         this.station = station;
         this.line.addLineStation(this);
+        this.station.addLineStation(this);
     }
 
     /**

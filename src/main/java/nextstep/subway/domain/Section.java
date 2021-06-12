@@ -24,7 +24,7 @@ public class Section extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
-    @OneToOne(mappedBy = "downSection", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "downSection")
     private Station upStation;
 
     /**
@@ -63,7 +63,9 @@ public class Section extends BaseEntity {
      */
     public void registerDownStation(Station downStation) {
         this.downStation = downStation;
-        downStation.setUpSection(this);
+        if (downStation != null) {
+            downStation.setUpSection(this);
+        }
     }
 
     public void registerLine(Line line) {
@@ -71,6 +73,10 @@ public class Section extends BaseEntity {
             this.line = line;
             line.addSections(this);
         }
+    }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
     }
 
     private boolean isRegisterAlreadyWithSameLine(Line line) {
@@ -118,5 +124,9 @@ public class Section extends BaseEntity {
 
     public Line line() {
         return line;
+    }
+
+    public Station upStation() {
+        return upStation;
     }
 }

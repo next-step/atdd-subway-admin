@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.NoSuchDataException;
 import nextstep.subway.exception.ValueFormatException;
 import org.apache.logging.log4j.util.Strings;
 
@@ -11,6 +10,9 @@ import java.util.Objects;
 
 @Entity
 public class Line extends BaseEntity {
+    @Transient
+    private static final int DELETABLE_SECTION_MIN = 2;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -81,6 +83,17 @@ public class Line extends BaseEntity {
         lineStations.addLineStation(lineStation);
     }
 
+    public void disconnectAll() {
+        Station upEndStation = upEndStation();
+        Station tempStation = upEndStation;
+        while (!isEndDownStation(tempStation)) {
+            Section downSection = tempStation.downSection();
+            tempStation.registerDownSection(null);
+            tempStation = downSection.downStation();
+            downSection.registerDownStation(null);
+        }
+    }
+
     /**
      * 비즈니스 메소드
      */
@@ -114,8 +127,8 @@ public class Line extends BaseEntity {
         return resultList;
     }
 
-    private boolean isExistsDownSection(Station tempStation) {
-        return tempStation.downSection() != null;
+    private boolean isExistsDownSection(Station station) {
+        return station.downSection() != null;
     }
 
     public Station upEndStation() {
@@ -138,6 +151,40 @@ public class Line extends BaseEntity {
         }
 
         connectAsMiddleStationByDownStation(upStation, downStation, section);
+    }
+
+    public Section findDeletableSection(Station station) {
+        if (station.downSection() == null) {
+            return station.upSection();
+        }
+        return station.downSection();
+    }
+
+    public void reconnect(Station station, Section section) {
+        if (isMiddleStation(station)) {
+            station.upSection().registerDownStation(section.downStation());
+        }
+
+        if (isEndDownStation(station)){
+            section.upStation().registerDownSection(null);
+        }
+
+        section.registerDownStation(null);
+        station.registerDownSection(null);
+    }
+
+    private boolean isEndDownStation(Station station) {
+        return station.downSection() == null;
+    }
+
+    public void validateDeletable(Station station) {
+        if (!contains(station)) {
+            throw new IllegalStateException("해당역이 노선에 포함되어 있지 않아 삭제할 수 없습니다. 역:" + station.name());
+        }
+
+        if (sections.size() < DELETABLE_SECTION_MIN) {
+            throw new IllegalStateException("노선의 구간이 " + DELETABLE_SECTION_MIN + "개 이상 존재해야 삭제할 수 있습니다. 구간 개수:" + sections.size());
+        }
     }
 
     public boolean contains(Station station) {
@@ -195,6 +242,7 @@ public class Line extends BaseEntity {
     private void connectAsEndStation(Station upStation, Station downStation, Section section) {
         connect(upStation, downStation, section);
         registerStation(upStation);
+        registerStation(downStation);
     }
 
     private boolean isEndStation(Section existsSection) {
@@ -231,6 +279,15 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
+    public Station findNewStation(Station upStation, Station downStation) {
+        Station existsStation = findExistsStation(upStation, downStation);
+        if (upStation.equals(existsStation)) {
+            return downStation;
+        }
+
+        return upStation;
+    }
+
     private void validate(boolean isExistsUpStation, boolean isExistsDownStation) {
         if (isExistsUpStation && isExistsDownStation) {
             throw new IllegalStateException("등록하려는 두 역이 이미 모두 노선에 포함되어 있습니다.");
@@ -239,5 +296,13 @@ public class Line extends BaseEntity {
         if (!isExistsUpStation && !isExistsDownStation) {
             throw new IllegalStateException("등록하려는 두 역이 노선에 모두 포함되어 있지 않습니다.");
         }
+    }
+
+    private boolean isMiddleStation(Station station) {
+        return station.upSection() != null && station.downSection() != null;
+    }
+
+    public LineStations lineStations() {
+        return lineStations;
     }
 }

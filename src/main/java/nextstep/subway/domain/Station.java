@@ -4,6 +4,7 @@ import nextstep.subway.exception.ValueFormatException;
 import org.apache.logging.log4j.util.Strings;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,11 +22,11 @@ public class Station extends BaseEntity {
     @OneToOne(fetch = LAZY)
     private Section downSection;
 
-    @OneToOne(mappedBy = "downStation", fetch = LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "downStation", fetch = LAZY)
     private Section upSection;
 
-    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LineStation> lineStations;
+    @OneToMany(mappedBy = "station", orphanRemoval = true)
+    private List<LineStation> lineStations = new ArrayList<>();
 
     /**
      * 생성자
@@ -63,10 +64,19 @@ public class Station extends BaseEntity {
 
     public void registerDownSection(Section downSection) {
         this.downSection = downSection;
+        if (downSection != null) {
+            downSection.setUpStation(this);
+        }
     }
 
     public void setUpSection(Section upSection) {
         this.upSection = upSection;
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        if (!lineStations.contains(lineStation)) {
+            lineStations.add(lineStation);
+        }
     }
 
     /**
@@ -107,5 +117,9 @@ public class Station extends BaseEntity {
 
     public Section upSection() {
         return upSection;
+    }
+
+    public List<LineStation> lineStations() {
+        return lineStations;
     }
 }

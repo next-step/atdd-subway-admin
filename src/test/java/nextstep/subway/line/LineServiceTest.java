@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -95,17 +96,15 @@ public class LineServiceTest {
         assertThat(linesResponse.contains(LinesSubResponse.of(line2))).isTrue();
     }
 
-    @DisplayName("노선 삭제")
+    @DisplayName("노선 삭제 - 존재하지않는 노선을 삭제하는 경우 예외발생")
     @Test
-    public void 노선삭제시_노석확인() {
+    public void 노선삭제시_예외발생() {
         //given
         Long lineId = 1L;
 
         //when
-        lineService.removeLine(lineId);
-
         //then
         when(lineRepository.findById(lineId)).thenThrow(NoSuchDataException.class);
-        assertThatThrownBy(() -> lineService.readLine(lineId)).isInstanceOf(NoSuchDataException.class);
+        assertThatThrownBy(() -> lineService.removeLine(lineId)).isInstanceOf(NoSuchDataException.class);
     }
 }
