@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,8 +24,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_생성_요청
         // when
-        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음("2호선", "green");
-        
+        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(
+                "2호선",
+                "green",
+                "1",
+                "2",
+                "10");
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         // then
@@ -36,11 +43,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("2호선", "green");
-
+        지하철_노선_등록되어_있음(
+                "2호선",
+                "green",
+                "1",
+                "2",
+                "10");
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음("2호선", "green");
+        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(
+                "2호선",
+                "green",
+                "1",
+                "2",
+                "10");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -52,11 +68,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("1호선", "blue");
-
+        지하철_노선_등록되어_있음(
+                "1호선",
+                "blue",
+                "3",
+                "4",
+                "10");
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("2호선", "green");
-
+        지하철_노선_등록되어_있음(
+                "2호선",
+                "green",
+                "1",
+                "2",
+                "10");
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = 지하철_노선목록_조회_요청();
@@ -73,7 +97,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("1호선", "blue");
+        지하철_노선_등록되어_있음(
+                "2호선",
+                "green",
+                "1",
+                "2",
+                "10");
 
         // when
         // 지하철_노선_조회_요청
@@ -81,7 +110,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().get("name").equals("1호선"));
+        assertThat(response.body().jsonPath().get("name").equals("2호선"));
+        assertThat(response.body().jsonPath().get("color").equals("green"));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -89,8 +119,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("1호선", "blue");
-
+        지하철_노선_등록되어_있음(
+                "1호선",
+                "blue",
+                "1",
+                "2",
+                "10");
         // when
         // 지하철_노선_수정_요청
         Map<String, String> params = new HashMap<>();
@@ -112,8 +146,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음("1호선", "blue");
-
+        지하철_노선_등록되어_있음(
+                "1호선",
+                "blue",
+                "1",
+                "2",
+                "10");
         // when
         // 지하철_노선_제거_요청
         Map<String, String> pathParams = new HashMap<>();
@@ -124,7 +162,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선목록_조회_요청(){
+    private ExtractableResponse<Response> 지하철_노선목록_조회_요청() {
         // 지하철_노선_조회_요청
         return RestAssured
                 .given().log().all()
@@ -133,7 +171,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(long id){
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(long id) {
         // 지하철_노선_조회_요청
         return RestAssured
                 .given().log().all()
@@ -143,10 +181,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color){
+    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name,
+                                                         String color,
+                                                         String upStationId,
+                                                         String downStationId,
+                                                         String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -155,7 +200,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(Map<String, String> params, Map<String, String> pathParams){
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Map<String, String> params, Map<String, String> pathParams) {
         // 지하철_노선_수정_요청
         return RestAssured
                 .given().log().all()
@@ -166,7 +211,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_삭제_요청(Map<String, String> pathParams){
+    private ExtractableResponse<Response> 지하철_노선_삭제_요청(Map<String, String> pathParams) {
         // 지하철_노선_삭제_요청
         return RestAssured
                 .given().log().all()
