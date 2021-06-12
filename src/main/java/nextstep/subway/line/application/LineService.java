@@ -24,17 +24,14 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(IllegalArgumentException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(IllegalArgumentException::new);
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
         Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
-    @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선아이디 입니다."));
-        return LineResponse.of(line);
+        return LineResponse.of(findLineById(id));
     }
 
     @Transactional(readOnly = true)
@@ -45,15 +42,25 @@ public class LineService {
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선아이디 입니다."));
+        Line line = findLineById(id);
         line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
 
     public void deleteLine(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선아이디 입니다."));
+        Line line = findLineById(id);
         lineRepository.deleteById(line.getId());
+    }
+
+    @Transactional(readOnly = true)
+    private Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역아이디 입니다."));
+    }
+
+    @Transactional(readOnly = true)
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선아이디 입니다."));
     }
 }
