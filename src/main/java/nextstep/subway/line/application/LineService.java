@@ -34,7 +34,6 @@ public class LineService {
     }
 
     public LinesResponse getLines(LineRequest lineRequest) {
-//        StringUtils.defaultIfBlank()
         return LinesResponse.of(lineRepository.findByNameContainingAndColorContaining(lineRequest.getName(), lineRequest.getColor()));
     }
 }
