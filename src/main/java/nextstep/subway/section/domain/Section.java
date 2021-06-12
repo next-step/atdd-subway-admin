@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.wrapper.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -27,7 +28,8 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section() {
     }
@@ -35,14 +37,14 @@ public class Section extends BaseEntity {
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public void lineBy(Line line) {
@@ -69,11 +71,11 @@ public class Section extends BaseEntity {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Section section = (Section) object;
-        return distance == section.distance &&
-                Objects.equals(id, section.id) &&
+        return Objects.equals(id, section.id) &&
                 Objects.equals(line, section.line) &&
                 Objects.equals(upStation, section.upStation) &&
-                Objects.equals(downStation, section.downStation);
+                Objects.equals(downStation, section.downStation) &&
+                Objects.equals(distance, section.distance);
     }
 
     @Override

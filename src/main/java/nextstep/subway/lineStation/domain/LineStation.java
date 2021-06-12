@@ -1,6 +1,8 @@
 package nextstep.subway.lineStation.domain;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.wrapper.Distance;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -12,9 +14,16 @@ public class LineStation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long stationId;
-    private Long preStationId;
-    private int distance;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "station_id", foreignKey = @ForeignKey(name = "fk_station_to_line"))
+    private Station station;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pre_station_id", foreignKey = @ForeignKey(name = "fk_pre_station_to_line"))
+    private Station preStation;
+
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
@@ -23,30 +32,21 @@ public class LineStation {
     public LineStation() {
     }
 
-    public LineStation(long stationId, long preStationId, int distance) {
-        this.stationId = stationId;
-        this.preStationId = preStationId;
-        this.distance = distance;
+    public LineStation(Station station, Station preStation, int distance) {
+        this.station = station;
+        this.preStation = preStation;
+        this.distance = new Distance(distance);
+    }
+
+    public LineStation(Station station, Station preStation, int distance, Line line) {
+        this.station = station;
+        this.preStation = preStation;
+        this.distance = new Distance(distance);
+        this.line = line;
     }
 
     public void lineBy(Line line) {
         this.line = line;
-    }
-
-    public Long getStationId() {
-        return stationId;
-    }
-
-    public Long getPreStationId() {
-        return preStationId;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     @Override
@@ -54,15 +54,15 @@ public class LineStation {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         LineStation that = (LineStation) object;
-        return distance == that.distance &&
-                Objects.equals(id, that.id) &&
-                Objects.equals(stationId, that.stationId) &&
-                Objects.equals(preStationId, that.preStationId) &&
+        return Objects.equals(id, that.id) &&
+                Objects.equals(station, that.station) &&
+                Objects.equals(preStation, that.preStation) &&
+                Objects.equals(distance, that.distance) &&
                 Objects.equals(line, that.line);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, stationId, preStationId, distance, line);
+        return Objects.hash(id, station, preStation, distance, line);
     }
 }

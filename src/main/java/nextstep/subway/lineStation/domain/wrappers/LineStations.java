@@ -2,6 +2,7 @@ package nextstep.subway.lineStation.domain.wrappers;
 
 import nextstep.subway.lineStation.domain.LineStation;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.Objects;
 @Embeddable
 public class LineStations {
 
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<LineStation> lineStations = new ArrayList<>();
 
     public LineStations() {

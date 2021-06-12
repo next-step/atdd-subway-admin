@@ -46,8 +46,10 @@ class LineTest {
 
     @Test
     void 노선_정보에_노선_지하철역_연결_테이블_정보_추가() {
+        Station station = new Station(2L, "정자역");
+        Station preStation = new Station(1L, "양재역");
         Line line = new Line("신분당선", "bg - red - 600");
-        LineStation lineStation = new LineStation(2L, 1L, 10);
+        LineStation lineStation = new LineStation(station, preStation, 10);
         line.addLineStation(lineStation);
 
         assertThat(line).isEqualTo(new Line("신분당선", "bg - red - 600", new LineStations(Arrays.asList(lineStation))));

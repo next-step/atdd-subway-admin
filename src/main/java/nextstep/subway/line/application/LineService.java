@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.lineStation.domain.LineStation;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
@@ -35,8 +36,10 @@ public class LineService {
             Station upStation = stationService.findStationById(request.getUpStationId());
             Station downStation = stationService.findStationById(request.getDownStationId());
             Section section = request.toSection(upStation, downStation);
+            LineStation lineStation = request.toLineStation(downStation, upStation);
             Line line = request.toLine();
             line.addSection(section);
+            line.addLineStation(lineStation);
             return LineResponse.of(lineRepository.save(line));
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateValueException(String.format(DUPLICATE_VALUE_ERROR_MESSAGE, request.getName()));

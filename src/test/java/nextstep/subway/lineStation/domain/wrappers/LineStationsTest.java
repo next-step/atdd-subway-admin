@@ -1,6 +1,8 @@
 package nextstep.subway.lineStation.domain.wrappers;
 
 import nextstep.subway.lineStation.domain.LineStation;
+import nextstep.subway.station.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,24 +15,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("노선 지하철 연결 테이블 일급 컬렉션 객체 테스트")
 public class LineStationsTest {
 
+    private Station station;
+    private Station preStation;
+
+    @BeforeEach
+    void setUp() {
+        station = new Station(2L, "정자역");
+        preStation = new Station(1L, "양재역");
+    }
+
     @Test
     void 노선_지하철_연결_테이블_일급_컬렉션_객체_생성() {
-        LineStations lineStations = new LineStations(Arrays.asList(new LineStation(2L, 1L, 10)));
-        assertThat(lineStations).isEqualTo(new LineStations(Arrays.asList(new LineStation(2L, 1L, 10))));
+        LineStations lineStations = new LineStations(Arrays.asList(new LineStation(station, preStation, 10)));
+        assertThat(lineStations).isEqualTo(new LineStations(Arrays.asList(new LineStation(station, preStation, 10))));
     }
 
     @Test
     void 노선_지하철_연결_테이블_일급_컬렉션_객체_포함_여부() {
-        LineStations lineStations = new LineStations(Arrays.asList(new LineStation(2L, 1L, 10)));
-        LineStation lineStation = new LineStation(3L, 1L, 10);
-        assertThat(lineStations.contains(new LineStation(2L, 1L, 10))).isTrue();
+        LineStations lineStations = new LineStations(Arrays.asList(new LineStation(station, preStation, 10)));
+        LineStation lineStation = new LineStation(new Station(3L, "판교역"), station, 10);
+        assertThat(lineStations.contains(new LineStation(station, preStation, 10))).isTrue();
         assertThat(lineStations.contains(lineStation)).isFalse();
     }
 
     @Test
     void 노선_지하철_연결_테이블_일급_컬렉션_객체_추가() {
-        LineStation lineStation1 = new LineStation(2L, 1L, 10);
-        LineStation lineStation2 = new LineStation(3L, 2L, 100);
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(new Station(3L, "판교역"), station, 100);
         List<LineStation> lineStations = new ArrayList<>();
         lineStations.add(lineStation1);
         LineStations actual = new LineStations(lineStations);
@@ -41,7 +52,7 @@ public class LineStationsTest {
 
     @Test
     void 노선_지하철_연결_테이블_일급_컬렉션_중복_객체_추가() {
-        LineStation lineStation1 = new LineStation(2L, 1L, 10);
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
         List<LineStation> lineStations = new ArrayList<>();
         lineStations.add(lineStation1);
         LineStations actual = new LineStations(lineStations);
