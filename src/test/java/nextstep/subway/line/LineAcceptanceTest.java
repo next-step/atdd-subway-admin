@@ -136,10 +136,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
-		노선을_생성한다(params);
+		ExtractableResponse<Response> createResponse = 노선을_생성한다(params);
 
 		// when
-		ExtractableResponse<Response> response = 특정_노선을_조회한다(1L);
+		ExtractableResponse<Response> response = 특정_노선을_조회한다(getLocation(createResponse));
 
 		// then
 		특정_노선이_조회된다(response);
@@ -156,12 +156,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
-		노선을_생성한다(params);
+		ExtractableResponse<Response> createResponse = 노선을_생성한다(params);
 
 		// when
 		ExtractableResponse<Response> response = 특정_노선을_수정한다();
 
-		ExtractableResponse<Response> modifiedResponse = 특정_노선을_조회한다(1L);
+		ExtractableResponse<Response> modifiedResponse = 특정_노선을_조회한다(getLocation(createResponse));
 
 		// then
 		수정된_노선이_조회된다(response, modifiedResponse);
@@ -188,25 +188,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
-		노선을_생성한다(params);
+		ExtractableResponse<Response> createResponse = 노선을_생성한다(params);
 
 		// when
-		ExtractableResponse<Response> response = 노선_삭제_요청을_한다();
+		ExtractableResponse<Response> response = 노선_삭제_요청을_한다(getLocation(createResponse));
 
 		// then
-		노선이_삭제되어_노선을_반환하지_않는다(response);
+		노선이_삭제되어_노선을_반환하지_않는다(response, getLocation(createResponse));
 	}
 
-	private void 노선이_삭제되어_노선을_반환하지_않는다(ExtractableResponse<Response> response) {
-		ExtractableResponse<Response> actual = 특정_노선을_조회한다(1L);
+	private String getLocation(ExtractableResponse<Response> response) {
+		return response.header("Location");
+	}
+
+	private void 노선이_삭제되어_노선을_반환하지_않는다(ExtractableResponse<Response> response, String createLocation) {
+		ExtractableResponse<Response> actual = 특정_노선을_조회한다(createLocation);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		assertThat(actual.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
-	private ExtractableResponse<Response> 노선_삭제_요청을_한다() {
+	private ExtractableResponse<Response> 노선_삭제_요청을_한다(String url) {
 		return RestAssured.given().log().all()
 				.when()
-				.delete("/lines/1")
+				.delete(url)
 				.then().log().all()
 				.extract();
 	}
@@ -221,10 +225,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 				.extract();
 	}
 
-	private ExtractableResponse<Response> 특정_노선을_조회한다(Long lineId) {
+	private ExtractableResponse<Response> 특정_노선을_조회한다(String url) {
 		return RestAssured.given().log().all()
 				.when()
-				.get("/lines/" + lineId)
+				.get(url)
 				.then().log().all()
 				.extract();
 	}
