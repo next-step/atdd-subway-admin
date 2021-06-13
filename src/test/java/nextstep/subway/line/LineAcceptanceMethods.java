@@ -4,9 +4,7 @@ import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,26 +14,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
 
 public class LineAcceptanceMethods {
-
-    public static StationResponse createStation(String name) {
-        // given
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", name);
-
-        // when
-        ExtractableResponse<Response> response1 = RestAssured.given().log().all()
-            .body(params1)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
-
-        return response1.jsonPath().getObject(".", StationResponse.class);
-    }
 
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
         return 지하철_노선_생성_요청(lineRequest);
