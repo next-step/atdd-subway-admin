@@ -57,6 +57,11 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ## 미션 단계
 
+### Step3
+- [ ] 기능 구현 전 Happy Path 인수 테스트 작성
+- [ ] 예외 케이스 처리 인수 테스트 작성
+- [ ] 구간등록 기능 구현 및 테스트 통과하기
+
 ### Step2
 - [x] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
   - 두 종점역은 구간의 형태로 관리되어야 함
