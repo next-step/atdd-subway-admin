@@ -4,7 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -24,9 +26,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
-		// gciven, when 지하철_노선_생성_요청
-		// + 상행, 하행 정보 요청 파라미터에 함께 추가
-		ExtractableResponse<Response> response = 노선정보세팅_메소드("잠실역", "yellow", 1L, 1L, 1);
+		// given, when 지하철_노선_생성_요청 + 상행, 하행 정보 요청 파라미터에 함께 추가
+		StationRequest stationRequest = new StationRequest();
+		stationRequest.name("잠실역");
+		지하철역_생성_요청(stationRequest);
+
+		LineRequest lineRequest = new LineRequest("2호선", "yellow", 1L, 1L, 1);
+		ExtractableResponse<Response> response = 노선정보세팅_메소드(lineRequest);
+
 		// then 지하철_노선_생성됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 	}
@@ -34,14 +41,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
 	@Test
 	void createLine2() {
-		// given 지하철_노선_등록되어_있음
-		// + 상행, 하행 정보 요청 파라미터에 함께 추가
-		String dupName = "잠실역";
+		// given 지하철_노선_등록되어_있음 + 상행, 하행 정보 요청 파라미터에 함께 추가
+		StationRequest stationRequest = new StationRequest();
+		stationRequest.name("잠실역");
+		지하철역_생성_요청(stationRequest);
+
+		String dupName = "2호선";
 		String dupColor = "yellow";
-		노선정보세팅_메소드(dupName, dupColor, 1L, 1L, 1);
+		LineRequest lineRequest = new LineRequest(dupName, dupColor, 1L, 1L, 1);
+		노선정보세팅_메소드(lineRequest);
 
 		// when 중복 지하철_노선_생성_요청
-		ExtractableResponse<Response> response = 노선정보세팅_메소드(dupName, dupColor, 1L, 1L, 1);
+		ExtractableResponse<Response> response = 노선정보세팅_메소드(lineRequest);
 
 		// then
 		// 지하철_노선_생성_실패됨
@@ -52,17 +63,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
-		// 지하철_노선_등록되어_있음
-		// + 상행, 하행 정보 요청 파라미터에 함께 추가
-		ExtractableResponse<Response> createdResponse1 = 노선정보세팅_메소드("잠실역", "yellow", 1L, 1L, 1);
+		// 지하철_노선_등록되어_있음 + 상행, 하행 정보 요청 파라미터에 함께 추가
+		StationRequest stationRequest = new StationRequest();
+		stationRequest.name("잠실역");
+		지하철역_생성_요청(stationRequest);
 
-		// 지하철_노선_등록되어_있음
-		// + 상행, 하행 정보 요청 파라미터에 함께 추가
-		ExtractableResponse<Response> createdResponse2 = 노선정보세팅_메소드("강남역", "green", 1L, 1L, 1);
+		LineRequest lineRequest = new LineRequest("2호선", "yellow", 1L, 1L, 1);
+		ExtractableResponse<Response> createdResponse1 = 노선정보세팅_메소드(lineRequest);
+
+		// 지하철_노선_등록되어_있음 + 상행, 하행 정보 요청 파라미터에 함께 추가
+		LineRequest lineRequest2 = new LineRequest("8호선", "yellow", 1L, 1L, 1);
+		ExtractableResponse<Response> createdResponse2 = 노선정보세팅_메소드(lineRequest2);
 
 		// when
-		// 지하철_노선_목록_조회_요청
-		// + 상행 -> 하행역 순으로 정렬되어야 함
+		// 지하철_노선_목록_조회_요청 + 상행 -> 하행역 순으로 정렬되어야 함
 		ExtractableResponse<Response> response = get메소드호출("/lines");
 
 		// then
@@ -86,10 +100,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
-		// 지하철_노선_등록되어_있음
-		// + 상행, 하행 정보 요청 파라미터에 함께 추가
-		String name = "잠실역";
-		노선정보세팅_메소드(name, "yellow", 1L, 1L, 1);
+		// 지하철_노선_등록되어_있음 + 상행, 하행 정보 요청 파라미터에 함께 추가
+		StationRequest stationRequest = new StationRequest();
+		stationRequest.name("잠실역");
+		지하철역_생성_요청(stationRequest);
+
+		String name = "2호선";
+		LineRequest lineRequest = new LineRequest(name, "yellow", 1L, 1L, 1);
+		노선정보세팅_메소드(lineRequest);
 
 		// when
 		// 지하철_노선_조회_요청
@@ -108,22 +126,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
-		// 지하철_노선_등록되어_있음
-		// + 상행, 하행 정보 요청 파라미터에 함께 추가
-		String name = "잠실역";
-		String originColor = "yellow";
-		노선정보세팅_메소드(name, originColor, 1L, 1L, 1);
+		// 지하철_노선_등록되어_있음 + 상행, 하행 정보 요청 파라미터에 함께 추가
+		StationRequest stationRequest = new StationRequest();
+		stationRequest.name("잠실역");
+		지하철역_생성_요청(stationRequest);
+
+		String name = "2호선";
+		LineRequest lineRequest = new LineRequest(name, "yellow", 1L, 1L, 1);
+		노선정보세팅_메소드(lineRequest);
 
 		// when;
 		// 지하철_노선_수정_요청
 		String newColor = "puple";
-
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
-		params.put("color", newColor);
+		LineRequest lineChangeRequest = new LineRequest(name, newColor, 1L, 1L, 1);
 
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
-				.body(params)
+				.body(lineChangeRequest)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when()
 				.patch("/lines")
@@ -139,10 +157,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
-		// 지하철_노선_등록되어_있음
-		// + 상행, 하행 정보 요청 파라미터에 함께 추가
-		String name = "잠실역";
-		노선정보세팅_메소드(name, "yellow", 1L, 1L, 1);
+		// 지하철_노선_등록되어_있음 + 상행, 하행 정보 요청 파라미터에 함께 추가
+		StationRequest stationRequest = new StationRequest();
+		stationRequest.name("잠실역");
+		지하철역_생성_요청(stationRequest);
+
+		String name = "2호선";
+		LineRequest lineRequest = new LineRequest(name, "yellow", 1L, 1L, 1);
+		노선정보세팅_메소드(lineRequest);
 
 		// when
 		// 지하철_노선_제거_요청
@@ -158,19 +180,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
-	private ExtractableResponse<Response> 노선정보세팅_메소드(String name, String color, Long upStationId, Long downStationId, Integer distance){
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
-		params.put("color", color);
-		params.put("upStationId", upStationId.toString());
-		params.put("downStationId", downStationId.toString());
-		params.put("distance", distance.toString());
-
+	private ExtractableResponse<Response> 노선정보세팅_메소드(LineRequest request) {
 		return RestAssured.given().log().all()
-				.body(params)
+				.body(request)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when()
 				.post("/lines")
+				.then().log().all()
+				.extract();
+	}
+
+	private ExtractableResponse<Response> 지하철역_생성_요청(StationRequest request) {
+		return  RestAssured.given().log().all()
+				.body(request)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when()
+				.post("/stations")
 				.then().log().all()
 				.extract();
 	}
