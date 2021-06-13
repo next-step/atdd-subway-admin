@@ -44,6 +44,9 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color, Collections.singletonList(new Section(upStationId, downStationId, distance)));
+        Section section = new Section(upStationId, downStationId, distance);
+        Line line = new Line(name, color);
+        section.setLine(line);
+        return line;
     }
 }

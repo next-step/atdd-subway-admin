@@ -14,16 +14,19 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
 
-    public Line(String name, String color, List<Section> sections) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.sections = sections;
+    }
+
+    public void addSection(Section section){
+        this.sections.add(section);
     }
 
     public void update(Line line) {

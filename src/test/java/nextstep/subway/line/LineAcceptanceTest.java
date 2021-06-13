@@ -24,6 +24,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_생성_요청
         // when
+        지하철역_생성("강남역");
+        지하철역_생성("역삼역");
         ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(
                 "2호선",
                 "green",
@@ -43,6 +45,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철역_생성("강남역");
+        지하철역_생성("역삼역");
         지하철_노선_등록되어_있음(
                 "2호선",
                 "green",
@@ -68,6 +72,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철역_생성("강남역");
+        지하철역_생성("역삼역");
+        지하철역_생성("신도림역");
+        지하철역_생성("영등포역");
         지하철_노선_등록되어_있음(
                 "1호선",
                 "blue",
@@ -97,6 +105,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철역_생성("강남역");
+        지하철역_생성("역삼역");
         지하철_노선_등록되어_있음(
                 "2호선",
                 "green",
@@ -121,6 +131,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철역_생성("강남역");
+        지하철역_생성("역삼역");
         지하철_노선_등록되어_있음(
                 "1호선",
                 "blue",
@@ -148,6 +160,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철역_생성("강남역");
+        지하철역_생성("역삼역");
         지하철_노선_등록되어_있음(
                 "1호선",
                 "blue",
@@ -221,5 +235,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/lines/{id}")
                 .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> 지하철역_생성(String name){
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", name);
+        return RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
     }
 }

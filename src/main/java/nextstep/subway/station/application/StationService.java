@@ -29,7 +29,13 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    public List<StationResponse> findByIds(List<Long> ids){
+        return stationRepository.findAllById(ids).stream()
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
