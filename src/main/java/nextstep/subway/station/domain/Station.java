@@ -45,6 +45,62 @@ public class Station extends BaseEntity {
         return new Station(name);
     }
 
+    public void deleteFrom(List<Section> sections) {
+        DeletePosition deletePosition = DeletePosition.None();
+        while (deletePosition.isNone() && deletePosition.index() < sections.size()) {
+            deletePosition = checkDeletePosition(sections, deletePosition);
+            deletePosition.nextIndex();
+        }
+        deletePosition.subtractIndex();
+
+        if (deletePosition.isNone()) {
+            throw new IllegalStateException("삭제하려는 역이 등록되어있지 않습니다.");
+        }
+
+        handleDeletion(sections, deletePosition);
+    }
+
+    private DeletePosition checkDeletePosition(List<Section> sections, DeletePosition position) {
+        int index = position.index();
+        Section currentSection = sections.get(index);
+        if (currentSection.upStation().equals(this) && index == 0) {
+            return position.typeUpInHead();
+        }
+        if (currentSection.upStation().equals(this) && index == sections.size() - 1) {
+            return position.typeUpInTail();
+        }
+        if (currentSection.upStation().equals(this)) {
+            return position.typeUpInMiddles();
+        }
+        if (currentSection.downStation().equals(this) && index == sections.size() - 1) {
+            return position.typeDownInTail();
+        }
+        return position;
+    }
+
+    private void handleDeletion(List<Section> sections, DeletePosition deletePosition) {
+        int index = deletePosition.index();
+        Section prevSection;
+        Section nextSection;
+        if (deletePosition.isUpInHead()) {
+            sections.remove(index);
+        }
+        if (deletePosition.isUpInTail()) {
+            prevSection = sections.get(index-1);
+            prevSection.setDownStation(sections.get(index).downStation());
+            sections.remove(index);
+        }
+        if (deletePosition.isUpInMiddles()) {
+            prevSection = sections.get(index-1);
+            nextSection = sections.get(index+1);
+            prevSection.handleAttributesToConnectInFrontOf(nextSection);
+            sections.remove(index);
+        }
+        if (deletePosition.isDownInTail()) {
+            sections.remove(index);
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -68,59 +124,6 @@ public class Station extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
-    }
-
-    public void deleteFrom(List<Section> sections) {
-        // sections 를 디비로부터 로드 후 한번은 정렬하거나 하여 정렬되었다는 가정 하에,
-        DeletePosition deletePosition = DeletePosition.None();
-        while (deletePosition.isNone() && deletePosition.index() < sections.size()) {
-            deletePosition = checkDeletePosition(sections, deletePosition);
-            deletePosition.nextIndex();
-        }
-        deletePosition.subtractIndex();
-
-        if (deletePosition.isNone()) {
-            throw new IllegalStateException("삭제하려는 역이 등록되어있지 않습니다.");
-        }
-
-        handleDeletion(sections, deletePosition);
-
-    }
-
-    private DeletePosition checkDeletePosition(List<Section> sections, DeletePosition position) {
-        int index = position.index();
-        Section currentSection = sections.get(index);
-        if (currentSection.upStation().equals(this) && index == 0) {
-            return position.typeUpInHead();
-        }
-        if (currentSection.upStation().equals(this) && index == sections.size() - 1) {
-            return position.typeUpInTail();
-        }
-        if (currentSection.upStation().equals(this)) {
-            return position.typeUpInMiddles();
-        }
-        if (currentSection.downStation().equals(this) && index == sections.size() - 1) {
-            return position.typeDownInTail();
-        }
-        return position;
-    }
-
-    private void handleDeletion(List<Section> sections, DeletePosition deletePosition) {
-        int index = deletePosition.index();
-        if (deletePosition.isUpInHead()) {
-            sections.remove(index);
-        }
-        if (deletePosition.isUpInTail()) {
-            sections.get(index-1).setDownStation(sections.get(index).downStation());
-            sections.remove(index);
-        }
-        if (deletePosition.isUpInMiddles()) {
-            sections.get(index-1).handleAttributesToConnectInFrontOf(sections.get(index+1));
-            sections.remove(index);
-        }
-        if (deletePosition.isDownInTail()) {
-            sections.remove(index);
-        }
     }
 
 }
