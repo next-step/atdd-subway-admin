@@ -134,14 +134,43 @@ class SectionsTest {
 		when(강남_양재.getId()).thenReturn(1L);
 		Section 양재_양재시민의숲 = spy(new Section(신분당선, 양재, 양재시민의숲, Distance.valueOf(5)));
 		when(양재_양재시민의숲.getId()).thenReturn(2L);
-		Sections 강남_청계산입구_구간들 = Sections.of(양재_양재시민의숲, 강남_양재);
+		Sections 강남_양재시민의숲_구간들 = Sections.of(양재_양재시민의숲, 강남_양재);
 
 		// when
-		강남_청계산입구_구간들.removeSectionBy(양재);
+		강남_양재시민의숲_구간들.removeSectionBy(양재);
 
 		// then
-		assertThat(강남_청계산입구_구간들.orderedStations()).containsExactly(강남, 양재시민의숲);
-		assertThat(강남_청계산입구_구간들.sumDistance()).isEqualTo(Distance.valueOf(9));
+		assertThat(강남_양재시민의숲_구간들.orderedStations()).containsExactly(강남, 양재시민의숲);
+		assertThat(강남_양재시민의숲_구간들.sumDistance()).isEqualTo(Distance.valueOf(9));
 	}
 
+	@Test
+	@DisplayName("노선에 없는 역의 구간은 제거할 수 없다.")
+	void removeSectionByUnknownStationTest() {
+		// given
+		Section 강남_양재 = spy(new Section(신분당선, 강남, 양재, Distance.valueOf(4)));
+		when(강남_양재.getId()).thenReturn(1L);
+		Section 양재_양재시민의숲 = spy(new Section(신분당선, 양재, 양재시민의숲, Distance.valueOf(5)));
+		when(양재_양재시민의숲.getId()).thenReturn(2L);
+		Sections 강남_청계산입구_구간들 = Sections.of(양재_양재시민의숲, 강남_양재);
+
+		// when then
+		assertThatThrownBy(() -> 강남_청계산입구_구간들.removeSectionBy(판교))
+			.isInstanceOf(IllegalArgumentException.class)
+		    .hasMessageContaining("노선에 없는 역의 구간은 제거할 수 없습니다.");
+	}
+
+	@Test
+	@DisplayName("노선에 구간이 하나 밖에 없는 경우에는 구간을 제거 할 수 없다.")
+	void removeLastSectionTest() {
+		// given
+		Section 강남_양재 = spy(new Section(신분당선, 강남, 양재, Distance.valueOf(4)));
+		when(강남_양재.getId()).thenReturn(1L);
+		Sections 강남_양재_구간들 = Sections.of(강남_양재);
+
+		// when then
+		assertThatThrownBy(() -> 강남_양재_구간들.removeSectionBy(강남))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("노선의 남은 구간이 하나 밖에 없어 제거할 수 없습니다.");
+	}
 }

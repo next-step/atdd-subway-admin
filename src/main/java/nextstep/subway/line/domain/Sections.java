@@ -18,6 +18,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 	private static final int ORDER_START_SECTION_IDX = 0;
+	private static final int MIN_SIZE = 1;
 
 	@OneToMany(fetch = LAZY, mappedBy = "line", cascade = ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
@@ -34,23 +35,37 @@ public class Sections {
 
 	void addSection(Section otherSection) {
 		checkValidation(otherSection);
+
 		for (Section section : sections) {
 			section.addInnerSection(otherSection);
 		}
+
 		sections.add(otherSection);
 	}
 
 	void removeSectionBy(Station station) {
-		Section sectionToRemove = sections.stream()
-			.filter(section -> section.contain(station))
-			.findAny()
-			.orElseThrow(() -> new IllegalArgumentException("노선에 없는 역의 구간은 삭제할 수 없습니다."));
+		validateMinSize();
+
+		Section sectionToRemove = findSectionToRemoveBy(station);
 
 		for (Section section : sections) {
 			section.removeInnerSectionByStation(sectionToRemove, station);
 		}
 
 		sections.remove(sectionToRemove);
+	}
+
+	private Section findSectionToRemoveBy(Station station) {
+		return sections.stream()
+			.filter(section -> section.contain(station))
+			.findAny()
+			.orElseThrow(() -> new IllegalArgumentException("노선에 없는 역의 구간은 제거할 수 없습니다."));
+	}
+
+	private void validateMinSize() {
+		if (sections.size() == MIN_SIZE) {
+			throw new IllegalArgumentException("노선의 남은 구간이 하나 밖에 없어 제거할 수 없습니다.");
+		}
 	}
 
 	Distance sumDistance() {

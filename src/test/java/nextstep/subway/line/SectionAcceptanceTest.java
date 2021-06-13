@@ -8,7 +8,6 @@ import static org.springframework.http.HttpStatus.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -128,7 +127,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_구간_등록_실패됨(response);
 	}
 
-	@Disabled("프로덕션 코드 미구현")
 	@DisplayName("노선의 중간 역을 제거한다.")
 	@Test
 	void removeInnerStationInLine() {
@@ -146,7 +144,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_구간이_제거됨(response, 신분당선.getId(), 강남역.getName(), 광교역.getName());
 	}
 
-	@Disabled("프로덕션 코드 미구현")
 	@DisplayName("노선의 종점역을 제거한다.")
 	@Test
 	void removeEndStationInLine() {
@@ -164,7 +161,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_구간이_제거됨(response, 신분당선.getId(), 양재역.getName(), 광교역.getName());
 	}
 
-	@Disabled("프로덕션 코드 미구현")
 	@DisplayName("노선에 등록되어 있지 않은 역을 제거한다.")
 	@Test
 	void removeUnknownStationInLine() {
@@ -183,7 +179,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_구간이_제거_실패됨(response);
 	}
 
-	@Disabled("프로덕션 코드 미구현")
 	@DisplayName("구간이 하나인 노선에 역을 제거한다.")
 	@Test
 	void removeStationInLine() {
@@ -221,7 +216,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.given().log().all()
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when().delete(LINE_API_ROOT + "/" + line.getId() + "/sections" + "?stationsId=" + stationToDelete.getId())
+			.when().delete(LINE_API_ROOT + "/" + line.getId() + "/sections" + "?stationId=" + stationToDelete.getId())
 			.then().log().all().extract();
 	}
 
