@@ -71,4 +71,8 @@ public class Station extends BaseEntity {
             return false;
         return true;
     }
+
+    public boolean isEqualsId(Long lastStationId) {
+        return this.id == lastStationId;
+    }
 }
