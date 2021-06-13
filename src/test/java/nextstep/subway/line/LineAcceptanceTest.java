@@ -166,7 +166,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(updateResponse.jsonPath().<String>get("color")).isEqualTo(updateRequest.getColor());
     }
 
-    @DisplayName("지하철_노선_수정_예외_유효하지_않은_PK")
+    @DisplayName("지하철_노선_수정_예외_존재하지_않는_PK")
     @Test
     void 지하철_노선_수정_예외_존재하지_않는_PK() {
         // when
@@ -197,18 +197,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선을 제거한다.")
+    @DisplayName("지하철_노선_제거_성공")
     @Test
     void 지하철_노선_제거_성공() {
         // given
         LineRequest saveRequest = new LineRequest("1호선", "FF0000");
-        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(saveRequest);
+        ExtractableResponse createResponse = 지하철_노선_생성_요청(saveRequest);
+        Long savedId = Long.valueOf(createResponse.header("Location").split("/")[2]);
 
         // when
-        LineRequest updateRequest = new LineRequest("1호선", "FF0000");
-        ExtractableResponse updateResponse = 지하철_노선_삭제_요청(updateRequest);
+        ExtractableResponse deleteResponse = 지하철_노선_삭제_요청(savedId);
 
         // then
-        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @DisplayName("지하철_노선_제거_예외_존재하지_않는_PK")
+    @Test
+    void 지하철_노선_제거_예외_존재하지_않는_PK() {
+        // when
+        ExtractableResponse deleteResponse = 지하철_노선_삭제_요청(Long.MAX_VALUE);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

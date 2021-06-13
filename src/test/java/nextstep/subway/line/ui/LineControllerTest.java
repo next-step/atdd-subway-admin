@@ -54,12 +54,11 @@ public class LineControllerTest {
                 .extract();
     }
 
-    public static ExtractableResponse 지하철_노선_삭제_요청(LineRequest deleteRequest) {
+    public static ExtractableResponse 지하철_노선_삭제_요청(Long id) {
         return RestAssured.given().log().all()
-                .body(deleteRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete("/lines")
+                .delete("/lines/"+ id)
                 .then().log().all()
                 .extract();
     }
