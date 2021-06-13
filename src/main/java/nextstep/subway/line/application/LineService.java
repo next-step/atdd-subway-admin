@@ -13,20 +13,18 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationResponse;
 
 @Service
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
     }
 
@@ -34,7 +32,7 @@ public class LineService {
         Line persistLine = lineRepository.save(request.toLine());
         Section section = getSection(request);
         persistLine.addLineSection(section);
-        sectionRepository.save(section);
+
         return LineResponse.of(persistLine);
     }
 
@@ -60,22 +58,23 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse getLine(Long id) {
-        Line line = findLineById(id);
-        return LineResponse.of(line);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(EntityNotFoundException::new);
+        List<StationResponse> stationResponses = line.getOrderStation().stream()
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
+        return LineResponse.of(line, stationResponses);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = findLineById(id);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(EntityNotFoundException::new);
         line.update(lineRequest.toLine());
     }
 
-    private Line findLineById(Long id) {
-        return lineRepository.findById(id)
-            .orElseThrow(EntityNotFoundException::new);
-    }
-
     public void deleteLineById(Long id) {
-        Line line = findLineById(id);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(EntityNotFoundException::new);
         lineRepository.delete(line);
     }
 }

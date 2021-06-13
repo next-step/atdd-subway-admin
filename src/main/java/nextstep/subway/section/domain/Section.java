@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -20,8 +21,8 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section extends BaseEntity {
-    private static final String CAN_NOT_STATION_EQUALS = "동일한 역을 등록할 수 없습니다.";
-    private static final String NOT_ENOUGH_DISTANCE = "충분하지 않은 구간 크기입니다.";
+    private static final String CAN_NOT_STATION_CREATE = "상행선과 하행선 동일한 역을 등록할 수 없습니다.";
+    private static final String EXISTS_SAME_SECTION = "추가할 구간과 동일한 구간이 존재합니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +37,8 @@ public class Section extends BaseEntity {
     private Station downStation;
 
     @Column(nullable = false)
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_line"))
@@ -46,24 +48,38 @@ public class Section extends BaseEntity {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
-        stationEqualsValidate(upStation, downStation);
-        distanceValidate(distance);
+        this(null, upStation, downStation, distance);
+    }
 
+    public Section(Long id, Station upStation, Station downStation, int distance) {
+        validate(upStation, downStation);
+
+        this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = Distance.of(distance);
     }
 
-    private void stationEqualsValidate(Station upStation, Station downStation)  {
+    private void validate(Station upStation, Station downStation)  {
         if (upStation.equals(downStation)) {
-            throw new IllegalArgumentException(CAN_NOT_STATION_EQUALS);
+            throw new IllegalArgumentException(CAN_NOT_STATION_CREATE);
         }
     }
 
-    private void distanceValidate(int distance) {
-        if (distance < 0) {
-            throw new IllegalArgumentException(NOT_ENOUGH_DISTANCE);
+    public void updateSection(Section newSection) {
+        distance.subtractDiffDistance(newSection.getDistance());
+        if (upStation.isSame(newSection.upStation)) {
+            upStation = newSection.downStation;
+            return;
         }
+        downStation = newSection.upStation;
+    }
+
+    public boolean isContainSection(Section section) {
+        if (upStation.isSame(section.upStation) && downStation.isSame(section.downStation)) {
+            throw new IllegalArgumentException(EXISTS_SAME_SECTION);
+        }
+        return upStation.isSame(section.upStation) || downStation.isSame(section.downStation);
     }
 
     public void changeLine(Line line) {
@@ -83,7 +99,7 @@ public class Section extends BaseEntity {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.toNumber();
     }
 
     public Line getLine() {

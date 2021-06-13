@@ -35,6 +35,10 @@ public class Station extends BaseEntity {
         return name;
     }
 
+    public boolean isSame(Station station) {
+        return Objects.equals(getId(), station.getId()) && Objects.equals(getName(), station.getName());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

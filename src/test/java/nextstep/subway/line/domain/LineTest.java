@@ -25,10 +25,10 @@ public class LineTest {
     @DisplayName("구간 추가 테스트")
     void addSection() {
         // given & when
-        수도권_신분당선.addLineSection(강남역_판교역_구간);
+        수도권_신분당선.addLineSection(강남_판교_구간);
         LineSections sections = 수도권_신분당선.getLineSections();
         // then
         assertThat(sections.getSections().size()).isEqualTo(1);
-        assertThat(sections.getSections().get(0)).isEqualTo(강남역_판교역_구간);
+        assertThat(sections.getSections().get(0)).isEqualTo(강남_판교_구간);
     }
 }
