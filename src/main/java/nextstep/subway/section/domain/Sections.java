@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -45,13 +46,10 @@ public class Sections {
 	}
 
 	private Station getStartStation(Map<Station, Station> order) {
-		Station key = null;
-
-		for (Station station : order.keySet()) {
-			if (!order.containsValue(station)) {
-				key = station;
-			}
-		}
-		return key;
+		return order.keySet()
+			.stream()
+			.filter(x -> !order.containsValue(x))
+			.findFirst()
+			.orElseThrow(() -> new NoSuchElementException("There is no start point"));
 	}
 }
