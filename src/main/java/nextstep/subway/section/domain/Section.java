@@ -66,7 +66,7 @@ public class Section extends BaseEntity {
         this.line.addSection(this);
     }
 
-    private Section(Station upStation, Station downStation) {
+    public Section(Station upStation, Station downStation) {
         this.upStation = Optional.ofNullable(upStation).orElseThrow(() ->
                 new IllegalArgumentException("상행역으로 Null을 입력할 수 없습니다."));
         this.downStation = Optional.ofNullable(downStation).orElseThrow(() ->
@@ -98,15 +98,38 @@ public class Section extends BaseEntity {
         return new ArrayList<>(Arrays.asList(this.upStation, this.downStation));
     }
 
-    public boolean containsStation(Station station) {
-        return upStation.equals(station) || downStation.equals(station);
+    public void updateDistance(Section section, Distance totalDistance) {
+        this.distance.plusDistance(section.distance).minusDistance(totalDistance);
+        section.distance.minusDistance(this.distance);
     }
 
-    public Section updateSection(Section section) {
-        this.upStation = section.upStation;
-        this.downStation = section.downStation;
-        this.distance = section.distance;
-        return this;
+    public void updateDistance(Distance totalDistance) {
+        this.distance.minusDistance(totalDistance);
+    }
+
+    public void updateStations(Section updateSection) {
+        this.upStation = updateSection.upStation;
+        this.downStation = updateSection.downStation;
+    }
+
+    public boolean hasSameDistanceAs(Distance targetDistance) {
+        return this.distance.isEqualTo(targetDistance);
+    }
+
+    public boolean hasSameDistanceAs(int distance) {
+        return this.distance.isEqualTo(distance);
+    }
+
+    public void addDistanceTo(Distance targetDistance) {
+        targetDistance.plusDistance(this.distance);
+    }
+
+    public boolean hasDistanceShorterThanOrEqualTo(Distance targetDistance) {
+        return targetDistance.isGreaterThanOrEqualTo(this.distance);
+    }
+
+    public boolean hasLongerDistanceThan(Distance targetDistance) {
+        return this.distance.isGreaterThan(targetDistance);
     }
 
     @Override

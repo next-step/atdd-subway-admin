@@ -135,7 +135,7 @@ public class SectionRepositoryTest {
         assertAll(
                 () -> assertThat(savedSection.getUpStation()).isSameAs(station3),
                 () -> assertThat(savedSection.getDownStation()).isSameAs(station6),
-                () -> assertThat(savedSection.getDistance().isEqualTo(1)).isTrue()
+                () -> assertThat(savedSection.hasSameDistanceAs(1)).isTrue()
         );
     }
 }

@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 import nextstep.subway.station.domain.Station;
 
 public class Sections {
+    private static final int FIRST_INDEX = 0;
+    private static final int LAST_INDEX_FIX_NUMBER = 1;
+    private static final int SKIP_COUNT_ONE = 1;
     private List<Section> sections = new ArrayList<>();
 
     public Sections(List<Section> sections) {
@@ -62,10 +65,10 @@ public class Sections {
 
     private Section addSectionByMatchedUpStation(Section newSection) {
         List<Section> sections = getSortedSectionsFrom(newSection.getUpStation());
-        Distance totalDistance = Distance.copy(getSectionsByUpStation().get(newSection.getUpStation()).getDistance());
-        validateSameDistance(newSection.getDistance(), totalDistance);
+        Distance totalDistance = Distance.copyDistanceOn(getSectionsByUpStation().get(newSection.getUpStation()));
+        validateSameDistance(newSection, totalDistance);
         Section targetSection = findTargetSection(newSection, sections, totalDistance);
-        if (newSection.getDistance().isGreaterThan(totalDistance)) {
+        if (newSection.hasLongerDistanceThan(totalDistance)) {
             return replaceStationsByMatchedUpStationForNew(newSection, targetSection, totalDistance);
         }
         return replaceStationsByMatchedUpStationForNewAndBase(newSection, targetSection, totalDistance);
@@ -73,48 +76,44 @@ public class Sections {
 
     private Section addSectionByMatchedDownStation(Section newSection) {
         List<Section> sections = getReverseOrderSectionsFrom(newSection.getDownStation());
-        Distance totalDistance = Distance.copy(getSectionsByDownStation().get(newSection.getDownStation()).getDistance());
+        Distance totalDistance = Distance.copyDistanceOn(getSectionsByDownStation().get(newSection.getDownStation()));
         Section targetSection = findTargetSection(newSection, sections, totalDistance);
-        if (newSection.getDistance().isGreaterThan(totalDistance)) {
+        if (newSection.hasLongerDistanceThan(totalDistance)) {
             return replaceStationsByMatchedDownStationForNew(newSection, targetSection, totalDistance);
         }
         return replaceStationsByMatchedDownStationForNewAndBase(newSection, targetSection, totalDistance);
     }
 
     private Section replaceStationsByMatchedUpStationForNew(Section newSection, Section baseSection, Distance totalDistance) {
-        newSection.getDistance().minusDistance(totalDistance);
-        Section updateAppendSection = new Section(baseSection.getDownStation(), newSection.getDownStation(), newSection.getDistance());
-        newSection.updateSection(updateAppendSection);
+        newSection.updateDistance(totalDistance);
+        newSection.updateStations(new Section(baseSection.getDownStation(), newSection.getDownStation()));
         addSectionWithSort(newSection);
         return newSection;
     }
 
     private Section replaceStationsByMatchedUpStationForNewAndBase(Section newSection, Section baseSection, Distance totalDistance) {
-        newSection.getDistance().plusDistance(baseSection.getDistance()).minusDistance(totalDistance);
-        baseSection.getDistance().minusDistance(newSection.getDistance());
-        Section baseUpdateSection = new Section(newSection.getDownStation(), baseSection.getDownStation(), baseSection.getDistance());
-        Section newUpdateSection = new Section(baseSection.getUpStation(), newSection.getDownStation(), newSection.getDistance());
-        baseSection.updateSection(baseUpdateSection);
-        newSection.updateSection(newUpdateSection);
+        newSection.updateDistance(baseSection, totalDistance);
+        Section baseUpdateSection = new Section(newSection.getDownStation(), baseSection.getDownStation());
+        Section newUpdateSection = new Section(baseSection.getUpStation(), newSection.getDownStation());
+        baseSection.updateStations(baseUpdateSection);
+        newSection.updateStations(newUpdateSection);
         addSectionWithSort(newSection);
         return newSection;
     }
 
     private Section replaceStationsByMatchedDownStationForNew(Section newSection, Section baseSection, Distance totalDistance) {
-        newSection.getDistance().minusDistance(totalDistance);
-        Section updateAppendSection = new Section(newSection.getUpStation(), baseSection.getUpStation(), newSection.getDistance());
-        newSection.updateSection(updateAppendSection);
+        newSection.updateDistance(totalDistance);
+        newSection.updateStations(new Section(newSection.getUpStation(), baseSection.getUpStation()));
         addSectionWithSort(newSection);
         return newSection;
     }
 
     private Section replaceStationsByMatchedDownStationForNewAndBase(Section newSection, Section baseSection, Distance totalDistance) {
-        newSection.getDistance().plusDistance(baseSection.getDistance()).minusDistance(totalDistance);
-        baseSection.getDistance().minusDistance(newSection.getDistance());
-        Section baseUpdateSection = new Section(baseSection.getUpStation(), newSection.getUpStation(), baseSection.getDistance());
-        Section newUpdateSection = new Section(newSection.getUpStation(), baseSection.getDownStation(), newSection.getDistance());
-        baseSection.updateSection(baseUpdateSection);
-        newSection.updateSection(newUpdateSection);
+        newSection.updateDistance(baseSection, totalDistance);
+        Section baseUpdateSection = new Section(baseSection.getUpStation(), newSection.getUpStation());
+        Section newUpdateSection = new Section(newSection.getUpStation(), baseSection.getDownStation());
+        baseSection.updateStations(baseUpdateSection);
+        newSection.updateStations(newUpdateSection);
         addSectionWithSort(newSection);
         return newSection;
     }
@@ -124,18 +123,18 @@ public class Sections {
         procSortSections();
     }
 
-    private void validateSameDistance(Distance newSectionDistance, Distance totalDistance) {
-        if (newSectionDistance.isEqualTo(totalDistance)) {
+    private void validateSameDistance(Section section, Distance targetDistance) {
+        if (section.hasSameDistanceAs(targetDistance)) {
             throw new IllegalArgumentException("같은 길이의 구간이 존재합니다.");
         }
     }
 
     private Section findTargetSection(Section newSection, List<Section> sections, Distance totalDistance) {
-        Section targetSection = sections.stream().skip(1).filter(section ->
-                totalDistance.plusDistance(section.getDistance()).isGreaterThanOrEqualTo(newSection.getDistance()))
+        Section targetSection = sections.stream().skip(SKIP_COUNT_ONE).filter(section ->
+                totalDistance.plusDistance(section).isGreaterThanOrEqualTo(newSection))
                 .findAny()
-                .orElse(sections.get(sections.size() - 1));
-        validateSameDistance(newSection.getDistance(), totalDistance);
+                .orElse(sections.get(getLastIndexOf(sections)));
+        validateSameDistance(newSection, totalDistance);
         return targetSection;
     }
 
@@ -147,13 +146,13 @@ public class Sections {
         Map<Station, Section> sectionsByDownStation = getSectionsByDownStation(sections);
         return sections.stream()
                 .filter(section -> !sectionsByDownStation.containsKey(section.getUpStation()))
-                .findFirst().orElse(sections.stream().findFirst().get());
+                .findFirst().orElse(sections.get(FIRST_INDEX));
     }
 
     private Section getEndSection() {
         return this.sections.stream()
                 .filter(section -> !getSectionsByUpStation().containsKey(section.getDownStation()))
-                .findFirst().orElse(this.sections.stream().findFirst().get());
+                .findFirst().orElse(this.sections.get(FIRST_INDEX));
     }
 
     private List<Section> getSortedSectionsFrom(Station upStation) {
@@ -202,6 +201,10 @@ public class Sections {
 
     private void procSortSections() {
         this.sections = getSortedSectionsFrom(getBeginSection().getUpStation());
+    }
+
+    private int getLastIndexOf(List<Section> sections) {
+        return sections.size() - LAST_INDEX_FIX_NUMBER;
     }
 
     private void validateNotExistBothUpStationAndDownStation(Section newSection) {

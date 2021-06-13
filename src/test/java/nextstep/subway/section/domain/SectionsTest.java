@@ -163,10 +163,10 @@ public class SectionsTest {
         assertAll(
                 () -> assertThat(section.getUpStation()).isSameAs(station3),
                 () -> assertThat(section.getDownStation()).isSameAs(station5),
-                () -> assertThat(section.getDistance().isEqualTo(1)).isTrue(),
+                () -> assertThat(section.hasSameDistanceAs(1)).isTrue(),
                 () -> assertThat(section3.getUpStation()).isSameAs(station5),
                 () -> assertThat(section3.getDownStation()).isSameAs(station4),
-                () -> assertThat(section3.getDistance().isEqualTo(3)).isTrue()
+                () -> assertThat(section3.hasSameDistanceAs(3)).isTrue()
         );
     }
 
@@ -187,10 +187,10 @@ public class SectionsTest {
         assertAll(
                 () -> assertThat(resultSection.getUpStation()).isSameAs(station4),
                 () -> assertThat(resultSection.getDownStation()).isSameAs(station5),
-                () -> assertThat(resultSection.getDistance().isEqualTo(3)).isTrue(),
+                () -> assertThat(resultSection.hasSameDistanceAs(3)).isTrue(),
                 () -> assertThat(section3.getUpStation()).isSameAs(station3),
                 () -> assertThat(section3.getDownStation()).isSameAs(station4),
-                () -> assertThat(section3.getDistance().isEqualTo(4)).isTrue()
+                () -> assertThat(section3.hasSameDistanceAs(4)).isTrue()
         );
     }
 
@@ -211,10 +211,10 @@ public class SectionsTest {
         assertAll(
                 () -> assertThat(resultSection.getUpStation()).isSameAs(station5),
                 () -> assertThat(resultSection.getDownStation()).isSameAs(station2),
-                () -> assertThat(resultSection.getDistance().isEqualTo(1)).isTrue(),
+                () -> assertThat(resultSection.hasSameDistanceAs(1)).isTrue(),
                 () -> assertThat(section1.getUpStation()).isSameAs(station1),
                 () -> assertThat(section1.getDownStation()).isSameAs(station5),
-                () -> assertThat(section1.getDistance().isEqualTo(1)).isTrue()
+                () -> assertThat(section1.hasSameDistanceAs(1)).isTrue()
         );
     }
 
@@ -235,10 +235,10 @@ public class SectionsTest {
         assertAll(
                 () -> assertThat(resultSection.getUpStation()).isSameAs(station5),
                 () -> assertThat(resultSection.getDownStation()).isSameAs(station1),
-                () -> assertThat(resultSection.getDistance().isEqualTo(6)).isTrue(),
+                () -> assertThat(resultSection.hasSameDistanceAs(6)).isTrue(),
                 () -> assertThat(section1.getUpStation()).isSameAs(station1),
                 () -> assertThat(section1.getDownStation()).isSameAs(station2),
-                () -> assertThat(section1.getDistance().isEqualTo(2)).isTrue()
+                () -> assertThat(section1.hasSameDistanceAs(2)).isTrue()
         );
     }
 }

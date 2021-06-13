@@ -17,8 +17,8 @@ public class Distance {
         this.distance = distance;
     }
 
-    public static Distance copy(Distance distance) {
-        return new Distance(distance.distance);
+    public static Distance copyDistanceOn(Section section) {
+        return new Distance(section.getDistance().distance);
     }
 
     public Distance plusDistance(Distance distance) {
@@ -32,16 +32,12 @@ public class Distance {
         return this;
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
     public boolean isGreaterThan(Distance distance) {
         return this.distance > distance.distance;
     }
 
     public boolean isEqualTo(Distance distance) {
-        return this.distance == distance.distance;
+        return isEqualTo(distance.distance);
     }
 
     public boolean isEqualTo(int distance) {
@@ -50,6 +46,15 @@ public class Distance {
 
     public boolean isGreaterThanOrEqualTo(Distance distance) {
         return this.distance >= distance.distance;
+    }
+
+    public Distance plusDistance(Section section) {
+        section.addDistanceTo(this);
+        return this;
+    }
+
+    public boolean isGreaterThanOrEqualTo(Section section) {
+        return section.hasDistanceShorterThanOrEqualTo(this);
     }
 
     @Override
