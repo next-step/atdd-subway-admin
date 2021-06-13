@@ -20,6 +20,8 @@ import nextstep.subway.station.domain.StationRepository;
 @Service
 @Transactional
 public class LineService {
+    public static final int UP_STATION_INDEX = 0;
+    public static final int DOWN_STATION_INDEX = 1;
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
@@ -40,8 +42,9 @@ public class LineService {
     }
 
     private List<LineStation> lineStations(final LineRequest request, final Line line) {
-        final Station upStation = station(request.getUpStationId());
-        final Station downStation = station(request.getDownStationId());
+        final Station[] stationArray = stationArray(request.getUpStationId(), request.getDownStationId());
+        final Station upStation = stationArray[UP_STATION_INDEX];
+        final Station downStation = stationArray[DOWN_STATION_INDEX];
 
         final LineStation lineStation = new LineStation(line, upStation);
         lineStation.next(downStation, request.getDistance());
@@ -92,16 +95,34 @@ public class LineService {
     }
 
     public LineResponse addSection(final Long lineId, final SectionRequest sectionRequest) {
+        final Station[] stationArray = stationArray(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
         final Line line = findById(lineId);
-        final Station upStation = station(sectionRequest.getUpStationId());
-        final Station downStation = station(sectionRequest.getDownStationId());
-        line.addLineStation(upStation, downStation, sectionRequest.getDistance());
+        line.addLineStation(stationArray[UP_STATION_INDEX], stationArray[DOWN_STATION_INDEX],
+            sectionRequest.getDistance());
 
         return LineResponse.of(line);
     }
 
-    private Station station(final Long upStationId) {
-        return stationRepository.findById(upStationId)
+    private Station[] stationArray(final Long upStationId, final Long downStationId) {
+        final List<Station> stations = stations(upStationId, downStationId);
+
+        final Station[] stationArray = new Station[2];
+        stationArray[UP_STATION_INDEX] = station(upStationId, stations);
+        stationArray[DOWN_STATION_INDEX] = station(downStationId, stations);
+
+        return stationArray;
+    }
+
+    private List<Station> stations(final Long upStationId, final Long downStationId) {
+        final List<Long> ids = Arrays.asList(upStationId, downStationId);
+
+        return stationRepository.findByIdIn(ids);
+    }
+
+    private Station station(final Long id, final List<Station> stations) {
+        return stations.stream()
+            .filter(station -> station.getId().equals(id))
+            .findFirst()
             .orElseThrow(NotFoundException::new);
     }
 }

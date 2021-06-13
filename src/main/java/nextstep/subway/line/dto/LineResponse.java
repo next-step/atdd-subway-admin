@@ -53,8 +53,4 @@ public class LineResponse {
     public List<StationResponse> getStations() {
         return this.stations;
     }
-
-    public Line toLine() {
-        return new Line(id, name, color);
-    }
 }
