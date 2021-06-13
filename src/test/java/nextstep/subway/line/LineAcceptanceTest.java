@@ -48,10 +48,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_목록_조회_성공() {
         // given
-        LineRequest firstRequest = new LineRequest("1호선", "FF0000");
-        LineRequest secondRequest = new LineRequest("2호선", "00FF00");
-        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(firstRequest);
-        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(secondRequest);
+        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000"));
+        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00"));
 
         // when
         ExtractableResponse response = 지하철_노선_목록_조회_요청();
@@ -80,12 +78,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_검색_성공() {
         // given
-        LineRequest firstRequest = new LineRequest("1호선", "FF0000");
-        LineRequest secondRequest = new LineRequest("2호선", "00FF00");
-        LineRequest thirdRequest = new LineRequest("3호선", "00FF00");
-        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(firstRequest);
-        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(secondRequest);
-        ExtractableResponse createResponse3 = 지하철_노선_생성_요청(thirdRequest);
+        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000"));
+        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00"));
+        ExtractableResponse createResponse3 = 지하철_노선_생성_요청(new LineRequest("3호선", "00FF00"));
         List<Long> expectedResult = extractIdInResponses(createResponse2, createResponse3);
 
         // when
@@ -113,8 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_PK_조건_조회_성공() {
         // given
-        LineRequest firstRequest = new LineRequest("1호선", "FF0000");
-        ExtractableResponse createResponse = 지하철_노선_생성_요청(firstRequest);
+        ExtractableResponse createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000"));
         LineResponse expectedResult = createResponse.jsonPath().getObject(".", LineResponse.class);
         Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
 
@@ -148,8 +142,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_수정_성공() {
         // given
-        LineRequest saveRequest = new LineRequest("1호선", "FF0000");
-        ExtractableResponse createResponse = 지하철_노선_생성_요청(saveRequest);
+        ExtractableResponse createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000"));
         Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
 
         // when
@@ -166,8 +159,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_수정_예외_존재하지_않는_PK() {
         // when
-        LineRequest updateRequest = new LineRequest("1호선", "0000FF");
-        ExtractableResponse updateResponse = 지하철_노선_수정_요청(Long.MAX_VALUE, updateRequest);
+        ExtractableResponse updateResponse = 지하철_노선_수정_요청(Long.MAX_VALUE, new LineRequest("1호선", "0000FF"));
 
         // then
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -177,11 +169,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_수정_예외_수정_중복된_이름() {
         // given
-        LineRequest saveRequest1 = new LineRequest("1호선", "FF0000");
-        지하철_노선_생성_요청(saveRequest1);
+        지하철_노선_생성_요청(new LineRequest("1호선", "FF0000"));
 
-        LineRequest saveRequest2 = new LineRequest("2호선", "00FF00");
-        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(saveRequest2);
+        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00"));
         Long savedId2 = ExtractableResponseUtil.extractIdInResponse(createResponse2);
 
         // when
@@ -196,8 +186,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_제거_성공() {
         // given
-        LineRequest saveRequest = new LineRequest("1호선", "FF0000");
-        ExtractableResponse createResponse = 지하철_노선_생성_요청(saveRequest);
+        ExtractableResponse createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000"));
         Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
 
         // when
