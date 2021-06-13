@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import nextstep.subway.sectionstations.domain.SectionStation;
+import nextstep.subway.sectionstations.domain.SectionStationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +29,13 @@ public class LineService {
     private final LineRepository lineRepository;
     private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
+    private final SectionStationRepository sectionStationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository, SectionStationRepository sectionStationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
         this.sectionRepository = sectionRepository;
+        this.sectionStationRepository = sectionStationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -42,6 +46,9 @@ public class LineService {
 
         Section section = Section.getInstance(persistLine, upStation, downStation, request.getDistance());
         sectionRepository.save(section);
+
+        sectionStationRepository.save(new SectionStation(section, upStation));
+        sectionStationRepository.save(new SectionStation(section, downStation));
 
         return LineResponse.of(persistLine);
     }
@@ -89,8 +96,8 @@ public class LineService {
     }
 
     private void addStationResponse(List<StationResponse> stationResponses, Section section) {
-        addResponse(stationResponses, StationResponse.of(section.getPrevStation()));
-        addResponse(stationResponses, StationResponse.of(section.getNextStation()));
+        addResponse(stationResponses, StationResponse.of(section.getUpStation()));
+        addResponse(stationResponses, StationResponse.of(section.getDownStation()));
     }
 
     private void addResponse(List<StationResponse> stationResponses, StationResponse stationResponse) {

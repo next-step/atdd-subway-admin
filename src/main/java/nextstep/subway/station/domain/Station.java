@@ -1,8 +1,11 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.sectionstations.domain.SectionStation;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Station extends BaseEntity {
@@ -12,6 +15,9 @@ public class Station extends BaseEntity {
 
     @Column(unique = true)
     private String name;
+
+    @OneToMany(mappedBy = "station")
+    List<SectionStation> sectionStations = new ArrayList<>();
 
     public Station() {
     }
