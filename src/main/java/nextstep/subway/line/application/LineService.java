@@ -22,11 +22,13 @@ public class LineService {
 		this.lineRepository = lineRepository;
 	}
 
+	@Transactional
 	public LineResponse saveLine(LineRequest request) {
 		Line persistLine = lineRepository.save(request.toLine());
 		return LineResponse.of(persistLine);
 	}
 
+	@Transactional(readOnly = true)
 	public List<LineResponse> findAllLines() {
 		List<Line> lines = lineRepository.findAll();
 

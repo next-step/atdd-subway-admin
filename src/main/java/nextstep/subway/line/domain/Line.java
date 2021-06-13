@@ -52,10 +52,12 @@ public class Line extends BaseEntity {
 
 	@Override
 	public boolean equals(Object object) {
-		if (this == object)
+		if (this == object) {
 			return true;
-		if (!(object instanceof Line))
+		}
+		if (!(object instanceof Line)) {
 			return false;
+		}
 		Line line = (Line)object;
 		return Objects.equals(id, line.id) && Objects.equals(name, line.name)
 			&& Objects.equals(color, line.color);

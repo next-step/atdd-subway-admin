@@ -50,10 +50,12 @@ public class LineResponse {
 
 	@Override
 	public boolean equals(Object object) {
-		if (this == object)
+		if (this == object) {
 			return true;
-		if (!(object instanceof LineResponse))
+		}
+		if (!(object instanceof LineResponse)) {
 			return false;
+		}
 		LineResponse that = (LineResponse)object;
 		return Objects.equals(id, that.id) && Objects.equals(name, that.name)
 			&& Objects.equals(color, that.color) && Objects.equals(createdDate, that.createdDate)

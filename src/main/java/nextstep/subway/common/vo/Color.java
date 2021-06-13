@@ -2,6 +2,7 @@ package nextstep.subway.common.vo;
 
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import org.apache.logging.log4j.util.Strings;
@@ -12,6 +13,7 @@ public class Color {
 	private static final int MAX_LENGTH = 255;
 	private static final String COLUMN_DESCRIPTION = "색상";
 
+	@Column
 	private String color;
 
 	protected Color() {

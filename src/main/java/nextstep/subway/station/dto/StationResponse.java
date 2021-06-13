@@ -44,10 +44,12 @@ public class StationResponse {
 
 	@Override
 	public boolean equals(Object object) {
-		if (this == object)
+		if (this == object) {
 			return true;
-		if (!(object instanceof StationResponse))
+		}
+		if (!(object instanceof StationResponse)) {
 			return false;
+		}
 		StationResponse that = (StationResponse)object;
 		return Objects.equals(id, that.id) && Objects.equals(name, that.name)
 			&& Objects.equals(createdDate, that.createdDate) && Objects.equals(modifiedDate,
