@@ -23,16 +23,24 @@ public class Sections {
         return sections.stream();
     }
 
-    public void add(Section sectionIn) {
+    public void add(Section section) {
         if (this.isEmpty()) {
-            sections.add(sectionIn);
+            sections.add(section);
             return;
         }
-        if (this.contains(sectionIn)) {
+        if (this.contains(section)) {
             return;
         }
 
-        sectionIn.positioningAt(sections);
+        section.positioningAt(sections);
+    }
+
+    public void delete(Station station) {
+        if (sections.size() <= 1) {
+            throw new RuntimeException();
+        }
+
+        station.deleteFrom(sections);
     }
 
     public boolean contains(Section section) {
@@ -74,30 +82,4 @@ public class Sections {
         return sections.isEmpty();
     }
 
-    public void delete(Station station) {
-        List<Section> sections = this.sections;
-        for (int i = 0; i < sections.size(); ++i) {
-//            Section section = sections.get(i);
-//
-//            if (section.upStationName().equals(station.getName())) {
-//                if (i > 0 && i < sections.size() - 1) {
-//                    sections.get(i-1).setDownStation(sections.get(i+1).upStation());
-//                }
-//                sections.remove(i);
-//                break;
-//            }
-//
-//            if (section.downStationName().equals(station.getName())) {
-//                if (i == 0 && i < sections.size() - 1) {
-//                    sections.get(i+1).setUpStation(sections.get(i).upStation());
-//                }
-//                if (i > 0 && i < sections.size() - 1) {
-//                    sections.get(i-1).setDownStation(sections.get(i+1).upStation());
-//                }
-//                sections.remove(i);
-//                break;
-//            }
-        }
-        this.sections = sections;
-    }
 }

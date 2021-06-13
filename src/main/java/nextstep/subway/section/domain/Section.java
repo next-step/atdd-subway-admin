@@ -58,7 +58,7 @@ public class Section extends BaseEntity {
         sections.add(position.index(), this);
     }
 
-    public Position dockingPositionOn(List<Section> sections, Section section) {
+    private Position dockingPositionOn(List<Section> sections, Section section) {
         if (this.isInFrontOf(section)) {
             handleAttributesOfFrontSection(sections, section);
             return Position.isFront();
@@ -130,11 +130,11 @@ public class Section extends BaseEntity {
         return line;
     }
 
-    protected Station upStation() {
+    public Station upStation() {
         return upStation;
     }
 
-    protected Station downStation() {
+    public Station downStation() {
         return downStation;
     }
 
@@ -195,5 +195,13 @@ public class Section extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
+    }
+
+    public void setDownStation(Station station) {
+        downStation = station;
+    }
+
+    public void setUpStation(Station station) {
+        upStation = station;
     }
 }

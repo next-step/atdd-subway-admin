@@ -1,9 +1,11 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -66,5 +68,31 @@ public class Station extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    public void deleteFrom(List<Section> sections) {
+        // 로드 후 한번은 정렬하거나 하여 정렬되었다는 가정 하에,
+        for (int i = 0; i < sections.size(); ++i) {
+            Section section = sections.get(i);
+
+            if (section.upStation().equals(this)) {
+                if (i > 0 && i < sections.size() - 1) {
+                    sections.get(i-1).setDownStation(sections.get(i+1).upStation());
+                }
+                sections.remove(i);
+                break;
+            }
+
+            if (section.downStation().equals(this)) {
+                if (i == 0 && i < sections.size() - 1) {
+                    sections.get(i+1).setUpStation(sections.get(i).upStation());
+                }
+                if (i > 0 && i < sections.size() - 1) {
+                    sections.get(i-1).setDownStation(sections.get(i+1).upStation());
+                }
+                sections.remove(i);
+                break;
+            }
+        }
     }
 }

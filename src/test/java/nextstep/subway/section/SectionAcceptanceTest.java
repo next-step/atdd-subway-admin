@@ -50,7 +50,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("역(Station)을 id 로 삭제하면서 해당 구간(Section)이 없어지는 Happy case")
     @Test
-    void delete_1() {
+    void deleteStationFromLineSectionsTest() {
         // given
         // 라인에 역이 3개 있다. 즉, 구간이 2개 있는 상태이다. (강남역 - 분짜역 - 광교역)
         createParams = new HashMap<>();
