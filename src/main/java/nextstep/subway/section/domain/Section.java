@@ -6,8 +6,10 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Entity
 public class Section extends BaseEntity {
@@ -50,5 +52,9 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public List<Station> stationsFromUpToDown() {
+        return Arrays.asList(upStation, downStation);
     }
 }

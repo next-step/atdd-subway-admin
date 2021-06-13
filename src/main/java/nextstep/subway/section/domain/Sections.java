@@ -6,9 +6,9 @@ import nextstep.subway.station.dto.StationResponse;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -24,14 +24,9 @@ public class Sections {
     }
 
     public List<Station> stationsFromUpToDown() {
-        List<Station> stations = new LinkedList<>();
-
-        for (int i = 0; i < sections.size(); i++) {
-            Section section = sections.get(i);
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
-        }
-
-        return stations;
+        return sections.stream()
+                .map(section -> Arrays.asList(section.getUpStation(), section.getDownStation()))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 }

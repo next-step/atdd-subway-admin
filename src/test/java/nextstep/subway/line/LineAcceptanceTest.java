@@ -5,10 +5,13 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -18,6 +21,10 @@ import java.util.Map;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    private StationRepository stationRepository;
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -35,25 +42,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private Long 역을_생성하여_아이디제공(String stationName) {
-        // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
+        Station presistStation = stationRepository.save(new Station(stationName));
 
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all().extract();
-
-        // then
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // 값 검증
-        StationResponse stationResponse = response.jsonPath().getObject(".", StationResponse.class);
-        Assertions.assertThat(stationResponse).extracting("name").isEqualTo(stationName);
-
-        return stationResponse.getId();
+        return presistStation.getId();
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(final String name, final String color, final Long upStationId, final Long downStationId, final int distance) {
@@ -140,7 +131,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 값 검증
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
         Assertions.assertThat(lineResponse.getName()).isEqualTo("경의선");
-        Assertions.assertThat(lineResponse.getStations()).extracting("name").contains("광명역", "오송역");
+        Assertions.assertThat(lineResponse.getStations()).extracting("name").first().isEqualTo("광명역");
+        Assertions.assertThat(lineResponse.getStations()).extracting("name").last().isEqualTo("오송역");
     }
 
     @DisplayName("등록되지않은 지하철 노선을 조회한다.")
