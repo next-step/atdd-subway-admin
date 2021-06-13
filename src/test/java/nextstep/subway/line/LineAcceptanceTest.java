@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.utils.ExtractableResponseUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -57,7 +58,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .map(ExtractableResponseUtil::extractIdInResponse)
                 .collect(Collectors.toList());
 
         List<Long> resultLineIds = response.jsonPath().getList("lineResponses", LineResponse.class).stream()
@@ -89,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse createResponse2 = 지하철_노선_생성_요청(secondRequest);
         ExtractableResponse createResponse3 = 지하철_노선_생성_요청(thirdRequest);
         List<Long> expectedResult = Arrays.asList(createResponse2, createResponse3).stream()
-                .map(it -> it.jsonPath().getObject(".", LineResponse.class).getId())
+                .map(ExtractableResponseUtil::extractIdInResponse)
                 .collect(Collectors.toList());
 
         // when
@@ -120,7 +121,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest firstRequest = new LineRequest("1호선", "FF0000");
         ExtractableResponse createResponse = 지하철_노선_생성_요청(firstRequest);
         LineResponse expectedResult = createResponse.jsonPath().getObject(".", LineResponse.class);
-        Long savedId = Long.valueOf(createResponse.header("Location").split("/")[2]);
+        Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
 
         // when
         ExtractableResponse response = 지하철_노선_PK_조건_조회_요청(savedId);
@@ -154,7 +155,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         LineRequest saveRequest = new LineRequest("1호선", "FF0000");
         ExtractableResponse createResponse = 지하철_노선_생성_요청(saveRequest);
-        Long savedId = createResponse.jsonPath().getObject(".", LineResponse.class).getId();
+        Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
 
         // when
         LineRequest updateRequest = new LineRequest("1호선", "0000FF");
@@ -183,11 +184,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         LineRequest saveRequest1 = new LineRequest("1호선", "FF0000");
         ExtractableResponse createResponse1 = 지하철_노선_생성_요청(saveRequest1);
-        Long savedId1 = createResponse1.jsonPath().getObject(".", LineResponse.class).getId();
+        Long savedId1 = ExtractableResponseUtil.extractIdInResponse(createResponse1);
 
         LineRequest saveRequest2 = new LineRequest("2호선", "00FF00");
         ExtractableResponse createResponse2 = 지하철_노선_생성_요청(saveRequest2);
-        Long savedId2 = createResponse2.jsonPath().getObject(".", LineResponse.class).getId();
+        Long savedId2 = ExtractableResponseUtil.extractIdInResponse(createResponse2);
 
         // when
         LineRequest updateRequest = new LineRequest("1호선", "0000FF");
@@ -203,7 +204,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         LineRequest saveRequest = new LineRequest("1호선", "FF0000");
         ExtractableResponse createResponse = 지하철_노선_생성_요청(saveRequest);
-        Long savedId = Long.valueOf(createResponse.header("Location").split("/")[2]);
+        Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
 
         // when
         ExtractableResponse deleteResponse = 지하철_노선_삭제_요청(savedId);

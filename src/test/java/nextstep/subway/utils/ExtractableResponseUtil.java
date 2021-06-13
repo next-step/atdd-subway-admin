@@ -7,7 +7,7 @@ import java.util.List;
 public class ExtractableResponseUtil {
 
     public static Long extractIdInResponse(ExtractableResponse response) {
-        return null;
+        return Long.parseLong(response.header("Location").split("/")[2]);
     }
     public static List<Long> extractIdInResponses(ExtractableResponse response) {
         return null;
