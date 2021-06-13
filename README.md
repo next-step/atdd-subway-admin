@@ -52,7 +52,6 @@
   - [x] ExtractableResponse
     - [x] 단일 응답에 대해 Location 헤더를 사용한 id 추출 기능 분리 및 적용
     - [x] 여러 응답에 대해 Location 헤더를 사용한 id 추출 기능 분리 및 적용
-    - [x] id 조건 조회 결과의 객체 변환
   - [x] LinesResponse
     - [x] getIds() 구현 및 적용
 ---
