@@ -10,12 +10,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.line.ui.LineControllerTest.*;
 import static nextstep.subway.utils.ExtractableResponseUtil.extractIdInResponses;
+import static nextstep.subway.utils.ExtractableResponseUtil.extractObjectInResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -117,12 +117,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         LineRequest firstRequest = new LineRequest("1호선", "FF0000");
         ExtractableResponse createResponse = 지하철_노선_생성_요청(firstRequest);
-        LineResponse expectedResult = createResponse.jsonPath().getObject(".", LineResponse.class);
+        LineResponse expectedResult = extractObjectInResponse(createResponse, LineResponse.class);
         Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
 
         // when
         ExtractableResponse response = 지하철_노선_PK_조건_조회_요청(savedId);
-        LineResponse actualResult = response.jsonPath().getObject(".", LineResponse.class);
+        LineResponse actualResult = extractObjectInResponse(response, LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
