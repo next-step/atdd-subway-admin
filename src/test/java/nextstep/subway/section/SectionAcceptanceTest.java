@@ -88,7 +88,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteStationFromLineSectionsTest_4() {
         // given
         // 라인에 역이 4개 있다. 즉, 구간이 3개 있는 상태이다. (강남역 - 분짜역 - 광교역 - 팟타이역)
-        기본구간세팅에_가운데로_분짜역_하행으로_팟타이역_총_두개_더_추가한다();
+        기본구간세팅에_가운데로_분짜역과_하행으로_팟타이역_총_두개_더_추가한다();
 
         // when
         // 최하행구간의 하행역을 지운다.
@@ -113,7 +113,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteStationFromLineSectionsTest_3() {
         // given
         // 라인에 역이 4개 있다. 즉, 구간이 3개 있는 상태이다. (강남역 - 분짜역 - 광교역 - 팟타이역)
-        기본구간세팅에_가운데로_분짜역_하행으로_팟타이역_총_두개_더_추가한다();
+        기본구간세팅에_가운데로_분짜역과_하행으로_팟타이역_총_두개_더_추가한다();
 
         // when
         // 중간에 있는 역 1개를 지운다.
@@ -367,7 +367,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
     }
 
-    private void 기본구간세팅에_가운데로_분짜역_하행으로_팟타이역_총_두개_더_추가한다() {
+    private void 기본구간세팅에_가운데로_분짜역과_하행으로_팟타이역_총_두개_더_추가한다() {
         createParams = new HashMap<>();
         createParams.put("upStationId", 분짜역.getId() + "");
         createParams.put("downStationId", 광교역.getId() + "");
