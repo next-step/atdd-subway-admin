@@ -71,28 +71,32 @@ public class Station extends BaseEntity {
     }
 
     public void deleteFrom(List<Section> sections) {
-        // 로드 후 한번은 정렬하거나 하여 정렬되었다는 가정 하에,
+        // sections 를 로드 후 한번은 정렬하거나 하여 정렬되었다는 가정 하에,
         for (int i = 0; i < sections.size(); ++i) {
-            Section section = sections.get(i);
+            Section sectionCurrent = sections.get(i);
 
-            if (section.upStation().equals(this)) {
-                if (i > 0 && i < sections.size() - 1) {
-                    sections.get(i-1).setDownStation(sections.get(i+1).upStation());
-                }
+            if (sectionCurrent.upStation().equals(this) && i == 0) {
                 sections.remove(i);
                 break;
             }
 
-            if (section.downStation().equals(this)) {
-                if (i == 0 && i < sections.size() - 1) {
-                    sections.get(i+1).setUpStation(sections.get(i).upStation());
-                }
-                if (i > 0 && i < sections.size() - 1) {
-                    sections.get(i-1).setDownStation(sections.get(i+1).upStation());
-                }
+            if (sectionCurrent.upStation().equals(this) && i == sections.size() - 1) {
+                sections.get(i-1).setDownStation(sections.get(i).downStation());
+                sections.remove(i);
+                break;
+            }
+
+            if (sectionCurrent.upStation().equals(this)) {
+                sections.get(i-1).setDownStation(sections.get(i+1).upStation());
+                sections.remove(i);
+                break;
+            }
+
+            if (sectionCurrent.downStation().equals(this) && i == sections.size() - 1) {
                 sections.remove(i);
                 break;
             }
         }
+        throw new IllegalStateException("삭제할 역이 없습니다.");
     }
 }

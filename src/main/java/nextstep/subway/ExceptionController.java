@@ -29,4 +29,10 @@ public class ExceptionController {
         return ResponseEntity.badRequest().build();
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity handIllegalStateException(IllegalStateException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
 }

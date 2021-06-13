@@ -37,7 +37,7 @@ public class Sections {
 
     public void delete(Station station) {
         if (sections.size() <= 1) {
-            throw new RuntimeException();
+            throw new IllegalStateException();
         }
 
         station.deleteFrom(sections);
