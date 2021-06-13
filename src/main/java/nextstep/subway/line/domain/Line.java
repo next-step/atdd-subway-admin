@@ -1,44 +1,67 @@
 package nextstep.subway.line.domain;
 
-import javax.persistence.Column;
+import java.util.Objects;
+
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.vo.Color;
+import nextstep.subway.common.vo.Name;
 
 @Entity
 public class Line extends BaseEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@Column(unique = true)
-	private String name;
-	private String color;
 
-	public Line() {
+	@Embedded
+	private Name name;
+
+	@Embedded
+	private Color color;
+
+	protected Line() {
 	}
 
 	public Line(String name, String color) {
-		this.name = name;
-		this.color = color;
+		this.name = Name.generate(name);
+		this.color = Color.generate(color);
 	}
 
 	public void update(Line line) {
-		this.name = line.getName();
-		this.color = line.getColor();
+		this.name = Name.generate(line.name());
+		this.color = Color.generate(line.color());
 	}
 
-	public Long getId() {
+	public Long id() {
 		return id;
 	}
 
-	public String getName() {
-		return name;
+	public String name() {
+		return name.value();
 	}
 
-	public String getColor() {
-		return color;
+	public String color() {
+		return color.value();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object)
+			return true;
+		if (!(object instanceof Line))
+			return false;
+		Line line = (Line)object;
+		return Objects.equals(name, line.name) && Objects.equals(color, line.color);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, color);
 	}
 }

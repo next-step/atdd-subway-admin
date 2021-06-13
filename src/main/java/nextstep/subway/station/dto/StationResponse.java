@@ -10,7 +10,7 @@ public class StationResponse {
 	private LocalDateTime createdDate;
 	private LocalDateTime modifiedDate;
 
-	public StationResponse() {
+	protected StationResponse() {
 	}
 
 	public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
@@ -21,8 +21,8 @@ public class StationResponse {
 	}
 
 	public static StationResponse of(Station station) {
-		return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(),
-			station.getModifiedDate());
+		return new StationResponse(station.id(), station.name(), station.createdDate(),
+			station.modifiedDate());
 	}
 
 	public Long getId() {

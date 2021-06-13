@@ -296,14 +296,12 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 0-1-5.clone : `git clone -b gregolee --single-branch https://github.com/gregolee/atdd-subway-admin.git`
         - [x] 0-1-6.branch : `git checkout -b step1`
     - [x] 0-2.요구사항 정리
-    - [x] 0-3.[AngularJS Commit Message Conventions](https://gist.github.com/stephenparish/9941e89d80e2bc58a153#generating-changelogmd)
-      참고
+    - [x] 0-3.[AngularJS Commit Message Conventions](https://gist.github.com/stephenparish/9941e89d80e2bc58a153#generating-changelogmd) 참고
     - [ ] 0-4.Slack을 통해 merge가 되는지 확인한 후에 코드 리뷰 2단계 과정으로 다음 단계 미션을 진행
         - [ ] 0-4-1.gregolee(master) branch로 체크아웃 : `git checkout gregolee`
         - [ ] 0-4-2.step1 branch 삭제 : `git branch -D step1`
         - [ ] 0-4-3.step1 branch 삭제 확인 : `git branch -a`
-        - [ ] 0-4-4.원본(next-step) git repository를 remote로 연결 (미션 당
-          1회) : `git remote add -t gregolee upstream https://github.com/next-step/atdd-subway-admin`
+        - [ ] 0-4-4.원본(next-step) git repository를 remote로 연결 (미션 당 1회) : `git remote add -t gregolee upstream https://github.com/next-step/atdd-subway-admin`
         - [ ] 0-4-5.원본(next-step) git repository를 remote로 연결 확인 : `git remote -v`
         - [ ] 0-4-6.원본(next-step) git repository에서 merge된 나의 branch(gregolee)를 fetch : `git fetch upstream gregolee`
         - [ ] 0-4-7.remote에서 가져온 나의 branch로 rebase : `git rebase upstream/gregolee`
@@ -331,17 +329,20 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 4-2-2.`Line`
             - [x] 4-2-2-1.`Name`
             - [x] 4-2-2-1.`Color`
-    - [ ] 4-3.entity 작성
-        - [ ] 4-3-1.`Station`
-        - [ ] 4-3-2.`Line`
-    - [ ] 4-4.service 작성
-        - [ ] 4-4-1.`StationService`
-        - [ ] 4-4-2.`LineService`
-    - [ ] 4-5.controller 작성
-        - [ ] 4-5-1.`StationController`
-        - [ ] 4-5-2.`LineController`
-    - [ ] 4-6.추가 리팩터링
-      - [ ] 4-6-1.
+    - [x] 4-3.entity 작성
+        - [x] 4-3-1.`Station`
+        - [x] 4-3-2.`Line`
+    - [ ] 4-4.repository 작성
+        - [ ] 4-4-1.`StationRepository`
+        - [ ] 4-4-2.`LineRepository`
+    - [ ] 4-5.service 작성
+        - [ ] 4-5-1.`StationService`
+        - [ ] 4-5-2.`LineService`
+    - [ ] 4-6.controller 작성
+        - [ ] 4-6-1.`StationController`
+        - [ ] 4-6-2.`LineController`
+    - [ ] 4-7.추가 리팩터링
+      - [ ] 4-7-1.
 - [ ] 5.테스트
     - [ ] 5-1.Gradle build Success 확인
     - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)

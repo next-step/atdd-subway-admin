@@ -2,8 +2,11 @@ package nextstep.subway.common.vo;
 
 import java.util.Objects;
 
+import javax.persistence.Embeddable;
+
 import org.apache.logging.log4j.util.Strings;
 
+@Embeddable
 public class Color {
 
 	private static final int MAX_LENGTH = 255;
