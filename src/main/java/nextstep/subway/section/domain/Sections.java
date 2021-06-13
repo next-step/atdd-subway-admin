@@ -43,4 +43,48 @@ public class Sections {
                 .findFirst()
                 .ifPresent(it -> it.updateDownStation(section));
     }
+
+    public List<Station> orderSection() {
+        List<Station> stations = new ArrayList<>();
+        Station station = getFirstSection();
+        stations.add(station);
+
+        while (isAfterSection(station)) {
+            Section afterStation = findAfterSection(station);
+            station = afterStation.getDownStation();
+            stations.add(station);
+        }
+        return stations;
+    }
+
+    public boolean isBeforeSection(Station station) {
+        return sections.stream().anyMatch(it -> it.getDownStation().equals(station));
+    }
+
+    public boolean isAfterSection(Station station) {
+        return sections.stream().anyMatch(it -> it.getUpStation().equals(station));
+    }
+
+    public Station getFirstSection() {
+        Station station = sections.get(0).getUpStation();
+        while (isBeforeSection(station)) {
+            Section section = findBeforeSection(station);
+            station = section.getUpStation();
+        }
+        return station;
+    }
+
+    public Section findBeforeSection(Station station) {
+        return sections.stream()
+                .filter(it -> it.getDownStation().equals(station))
+                .findFirst()
+                .orElseThrow(NotFoundException::new);
+    }
+
+    private Section findAfterSection(Station station) {
+        return sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow(NotFoundException::new);
+    }
 }

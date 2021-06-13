@@ -30,6 +30,9 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
+        if(line.getStations().isEmpty()) {
+            return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList(), line.getCreatedDate(), line.getModifiedDate());
+        }
         return new LineResponse(line.getId(), line.getName(), line.getColor(), getStations(line), line.getCreatedDate(), line.getModifiedDate());
     }
 

@@ -8,6 +8,7 @@ import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,12 +57,10 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        for (Section section: sections.getSections()) {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
+        if (sections.getSections().isEmpty()) {
+            return Arrays.asList();
         }
-        return stations;
+        return sections.orderSection();
     }
 
     public void addSection(Section section) {
@@ -83,7 +82,7 @@ public class Line extends BaseEntity {
         Boolean isUpStationExist = isUpStationExist(section);
         Boolean isDownStationExist = isDownStationExist(section);
 
-        if (!isUpStationExist && !isDownStationExist) {
+        if (!isUpStationExist && !isDownStationExist && !getStations().isEmpty()) {
             throw new RuntimeException("상/하행선 둘 중 하나는 일치해야 합니다.");
         }
         if (sections.validDuplicationSection(section)) {
