@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +47,17 @@ public class LineTest {
         assertThat(result).contains(판교역);
     }
 
+    @DisplayName("노선에 구간 여러개 추가하기")
+    @Test
+    void addSections2() {
+        구간_등록(강남역, 양재역, 30);
+        구간_등록(양재역, 판교역, 20);
+
+        List<Station> result = 신분당선.getStations();
+
+        입력한_모든_역이_존재함(result);
+    }
+
     @DisplayName("상/하행선이 동일한 구간 추가 불가")
     @Test
     void addDuplicationSection() {
@@ -82,5 +94,15 @@ public class LineTest {
     private void 구간_등록(Station upStation, Station downStationName, int distance) {
         Section section = new Section(신분당선, upStation, downStationName, distance);
         신분당선.addSection(section);
+    }
+
+    private void 입력한_모든_역이_존재함(List<Station> result) {
+        List<Station> allInputStation = new ArrayList<>();
+        allInputStation.add(판교역);
+        allInputStation.add(수지구청역);
+        allInputStation.add(강남역);
+        allInputStation.add(양재역);
+        allInputStation.add(판교역);
+        assertThat(result).containsAll(allInputStation);
     }
 }

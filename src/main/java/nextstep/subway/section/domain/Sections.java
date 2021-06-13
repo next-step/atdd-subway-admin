@@ -33,7 +33,7 @@ public class Sections {
         sections.stream()
                 .filter(it -> it.getUpStation().equals(inputUpStation))
                 .findFirst()
-                .ifPresent(it -> it.updateDownStation(section));
+                .ifPresent(it -> it.updateUpStation(section));
     }
 
     public void updateDownStation(Section section) {
@@ -41,6 +41,6 @@ public class Sections {
         sections.stream()
                 .filter(it -> it.getDownStation().equals(inputDownStation))
                 .findFirst()
-                .ifPresent(it -> it.updateUpStation(section));
+                .ifPresent(it -> it.updateDownStation(section));
     }
 }
