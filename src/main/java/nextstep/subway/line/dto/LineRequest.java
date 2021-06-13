@@ -2,7 +2,7 @@ package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.lineStation.domain.LineStation;
-import nextstep.subway.lineStation.domain.wrappers.LineStations;
+import nextstep.subway.wrappers.LineStations;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 

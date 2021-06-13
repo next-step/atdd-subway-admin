@@ -1,7 +1,7 @@
 package nextstep.subway.lineStation.domain;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.wrapper.Distance;
+import nextstep.subway.wrappers.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -53,6 +53,24 @@ public class LineStation {
         return Objects.isNull(preStation);
     }
 
+    public boolean isNextLineStation(LineStation lineStation) {
+        return Objects.nonNull(preStation) && Objects.equals(preStation.getId(), lineStation.getStation().getId());
+    }
+
+    public boolean isSamePreStation(Station preStation) {
+        return Objects.nonNull(this.preStation) && Objects.equals(this.preStation.getId(), preStation.getId());
+    }
+
+    public boolean isSameStation(Station station) {
+        return this.station.getId() == station.getId();
+    }
+
+    public void update(Station station, Station preStation, Distance distance) {
+        this.preStation = preStation;
+        this.station = station;
+        this.distance = distance;
+    }
+
     public Station getPreStation() {
         return preStation;
     }
@@ -63,20 +81,6 @@ public class LineStation {
 
     public Line getLine() {
         return line;
-    }
-
-    public boolean isNextLineStation(LineStation lineStation) {
-        return Objects.nonNull(preStation) && Objects.equals(preStation.getId(), lineStation.getStation().getId());
-    }
-
-    public boolean isSamePreStation(LineStation lineStation) {
-        return Objects.nonNull(preStation) && Objects.equals(preStation.getId(), lineStation.getPreStation().getId());
-    }
-
-    public void update(Station station, Station preStation, Distance distance) {
-        this.preStation = preStation;
-        this.station = station;
-        this.distance = distance;
     }
 
     public Distance getDistance() {

@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain.wrapper;
+package nextstep.subway.wrappers;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;

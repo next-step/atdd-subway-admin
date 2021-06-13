@@ -2,7 +2,8 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.wrapper.Distance;
+import nextstep.subway.lineStation.domain.LineStation;
+import nextstep.subway.wrappers.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -52,6 +53,10 @@ public class Section extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public static Section of(LineStation lineStation) {
+        return new Section(lineStation.getLine(), lineStation.getPreStation(), lineStation.getStation(), lineStation.getDistance());
     }
 
     public void lineBy(Line line) {

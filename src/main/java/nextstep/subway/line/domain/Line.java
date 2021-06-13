@@ -1,11 +1,12 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.wrappers.Sections;
+import nextstep.subway.enums.SectionAddType;
+import nextstep.subway.wrappers.Distance;
+import nextstep.subway.wrappers.Sections;
 import nextstep.subway.lineStation.domain.LineStation;
-import nextstep.subway.lineStation.domain.wrappers.LineStations;
+import nextstep.subway.wrappers.LineStations;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.wrapper.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -85,30 +86,20 @@ public class Line extends BaseEntity {
         return sections.generateStations();
     }
 
-    public Section createNewSection(LineStation lineStation) {
-        List<LineStation> lineStations = this.lineStations.getLineStationsOrderByAsc();
-        if (lineStations.get(0).getStation().getId() == lineStation.getStation().getId()) {
-            lineStations.get(0).update(lineStation.getStation(), lineStation.getPreStation(), lineStation.getDistance());
-            Section section = new Section(this, lineStation.getPreStation(), lineStation.getStation(), lineStation.getDistance());
-            return section;
-        }
-        if (lineStations.get(lineStations.size() - 1).getStation().getId() == lineStation.getPreStation().getId()) {
-            Section section = new Section(this, lineStation.getPreStation(), lineStation.getStation(), lineStation.getDistance());
-            return section;
-        }
+    public List<LineStation> getLineStationsOrderByAse() {
+        return this.lineStations.getLineStationsOrderByAsc();
+    }
 
-        Optional<LineStation> first = lineStations
-                .stream()
-                .filter(ls -> ls.isSamePreStation(lineStation))
-                .findFirst();
-
-        if (first.isPresent()) {
-            LineStation targetLineStation = first.get();
-            Distance newDistance = targetLineStation.getDistance().subtractionDistance(lineStation.getDistance());
-            targetLineStation.update(targetLineStation.getStation(), lineStation.getStation(), newDistance);
-            this.sections.updateSectionByDownStation(targetLineStation, newDistance);
+    public void updateLineStationAndSection(SectionAddType sectionAddType, LineStation lineStation) {
+        if (sectionAddType.equals(SectionAddType.NEW_UP)) {
+            lineStations.updateFirstLineStation(lineStation);
         }
-        return new Section(this, lineStation.getPreStation(), lineStation.getStation(), lineStation.getDistance());
+        if (sectionAddType.equals(SectionAddType.NEW_BETWEEN)) {
+            LineStation updateTargetLineStation = lineStations.findLineStationByPreStation(lineStation.getPreStation());
+            Distance newDistance = updateTargetLineStation.getDistance().subtractionDistance(lineStation.getDistance());
+            updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getStation(), newDistance);
+            sections.updateSectionByDownStation(updateTargetLineStation, newDistance);
+        }
     }
 
     public Long getId() {

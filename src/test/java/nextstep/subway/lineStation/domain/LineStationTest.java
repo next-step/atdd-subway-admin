@@ -1,7 +1,7 @@
 package nextstep.subway.lineStation.domain;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.wrapper.Distance;
+import nextstep.subway.wrappers.Distance;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,7 +63,7 @@ public class LineStationTest {
     @Test
     @DisplayName("노선 지하철역 이전역 정보 일치 여부")
     void isSamePreStation() {
-        assertThat(lineStation.isSamePreStation(new LineStation(station, preStation, 10))).isTrue();
-        assertThat(lineStation.isSamePreStation(new LineStation(preStation, station, 10))).isFalse();
+        assertThat(lineStation.isSamePreStation(preStation)).isTrue();
+        assertThat(lineStation.isSamePreStation(station)).isFalse();
     }
 }

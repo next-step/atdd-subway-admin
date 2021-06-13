@@ -1,8 +1,8 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.domain.wrappers.Sections;
+import nextstep.subway.wrappers.Sections;
 import nextstep.subway.lineStation.domain.LineStation;
-import nextstep.subway.lineStation.domain.wrappers.LineStations;
+import nextstep.subway.wrappers.LineStations;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;

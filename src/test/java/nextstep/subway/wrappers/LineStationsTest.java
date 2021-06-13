@@ -1,4 +1,4 @@
-package nextstep.subway.lineStation.domain.wrappers;
+package nextstep.subway.wrappers;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.lineStation.domain.LineStation;
@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("노선 지하철 연결 테이블 일급 컬렉션 객체 테스트")
 public class LineStationsTest {
@@ -81,5 +82,34 @@ public class LineStationsTest {
         for (LineStation lineStation : lineStations.getLineStationsOrderByAsc()) {
             assertThat(lineStation.getLine()).isNotNull();
         }
+    }
+
+    @Test
+    void 노선_지하철_연결_테이블_첫번째_노선_지하철_객체_update() {
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(preStation, null, 0);
+        LineStations lineStations = new LineStations(Arrays.asList(lineStation1, lineStation2));
+        LineStation expected = new LineStation(preStation, new Station(7L, "교대역"), 10);
+        lineStations.updateFirstLineStation(expected);
+        assertThat(lineStations.contains(expected)).isTrue();
+    }
+
+    @Test
+    void 노선_지하철_연결_테이블_이전역_기준_노선_지하철_객체_찾기() {
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(preStation, null, 0);
+        LineStations lineStations = new LineStations(Arrays.asList(lineStation1, lineStation2));
+
+        LineStation actual = lineStations.findLineStationByPreStation(preStation);
+        assertThat(actual).isEqualTo(lineStation1);
+    }
+
+    @Test
+    void 노선_지하철_연결_테이블_이전역_기준_노선_지하철_객체_찾을수_없을때_에러_발생() {
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(preStation, null, 0);
+        LineStations lineStations = new LineStations(Arrays.asList(lineStation1, lineStation2));
+
+        assertThatThrownBy(() -> lineStations.findLineStationByPreStation(station)).isInstanceOf(IllegalArgumentException.class);
     }
 }

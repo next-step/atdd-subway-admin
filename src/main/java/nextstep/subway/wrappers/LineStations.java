@@ -1,7 +1,8 @@
-package nextstep.subway.lineStation.domain.wrappers;
+package nextstep.subway.wrappers;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.lineStation.domain.LineStation;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -46,6 +47,19 @@ public class LineStations {
             preLineStation = findNextLineStation(lineStation);
         }
         return lineStations;
+    }
+
+    public LineStation findLineStationByPreStation(Station preStation) {
+        return lineStations
+                .stream()
+                .filter(ls -> ls.isSamePreStation(preStation))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public void updateFirstLineStation(LineStation lineStation) {
+        findFirstLineStation().ifPresent(
+                ls -> ls.update(lineStation.getStation(), lineStation.getPreStation(), lineStation.getDistance()));
     }
 
     private Optional<LineStation> findFirstLineStation() {

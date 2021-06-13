@@ -1,11 +1,10 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.wrappers.Sections;
+import nextstep.subway.wrappers.Sections;
 import nextstep.subway.lineStation.domain.LineStation;
-import nextstep.subway.lineStation.domain.wrappers.LineStations;
+import nextstep.subway.wrappers.LineStations;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.wrapper.Distance;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("지하철 노선 파라미터 테스트")
 class LineRequestTest {

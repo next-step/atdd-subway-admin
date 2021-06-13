@@ -1,8 +1,7 @@
-package nextstep.subway.line.domain.wrappers;
+package nextstep.subway.wrappers;
 
 import nextstep.subway.lineStation.domain.LineStation;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.wrapper.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;

@@ -1,5 +1,6 @@
 package nextstep.subway.section.application;
 
+import nextstep.subway.enums.SectionAddType;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.lineStation.domain.LineStation;
@@ -11,6 +12,8 @@ import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -34,10 +37,12 @@ public class SectionService {
     public SectionResponse saveSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
-        LineStation lineStation = sectionRequest.toLineStation(upStation, downStation);
         Line line = Line.getNotNullLine(lineRepository.findById(lineId));
-        Section section = line.createNewSection(lineStation);
+        LineStation lineStation = sectionRequest.toLineStation(upStation, downStation);
+        List<LineStation> lineStations = line.getLineStationsOrderByAse();
+        SectionAddType sectionAddType = SectionAddType.calcAddType(lineStations, lineStation);
+        line.updateLineStationAndSection(sectionAddType, lineStation);
         line.addLineStation(lineStation);
-        return SectionResponse.of(sectionRepository.save(section));
+        return SectionResponse.of(sectionRepository.save(sectionAddType.createSection(lineStation)));
     }
 }
