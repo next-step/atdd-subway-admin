@@ -81,11 +81,11 @@ public class Section {
         return this.upStation.equals(compareSection.upStation) || this.upStation.equals(compareSection.downStation);
     }
 
-    public boolean sameUpStaion(Section compareSection) {
+    public boolean sameUpStation(Section compareSection) {
         return compareSection.upStation.equals(this.upStation);
     }
 
-    public boolean sameDownStaion(Section compareSection) {
+    public boolean sameDownStation(Section compareSection) {
         return compareSection.downStation.equals(this.downStation);
     }
 
@@ -113,11 +113,11 @@ public class Section {
         return this.downStation.equals(beforeSection.upStation);
     }
 
-    public boolean sameUpStaion(Station station) {
+    public boolean sameUpStation(Station station) {
         return this.upStation.equals(station);
     }
 
-    public boolean sameDownStaion(Station station) {
+    public boolean sameDownStation(Station station) {
         return this.downStation.equals(station);
     }
 
@@ -125,7 +125,7 @@ public class Section {
         this.distance += afterSection.distance;
     }
 
-    public Long upStaionId() {
+    public Long upStationId() {
         return upStation.getId();
     }
 

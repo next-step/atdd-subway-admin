@@ -29,15 +29,15 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        validateBeforLine(request);
+        validateBeforeLine(request);
         Station upStation = findStation(request.getUpStationId());
-        Station downStaion = findStation(request.getDownStationId());
-        Line line = request.toLine(upStation, downStaion);
+        Station downStation = findStation(request.getDownStationId());
+        Line line = request.toLine(upStation, downStation);
 
         return LineResponse.of(lineRepository.save(line));
     }
 
-    private void validateBeforLine(LineRequest request) {
+    private void validateBeforeLine(LineRequest request) {
         lineRepository.findByName(request.getName()).ifPresent(line -> {
             throw new LineAlreadyExistException();
         });
@@ -63,8 +63,8 @@ public class LineService {
     public void updateLine(LineRequest lineRequest, Long id) {
         Line findedLine = lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
         Station upStation = findStation(lineRequest.getUpStationId());
-        Station downStaion = findStation(lineRequest.getDownStationId());
-        findedLine.update(lineRequest.toLine(upStation, downStaion));
+        Station downStation = findStation(lineRequest.getDownStationId());
+        findedLine.update(lineRequest.toLine(upStation, downStation));
     }
 
     public void deleteLine(Long id) {
