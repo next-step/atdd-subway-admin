@@ -82,4 +82,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 #### 인수 테스트 작성
 
-* [ ] 지하철 구간을 등록한다.
+* [x] 지하철 구간을 등록한다.

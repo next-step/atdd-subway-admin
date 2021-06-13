@@ -3,21 +3,17 @@ package nextstep.subway.line.application;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import nextstep.subway.DuplicatedSectionException;
 import nextstep.subway.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.linestation.domain.LineStation;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -26,15 +22,10 @@ import nextstep.subway.station.domain.StationRepository;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
 
-    public LineService(final LineRepository lineRepository,
-        final StationRepository stationRepository, final SectionRepository sectionRepository,
-        final SectionRepository sectionRepository1) {
-
+    public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository1;
     }
 
     public LineResponse saveLine(final LineRequest request) {
@@ -43,7 +34,16 @@ public class LineService {
 
     private Line initializeLine(final LineRequest request) {
         final Line line = request.toLine();
-        line.addSection(new Section(stations(ids(request)), request.getDistance(), line));
+        final Station upStation = station(request.getUpStationId());
+        final Station downStation = station(request.getDownStationId());
+
+        final LineStation lineStation = new LineStation(line, upStation);
+        lineStation.next(downStation, request.getDistance());
+        final LineStation lineStation2 = new LineStation(line, downStation);
+        lineStation2.previous(upStation, request.getDistance());
+
+        line.addLineStation(lineStation);
+        line.addLineStation(lineStation2);
 
         return line;
     }
@@ -87,54 +87,26 @@ public class LineService {
             .orElseThrow(NotFoundException::new);
     }
 
-    public LineResponse updateLine(final Long id, final LineRequest lineRequest) {
+    public void updateLine(final Long id, final LineRequest lineRequest) {
         final Line line = findById(id);
         line.update(lineRequest.toLine());
-
-        return LineResponse.of(persistLine(line));
     }
 
     public void deleteLineById(final Long id) {
         lineRepository.deleteById(id);
     }
 
-    public SectionResponse addSection(final Long lineId, final SectionRequest sectionRequest) {
-        return SectionResponse.of(persistSection(lineId, sectionRequest));
+    public LineResponse addSection(final Long lineId, final SectionRequest sectionRequest) {
+        final Line line = findById(lineId);
+        final Station upStation = station(sectionRequest.getUpStationId());
+        final Station downStation = station(sectionRequest.getDownStationId());
+        line.addLineStation(upStation, downStation, sectionRequest.getDistance());
+
+        return LineResponse.of(line);
     }
 
-    private Section persistSection(final Long lineId, final SectionRequest sectionRequest) {
-        return sectionRepository.save(section(sectionRequest, findById(lineId)));
-    }
-
-    private Section section(final SectionRequest sectionRequest, final Line line) {
-        final List<Long> ids = Arrays.asList(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
-        final List<Station> stations = stationRepository.findByIdIn(ids);
-        checkSectionExistOrNot(sectionRequest, line, stations);
-
-        return Section.of(stations, sectionRequest.getDistance(), line);
-    }
-
-    private void checkSectionExistOrNot(final SectionRequest sectionRequest, final Line line,
-        final List<Station> stations) {
-        final Station upStation = getStation(sectionRequest.getUpStationId(), stations)
+    private Station station(final Long upStationId) {
+        return stationRepository.findById(upStationId)
             .orElseThrow(NotFoundException::new);
-        final Station downStation = getStation(sectionRequest.getDownStationId(), stations)
-            .orElseThrow(NotFoundException::new);
-
-        final Section section = sectionRepository.findIdByStationsAndLine(upStation, downStation, line);
-
-        if (section != null) {
-            throw new DuplicatedSectionException();
-        }
-    }
-
-    private Optional<Station> getStation(final Long id, final List<Station> stations) {
-        for (final Station station : stations) {
-            if (station.getId().equals(id)) {
-                return Optional.of(station);
-            }
-        }
-
-        return Optional.empty();
     }
 }

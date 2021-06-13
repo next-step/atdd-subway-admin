@@ -21,7 +21,6 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.section.dto.SectionResponse;
 
 @RestController
 @RequestMapping("/lines")
@@ -50,7 +49,7 @@ public class LineController {
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity<SectionResponse> addSection(@PathVariable final Long id,
+    public ResponseEntity<LineResponse> addSection(@PathVariable final Long id,
         @RequestBody final SectionRequest sectionRequest) {
 
         return ResponseEntity.ok(lineService.addSection(id, sectionRequest));
@@ -87,7 +86,8 @@ public class LineController {
             .build();
     }
 
-    @ExceptionHandler({DataIntegrityViolationException.class, DuplicatedSectionException.class})
+    @ExceptionHandler({DataIntegrityViolationException.class, DuplicatedSectionException.class,
+        IllegalArgumentException.class})
     public ResponseEntity<LineResponse> handleIllegalArgsException(final RuntimeException e) {
         return ResponseEntity.badRequest()
             .build();
