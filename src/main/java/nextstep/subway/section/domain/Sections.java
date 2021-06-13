@@ -41,18 +41,26 @@ public class Sections {
 
 	public void removeStation(final Station station) {
 		checkPossibleRemoveByStation(station);
-		Optional<Section> s1 = findSectionUsingFilter(value -> value.downStation().equals(station));
-		Optional<Section> s2 = findSectionUsingFilter(value -> value.upStation().equals(station));
-		if (s1.isPresent() && !s2.isPresent()) { // 첫번째 Section일 경우, s1만 지우면 된다.
-			this.sections.remove(s1.get());
+		Optional<Section> upSection = findSectionUsingFilter(value -> value.downStation().equals(station));
+		Optional<Section> downSection = findSectionUsingFilter(value -> value.upStation().equals(station));
+		if (!downSection.isPresent()) {
+			removeSection(upSection.get());
+			return;
 		}
-		if (s1.isPresent() && s2.isPresent()) { // 중간 인경우, s1의 downStation을 s2의 downStation으로 s2는 리스트에서 remove
-			s2.get().disconnectStation(s1.get());
-			this.sections.remove(s1.get());
+		if (!upSection.isPresent()) {
+			removeSection(downSection.get());
+			return;
 		}
-		if (!s1.isPresent() && s2.isPresent()) { // 맨 마지막 Section일 경우, s2만 지우면 된다.
-			this.sections.remove(s2.get());
-		}
+		disConnectSection(downSection.get(), upSection.get());
+	}
+
+	private void disConnectSection(final Section connectedUpStation, final Section connectedDownStation) {
+		connectedUpStation.disconnectDownStation(connectedDownStation);
+		this.sections.remove(connectedDownStation);
+	}
+
+	private void removeSection(final Section station) {
+		this.sections.remove(station);
 	}
 
 	private void validateStations(final Section section) {

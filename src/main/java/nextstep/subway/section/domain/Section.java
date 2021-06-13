@@ -70,7 +70,7 @@ public class Section extends BaseEntity {
 		this.downStation = section.upStation;
 	}
 
-	public void disconnectStation(final Section section) {
+	public void disconnectDownStation(final Section section) {
 		unionDistance(section.distance);
 		this.upStation = section.upStation;
 	}
