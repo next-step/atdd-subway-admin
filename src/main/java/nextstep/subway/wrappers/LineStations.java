@@ -73,6 +73,10 @@ public class LineStations {
                 .findFirst();
     }
 
+    public boolean isNotContainStations(LineStation lineStation) {
+        return lineStations.stream().anyMatch(ls -> ls.isNotContainStation(lineStation));
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;

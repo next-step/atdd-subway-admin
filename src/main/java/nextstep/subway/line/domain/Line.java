@@ -18,6 +18,7 @@ import java.util.Optional;
 public class Line extends BaseEntity {
     private static final String NOT_FOUND_LINE_ERROR_MESSAGE = "요청한 id 기준 노선이 존재하지않습니다.";
     public static final String DUPLICATE_LINE_STATION_ERROR_MESSAGE = "상행역 %s 하행역 %s은 이미 등록된 구간 입니다.";
+    public static final String NOT_CONTAION_STATIONS_ERROR_MESSAGE = "상행역 %s, 하행역 %s을 둘중 하나라도 포함하는 구간이 존재하지않습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -104,11 +105,23 @@ public class Line extends BaseEntity {
         }
     }
 
-    public void checkValidDuplicateLineStation(LineStation lineStation) {
+    public void checkValidLineStation(LineStation lineStation) {
+        checkValidDuplicateLineStation(lineStation);
+        checkValidNotContainStations(lineStation);
+    }
+
+    private void checkValidDuplicateLineStation(LineStation lineStation) {
         if (lineStations.isSameLineStation(lineStation)) {
             throw new IllegalArgumentException(
                     String.format(DUPLICATE_LINE_STATION_ERROR_MESSAGE, lineStation.getPreStation().getName(), lineStation.getStation().getName())
             );
+        }
+    }
+
+    private void checkValidNotContainStations(LineStation lineStation) {
+        if (lineStations.isNotContainStations(lineStation)) {
+            throw new IllegalArgumentException(
+                    String.format(NOT_CONTAION_STATIONS_ERROR_MESSAGE, lineStation.getPreStation().getName(), lineStation.getStation().getName()));
         }
     }
 

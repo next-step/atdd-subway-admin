@@ -63,8 +63,22 @@ class LineTest {
         Line line = new Line("신분당선", "bg - red - 600");
         LineStation lineStation = new LineStation(station, preStation, 10);
         line.addLineStation(lineStation);
-        assertThatThrownBy(() -> line.checkValidDuplicateLineStation(lineStation))
+        assertThatThrownBy(() -> line.checkValidLineStation(lineStation))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역 양재역 하행역 정자역은 이미 등록된 구간 입니다.");
+    }
+
+    @Test
+    @DisplayName("노선 정보의 LineStations에 상행역, 하행역 둘중 하나라도 포함한 lineStation이 존재하지않을때 에러 발생")
+    void checkValidNotContainStations() {
+        Station station = new Station(2L, "정자역");
+        Station preStation = new Station(1L, "양재역");
+        Line line = new Line("신분당선", "bg - red - 600");
+        LineStation actual = new LineStation(station, preStation, 10);
+        line.addLineStation(actual);
+        LineStation lineStation = new LineStation(new Station(7L, "매봉역"), new Station(8L, "교대역"), 10);
+        assertThatThrownBy(() -> line.checkValidLineStation(lineStation))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역 교대역, 하행역 매봉역을 둘중 하나라도 포함하는 구간이 존재하지않습니다.");
     }
 }

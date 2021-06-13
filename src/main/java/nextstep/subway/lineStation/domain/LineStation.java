@@ -118,4 +118,14 @@ public class LineStation {
     public int hashCode() {
         return Objects.hash(id, station, preStation, distance, line);
     }
+
+    public boolean isNotContainStation(LineStation lineStation) {
+        if (Objects.isNull(preStation)) {
+            return !(Objects.nonNull(lineStation.preStation) || station.isSameId(lineStation.preStation) || station.isSameId(lineStation.station));
+        }
+        return !(preStation.isSameId(lineStation.preStation)
+                || preStation.isSameId(lineStation.station)
+                || station.isSameId(lineStation.preStation)
+                || station.isSameId(lineStation.station));
+    }
 }

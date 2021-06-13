@@ -39,7 +39,7 @@ public class SectionService {
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
         Line line = Line.getNotNullLine(lineRepository.findById(lineId));
         LineStation lineStation = sectionRequest.toLineStation(upStation, downStation);
-        line.checkValidDuplicateLineStation(lineStation);
+        line.checkValidLineStation(lineStation);
         List<LineStation> lineStations = line.getLineStationsOrderByAse();
         SectionAddType sectionAddType = SectionAddType.calcAddType(lineStations, lineStation);
         line.updateLineStationAndSection(sectionAddType, lineStation);
