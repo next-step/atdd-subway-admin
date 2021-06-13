@@ -48,13 +48,13 @@
   - [ ] 노선 수정 예외, 중복된 이름
   - [ ] 노선 삭제
 
-- [ ] 테스트 리팩토링
-  - [ ] ExtractableResponse
+- [x] 테스트 리팩토링
+  - [x] ExtractableResponse
     - [x] 단일 응답에 대해 Location 헤더를 사용한 id 추출 기능 분리 및 적용
     - [x] 여러 응답에 대해 Location 헤더를 사용한 id 추출 기능 분리 및 적용
     - [x] id 조건 조회 결과의 객체 변환
-  - [ ] LinesResponse
-    - [ ] getIds() 구현 및 적용
+  - [x] LinesResponse
+    - [x] getIds() 구현 및 적용
 ---
 
 <p align="center">
