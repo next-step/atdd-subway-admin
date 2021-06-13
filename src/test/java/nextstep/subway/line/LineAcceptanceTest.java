@@ -21,7 +21,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.StationAcceptanceFixture;
 import nextstep.subway.station.domain.Station;
 
@@ -49,17 +48,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void given_Line_when_AddSection_then_ReturnOk() {
         // given
         NEW_지하철_노선_생성_요청(PATH, FIRST);
+        final List<Station> expected = Arrays.asList(강남역, 역삼역, 선릉역);
 
         // when
         final ExtractableResponse<Response> response = 지하철_구간에_지하철역_등록_요청(PATH + "/1/sections", SECTION);
 
         // then
-        final Section section = toSection(response);
         assertAll(
             () -> assertThat(statusCode(response)).isEqualTo(statusCode(OK)),
-            () -> assertThat(section.getUpStation()).isEqualTo(역삼역),
-            () -> assertThat(section.getDownStation()).isEqualTo(선릉역),
-            () -> assertThat(section.getDistance()).isEqualTo(Integer.parseInt(SECTION.getDistance()))
+            () -> assertThat(toStations(response)).isEqualTo(expected)
         );
     }
 
