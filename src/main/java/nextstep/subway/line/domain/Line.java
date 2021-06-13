@@ -57,11 +57,12 @@ public class Line extends BaseEntity {
 		if (!(object instanceof Line))
 			return false;
 		Line line = (Line)object;
-		return Objects.equals(name, line.name) && Objects.equals(color, line.color);
+		return Objects.equals(id, line.id) && Objects.equals(name, line.name)
+			&& Objects.equals(color, line.color);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, color);
+		return Objects.hash(id, name, color);
 	}
 }

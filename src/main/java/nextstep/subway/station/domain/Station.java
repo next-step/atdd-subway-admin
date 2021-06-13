@@ -41,17 +41,17 @@ public class Station extends BaseEntity {
 	}
 
 	@Override
-	public boolean equals(Object obejct) {
-		if (this == obejct)
+	public boolean equals(Object object) {
+		if (this == object)
 			return true;
-		if (!(obejct instanceof Station))
+		if (!(object instanceof Station))
 			return false;
-		Station station = (Station)obejct;
-		return Objects.equals(name, station.name);
+		Station station = (Station)object;
+		return Objects.equals(id, station.id) && Objects.equals(name, station.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name);
+		return Objects.hash(id, name);
 	}
 }

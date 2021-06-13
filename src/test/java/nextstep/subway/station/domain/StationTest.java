@@ -2,8 +2,10 @@ package nextstep.subway.station.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("지하철역 엔티티 테스트")
 public class StationTest {
 
 	@Test

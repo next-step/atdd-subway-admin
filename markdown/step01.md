@@ -332,9 +332,9 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
     - [x] 4-3.entity 작성
         - [x] 4-3-1.`Station`
         - [x] 4-3-2.`Line`
-    - [ ] 4-4.repository 작성
-        - [ ] 4-4-1.`StationRepository`
-        - [ ] 4-4-2.`LineRepository`
+    - [x] 4-4.repository 작성
+        - [x] 4-4-1.`StationRepository`
+        - [x] 4-4-2.`LineRepository`
     - [ ] 4-5.service 작성
         - [ ] 4-5-1.`StationService`
         - [ ] 4-5-2.`LineService`
