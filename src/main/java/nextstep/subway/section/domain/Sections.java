@@ -43,7 +43,8 @@ public class Sections {
 
     public int getDistanceWithStations(Station upStation, Station downStation) {
         return sections.stream()
-            .filter(seciton -> seciton.sameUpStation(upStation) && seciton.sameDownStation(downStation)).findFirst()
+            .filter(seciton -> seciton.sameUpStation(upStation) && seciton.sameDownStation(downStation))
+            .findFirst()
             .orElseThrow(NotFoundSectionException::new).getDistance();
     }
 
@@ -78,12 +79,12 @@ public class Sections {
         Long lastStationId = findLastSection().downStationId();
         Long firstStationId = findStartSection().upStationId();
 
-        if (station.getId().equals(lastStationId)) {
+        if (station.isEqualsId(lastStationId)) {
             sections.remove(beforeSection);
             return;
         }
 
-        if (station.getId().equals(firstStationId)) {
+        if (station.isEqualsId(firstStationId)) {
             sections.remove(afterSection);
             return;
         }
@@ -94,11 +95,16 @@ public class Sections {
     }
 
     private Section findDownStationSection(Station station) {
-        return sections.stream().filter(section -> section.sameDownStation(station)).findFirst().orElse(Section.EMPTY);
+        return sections.stream().filter(section -> section.sameDownStation(station))
+            .findFirst()
+            .orElse(Section.EMPTY);
     }
 
     private Section findUpStationSection(Station station) {
-        return sections.stream().filter(section -> section.sameUpStation(station)).findFirst().orElse(Section.EMPTY);
+        return sections.stream()
+            .filter(section -> section.sameUpStation(station))
+            .findFirst()
+            .orElse(Section.EMPTY);
     }
 
     private void validationRemove(Station station) {
@@ -116,7 +122,8 @@ public class Sections {
 
     private List<Long> getStationIdList() {
         return sections.stream()
-            .map(section -> Stream.of(section.upStationId(), section.downStationId())).flatMap(Stream::distinct)
+            .map(section -> Stream.of(section.upStationId(), section.downStationId()))
+            .flatMap(Stream::distinct)
             .collect(Collectors.toList());
     }
 
@@ -126,13 +133,17 @@ public class Sections {
     }
 
     private Section findStartSection() {
-        return sections.stream().filter(section -> findSectionIsAnotherDownStation(section) == null)
-            .findFirst().orElseThrow(NotFoundSectionException::new);
+        return sections.stream()
+            .filter(section -> findSectionIsAnotherDownStation(section) == null)
+            .findFirst()
+            .orElseThrow(NotFoundSectionException::new);
     }
 
     private Section findLastSection() {
-        return sections.stream().filter(section -> findSectionIsAnotherUpStation(section) == null)
-            .findFirst().orElseThrow(NotFoundSectionException::new);
+        return sections.stream()
+            .filter(section -> findSectionIsAnotherUpStation(section) == null)
+            .findFirst()
+            .orElseThrow(NotFoundSectionException::new);
     }
 
     private Section findSectionIsAnotherUpStation(Section beforeSection) {

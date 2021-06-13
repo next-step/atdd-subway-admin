@@ -46,18 +46,23 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-        return lines.stream().map(LineResponse::of).collect(Collectors.toList());
+        return lines.stream()
+            .map(LineResponse::of)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        return lineRepository.findById(id).map(LineResponse::of)
+        return lineRepository.findById(id)
+            .map(LineResponse::of)
             .orElseThrow(NotFoundLineException::new);
     }
 
     @Transactional(readOnly = true)
     public Station findStation(Long id) {
-        return stationRepository.findById(id).orElseThrow(NotFoundStationException::new);
+        return stationRepository
+            .findById(id)
+            .orElseThrow(NotFoundStationException::new);
     }
 
     public void updateLine(LineRequest lineRequest, Long id) {
