@@ -24,9 +24,13 @@ public class Line extends BaseEntity {
 
     protected Line() { }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public static Line create(String name, String color) {
+        return new Line(name, color);
     }
 
     public void updateColor(String color) {

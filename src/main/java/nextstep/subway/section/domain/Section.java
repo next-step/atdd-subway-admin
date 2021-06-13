@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
@@ -14,17 +15,29 @@ public class Section extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "section", fetch = FetchType.LAZY)
 	private Line line;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "up_station_id")
-	private Line upStation;
+	private Station upStation;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "down_station_id")
-	private Line downStation;
+	private Station downStation;
 
-	@Embedded
-	private Distance distance;
+	private int distance;
+
+	protected Section() { }
+
+	public Section(Station upStation, Station downStation, int distance) {
+		this.upStation = upStation;
+		this.downStation = downStation;
+		this.distance = distance;
+	}
+
+	public static Section create(Station upStation, Station downStation, int distance){
+		return new Section(upStation, downStation, distance);
+	}
+
 }
