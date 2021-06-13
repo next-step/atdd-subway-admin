@@ -29,25 +29,22 @@ public class SectionsTest {
     void Sections_상행에서_하행으로_Section을_정렬조회한다() {
         Sections sections = new Sections();
 
-        Section section4 = Section을_두개역과_만든다("4번역", "5번역", 5);
         Section section2 = Section을_두개역과_만든다("2번역", "3번역", 5);
         Section section1 = Section을_두개역과_만든다("1번역", "2번역", 5);
         Section section3 = Section을_두개역과_만든다("3번역", "4번역", 5);
+        Section section4 = Section을_두개역과_만든다("4번역", "5번역", 5);
 
-        sections.add(section4);
         sections.add(section2);
         sections.add(section1);
         sections.add(section3);
+        sections.add(section4);
 
-        List<Section> actualSections = sections.orderedSections().get();
-        assertThat(actualSections.get(0).getUpStation().getName()).isEqualTo("1번역");
-        assertThat(actualSections.get(1).getUpStation().getName()).isEqualTo("2번역");
-        assertThat(actualSections.get(2).getUpStation().getName()).isEqualTo("3번역");
-        assertThat(actualSections.get(3).getUpStation().getName()).isEqualTo("4번역");
-        assertThat(actualSections.get(0).getDownStation().getName()).isEqualTo("2번역");
-        assertThat(actualSections.get(1).getDownStation().getName()).isEqualTo("3번역");
-        assertThat(actualSections.get(2).getDownStation().getName()).isEqualTo("4번역");
-        assertThat(actualSections.get(3).getDownStation().getName()).isEqualTo("5번역");
+        List<Station> actualStations = sections.orderedStations();
+        assertThat(actualStations.get(0).getName()).isEqualTo("1번역");
+        assertThat(actualStations.get(1).getName()).isEqualTo("2번역");
+        assertThat(actualStations.get(2).getName()).isEqualTo("3번역");
+        assertThat(actualStations.get(3).getName()).isEqualTo("4번역");
+        assertThat(actualStations.get(4).getName()).isEqualTo("5번역");
     }
 
     @Test

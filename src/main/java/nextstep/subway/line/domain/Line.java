@@ -1,15 +1,12 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.OrderedSections;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -26,7 +23,8 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
-    public Line() { }
+    public Line() {
+    }
 
     private Line(String name, String color, Section section) {
         this.name = name;
@@ -53,19 +51,12 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public Sections getSections() {
+    public Sections sections() {
         return this.sections;
     }
 
-    public List<Station> getStations() {
-        return sections.stream()
-                .flatMap(station -> Stream.of(station.getUpStation(), station.getDownStation()))
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    public List<Station> getOrderedStations() {
-        return sections.orderedStations();
+    public List<Station> stations() {
+        return sections.stations();
     }
 
     public Long getId() {
@@ -80,26 +71,13 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public boolean contains(Section section) {
-        return sections.contains(section);
-    }
-
     public void addSection(Section sectionIn) {
-        if (sections.isEmpty()) {
-            sections.add(sectionIn);
-            return;
-        }
-
-        sections.validateAbout(sectionIn);
-
-        checkConnectingPositionThroughOrderedSections(sectionIn);
-
+        connect(sectionIn);
         sectionIn.setLine(this);
     }
 
-    private void checkConnectingPositionThroughOrderedSections(Section sectionIn) {
-        OrderedSections orderedSections = sections.orderedSections();
-        orderedSections.connectThroughOrderedSections(sectionIn);
+    private void connect(Section sectionIn) {
+        sections.validateConnectionWith(sectionIn);
         sections.add(sectionIn);
     }
 

@@ -32,10 +32,10 @@ public class SectionResponse {
     public static SectionResponse of(Section section) {
         return new SectionResponse(
                 section.getId(),
-                section.getLine().getId(),
-                section.getUpStation().getId(),
-                section.getDownStation().getId(),
-                section.getDistance(),
+                section.lineId(),
+                section.upStationId(),
+                section.downStationId(),
+                section.distance(),
                 section.getCreatedDate(),
                 section.getModifiedDate());
     }

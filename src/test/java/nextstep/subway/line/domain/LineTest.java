@@ -1,12 +1,15 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
+import static nextstep.subway.section.domain.SectionsTest.Section을_두개역과_만든다;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Line 클래스 관련 테스트")
@@ -50,7 +53,30 @@ public class LineTest {
         line2.addSection(section5);
 
         // expect 1 - 2 - 4 - 3 - 6 - 5
-        assertThat(line2.getOrderedStations()).containsExactly(station1, station2, station4, station3, station6, station5);
+        assertThat(line2.stations()).containsExactly(station1, station2, station4, station3, station6, station5);
+    }
+
+    @DisplayName("1~ 5 사이에, 1~ 2, 4~ 5, 3~ 4 순서대로 추가해서 정렬없이 1-2-3-4-5 가 나오는 것을 확인한다.")
+    @Test
+    void Line_의_Section_을_사이사이_넣으면서_바로_정렬되는_것_테스트() {
+        Sections sections = new Sections();
+
+        Section section2 = Section을_두개역과_만든다("1번역", "5번역", 100);
+        Section section1 = Section을_두개역과_만든다("1번역", "2번역", 5);
+        Section section3 = Section을_두개역과_만든다("4번역", "5번역", 5);
+        Section section4 = Section을_두개역과_만든다("3번역", "4번역", 5);
+
+        line2.addSection(section2);
+        line2.addSection(section1);
+        line2.addSection(section3);
+        line2.addSection(section4);
+
+        List<Station> actualStations = line2.stations();
+        assertThat(actualStations.get(0).getName()).isEqualTo("1번역");
+        assertThat(actualStations.get(1).getName()).isEqualTo("2번역");
+        assertThat(actualStations.get(2).getName()).isEqualTo("3번역");
+        assertThat(actualStations.get(3).getName()).isEqualTo("4번역");
+        assertThat(actualStations.get(4).getName()).isEqualTo("5번역");
     }
 
     @Test
@@ -62,8 +88,8 @@ public class LineTest {
 
         line2.addSection(section);
 
-        assertThat(line2.getSections().stream().count()).isOne();
-        assertThat(line2.getSections().stream().anyMatch(it -> it.equals(section))).isTrue();
+        assertThat(line2.sections().stream().count()).isOne();
+        assertThat(line2.sections().stream().anyMatch(it -> it.equals(section))).isTrue();
     }
 
     @Test

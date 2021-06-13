@@ -2,7 +2,9 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,66 +16,65 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval=true)
     private List<Section> sections = new ArrayList<>();
 
-    public Sections() { }
+    public Sections() {
+    }
 
     public Stream<Section> stream() {
         return sections.stream();
     }
 
-    public void add(Section section) {
-        if (this.contains(section)) {
+    public void add(Section sectionIn) {
+        if (this.isEmpty()) {
+            sections.add(sectionIn);
             return;
         }
-        sections.add(section);
-    }
+        if (this.contains(sectionIn)) {
+            return;
+        }
 
-    public void add(int index, Section section) {
-        if (this.contains(section)) {
-            return;
-        }
-        sections.add(index, section);
+        sectionIn.positioningAt(sections);
     }
 
     public boolean contains(Section section) {
         return sections.contains(section);
     }
 
-    public boolean validateAbout(Section sectionIn) {
+    public void validateConnectionWith(Section sectionIn) {
+        if (sections.isEmpty()) {
+            return;
+        }
         alreadyInBoth(sectionIn);
         nothingInBoth(sectionIn);
-        return true;
     }
 
     private void alreadyInBoth(Section sectionIn) {
-        if (stations().contains(sectionIn.getUpStation())
-                && stations().contains(sectionIn.getDownStation())) {
+        if (sectionIn.bothStationsAreAlreadyIn(stations())) {
             throw new IllegalArgumentException("둘 다 이미 들어있는 역.");
         }
     }
 
     private void nothingInBoth(Section sectionIn) {
-        if (!stations().contains(sectionIn.getUpStation())
-                && !stations().contains(sectionIn.getDownStation())) {
+        if (sectionIn.bothStationsAreNotIn(stations())) {
             throw new IllegalArgumentException("둘 다 들어있지 않은 역.");
         }
     }
 
     public List<Station> stations() {
-        return this.sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+        return OrderedSections.of(this.sections).get().stream()
+                .flatMap(section -> section.upDownStations().stream())
                 .distinct()
                 .collect(Collectors.toList());
     }
 
     public List<Station> orderedStations() {
         return OrderedSections.of(this.sections).get().stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .flatMap(section -> section.upDownStations().stream())
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-     public OrderedSections orderedSections() {
-        return OrderedSections.of(this.sections);
+    public List<Section> get() {
+        return sections;
     }
 
     public boolean isEmpty() {

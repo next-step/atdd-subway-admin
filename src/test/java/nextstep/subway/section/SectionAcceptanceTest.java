@@ -78,7 +78,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
-    void exceptionTest_3() {
+    void 상행역_하행역_둘다_포함안됨_예외테스트() {
         // when
         // 지하철_노선에_지하철역_등록_요청
         StationResponse 포함안된역_1 =
@@ -94,7 +94,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 5 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록_실패함
@@ -103,7 +103,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음, 환형도 안됨")
     @Test
-    void exceptionTest_2() {
+    void 상행역_하행역_둘다_이미_등록되어있다_예외테스트() {
         // when
         // 지하철_노선에_이미등록된_지하철역_등록_요청
         createParams = new HashMap<>();
@@ -112,7 +112,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 5 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록_실패함
@@ -121,7 +121,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @Test
-    void exceptionTest_1() {
+    void 기존_역들_사이에_추가되는_역의_길이가_더_길거나_같다_예외테스트() {
         // when
         // 지하철_노선에_지하철역_등록_요청
         StationResponse 강남역과_광교역_사이의_역 =
@@ -134,7 +134,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 10 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록_실패함
@@ -155,12 +155,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 5 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LineResponse 구간등록_후_신분당선 = get("/lines/"+신분당선.getId())
+        LineResponse 구간등록_후_신분당선 = get("/lines/" + 신분당선.getId())
                 .body()
                 .as(LineResponse.class);
         List<String> stations = 구간등록_후_신분당선.getStations().stream()
@@ -183,12 +183,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 5 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LineResponse 구간등록_후_신분당선 = get("/lines/"+신분당선.getId())
+        LineResponse 구간등록_후_신분당선 = get("/lines/" + 신분당선.getId())
                 .body()
                 .as(LineResponse.class);
         List<String> stations = 구간등록_후_신분당선.getStations().stream()
@@ -199,7 +199,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("역_사이_뒤쪽에_새로운_역을_등록할_경우")
     @Test
-    void addSection_1() {
+    void 역_사이_하행쪽_새로운역_등록한다() {
         // when
         // 지하철_노선에_지하철역_등록_요청
         StationResponse 강남역과_광교역_사이의_역 =
@@ -212,12 +212,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 5 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LineResponse 구간등록_후_신분당선 = get("/lines/"+신분당선.getId())
+        LineResponse 구간등록_후_신분당선 = get("/lines/" + 신분당선.getId())
                 .body()
                 .as(LineResponse.class);
         List<String> stations = 구간등록_후_신분당선.getStations().stream()
@@ -228,7 +228,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("역_사이_앞쪽에_새로운_역을_등록할_경우")
     @Test
-    void addSection_2() {
+    void 역_사이_상행쪽_새로운역_등록한다() {
         // when
         // 지하철_노선에_지하철역_등록_요청
         StationResponse 강남역과_광교역_사이의_역 =
@@ -241,12 +241,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("distance", 5 + "");
 
         ExtractableResponse<Response> response = RestAssuredCRUD
-                .postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+                .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
 
         // then
         // 지하철_노선에_지하철역_등록됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        LineResponse 구간등록_후_신분당선 = get("/lines/"+신분당선.getId())
+        LineResponse 구간등록_후_신분당선 = get("/lines/" + 신분당선.getId())
                 .body()
                 .as(LineResponse.class);
         List<String> stations = 구간등록_후_신분당선.getStations().stream()
@@ -254,5 +254,5 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
         assertThat(stations).containsExactly("강남역", "강남역과_광교역_사이의_역", "광교역");
     }
-    
+
 }

@@ -1,7 +1,6 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,8 +35,8 @@ public class SectionTest {
 
         Section section = Section.of(upStation, downStation, distance);
 
-        Station expectUpStation = section.getUpStation();
-        Station expectDownStation = section.getDownStation();
+        Station expectUpStation = section.upStation();
+        Station expectDownStation = section.downStation();
 
         assertThat(expectUpStation.getName()).isEqualTo(upStation.getName());
         assertThat(expectDownStation.getName()).isEqualTo(downStation.getName());
