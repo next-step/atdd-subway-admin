@@ -66,13 +66,6 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public List<Station> orderedStations() {
-        return OrderedSections.of(this.sections).get().stream()
-                .flatMap(section -> section.upDownStations().stream())
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
     public List<Section> get() {
         return sections;
     }
@@ -84,26 +77,26 @@ public class Sections {
     public void delete(Station station) {
         List<Section> sections = this.sections;
         for (int i = 0; i < sections.size(); ++i) {
-            Section section = sections.get(i);
-
-            if (section.getUpStation().getName().equals(station.getName())) {
-                if (i > 0 && i < sections.size() - 1) {
-                    sections.get(i-1).setDownStation(sections.get(i+1).getUpStation());
-                }
-                sections.remove(i);
-                break;
-            }
-
-            if (section.getDownStation().getName().equals(station.getName())) {
-                if (i == 0 && i < sections.size() - 1) {
-                    sections.get(i+1).setUpStation(sections.get(i).getUpStation());
-                }
-                if (i > 0 && i < sections.size() - 1) {
-                    sections.get(i-1).setDownStation(sections.get(i+1).getUpStation());
-                }
-                sections.remove(i);
-                break;
-            }
+//            Section section = sections.get(i);
+//
+//            if (section.upStationName().equals(station.getName())) {
+//                if (i > 0 && i < sections.size() - 1) {
+//                    sections.get(i-1).setDownStation(sections.get(i+1).upStation());
+//                }
+//                sections.remove(i);
+//                break;
+//            }
+//
+//            if (section.downStationName().equals(station.getName())) {
+//                if (i == 0 && i < sections.size() - 1) {
+//                    sections.get(i+1).setUpStation(sections.get(i).upStation());
+//                }
+//                if (i > 0 && i < sections.size() - 1) {
+//                    sections.get(i-1).setDownStation(sections.get(i+1).upStation());
+//                }
+//                sections.remove(i);
+//                break;
+//            }
         }
         this.sections = sections;
     }

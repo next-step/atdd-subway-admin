@@ -49,13 +49,6 @@ public class Position {
         --index;
     }
 
-//    public void set(int position) {
-//        if (position < 0) {
-//            throw new IllegalArgumentException("유효하지 않은 위치값");
-//        }
-//        this.index = position;
-//    }
-
     public boolean isNotDockedYet() {
         return DockingType.NONE == dockingType;
     }
