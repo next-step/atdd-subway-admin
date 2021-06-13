@@ -170,4 +170,76 @@ npm run dev
        ```
         HTTP/1.1 204
         Date: Fri, 13 Nov 2020 00:11:51 GMT
-        ```
+       ```
+
+## 디렉토리 구조
+```
+│  ├─java
+│  │  └─nextstep
+│  │      └─subway
+│  │          │  PageController.java
+│  │          │  SubwayApplication.java
+│  │          │
+│  │          ├─common
+│  │          │      BaseEntity.java              공통 컬럼 관리 엔티티
+│  │          │
+│  │          ├─line                              지하철 노선 관리
+│  │          │  ├─application
+│  │          │  │      LineService.java
+│  │          │  │
+│  │          │  ├─domain
+│  │          │  │      Line.java
+│  │          │  │      LineRepository.java
+│  │          │  │
+│  │          │  ├─dto
+│  │          │  │      LineRequest.java
+│  │          │  │      LineResponse.java
+│  │          │  │
+│  │          │  └─ui
+│  │          │          LineController.java
+│  │          │
+│  │          └─station                           지하철 역 관리
+│  │              ├─application
+│  │              │      StationService.java
+│  │              │
+│  │              ├─domain
+│  │              │      Station.java
+│  │              │      StationRepository.java
+│  │              │
+│  │              ├─dto
+│  │              │      StationRequest.java
+│  │              │      StationResponse.java
+│  │              │
+│  │              └─ui
+│  │                      StationController.java
+│  │
+│  └─resources
+│      │  application.properties
+│      │  logback-access.xml
+│      │
+│      ├─static
+│      │  └─images
+│      │          logo_small.png
+│      │          main_logo.png
+│      │
+│      └─templates
+│              index.html
+│
+└─test
+   │  test.iml
+   │
+   └─java
+       └─nextstep
+           └─subway
+               │  AcceptanceTest.java
+               │  SubwayApplicationTests.java
+               │
+               ├─line
+               │      LineAcceptanceTest.java
+               │
+               ├─station
+               │      StationAcceptanceTest.java
+               │
+               └─utils
+                       DatabaseCleanup.java
+```
