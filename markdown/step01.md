@@ -320,9 +320,22 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
     - [x] 2-2.LiveTemplates - IntelliJ
 - [x] 3.분석 및 설계
     - [x] 3-1.step01.md 초안 작성
+    - [x] 3-2.ATDD 작성
 - [ ] 4.구현
-    - [ ] 4-1.
-        - [ ] 4-1-1.`class, method, tool, ...etc.`
+    - [ ] 4-1.ATDD 작성
+        - [ ] 4-1-1.`StationAcceptanceTest`
+        - [ ] 4-1-2.`LineAcceptanceTest`
+    - [ ] 4-2.vo 작성
+        - [ ] 4-2-1.`Station`
+            - [ ] 4-2-1-1.`Name`
+        - [ ] 4-2-2.`Line`
+            - [ ] 4-2-2-1.`Name`
+            - [ ] 4-2-2-1.`Color`
+    - [ ] 4-3.entity 작성
+        - [ ] 4-3-1.`Station`
+        - [ ] 4-3-2.`Line`
+    - [ ] 4-4.service 작성
+    
 - [ ] 5.테스트
     - [ ] 5-1.Gradle build Success 확인
     - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)
@@ -336,6 +349,10 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [ ] 6-1-1.step1를 gregolee/atdd-subway-admin로 push : `git push origin step1`
         - [ ] 6-1-2.pull request(PR) 작성
     - [ ] 6-3.Slack을 통해 merge가 되는지 확인한 후에 미션 종료
+
+### 2.3. ATDD 작성
+
+ATDD 작성 [Markdown 보기](./atdd.md)
 
 ## 3. 인수인계
 
