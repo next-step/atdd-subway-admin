@@ -29,6 +29,10 @@ public class Station extends BaseEntity {
         return id;
     }
 
+    public boolean isSameId(Station station) {
+        return this.id == station.id;
+    }
+
     public String getName() {
         return name;
     }

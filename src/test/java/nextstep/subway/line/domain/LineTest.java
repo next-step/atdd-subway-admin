@@ -54,4 +54,17 @@ class LineTest {
 
         assertThat(line).isEqualTo(new Line("신분당선", "bg - red - 600").lineStationsBy(new LineStations(Arrays.asList(lineStation))));
     }
+
+    @Test
+    @DisplayName("노선 정보의 LineStations에 동일한 LineStations가 존재할 경우 에러 발생")
+    void checkValidDuplicateLineStation() {
+        Station station = new Station(2L, "정자역");
+        Station preStation = new Station(1L, "양재역");
+        Line line = new Line("신분당선", "bg - red - 600");
+        LineStation lineStation = new LineStation(station, preStation, 10);
+        line.addLineStation(lineStation);
+        assertThatThrownBy(() -> line.checkValidDuplicateLineStation(lineStation))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역 양재역 하행역 정자역은 이미 등록된 구간 입니다.");
+    }
 }

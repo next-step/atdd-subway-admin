@@ -79,4 +79,13 @@ public class LineStationTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간 사이에 새로운 역을 등록 시 구간거리는 기존 등록된 구간 거리보다 작아야합니다.");
     }
+
+    @Test
+    @DisplayName("두개의 노선 지하철역 entity의 이전 지하철역, 지하철역이 같은지 비교")
+    void is_same() {
+        LineStation other = new LineStation(station, preStation, 10);
+        assertThat(lineStation.isSame(other)).isTrue();
+        assertThat(lineStation.isSame(new LineStation(station, new Station(7L, "교대역"), 10))).isFalse();
+        assertThat(lineStation.isSame(new LineStation(new Station(7L, "교대역"), preStation, 10))).isFalse();
+    }
 }

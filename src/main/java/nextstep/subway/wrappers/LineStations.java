@@ -85,4 +85,12 @@ public class LineStations {
     public int hashCode() {
         return Objects.hash(lineStations);
     }
+
+    public boolean isSameLineStation(LineStation other) {
+        boolean isSame = false;
+        for (LineStation lineStation : lineStations) {
+            isSame = lineStation.isSame(other);
+        }
+        return isSame;
+    }
 }

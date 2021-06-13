@@ -95,6 +95,13 @@ public class LineStation {
         }
     }
 
+    public boolean isSame(LineStation other) {
+        if (Objects.isNull(preStation)) {
+            return Objects.isNull(other.preStation) && (station.isSameId(other.station));
+        }
+        return (preStation.isSameId(other.preStation)) && (station.isSameId(other.station));
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;

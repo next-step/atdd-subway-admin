@@ -17,6 +17,7 @@ import java.util.Optional;
 @Entity
 public class Line extends BaseEntity {
     private static final String NOT_FOUND_LINE_ERROR_MESSAGE = "요청한 id 기준 노선이 존재하지않습니다.";
+    public static final String DUPLICATE_LINE_STATION_ERROR_MESSAGE = "상행역 %s 하행역 %s은 이미 등록된 구간 입니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -100,6 +101,14 @@ public class Line extends BaseEntity {
             Distance newDistance = new Distance(updateTargetLineStation.getDistance().subtractionDistance(lineStation.getDistance()));
             updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getStation(), newDistance);
             sections.updateSectionByDownStation(updateTargetLineStation, newDistance);
+        }
+    }
+
+    public void checkValidDuplicateLineStation(LineStation lineStation) {
+        if (lineStations.isSameLineStation(lineStation)) {
+            throw new IllegalArgumentException(
+                    String.format(DUPLICATE_LINE_STATION_ERROR_MESSAGE, lineStation.getPreStation().getName(), lineStation.getStation().getName())
+            );
         }
     }
 
