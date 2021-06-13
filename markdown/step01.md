@@ -280,7 +280,7 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
 
 #### 2.1.1. ATDD 
 
-> 학습 내용 간단히 정리
+> 학습 내용 간단히 정리 [[Markdown 보기]](./summary.md)
 
 ### 2.2. Todo List
 
@@ -310,21 +310,13 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
     - [ ] 1-2.[gradle-checkstyle](https://naver.github.io/hackday-conventions-java/#checkstyle) 적용
     - [ ] 1-3.[IntelliJ](https://naver.github.io/hackday-conventions-java/#_intellij) 적용
     - [ ] 1-4.[Github](https://naver.github.io/hackday-conventions-java/#_github) 적용
-- [ ] 2.학습
-    - [ ] 2-1.RestAssured 학습 : [[Usage Guide]](https://github.com/rest-assured/rest-assured/wiki/Usage#examples)
+- [x] 2.학습
+    - [x] 2-1.RestAssured 학습 : [[Usage Guide]](https://github.com/rest-assured/rest-assured/wiki/Usage#examples)
 - [x] 3.분석 및 설계
     - [x] 3-1.step01.md 초안 작성
 - [ ] 4.구현
-    - [ ] 4-1.엔티티 매핑
-        - [ ] 4-1-1.`Answer`
-        - [ ] 4-1-2.`DeleteHistory`
-        - [ ] 4-1-3.`Question`
-        - [ ] 4-1-4.`User`
-    - [ ] 4-2.테스트 코드 작성
-        - [ ] 4-2-1.`AnswerTest`
-        - [ ] 4-2-2.`DeleteHistoryTest`
-        - [ ] 4-2-3.`QuestionTest`
-        - [ ] 4-2-4.`UserTest`
+    - [ ] 4-1.
+        - [ ] 4-1-1.`class, method, tool, ...etc.`
 - [ ] 5.테스트
     - [ ] 5-1.Gradle build Success 확인
     - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)
@@ -335,7 +327,7 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [ ] 6-1-1.느낀점 & 배운점 작성
         - [ ] 6-1-2.피드백 요청 정리
     - [ ] 6-2.코드리뷰 요청 및 피드백
-        - [ ] 6-1-1.step1를 gregolee/jwp-qna로 push : `git push origin step1`
+        - [ ] 6-1-1.step1를 gregolee/atdd-subway-admin로 push : `git push origin step1`
         - [ ] 6-1-2.pull request(PR) 작성
     - [ ] 6-3.Slack을 통해 merge가 되는지 확인한 후에 미션 종료
 
