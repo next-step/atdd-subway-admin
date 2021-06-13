@@ -5,7 +5,6 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.utils.ExtractableResponseUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.line.ui.LineControllerTest.*;
 import static nextstep.subway.utils.ExtractableResponseUtil.extractIdInResponses;
-import static nextstep.subway.utils.ExtractableResponseUtil.extractObjectInResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -60,8 +58,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         List<Long> expectedLineIds = extractIdInResponses(createResponse1, createResponse2);
-
-        List<Long> resultLineIds =  extractObjectInResponse(response, LinesResponse.class).getIds();
+        List<Long> resultLineIds = response.jsonPath().getList("lineResponses", LineResponse.class).stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds).containsAll(expectedLineIds);
@@ -91,7 +90,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse response = 지하철_노선_검색_요청(new LineRequest("", "00FF00"));
-        List<Long> actualResult = extractObjectInResponse(response, LinesResponse.class).getIds();
+        List<Long> actualResult = response.jsonPath().getList("lineResponses", LineResponse.class).stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -114,12 +115,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         LineRequest firstRequest = new LineRequest("1호선", "FF0000");
         ExtractableResponse createResponse = 지하철_노선_생성_요청(firstRequest);
-        LineResponse expectedResult = extractObjectInResponse(createResponse, LineResponse.class);
+        LineResponse expectedResult = createResponse.jsonPath().getObject(".", LineResponse.class);
         Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
 
         // when
         ExtractableResponse response = 지하철_노선_PK_조건_조회_요청(savedId);
-        LineResponse actualResult = extractObjectInResponse(response, LineResponse.class);
+        LineResponse actualResult = response.jsonPath().getObject(".", LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
