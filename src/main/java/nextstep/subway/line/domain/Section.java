@@ -48,20 +48,12 @@ public class Section {
 		this.distance = distance;
 	}
 
-	boolean isUpDirectionOf(Section otherSection) {
+	boolean isUpwardOf(Section otherSection) {
 		return this.downStation.equals(otherSection.upStation);
 	}
 
-	boolean isUpDirectionOf(Section otherSection, Station downStation) {
-		return containAsDownStation(downStation) && isUpDirectionOf(otherSection);
-	}
-
-	boolean isDownDirectionOf(Section otherSection) {
+	boolean isDownwardOf(Section otherSection) {
 		return this.upStation.equals(otherSection.downStation);
-	}
-
-	boolean isDownDirectionOf(Section otherSection, Station upStation) {
-		return containAsUpStation(upStation) && isDownDirectionOf(otherSection);
 	}
 
 	boolean hasEqualDownStation(Section otherSection) {
@@ -94,24 +86,32 @@ public class Section {
 	}
 
 	void removeInnerSectionByStation(Section otherSection, Station station) {
-		if (isUpDirectionOf(otherSection, station)) {
+		if (isConnectedInUpwardByStation(otherSection, station)) {
 			removeDownDirection(otherSection);
 		}
-		if (isDownDirectionOf(otherSection, station)) {
+		if (isConnectedInDownwardByStation(otherSection, station)) {
 			removeUpDirection(otherSection);
 		}
 	}
 
 	boolean contain(Station station) {
-		return containAsUpStation(station) || containAsDownStation(station);
+		return containUpwardStation(station) || containDownwardStation(station);
 	}
 
-	private boolean containAsDownStation(Station station) {
+	private boolean containDownwardStation(Station station) {
 		return this.downStation.equals(station);
 	}
 
-	private boolean containAsUpStation(Station station) {
+	private boolean containUpwardStation(Station station) {
 		return this.upStation.equals(station);
+	}
+
+	private boolean isConnectedInDownwardByStation(Section otherSection, Station station) {
+		return containUpwardStation(station) && isDownwardOf(otherSection);
+	}
+
+	private boolean isConnectedInUpwardByStation(Section otherSection, Station station) {
+		return containDownwardStation(station) && isUpwardOf(otherSection);
 	}
 
 	private void removeDownDirection(Section downDirectionSection) {

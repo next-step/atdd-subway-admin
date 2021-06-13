@@ -27,8 +27,8 @@ class SectionTest {
 	@DisplayName("구간의 상행역, 하행역에 따라서 이전 이후 역을 판별할 수 있다.")
 	public void isPreviousAndNextTest() {
 		assertAll(
-			() -> assertThat(강남_양재_구간.isUpDirectionOf(양재_양재시민의숲_구간)).isTrue(),
-			() -> assertThat(청계산입구_판교_구간.isDownDirectionOf(양재시민의숲_청계산입구_구간)).isTrue()
+			() -> assertThat(강남_양재_구간.isUpwardOf(양재_양재시민의숲_구간)).isTrue(),
+			() -> assertThat(청계산입구_판교_구간.isDownwardOf(양재시민의숲_청계산입구_구간)).isTrue()
 		);
 	}
 

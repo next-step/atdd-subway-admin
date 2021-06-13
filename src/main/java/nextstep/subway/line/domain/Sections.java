@@ -55,19 +55,6 @@ public class Sections {
 		sections.remove(sectionToRemove);
 	}
 
-	private Section findSectionToRemoveBy(Station station) {
-		return sections.stream()
-			.filter(section -> section.contain(station))
-			.findAny()
-			.orElseThrow(() -> new IllegalArgumentException("노선에 없는 역의 구간은 제거할 수 없습니다."));
-	}
-
-	private void validateMinSize() {
-		if (sections.size() == MIN_SIZE) {
-			throw new IllegalArgumentException("노선의 남은 구간이 하나 밖에 없어 제거할 수 없습니다.");
-		}
-	}
-
 	Distance sumDistance() {
 		return sections.stream()
 			.map(Section::getDistance)
@@ -92,7 +79,7 @@ public class Sections {
 
 	private Stream<Section> findUpDirectionSectionsClosed(Section currentSection) {
 		Optional<Section> previousSection = sections.stream()
-			.filter(section -> section.isUpDirectionOf(currentSection))
+			.filter(section -> section.isUpwardOf(currentSection))
 			.findFirst();
 
 		Stream<Section> current = Stream.of(currentSection);
@@ -104,7 +91,7 @@ public class Sections {
 
 	private Stream<Section> findDownDirectionSectionsClosed(Section currentSection) {
 		Optional<Section> nextSection = sections.stream()
-			.filter(section -> section.isDownDirectionOf(currentSection))
+			.filter(section -> section.isDownwardOf(currentSection))
 			.findFirst();
 
 		Stream<Section> current = Stream.of(currentSection);
@@ -138,5 +125,18 @@ public class Sections {
 		return sections.stream()
 			.flatMap(Section::getStreamOfStations)
 			.noneMatch(otherSection::contain);
+	}
+
+	private Section findSectionToRemoveBy(Station station) {
+		return sections.stream()
+			.filter(section -> section.contain(station))
+			.findAny()
+			.orElseThrow(() -> new IllegalArgumentException("노선에 없는 역의 구간은 제거할 수 없습니다."));
+	}
+
+	private void validateMinSize() {
+		if (sections.size() == MIN_SIZE) {
+			throw new IllegalArgumentException("노선의 남은 구간이 하나 밖에 없어 제거할 수 없습니다.");
+		}
 	}
 }
