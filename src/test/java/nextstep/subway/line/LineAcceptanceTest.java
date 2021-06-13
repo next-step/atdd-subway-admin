@@ -40,6 +40,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final String 거리 = "10";
     public static final String STATION_LIST = "stationList";
     public static final String LOCATION = "Location";
+    public static final String 강남역 = "강남역";
+    public static final String 양재역 = "양재역";
 
     @BeforeEach
     void setup() {
@@ -118,7 +120,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
-        assertThat(노선_목록_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+        지하철_노선_응답_정상_검사(노선_목록_조회_응답);
         지하철_노선_목록_포함_검사(신분당선_생성_응답, 이호선_생성_응답, 노선_목록_조회_응답);
     }
 
@@ -132,7 +134,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(신분당선_생성_응답.body().jsonPath().get("id").toString());
+        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(신분당선_생성_응답);
 
         // then
         // 지하철_노선_응답됨
@@ -186,12 +188,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_제거_요청
-        String uri = 신분당선_생성_응답.header(LOCATION);
-        ExtractableResponse<Response> response = 노선_삭제_요청(uri);
+        String 요청_주소 = 신분당선_생성_응답.header(LOCATION);
+        ExtractableResponse<Response> 노선_삭제_응답 = 노선_삭제_요청(요청_주소);
 
         // then
         // 지하철_노선_삭제됨
-        노선_삭제_검사(response, HttpStatus.NO_CONTENT);
+        노선_삭제_검사(노선_삭제_응답);
     }
 
     private Map<String, String> 노선_파라미터_생성(String name, String color, String upStationId, String downStationId, String distance) {
@@ -210,6 +212,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 노선_조회_요청(ExtractableResponse<Response> 응답) {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + 응답.body().jsonPath().get("id").toString())
                 .then().log().all()
                 .extract();
     }
@@ -272,8 +282,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(노선_수정_응답.body().jsonPath().get(PARAM_COLOR).toString()).isEqualTo(노란색);
     }
 
-    private void 노선_삭제_검사(ExtractableResponse<Response> response, HttpStatus noContent) {
-        assertThat(response.statusCode()).isEqualTo(noContent.value());
+    private void 노선_삭제_검사(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private void 노선_출발_종점_역_검사(ExtractableResponse<Response> 노선_조회_응답, String 시작종점, String 도착종점) {
@@ -285,8 +295,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
 
-        assertThat(역_목록.get(0)).isEqualTo("강남역");
-        assertThat(역_목록.get(1)).isEqualTo("양재역");
+        assertThat(역_목록.size()).isEqualTo(2);
+        assertThat(역_id.size()).isEqualTo(2);
+
+        assertThat(역_목록.get(0)).isEqualTo(강남역);
+        assertThat(역_목록.get(1)).isEqualTo(양재역);
 
         assertThat(역_id.get(0)).isEqualTo(Long.parseLong(시작종점));
         assertThat(역_id.get(1)).isEqualTo(Long.parseLong(도착종점));
@@ -294,5 +307,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private String ID_추출(ExtractableResponse<Response> 응답) {
         return 응답.body().jsonPath().get("id").toString();
+    }
+
+    private void 지하철_노선_응답_정상_검사(ExtractableResponse<Response> 노선_목록_조회_응답) {
+        assertThat(노선_목록_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
