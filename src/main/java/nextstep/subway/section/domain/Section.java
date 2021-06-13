@@ -140,6 +140,11 @@ public class Section extends BaseEntity {
         return upStation.isStationIdMatch(stationId) || downStation.isStationIdMatch(stationId);
     }
 
+    public void changeUpward(Section section) {
+        this.downStation = section.getDownStation();
+        this.distance = distance.plus(section.distance);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -162,14 +167,5 @@ public class Section extends BaseEntity {
                 ", distance=" + distance +
                 ", line=" + line +
                 '}';
-    }
-
-    public void changeUpward(Section section) {
-        this.downStation = section.getDownStation();
-        this.distance = distance.plus(section.distance);
-    }
-
-    public void deleteUpStation(Section section) {
-//        this.upStation =
     }
 }
