@@ -46,11 +46,13 @@ public class LineService {
     }
 
     private Section createSection(LineRequest request) {
+        return createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance());
+    }
 
-        Station upStation = findStationById(request.getUpStationId());
-        Station downStation = findStationById(request.getDownStationId());
-
-        return new Section(upStation, downStation, request.getDistance());
+    private Section createSection(Long upStationId, Long downStationId, int distance) {
+        Station upStation = findStationById(upStationId);
+        Station downStation = findStationById(downStationId);
+        return new Section(upStation, downStation, distance);
     }
 
     public List<LineResponse> findAllLines() {
@@ -77,10 +79,7 @@ public class LineService {
 
     public LineResponse addSection(Long id, SectionRequest request) {
         Line foundLine = findById(id);
-        Station upStation = findStationById(request.getUpStationId());
-        Station downStation = findStationById(request.getDownStationId());
-
-        foundLine.addSection(new Section(upStation, downStation, request.getDistance()));
+        foundLine.addSection(createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
 
         return LineResponse.of(foundLine);
     }
