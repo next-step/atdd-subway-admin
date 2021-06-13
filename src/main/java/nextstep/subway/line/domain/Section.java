@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Entity
