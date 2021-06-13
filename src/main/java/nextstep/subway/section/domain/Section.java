@@ -48,9 +48,9 @@ public class Section extends BaseEntity {
     }
 
     public void positioningAt(List<Section> sections) {
-        Position position = Position.isNone();
+        DockingPosition position = DockingPosition.none();
         while (position.isNotDockedYet()) {
-            position = this.dockingPositionOn(sections, sections.get(position.index()));
+            position = this.dockingPositionOn(sections, position);
             position.nextIndex();
         }
         position.subIndex();
@@ -58,24 +58,25 @@ public class Section extends BaseEntity {
         sections.add(position.index(), this);
     }
 
-    private Position dockingPositionOn(List<Section> sections, Section section) {
+    private DockingPosition dockingPositionOn(List<Section> sections, DockingPosition position) {
+        Section section = sections.get(position.index());
         if (this.isInFrontOf(section)) {
             handleAttributesOfFrontSection(sections, section);
-            return Position.isFront();
+            return position.isFront();
         }
         if (this.isInMidFrontOf(section)) {
             section.handleAttributesToConnectBehindOf(this);
-            return Position.isMidFront();
+            return position.isMidFront();
         }
         if (this.isInMidRearOf(section)) {
             section.handleAttributesToConnectInFrontOf(this);
-            return Position.isMidRear();
+            return position.isMidRear();
         }
         if (this.isBehindOf(section)) {
             handleAttributesOfBackSection(sections, section);
-            return Position.isRear();
+            return position.isRear();
         }
-        return Position.isNone();
+        return position.isNone();
     }
 
     private boolean isInMidFrontOf(Section section) {
