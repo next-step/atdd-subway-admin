@@ -1,7 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.section.Section;
+import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
 
@@ -19,8 +19,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> section;
+    @OneToOne(cascade = CascadeType.ALL)
+    private Section section;
 
     @OneToOne(fetch = LAZY)
     private Line downStation;

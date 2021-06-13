@@ -1,10 +1,13 @@
-package nextstep.subway.line.section;
+package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 
 import javax.persistence.*;
 
+/**
+ * 라인 등록 시 양끝 종점 정보
+ */
 @Entity
 public class Section extends BaseEntity {
 	@Id
