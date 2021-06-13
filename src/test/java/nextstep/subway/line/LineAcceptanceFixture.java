@@ -64,7 +64,8 @@ public class LineAcceptanceFixture {
     enum SectionFixture {
         SECTION("2", "3", "50"),
         DUPLICATED_SECTION("1", "2", "50"),
-        SECTION_NEW_STATION("3", "4", "50");
+        SECTION_NEW_STATION("3", "4", "50"),
+        TOO_LONG_DISTANCE("2", "3", "100");
 
         private final String upStation;
         private final String downStation;

@@ -86,6 +86,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(statusCode(response)).isEqualTo(statusCode(BAD_REQUEST));
     }
 
+    @DisplayName("상행역과 하행역 거리가 이미 등록된 역 간 거리와 같은 구간을 추가한다.")
+    @Test
+    void given_TooLongDistance_when_AddSection_then_ReturnBadRequest() {
+        // given
+        NEW_지하철_노선_생성_요청(PATH, FIRST);
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_구간에_지하철역_등록_요청(PATH + "/1/sections", DUPLICATED_SECTION);
+
+        // then
+        assertThat(statusCode(response)).isEqualTo(statusCode(BAD_REQUEST));
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void given_NoExisingLine_when_CreateLineWithStation_then_ReturnLine() {
