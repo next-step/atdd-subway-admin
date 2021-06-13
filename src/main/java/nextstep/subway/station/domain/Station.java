@@ -52,10 +52,7 @@ public class Station extends BaseEntity {
             deletePosition.nextIndex();
         }
         deletePosition.subtractIndex();
-
-        if (deletePosition.isNone()) {
-            throw new IllegalStateException("삭제하려는 역이 등록되어있지 않습니다.");
-        }
+        deletePosition.validate();
 
         handleDeletion(sections, deletePosition);
     }

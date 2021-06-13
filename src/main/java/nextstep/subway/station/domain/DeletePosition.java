@@ -65,4 +65,9 @@ public class DeletePosition {
         --index;
     }
 
+    public void validate() {
+        if (this.isNone()) {
+            throw new IllegalStateException("삭제하려는 역이 등록되어있지 않습니다.");
+        }
+    }
 }
