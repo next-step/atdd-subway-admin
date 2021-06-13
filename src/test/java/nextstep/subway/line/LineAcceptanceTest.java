@@ -209,7 +209,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse deleteResponse = 지하철_노선_삭제_요청(savedId);
 
         // then
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("지하철_노선_제거_예외_존재하지_않는_PK")

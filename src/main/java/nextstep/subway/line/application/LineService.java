@@ -45,4 +45,10 @@ public class LineService {
 
         return LineResponse.of(lineRepository.save(updatingLine));
     }
+
+    public void deleteLine(Long id) {
+        Optional<Line> line = lineRepository.findById(id);
+        Line deletingLine = line.orElseThrow(() -> new NullPointerException(format("id가 %d인 노선이 존재 하지 않습니다.", id)));
+        lineRepository.delete(deletingLine);
+    }
 }
