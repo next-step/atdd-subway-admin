@@ -41,8 +41,8 @@ public class LineStationsTest {
         lineStations.addLineStation(lineStation);
 
         // when
-        final boolean exist = lineStations.containsStation(신도림역);
-        final boolean notExist = lineStations.containsStation(서울역);
+        final boolean exist = lineStations.containsStation(new LineStation(line, 신도림역));
+        final boolean notExist = lineStations.containsStation(new LineStation(line, 서울역));
 
         // then
         assertThat(exist).isEqualTo(true);
@@ -61,7 +61,8 @@ public class LineStationsTest {
         lineStations.addLineStation(lineStation);
 
         // when
-        final long actual = lineStations.countStations(Arrays.asList(신도림역, 서울역));
+        final long actual = lineStations.countStations(
+            Arrays.asList(new LineStation(line, 신도림역), new LineStation(line, 서울역)));
 
         // then
         assertThat(actual).isEqualTo(1);

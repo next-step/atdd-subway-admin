@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -30,94 +28,76 @@ public class LineStations {
         lineStations.add(lineStation);
     }
 
-    public boolean contains(final LineStation lineStation) {
-        return lineStations.contains(lineStation);
-    }
-
-    public void addLineStation(final Station upStation, final Station downStation, final int distance) {
-        final List<Station> stations = Arrays.asList(upStation, downStation);
+    public void addLineStation(final LineStation upStation, final LineStation downStation, final int distance) {
+        final List<LineStation> stations = Arrays.asList(upStation, downStation);
         validateStations(stations);
-        final LineStation lineStation = findLineStation(stations);
-        final LineStation newLineStation = makeLineStation(upStation, downStation, distance, lineStation);
-        updateExistingLineStation(upStation, downStation, distance, lineStation);
+        final LineStation persistedLineStation = persistedLineStation(findLineStation(stations));
+        final LineStation newLineStation = makeLineStation(upStation, downStation, distance, persistedLineStation);
+        updateExistingLineStation(upStation, downStation, distance, persistedLineStation);
         this.lineStations.add(newLineStation);
     }
 
-    private void validateStations(final List<Station> stations) {
+    private LineStation persistedLineStation(final LineStation lineStation) {
+        return lineStations.stream()
+            .filter(ls -> ls.equals(lineStation))
+            .findFirst()
+            .orElseThrow(NotFoundException::new);
+    }
+
+    private void validateStations(final List<LineStation> stations) {
         if (countStations(stations) != 1) {
             throw new IllegalArgumentException();
         }
     }
 
-    public int countStations(final List<Station> stations) {
+    public int countStations(final List<LineStation> stations) {
         return (int)stations.stream()
             .filter(this::containsStation)
             .count();
     }
 
-    public boolean containsStation(final Station station) {
+    public boolean containsStation(final LineStation lineStation) {
         return lineStations.stream()
-            .anyMatch(lineStation -> lineStation.isSameStation(station));
+            .anyMatch(ls -> ls.equals(lineStation));
     }
 
-    private LineStation findLineStation(final List<Station> stations) {
+    private LineStation findLineStation(final List<LineStation> stations) {
         return stations.stream()
             .filter(this::containsStation)
             .findFirst()
-            .map(this::lineStation)
             .orElseThrow(NotFoundException::new);
     }
 
-    public LineStation lineStation(final Station station) {
-        return lineStations.stream()
-            .filter(lineStation -> lineStation.isSameStation(station))
-            .findFirst()
-            .orElseThrow(NotFoundException::new);
-    }
-
-    private LineStation makeLineStation(final Station upStation, final Station downStation, final int distance,
+    private LineStation makeLineStation(final LineStation upStation, final LineStation downStation, final int distance,
         final LineStation lineStation) {
 
-        if (lineStation.isSameStation(upStation)) {
+        if (lineStation.equals(upStation)) {
             return initializeLineStation(downStation, distance, lineStation);
         }
 
-        final LineStation newLineStation = new LineStation(lineStation.getLine(), upStation);
-        newLineStation.next(lineStation.getStation(), distance);
+        upStation.next(lineStation, distance);
         if (lineStation.getPreviousStation() != null && lineStation.getPreviousDistance() != null) {
-            newLineStation.previous(lineStation.getPreviousStation(), lineStation.getPreviousDistance() - distance);
+            upStation.previous(lineStation.getPreviousStation(), lineStation.getPreviousDistance() - distance);
         }
 
-        return newLineStation;
+        return upStation;
     }
 
-    private LineStation initializeLineStation(final Station downStation, final int distance,
+    private LineStation initializeLineStation(final LineStation downStation, final int distance,
         final LineStation lineStation) {
 
-        final LineStation newLineStation = new LineStation(lineStation.getLine(), downStation);
-        newLineStation.previous(lineStation.getStation(), distance);
+        downStation.previous(lineStation, distance);
         if (lineStation.getNextStation() != null && lineStation.getNextDistance() != null) {
-            newLineStation.next(lineStation.getNextStation(), lineStation.getNextDistance() - distance);
+            downStation.next(lineStation.getNextStation(), lineStation.getNextDistance() - distance);
         }
 
-        return newLineStation;
+        return downStation;
     }
 
-    private void updateExistingLineStation(final Station upStation, final Station downStation, final int distance,
-        final LineStation lineStation) {
+    private void updateExistingLineStation(final LineStation upStation, final LineStation downStation,
+        final int distance, final LineStation lineStation) {
 
-        final List<LineStation> lineStations = lineStations(lineStation);
-        lineStations.forEach(ls -> ls.update(upStation, downStation, distance));
-    }
-
-    private List<LineStation> lineStations(final LineStation lineStation) {
-        final Predicate<LineStation> condition1 = ls -> ls.isSameStation(lineStation.getStation());
-        final Predicate<LineStation> condition2 = ls -> ls.isSameStation(lineStation.getPreviousStation());
-        final Predicate<LineStation> condition3 = ls -> ls.isSameStation(lineStation.getNextStation());
-
-        return this.lineStations.stream()
-            .filter(condition1.or(condition2).or(condition3))
-            .collect(Collectors.toList());
+        lineStation.update(upStation, downStation, distance);
     }
 
     public List<Station> orderedStations() {
@@ -127,13 +107,11 @@ public class LineStations {
 
         final List<Station> stations = new ArrayList<>();
         while (optLIneStation.isPresent()) {
-            final Station station = optLIneStation.get()
-                .getStation();
+            final LineStation lineStation = optLIneStation.get();
+            final Station station = lineStation.getStation();
             stations.add(station);
 
-            optLIneStation = lineStations.stream()
-                .filter(ls -> ls.getPreviousStation() == station)
-                .findFirst();
+            optLIneStation = Optional.ofNullable(lineStation.getNextStation());
         }
 
         return stations;

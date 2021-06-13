@@ -32,13 +32,13 @@ public class LineStation {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "prev_station_id")
-    private Station previousStation;
+    private LineStation previousStation;
 
     private Integer previousDistance;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "next_station_id")
-    private Station nextStation;
+    private LineStation nextStation;
 
     private Integer nextDistance;
 
@@ -62,7 +62,7 @@ public class LineStation {
         return station;
     }
 
-    public Station getPreviousStation() {
+    public LineStation getPreviousStation() {
         return previousStation;
     }
 
@@ -70,7 +70,7 @@ public class LineStation {
         return previousDistance;
     }
 
-    public Station getNextStation() {
+    public LineStation getNextStation() {
         return nextStation;
     }
 
@@ -78,15 +78,14 @@ public class LineStation {
         return nextDistance;
     }
 
-    public void previous(final Station previousStation, final Integer previousDistance) {
+    public void previous(final LineStation previousStation, final Integer previousDistance) {
         this.previousStation = validStation(previousStation);
         this.previousDistance = validDistance(previousDistance);
     }
 
-    private Station validStation(final Station station) {
-        return Optional.ofNullable(station)
-            .filter(s -> s.getName() != null)
-            .filter(s -> !s.equals(this.station))
+    private LineStation validStation(final LineStation lineStation) {
+        return Optional.ofNullable(lineStation)
+            .filter(ls -> ls.getStation().getName() != null && !ls.equals(this))
             .orElseThrow(IllegalArgumentException::new);
     }
 
@@ -96,11 +95,7 @@ public class LineStation {
             .orElseThrow(IllegalArgumentException::new);
     }
 
-    public void next(final Station nextStation, final Integer nextDistance) {
-        if (isInvalid(nextStation, nextDistance)) {
-            return;
-        }
-
+    public void next(final LineStation nextStation, final Integer nextDistance) {
         this.nextStation = validStation(nextStation);
         this.nextDistance = validDistance(nextDistance);
     }
@@ -109,21 +104,13 @@ public class LineStation {
         return this.line.equals(line);
     }
 
-    public boolean isSameStation(final Station station) {
-        return this.station.equals(station);
-    }
-
-    public void update(final Station upStation, final Station downStation, final int distance) {
+    public void update(final LineStation upStation, final LineStation downStation, final int distance) {
         updatePrevious(upStation, downStation, distance);
         updateNext(upStation, downStation, distance);
     }
 
-    private void updatePrevious(final Station upStation, final Station downStation, final int distance) {
-        if (isInvalid(previousStation, previousDistance)) {
-            return;
-        }
-
-        if (previousStation.equals(upStation)) {
+    private void updatePrevious(final LineStation upStation, final LineStation downStation, final int distance) {
+        if (upStation.equals(previousStation)) {
             validateDistance(distance, previousDistance);
             previousStation = downStation;
             previousDistance -= distance;
@@ -131,29 +118,25 @@ public class LineStation {
             return;
         }
 
-        if (station.equals(downStation)) {
+        if (this.equals(downStation)) {
             validateDistance(distance, previousDistance);
             previousStation = upStation;
             previousDistance = distance;
         }
     }
 
-    private boolean isInvalid(final Station station, final Integer distance) {
-        return station == null || distance == null;
-    }
-
     private void validateDistance(final int distance, final Integer targetDistance) {
+        if (targetDistance == null) {
+            return;
+        }
+
         if (distance >= targetDistance) {
             throw new IllegalArgumentException();
         }
     }
 
-    private void updateNext(final Station upStation, final Station downStation, final int distance) {
-        if (isInvalid(nextStation, nextDistance)) {
-            return;
-        }
-
-        if (nextStation.equals(downStation)) {
+    private void updateNext(final LineStation upStation, final LineStation downStation, final int distance) {
+        if (downStation.equals(nextStation)) {
             validateDistance(distance, nextDistance);
             nextStation = upStation;
             nextDistance -= distance;
@@ -161,7 +144,7 @@ public class LineStation {
             return;
         }
 
-        if (station.equals(upStation)) {
+        if (this.equals(upStation)) {
             validateDistance(distance, nextDistance);
             nextStation = downStation;
             nextDistance = distance;

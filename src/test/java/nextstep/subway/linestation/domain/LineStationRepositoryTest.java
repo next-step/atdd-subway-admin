@@ -32,8 +32,8 @@ public class LineStationRepositoryTest {
         final Station nextStation = testEntityManager.persist(new Station("신도림"));
         final Integer nextDistance = 200;
         final LineStation lineStation = new LineStation(line, station);
-        lineStation.previous(previousStation, previousDistance);
-        lineStation.next(nextStation, nextDistance);
+        lineStation.previous(new LineStation(line, previousStation), previousDistance);
+        lineStation.next(new LineStation(line, nextStation), nextDistance);
 
         // when
         final LineStation actual = lineStationRepository.save(lineStation);
@@ -41,9 +41,9 @@ public class LineStationRepositoryTest {
         // then
         assertAll(
             () -> assertThat(actual.getStation()).isEqualTo(station),
-            () -> assertThat(actual.getPreviousStation()).isEqualTo(previousStation),
+            () -> assertThat(actual.getPreviousStation()).isEqualTo(new LineStation(line, previousStation)),
             () -> assertThat(actual.getPreviousDistance()).isEqualTo(previousDistance),
-            () -> assertThat(actual.getNextStation()).isEqualTo(nextStation),
+            () -> assertThat(actual.getNextStation()).isEqualTo(new LineStation(line, nextStation)),
             () -> assertThat(actual.getNextDistance()).isEqualTo(nextDistance)
         );
     }

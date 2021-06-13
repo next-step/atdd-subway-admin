@@ -23,7 +23,8 @@ public class LineStationTest {
 
         // when
         final Throwable prevThrowable = catchThrowable(() -> lineStation.previous(null, previousDistance));
-        final Throwable nextThrowable = catchThrowable(() -> lineStation.next(nextStation, null));
+        final Throwable nextThrowable = catchThrowable(
+            () -> lineStation.next(new LineStation(line, nextStation), null));
 
         // then
         assertAll(
@@ -58,21 +59,22 @@ public class LineStationTest {
         final Station 구일역 = new Station("구일역");
         final Station 영등포역 = new Station("영등포역");
         final Station 신길역 = new Station("신길역");
-        final LineStation lineStation = new LineStation(new Line("1호선", "bg-blue-600"), new Station("신도림역"));
-        lineStation.previous(구로역, 100);
-        lineStation.next(신길역, 200);
+        final Line line = new Line("1호선", "bg-blue-600");
+        final LineStation lineStation = new LineStation(line, new Station("신도림역"));
+        lineStation.previous(new LineStation(line, 구로역), 100);
+        lineStation.next(new LineStation(line, 신길역), 200);
         final int previousDistance = 30;
         final int nextDistance = 20;
 
         // when
-        lineStation.update(구로역, 구일역, previousDistance);
-        lineStation.update(영등포역, 신길역, nextDistance);
+        lineStation.update(new LineStation(line, 구로역), new LineStation(line, 구일역), previousDistance);
+        lineStation.update(new LineStation(line, 영등포역), new LineStation(line, 신길역), nextDistance);
 
         // then
         assertAll(
-            () -> assertThat(lineStation.getPreviousStation()).isEqualTo(구일역),
+            () -> assertThat(lineStation.getPreviousStation()).isEqualTo(new LineStation(line, 구일역)),
             () -> assertThat(lineStation.getPreviousDistance()).isEqualTo(100 - previousDistance),
-            () -> assertThat(lineStation.getNextStation()).isEqualTo(영등포역),
+            () -> assertThat(lineStation.getNextStation()).isEqualTo(new LineStation(line, 영등포역)),
             () -> assertThat(lineStation.getNextDistance()).isEqualTo(200 - nextDistance)
         );
     }
@@ -87,22 +89,23 @@ public class LineStationTest {
         final Station 신길역 = new Station("신길역");
         final Station 강남역 = new Station("강남역");
         final Station 역삼역 = new Station("역삼역");
-        final LineStation lineStation = new LineStation(new Line("1호선", "bg-blue-600"), new Station("신도림역"));
-        lineStation.previous(구로역, 100);
-        lineStation.next(신길역, 200);
+        final Line line = new Line("1호선", "bg-blue-600");
+        final LineStation lineStation = new LineStation(line, new Station("신도림역"));
+        lineStation.previous(new LineStation(line, 구로역), 100);
+        lineStation.next(new LineStation(line, 신길역), 200);
         final int nextDistance = 20;
         final int previousDistance = 50;
 
         // when
-        lineStation.update(강남역, 역삼역, previousDistance);
-        lineStation.update(구일역, 구로역, previousDistance);
-        lineStation.update(신길역, 영등포역, previousDistance);
+        lineStation.update(new LineStation(line, 강남역), new LineStation(line, 역삼역), previousDistance);
+        lineStation.update(new LineStation(line, 구일역), new LineStation(line, 구로역), previousDistance);
+        lineStation.update(new LineStation(line, 신길역), new LineStation(line, 영등포역), previousDistance);
 
         // then
         assertAll(
-            () -> assertThat(lineStation.getPreviousStation()).isEqualTo(구로역),
+            () -> assertThat(lineStation.getPreviousStation()).isEqualTo(new LineStation(line, 구로역)),
             () -> assertThat(lineStation.getPreviousDistance()).isEqualTo(100),
-            () -> assertThat(lineStation.getNextStation()).isEqualTo(신길역),
+            () -> assertThat(lineStation.getNextStation()).isEqualTo(new LineStation(line, 신길역)),
             () -> assertThat(lineStation.getNextDistance()).isEqualTo(200)
         );
     }
@@ -116,21 +119,22 @@ public class LineStationTest {
         final Station 영등포역 = new Station("영등포역");
         final Station 신길역 = new Station("신길역");
         final Station 신도림역 = new Station("신도림역");
-        final LineStation lineStation = new LineStation(new Line("1호선", "bg-blue-600"), 신도림역);
-        lineStation.previous(구로역, 100);
-        lineStation.next(신길역, 200);
+        final Line line = new Line("1호선", "bg-blue-600");
+        final LineStation lineStation = new LineStation(line, 신도림역);
+        lineStation.previous(new LineStation(line, 구로역), 100);
+        lineStation.next(new LineStation(line, 신길역), 200);
         final int nextDistance = 20;
         final int previousDistance = 30;
 
         // when
-        lineStation.update(구일역, 신도림역, previousDistance);
-        lineStation.update(신도림역, 영등포역, nextDistance);
+        lineStation.update(new LineStation(line, 구일역), new LineStation(line, 신도림역), previousDistance);
+        lineStation.update(new LineStation(line, 신도림역), new LineStation(line, 영등포역), nextDistance);
 
         // then
         assertAll(
-            () -> assertThat(lineStation.getPreviousStation()).isEqualTo(구일역),
+            () -> assertThat(lineStation.getPreviousStation()).isEqualTo(new LineStation(line, 구일역)),
             () -> assertThat(lineStation.getPreviousDistance()).isEqualTo(previousDistance),
-            () -> assertThat(lineStation.getNextStation()).isEqualTo(영등포역),
+            () -> assertThat(lineStation.getNextStation()).isEqualTo(new LineStation(line, 영등포역)),
             () -> assertThat(lineStation.getNextDistance()).isEqualTo(nextDistance)
         );
     }

@@ -15,7 +15,6 @@ import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.linestation.domain.LineStation;
 import nextstep.subway.linestation.domain.LineStations;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 @Entity
@@ -83,7 +82,7 @@ public class Line extends BaseEntity {
         lineStations.addLineStation(lineStation);
     }
 
-    public void addLineStation(final Station upStation, final Station downStation, final int distance) {
+    public void addLineStation(final LineStation upStation, final LineStation downStation, final int distance) {
         lineStations.addLineStation(upStation, downStation, distance);
     }
 

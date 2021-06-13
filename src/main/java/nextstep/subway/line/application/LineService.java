@@ -47,9 +47,9 @@ public class LineService {
         final Station downStation = stationArray[DOWN_STATION_INDEX];
 
         final LineStation lineStation = new LineStation(line, upStation);
-        lineStation.next(downStation, request.getDistance());
         final LineStation lineStation2 = new LineStation(line, downStation);
-        lineStation2.previous(upStation, request.getDistance());
+        lineStation.next(lineStation2, request.getDistance());
+        lineStation2.previous(lineStation, request.getDistance());
 
         return Arrays.asList(lineStation, lineStation2);
     }
@@ -97,7 +97,8 @@ public class LineService {
     public LineResponse addSection(final Long lineId, final SectionRequest sectionRequest) {
         final Station[] stationArray = stationArray(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
         final Line line = findById(lineId);
-        line.addLineStation(stationArray[UP_STATION_INDEX], stationArray[DOWN_STATION_INDEX],
+        line.addLineStation(new LineStation(line, stationArray[UP_STATION_INDEX]),
+            new LineStation(line, stationArray[DOWN_STATION_INDEX]),
             sectionRequest.getDistance());
 
         return LineResponse.of(line);
