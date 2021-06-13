@@ -33,31 +33,21 @@ public class Section {
 
     private int distance;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setLine(Line line) {
-        this.line = line;
-    }
-
-    public void setPrevStation(Station prevStation) {
-        this.prevStation = prevStation;
-    }
-
-    public void setDistance(int distance) {
-        this.distance = distance;
-    }
-
-    public void setNextStation(Station nextStation) {
-        this.nextStation = nextStation;
-    }
-
     public Station getPrevStation() {
         return prevStation;
     }
 
     public Station getNextStation() {
         return nextStation;
+    }
+
+    public Section() {
+    }
+
+    public Section(Line line, Station prevStation, Station nextStation, int distance) {
+        this.line = line;
+        this.prevStation = prevStation;
+        this.nextStation = nextStation;
+        this.distance = distance;
     }
 }
