@@ -13,13 +13,13 @@ public class PositionTest {
         Position midfront = Position.isMidFront();
         Position rear = Position.isRear();
 
-        int testIndex = 10;
-
-        midfront.set(testIndex);
-        rear.set(testIndex);
-
-        assertThat(midfront.index()).isEqualTo(testIndex);
-        assertThat(rear.index()).isEqualTo(++testIndex);
+        int testPositionIndex = 10;
+        for (int i = 0; i < testPositionIndex; ++i) {
+            midfront.nextIndex();
+            rear.nextIndex();
+        }
+        assertThat(midfront.positionIndex()).isEqualTo(testPositionIndex);
+        assertThat(rear.positionIndex()).isEqualTo(++testPositionIndex);
     }
 
     @Test
@@ -35,7 +35,7 @@ public class PositionTest {
     void create() {
         Position front = Position.isFront();
 
-        int defaultIndex = -1;
+        int defaultIndex = 0;
 
         assertThat(front.index()).isEqualTo(defaultIndex);
     }

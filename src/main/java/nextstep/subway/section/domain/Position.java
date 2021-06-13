@@ -1,8 +1,8 @@
 package nextstep.subway.section.domain;
 
 public class Position {
-    private DockingType dockingType;
-    private int index = -1;
+    private final DockingType dockingType;
+    private int index = 0;
 
     private Position(DockingType dockingType) {
         this.dockingType = dockingType;
@@ -28,7 +28,7 @@ public class Position {
         return new Position(DockingType.NONE);
     }
 
-    public int index() {
+    public int positionIndex() {
         if (dockingType == DockingType.FRONT
                 || dockingType == DockingType.MID_FRONT
                 || dockingType == DockingType.MID_REAR) {
@@ -37,17 +37,26 @@ public class Position {
         return ++index;
     }
 
-    public void set(int position) {
-        if (position < 0) {
-            throw new IllegalArgumentException("유효하지 않은 위치값");
-        }
-        this.index = position;
+    public int index() {
+        return index;
     }
 
+    public int nextIndex() {
+        return ++index;
+    }
+
+    public void subIndex() {
+        --index;
+    }
+
+//    public void set(int position) {
+//        if (position < 0) {
+//            throw new IllegalArgumentException("유효하지 않은 위치값");
+//        }
+//        this.index = position;
+//    }
+
     public boolean isNotDockedYet() {
-        if (dockingType == DockingType.NONE) {
-            return true;
-        }
-        return false;
+        return DockingType.NONE == dockingType;
     }
 }

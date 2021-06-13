@@ -49,13 +49,12 @@ public class Section extends BaseEntity {
     }
 
     public void positioningAt(List<Section> sections) {
-        int i = 0;
         Position position = Position.isNone();
         while (position.isNotDockedYet()) {
-            position = this.dockingPositionOn(sections, sections.get(i));
-            ++i;
+            position = this.dockingPositionOn(sections, sections.get(position.index()));
+            position.nextIndex();
         }
-        position.set(--i);
+        position.subIndex();
 
         sections.add(position.index(), this);
     }
