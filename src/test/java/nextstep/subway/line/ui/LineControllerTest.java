@@ -44,12 +44,12 @@ public class LineControllerTest {
                 .extract();
     }
 
-    public static ExtractableResponse 지하철_노선_수정_요청(LineRequest lineRequest) {
+    public static ExtractableResponse 지하철_노선_수정_요청(Long id, LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .patch("/lines")
+                .patch("/lines/"+ id)
                 .then().log().all()
                 .extract();
     }

@@ -30,9 +30,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    @DisplayName("지하철_중복_노선_생성_예외_중복된_이름")
     @Test
-    void 지하철_중복_노선_생성_예외() {
+    void 지하철_중복_노선_생성_예외_중복된_이름() {
         // given
         ExtractableResponse<Response> firstResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000"));
 
@@ -148,21 +148,53 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
+    @DisplayName("지하철_노선_수정_성공")
     @Test
     void 지하철_노선_수정_성공() {
         // given
         LineRequest saveRequest = new LineRequest("1호선", "FF0000");
-        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(saveRequest);
+        ExtractableResponse createResponse = 지하철_노선_생성_요청(saveRequest);
+        Long savedId = createResponse.jsonPath().getObject(".", LineResponse.class).getId();
 
         // when
         LineRequest updateRequest = new LineRequest("1호선", "0000FF");
-        ExtractableResponse updateResponse = 지하철_노선_수정_요청(updateRequest);
+        ExtractableResponse updateResponse = 지하철_노선_수정_요청(savedId, updateRequest);
 
         // then
-        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(updateResponse.jsonPath().<String>get("$.name")).isEqualTo(updateRequest.getName());
-        assertThat(updateResponse.jsonPath().<String>get("$.color")).isEqualTo(updateRequest.getColor());
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(updateResponse.jsonPath().<String>get("name")).isEqualTo(updateRequest.getName());
+        assertThat(updateResponse.jsonPath().<String>get("color")).isEqualTo(updateRequest.getColor());
+    }
+
+    @DisplayName("지하철_노선_수정_예외_유효하지_않은_PK")
+    @Test
+    void 지하철_노선_수정_예외_존재하지_않는_PK() {
+        // when
+        LineRequest updateRequest = new LineRequest("1호선", "0000FF");
+        ExtractableResponse updateResponse = 지하철_노선_수정_요청(Long.MAX_VALUE, updateRequest);
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("지하철_노선_수정_예외_중복된_이름")
+    @Test
+    void 지하철_노선_수정_예외_수정_중복된_이름() {
+        // given
+        LineRequest saveRequest1 = new LineRequest("1호선", "FF0000");
+        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(saveRequest1);
+        Long savedId1 = createResponse1.jsonPath().getObject(".", LineResponse.class).getId();
+
+        LineRequest saveRequest2 = new LineRequest("2호선", "00FF00");
+        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(saveRequest2);
+        Long savedId2 = createResponse2.jsonPath().getObject(".", LineResponse.class).getId();
+
+        // when
+        LineRequest updateRequest = new LineRequest("1호선", "0000FF");
+        ExtractableResponse updateResponse = 지하철_노선_수정_요청(savedId2, updateRequest);
+
+        // then
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")

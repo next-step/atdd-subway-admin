@@ -22,13 +22,9 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         ResponseEntity<LineResponse> response;
-        try {
-            LineResponse line = lineService.saveLine(lineRequest);
-            response = ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
-        } catch (DataIntegrityViolationException e) {
-            response = ResponseEntity.badRequest().build();
-            e.printStackTrace();
-        }
+
+        LineResponse line = lineService.saveLine(lineRequest);
+        response = ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
 
         return response;
     }
@@ -54,13 +50,18 @@ public class LineController {
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
         ResponseEntity<LineResponse> response = null;
 
-        try {
-            LineResponse linesResponse = lineService.getLineById(id);
-            response = ResponseEntity.ok().body(linesResponse);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            response = ResponseEntity.notFound().build();
-        }
+        LineResponse linesResponse = lineService.getLineById(id);
+        response = ResponseEntity.ok().body(linesResponse);
+
+        return response;
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        ResponseEntity<LineResponse> response = null;
+
+        LineResponse linesResponse = lineService.updateLine(id, lineRequest);
+        response = ResponseEntity.ok().body(linesResponse);
 
         return response;
     }
