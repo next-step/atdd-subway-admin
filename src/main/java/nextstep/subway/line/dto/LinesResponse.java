@@ -21,10 +21,6 @@ public class LinesResponse {
         return this.lineResponses.isEmpty();
     }
 
-    public List<LineResponse> get() {
-        return this.lineResponses;
-    }
-
     public List<LineResponse> getLineResponses() {
         return lineResponses;
     }
