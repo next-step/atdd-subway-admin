@@ -55,11 +55,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 예외_2_deleteStationFromLineSectionsTest() {
         // given
         // 라인에 역이 3개 있다. 즉, 구간이 2개 있는 상태이다. (강남역 - 분짜역 - 광교역)
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 분짜역.getId() + "");
-        createParams.put("downStationId", 광교역.getId() + "");
-        createParams.put("distance", 5 + "");
-        RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+        기본구간세팅에_가운데로_분짜역을_하나_추가한다();
 
         // when
         // 중간에 있지 않은 역 1개를 지우려 한다.
@@ -92,16 +88,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteStationFromLineSectionsTest_4() {
         // given
         // 라인에 역이 4개 있다. 즉, 구간이 3개 있는 상태이다. (강남역 - 분짜역 - 광교역 - 팟타이역)
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 분짜역.getId() + "");
-        createParams.put("downStationId", 광교역.getId() + "");
-        createParams.put("distance", 5 + "");
-        RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 광교역.getId() + "");
-        createParams.put("downStationId", 팟타이역.getId() + "");
-        createParams.put("distance", 15 + "");
-        RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+        기본구간세팅에_가운데로_분짜역_하행으로_팟타이역_총_두개_더_추가한다();
 
         // when
         // 최하행구간의 하행역을 지운다.
@@ -126,16 +113,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteStationFromLineSectionsTest_3() {
         // given
         // 라인에 역이 4개 있다. 즉, 구간이 3개 있는 상태이다. (강남역 - 분짜역 - 광교역 - 팟타이역)
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 분짜역.getId() + "");
-        createParams.put("downStationId", 광교역.getId() + "");
-        createParams.put("distance", 5 + "");
-        RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 광교역.getId() + "");
-        createParams.put("downStationId", 팟타이역.getId() + "");
-        createParams.put("distance", 15 + "");
-        RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+        기본구간세팅에_가운데로_분짜역_하행으로_팟타이역_총_두개_더_추가한다();
 
         // when
         // 중간에 있는 역 1개를 지운다.
@@ -159,11 +137,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteStationFromLineSectionsTest_2() {
         // given
         // 라인에 역이 3개 있다. 즉, 구간이 2개 있는 상태이다. (강남역 - 분짜역 - 광교역)
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 분짜역.getId() + "");
-        createParams.put("downStationId", 광교역.getId() + "");
-        createParams.put("distance", 5 + "");
-        RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+        기본구간세팅에_가운데로_분짜역을_하나_추가한다();
 
         // when
         // 중간에 있는 역 1개를 지운다.
@@ -187,11 +161,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteStationFromLineSectionsTest_1() {
         // given
         // 라인에 역이 3개 있다. 즉, 구간이 2개 있는 상태이다. (강남역 - 분짜역 - 광교역)
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 분짜역.getId() + "");
-        createParams.put("downStationId", 광교역.getId() + "");
-        createParams.put("distance", 5 + "");
-        RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+        기본구간세팅에_가운데로_분짜역을_하나_추가한다();
 
         // when
         // 중간에 있는 역 1개를 지운다.
@@ -389,4 +359,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(stations).containsExactly("강남역", "강남역과_광교역_사이의_역", "광교역");
     }
 
+    private void 기본구간세팅에_가운데로_분짜역을_하나_추가한다() {
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 분짜역.getId() + "");
+        createParams.put("downStationId", 광교역.getId() + "");
+        createParams.put("distance", 5 + "");
+        RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+    }
+
+    private void 기본구간세팅에_가운데로_분짜역_하행으로_팟타이역_총_두개_더_추가한다() {
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 분짜역.getId() + "");
+        createParams.put("downStationId", 광교역.getId() + "");
+        createParams.put("distance", 5 + "");
+        RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+        createParams = new HashMap<>();
+        createParams.put("upStationId", 광교역.getId() + "");
+        createParams.put("downStationId", 팟타이역.getId() + "");
+        createParams.put("distance", 15 + "");
+        RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+    }
 }
