@@ -8,10 +8,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.dto.StationRequest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -19,6 +16,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("구간 관련 기능 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -73,6 +71,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                     ExtractableResponse<Response> response = 지하철역_노선_조회(1L);
                     List<SectionResponse> expected = response.jsonPath().getList(".");
                     assertThat(expected.size()).isEqualTo(4);
+                })
+        );
+    }
+
+    @DisplayName("상행역이 같은 구간 추가 시 구간길이가 같거나 크면 추가할 수 없다.")
+    @TestFactory
+    Stream<DynamicTest> cannot_add_sections_when_sectionLength_same_and_bigger(){
+        return Stream.of(
+                // given
+                // 지하철 노선 등록되어 있음
+                DynamicTest.dynamicTest("지하철 노선과 구간 등록", () -> {
+                    //when
+                    지하철역_여러_생성();
+                    지하철_노선_등록(new LineRequest("1호선", "Purple", 1L, 2L, 10));
+                    지하철_노선_추가_등록(new SectionRequest(2L, 3L, 10), 1L);
+                    지하철_노선_추가_등록(new SectionRequest(3L, 4L, 10), 1L);
+                }),
+
+                // then
+                // 1호선으로 등록된 지하철 갯수
+                DynamicTest.dynamicTest("추가 등록 오류 조건", () -> {
+                    assertThatThrownBy(() -> 지하철_노선_추가_등록(new SectionRequest(1L, 5L, 11), 1L))
+                            .isInstanceOf(IllegalArgumentException.class);
                 })
         );
     }

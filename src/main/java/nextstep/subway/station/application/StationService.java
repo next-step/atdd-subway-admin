@@ -42,4 +42,9 @@ public class StationService {
     public StationResponse findById(Long id) {
         return StationResponse.of(stationRepository.findById(id).orElseThrow(NoSuchElementException::new));
     }
+
+    @Transactional(readOnly = true)
+    public Station findStationById(Long id) {
+        return stationRepository.findById(id).orElseThrow(NoSuchElementException::new);
+    }
 }
