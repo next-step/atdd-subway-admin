@@ -2,16 +2,17 @@ package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceTest.*;
 import static nextstep.subway.station.StationAcceptanceTest.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.springframework.http.HttpStatus.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
@@ -127,6 +128,77 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_구간_등록_실패됨(response);
 	}
 
+	@Disabled("프로덕션 코드 미구현")
+	@DisplayName("노선의 중간 역을 제거한다.")
+	@Test
+	void removeInnerStationInLine() {
+		// given
+		StationResponse 강남역 = 지하철역_생성_요청("강남역").as(StationResponse.class);
+		StationResponse 양재역 = 지하철역_생성_요청("양재역").as(StationResponse.class);
+		StationResponse 광교역 = 지하철역_생성_요청("광교역").as(StationResponse.class);
+		LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10).as(LineResponse.class);
+		지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 5);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선, 양재역);
+
+		// then
+		지하철_노선에_구간이_제거됨(response, 신분당선.getId(), 강남역.getName(), 광교역.getName());
+	}
+
+	@Disabled("프로덕션 코드 미구현")
+	@DisplayName("노선의 종점역을 제거한다.")
+	@Test
+	void removeEndStationInLine() {
+		// given
+		StationResponse 강남역 = 지하철역_생성_요청("강남역").as(StationResponse.class);
+		StationResponse 양재역 = 지하철역_생성_요청("양재역").as(StationResponse.class);
+		StationResponse 광교역 = 지하철역_생성_요청("광교역").as(StationResponse.class);
+		LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10).as(LineResponse.class);
+		지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 5);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선, 강남역);
+
+		// then
+		지하철_노선에_구간이_제거됨(response, 신분당선.getId(), 양재역.getName(), 광교역.getName());
+	}
+
+	@Disabled("프로덕션 코드 미구현")
+	@DisplayName("노선에 등록되어 있지 않은 역을 제거한다.")
+	@Test
+	void removeUnknownStationInLine() {
+		// given
+		StationResponse 강남역 = 지하철역_생성_요청("강남역").as(StationResponse.class);
+		StationResponse 양재역 = 지하철역_생성_요청("양재역").as(StationResponse.class);
+		StationResponse 광교역 = 지하철역_생성_요청("광교역").as(StationResponse.class);
+		StationResponse 목동역 = 지하철역_생성_요청("목동역").as(StationResponse.class);
+		LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10).as(LineResponse.class);
+		지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 5);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선, 목동역);
+
+		// then
+		지하철_노선에_구간이_제거_실패됨(response);
+	}
+
+	@Disabled("프로덕션 코드 미구현")
+	@DisplayName("구간이 하나인 노선에 역을 제거한다.")
+	@Test
+	void removeStationInLine() {
+		// given
+		StationResponse 강남역 = 지하철역_생성_요청("강남역").as(StationResponse.class);
+		StationResponse 광교역 = 지하철역_생성_요청("광교역").as(StationResponse.class);
+		LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10).as(LineResponse.class);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선, 강남역);
+
+		// then
+		지하철_노선에_구간이_제거_실패됨(response);
+	}
+
 	private ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(LineResponse line, StationResponse upStation,
 		StationResponse downStation, int distance) {
 		Map<String, Object> params = new HashMap<>();
@@ -138,15 +210,36 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		        .given().log().all()
 		        .body(params)
 		        .contentType(MediaType.APPLICATION_JSON_VALUE)
-		        .when().post("/lines/" + line.getId() + "/sections")
+		        .when().post(LINE_API_ROOT + "/" + line.getId() + "/sections")
 		        .then().log().all().extract();
 	}
 
+	private ExtractableResponse<Response> 지하철_노선에_구간_제거_요청(LineResponse line, StationResponse stationToDelete) {
+		// when
+		Map<String, String> params = new HashMap<>();
+		return RestAssured
+			.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().delete(LINE_API_ROOT + "/" + line.getId() + "/sections" + "?stationsId=" + stationToDelete.getId())
+			.then().log().all().extract();
+	}
+
 	private void 지하철_노선에_구간_등록됨(ExtractableResponse<Response> response) {
-		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.statusCode()).isEqualTo(OK.value());
 	}
 
 	private void 지하철_노선에_구간_등록_실패됨(ExtractableResponse<Response> response) {
-		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+	}
+
+	private void 지하철_노선에_구간이_제거됨(ExtractableResponse<Response> response, long lineId, String... stations) {
+		assertThat(response.statusCode()).isEqualTo(OK.value());
+		ExtractableResponse<Response> lineResponse = 지하철_노선_조회_요청(lineId);
+		지하철_노선_응답됨(lineResponse, stations);
+	}
+
+	private void 지하철_노선에_구간이_제거_실패됨(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
 	}
 }
