@@ -1,10 +1,10 @@
 package nextstep.subway.section.application;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.exception.line.NotFoundLineException;
+import nextstep.subway.exception.station.NotFoundStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
@@ -25,13 +25,19 @@ public class SectionService {
     }
 
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line findedLine = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+        Line findedLine = lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
-            .orElseThrow(EntityNotFoundException::new);
+            .orElseThrow(NotFoundStationException::new);
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
-            .orElseThrow(EntityNotFoundException::new);
+            .orElseThrow(NotFoundStationException::new);
         findedLine.addSection(sectionRequest.toSection(upStation, downStation));
 
         return LineResponse.of(findedLine);
+    }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line findedLine = lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
+        Station station = stationRepository.findById(stationId).orElseThrow(NotFoundStationException::new);
+        findedLine.removeSection(station);
     }
 }

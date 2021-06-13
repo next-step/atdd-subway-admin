@@ -6,15 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.exception.StationsAlreadyExistException;
-import nextstep.subway.exception.StationsNoExistException;
+import nextstep.subway.exception.section.NotFoundSectionException;
+import nextstep.subway.exception.section.NotPossibleRemoveException;
+import nextstep.subway.exception.station.StationsAlreadyExistException;
+import nextstep.subway.exception.station.StationsNoExistException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
@@ -29,6 +30,7 @@ public class SectionsTest {
     private Station newStation;
     private Line line;
     private Station newStation2;
+    private Section sectionFirst;
 
     @BeforeEach
     void setup() {
@@ -37,15 +39,15 @@ public class SectionsTest {
         newStation = Station.of(3L, "선릉역");
         newStation2 = Station.of(4L, "전장역");
         line = new Line(1L, "2호선", "green");
-        Section section = Section.of(1L, upStation, downStation, line, 20);
-        sections = Sections.of(new ArrayList<Section>(Arrays.asList(section)));
+        sectionFirst = Section.of(1L, upStation, downStation, line, 20);
+        sections = Sections.of(new ArrayList<Section>(Arrays.asList(sectionFirst)));
     }
 
     @Test
     @DisplayName("두 역 사이 거리 얻어오는 것 테스트")
     void getDistanceWithStationsTest() {
         assertThat(sections.getDistanceWithStations(upStation, downStation)).isEqualTo(20);
-        assertThrows(NoSuchElementException.class, () -> sections.getDistanceWithStations(upStation, newStation));
+        assertThrows(NotFoundSectionException.class, () -> sections.getDistanceWithStations(upStation, newStation));
 
     }
 
@@ -110,6 +112,54 @@ public class SectionsTest {
         assertThrows(StationsNoExistException.class, () -> {
             Section section = Section.of(2L, newStation, newStation2, line, 10);
             sections.add(section);
+        });
+    }
+
+    @Test
+    @DisplayName("A-B-C 중 A 삭제 테스트")
+    void removeAB() {
+        Section section = Section.of(2L, upStation, newStation, line, 10);
+        sections.add(section);
+        sections.remove(upStation);
+        assertThat(sections.getDistanceWithStations(newStation, downStation)).isEqualTo(10);
+
+    }
+
+    @Test
+    @DisplayName("A-B-C 중 B 삭제 테스트")
+    void removeBC() {
+        Section section = Section.of(2L, downStation, newStation, line, 10);
+        sections.add(section);
+        sections.remove(downStation);
+        assertThat(sections.getDistanceWithStations(upStation, newStation)).isEqualTo(30);
+    }
+
+    @Test
+    @DisplayName("A-B-C-D 중 B 삭제 테스트")
+    void removeBDInner() {
+        Section sectionBC = Section.of(2L, downStation, newStation, line, 10);
+        sections.add(sectionBC);
+        Section sectionCD = Section.of(2L, newStation, newStation2, line, 10);
+        sections.add(sectionCD);
+
+        sections.remove(downStation);
+        assertThat(sections.getDistanceWithStations(upStation, newStation)).isEqualTo(30);
+    }
+
+    @Test
+    @DisplayName("구간이 1개밖에 없을 때는 삭제가 불가능 하다.")
+    void removeOnlyOne() {
+        assertThrows(NotPossibleRemoveException.class, () -> {
+            sections.remove(upStation);
+        });
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 구간은 삭제 불가능 하다.")
+    void removeNoSection() {
+        assertThrows(NotPossibleRemoveException.class, () -> {
+            Section.of(2L, upStation, newStation, line, 10);
+            sections.remove(newStation);
         });
     }
 

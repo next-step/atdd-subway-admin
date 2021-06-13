@@ -2,15 +2,20 @@ package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
-import nextstep.subway.exception.InvalidDistanceException;
-import nextstep.subway.exception.StationsAlreadyExistException;
-import nextstep.subway.exception.StationsNoExistException;
+import org.springframework.util.CollectionUtils;
+
+import nextstep.subway.exception.section.InvalidDistanceException;
+import nextstep.subway.exception.section.NotFoundSectionException;
+import nextstep.subway.exception.section.NotPossibleRemoveException;
+import nextstep.subway.exception.station.StationsAlreadyExistException;
+import nextstep.subway.exception.station.StationsNoExistException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -20,8 +25,10 @@ public class Sections {
     private static final String ALREADY_EXIST = "이미 구간이 등록된 역입니다.";
     private static final String NO_EXIST = "구간에 없는 역들입니다.";
     private static final String OVER_DISTANCE = "기존 구간의 거리보다 작아야 합니다.";
+    private static final String CHECK_SIZE = "구간이 1개일 경우 삭제가 불가능합니다.";
+    private static final String EMPTY_SECION = "구간이 존재하지 않습니다.";
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<Section>();
 
     public Sections() {}
@@ -36,8 +43,9 @@ public class Sections {
 
     public int getDistanceWithStations(Station upStation, Station downStation) {
         return sections.stream()
-            .filter(seciton -> seciton.sameUpStaion(upStation) && seciton.sameDownStaion(downStation)).findFirst()
-            .orElseThrow(NoSuchElementException::new).getDistance();
+            .filter(seciton -> seciton.sameUpStation(upStation) && seciton.sameDownStation(downStation))
+            .findFirst()
+            .orElseThrow(NotFoundSectionException::new).getDistance();
     }
 
     public List<StationResponse> toResponseList() {
@@ -47,60 +55,131 @@ public class Sections {
             return list;
         }
 
-        Section nextSection = findStartStation();
+        Section nextSection = findStartSection();
         list.add(nextSection.upStationToReponse());
         while (nextSection != null) {
             list.add(nextSection.downStationToReponse());
-            nextSection = findEndStatoin(nextSection);
+            nextSection = findNextSection(nextSection);
         }
 
         return list;
     }
 
-    private Section findEndStatoin(Section nextSection) {
-        return sections.stream().filter(section -> section.isStartStation(nextSection))
-            .findFirst().orElse(null);
-    }
-
-    private Section findStartStation() {
-        return sections.stream().filter(section -> findUpStation(section) == null)
-            .findFirst().orElseThrow(NoSuchElementException::new);
-    }
-
-    private Section findUpStation(Section findSection) {
-        return sections.stream()
-            .filter(section -> section.isEndStation(findSection))
-            .findFirst()
-            .orElse(null);
-    }
-
     public void add(Section section) {
         validateAlreadyOrNoExist(section);
-        updateIfUpStaionMatch(section);
+        updateIfUpStationMatch(section);
         updateIfDownStationMatch(section);
         sections.add(section);
     }
 
+    public void remove(Station station) {
+        validationRemove(station);
+        Section beforeSection = findDownStationSection(station);
+        Section afterSection = findUpStationSection(station);
+        Long lastStationId = findLastSection().downStationId();
+        Long firstStationId = findStartSection().upStationId();
+
+        if (station.isEqualsId(lastStationId)) {
+            sections.remove(beforeSection);
+            return;
+        }
+
+        if (station.isEqualsId(firstStationId)) {
+            sections.remove(afterSection);
+            return;
+        }
+
+        beforeSection.updateDownStationToDown(afterSection);
+        beforeSection.connectDistance(afterSection);
+        sections.remove(afterSection);
+    }
+
+    private Section findDownStationSection(Station station) {
+        return sections.stream().filter(section -> section.sameDownStation(station))
+            .findFirst()
+            .orElse(Section.EMPTY);
+    }
+
+    private Section findUpStationSection(Station station) {
+        return sections.stream()
+            .filter(section -> section.sameUpStation(station))
+            .findFirst()
+            .orElse(Section.EMPTY);
+    }
+
+    private void validationRemove(Station station) {
+        List<Long> stationIdList = getStationIdList();
+
+        if (CollectionUtils.isEmpty(sections) || !stationIdList.contains(station.getId())) {
+            throw new NotPossibleRemoveException(EMPTY_SECION);
+        }
+
+        if (sections.size() == 1) {
+            throw new NotPossibleRemoveException(CHECK_SIZE);
+        }
+
+    }
+
+    private List<Long> getStationIdList() {
+        return sections.stream()
+            .map(section -> Stream.of(section.upStationId(), section.downStationId()))
+            .flatMap(Stream::distinct)
+            .collect(Collectors.toList());
+    }
+
+    private Section findNextSection(Section beforSection) {
+        return sections.stream().filter(section -> section.isUpStationWithDown(beforSection))
+            .findFirst().orElse(null);
+    }
+
+    private Section findStartSection() {
+        return sections.stream()
+            .filter(section -> findSectionIsAnotherDownStation(section) == null)
+            .findFirst()
+            .orElseThrow(NotFoundSectionException::new);
+    }
+
+    private Section findLastSection() {
+        return sections.stream()
+            .filter(section -> findSectionIsAnotherUpStation(section) == null)
+            .findFirst()
+            .orElseThrow(NotFoundSectionException::new);
+    }
+
+    private Section findSectionIsAnotherUpStation(Section beforeSection) {
+        return sections.stream()
+            .filter(section -> section.isUpStationWithDown(beforeSection))
+            .findFirst()
+            .orElse(null);
+    }
+
+    private Section findSectionIsAnotherDownStation(Section beforeSection) {
+        return sections.stream()
+            .filter(section -> section.isDownStationWithUp(beforeSection))
+            .findFirst()
+            .orElse(null);
+    }
+
     private void updateIfDownStationMatch(Section compareSection) {
         sections.stream()
-            .filter(compareSection::sameDownStaion)
+            .filter(compareSection::sameDownStation)
             .findFirst()
             .ifPresent(findedSection -> {
                 validateDistance(findedSection, compareSection);
                 findedSection.updateDownStation(compareSection);
-                findedSection.updateDistance(compareSection);
+                findedSection.updateMinusDistance(compareSection);
             });
 
     }
 
-    private void updateIfUpStaionMatch(Section compareSection) {
+    private void updateIfUpStationMatch(Section compareSection) {
         sections.stream()
-            .filter(compareSection::sameUpStaion)
+            .filter(compareSection::sameUpStation)
             .findFirst()
             .ifPresent(findedSection -> {
                 validateDistance(findedSection, compareSection);
                 findedSection.updateUpStation(compareSection);
-                findedSection.updateDistance(compareSection);
+                findedSection.updateMinusDistance(compareSection);
             });
     }
 

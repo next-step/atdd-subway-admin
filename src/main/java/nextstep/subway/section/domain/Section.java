@@ -14,6 +14,8 @@ import nextstep.subway.station.dto.StationResponse;
 @Entity
 public class Section {
 
+    public static final Section EMPTY = new Section();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -79,11 +81,11 @@ public class Section {
         return this.upStation.equals(compareSection.upStation) || this.upStation.equals(compareSection.downStation);
     }
 
-    public boolean sameUpStaion(Section compareSection) {
+    public boolean sameUpStation(Section compareSection) {
         return compareSection.upStation.equals(this.upStation);
     }
 
-    public boolean sameDownStaion(Section compareSection) {
+    public boolean sameDownStation(Section compareSection) {
         return compareSection.downStation.equals(this.downStation);
     }
 
@@ -95,7 +97,7 @@ public class Section {
         this.upStation = compareSection.downStation;
     }
 
-    public void updateDistance(Section compareSection) {
+    public void updateMinusDistance(Section compareSection) {
         this.distance -= compareSection.distance;
     }
 
@@ -103,20 +105,36 @@ public class Section {
         this.downStation = compareSection.upStation;
     }
 
-    public boolean isStartStation(Section startSection) {
-        return this.upStation.equals(startSection.downStation);
+    public boolean isUpStationWithDown(Section beforeSection) {
+        return this.upStation.equals(beforeSection.downStation);
     }
 
-    public boolean isEndStation(Section findSection) {
-        return this.downStation.equals(findSection.upStation);
+    public boolean isDownStationWithUp(Section beforeSection) {
+        return this.downStation.equals(beforeSection.upStation);
     }
 
-    public boolean sameUpStaion(Station station) {
+    public boolean sameUpStation(Station station) {
         return this.upStation.equals(station);
     }
 
-    public boolean sameDownStaion(Station station) {
+    public boolean sameDownStation(Station station) {
         return this.downStation.equals(station);
+    }
+
+    public void connectDistance(Section afterSection) {
+        this.distance += afterSection.distance;
+    }
+
+    public Long upStationId() {
+        return upStation.getId();
+    }
+
+    public Long downStationId() {
+        return downStation.getId();
+    }
+
+    public void updateDownStationToDown(Section afterSection) {
+        this.downStation = afterSection.downStation;
     }
 
 }

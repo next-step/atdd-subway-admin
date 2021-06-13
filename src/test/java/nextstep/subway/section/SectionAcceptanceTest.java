@@ -1,8 +1,7 @@
 package nextstep.subway.section;
 
-import static nextstep.subway.utils.CommonSettings.생성_요청;
-import static nextstep.subway.utils.CommonSettings.조회_요청;
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.utils.CommonSettings.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -36,13 +36,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        //givn
+        //given
         //지하철 역이 등록되어 있다.
         ExtractableResponse<Response> createdStationResponse1 = 생성_요청(new StationRequest("강남역"), "/stations");
         ExtractableResponse<Response> createdStationResponse2 = 생성_요청(new StationRequest("역삼역"), "/stations");
         ExtractableResponse<Response> createdStationResponse3 = 생성_요청(new StationRequest("판교역"), "/stations");
         ExtractableResponse<Response> createdStationResponse4 = 생성_요청(new StationRequest("은계역"), "/stations");
-        ExtractableResponse<Response> createdStationResponse5 = 생성_요청(new StationRequest("장미역"), "/stations");
+        ExtractableResponse<Response> createdStationResponse5 = 생성_요청(new StationRequest("사랑역"), "/stations");
 
         upStationId = createdStationResponse1.as(StationResponse.class).getId();
         downStationId = createdStationResponse2.as(StationResponse.class).getId();
@@ -138,6 +138,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             new SectionRequest(upStationId, newStationId, 20),
             String.format("/lines/%d/sections", lineId));
 
+        // then
+        // 에러가 발생한다
         assertThat(createdSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -150,6 +152,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             new SectionRequest(upStationId, downStationId, 5),
             String.format("/lines/%d/sections", lineId));
 
+        // then
+        // 에러가 발생한다
         assertThat(createdSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -161,8 +165,49 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createdSectionResponse = 생성_요청(
             new SectionRequest(newStationId, newStationId2, 5),
             String.format("/lines/%d/sections", lineId));
-
+        // then
+        // 에러가 발생한다
         assertThat(createdSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("up - new3 - new2 - new -down 중  new2 > down > new3 삭제 테스트")
+    void remove() {
+        //given
+        // 구간이 등록되어 있다.
+        생성_요청(new SectionRequest(upStationId, newStationId, 19), String.format("/lines/%d/sections", lineId));
+        생성_요청(new SectionRequest(upStationId, newStationId2, 15), String.format("/lines/%d/sections", lineId));
+        생성_요청(new SectionRequest(upStationId, newStationId3, 5), String.format("/lines/%d/sections", lineId));
+
+        removeNew2();
+        removeDown();
+        removeNew();
+    }
+
+    @Test
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 때 제거할 수 없다.")
+    void removeOnlyOne() {
+        //when
+        //지하철 삭제요청을 보낸다
+        ExtractableResponse<Response> removedSectionResponse = 역_삭제_요청(
+            String.format("/lines/%d/sections", lineId), upStationId);
+
+        //then
+        //삭제가 불가능하다.
+        assertThat(removedSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("없는 구간은 제거할 수없다.")
+    void removeNoSection() {
+        //when
+        //지하철 삭제요청을 보낸다
+        ExtractableResponse<Response> removedSectionResponse = 역_삭제_요청(
+            String.format("/lines/%d/sections", lineId), newStationId);
+
+        //then
+        //삭제가 불가능하다.
+        assertThat(removedSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private List<Long> 지하철역_ID_추출(ExtractableResponse<Response> createdSectionResponse) {
@@ -170,4 +215,53 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .map(StationResponse::getId)
             .collect(Collectors.toList());
     }
+
+    private void removeNew() {
+        //when
+        //지하철 삭제요청을 보낸다
+        ExtractableResponse<Response> removedSectionResponse = 역_삭제_요청(
+            String.format("/lines/%d/sections", lineId), newStationId);
+
+        //then
+        // 정상적으로 삭제가 된다
+        assertThat(removedSectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(LineAcceptanceTest.찾은_노선에서_Sations_ID추출(조회_요청("/lines/" + lineId))).containsExactly(upStationId,
+            newStationId3);
+    }
+
+    private void removeDown() {
+        //when
+        //지하철 삭제요청을 보낸다
+        ExtractableResponse<Response> removedSectionResponse = 역_삭제_요청(
+            String.format("/lines/%d/sections", lineId), downStationId);
+
+        //then
+        // 정상적으로 삭제가 된다
+        assertThat(removedSectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(LineAcceptanceTest.찾은_노선에서_Sations_ID추출(조회_요청("/lines/" + lineId))).containsExactly(upStationId,
+            newStationId3, newStationId);
+    }
+
+    private void removeNew2() {
+        //when
+        //지하철 삭제요청을 보낸다
+        ExtractableResponse<Response> removedSectionResponse = 역_삭제_요청(
+            String.format("/lines/%d/sections", lineId), newStationId2);
+
+        //then
+        // 정상적으로 삭제가 된다
+        assertThat(removedSectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(LineAcceptanceTest.찾은_노선에서_Sations_ID추출(조회_요청("/lines/" + lineId))).containsExactly(upStationId,
+            newStationId3, newStationId, downStationId);
+    }
+
+    public static ExtractableResponse<Response> 역_삭제_요청(String path, Long stationId) {
+        return RestAssured.given().log().all()
+            .queryParam("stationId", stationId)
+            .when()
+            .delete(path)
+            .then().log().all()
+            .extract();
+    }
+
 }
