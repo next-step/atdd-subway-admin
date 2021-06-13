@@ -88,7 +88,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse createResponse1 = 지하철_노선_생성_요청(firstRequest);
         ExtractableResponse createResponse2 = 지하철_노선_생성_요청(secondRequest);
         ExtractableResponse createResponse3 = 지하철_노선_생성_요청(thirdRequest);
-        List<Long> expectedResult = extractIdInResponses(createResponse1, createResponse2);
+        List<Long> expectedResult = extractIdInResponses(createResponse2, createResponse3);
 
         // when
         ExtractableResponse response = 지하철_노선_검색_요청(new LineRequest("", "00FF00"));
