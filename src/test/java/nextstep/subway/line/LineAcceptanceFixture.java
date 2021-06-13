@@ -65,7 +65,7 @@ public class LineAcceptanceFixture {
         SECTION("2", "3", "50"),
         DUPLICATED_SECTION("1", "2", "50"),
         SECTION_NEW_STATION("3", "4", "50"),
-        TOO_LONG_DISTANCE("2", "3", "100");
+        TOO_LONG_DISTANCE("1", "3", "100");
 
         private final String upStation;
         private final String downStation;
@@ -90,21 +90,13 @@ public class LineAcceptanceFixture {
         }
     }
 
-    static ExtractableResponse<Response> NEW_지하철_노선_생성_요청(final String path, final LineFixture lineFixture) {
+    static ExtractableResponse<Response> 지하철_노선_생성_요청(final String path, final LineFixture lineFixture) {
         final Map<String, String> params = new HashMap<>();
         params.put("name", lineFixture.getName());
         params.put("color", lineFixture.getColor());
         params.put("upStationId", lineFixture.getUpStationId());
         params.put("downStationId", lineFixture.getDownStationId());
         params.put("distance", lineFixture.getDistance());
-
-        return post(path, params);
-    }
-
-    static ExtractableResponse<Response> 지하철_노선_생성_요청(final String path, final LineFixture lineFixture) {
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", lineFixture.getName());
-        params.put("color", lineFixture.getColor());
 
         return post(path, params);
     }

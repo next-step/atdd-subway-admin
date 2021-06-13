@@ -2,8 +2,8 @@ package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceFixture.LineFixture.*;
 import static nextstep.subway.line.LineAcceptanceFixture.PATH;
-import static nextstep.subway.line.LineAcceptanceFixture.*;
 import static nextstep.subway.line.LineAcceptanceFixture.SectionFixture.*;
+import static nextstep.subway.line.LineAcceptanceFixture.*;
 import static nextstep.subway.station.StationAcceptanceFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,6 +11,8 @@ import static org.springframework.http.HttpStatus.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +32,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private Station 강남역;
     private Station 역삼역;
     private Station 선릉역;
-    private Station 잠실역;
 
     @Override
     @BeforeEach
@@ -40,14 +41,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         강남역 = 지하철역_생성_요청("강남역", StationAcceptanceFixture::toStation);
         역삼역 = 지하철역_생성_요청("역삼역", StationAcceptanceFixture::toStation);
         선릉역 = 지하철역_생성_요청("선릉역", StationAcceptanceFixture::toStation);
-        잠실역 = 지하철역_생성_요청("잠실역", StationAcceptanceFixture::toStation);
     }
 
     @DisplayName("지하철 구간을 추가한다.")
     @Test
     void given_Line_when_AddSection_then_ReturnOk() {
         // given
-        NEW_지하철_노선_생성_요청(PATH, FIRST);
+        지하철_노선_생성_요청(PATH, FIRST);
         final List<Station> expected = Arrays.asList(강남역, 역삼역, 선릉역);
 
         // when
@@ -64,7 +64,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void given_DuplicatedSection_when_AddExistingSection_then_ReturnBadRequest() {
         // given
-        NEW_지하철_노선_생성_요청(PATH, FIRST);
+        지하철_노선_생성_요청(PATH, FIRST);
 
         // when
         final ExtractableResponse<Response> response = 지하철_구간에_지하철역_등록_요청(PATH + "/1/sections", DUPLICATED_SECTION);
@@ -77,7 +77,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void given_SectionHasStationsLineNotContain_when_AddExistingSection_then_ReturnBadRequest() {
         // given
-        NEW_지하철_노선_생성_요청(PATH, FIRST);
+        지하철_노선_생성_요청(PATH, FIRST);
 
         // when
         final ExtractableResponse<Response> response = 지하철_구간에_지하철역_등록_요청(PATH + "/1/sections", SECTION_NEW_STATION);
@@ -90,10 +90,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void given_TooLongDistance_when_AddSection_then_ReturnBadRequest() {
         // given
-        NEW_지하철_노선_생성_요청(PATH, FIRST);
+        지하철_노선_생성_요청(PATH, FIRST);
 
         // when
-        final ExtractableResponse<Response> response = 지하철_구간에_지하철역_등록_요청(PATH + "/1/sections", DUPLICATED_SECTION);
+        final ExtractableResponse<Response> response = 지하철_구간에_지하철역_등록_요청(PATH + "/1/sections", TOO_LONG_DISTANCE);
 
         // then
         assertThat(statusCode(response)).isEqualTo(statusCode(BAD_REQUEST));
@@ -103,7 +103,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void given_NoExisingLine_when_CreateLineWithStation_then_ReturnLine() {
         // when
-        final ExtractableResponse<Response> response = NEW_지하철_노선_생성_요청(PATH, FIRST);
+        final ExtractableResponse<Response> response = 지하철_노선_생성_요청(PATH, FIRST);
 
         // then
         assertAll(
@@ -152,9 +152,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @SuppressWarnings("unchecked")
     private List<Line> actual(final ExtractableResponse<Response> response) {
         return response.jsonPath()
-            .getList(".", Line.class);
+            .getList(".")
+            .stream()
+            .map(obj -> (Map<String, Object>)obj)
+            .map(map -> new Line(Long.parseLong(String.valueOf(map.get("id"))), (String)map.get("name"),
+                (String)map.get("color")))
+            .collect(Collectors.toList());
     }
 
     private List<Line> expected() {
