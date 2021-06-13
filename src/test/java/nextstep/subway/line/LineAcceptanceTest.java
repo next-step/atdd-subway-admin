@@ -26,7 +26,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void createLine() {
 		// gciven, when 지하철_노선_생성_요청
 		// + 상행, 하행 정보 요청 파라미터에 함께 추가
-		ExtractableResponse<Response> response = 노선정보세팅_메소드("잠실역", "yellow");
+		ExtractableResponse<Response> response = 노선정보세팅_메소드("잠실역", "yellow", 1L, 1L, 1);
 		// then 지하철_노선_생성됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 	}
@@ -38,10 +38,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// + 상행, 하행 정보 요청 파라미터에 함께 추가
 		String dupName = "잠실역";
 		String dupColor = "yellow";
-		노선정보세팅_메소드(dupName, dupColor);
+		노선정보세팅_메소드(dupName, dupColor, 1L, 1L, 1);
 
 		// when 중복 지하철_노선_생성_요청
-		ExtractableResponse<Response> response = 노선정보세팅_메소드(dupName, dupColor);
+		ExtractableResponse<Response> response = 노선정보세팅_메소드(dupName, dupColor, 1L, 1L, 1);
 
 		// then
 		// 지하철_노선_생성_실패됨
@@ -54,11 +54,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// given
 		// 지하철_노선_등록되어_있음
 		// + 상행, 하행 정보 요청 파라미터에 함께 추가
-		ExtractableResponse<Response> createdResponse1 = 노선정보세팅_메소드("잠실역", "yellow");
+		ExtractableResponse<Response> createdResponse1 = 노선정보세팅_메소드("잠실역", "yellow", 1L, 1L, 1);
 
 		// 지하철_노선_등록되어_있음
 		// + 상행, 하행 정보 요청 파라미터에 함께 추가
-		ExtractableResponse<Response> createdResponse2 = 노선정보세팅_메소드("강남역", "green");
+		ExtractableResponse<Response> createdResponse2 = 노선정보세팅_메소드("강남역", "green", 1L, 1L, 1);
 
 		// when
 		// 지하철_노선_목록_조회_요청
@@ -89,7 +89,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// 지하철_노선_등록되어_있음
 		// + 상행, 하행 정보 요청 파라미터에 함께 추가
 		String name = "잠실역";
-		노선정보세팅_메소드(name, "yellow");
+		노선정보세팅_메소드(name, "yellow", 1L, 1L, 1);
 
 		// when
 		// 지하철_노선_조회_요청
@@ -112,7 +112,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// + 상행, 하행 정보 요청 파라미터에 함께 추가
 		String name = "잠실역";
 		String originColor = "yellow";
-		노선정보세팅_메소드(name, originColor);
+		노선정보세팅_메소드(name, originColor, 1L, 1L, 1);
 
 		// when;
 		// 지하철_노선_수정_요청
@@ -142,7 +142,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// 지하철_노선_등록되어_있음
 		// + 상행, 하행 정보 요청 파라미터에 함께 추가
 		String name = "잠실역";
-		노선정보세팅_메소드(name, "yellow");
+		노선정보세팅_메소드(name, "yellow", 1L, 1L, 1);
 
 		// when
 		// 지하철_노선_제거_요청
@@ -158,10 +158,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
-	private ExtractableResponse<Response> 노선정보세팅_메소드(String name, String color){
+	private ExtractableResponse<Response> 노선정보세팅_메소드(String name, String color, Long upStationId, Long downStationId, Integer distance){
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 		params.put("color", color);
+		params.put("upStationId", upStationId.toString());
+		params.put("downStationId", downStationId.toString());
+		params.put("distance", distance.toString());
 
 		return RestAssured.given().log().all()
 				.body(params)
