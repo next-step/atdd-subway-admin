@@ -93,6 +93,57 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(stationNames).containsExactly("양재역", "정자역", "미금역");
     }
 
+    @Test
+    void 구간_사이에_새로운_역을_등록_시_구간거리가_기존_역사이의_구간_거리와_같은_값으로_역_등록() {
+        // given: 판교역이 등록되어 있음.
+        StationResponse 판교역 = 지하철역이_등록되어_있음("판교역");
+
+        // when: 양재역, 판교역 구간 등록을 요청한다. 등록 시 구간 거리를 양재역, 정자역 구간 거리와 같은 값을 입력한다.
+        Map<String, String> params = 신규_구간_생성_파라미터(양재역.getId(), 판교역.getId(), 10);
+        ExtractableResponse<Response> response = 신규_구간_등록(params, 신분당선.getId());
+
+        // then: 양재역, 판교역 구간 등록이 실패한다.
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    @Test
+    void 구간_사이에_새로운_역을_등록_시_구간거리가_기존_역사이의_구간_거리보다_큰값으로_역_등록() {
+        // given: 판교역이 등록되어 있음.
+        StationResponse 판교역 = 지하철역이_등록되어_있음("판교역");
+
+        // when: 양재역, 판교역 구간 등록을 요청한다. 등록 시 구간 거리를 양재역, 정자역 구간 거리보다 큰값을 입력한다.
+        Map<String, String> params = 신규_구간_생성_파라미터(양재역.getId(), 판교역.getId(), 11);
+        ExtractableResponse<Response> response = 신규_구간_등록(params, 신분당선.getId());
+
+        // then: 양재역, 판교역 구간 등록이 실패한다.
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 상행역과_하행역이_이미_구간에_등록되어_있는_구간_등록() {
+        // when: 양재역, 정자역 구간 등록을 요청한다.
+        Map<String, String> params = 신규_구간_생성_파라미터(양재역.getId(), 정자역.getId(), 10);
+        ExtractableResponse<Response> response = 신규_구간_등록(params, 신분당선.getId());
+
+        // then: 양재역, 정자역 구간 등록이 실패한다.
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 노선에_상행역과_하행역_둘중_하나도_포함되어_있지_않은_구간_등록() {
+        // give: 교대역이 등록되어 있음.
+        StationResponse 교대역 = 지하철역이_등록되어_있음("교대역");
+        // give: 매봉역이 등록되어 있음.
+        StationResponse 매봉역 = 지하철역이_등록되어_있음("매봉역");
+
+        Map<String, String> params = 신규_구간_생성_파라미터(교대역.getId(), 매봉역.getId(), 4);
+        // when: 교대역, 매봉역 구간 등록을 요청한다.
+        ExtractableResponse<Response> response = 신규_구간_등록(params, 신분당선.getId());
+        // then: 교대역, 매봉역 구간 등록이 실패한다.
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 신규_구간_등록(Map<String, String> params, Long 신분당선_노선_아이디) {
         return RestAssured.given().log().all()
                 .body(params)
