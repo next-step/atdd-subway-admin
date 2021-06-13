@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.DuplicateLineException;
@@ -23,14 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineService {
     private final LineRepository lineRepository;
 
-    private final SectionRepository sectionRepository;
-
     private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, SectionRepository sectionRepository,
-        StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
     }
 
@@ -39,10 +34,9 @@ public class LineService {
         Station upStation = getStationById(request.getUpStationId());
         Station downStation = getStationById(request.getDownStationId());
 
-        Line persistLine = lineRepository.save(request.toLine());
-
-        sectionRepository.save(
-            new Section(persistLine, upStation, downStation, request.getDistance()));
+        Line line = request.toLine();
+        line.addSection(new Section(upStation, downStation, request.getDistance()));
+        Line persistLine = lineRepository.save(line);
 
         return LineResponse.of(persistLine);
     }
@@ -78,8 +72,6 @@ public class LineService {
 
     public void deleteLine(Long id) {
         Line line = getLineById(id);
-        line.getSections()
-            .forEach(sectionRepository::delete);
         lineRepository.delete(line);
     }
 

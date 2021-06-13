@@ -34,9 +34,7 @@ public class LineResponse {
             line.getId(),
             line.getName(),
             line.getColor(),
-            line.getStations().stream()
-                .map(StationResponse::of)
-                .collect(Collectors.toList()),
+            null, // TODO 처리 필요
             line.getCreatedDate(),
             line.getModifiedDate());
     }

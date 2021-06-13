@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import nextstep.subway.line.exception.NoSuchSectionException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -32,25 +33,15 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        validateSection(line, upStation, downStation, distance);
+    public Section(Station upStation, Station downStation, int distance) {
+        validateSection(upStation, downStation, distance);
 
-        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-
-        upStation.setNextSection(this);
-        downStation.setPrevSection(this);
-
-        line.addSection(this);
     }
 
-    private static void validateSection(Line line, Station upStation, Station downStation, int distance) {
-        if (Objects.isNull(line)) {
-            throw new IllegalArgumentException("소속될 Line이 반드시 존재해야 합니다.");
-        }
-
+    private void validateSection(Station upStation, Station downStation, int distance) {
         if (Objects.isNull(upStation) || Objects.isNull(downStation)) {
             throw new IllegalArgumentException("양 끝 Station이 반드시 존재해야 합니다.");
         }
@@ -60,12 +51,23 @@ public class Section {
         }
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public boolean isAddedToLine() {
+        return Objects.nonNull(this.line);
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public void setLine(Line line) {
+        validateLine(line);
+        this.line = line;
+    }
+
+    private void validateLine(Line line) {
+        if (Objects.isNull(line)) {
+            throw new IllegalArgumentException("소속 노선은 null 이 될 수 없습니다.");
+        }
+
+        if (!line.contains(this)) {
+            throw new NoSuchSectionException("해당 노선에 본 구간이 존재하지 않습니다. Line.addSection 을 사용해주세요.");
+        }
     }
 
     @Override
