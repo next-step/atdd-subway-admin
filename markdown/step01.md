@@ -144,7 +144,7 @@
         HTTP/1.1 204 
         Date: Fri, 13 Nov 2020 00:11:51 GMT
         ```
-    
+
 ##### 1.1.1.2. 기능 구현 전 인수 테스트 작성
 
 ###### 1.1.1.2.1. 지하철 노선 관련 기능의 인수 테스트를 작성하기
@@ -152,17 +152,18 @@
 `LineAcceptanceTest` 를 모두 완성시키세요.
 
 ```java
+
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    @DisplayName("지하철 노선을 생성한다.")
-    @Test
-    void createLine() {
-        // when
-        // 지하철_노선_생성_요청
+	@DisplayName("지하철 노선을 생성한다.")
+	@Test
+	void createLine() {
+		// when
+		// 지하철_노선_생성_요청
 
-        // then
-        // 지하철_노선_생성됨
-    }
+		// then
+		// 지하철_노선_생성됨
+	}
 
     ...
 }
@@ -173,21 +174,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
 인수 테스트가 모두 성공할 수 있도록 `LineController`를 통해 요청을 받고 처리하는 기능을 구현하세요.
 
 ```java
+
 @RestController
 @RequestMapping("/lines")
 public class LineController {
 
     ...
-    
-    @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        // TODO
-    }
 
-    @GetMapping
-    public ResponseEntity<List<LineResponse>> findAllLines() {
-        // TODO
-    }
+	@PostMapping
+	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+		// TODO
+	}
+
+	@GetMapping
+	public ResponseEntity<List<LineResponse>> findAllLines() {
+		// TODO
+	}
     
     ...
 }
@@ -264,6 +266,7 @@ feat (feature)
  ```
 
 # 1.4.2. editorConfig setting
+
 ```
 Execution failed for task ':editorconfigCheck'.
 > There are .editorconfig violations. You may want to run
@@ -278,7 +281,7 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
 
 ### 2.1. 이번 Step 핵심 목표
 
-#### 2.1.1. ATDD 
+#### 2.1.1. ATDD
 
 > 학습 내용 간단히 정리 [[Markdown 보기]](./summary.md)
 
@@ -293,25 +296,28 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 0-1-5.clone : `git clone -b gregolee --single-branch https://github.com/gregolee/atdd-subway-admin.git`
         - [x] 0-1-6.branch : `git checkout -b step1`
     - [x] 0-2.요구사항 정리
-    - [ ] 0-3.[AngularJS Commit Message Conventions](https://gist.github.com/stephenparish/9941e89d80e2bc58a153#generating-changelogmd) 참고
+    - [x] 0-3.[AngularJS Commit Message Conventions](https://gist.github.com/stephenparish/9941e89d80e2bc58a153#generating-changelogmd)
+      참고
     - [ ] 0-4.Slack을 통해 merge가 되는지 확인한 후에 코드 리뷰 2단계 과정으로 다음 단계 미션을 진행
         - [ ] 0-4-1.gregolee(master) branch로 체크아웃 : `git checkout gregolee`
-        - [ ] 0-4-2.step4 branch 삭제 : `git branch -D step1`
-        - [ ] 0-4-3.step4 branch 삭제 확인 : `git branch -a`
-        - [ ] 0-4-4.원본(next-step) git repository를 remote로 연결 (미션 당 1회) : `git remote add -t gregolee upstream https://github.com/next-step/atdd-subway-admin`
+        - [ ] 0-4-2.step1 branch 삭제 : `git branch -D step1`
+        - [ ] 0-4-3.step1 branch 삭제 확인 : `git branch -a`
+        - [ ] 0-4-4.원본(next-step) git repository를 remote로 연결 (미션 당
+          1회) : `git remote add -t gregolee upstream https://github.com/next-step/atdd-subway-admin`
         - [ ] 0-4-5.원본(next-step) git repository를 remote로 연결 확인 : `git remote -v`
         - [ ] 0-4-6.원본(next-step) git repository에서 merge된 나의 branch(gregolee)를 fetch : `git fetch upstream gregolee`
         - [ ] 0-4-7.remote에서 가져온 나의 branch로 rebase : `git rebase upstream/gregolee`
         - [ ] 0-4-7.gregolee -> step2로 체크아웃 : `git checkout -b step2`
-    - [ ] 0-5.리뷰어님의 리뷰를 반영한 코드로 수정
-        - [ ] 0-5-1.적용사항 없음
-- [ ] 1.자바 코드 컨벤션을 위한 세팅
-    - [ ] 1-1.[gradle-editorconfig](https://naver.github.io/hackday-conventions-java/#editorconfig) 적용
-    - [ ] 1-2.[gradle-checkstyle](https://naver.github.io/hackday-conventions-java/#checkstyle) 적용
-    - [ ] 1-3.[IntelliJ](https://naver.github.io/hackday-conventions-java/#_intellij) 적용
-    - [ ] 1-4.[Github](https://naver.github.io/hackday-conventions-java/#_github) 적용
+    - [x] 0-5.리뷰어님의 리뷰를 반영한 코드로 수정
+        - [x] 0-5-1.적용사항 없음
+- [x] 1.자바 코드 컨벤션을 위한 세팅
+    - [x] 1-1.[gradle-editorconfig](https://naver.github.io/hackday-conventions-java/#editorconfig) 적용
+    - [x] 1-2.[gradle-checkstyle](https://naver.github.io/hackday-conventions-java/#checkstyle) 적용
+    - [x] 1-3.[IntelliJ](https://naver.github.io/hackday-conventions-java/#_intellij) 적용
+    - [x] 1-4.[Github](https://naver.github.io/hackday-conventions-java/#_github) 적용
 - [x] 2.학습
     - [x] 2-1.RestAssured 학습 : [[Usage Guide]](https://github.com/rest-assured/rest-assured/wiki/Usage#examples)
+    - [x] 2-2.LiveTemplates - IntelliJ
 - [x] 3.분석 및 설계
     - [x] 3-1.step01.md 초안 작성
 - [ ] 4.구현
@@ -337,11 +343,11 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
 
 #### 3.1.1. 느낀점
 
-- 
+-
 
 #### 3.1.2. 배운점
 
-- 
+-
 
 ### 3.2. 피드백 요청
 
