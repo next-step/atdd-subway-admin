@@ -45,7 +45,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		SectionRequest sectionRequest = new SectionRequest(판교역.getId(), 광교역.getId(), 4);
 
 		ExtractableResponse<Response> addSectionResponse = this.노선에_구간등록을_요청(신분당선.getId(), sectionRequest);
+		LineResponse lineResponse = addSectionResponse.response().as(LineResponse.class);
+
 		assertThat(addSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(lineResponse.getStations()).containsExactly(강남역, 판교역, 광교역);
 	}
 
 	private ExtractableResponse<Response> 노선에_구간등록을_요청(long lineId, SectionRequest sectionRequest) {
