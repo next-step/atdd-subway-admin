@@ -3,6 +3,7 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,5 +45,10 @@ public class LineController {
 	public ResponseEntity<Void> deleteLine(@PathVariable Long lineId) {
 		lineService.deleteLine(lineId);
 		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/{lineId}/sections")
+	public ResponseEntity addSection(@PathVariable String lineId, @RequestBody SectionRequest sectionRequest) {
+		return ResponseEntity.ok("");
 	}
 }

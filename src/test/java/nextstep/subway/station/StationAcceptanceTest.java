@@ -32,7 +32,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    public ExtractableResponse<Response> 지하철역을_생성한다(String stationName) {
+    public static ExtractableResponse<Response> 지하철역을_생성한다(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
