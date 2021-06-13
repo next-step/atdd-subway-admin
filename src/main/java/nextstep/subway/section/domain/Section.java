@@ -44,10 +44,16 @@ public class Section {
     public Section() {
     }
 
-    public Section(Line line, Station prevStation, Station nextStation, int distance) {
+    private Section(Line line, Station prevStation, Station nextStation, int distance) {
         this.line = line;
         this.prevStation = prevStation;
         this.nextStation = nextStation;
         this.distance = distance;
+    }
+
+    public static Section getInstance(Line line, Station prevStation, Station nextStation, int distance) {
+        Section section = new Section(line, prevStation, nextStation, distance);
+        line.addSection(section);
+        return section;
     }
 }

@@ -40,10 +40,8 @@ public class LineService {
 
         Line persistLine = lineRepository.save(request.toLine());
 
-        Section section = new Section(persistLine, upStation, downStation, request.getDistance());
-
+        Section section = Section.getInstance(persistLine, upStation, downStation, request.getDistance());
         sectionRepository.save(section);
-        persistLine.addSection(section);
 
         return LineResponse.of(persistLine);
     }
