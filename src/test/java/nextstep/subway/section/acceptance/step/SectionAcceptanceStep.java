@@ -16,12 +16,16 @@ public class SectionAcceptanceStep {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    public static void 지하철_노선에_지하철역_실패됨(ExtractableResponse<Response> response) {
+    public static void 지하철_노선에_구간_생성_실패됨(ExtractableResponse<Response> response) {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    public static void 지하철_노선에_지하철역_중복됨(ExtractableResponse<Response> response) {
+    public static void 지하철_노선에_구간_중복됨(ExtractableResponse<Response> response) {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록되어있음(Long lineId, Long upStationId, Long downStationId, int distance) {
+        return 지하철_노선에_지하철역_등록_요청(lineId, upStationId, downStationId, distance);
     }
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
