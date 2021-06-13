@@ -22,12 +22,6 @@ public class Line extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL)
     private Section section;
 
-    @OneToOne(fetch = LAZY)
-    private Line downStation;
-
-    @OneToOne(fetch = LAZY)
-    private Line upStation;
-
     protected Line() { }
 
     public Line(String name, String color) {
@@ -51,13 +45,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Line setUpStation(Line upStation) {
-        this.upStation = upStation;
-        return this;
-    }
-
-    public Line setDownStation(Line downStation) {
-        this.downStation = downStation;
+    public Line setSection(Section station) {
+        this.section = station;
         return this;
     }
 }
