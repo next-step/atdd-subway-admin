@@ -20,7 +20,7 @@ public class Sections {
     protected Sections() {
     }
 
-    public List<Station> getStations() {
+    public List<Station> getStationsInAscending() {
         return Relationship.of(sections)
             .getSortedStations();
     }
