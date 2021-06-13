@@ -325,17 +325,23 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
     - [ ] 4-1.ATDD 작성
         - [ ] 4-1-1.`StationAcceptanceTest`
         - [ ] 4-1-2.`LineAcceptanceTest`
-    - [ ] 4-2.vo 작성
-        - [ ] 4-2-1.`Station`
-            - [ ] 4-2-1-1.`Name`
-        - [ ] 4-2-2.`Line`
-            - [ ] 4-2-2-1.`Name`
-            - [ ] 4-2-2-1.`Color`
+    - [x] 4-2.vo 작성
+        - [x] 4-2-1.`Station`
+            - [x] 4-2-1-1.`Name`
+        - [x] 4-2-2.`Line`
+            - [x] 4-2-2-1.`Name`
+            - [x] 4-2-2-1.`Color`
     - [ ] 4-3.entity 작성
         - [ ] 4-3-1.`Station`
         - [ ] 4-3-2.`Line`
     - [ ] 4-4.service 작성
-    
+        - [ ] 4-4-1.`StationService`
+        - [ ] 4-4-2.`LineService`
+    - [ ] 4-5.controller 작성
+        - [ ] 4-5-1.`StationController`
+        - [ ] 4-5-2.`LineController`
+    - [ ] 4-6.추가 리팩터링
+      - [ ] 4-6-1.
 - [ ] 5.테스트
     - [ ] 5-1.Gradle build Success 확인
     - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)
