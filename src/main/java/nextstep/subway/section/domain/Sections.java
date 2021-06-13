@@ -57,6 +57,7 @@ public class Sections {
 
 	private boolean isEntryPointSection(Section newSection) {
 		List<Station> orderedStations = this.getOrderedStations();
+
 		return orderedStations.get(0).equals(newSection.getDownStation()) || orderedStations.get(
 			orderedStations.size() - 1).equals(newSection.getUpStation());
 	}
@@ -119,7 +120,7 @@ public class Sections {
 
 		return this.sections.stream()
 			.filter(section -> !downStations.contains(section.getUpStation()))
-			.findFirst();
+			.findAny();
 	}
 
 }

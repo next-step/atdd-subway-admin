@@ -37,7 +37,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.as(StationResponse.class);
 		LineRequest lineRequest = createLineRequest("2호선", "bg-green-600", upStation, downStation);
 
-		ExtractableResponse<Response> createLineResponse = this.지하철노선을_생성_요청(lineRequest);
+		ExtractableResponse<Response> createLineResponse = 지하철노선을_생성_요청(lineRequest);
 		assertThat(createLineResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(createLineResponse.header("Location")).isNotBlank();
 	}
@@ -212,7 +212,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.getBody()
 			.as(StationResponse.class);
 		LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", upStation, downStation);
-		ExtractableResponse<Response> addLineResponse = this.지하철노선을_생성_요청(lineRequest);
+		ExtractableResponse<Response> addLineResponse = 지하철노선을_생성_요청(lineRequest);
 		LineResponse createdLine = addLineResponse.response().as(LineResponse.class);
 		// when
 		// 지하철_노선_제거_요청

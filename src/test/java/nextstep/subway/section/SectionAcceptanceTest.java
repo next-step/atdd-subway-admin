@@ -42,11 +42,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("노선에 구간을 등록한다")
 	void testAddSection() {
 		StationResponse 판교역 = StationAcceptanceTest.지하철역을_생성요청("판교역").as(StationResponse.class);
-		SectionRequest sectionRequest = new SectionRequest(광교역.getId(), 판교역.getId(), 4);
+		SectionRequest sectionRequest = new SectionRequest(판교역.getId(), 광교역.getId(), 4);
 
 		ExtractableResponse<Response> addSectionResponse = this.노선에_구간등록을_요청(신분당선.getId(), sectionRequest);
-
-		assertThat(addSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(addSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	private ExtractableResponse<Response> 노선에_구간등록을_요청(long lineId, SectionRequest sectionRequest) {

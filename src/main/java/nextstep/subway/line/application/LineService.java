@@ -70,12 +70,12 @@ public class LineService {
 		this.lineRepository.deleteById(lineId);
 	}
 
-	public void addSection(long lineId, SectionRequest sectionRequest) {
+	public LineResponse addSection(long lineId, SectionRequest sectionRequest) {
 		Line line = this.lineRepository.findById(lineId).orElseThrow(this.getEntityNotFoundExceptionSupplier());
 		Station upStation = this.stationService.getStation(sectionRequest.getUpStationId());
 		Station downStation = this.stationService.getStation(sectionRequest.getDownStationId());
 		Section newSection = new Section(line, upStation, downStation, sectionRequest.getDistance());
 		line.addSection(newSection);
-
+		return LineResponse.of(this.lineRepository.save(line));
 	}
 }
