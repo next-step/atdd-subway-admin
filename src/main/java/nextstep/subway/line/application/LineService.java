@@ -11,19 +11,36 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 
 @Service
 @Transactional
 public class LineService {
 	private LineRepository lines;
+	private StationRepository stations;
+	private SectionRepository sections;
 
-	public LineService(LineRepository lines) {
+	public LineService(LineRepository lines, StationRepository stations, SectionRepository sections) {
 		this.lines = lines;
+		this.stations = stations;
+		this.sections = sections;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		Line persistLine = lines.save(request.toLine());
+		Station startStation = getStation(request.getUpStationId());
+		Station endStation = getStation(request.getDownStationId());
+		Line line = request.toLine();
+		line.addSection(request.toSection(line, startStation, endStation));
+
+		Line persistLine = lines.save(line);
 		return LineResponse.of(persistLine);
+	}
+
+	private Station getStation(Long id) {
+		return stations.findById(id)
+			.orElseThrow(() -> new NoSuchElementException("Terminal station is needed"));
 	}
 
 	@Transactional(readOnly = true)
@@ -47,6 +64,6 @@ public class LineService {
 
 	public void deleteLineById(Long id) {
 		Line line = lines.findById(id).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
-		lines.deleteById(line.getId());
+		lines.delete(line);
 	}
 }
