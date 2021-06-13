@@ -69,7 +69,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         //given
-        String createdLocationUri = 지하철_노선_등록되어_있음();
+        String createdLocationUri = 지하철_노선_등록되어_있음(lineRequest);
 
         //when
         ExtractableResponse<Response> response = 지하철_노선_조회(createdLocationUri);
@@ -106,7 +106,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         //given
-        String createdLocationUri = 지하철_노선_등록되어_있음();
+        String createdLocationUri = 지하철_노선_등록되어_있음(lineRequest);
 
         //when
         ExtractableResponse<Response> response = 지하철_노선_삭제(createdLocationUri);
@@ -115,7 +115,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(createdLocationUri, response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성(LineRequest line) {
+    private static ExtractableResponse<Response> 지하철_노선_생성(LineRequest line) {
         return RestAssured.given().log().all()
                 .body(line)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -153,13 +153,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getString("stations")).isNotBlank();
     }
 
-    private String 지하철_노선_등록되어_있음() {
+    public static String 지하철_노선_등록되어_있음(LineRequest lineRequest) {
         return 지하철_노선_생성(lineRequest).header("Location");
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(String changeName, String changeColor) {
         LineRequest line = new LineRequest(changeName, changeColor);
-        String createdLocationUri = 지하철_노선_등록되어_있음();
+        String createdLocationUri = 지하철_노선_등록되어_있음(lineRequest);
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -214,7 +214,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(지하철_노선_조회(createdLocationUri).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    private long getStationId(String stationName) {
+    public static long getStationId(String stationName) {
         return Long.parseLong(지하철_역_생성되어_있음(stationName).split("/")[2]);
     }
 
