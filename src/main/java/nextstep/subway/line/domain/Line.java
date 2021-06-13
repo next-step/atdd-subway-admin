@@ -14,8 +14,6 @@ import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.linestation.domain.LineStation;
 import nextstep.subway.linestation.domain.LineStations;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -30,8 +28,6 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @Embedded
-    private final Sections sections = new Sections();
     @Embedded
     private final LineStations lineStations = new LineStations();
 
@@ -70,10 +66,6 @@ public class Line extends BaseEntity {
         return lineStations.orderedStations().stream()
             .map(StationResponse::of)
             .collect(Collectors.toList());
-    }
-
-    public void addSection(final Section section) {
-        this.sections.add(section);
     }
 
     public void addLineStation(final LineStation lineStation) {

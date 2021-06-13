@@ -10,7 +10,6 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 public class LineAcceptanceFixture {
@@ -144,11 +143,5 @@ public class LineAcceptanceFixture {
         final JsonPath jsonPath = response.jsonPath();
 
         return jsonPath.getList("stations", Station.class);
-    }
-
-    static Section toSection(final ExtractableResponse<Response> response) {
-        final JsonPath jsonPath = response.jsonPath();
-
-        return jsonPath.getObject(".", Section.class);
     }
 }

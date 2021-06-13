@@ -1,7 +1,6 @@
 package nextstep.subway.line.application;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -50,14 +49,6 @@ public class LineService {
 
     private Line persistLine(final Line line) {
         return lineRepository.save(line);
-    }
-
-    private List<Long> ids(final LineRequest request) {
-        return Arrays.asList(request.getUpStationId(), request.getDownStationId());
-    }
-
-    private List<Station> stations(final List<Long> ids) {
-        return stationRepository.findByIdIn(ids);
     }
 
     private LineResponse lineResponse(final Line line) {
