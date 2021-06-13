@@ -141,7 +141,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선, 양재역);
 
 		// then
-		지하철_노선에_구간이_제거됨(response, 신분당선.getId(), 강남역.getName(), 광교역.getName());
+		지하철_노선에_구간이_제거됨(response, 신분당선.getId(), 강남역.getId(), 광교역.getId());
 	}
 
 	@DisplayName("노선의 종점역을 제거한다.")
@@ -158,7 +158,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선, 강남역);
 
 		// then
-		지하철_노선에_구간이_제거됨(response, 신분당선.getId(), 양재역.getName(), 광교역.getName());
+		지하철_노선에_구간이_제거됨(response, 신분당선.getId(), 양재역.getId(), 광교역.getId());
 	}
 
 	@DisplayName("노선에 등록되어 있지 않은 역을 제거한다.")
@@ -228,7 +228,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
 	}
 
-	private void 지하철_노선에_구간이_제거됨(ExtractableResponse<Response> response, long lineId, String... stations) {
+	private void 지하철_노선에_구간이_제거됨(ExtractableResponse<Response> response, Long lineId, Long... stations) {
 		assertThat(response.statusCode()).isEqualTo(OK.value());
 		ExtractableResponse<Response> lineResponse = 지하철_노선_조회_요청(lineId);
 		지하철_노선_응답됨(lineResponse, stations);

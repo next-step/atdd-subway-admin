@@ -71,13 +71,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineResponse 신분당선 = 지하철_노선과_노선의_종점역_생성_요청("신분당선", "bg-red-600", "강남역", "광교역", 10).as(LineResponse.class);
+        StationResponse 강남역 = 지하철역_생성_요청("강남역").as(StationResponse.class);
+        StationResponse 광교역 = 지하철역_생성_요청("광교역").as(StationResponse.class);
+        LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10)
+            .as(LineResponse.class);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선.getId());
 
         // then
-        지하철_노선_응답됨(response, "강남역", "광교역");
+        지하철_노선_응답됨(response, 강남역.getId(), 광교역.getId());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -196,10 +199,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(updatedResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    static void 지하철_노선_응답됨(ExtractableResponse<Response> findResponse, String... stations) {
+    static void 지하철_노선_응답됨(ExtractableResponse<Response> findResponse, Long... stationIds) {
         assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(findResponse.as(LineResponse.class)).isNotNull();
-        assertThat(findResponse.jsonPath().getList("stations.name", String.class)).containsExactly(stations);
+        assertThat(findResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(stationIds);
     }
 
     private static Map<String, Object> createBody(String name, String color) {
