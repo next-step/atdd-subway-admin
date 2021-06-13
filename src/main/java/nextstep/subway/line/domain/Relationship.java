@@ -37,19 +37,11 @@ public class Relationship {
         return unmodifiableList(stations);
     }
 
-    public Station upTerminus() {
+    private Station upTerminus() {
         return relations.keySet()
             .stream()
             .filter(s -> !relations.containsValue(s))
             .findAny()
             .orElseThrow(() -> new TerminusNotFoundException("출발역이 존재하지 않습니다."));
-    }
-
-    public Station downTerminus() {
-        return relations.values()
-            .stream()
-            .filter(s -> !relations.containsKey(s))
-            .findAny()
-            .orElseThrow(() -> new TerminusNotFoundException("종착역이 존재하지 않습니다."));
     }
 }
