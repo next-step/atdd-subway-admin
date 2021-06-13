@@ -17,8 +17,4 @@ public enum SectionAddType {
         }
         return NEW_BETWEEN;
     }
-
-    public static Section createSection(LineStation lineStation) {
-        return Section.of(lineStation);
-    }
 }

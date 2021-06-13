@@ -48,12 +48,4 @@ class SectionAddTypeTest {
         LineStation lineStation = new LineStation(new Station(5L, "시민의 숲역"), 강남역, 10);
         assertThat(SectionAddType.calcAddType(lineStations, lineStation)).isEqualTo(SectionAddType.NEW_BETWEEN);
     }
-
-    @Test
-    void 노선_지하철역_연결_entity를_이용하여_구간_생성() {
-        Line line = new Line("신분당선", "bg-red-600");
-        LineStation lineStation = new LineStation(양재역, 강남역, 10);
-        lineStation.lineBy(line);
-        assertThat(SectionAddType.createSection(lineStation)).isEqualTo(new Section(line, 강남역, 양재역, 10));
-    }
 }

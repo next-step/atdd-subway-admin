@@ -44,6 +44,6 @@ public class SectionService {
         SectionAddType sectionAddType = SectionAddType.calcAddType(lineStations, lineStation);
         line.updateLineStationAndSection(sectionAddType, lineStation);
         line.addLineStation(lineStation);
-        return SectionResponse.of(sectionRepository.save(sectionAddType.createSection(lineStation)));
+        return SectionResponse.of(sectionRepository.save(Section.of(lineStation)));
     }
 }
