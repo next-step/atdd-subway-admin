@@ -13,8 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,6 +54,28 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 구간_추가_요청(구간_추가(구일역, 구로역, 10));
 
         구간_추가됨(response);
+    }
+
+    @DisplayName("노선에 구간을 여러개 추가하고 정렬을 확인한다.")
+    @Test
+    void addSections2() {
+        StationResponse 신도림역 = StationAcceptanceTest.지하철역_등록_요청("신도림역").as(StationResponse.class);
+        구간_추가_요청(구간_추가(구일역, 회기역, 150));
+        ExtractableResponse<Response> response = 구간_추가_요청(구간_추가(구일역, 구로역, 100));
+
+        구간_추가됨(response);
+        추가된_구간_정렬됨(response);
+    }
+
+    private void 추가된_구간_정렬됨(ExtractableResponse<Response> response) {
+        LineResponse line = response.as(LineResponse.class);
+        List<String> resultNameList = line.getStations().stream()
+                .map(it -> it.getName())
+                .collect(Collectors.toList());
+
+        List<String> stationNameLIst = Arrays.asList("구일역", "구로역", "회기역");
+
+        assertThat(resultNameList).containsExactlyElementsOf(stationNameLIst);
     }
 
     @DisplayName("상/하행선이 동일한 구간 추가 불가")

@@ -139,7 +139,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> findLineById(Long id) {
+    public static ExtractableResponse<Response> findLineById(Long id) {
         return RestAssured.given().log().all()
                 .when()
                 .get("/lines/{id}", id)

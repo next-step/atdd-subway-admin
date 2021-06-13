@@ -56,6 +56,7 @@ public class LineTest {
         List<Station> result = 신분당선.getStations();
 
         입력한_모든_역이_존재함(result);
+        입력한_역이_정렬됨(result);
     }
 
     @DisplayName("상/하행선이 동일한 구간 추가 불가")
@@ -102,7 +103,15 @@ public class LineTest {
         allInputStation.add(수지구청역);
         allInputStation.add(강남역);
         allInputStation.add(양재역);
-        allInputStation.add(판교역);
         assertThat(result).containsAll(allInputStation);
+    }
+
+    private void 입력한_역이_정렬됨(List<Station> result) {
+        List<Station> allInputStation = new ArrayList<>();
+        allInputStation.add(강남역);
+        allInputStation.add(양재역);
+        allInputStation.add(판교역);
+        allInputStation.add(수지구청역);
+        assertThat(result).containsExactlyElementsOf(allInputStation);
     }
 }
