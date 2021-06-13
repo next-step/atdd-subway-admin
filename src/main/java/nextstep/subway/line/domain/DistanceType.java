@@ -1,22 +1,20 @@
 package nextstep.subway.line.domain;
 
-import java.util.function.BinaryOperator;
-
-public enum CalculatorType {
-    ADD((preValue, postValue) -> preValue + postValue),
-    SUBTRACT((preValue, postValue) -> preValue - postValue);
+public enum DistanceType {
+    EXTENDED_DISTANCE((preValue, postValue) -> preValue + postValue),
+    DIVIDE_DISTANCE((preValue, postValue) -> preValue - postValue);
 
     private static final int MINIMUN_NEW_DISTANCE = 0;
     private static final String EXCEPTION_FOR_DISTANCE = "기존 구간 안에 구간 등록시 distance는 기존 구간보다 작아야 합니다.";
 
-    private BinaryOperator<Integer> operator;
+    private DistanceFinder finder;
 
-    CalculatorType(BinaryOperator<Integer> operator) {
-        this.operator = operator;
+    DistanceType(DistanceFinder finder) {
+        this.finder = finder;
     }
 
-    public int calculateDistance(int preDistance, int postDistance) {
-        Integer calculated = operator.apply(preDistance, postDistance);
+    public int calculate(int preDistance, int postDistance) {
+        int calculated = finder.measure(preDistance, postDistance);
         if (isIllegalDistance(calculated)) {
             throw new IllegalArgumentException(EXCEPTION_FOR_DISTANCE);
         }

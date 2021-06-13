@@ -49,17 +49,17 @@ public class Section extends BaseEntity {
 
     public static Section makeAfterSection(Section preSection, Section section) {
         return new Section(preSection.line, section.downStation, preSection.downStation,
-                CalculatorType.SUBTRACT.calculateDistance(preSection.distance, section.distance));
+                DistanceType.DIVIDE_DISTANCE.calculate(preSection.distance, section.distance));
     }
 
     public static Section makeBeforeSection(Section preSection, Section section) {
         return new Section(preSection.line, preSection.upStation, section.upStation,
-                CalculatorType.SUBTRACT.calculateDistance(preSection.distance, section.distance));
+                DistanceType.DIVIDE_DISTANCE.calculate(preSection.distance, section.distance));
     }
 
     public static Section makeInsideSection(Section preSection, Section section) {
         return new Section(preSection.line, preSection.upStation, section.downStation,
-                CalculatorType.ADD.calculateDistance(preSection.distance, section.distance));
+                DistanceType.EXTENDED_DISTANCE.calculate(preSection.distance, section.distance));
     }
 
     public boolean isEqualsUpStation(Section section) {
