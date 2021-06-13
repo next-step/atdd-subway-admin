@@ -48,14 +48,33 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 구간을 추가한다.")
     @Test
     void addSections() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", 구일역.getId());
-        params.put("downStationId", 구로역.getId());
-        params.put("distance", 10);
-
-        ExtractableResponse<Response> response = 구간_추가_요청(params);
+        ExtractableResponse<Response> response = 구간_추가_요청(구간_추가(구일역, 구로역, 10));
 
         구간_추가됨(response);
+    }
+
+    @DisplayName("상/하행선이 동일한 구간 추가 불가")
+    @Test
+    void addDuplicationSection() {
+        ExtractableResponse<Response> response = 구간_추가_요청(구간_추가(구일역, 회기역, 10));
+
+        지하철_구간_중복_등록_불가(response);
+    }
+
+    @DisplayName("상/하행선 둘중 하나와도 일치하지 않는 구간 추가 불가")
+    @Test
+    void addNotSameSection() {
+        ExtractableResponse<Response> response = 구간_추가_요청(구간_추가(구로역, 청량리역, 10));
+
+        지하철_구간_상하행_모두_불일치_등록_불가(response);
+    }
+
+    @DisplayName("중간에 구간 추가시 기존 구간보다 긴 거리값 가지고 있을 경우 추가 불가")
+    @Test
+    void addLongDistanceSection() {
+        ExtractableResponse<Response> response = 구간_추가_요청(구간_추가(구일역, 구로역, 300));
+
+        지하철_구간_거리_길다면_등록_불가(response);
     }
 
     private ExtractableResponse<Response> 구간_추가_요청(Map<String, Object> params) {
@@ -70,5 +89,25 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private void 구간_추가됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private Map<String, Object> 구간_추가(StationResponse station1, StationResponse station2, int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", station1.getId());
+        params.put("downStationId", station2.getId());
+        params.put("distance", distance);
+        return params;
+    }
+
+    public static void 지하철_구간_중복_등록_불가(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    public static void 지하철_구간_상하행_모두_불일치_등록_불가(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    public static void 지하철_구간_거리_길다면_등록_불가(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
