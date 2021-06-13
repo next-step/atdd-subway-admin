@@ -1,10 +1,15 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.wrappers.Sections;
+import nextstep.subway.lineStation.domain.LineStation;
+import nextstep.subway.section.domain.wrapper.Distance;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,5 +56,19 @@ public class SectionTest {
         Section section = new Section(upStation, downStation, 100);
         assertThat(section.isEqualUpStation(upStation)).isTrue();
         assertThat(section.isEqualUpStation(downStation)).isFalse();
+    }
+
+    @Test
+    @DisplayName("지하철역 구간 정보 일급 컬렉션에서 하행 지하철역이 일치하는 section update")
+    void updateSectionByDownStation() {
+        Station upStation = new Station(1L, "강남역");
+        Station downStation = new Station(2L, "광교역");
+        Station newStation = new Station(3L, "정자역");
+        Sections sections = new Sections(
+                Arrays.asList(new Section(upStation, downStation, 10)));
+        LineStation lineStation = new LineStation(downStation, newStation, 4);
+
+        sections.updateSectionByDownStation(lineStation, new Distance(6));
+        assertThat(sections).isEqualTo(new Sections(Arrays.asList(new Section(newStation, downStation, 6))));
     }
 }

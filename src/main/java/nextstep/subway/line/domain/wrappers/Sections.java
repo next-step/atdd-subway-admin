@@ -1,15 +1,14 @@
 package nextstep.subway.line.domain.wrappers;
 
+import nextstep.subway.lineStation.domain.LineStation;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.wrapper.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Embeddable
 public class Sections {
@@ -45,6 +44,18 @@ public class Sections {
             section = findSectionByUpStation(downStation);
         }
         return responseStations;
+    }
+
+    public void updateSectionByDownStation(LineStation lineStation, Distance distance) {
+        sections.stream()
+                .filter(section -> section.isEqualDownStation(lineStation.getStation()))
+                .findFirst()
+                .ifPresent(section -> section.update(
+                        section.getLine(),
+                        lineStation.getPreStation(),
+                        section.downStation(),
+                        distance)
+                );
     }
 
     private Station calcStartSection() {

@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.wrappers.Sections;
 import nextstep.subway.lineStation.domain.LineStation;
 import nextstep.subway.lineStation.domain.wrappers.LineStations;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.wrapper.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -44,6 +45,13 @@ public class Line extends BaseEntity {
         this.sections = sections;
     }
 
+    public Line(String name, String color, Sections sections, LineStations lineStations) {
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
+        this.lineStations = lineStations;
+    }
+
     public Line lineStationsBy(LineStations lineStations) {
         this.lineStations = lineStations;
         lineStations.addLine(this);
@@ -77,6 +85,32 @@ public class Line extends BaseEntity {
         return sections.generateStations();
     }
 
+    public Section createNewSection(LineStation lineStation) {
+        List<LineStation> lineStations = this.lineStations.getLineStationsOrderByAsc();
+        if (lineStations.get(0).getStation().getId() == lineStation.getStation().getId()) {
+            lineStations.get(0).update(lineStation.getStation(), lineStation.getPreStation(), lineStation.getDistance());
+            Section section = new Section(this, lineStation.getPreStation(), lineStation.getStation(), lineStation.getDistance());
+            return section;
+        }
+        if (lineStations.get(lineStations.size() - 1).getStation().getId() == lineStation.getPreStation().getId()) {
+            Section section = new Section(this, lineStation.getPreStation(), lineStation.getStation(), lineStation.getDistance());
+            return section;
+        }
+
+        Optional<LineStation> first = lineStations
+                .stream()
+                .filter(ls -> ls.isSamePreStation(lineStation))
+                .findFirst();
+
+        if (first.isPresent()) {
+            LineStation targetLineStation = first.get();
+            Distance newDistance = targetLineStation.getDistance().subtractionDistance(lineStation.getDistance());
+            targetLineStation.update(targetLineStation.getStation(), lineStation.getStation(), newDistance);
+            this.sections.updateSectionByDownStation(targetLineStation, newDistance);
+        }
+        return new Section(this, lineStation.getPreStation(), lineStation.getStation(), lineStation.getDistance());
+    }
+
     public Long getId() {
         return id;
     }
@@ -90,17 +124,19 @@ public class Line extends BaseEntity {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Line line = (Line) o;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Line line = (Line) object;
         return Objects.equals(id, line.id) &&
                 Objects.equals(name, line.name) &&
-                Objects.equals(color, line.color);
+                Objects.equals(color, line.color) &&
+                Objects.equals(sections, line.sections) &&
+                Objects.equals(lineStations, line.lineStations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color);
+        return Objects.hash(id, name, color, sections, lineStations);
     }
 }

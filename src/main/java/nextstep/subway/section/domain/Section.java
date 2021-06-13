@@ -47,6 +47,13 @@ public class Section extends BaseEntity {
         this.distance = new Distance(distance);
     }
 
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
     public void lineBy(Line line) {
         this.line = line;
     }
@@ -64,6 +71,37 @@ public class Section extends BaseEntity {
 
     public boolean isEqualUpStation(Station station) {
         return upStation.getId() == station.getId();
+    }
+
+    public boolean isEqualDownStation(Station station) {
+        return downStation.getId() == station.getId();
+    }
+
+    public void update(Line line, Station upStation, Station downStation, Distance distance) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
     @Override

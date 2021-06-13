@@ -6,9 +6,7 @@ import nextstep.subway.lineStation.domain.LineStation;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Embeddable
 public class LineStations {
@@ -39,6 +37,28 @@ public class LineStations {
         }
     }
 
+    public List<LineStation> getLineStationsOrderByAsc() {
+        List<LineStation> lineStations = new LinkedList<>();
+        Optional<LineStation> preLineStation = findFirstLineStation();
+        while (preLineStation.isPresent()) {
+            LineStation lineStation = preLineStation.get();
+            lineStations.add(lineStation);
+            preLineStation = findNextLineStation(lineStation);
+        }
+        return lineStations;
+    }
+
+    private Optional<LineStation> findFirstLineStation() {
+        return lineStations.stream().filter(LineStation::isNullPreStation).findFirst();
+    }
+
+    private Optional<LineStation> findNextLineStation(LineStation lineStation) {
+        return lineStations
+                .stream()
+                .filter(ls -> ls.isNextLineStation(lineStation))
+                .findFirst();
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -51,5 +71,4 @@ public class LineStations {
     public int hashCode() {
         return Objects.hash(lineStations);
     }
-
 }

@@ -36,7 +36,7 @@ public class LineService {
             Station upStation = stationService.findStationById(request.getUpStationId());
             Station downStation = stationService.findStationById(request.getDownStationId());
             Section section = request.toSection(upStation, downStation);
-            LineStations lineStations = request.toLineStations(downStation, upStation);
+            LineStations lineStations = request.toLineStations(upStation, downStation);
             Line line = request.toLine(section, lineStations);
             return LineResponse.of(lineRepository.save(line));
         } catch (DataIntegrityViolationException e) {

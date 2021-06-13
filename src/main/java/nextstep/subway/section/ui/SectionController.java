@@ -2,6 +2,7 @@ package nextstep.subway.section.ui;
 
 import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class SectionController {
 
     @PostMapping("/{id}/sections")
     public ResponseEntity createSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        sectionService.saveSection(id, sectionRequest);
-        return ResponseEntity.created(URI.create("/lines/" + id + "/sections")).body(null);
+        SectionResponse section = sectionService.saveSection(id, sectionRequest);
+        return ResponseEntity.created(URI.create("/lines/" + id + "/sections")).body(section);
     }
 }

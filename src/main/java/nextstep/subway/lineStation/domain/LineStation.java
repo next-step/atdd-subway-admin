@@ -49,6 +49,40 @@ public class LineStation {
         this.line = line;
     }
 
+    public boolean isNullPreStation() {
+        return Objects.isNull(preStation);
+    }
+
+    public Station getPreStation() {
+        return preStation;
+    }
+
+    public Station getStation() {
+        return station;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public boolean isNextLineStation(LineStation lineStation) {
+        return Objects.nonNull(preStation) && Objects.equals(preStation.getId(), lineStation.getStation().getId());
+    }
+
+    public boolean isSamePreStation(LineStation lineStation) {
+        return Objects.nonNull(preStation) && Objects.equals(preStation.getId(), lineStation.getPreStation().getId());
+    }
+
+    public void update(Station station, Station preStation, Distance distance) {
+        this.preStation = preStation;
+        this.station = station;
+        this.distance = distance;
+    }
+
+    public Distance getDistance() {
+        return distance;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
