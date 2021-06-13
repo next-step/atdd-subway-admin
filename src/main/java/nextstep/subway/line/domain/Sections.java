@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.line.domain.SectionConverter.*;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -21,8 +23,7 @@ public class Sections {
     }
 
     public List<Station> getStationsInAscending() {
-        return Relationship.of(sections)
-            .getSortedStations();
+        return extractStationsInAscending(sections);
     }
 
     public boolean contains(Section section) {

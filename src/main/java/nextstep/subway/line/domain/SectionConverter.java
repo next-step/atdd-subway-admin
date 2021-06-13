@@ -10,23 +10,13 @@ import java.util.Map;
 import nextstep.subway.line.exception.TerminusNotFoundException;
 import nextstep.subway.station.domain.Station;
 
-public class Relationship {
+public class SectionConverter {
 
-    private final Map<Station, Station> relations;
+    public static List<Station> extractStationsInAscending(List<Section> sections) {
+        Map<Station, Station> relations = getRelations(sections);
 
-    public static Relationship of(List<Section> sections) {
-        return new Relationship(sections.stream()
-            .collect(toMap(Section::upStation, Section::downStation)));
-    }
-
-    public Relationship(Map<Station, Station> relations) {
-        this.relations = relations;
-    }
-
-    public List<Station> getSortedStations() {
         List<Station> stations = new ArrayList<>();
-
-        Station station = upTerminus();
+        Station station = upTerminus(relations);
         while (relations.containsKey(station)) {
             stations.add(station);
             station = relations.get(station);
@@ -37,11 +27,16 @@ public class Relationship {
         return unmodifiableList(stations);
     }
 
-    private Station upTerminus() {
+    private static Station upTerminus(Map<Station, Station> relations) {
         return relations.keySet()
             .stream()
             .filter(s -> !relations.containsValue(s))
             .findAny()
             .orElseThrow(() -> new TerminusNotFoundException("출발역이 존재하지 않습니다."));
+    }
+
+    private static Map<Station, Station> getRelations(List<Section> sections) {
+        return sections.stream()
+            .collect(toMap(Section::upStation, Section::downStation));
     }
 }
