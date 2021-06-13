@@ -2,6 +2,8 @@ package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -12,7 +14,10 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -38,36 +43,44 @@ public class Line extends BaseEntity {
     }
 
     public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+        this.name = line.name;
+        this.color = line.color;
     }
 
     public void addSection(Section section) {
         this.sections.add(section);
     }
 
-    public void removeSection(Section section) {
-        this.sections.remove(section);
-    }
-
-    public void removeAllSections() {
-        this.sections.clear();
-    }
-
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Sections createSections() {
+        return new Sections(this.sections);
     }
 
-    public String getColor() {
-        return color;
+    public LineResponse toLineResponse() {
+        return new LineResponse(this.id, this.name, this.color, getCreatedDate(), getModifiedDate(),
+                new Sections(sections).getSortedStations()
+                .stream()
+                .map(Station::toStationResponse)
+                .collect(Collectors.toList()));
     }
 
-    public List<Section> getSections() {
-        return this.sections;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return Objects.equals(id, line.id) &&
+                Objects.equals(name, line.name) &&
+                Objects.equals(color, line.color) &&
+                Objects.equals(sections, line.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color, sections);
     }
 
     @Override

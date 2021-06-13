@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.dto.StationResponse;
 
 @Entity
 public class Station extends BaseEntity {
@@ -22,6 +23,7 @@ public class Station extends BaseEntity {
     }
 
     public Station(String name) {
+        validateStationName(name);
         this.name = name;
     }
 
@@ -29,8 +31,8 @@ public class Station extends BaseEntity {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public StationResponse toStationResponse() {
+        return new StationResponse(this.id, this.name, this.getCreatedDate(), this.getModifiedDate());
     }
 
     @Override
@@ -53,5 +55,11 @@ public class Station extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    private void validateStationName(String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("역 이름이 입력되지 않았습니다.");
+        }
     }
 }
