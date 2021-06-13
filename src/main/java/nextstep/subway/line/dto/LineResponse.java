@@ -20,7 +20,7 @@ public class LineResponse {
     }
 
     private LineResponse(Long id, String name, String color,
-                        List<Station> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+                         List<Station> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -32,7 +32,7 @@ public class LineResponse {
     }
 
     private LineResponse(Line line) {
-        this(line.getId(), line.getName(), line.getColor(), line.getStations(), line.getCreatedDate(), line.getModifiedDate());
+        this(line.getId(), line.getName(), line.getColor(), line.stations(), line.getCreatedDate(), line.getModifiedDate());
     }
 
     public static LineResponse of(Line line) {

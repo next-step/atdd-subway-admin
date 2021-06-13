@@ -28,6 +28,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private LineRequest line2Request;
     private LineRequest line6Request;
 
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> createParams) {
+        return postRequest("/lines", createParams);
+    }
+
     @BeforeEach
     void setup() {
         line2Request = 라인2를_생성하기위한_request를_만든다();
