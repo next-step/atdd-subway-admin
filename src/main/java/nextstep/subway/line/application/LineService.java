@@ -38,7 +38,6 @@ public class LineService {
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        // 1.없는 경우, 2.유효하지 않은 요청
         Optional<Line> line = lineRepository.findById(id);
         Line updatingLine = line.orElseThrow(() -> new NullPointerException(format("id가 %d인 노선이 존재 하지 않습니다.", id)));
         lineRequest.changeValues(updatingLine);
