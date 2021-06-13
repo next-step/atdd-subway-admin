@@ -55,7 +55,7 @@ public class Section extends BaseEntity {
         }
         position.subIndex();
 
-        sections.add(position.index(), this);
+        sections.add(position.positionIndex(), this);
     }
 
     private DockingPosition dockingPositionOn(List<Section> sections, DockingPosition position) {
@@ -106,21 +106,31 @@ public class Section extends BaseEntity {
     }
 
     private void handleAttributesToConnectBehindOf(Section section) {
-        shortenDistanceUsing(section);
+        this.shortenDistance(section.distance());
         this.upStation = section.downStation();
     }
 
     public void handleAttributesToConnectInFrontOf(Section section) {
-        shortenDistanceUsing(section);
+        this.shortenDistance(section.distance());
         this.downStation = section.upStation();
     }
 
-    private void shortenDistanceUsing(Section sectionInput) {
-        this.shortenDistance(sectionInput.distance());
+    public void handleAttributesToDeleteInFrontOf(Section section) {
+        this.addDistance(section.distance());
+        this.downStation = section.upStation();
+    }
+
+    public void handleAttributesToDeleteOnTail(Section section) {
+        this.addDistance(section.distance());
+        this.downStation = section.downStation();
     }
 
     private void shortenDistance(int distance) {
         this.distance.shorten(distance);
+    }
+
+    private void addDistance(int distance) {
+        this.distance.add(distance);
     }
 
     public Long getId() {
@@ -202,7 +212,4 @@ public class Section extends BaseEntity {
         downStation = station;
     }
 
-    public void setUpStation(Station station) {
-        upStation = station;
-    }
 }

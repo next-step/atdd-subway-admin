@@ -38,4 +38,8 @@ public class Distance {
     public void shorten(int distance) {
         set(this.distance - distance);
     }
+
+    public void add(int distance) {
+        this.distance += distance;
+    }
 }

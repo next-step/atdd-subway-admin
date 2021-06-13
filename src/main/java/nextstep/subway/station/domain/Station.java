@@ -87,13 +87,13 @@ public class Station extends BaseEntity {
         }
         if (deletePosition.isUpInTail()) {
             prevSection = sections.get(index-1);
-            prevSection.setDownStation(sections.get(index).downStation());
+            prevSection.handleAttributesToDeleteOnTail(sections.get(index));
             sections.remove(index);
         }
         if (deletePosition.isUpInMiddles()) {
             prevSection = sections.get(index-1);
             nextSection = sections.get(index+1);
-            prevSection.handleAttributesToConnectInFrontOf(nextSection);
+            prevSection.handleAttributesToDeleteInFrontOf(nextSection);
             sections.remove(index);
         }
         if (deletePosition.isDownInTail()) {

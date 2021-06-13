@@ -54,9 +54,7 @@ public class DockingPosition {
     }
 
     public int positionIndex() {
-        if (dockingType == DockingType.FRONT
-                || dockingType == DockingType.MID_FRONT
-                || dockingType == DockingType.MID_REAR) {
+        if (dockingType == DockingType.FRONT || dockingType == DockingType.MID_FRONT) {
             return index;
         }
         return ++index;
