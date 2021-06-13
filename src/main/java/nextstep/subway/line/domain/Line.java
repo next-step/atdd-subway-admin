@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -8,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -43,20 +46,9 @@ public class Line extends BaseEntity {
         section.setLine(this);
     }
 
-    // public List<Station> getStations() {
-    //     List<Station> stations = new ArrayList<>();
-    //     Station station = getStartStation();
-    //
-    //     while (!station.isLast()) {
-    //         stations.add(station);
-    //         station = station.nextStation();
-    //     }
-    //
-    //     stations.add(station);
-    //
-    //     return unmodifiableList(stations);
-
-    // }
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
 
     public Long getId() {
         return id;
@@ -69,12 +61,4 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
-    // private Station getStartStation() {
-    //     return sections.stream()
-    //         .map(Section::getUpStation)
-    //         .filter(Station::isFirst)
-    //         .findAny()
-    //         .orElseThrow(() -> new LineEndpointException("비 정상적인 노선입니다. 출발역이 존재하지 않습니다."));
-
-    // }
 }

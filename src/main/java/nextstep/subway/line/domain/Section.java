@@ -8,13 +8,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.exception.NoSuchSectionException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,10 +22,10 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station upStation;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
     private int distance;
@@ -51,7 +51,15 @@ public class Section {
         }
     }
 
-    public boolean isAddedToLine() {
+    public Station upStation() {
+        return upStation;
+    }
+
+    public Station downStation() {
+        return downStation;
+    }
+
+    public boolean isAllocated() {
         return Objects.nonNull(this.line);
     }
 

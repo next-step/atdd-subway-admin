@@ -97,10 +97,10 @@ public class LineAcceptanceMethods {
         assertThat(lineResponse.getId()).isNotNull();
         assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
         assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
-        // assertThat(lineResponse.getStations()).isNotNull(); // TODO 기능 제대로 구현하고 활성화
-        // assertThat(lineResponse.getStations().size()).isNotZero();
-        // assertThat(lineResponse.getStations().get(0).getId()).isEqualTo(lineRequest.getUpStationId());
-        // assertThat(lineResponse.getStations().get(1).getId()).isEqualTo(lineRequest.getDownStationId());
+        assertThat(lineResponse.getStations()).isNotNull();
+        assertThat(lineResponse.getStations().size()).isNotZero();
+        assertThat(lineResponse.getStations().get(0).getId()).isEqualTo(lineRequest.getUpStationId());
+        assertThat(lineResponse.getStations().get(1).getId()).isEqualTo(lineRequest.getDownStationId());
     }
 
     public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {

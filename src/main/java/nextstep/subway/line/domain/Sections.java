@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.line.exception.AlreadyInitializedException;
+import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
@@ -17,6 +18,11 @@ public class Sections {
     private List<Section> sections = new LinkedList<>();
 
     protected Sections() {
+    }
+
+    public List<Station> getStations() {
+        return Relationship.of(sections)
+            .getSortedStations();
     }
 
     public boolean contains(Section section) {
@@ -37,7 +43,7 @@ public class Sections {
             throw new AlreadyInitializedException("이미 본 노선에 존재하는 구간입니다.");
         }
 
-        if (section.isAddedToLine()) {
+        if (section.isAllocated()) {
             throw new AlreadyInitializedException("이미 특정 노선에 포함되어있는 구간입니다.");
         }
     }
