@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,6 +15,7 @@ public class Sections {
     private static final int FIRST_INDEX = 0;
     private static final int LAST_INDEX_FIX_NUMBER = 1;
     private static final int SKIP_COUNT_ONE = 1;
+    private static final int NON_DELETABLE_SIZE = 1;
     private List<Section> sections = new ArrayList<>();
 
     public Sections(List<Section> sections) {
@@ -40,6 +43,43 @@ public class Sections {
             return newSection;
         }
         return addSectionPlacedInMiddle(newSection);
+    }
+
+    public Section removeSectionByStation(Station targetStation) {
+        if (getSectionsByUpStation().containsKey(targetStation)) {
+            return removeSectionByMatchedUpStation(targetStation);
+        }
+        return removeSectionByMatchedDownStation(targetStation);
+    }
+
+    private Section removeSectionByMatchedUpStation(Station targetStation) {
+        validateLastSection();
+        Section section = getSectionsByUpStation().get(targetStation);
+        updatePreSection(targetStation, section);
+        this.sections.remove(section);
+        return section;
+    }
+
+    private Section removeSectionByMatchedDownStation(Station targetStation) {
+        Section section = Optional.ofNullable(getSectionsByDownStation().get(targetStation))
+                .orElseThrow(() -> new NoSuchElementException("구간에 포함된 역이 아닙니다."));
+        validateLastSection();
+        this.sections.remove(section);
+        return section;
+    }
+
+    private void updatePreSection(Station targetStation, Section section) {
+        if (getSectionsByDownStation().containsKey(targetStation)) {
+            Section preSection = getSectionsByDownStation().get(targetStation);
+            preSection.updateStations(new Section(preSection.getUpStation(), section.getDownStation()));
+            preSection.sumDistanceWith(section);
+        }
+    }
+
+    private void validateLastSection() {
+        if (this.sections.size() == NON_DELETABLE_SIZE) {
+            throw new IllegalArgumentException("마지막 구간에 포함된 역은 삭제할 수 없습니다.");
+        }
     }
 
     private boolean isPlacedInFrontOrRearFor(Section newSection) {

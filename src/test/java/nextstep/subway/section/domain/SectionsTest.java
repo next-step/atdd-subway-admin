@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,16 +41,16 @@ public class SectionsTest {
     void setUp() {
         line = new Line("2호선", "green");
         blueLine = new Line("4호선", "blue");
+        station1 = new Station("강남역");
         station2 = new Station("역삼역");
         station3 = new Station("교대역");
-        station1 = new Station("강남역");
         station4 = new Station("서초역");
         station5 = new Station("방배역");
         lineStations = Arrays.asList(station2, station3, station1, station4, station5);
         section1 = new Section(station2, station3, 3, line);
+        section4 = new Section(station3, station1, 3, line);
         section2 = new Section(station1, station4, 10, line);
         section3 = new Section(station4, station5, 3, line);
-        section4 = new Section(station3, station1, 3, line);
         sections = new Sections(Arrays.asList(section1, section2, section3, section4));
     }
 
@@ -240,5 +241,132 @@ public class SectionsTest {
                 () -> assertThat(section1.getDownStation()).isSameAs(station2),
                 () -> assertThat(section1.hasSameDistanceAs(2)).isTrue()
         );
+    }
+
+    @Test
+    @DisplayName("구간 목록에서 중간에 존재하는 구간 삭제 및 구간 역 조정")
+    void delete_section_by_station1() {
+        // when
+        int size = sections.getSections().size();
+        Distance distance = Distance.copyDistanceOn(section1);
+        distance.plusDistance(Distance.copyDistanceOn(section4));
+        Section section = sections.removeSectionByStation(station3);
+
+        // then
+        List<String> resultStationNames = sections.getSortedStations().stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        List<String> targetStationNames = Arrays.asList(station2, station1, station4, station5).stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(Arrays.equals(resultStationNames.toArray(), targetStationNames.toArray())).isTrue(),
+                () -> assertThat(section).isSameAs(section4),
+                () -> assertThat(section1.hasSameDistanceAs(distance)),
+                () -> assertThat(sections.getSections().size()).isEqualTo(size - 1)
+        );
+    }
+
+    @Test
+    @DisplayName("구간 목록에서 가장 처음에 존재하는 역을 포함하는 구간 삭제 및 구간 역 조정")
+    void delete_section_by_station2() {
+        // when
+        int size = sections.getSections().size();
+        Section section = sections.removeSectionByStation(station2);
+
+        // then
+        List<String> resultStationNames = sections.getSortedStations().stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        List<String> targetStationNames = Arrays.asList(station3, station1, station4, station5).stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(Arrays.equals(resultStationNames.toArray(), targetStationNames.toArray())).isTrue(),
+                () -> assertThat(section).isSameAs(section1),
+                () -> assertThat(sections.getSections().size()).isEqualTo(size - 1)
+        );
+    }
+
+    @Test
+    @DisplayName("구간 목록에서 가장 마지막에 존재하는 구간 삭제 및 구간 역 조정")
+    void delete_section_by_station3() {
+        // when
+        int size = sections.getSections().size();
+        Section section = sections.removeSectionByStation(station4);
+
+        // then
+        List<String> resultStationNames = sections.getSortedStations().stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        List<String> targetStationNames = Arrays.asList(station2, station3, station1, station5).stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(Arrays.equals(resultStationNames.toArray(), targetStationNames.toArray())).isTrue(),
+                () -> assertThat(section).isSameAs(section3),
+                () -> assertThat(sections.getSections().size()).isEqualTo(size - 1)
+        );
+    }
+
+    @Test
+    @DisplayName("구간 목록에서 가장 마지막 역을 포함하는 구간 삭제 및 구간 역 조정")
+    void delete_section_by_station4() {
+        // when
+        int size = sections.getSections().size();
+        Section section = sections.removeSectionByStation(station5);
+
+        // then
+        List<String> resultStationNames = sections.getSortedStations().stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        List<String> targetStationNames = Arrays.asList(station2, station3, station1, station4).stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(Arrays.equals(resultStationNames.toArray(), targetStationNames.toArray())).isTrue(),
+                () -> assertThat(section).isSameAs(section3),
+                () -> assertThat(sections.getSections().size()).isEqualTo(size - 1)
+        );
+    }
+
+    @Test
+    @DisplayName("노선 구간에 포함되지 않는 역 삭제 요청 시 예외처리")
+    void delete_section_by_notIncludingStation_exception() {
+        // given
+        Station station = new Station("신림역");
+
+        // then
+        assertThatThrownBy(() -> sections.removeSectionByStation(station))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("구간에 포함된 역이 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("마지막 남은 구간에 포함된 역 삭제 시도 시 예외처리")
+    void delete_section_by_lastStation_exception() {
+        // given
+        sections.removeSectionByStation(station2);
+        sections.removeSectionByStation(station3);
+        sections.removeSectionByStation(station1);
+
+        // then
+        assertAll(
+                () -> assertThatThrownBy(() -> sections.removeSectionByStation(station4))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage("마지막 구간에 포함된 역은 삭제할 수 없습니다."),
+                () -> assertThatThrownBy(() -> sections.removeSectionByStation(station5))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage("마지막 구간에 포함된 역은 삭제할 수 없습니다.")
+        );
+
     }
 }

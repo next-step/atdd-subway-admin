@@ -192,6 +192,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .getObject(".", LineResponse.class);
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청_공용(Long id) {
+        return RestAssured.given().log().all()
+                .when()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/lines/" + id)
+                .then().log().all()
+                .extract();
+    }
+
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)

@@ -132,6 +132,10 @@ public class Section extends BaseEntity {
         return this.distance.isGreaterThan(targetDistance);
     }
 
+    public void sumDistanceWith(Section section) {
+        this.distance.plusDistance(section.distance);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
