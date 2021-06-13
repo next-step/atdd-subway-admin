@@ -49,7 +49,7 @@ public class LineControllerTest {
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .patch("/lines/"+ id)
+                .patch("/lines/" + id)
                 .then().log().all()
                 .extract();
     }
@@ -58,7 +58,7 @@ public class LineControllerTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete("/lines/"+ id)
+                .delete("/lines/" + id)
                 .then().log().all()
                 .extract();
     }

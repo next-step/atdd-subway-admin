@@ -5,8 +5,6 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.dialect.function.NvlFunction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
