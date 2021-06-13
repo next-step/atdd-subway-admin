@@ -21,6 +21,10 @@ public class Distance {
         return new Distance(this.distance - distance.getDistance());
     }
 
+    public Distance plus(Distance distance) {
+        return new Distance(this.distance + distance.getDistance());
+    }
+
     private void validate(int distance) {
         if (distance <= 0) {
             throw new IllegalArgumentException(INVALID_DISTANCE);

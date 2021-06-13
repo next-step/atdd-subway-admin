@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.section.application.SectionDuplicatedException;
 import nextstep.subway.section.application.StationNotRegisterException;
+import nextstep.subway.station.application.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -24,7 +25,11 @@ public class Sections {
     private List<Section> sections;
 
     public Sections() {
-        sections = new LinkedList<>();
+        this.sections = new LinkedList<>();
+    }
+
+    public Sections(List<Section> sections) {
+        this.sections = sections;
     }
 
     public void addSection(Section section) {
@@ -153,5 +158,70 @@ public class Sections {
                 flatMap(Section::getProcessStations)
                 .distinct()
                 .collect(toList());
+    }
+
+    private void checkHasStationId(Long stationId) {
+        sections.stream()
+                .filter(v -> v.hasStationId(stationId))
+                .findFirst()
+                .orElseThrow(StationNotFoundException::new);
+    }
+
+    public void deleteSection(Long stationId) {
+        validate(stationId);
+
+        List<Section> foundSections = sections.stream()
+                .filter(v -> v.hasStationId(stationId))
+                .collect(toList());
+        final Section upwardSection = getUpwardSection(stationId, foundSections);
+        final Section downwardSection = getDownwardSection(stationId, foundSections);
+
+        LinkedList<Section> orderedSections = new LinkedList<>(this.sections);
+        final Section first = orderedSections.getFirst();
+        final Section last = orderedSections.getLast();
+
+        if (isFirstSectionDelete(upwardSection, first)) {
+            this.sections.remove(first);
+            return;
+        }
+        if (isLastSectionDelete(downwardSection, last)) {
+            this.sections.remove(last);
+            return;
+        }
+        downwardSection.changeUpward(upwardSection);
+        this.sections.remove(upwardSection);
+    }
+
+    private void validate(Long stationId) {
+        checkCanRemoveSection();
+        checkHasStationId(stationId);
+    }
+
+    private Section getUpwardSection(Long stationId, List<Section> foundSections) {
+        return foundSections.stream()
+                .filter(v -> v.isSameUpStation(stationId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Section getDownwardSection(Long stationId, List<Section> foundSections) {
+        return foundSections.stream()
+                .filter(v -> v.isSameDownStation(stationId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private boolean isLastSectionDelete(Section downSection, Section last) {
+        return last.equals(downSection);
+    }
+
+    private boolean isFirstSectionDelete(Section upSection, Section first) {
+        return first.equals(upSection);
+    }
+
+    private void checkCanRemoveSection() {
+        if (sections.size() < 2) {
+            throw new IllegalStateException();
+        }
     }
 }

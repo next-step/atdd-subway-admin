@@ -111,8 +111,16 @@ public class Section extends BaseEntity {
         return this.upStation.equals(section.upStation);
     }
 
+    public boolean isSameUpStation(Long stationId) {
+        return upStation.isStationIdMatch(stationId);
+    }
+
     public boolean isSameDownStation(Section section) {
         return this.downStation.equals(section.downStation);
+    }
+
+    public boolean isSameDownStation(Long stationId) {
+        return downStation.isStationIdMatch(stationId);
     }
 
     public boolean containsNoneStations(Section section) {
@@ -126,6 +134,10 @@ public class Section extends BaseEntity {
 
     public Stream<Station> getProcessStations() {
         return Stream.of(upStation, downStation);
+    }
+
+    public boolean hasStationId(Long stationId) {
+        return upStation.isStationIdMatch(stationId) || downStation.isStationIdMatch(stationId);
     }
 
     @Override
@@ -150,5 +162,14 @@ public class Section extends BaseEntity {
                 ", distance=" + distance +
                 ", line=" + line +
                 '}';
+    }
+
+    public void changeUpward(Section section) {
+        this.downStation = section.getDownStation();
+        this.distance = distance.plus(section.distance);
+    }
+
+    public void deleteUpStation(Section section) {
+//        this.upStation =
     }
 }

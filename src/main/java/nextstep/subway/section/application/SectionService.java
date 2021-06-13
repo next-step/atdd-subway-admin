@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class SectionService {
-    public static final String NOT_FOUND_LINE = "존재하지 않는 노선입니다";
+    private static final String NOT_EXIST_LINE = "존재하지 않는 노선: ";
     private final LineRepository lineRepository;
     private final StationService stationService;
 
@@ -30,8 +30,15 @@ public class SectionService {
         line.addSection(new Section(upStation, downStation, request.getDistance()));
     }
 
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        final Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException(NOT_EXIST_LINE + lineId));
+        line.deleteStation(stationId);
+    }
+
     private Line getLine(Long lineId) {
         return lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException(NOT_FOUND_LINE));
+                .orElseThrow(() -> new LineNotFoundException(NOT_EXIST_LINE + lineId));
     }
 }

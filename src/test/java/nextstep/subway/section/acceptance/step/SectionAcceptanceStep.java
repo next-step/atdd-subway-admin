@@ -41,4 +41,20 @@ public class SectionAcceptanceStep {
                 .then().log().all().extract();
         return response;
     }
+
+    public static ExtractableResponse<Response> 지하철_구간_삭제_요청(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
+                .then().log().all()
+                .extract();
+    }
+
+    public static void 지하철_구간_삭제됨(ExtractableResponse<Response> response) {
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static void 지하철_노선에_구간_삭제_실패됨(ExtractableResponse<Response> response) {
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }

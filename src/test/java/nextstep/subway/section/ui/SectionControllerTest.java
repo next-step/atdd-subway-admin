@@ -5,6 +5,7 @@ import nextstep.subway.line.application.LineNotFoundException;
 import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
+import nextstep.subway.station.application.StationNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,8 +28,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class SectionControllerTest {
 
-    private static final Long NOT_EXIST_ID = 0L;
+    private static final Long NOT_EXIST_LINE_ID = 0L;
+    private static final Long NOT_EXIST_STATION_ID = 0L;
     private static final Long EXIST_LINE_ID = 1L;
+    private static final Long EXIST_STATION_ID = 2L;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -83,5 +88,69 @@ public class SectionControllerTest {
                         .andExpect(status().isNotFound());
             }
         }
+    }
+
+    @Nested
+    @DisplayName("DELETE /lines/{lineId}/section?StationId={stationId}는")
+    class Describe_delete_section {
+
+        @Nested
+        @DisplayName("제거할 노선과 역 식별자가 주어지면")
+        class Context_with_valid_section {
+            final Long givenLineId = EXIST_LINE_ID;
+            final Long givenStationId = EXIST_STATION_ID;
+
+            @DisplayName("204 No Content를 응답한다.")
+            @Test
+            void It_responds_no_content() throws Exception {
+                mockMvc.perform(
+                        delete("/lines/{lineId}/sections?stationId={stationId}", givenLineId, givenStationId)
+                )
+                        .andExpect(status().isNoContent());
+            }
+        }
+
+        @Nested
+        @DisplayName("존재하지 않는 노선이 주어지면")
+        class Context_with_invalid_line {
+            final Long givenLineId = NOT_EXIST_LINE_ID;
+            final Long givenStationId = EXIST_STATION_ID;
+
+            @BeforeEach
+            void setUp() {
+                doThrow(new LineNotFoundException()).when(sectionService).deleteSection(anyLong(), anyLong());
+            }
+
+            @DisplayName("404 Not Found를 응답한다.")
+            @Test
+            void It_responds_no_content() throws Exception {
+                mockMvc.perform(
+                        delete("/lines/{lineId}/sections?stationId={stationId}", givenLineId, givenStationId)
+                )
+                        .andExpect(status().isNotFound());
+            }
+        }
+
+        @Nested
+        @DisplayName("존재하지 않는 지하철역이 주어지면")
+        class Context_with_invalid_station {
+            final Long givenLineId = NOT_EXIST_LINE_ID;
+            final Long givenStationId = NOT_EXIST_STATION_ID;
+
+            @BeforeEach
+            void setUp() {
+                doThrow(new StationNotFoundException()).when(sectionService).deleteSection(anyLong(), anyLong());
+            }
+
+            @DisplayName("404 Not Found를 응답한다.")
+            @Test
+            void It_responds_no_content() throws Exception {
+                mockMvc.perform(
+                        delete("/lines/{lineId}/sections?stationId={stationId}", givenLineId, givenStationId)
+                )
+                        .andExpect(status().isNotFound());
+            }
+        }
+
     }
 }
