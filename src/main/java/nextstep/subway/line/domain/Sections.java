@@ -6,6 +6,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -21,5 +22,10 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public List<Long> ids() {
+        return sections.stream().map(Section::getId)
+                .collect(Collectors.toList());
     }
 }

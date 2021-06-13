@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.sectionstations.domain.SectionStation;
 import nextstep.subway.station.domain.Station;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,26 +28,10 @@ public class Section {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @OneToMany(mappedBy = "section")
+    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
     private List<SectionStation> sectionStations = new ArrayList<>();
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
     private int distance;
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
 
     public Section() {
     }
@@ -63,5 +48,9 @@ public class Section {
         Section section = new Section(line, upStation, downStation, distance);
         line.addSection(section);
         return section;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

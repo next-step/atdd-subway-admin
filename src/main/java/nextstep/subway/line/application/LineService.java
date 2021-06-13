@@ -65,13 +65,11 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         Line line = getLine(id);
+        List<Long> ids = line.getSections().ids();
 
-        List<Section> sections = sectionRepository.findByLineId(id);
         List<StationResponse> stationResponses = new ArrayList<>();
-
-        for (Section section : sections) {
-            addStationResponse(stationResponses, section);
-        }
+        List<Station> stations = sectionStationRepository.findStationsBySection(ids);
+        stations.forEach(station -> addStationResponse(stationResponses, station));
 
         return LineResponse.of(line, stationResponses);
     }
@@ -95,9 +93,8 @@ public class LineService {
         return lineRepository.findById(id).orElseThrow(() -> new RuntimeException(NOT_FOUND_LINE));
     }
 
-    private void addStationResponse(List<StationResponse> stationResponses, Section section) {
-        addResponse(stationResponses, StationResponse.of(section.getUpStation()));
-        addResponse(stationResponses, StationResponse.of(section.getDownStation()));
+    private void addStationResponse(List<StationResponse> stationResponses, Station station) {
+        addResponse(stationResponses, StationResponse.of(station));
     }
 
     private void addResponse(List<StationResponse> stationResponses, StationResponse stationResponse) {
