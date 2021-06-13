@@ -9,6 +9,7 @@ import nextstep.subway.station.dto.StationResponse;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -64,6 +65,21 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
+        validSection(section);
+        sections.updateUpStation(section);
+        sections.updateDownStation(section);
         sections.addSection(section);
+    }
+
+    public void validSection(Section section) {
+        Boolean isUpStationExist = getStations().stream().anyMatch(it -> it.equals(section.getUpStation()));
+        Boolean isDownStationExist = getStations().stream().anyMatch(it -> it.equals(section.getDownStation()));
+
+        if (!isUpStationExist && !isDownStationExist) {
+            throw new RuntimeException("상/하행선 둘 중 하나는 일치해야 합니다.");
+        }
+        if (sections.validDuplicationSection(section)) {
+            throw new RuntimeException("동일한 구간은 추가할 수 없습니다.");
+        }
     }
 }

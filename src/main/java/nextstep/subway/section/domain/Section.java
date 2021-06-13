@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -43,10 +44,32 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     public void update(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public void updateUpStation(Section newSection) {
+        checkDistance(newSection.getDistance());
+        this.upStation = newSection.getDownStation();
+        this.distance -= newSection.getDistance();
+    }
+
+    public void updateDownStation(Section newSection) {
+        checkDistance(newSection.getDistance());
+        this.downStation = newSection.getUpStation();
+        this.distance -= newSection.getDistance();
+    }
+
+    private void checkDistance(int distance){
+        if (this.distance < distance) {
+            throw new IllegalArgumentException("기존 구간보다 긴 거리값은 추가할수 없습니다.");
+        }
     }
 }

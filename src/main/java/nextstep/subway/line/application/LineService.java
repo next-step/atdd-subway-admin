@@ -1,6 +1,6 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.exception.NotFountException;
+import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -26,8 +26,8 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation =  stationRepository.findById(request.getUpStationId()).orElseThrow(NotFountException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFountException::new);
+        Station upStation =  stationRepository.findById(request.getUpStationId()).orElseThrow(NotFoundException::new);
+        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFoundException::new);
         Line persistLine = lineRepository.save(new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
         return LineResponse.of(persistLine);
     }
@@ -42,12 +42,12 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(NotFountException::new);
+        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
         return LineResponse.of(line);
     }
 
     public void updateLine(Long id, LineRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(NotFountException::new);
+        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
         line.update(request.toLine());
     }
 
@@ -56,9 +56,9 @@ public class LineService {
     }
 
     public void addSection(Long id, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(NotFountException::new);
-        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(NotFountException::new);
-        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(NotFountException::new);
+        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(NotFoundException::new);
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(NotFoundException::new);
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 }
