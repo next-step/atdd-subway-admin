@@ -96,7 +96,8 @@ public class Line extends BaseEntity {
         }
         if (sectionAddType.equals(SectionAddType.NEW_BETWEEN)) {
             LineStation updateTargetLineStation = lineStations.findLineStationByPreStation(lineStation.getPreStation());
-            Distance newDistance = updateTargetLineStation.getDistance().subtractionDistance(lineStation.getDistance());
+            updateTargetLineStation.validDistance(lineStation);
+            Distance newDistance = new Distance(updateTargetLineStation.getDistance().subtractionDistance(lineStation.getDistance()));
             updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getStation(), newDistance);
             sections.updateSectionByDownStation(updateTargetLineStation, newDistance);
         }

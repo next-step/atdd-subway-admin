@@ -16,8 +16,8 @@ public class Distance {
         this.distance = distance;
     }
 
-    public Distance subtractionDistance(Distance other) {
-        return new Distance(distance - other.distance);
+    public int subtractionDistance(Distance other) {
+        return distance - other.distance;
     }
 
     public int distance() {

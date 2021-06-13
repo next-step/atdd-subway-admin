@@ -10,6 +10,8 @@ import java.util.Objects;
 @Entity
 public class LineStation {
 
+    private static final String OUT_BOUND_DISTANCE_ERROR_MESSAGE = "구간 사이에 새로운 역을 등록 시 구간거리는 기존 등록된 구간 거리보다 작아야합니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -85,6 +87,12 @@ public class LineStation {
 
     public Distance getDistance() {
         return distance;
+    }
+
+    public void validDistance(LineStation lineStation) {
+        if (this.distance.subtractionDistance(lineStation.distance) <= 0) {
+            throw new IllegalArgumentException(OUT_BOUND_DISTANCE_ERROR_MESSAGE);
+        }
     }
 
     @Override
