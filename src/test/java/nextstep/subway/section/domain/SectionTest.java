@@ -20,8 +20,8 @@ public class SectionTest {
 
     @BeforeEach
     void setUp() {
-        upStation = new Station("강남역");
-        downStation = new Station("광교역");
+        upStation = new Station(1L, "강남역");
+        downStation = new Station(3L, "광교역");
     }
 
     @Test
@@ -46,8 +46,8 @@ public class SectionTest {
     void calcUpStation() {
         Section section = new Section(upStation, downStation, 100);
 
-        assertThat(section.calcUpStation(new Station("광교역"))).isEqualTo(new Station("강남역"));
-        assertThat(section.calcUpStation(null)).isEqualTo(new Station("강남역"));
+        assertThat(section.calcUpStation(new Station(3L, "광교역"))).isEqualTo(new Station(1L, "강남역"));
+        assertThat(section.calcUpStation(null)).isEqualTo(new Station(1L, "강남역"));
     }
 
     @Test

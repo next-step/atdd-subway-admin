@@ -63,6 +63,16 @@ public class LineStationsTest {
     }
 
     @Test
+    void 노선_지하철_연결_entity_상행부터_정렬한_리스트_반환() {
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(preStation, null, 0);
+        LineStations lineStations = new LineStations(Arrays.asList(lineStation1, lineStation2));
+        List<LineStation> actual = lineStations.getLineStationsOrderByAsc();
+        assertThat(actual.get(0)).isEqualTo(lineStation2);
+        assertThat(actual.get(1)).isEqualTo(lineStation1);
+    }
+
+    @Test
     void 노선_지하철_연결_테이블_일급_컬렉션_노선_정보_추가() {
         LineStation lineStation1 = new LineStation(station, preStation, 10);
         LineStation lineStation2 = new LineStation(preStation, null, 0);
