@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.sectionstations.domain.SectionStation;
 import nextstep.subway.sectionstations.domain.SectionStationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.dto.StationResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
@@ -65,10 +65,9 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         Line line = getLine(id);
-        List<Long> ids = line.getSections().ids();
+        List<Station> stations = line.stations();
 
         List<StationResponse> stationResponses = new ArrayList<>();
-        List<Station> stations = sectionStationRepository.findStationsBySection(ids);
         stations.forEach(station -> addStationResponse(stationResponses, station));
 
         return LineResponse.of(line, stationResponses);

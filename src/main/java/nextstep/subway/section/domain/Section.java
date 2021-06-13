@@ -2,18 +2,17 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.sectionstations.domain.SectionStation;
+import nextstep.subway.sectionstations.domain.SectionStations;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
@@ -28,8 +27,8 @@ public class Section {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
-    private List<SectionStation> sectionStations = new ArrayList<>();
+    @Embedded
+    SectionStations sectionStations = new SectionStations();
 
     private int distance;
 
@@ -52,5 +51,9 @@ public class Section {
 
     public Long getId() {
         return id;
+    }
+
+    public List<Station> stations() {
+        return sectionStations.stations();
     }
 }

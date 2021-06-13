@@ -1,16 +1,18 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.section.domain;
 
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
-import javax.persistence.Embeddable;
-import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
+
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private final List<Section> sections = new ArrayList<>();
 
     public Sections() {
@@ -24,8 +26,9 @@ public class Sections {
         return sections;
     }
 
-    public List<Long> ids() {
-        return sections.stream().map(Section::getId)
+    public List<Station> getStations() {
+        return sections.stream().map(Section::stations)
+                .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
 }

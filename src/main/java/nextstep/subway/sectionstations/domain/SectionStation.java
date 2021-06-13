@@ -31,4 +31,8 @@ public class SectionStation {
         this.section = section;
         this.station = station;
     }
+
+    public Station getStation() {
+        return station;
+    }
 }
