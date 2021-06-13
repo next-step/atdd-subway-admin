@@ -16,7 +16,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<LineResponse> handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity<LineResponse> handleIllegalDataException(DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(InvalidSectionException.class)
+    public ResponseEntity<LineResponse> handleInvalidSectionException(InvalidSectionException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<LineResponse> handleIllegalDataException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().build();
     }
 }

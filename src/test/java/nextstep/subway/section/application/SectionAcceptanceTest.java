@@ -25,8 +25,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private long existedLineUpStationId;
     private long existedLineDownStationId;
-    private long tryRegisterStationId;
-    private ExtractableResponse<Response> response;
+    private Long tryRegisterStationId;
     private String linesId;
     private long notIncludedUpStationId;
     private long notIncludedDownStationId;
@@ -41,7 +40,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         notIncludedUpStationId = 지하철_역_생성_후_ID_반환("구리");
         notIncludedDownStationId = 지하철_역_생성_후_ID_반환("도농");
 
-        response = 지하철_노선_등록("신분당선", "g-123", existedLineUpStationId, existedLineDownStationId, 100);
+        ExtractableResponse<Response> response = 지하철_노선_등록("신분당선", "g-123", existedLineUpStationId, existedLineDownStationId, 100);
         linesId = response.header("Location").split("/")[2];
     }
 
@@ -49,19 +48,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 역_사이에_새로운_역을_등록할_경우() {
 
         // when
-        Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", existedLineUpStationId);
-        params.put("downStationId", tryRegisterStationId);
-        params.put("distance", 50);
-
-        ExtractableResponse<Response> response = given().log().all()
-                .when()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .post("/lines/" + linesId + "/sections")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> response = 구간_중간에_새로운_역_추가됨_A_B_C();
 
         // then
         List<Long> stations = response.body().jsonPath().getObject(".", LineResponse.class).getStations().stream()
@@ -174,6 +161,57 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Test
+    void 노선구간제거_중간역이_제거될_경우_재배치() {
+
+        구간_중간에_새로운_역_추가됨_A_B_C();
+
+        ExtractableResponse<Response> deleteResponse = given().log().all()
+                .when()
+                .queryParam("stationId", tryRegisterStationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .delete("/lines/" + linesId + "/sections")
+                .then()
+                .log().all()
+                .extract();
+
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void 노선에_등록되어있지_않는_역을_제거할때_예외가_발생() {
+
+        구간_중간에_새로운_역_추가됨_A_B_C();
+
+        ExtractableResponse<Response> deleteResponse = given().log().all()
+                .when()
+                .queryParam("stationId", notIncludedUpStationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .delete("/lines/" + linesId + "/sections")
+                .then()
+                .log().all()
+                .extract();
+
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 구간이_하나인_노선에서_마지막_구간을_제거하면_예외발생() {
+
+        구간_중간에_새로운_역_추가됨_A_B_C();
+
+        ExtractableResponse<Response> deleteResponse = given().log().all()
+                .when()
+                .queryParam("stationId", existedLineDownStationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .delete("/lines/" + linesId + "/sections")
+                .then()
+                .log().all()
+                .extract();
+
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 지하철_노선_등록(String 이름, String 색깔, Long 상행종착역ID, Long 하행종착역ID, int 거리) {
         Map<String, Object> originLine = new HashMap<>();
         originLine.put("name", 이름);
@@ -206,5 +244,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         return Long.parseLong(response.header("Location").split("/")[2]);
+    }
+
+    private ExtractableResponse<Response> 구간_중간에_새로운_역_추가됨_A_B_C() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", existedLineUpStationId);
+        params.put("downStationId", tryRegisterStationId);
+        params.put("distance", 50);
+
+        return given().log().all()
+                .when()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .post("/lines/" + linesId + "/sections")
+                .then()
+                .log().all()
+                .extract();
     }
 }

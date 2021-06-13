@@ -8,6 +8,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -22,10 +24,6 @@ public class Sections {
 
     protected Sections() {
 
-    }
-
-    public List<Section> getValues() {
-        return values;
     }
 
     public static Sections of(List<Section> sections) {
@@ -63,6 +61,23 @@ public class Sections {
         }
     }
 
+    public Stream<Section> stream() {
+        return values.stream();
+    }
+
+    public void removeStation(Station station) {
+        AdjacentSections adjacentSections = getSectionsContainingStation(station);
+        adjacentSections.merge(this.values);
+    }
+
+    public void add(Section section) {
+        this.values.add(section);
+    }
+
+    public void clear() {
+        values.clear();
+    }
+
     private void addSectionBehindOfOriginal(Section targetSection, Section original) {
         values.add(values.indexOf(original) + 1, targetSection);
     }
@@ -90,5 +105,11 @@ public class Sections {
                 line.isContainingStation(downStation) == false) {
             throw new IllegalArgumentException("상행, 종행 역 모두가 포함되지 않았습니다.");
         }
+    }
+
+    private AdjacentSections getSectionsContainingStation(Station station) {
+        return AdjacentSections.of(this.values.stream()
+                .filter(section -> section.isUpStationEquals(station) || section.isDownStationEquals(station))
+                .collect(Collectors.toList()));
     }
 }

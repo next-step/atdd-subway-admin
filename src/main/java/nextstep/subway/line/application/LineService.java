@@ -1,6 +1,5 @@
 package nextstep.subway.line.application;
 
-import com.google.common.collect.Lists;
 import nextstep.subway.exception.NotFoundEntityException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -86,5 +85,10 @@ public class LineService {
     private Station getStation(Long stationId) {
         return stationRepository.findById(stationId)
                 .orElseThrow(() -> new NotFoundEntityException("Not Fount downStationId" + stationId));
+    }
+
+    public void removeStation(Long lineId, Long stationId) {
+        Line line = getLine(lineId);
+        line.removeStation(getStation(stationId));
     }
 }
