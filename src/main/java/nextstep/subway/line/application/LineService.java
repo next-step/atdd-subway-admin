@@ -38,11 +38,11 @@ public class LineService {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(NoSuchElementException::new);
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(NoSuchElementException::new);
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        LineStation upLineStation = new LineStation();
+        LineStation upLineStation = lineStationRepository.findByLineIdAndStationId(persistLine.getId(), upStation.getId()).orElse(new LineStation());
         persistLine.addLineStation(upLineStation);
         upStation.addLineStation(upLineStation);
 
-        LineStation downLineStation = new LineStation();
+        LineStation downLineStation = lineStationRepository.findByLineIdAndStationId(persistLine.getId(), downStation.getId()).orElse(new LineStation());
         persistLine.addLineStation(downLineStation);
         downStation.addLineStation(downLineStation);
         return LineResponse.of(persistLine);

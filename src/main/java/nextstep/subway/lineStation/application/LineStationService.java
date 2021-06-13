@@ -31,4 +31,11 @@ public class LineStationService {
                 .map(it -> LineStationResponse.of(it))
                 .collect(Collectors.toList());
     }
+
+    public List<LineStationResponse> findByLineId(Long id) {
+        List<LineStation> lineStations = lineStationRepository.findByLineId(id);
+        return lineStations.stream()
+                .map(it -> LineStationResponse.of(it))
+                .collect(Collectors.toList());
+    }
 }

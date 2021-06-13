@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/lineStations")
 public class LineStationController {
     private final LineStationService lineStationService;
 
@@ -21,13 +20,18 @@ public class LineStationController {
         this.lineStationService = lineStationService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/lineStations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineStationResponse>> showLineStations(){
         return ResponseEntity.ok().body(lineStationService.findAllLineStations());
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/lineStations/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineStationResponse>> showLineStation(@PathVariable Long id){
         return ResponseEntity.ok().body(lineStationService.findByStationId(id));
+    }
+
+    @GetMapping(value = "/lines/{id}/lineStations", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<LineStationResponse>> showLineStations(@PathVariable Long id){
+        return ResponseEntity.ok().body(lineStationService.findByLineId(id));
     }
 }
