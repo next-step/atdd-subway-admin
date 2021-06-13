@@ -24,8 +24,20 @@ public class Distance {
 		}
 	}
 
-	public static Distance valueOf(int distance) {
+	static Distance valueOf(int distance) {
 		return new Distance(distance);
+	}
+
+	Distance minus(Distance otherSection) {
+		return Distance.valueOf(this.distance - otherSection.distance);
+	}
+
+	Distance plus(Distance otherSection) {
+		return Distance.valueOf(this.distance + otherSection.distance);
+	}
+
+	boolean isLessThan(Distance other) {
+		return this.distance <= other.distance;
 	}
 
 	@Override
@@ -41,14 +53,6 @@ public class Distance {
 	@Override
 	public int hashCode() {
 		return Objects.hash(distance);
-	}
-
-	public boolean isLessThan(Distance other) {
-		return this.distance <= other.distance;
-	}
-
-	public Distance minus(Distance otherSection) {
-		return Distance.valueOf(this.distance - otherSection.distance);
 	}
 
 	@Override

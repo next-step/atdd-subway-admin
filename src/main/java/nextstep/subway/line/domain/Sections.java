@@ -32,12 +32,32 @@ public class Sections {
 		return new Sections(new ArrayList<>(asList(sections)));
 	}
 
-	void add(Section otherSection) {
+	void addSection(Section otherSection) {
 		checkValidation(otherSection);
 		for (Section section : sections) {
 			section.addInnerSection(otherSection);
 		}
 		sections.add(otherSection);
+	}
+
+	void removeSectionBy(Station station) {
+		Section sectionToRemove = sections.stream()
+			.filter(section -> section.contain(station))
+			.findAny()
+			.orElseThrow(() -> new IllegalArgumentException("노선에 없는 역의 구간은 삭제할 수 없습니다."));
+
+		for (Section section : sections) {
+			section.removeInnerSectionByStation(sectionToRemove, station);
+		}
+
+		sections.remove(sectionToRemove);
+	}
+
+	Distance sumDistance() {
+		return sections.stream()
+			.map(Section::getDistance)
+			.reduce(Distance::plus)
+			.orElseThrow(IllegalStateException::new);
 	}
 
 	List<Station> orderedStations() {
@@ -93,15 +113,15 @@ public class Sections {
 
 	private boolean exists(Section otherSection) {
 		boolean existsSameUpStation = sections.stream()
-			.anyMatch(section -> section.isSameUpStation(otherSection));
+			.anyMatch(section -> section.hasEqualUpStation(otherSection));
 
 		return sections.stream()
-			.anyMatch(section -> existsSameUpStation && section.isSameDownStation(otherSection));
+			.anyMatch(section -> existsSameUpStation && section.hasEqualDownStation(otherSection));
 	}
 
 	private boolean notExistsUpAndDownStations(Section otherSection) {
 		return sections.stream()
 			.flatMap(Section::getStreamOfStations)
-			.noneMatch(otherSection::contains);
+			.noneMatch(otherSection::contain);
 	}
 }

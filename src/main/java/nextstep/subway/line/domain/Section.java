@@ -52,15 +52,23 @@ public class Section {
 		return this.downStation.equals(otherSection.upStation);
 	}
 
+	boolean isUpDirectionOf(Section otherSection, Station downStation) {
+		return containAsDownStation(downStation) && isUpDirectionOf(otherSection);
+	}
+
 	boolean isDownDirectionOf(Section otherSection) {
 		return this.upStation.equals(otherSection.downStation);
 	}
 
-	boolean isSameDownStation(Section otherSection) {
+	boolean isDownDirectionOf(Section otherSection, Station upStation) {
+		return containAsUpStation(upStation) && isDownDirectionOf(otherSection);
+	}
+
+	boolean hasEqualDownStation(Section otherSection) {
 		return this.downStation.equals(otherSection.downStation);
 	}
 
-	boolean isSameUpStation(Section otherSection) {
+	boolean hasEqualUpStation(Section otherSection) {
 		return this.upStation.equals(otherSection.upStation);
 	}
 
@@ -77,28 +85,55 @@ public class Section {
 	}
 
 	void addInnerSection(Section otherSection) {
-		if (isSameDownStation(otherSection)) {
+		if (hasEqualDownStation(otherSection)) {
 			addToDownDirection(otherSection);
 		}
-		if (isSameUpStation(otherSection)) {
+		if (hasEqualUpStation(otherSection)) {
 			addToUpDirection(otherSection);
 		}
 	}
 
-	boolean contains(Station station) {
-		return upStation.equals(station) || downStation.equals(station);
+	void removeInnerSectionByStation(Section otherSection, Station station) {
+		if (isUpDirectionOf(otherSection, station)) {
+			removeDownDirection(otherSection);
+		}
+		if (isDownDirectionOf(otherSection, station)) {
+			removeUpDirection(otherSection);
+		}
 	}
 
-	private void addToDownDirection(Section otherSection) {
-		validateLongerThan(otherSection);
-		this.downStation = otherSection.upStation;
-		this.distance = distance.minus(otherSection.distance);
+	boolean contain(Station station) {
+		return containAsUpStation(station) || containAsDownStation(station);
 	}
 
-	private void addToUpDirection(Section otherSection) {
-		validateLongerThan(otherSection);
-		this.upStation = otherSection.downStation;
-		this.distance = distance.minus(otherSection.distance);
+	private boolean containAsDownStation(Station station) {
+		return this.downStation.equals(station);
+	}
+
+	private boolean containAsUpStation(Station station) {
+		return this.upStation.equals(station);
+	}
+
+	private void removeDownDirection(Section downDirectionSection) {
+		this.downStation = downDirectionSection.downStation;
+		this.distance = distance.plus(downDirectionSection.distance);
+	}
+
+	private void removeUpDirection(Section upDirectionSection) {
+		this.upStation = upDirectionSection.upStation;
+		this.distance = distance.plus(upDirectionSection.distance);
+	}
+
+	private void addToDownDirection(Section downDirectionSection) {
+		validateLongerThan(downDirectionSection);
+		this.downStation = downDirectionSection.upStation;
+		this.distance = distance.minus(downDirectionSection.distance);
+	}
+
+	private void addToUpDirection(Section upDirectionSection) {
+		validateLongerThan(upDirectionSection);
+		this.upStation = upDirectionSection.downStation;
+		this.distance = distance.minus(upDirectionSection.distance);
 	}
 
 	private void validateLongerThan(Section otherSection) {

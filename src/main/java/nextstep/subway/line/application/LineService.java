@@ -2,6 +2,9 @@ package nextstep.subway.line.application;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import nextstep.subway.line.application.exceptions.AlreadyExistsLineNameException;
 import nextstep.subway.line.application.exceptions.NotFoundLineException;
 import nextstep.subway.line.domain.Line;
@@ -11,9 +14,6 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -68,5 +68,11 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = findLineById(lineId);
         line.addSection(upStation, downStation, sectionRequest.getDistance());
+    }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = stationService.findById(stationId);
+        line.removeSectionBy(station);
     }
 }

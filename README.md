@@ -85,3 +85,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 -[ ] 구간 제거하기 기능
     -[x] 구가 삭제에 대한 인수테스트 작성
     -[ ] 구간 삭제 기능 프로덕션 코드 구현
+        - [x] 구간 삭제 기능 성공일 경우 코드 구현
+        - [ ] 구간 삭제 기능 예외 처리 구현
