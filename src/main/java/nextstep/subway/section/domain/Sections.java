@@ -37,7 +37,7 @@ public class Sections {
 
     public void delete(Station station) {
         if (sections.size() <= 1) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("구간이 1개라서 삭제 할 수 없습니다.");
         }
 
         station.deleteFrom(sections);

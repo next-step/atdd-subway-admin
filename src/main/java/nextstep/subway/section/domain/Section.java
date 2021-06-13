@@ -109,7 +109,7 @@ public class Section extends BaseEntity {
         this.upStation = section.downStation();
     }
 
-    private void handleAttributesToConnectInFrontOf(Section section) {
+    public void handleAttributesToConnectInFrontOf(Section section) {
         shortenDistanceUsing(section);
         this.downStation = section.upStation();
     }
