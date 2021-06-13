@@ -16,7 +16,6 @@ public class SectionsTest {
     private Station 충무로역;
     private Station 동역문역;
 
-
     private Sections sections;
 
     @BeforeEach
@@ -24,8 +23,6 @@ public class SectionsTest {
         서울역 = new Station("서울역");
         회현역 = new Station("회현역");
         명동역 = new Station("명동역");
-        충무로역 = new Station("충무로역");
-        동역문역 = new Station("동역문역");
 
         sections = new Sections();
     }
