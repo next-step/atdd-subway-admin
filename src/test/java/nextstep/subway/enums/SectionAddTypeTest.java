@@ -1,20 +1,18 @@
 package nextstep.subway.enums;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.lineStation.domain.LineStation;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.wrappers.LineStations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionAddTypeTest {
 
-    private List<LineStation> lineStations;
+    private LineStations lineStations;
     private Station 강남역;
     private Station 양재역;
     private Station 정자역;
@@ -24,11 +22,11 @@ class SectionAddTypeTest {
         강남역 = new Station(1L, "강남역");
         양재역 = new Station(2L, "양재역");
         정자역 = new Station(3L, "정자역");
-        lineStations = Arrays.asList(
+        lineStations = new LineStations(Arrays.asList(
                 new LineStation(강남역, null, 0),
                 new LineStation(양재역, 강남역, 10),
                 new LineStation(정자역, 양재역, 10)
-        );
+        ));
     }
 
     @Test

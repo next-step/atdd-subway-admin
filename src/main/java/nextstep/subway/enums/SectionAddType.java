@@ -1,18 +1,16 @@
 package nextstep.subway.enums;
 
 import nextstep.subway.lineStation.domain.LineStation;
-import nextstep.subway.section.domain.Section;
-
-import java.util.List;
+import nextstep.subway.wrappers.LineStations;
 
 public enum SectionAddType {
     NEW_UP, NEW_BETWEEN, NEW_DOWN;
 
-    public static SectionAddType calcAddType(List<LineStation> lineStations, LineStation lineStation) {
-        if (lineStations.get(0).isSameStation(lineStation.getStation())) {
+    public static SectionAddType calcAddType(LineStations lineStations, LineStation lineStation) {
+        if (lineStations.isNewUpLineStation(lineStation)) {
             return NEW_UP;
         }
-        if (lineStations.get(lineStations.size() - 1).isSameStation(lineStation.getPreStation())) {
+        if (lineStations.isNewDownLineStation(lineStation)) {
             return NEW_DOWN;
         }
         return NEW_BETWEEN;

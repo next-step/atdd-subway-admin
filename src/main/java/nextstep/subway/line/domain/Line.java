@@ -55,6 +55,10 @@ public class Line extends BaseEntity {
         this.lineStations = lineStations;
     }
 
+    public SectionAddType calcAddType(LineStation lineStation) {
+        return SectionAddType.calcAddType(lineStations, lineStation);
+    }
+
     public Line lineStationsBy(LineStations lineStations) {
         this.lineStations = lineStations;
         lineStations.addLine(this);

@@ -40,8 +40,7 @@ public class SectionService {
         Line line = Line.getNotNullLine(lineRepository.findById(lineId));
         LineStation lineStation = sectionRequest.toLineStation(upStation, downStation);
         line.checkValidLineStation(lineStation);
-        List<LineStation> lineStations = line.getLineStationsOrderByAse();
-        SectionAddType sectionAddType = SectionAddType.calcAddType(lineStations, lineStation);
+        SectionAddType sectionAddType = line.calcAddType(lineStation);
         line.updateLineStationAndSection(sectionAddType, lineStation);
         line.addLineStation(lineStation);
         return SectionResponse.of(sectionRepository.save(Section.of(lineStation)));

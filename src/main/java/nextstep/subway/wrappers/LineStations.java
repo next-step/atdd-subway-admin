@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Embeddable
 public class LineStations {
@@ -60,6 +61,16 @@ public class LineStations {
     public void updateFirstLineStation(LineStation lineStation) {
         findFirstLineStation().ifPresent(
                 ls -> ls.update(lineStation.getStation(), lineStation.getPreStation(), lineStation.getDistance()));
+    }
+
+    public boolean isNewUpLineStation(LineStation lineStation) {
+        AtomicBoolean isNewUpLineStation = new AtomicBoolean(false);
+        findFirstLineStation().ifPresent( ls -> isNewUpLineStation.set(ls.isSameStation(lineStation.getStation())));
+        return isNewUpLineStation.get();
+    }
+
+    public boolean isNewDownLineStation(LineStation lineStation) {
+        return getLineStationsOrderByAsc().get(lineStations.size() - 1).isSameStation(lineStation.getPreStation());
     }
 
     private Optional<LineStation> findFirstLineStation() {
