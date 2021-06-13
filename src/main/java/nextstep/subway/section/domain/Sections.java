@@ -6,14 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
+
 import nextstep.subway.station.domain.Station;
 
+@Embeddable
 public class Sections {
+	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	List<Section> list = new LinkedList<>();
-
-	public List<Section> getSections() {
-		return list;
-	}
 
 	public void add(Section section) {
 		list.add(section);

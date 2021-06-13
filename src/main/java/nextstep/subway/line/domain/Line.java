@@ -2,14 +2,12 @@ package nextstep.subway.line.domain;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
@@ -28,10 +26,7 @@ public class Line extends BaseEntity {
 	@Column
 	private String color;
 
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Section> sectionList = new Sections().getSections();
-
-	@Transient
+	@Embedded
 	private Sections sections = new Sections();
 
 	protected Line() {
