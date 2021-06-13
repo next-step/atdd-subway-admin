@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.Column;
@@ -66,6 +67,12 @@ public class Line extends BaseEntity {
         return lineStations.orderedStations().stream()
             .map(StationResponse::of)
             .collect(Collectors.toList());
+    }
+
+    public void addLineStations(final List<LineStation> lineStations) {
+        Optional.ofNullable(lineStations)
+            .orElseThrow(IllegalArgumentException::new)
+            .forEach(this::addLineStation);
     }
 
     public void addLineStation(final LineStation lineStation) {
