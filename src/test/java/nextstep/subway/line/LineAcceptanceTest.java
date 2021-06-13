@@ -117,7 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines" + createResponse.getId())
+                .put("/lines/" + createResponse.getId())
                 .then().log().all()
                 .extract();
 
@@ -142,15 +142,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete("/lines" + createResponse.getId())
+                .delete("/lines/" + createResponse.getId())
                 .then().log().all()
                 .extract();
 
 
         // then
         // 지하철_노선_삭제됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(지하철_노선_조회_요청(createResponse.getId()).as(List.class).size()).isEqualTo(0);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(지하철_노선_조회_요청(createResponse.getId()).statusCode())
+                .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
