@@ -78,19 +78,19 @@ public class Section {
 
 	void addInnerSection(Section otherSection) {
 		if (hasEqualDownStation(otherSection)) {
-			addToDownDirection(otherSection);
+			addDownwardSection(otherSection);
 		}
 		if (hasEqualUpStation(otherSection)) {
-			addToUpDirection(otherSection);
+			addUpwardSection(otherSection);
 		}
 	}
 
 	void removeInnerSectionByStation(Section otherSection, Station station) {
 		if (isConnectedInUpwardByStation(otherSection, station)) {
-			removeDownDirection(otherSection);
+			removeDownwardSection(otherSection);
 		}
 		if (isConnectedInDownwardByStation(otherSection, station)) {
-			removeUpDirection(otherSection);
+			removeUpwardSection(otherSection);
 		}
 	}
 
@@ -114,26 +114,26 @@ public class Section {
 		return containDownwardStation(station) && isUpwardOf(otherSection);
 	}
 
-	private void removeDownDirection(Section downDirectionSection) {
-		this.downStation = downDirectionSection.downStation;
-		this.distance = distance.plus(downDirectionSection.distance);
+	private void removeDownwardSection(Section downwardSection) {
+		this.downStation = downwardSection.downStation;
+		this.distance = distance.plus(downwardSection.distance);
 	}
 
-	private void removeUpDirection(Section upDirectionSection) {
-		this.upStation = upDirectionSection.upStation;
-		this.distance = distance.plus(upDirectionSection.distance);
+	private void removeUpwardSection(Section upwardSection) {
+		this.upStation = upwardSection.upStation;
+		this.distance = distance.plus(upwardSection.distance);
 	}
 
-	private void addToDownDirection(Section downDirectionSection) {
-		validateLongerThan(downDirectionSection);
-		this.downStation = downDirectionSection.upStation;
-		this.distance = distance.minus(downDirectionSection.distance);
+	private void addDownwardSection(Section downwardSection) {
+		validateLongerThan(downwardSection);
+		this.downStation = downwardSection.upStation;
+		this.distance = distance.minus(downwardSection.distance);
 	}
 
-	private void addToUpDirection(Section upDirectionSection) {
-		validateLongerThan(upDirectionSection);
-		this.upStation = upDirectionSection.downStation;
-		this.distance = distance.minus(upDirectionSection.distance);
+	private void addUpwardSection(Section upwardSection) {
+		validateLongerThan(upwardSection);
+		this.upStation = upwardSection.downStation;
+		this.distance = distance.minus(upwardSection.distance);
 	}
 
 	private void validateLongerThan(Section otherSection) {

@@ -72,12 +72,12 @@ public class Sections {
 	private Stream<Section> orderedSections() {
 		Section currentSection = sections.get(ORDER_START_SECTION_IDX);
 		return Stream.concat(
-			findUpDirectionSectionsClosed(currentSection),
-			findDownDirectionSectionsClosed(currentSection))
+			findUpwardSectionsClosed(currentSection),
+			findDownwardSectionsClosed(currentSection))
 			.distinct();
 	}
 
-	private Stream<Section> findUpDirectionSectionsClosed(Section currentSection) {
+	private Stream<Section> findUpwardSectionsClosed(Section currentSection) {
 		Optional<Section> previousSection = sections.stream()
 			.filter(section -> section.isUpwardOf(currentSection))
 			.findFirst();
@@ -85,11 +85,11 @@ public class Sections {
 		Stream<Section> current = Stream.of(currentSection);
 
 		return previousSection
-			.map(section -> Stream.concat(findUpDirectionSectionsClosed(section), current))
+			.map(section -> Stream.concat(findUpwardSectionsClosed(section), current))
 			.orElse(current);
 	}
 
-	private Stream<Section> findDownDirectionSectionsClosed(Section currentSection) {
+	private Stream<Section> findDownwardSectionsClosed(Section currentSection) {
 		Optional<Section> nextSection = sections.stream()
 			.filter(section -> section.isDownwardOf(currentSection))
 			.findFirst();
@@ -97,7 +97,7 @@ public class Sections {
 		Stream<Section> current = Stream.of(currentSection);
 
 		return nextSection
-			.map(section -> Stream.concat(current, findDownDirectionSectionsClosed(section)))
+			.map(section -> Stream.concat(current, findDownwardSectionsClosed(section)))
 			.orElse(current);
 	}
 
