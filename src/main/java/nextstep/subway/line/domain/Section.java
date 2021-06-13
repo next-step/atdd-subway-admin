@@ -143,7 +143,7 @@ public class Section {
 	}
 
 	private boolean isEqualOrShorterThan(Section otherSection) {
-		return distance.isLessThan(otherSection.distance);
+		return distance.compareTo(otherSection.distance) <= 0;
 	}
 
 	@Override
