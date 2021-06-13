@@ -1,6 +1,5 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.exception.InvalidSectionException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -25,14 +24,6 @@ public class Sections {
 
     protected Sections() {
 
-    }
-
-    private List<Section> getValues() {
-        return values;
-    }
-
-    public Stream<Section> stream(){
-        return values.stream();
     }
 
     public static Sections of(List<Section> sections) {
@@ -70,6 +61,23 @@ public class Sections {
         }
     }
 
+    public Stream<Section> stream() {
+        return values.stream();
+    }
+
+    public void removeStation(Station station) {
+        AdjacentSections adjacentSections = getSectionsContainingStation(station);
+        adjacentSections.merge(this.values);
+    }
+
+    public void add(Section section) {
+        this.values.add(section);
+    }
+
+    public void clear() {
+        values.clear();
+    }
+
     private void addSectionBehindOfOriginal(Section targetSection, Section original) {
         values.add(values.indexOf(original) + 1, targetSection);
     }
@@ -99,30 +107,9 @@ public class Sections {
         }
     }
 
-    public void removeStation(Station station) {
-        List<Section> adjacentSections = getSectionsContainingStation(station);
-        if (adjacentSections.size() != 2){
-            throw new InvalidSectionException("adjacentSections size: " + adjacentSections.size());
-        }
-
-        Section section = adjacentSections.get(0);
-        Section nextSection = adjacentSections.get(1);
-        section.changeDownStation(nextSection.getDownStation());
-        section.plusDistance(nextSection.getDistance());
-        getValues().remove(nextSection);
-    }
-
-    private List<Section> getSectionsContainingStation(Station station) {
-        return getValues().stream()
+    private AdjacentSections getSectionsContainingStation(Station station) {
+        return AdjacentSections.of(this.values.stream()
                 .filter(section -> section.isUpStationEquals(station) || section.isDownStationEquals(station))
-                .collect(Collectors.toList());
-    }
-
-    public void add(Section section) {
-        this.values.add(section);
-    }
-
-    public void clear() {
-        values.clear();
+                .collect(Collectors.toList()));
     }
 }
