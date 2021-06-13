@@ -21,6 +21,12 @@ public class LinesResponse {
         return this.lineResponses.isEmpty();
     }
 
+    public List<Long> getIds() {
+        return lineResponses.stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
+    }
+
     public List<LineResponse> getLineResponses() {
         return lineResponses;
     }

@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.utils.ExtractableResponseUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,9 +61,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         List<Long> expectedLineIds = extractIdInResponses(createResponse1, createResponse2);
 
-        List<Long> resultLineIds = response.jsonPath().getList("lineResponses", LineResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
+        List<Long> resultLineIds =  extractObjectInResponse(response, LinesResponse.class).getIds();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(resultLineIds).containsAll(expectedLineIds);
@@ -92,9 +91,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse response = 지하철_노선_검색_요청(new LineRequest("", "00FF00"));
-        List<Long> actualResult = response.jsonPath().getList("lineResponses", LineResponse.class).stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
+        List<Long> actualResult = extractObjectInResponse(response, LinesResponse.class).getIds();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
