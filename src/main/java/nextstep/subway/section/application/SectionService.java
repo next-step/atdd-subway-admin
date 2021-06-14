@@ -69,4 +69,8 @@ public class SectionService {
                 .map(it -> SectionResponse.of(it))
                 .collect(Collectors.toList());
     }
+
+    public void deleteByLineId(Long id) {
+        sectionRepository.deleteByLineId(id);
+    }
 }

@@ -23,17 +23,16 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
-        int location = 0;
         if (sections.size() != 0) {
-            location = sectionLocation(newSection);
+            checkSectionValidation(newSection);
         }
-        this.sections.add(location, newSection);
+        this.sections.add(newSection);
     }
 
-    private int sectionLocation(Section newSection) {
+    private void checkSectionValidation(Section newSection) {
         int sectionIdx = 0;
         Section originSection = sections.get(sectionIdx);
-        if (isUpFinalSection(originSection, newSection)) return sectionIdx;
+        if (isUpFinalSection(originSection, newSection)) return;
         boolean createUpSection = false;
         boolean createDownSection = false;
         while (!createUpSection && !createDownSection && sectionIdx < sections.size()) {
@@ -42,9 +41,8 @@ public class Sections {
             createDownSection = checkDownSectionValidation(originSection, newSection);
             sectionIdx++;
         }
-        if (createUpSection) return sectionIdx;
-        if (createDownSection) return sectionIdx + 1;
-        if (isDownFinalSection(originSection, newSection)) return sections.size();
+        if (createUpSection || createDownSection) return;
+        if (isDownFinalSection(originSection, newSection)) return;
         throw new IllegalArgumentException("상행역과 하행역 둘 중 하나라도 기존 구간에 존재해야 합니다.");
     }
 
@@ -81,7 +79,7 @@ public class Sections {
         stationList.add(upFinalSection.getUpStation());
         Station nextStation;
         Section nextSection = upFinalSection;
-        while(nextSection != null){
+        while (nextSection != null) {
             nextStation = nextSection.getDownStation();
             stationList.add(nextStation);
             nextSection = getNextStation(nextStation);

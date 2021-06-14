@@ -1,7 +1,6 @@
 package nextstep.subway.station.ui;
 
 import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.dao.DataIntegrityViolationException;

@@ -8,7 +8,10 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.dto.StationRequest;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -16,7 +19,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("구간 관련 기능 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -77,7 +79,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("상행역이 같은 구간 추가 시 구간길이가 같거나 크면 추가할 수 없다.")
     @TestFactory
-    Stream<DynamicTest> cannot_add_sections_when_sectionLength_same_and_bigger(){
+    Stream<DynamicTest> cannot_add_sections_when_sectionLength_same_and_bigger() {
         return Stream.of(
                 // given
                 // 지하철 노선 등록되어 있음
@@ -109,7 +111,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("구간 중간 삽입 테스트")
     @TestFactory
-    Stream<DynamicTest> insert_section(){
+    Stream<DynamicTest> insert_section() {
         return Stream.of(
                 // given
                 // 지하철 노선 등록되어 있음

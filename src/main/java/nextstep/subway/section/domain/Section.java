@@ -53,6 +53,7 @@ public class Section extends BaseEntity {
     public boolean isUpSection(Section newSection) {
         if(newSection.isSameUpStation(upStation)){
             newSection.checkShortDistance(distance);
+            this.upStation = newSection.getDownStation();
             return true;
         }
         return false;
@@ -61,6 +62,7 @@ public class Section extends BaseEntity {
     public boolean isDownSection(Section newSection) {
         if(newSection.isSameDownStation(downStation)){
             newSection.checkShortDistance(distance);
+            this.downStation = newSection.getUpStation();
             return true;
         }
         return false;

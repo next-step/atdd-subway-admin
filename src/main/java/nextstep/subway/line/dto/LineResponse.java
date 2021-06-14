@@ -1,17 +1,11 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Sections;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class LineResponse {
     private Long id;
@@ -37,10 +31,6 @@ public class LineResponse {
         List<StationResponse> stationResponses = line.getStationList().stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
-                /*line.getSectionsList().stream()
-                .map(section -> Arrays.asList(StationResponse.of(section.getUpStation()), (StationResponse.of(section.getDownStation()))))
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);*/
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses, line.getCreatedDate(), line.getModifiedDate());
     }
 

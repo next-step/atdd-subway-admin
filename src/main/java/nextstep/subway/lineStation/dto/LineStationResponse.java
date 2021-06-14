@@ -1,8 +1,6 @@
 package nextstep.subway.lineStation.dto;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.lineStation.domain.LineStation;
-import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 
@@ -18,12 +16,12 @@ public class LineStationResponse {
     public LineStationResponse() {
     }
 
-    public static LineStationResponse of(LineStation lineStation){
+    public static LineStationResponse of(LineStation lineStation) {
         return new LineStationResponse(lineStation.getId(), lineStation.getLine().getId(), lineStation.getLine().getName()
                 , lineStation.getStation().getId(), lineStation.getStation().getName(), lineStation.getCreatedDate(), lineStation.getModifiedDate());
     }
 
-    public LineStationResponse(Long id, Long lineId, String lineName, Long stationId, String stationName, LocalDateTime createdDate, LocalDateTime modifiedDate){
+    public LineStationResponse(Long id, Long lineId, String lineName, Long stationId, String stationName, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.lineId = lineId;
         this.lineName = lineName;
@@ -33,7 +31,7 @@ public class LineStationResponse {
         this.modifiedDate = modifiedDate;
     }
 
-    public Long getId(){
+    public Long getId() {
         return this.id;
     }
 

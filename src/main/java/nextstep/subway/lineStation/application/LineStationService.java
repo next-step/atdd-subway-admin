@@ -4,13 +4,11 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.lineStation.domain.LineStation;
 import nextstep.subway.lineStation.domain.LineStationRepository;
 import nextstep.subway.lineStation.dto.LineStationResponse;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
