@@ -94,28 +94,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_같음(createdId, response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(long createdId) {
-        return RestAssured
-                    .given().log().all()
-                    .when().get("/lines/" + createdId)
-                    .then().log().all().extract();
-    }
-
-    private void 지하철_노선_같음(long createdId, ExtractableResponse<Response> response) {
-        assertThat(createdId).isEqualTo(response.body().as(LineResponse.class).getId());
-    }
-
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createdFirstLine = 지하철_노선_생성_요청(TEST_FIRST_LINE);
+        long createdId = extractIdByLocationHeader(createdFirstLine);
+        LineRequest parameter = new LineRequest("1호선", "black");
 
         // when
         // 지하철_노선_수정_요청
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(parameter)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/" + createdId)
+                .then().log().all().extract();
 
         // then
-        // 지하철_노선_수정됨
+        지하철_노선_수정됨(response);
+    }
+
+    private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
+        assertThat(response).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -129,6 +132,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(long createdId) {
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines/" + createdId)
+                .then().log().all().extract();
+    }
+
+    private void 지하철_노선_같음(long createdId, ExtractableResponse<Response> response) {
+        assertThat(createdId).isEqualTo(response.body().as(LineResponse.class).getId());
     }
 
     private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, ExtractableResponse<Response>...responses) {
