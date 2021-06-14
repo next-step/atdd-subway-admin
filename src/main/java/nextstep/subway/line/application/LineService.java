@@ -9,6 +9,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,10 +37,6 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    private Line findLineByLineId(Long id) {
-        return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-    }
-
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         return LineResponse.of(findLineByLineId(id));
@@ -54,7 +51,12 @@ public class LineService {
     }
 
     public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
+        Line line = findLineByLineId(id);
+        lineRepository.delete(line);
+    }
+
+    private Line findLineByLineId(Long id) {
+        return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
 }

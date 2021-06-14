@@ -23,7 +23,8 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId(), line.getName().toString(), line.getColor().toString(),
+            line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
