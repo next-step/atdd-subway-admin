@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.util.NoSuchElementException;
+
 @RestController
 @RequestMapping("/lines")
 public class SectionController {
@@ -19,11 +22,22 @@ public class SectionController {
     public ResponseEntity addSection(@PathVariable Long lineId,
                                      @RequestBody SectionRequest sectionRequest) {
         sectionService.addSection(lineId, sectionRequest);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.created(URI.create(lineId + "/sections")).body(HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity removeSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        sectionService.removeSection(lineId, stationId);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity handleIllegalArgsExceptionForSection(IllegalArgumentException exception) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity handleNoSuchElementExceptionForSection(NoSuchElementException exception) {
         return ResponseEntity.badRequest().build();
     }
 }

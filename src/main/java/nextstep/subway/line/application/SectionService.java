@@ -36,4 +36,10 @@ public class SectionService {
     private Station findStation(Long stationId) {
         return stationRepository.findById(stationId).orElseThrow(NoSuchElementException::new);
     }
+
+    public void removeSection(Long lineId, Long stationId) {
+        Line line = findLine(lineId);
+        Station targetStation = findStation(stationId);
+        line.removeStation(targetStation);
+    }
 }
