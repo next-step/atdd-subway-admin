@@ -30,6 +30,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         return LineResponse.of(findLineById(id));
     }
@@ -52,14 +53,12 @@ public class LineService {
         lineRepository.deleteById(line.getId());
     }
 
-    @Transactional(readOnly = true)
-    private Station findStationById(Long stationId) {
+    public Station findStationById(Long stationId) {
         return stationRepository.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역아이디 입니다."));
     }
 
-    @Transactional(readOnly = true)
-    private Line findLineById(Long id) {
+    public Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선아이디 입니다."));
     }
