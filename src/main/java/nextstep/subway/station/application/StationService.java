@@ -1,5 +1,6 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.common.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -35,5 +36,14 @@ public class StationService {
 
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findDomainById(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new StationNotFoundException("존재하지 않는 역입니다."));
+    }
+
+    public Station findById(Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(() -> new StationNotFoundException("존재하지 않는 역입니다."));
     }
 }
