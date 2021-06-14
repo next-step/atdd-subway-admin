@@ -36,9 +36,9 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public Section(Optional<Station> upStation, Optional<Station> downStation, int distance) {
-        this.upStation = upStation.orElseThrow(()-> new NoSuchElementException());
-        this.downStation = downStation.orElseThrow(()-> new NoSuchElementException());
+    public Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
