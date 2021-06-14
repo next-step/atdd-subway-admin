@@ -61,19 +61,19 @@ public class Sections {
     }
 
     private boolean isLastSectionBefore(Section section, Section last) {
-        return last.getDownStation().equals(section.getDownStation());
+        return last.isLastSectionBefore(section);
     }
 
     private boolean isLastSectionNext(Section section, Section last) {
-        return last.getDownStation().equals(section.getUpStation());
+        return last.isLastSectionNext(section);
     }
 
     private boolean isFirstSectionBefore(Section section, Section first) {
-        return first.getUpStation().equals(section.getDownStation());
+        return first.isFirstSectionBefore(section);
     }
 
     private boolean isFirstSectionNext(Section section, Section first) {
-        return first.getUpStation().equals(section.getUpStation());
+        return first.isFirstSectionNext(section);
     }
 
     private void addMiddleSection(Section section, LinkedList<Section> result) {
@@ -135,20 +135,28 @@ public class Sections {
     }
 
     private void validate(Section section) {
-        if (checkSectionDuplicated(section)) {
+        checkSectionDuplicated(section);
+        checkStationExist(section);
+    }
+
+    private void checkSectionDuplicated(Section section) {
+        if (isSectionDuplicated(section)) {
             throw new SectionDuplicatedException(SECTION_DUPLICATE);
         }
-        if (checkSectionStationExisted(section)) {
+    }
+
+    private void checkStationExist(Section section) {
+        if (isSectionStationExisted(section)) {
             throw new StationNotRegisterException(NOT_REGISTERED_STATION);
         }
     }
 
-    private boolean checkSectionDuplicated(Section section) {
+    private boolean isSectionDuplicated(Section section) {
         return sections.stream()
                 .allMatch(section::containsAllStations);
     }
 
-    private boolean checkSectionStationExisted(Section section) {
+    private boolean isSectionStationExisted(Section section) {
         return sections.stream()
                 .allMatch(section::containsNoneStations);
     }
@@ -168,7 +176,8 @@ public class Sections {
     }
 
     public void deleteSection(Long stationId) {
-        validate(stationId);
+        checkCanRemoveSection();
+        checkHasStationId(stationId);
 
         List<Section> foundSections = sections.stream()
                 .filter(v -> v.hasStationId(stationId))
@@ -190,11 +199,6 @@ public class Sections {
         }
         downwardSection.changeUpward(upwardSection);
         this.sections.remove(upwardSection);
-    }
-
-    private void validate(Long stationId) {
-        checkCanRemoveSection();
-        checkHasStationId(stationId);
     }
 
     private Section getUpwardSection(Long stationId, List<Section> foundSections) {

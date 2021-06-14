@@ -140,8 +140,24 @@ public class Section extends BaseEntity {
         return upStation.isStationIdMatch(stationId) || downStation.isStationIdMatch(stationId);
     }
 
+    public boolean isLastSectionBefore(Section section) {
+        return downStation.equals(section.downStation);
+    }
+
+    public boolean isLastSectionNext(Section section) {
+        return downStation.equals(section.upStation);
+    }
+
+    public boolean isFirstSectionBefore(Section section) {
+        return upStation.equals(section.downStation);
+    }
+
+    public boolean isFirstSectionNext(Section section) {
+        return upStation.equals(section.upStation);
+    }
+
     public void changeUpward(Section section) {
-        this.downStation = section.getDownStation();
+        this.downStation = section.downStation;
         this.distance = distance.plus(section.distance);
     }
 
