@@ -100,7 +100,7 @@ public class LineStationsTest {
         LineStation lineStation2 = new LineStation(preStation, null, 0);
         LineStations lineStations = new LineStations(Arrays.asList(lineStation1, lineStation2));
 
-        LineStation actual = lineStations.findLineStationByPreStation(preStation);
+        LineStation actual = lineStations.findLineStationByPreStation(lineStation1);
         assertThat(actual).isEqualTo(lineStation1);
     }
 
@@ -109,8 +109,8 @@ public class LineStationsTest {
         LineStation lineStation1 = new LineStation(station, preStation, 10);
         LineStation lineStation2 = new LineStation(preStation, null, 0);
         LineStations lineStations = new LineStations(Arrays.asList(lineStation1, lineStation2));
-
-        assertThatThrownBy(() -> lineStations.findLineStationByPreStation(station)).isInstanceOf(IllegalArgumentException.class);
+        LineStation expected = new LineStation(preStation, station, 10);
+        assertThatThrownBy(() -> lineStations.findLineStationByPreStation(expected)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

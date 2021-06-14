@@ -66,8 +66,10 @@ public class LineStationTest {
     @Test
     @DisplayName("노선 지하철역 이전역 정보 일치 여부")
     void isSamePreStation() {
-        assertThat(lineStation.isSamePreStation(preStation)).isTrue();
-        assertThat(lineStation.isSamePreStation(station)).isFalse();
+        LineStation expected1 = new LineStation(station, preStation, 10);
+        LineStation expected2 = new LineStation(preStation, station, 10);
+        assertThat(lineStation.isSamePreStation(expected1)).isTrue();
+        assertThat(lineStation.isSamePreStation(expected2)).isFalse();
     }
 
     @ParameterizedTest

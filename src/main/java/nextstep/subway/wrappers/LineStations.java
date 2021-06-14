@@ -50,10 +50,10 @@ public class LineStations {
         return lineStations;
     }
 
-    public LineStation findLineStationByPreStation(Station preStation) {
+    public LineStation findLineStationByPreStation(LineStation lineStation) {
         return lineStations
                 .stream()
-                .filter(ls -> ls.isSamePreStation(preStation))
+                .filter(ls -> ls.isSamePreStation(lineStation))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
@@ -65,12 +65,12 @@ public class LineStations {
 
     public boolean isNewUpLineStation(LineStation lineStation) {
         AtomicBoolean isNewUpLineStation = new AtomicBoolean(false);
-        findFirstLineStation().ifPresent( ls -> isNewUpLineStation.set(ls.isSameStation(lineStation.getStation())));
+        findFirstLineStation().ifPresent( ls -> isNewUpLineStation.set(ls.isSameStation(lineStation)));
         return isNewUpLineStation.get();
     }
 
     public boolean isNewDownLineStation(LineStation lineStation) {
-        return getLineStationsOrderByAsc().get(lineStations.size() - 1).isSameStation(lineStation.getPreStation());
+        return getLineStationsOrderByAsc().get(lineStations.size() - 1).isLastLineStation(lineStation);
     }
 
     public boolean isNotContainStations(LineStation lineStation) {

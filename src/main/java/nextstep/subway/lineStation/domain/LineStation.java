@@ -59,12 +59,29 @@ public class LineStation {
         return Objects.nonNull(preStation) && Objects.equals(preStation.getId(), lineStation.getStation().getId());
     }
 
-    public boolean isSamePreStation(Station preStation) {
-        return Objects.nonNull(this.preStation) && Objects.equals(this.preStation.getId(), preStation.getId());
+    public boolean isSamePreStation(LineStation lineStation) {
+        return Objects.nonNull(this.preStation) && Objects.equals(this.preStation.getId(), lineStation.preStation.getId());
     }
 
-    public boolean isSameStation(Station station) {
-        return this.station.getId() == station.getId();
+    public boolean isSameStation(LineStation lineStation) {
+        return this.station.getId() == lineStation.station.getId();
+    }
+
+    public void validDistance(LineStation lineStation) {
+        if (this.distance.subtractionDistance(lineStation.distance) <= 0) {
+            throw new IllegalArgumentException(OUT_BOUND_DISTANCE_ERROR_MESSAGE);
+        }
+    }
+
+    public boolean isSame(LineStation other) {
+        if (Objects.isNull(preStation)) {
+            return Objects.isNull(other.preStation) && (station.isSameId(other.station));
+        }
+        return (preStation.isSameId(other.preStation)) && (station.isSameId(other.station));
+    }
+
+    public boolean isLastLineStation(LineStation lineStation) {
+        return this.station.isSameId(lineStation.preStation);
     }
 
     public void update(Station station, Station preStation, Distance distance) {
@@ -87,19 +104,6 @@ public class LineStation {
 
     public Distance getDistance() {
         return distance;
-    }
-
-    public void validDistance(LineStation lineStation) {
-        if (this.distance.subtractionDistance(lineStation.distance) <= 0) {
-            throw new IllegalArgumentException(OUT_BOUND_DISTANCE_ERROR_MESSAGE);
-        }
-    }
-
-    public boolean isSame(LineStation other) {
-        if (Objects.isNull(preStation)) {
-            return Objects.isNull(other.preStation) && (station.isSameId(other.station));
-        }
-        return (preStation.isSameId(other.preStation)) && (station.isSameId(other.station));
     }
 
     @Override
