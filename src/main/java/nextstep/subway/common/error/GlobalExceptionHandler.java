@@ -38,4 +38,10 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleIllegalArgsException(DataIntegrityViolationException e) {
         return ErrorResponse.of(e.getMessage());
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(Throwable.class)
+    public ErrorResponse handleThrowableException(Throwable e){
+        return ErrorResponse.of(e.getMessage());
+    }
 }
