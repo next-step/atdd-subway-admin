@@ -9,9 +9,9 @@ import nextstep.subway.station.dto.StationResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LineAcceptanceTestUtils {
+public class LineAcceptanceTestHelper {
 
-	private LineAcceptanceTestUtils() {
+	private LineAcceptanceTestHelper() {
 		// empty
 	}
 

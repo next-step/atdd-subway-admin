@@ -32,28 +32,35 @@ public class LineController {
 		return ResponseEntity.ok(lineService.getLineRepository());
 	}
 
-	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-		return ResponseEntity.ok(lineService.getLine(id));
+	@GetMapping(value = "/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LineResponse> getLine(@PathVariable Long lineId) {
+		return ResponseEntity.ok(lineService.getLine(lineId));
 	}
 
-	@PutMapping(value = "/{id}")
-	public ResponseEntity<LineResponse> updateLine(@PathVariable Long id,
+	@PutMapping(value = "/{lineId}")
+	public ResponseEntity<LineResponse> updateLine(@PathVariable Long lineId,
 												   @RequestBody LineRequest lineRequest) {
-		lineService.updateLine(id, lineRequest);
-		return ResponseEntity.ok().build();
+		LineResponse line = lineService.updateLine(lineId, lineRequest);
+		return ResponseEntity.ok(line);
 	}
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
-		lineService.deleteLine(id);
+	@DeleteMapping("/{lineId}")
+	public ResponseEntity<Void> deleteLine(@PathVariable Long lineId) {
+		lineService.deleteLine(lineId);
 		return ResponseEntity.noContent().build();
 	}
 
-	@PostMapping("/{id}/sections")
-	public ResponseEntity<LineResponse> registerSection(@PathVariable Long id,
+	@PostMapping("/{lineId}/sections")
+	public ResponseEntity<LineResponse> registerSection(@PathVariable Long lineId,
 														@RequestBody SectionRequest request) {
-		LineResponse line = lineService.registerSection(id, request);
+		LineResponse line = lineService.registerSection(lineId, request);
+		return ResponseEntity.ok(line);
+	}
+
+	@DeleteMapping("/{lineId}/sections")
+	public ResponseEntity<LineResponse> removeSection(@PathVariable Long lineId,
+													  @RequestParam Long stationId) {
+		LineResponse line = lineService.removeSectionByStationId(lineId, stationId);
 		return ResponseEntity.ok(line);
 	}
 }

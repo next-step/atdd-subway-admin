@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 
+import java.util.Map;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
 	@LocalServerPort
@@ -66,6 +68,17 @@ public class AcceptanceTest {
 		// when
 		return RestAssured
 			.given().log().all()
+			.when()
+			    .delete(url)
+			.then().log().all()
+			    .extract();
+	}
+
+	protected static ExtractableResponse<Response> deleteWithParams(final String url, final Map<String, Object> params) {
+		// when
+		return RestAssured
+			.given().log().all()
+			    .params(params)
 			.when()
 			    .delete(url)
 			.then().log().all()

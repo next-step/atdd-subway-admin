@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 
-import static nextstep.subway.line.LineAcceptanceTestUtils.*;
+import static nextstep.subway.line.LineAcceptanceTestHelper.*;
 import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성_요청_및_성공_체크;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;

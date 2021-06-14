@@ -11,34 +11,56 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.exception.CommonExceptionMessage.EXISTS_ALL_STATIONS;
-import static nextstep.subway.exception.CommonExceptionMessage.NOT_EXISTS_STATIONS;
+import static nextstep.subway.exception.CommonExceptionMessage.*;
 
 @Embeddable
 public class Sections {
 
+	private static final int SECTION_MIN_SIZE = 1;
+
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
-	public void add(final Section section) {
+	public boolean add(final Section section) {
+		if (this.sections.contains(section)) {
+			return false;
+		}
 		if (!CollectionUtils.isEmpty(sections)) {
 			validateStations(section);
 			connectIfExistsUpStation(section);
 			connectIfExistsDownStation(section);
 		}
-		this.sections.add(section);
+		return this.sections.add(section);
 	}
 
 	public List<Station> stationsBySorted() {
-		Optional<Section> firstSection = findFirstSection();
-		if (!firstSection.isPresent()) {
-			return Collections.emptyList();
-		}
-		return getSortedStations(firstSection.get());
+		return findFirstSection()
+			.map(this::getSortedStations)
+			.orElse(Collections.emptyList());
 	}
 
-	public boolean contain(final Section section) {
-		return sections.contains(section);
+	public void removeStation(final Station station) {
+		checkPossibleRemoveByStation(station);
+		Optional<Section> upSection = findSectionUsingFilter(value -> value.downStation().equals(station));
+		Optional<Section> downSection = findSectionUsingFilter(value -> value.upStation().equals(station));
+		if (!downSection.isPresent()) {
+			removeSection(upSection.get());
+			return;
+		}
+		if (!upSection.isPresent()) {
+			removeSection(downSection.get());
+			return;
+		}
+		disConnectSection(downSection.get(), upSection.get());
+	}
+
+	private void disConnectSection(final Section connectedUpStation, final Section connectedDownStation) {
+		connectedUpStation.disconnectDownStation(connectedDownStation);
+		this.sections.remove(connectedDownStation);
+	}
+
+	private void removeSection(final Section station) {
+		this.sections.remove(station);
 	}
 
 	private void validateStations(final Section section) {
@@ -69,14 +91,18 @@ public class Sections {
 	}
 
 	private boolean containUpStation(final Section section) {
-		return stationsNotSorted().contains(section.upStation());
+		return containStationInSection(section.upStation());
 	}
 
 	private boolean containDownStation(final Section section) {
-		return stationsNotSorted().contains(section.downStation());
+		return containStationInSection(section.downStation());
 	}
 
-	private List<Station> stationsNotSorted() {
+	private boolean containStationInSection(final Station station) {
+		return stations().contains(station);
+	}
+
+	private List<Station> stations() {
 		return this.sections.stream()
 							.flatMap(Section::streamOfStation)
 							.distinct()
@@ -85,12 +111,12 @@ public class Sections {
 
 	private Map<Station, Section> groupByUpStation() {
 		return sections.stream()
-					   .collect(Collectors.toMap(section -> section.upStation(), Function.identity()));
+					   .collect(Collectors.toMap(Section::upStation, Function.identity()));
 	}
 
 	private List<Station> downStations() {
 		return sections.stream()
-					   .map(section -> section.downStation())
+					   .map(Section::downStation)
 					   .collect(Collectors.toList());
 	}
 
@@ -110,6 +136,19 @@ public class Sections {
 			nextSection = upStationMap.get(nextSection.downStation());
 		} while (nextSection != null);
 		return stations;
+	}
+
+	private void checkPossibleRemoveByStation(final Station station) {
+		if (!isPossibleRemoveSize()) { // Sections의 최소 갯수는 삭제할 수 없다.
+			throw new IllegalArgumentException(CANNOT_DELETE_LAST_SECTION.message());
+		}
+		if (!containStationInSection(station)) { // 구간에 포함되어 있지 않으면 삭제 불가
+			throw new IllegalArgumentException(NOT_EXISTS_STATIONS.message());
+		}
+	}
+
+	private boolean isPossibleRemoveSize() {
+		return this.sections.size() > SECTION_MIN_SIZE;
 	}
 
 }

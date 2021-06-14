@@ -23,6 +23,7 @@ public class Line extends BaseEntity {
 	private Sections sections = new Sections();
 
 	protected Line() {
+		// empty
 	}
 
 	public Line(final String name, final String color) {
@@ -48,14 +49,17 @@ public class Line extends BaseEntity {
 	}
 
 	public void addSection(final Section section) {
-		if (this.sections.contain(section)) {
+		if (!this.sections.add(section)) {
 			return;
 		}
-		this.sections.add(section);
 		section.toLine(this);
 	}
 
 	public List<Station> stations() {
 		return sections.stationsBySorted();
+	}
+
+	public void removeSection(Station station) {
+		this.sections.removeStation(station);
 	}
 }

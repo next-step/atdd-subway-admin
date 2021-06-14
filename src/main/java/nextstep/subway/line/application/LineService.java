@@ -31,16 +31,9 @@ public class LineService {
 	}
 
 	public LineResponse saveLine(final LineRequest request) {
-		Station upStation = findStationById(request.getUpStationId());
-		Station downStation = findStationById(request.getDownStationId());
-		Line line = lineRepository.save(request.toLine());
-		line.addSection(Section.of(upStation, downStation, request.getDistance()));
-		return LineResponse.of(line);
-	}
-
-	private Station findStationById(final Long id) {
-		return stationRepository.findById(id)
-								.orElseThrow(() -> new ApiException(NOT_FOUND_STATION));
+		Line line = request.toLine();
+		line.addSection(createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
+		return LineResponse.of(lineRepository.save(line));
 	}
 
 	@Transactional(readOnly = true)
@@ -48,24 +41,18 @@ public class LineService {
 		return convertLineResponse(lineRepository.findAll());
 	}
 
-	private List<LineResponse> convertLineResponse(List<Line> lines) {
-		return lines.stream()
-					.map(LineResponse::of)
-					.collect(Collectors.toList());
-	}
-
-	public LineResponse getLine(final Long id) {
-		return LineResponse.of(findById(id));
+	public LineResponse getLine(final Long lineId) {
+		return LineResponse.of(findById(lineId));
 	}
 
 	@Transactional(readOnly = true)
-	public Line findById(final Long id) {
-		return lineRepository.findById(id)
+	public Line findById(final Long lineId) {
+		return lineRepository.findById(lineId)
 							 .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
 	}
 
-	public LineResponse updateLine(final Long id, final LineRequest request) {
-		Line line = lineRepository.findById(id)
+	public LineResponse updateLine(final Long lineId, final LineRequest request) {
+		Line line = lineRepository.findById(lineId)
 								  .orElseThrow(() -> new ApiException(NOT_FOUND_LINE));
 		line.update(request.toLine());
 		return LineResponse.of(line);
@@ -75,11 +62,33 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
-	public LineResponse registerSection(final Long id, final SectionRequest request) {
-		Line line = findById(id);
-		Station upStation = findStationById(request.getUpStationId());
-		Station downStation = findStationById(request.getDownStationId());
-		line.addSection(Section.of(upStation, downStation, request.getDistance()));
+	public LineResponse registerSection(final Long lineId, final SectionRequest request) {
+		Line line = findById(lineId);
+		line.addSection(createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
 		return LineResponse.of(line);
+	}
+
+	public LineResponse removeSectionByStationId(final Long lineId, final Long stationId) {
+		Line line = findById(lineId);
+		Station station = findStationById(stationId);
+		line.removeSection(station);
+		return LineResponse.of(line);
+	}
+
+	private Section createSection(final Long upStationId, final Long downStationId, final int distance) {
+		Station upStation = findStationById(upStationId);
+		Station downStation = findStationById(downStationId);
+		return Section.of(upStation, downStation, distance);
+	}
+
+	private List<LineResponse> convertLineResponse(List<Line> lines) {
+		return lines.stream()
+					.map(LineResponse::of)
+					.collect(Collectors.toList());
+	}
+
+	private Station findStationById(final Long stationId) {
+		return stationRepository.findById(stationId)
+								.orElseThrow(() -> new ApiException(NOT_FOUND_STATION));
 	}
 }

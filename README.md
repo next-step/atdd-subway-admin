@@ -114,19 +114,34 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 *   Scenario: 기존 역 사이 길이보다 큰 새로운 역을 등록한다.
     *   Given 지하철 노선이 등록되어 있다.
     *   When 등록된 지하철 노선 사이에 구간 등록 요청한다.
-    *   Then 지하철 노선 구간이 실패한다.
+    *   Then 지하철 노선 구간이 등록 실패한다.
 
 
 *   Scenario: 상행역과 하행역이 모두 등록되있는 새로운 역을 등록한다.
     *   Given 지하철 노선이 등록되어 있다.
     *   When 등록된 지하철 노선 사이에 구간 등록 요청한다.
-    *   Then 지하철 노선 구간이 실패한다.
+    *   Then 지하철 노선 구간이 등록 실패한다.
 
 
 *   Scenario: 상행역과 하행역이 모두 등록되어있지 않은 새로운 역을 등록한다.
     *   Given 지하철 노선이 등록되어 있다.
     *   When 등록된 지하철 노선 사이에 구간 등록 요청한다.
-    *   Then 지하철 노선 구간이 실패한다.
+    *   Then 지하철 노선 구간이 등록 실패한다.
+
+*   Scenario: 지하철 구간을 제거한다.
+    *   Given 지하철 노선이 등록되어 있다.
+    *   When 구간에 등록된 지하철 역 제거 요청한다.
+    *   Then 지하철 노선 구간이 제거된다.
+
+*   Scenario: 구간에 등록되지 않은 역을 제거한다.
+    *   Given 지하철 노선이 등록되어 있다.
+    *   When 구간에 등록되지 않은 지하철 역 제거 요청한다.
+    *   Then 지하철 노선 구간이 제거 실패한다.
+
+*   Scenario: 마지막 구간을 제거한다.
+    *   Given 지하철 노선이 등록되어 있다.
+    *   When 마지막 구간 지하철 역 제거 요청한다.
+    *   Then 지하철 노선 구간이 제거 실패한다.
 
 
 ##  기능 목록
@@ -137,6 +152,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 *   지하철 노선 삭제
 *   노선의 역 목록을 조회하는 기능
 *   지하철 구간 등록 기능
+*   지하철 구간 삭제 기능
 
 
 ## DDL
