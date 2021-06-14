@@ -85,12 +85,12 @@ public class Section {
 		}
 	}
 
-	void removeInnerSectionByStation(Section otherSection, Station station) {
-		if (isConnectedInUpwardByStation(otherSection, station)) {
-			removeDownwardSection(otherSection);
+	void removeConnectingStation(Station station, Section adjacentSection) {
+		if (isConnectedInUpwardByStation(adjacentSection, station)) {
+			removeDownwardStation(adjacentSection);
 		}
-		if (isConnectedInDownwardByStation(otherSection, station)) {
-			removeUpwardSection(otherSection);
+		if (isConnectedInDownwardByStation(adjacentSection, station)) {
+			removeUpwardStation(adjacentSection);
 		}
 	}
 
@@ -114,12 +114,12 @@ public class Section {
 		return containDownwardStation(station) && isUpwardOf(otherSection);
 	}
 
-	private void removeDownwardSection(Section downwardSection) {
+	private void removeDownwardStation(Section downwardSection) {
 		this.downStation = downwardSection.downStation;
 		this.distance = distance.plus(downwardSection.distance);
 	}
 
-	private void removeUpwardSection(Section upwardSection) {
+	private void removeUpwardStation(Section upwardSection) {
 		this.upStation = upwardSection.upStation;
 		this.distance = distance.plus(upwardSection.distance);
 	}

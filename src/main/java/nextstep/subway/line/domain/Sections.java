@@ -48,9 +48,7 @@ public class Sections {
 
 		Section sectionToRemove = findSectionToRemoveBy(station);
 
-		for (Section section : sections) {
-			section.removeInnerSectionByStation(sectionToRemove, station);
-		}
+		removeConnectingStation(station, sectionToRemove);
 
 		sections.remove(sectionToRemove);
 	}
@@ -67,6 +65,12 @@ public class Sections {
 			.flatMap(Section::getStreamOfStations)
 			.distinct()
 			.collect(toList());
+	}
+
+	private void removeConnectingStation(Station station, Section sectionToRemove) {
+		for (Section section : sections) {
+			section.removeConnectingStation(station, sectionToRemove);
+		}
 	}
 
 	private Stream<Section> orderedSections() {
