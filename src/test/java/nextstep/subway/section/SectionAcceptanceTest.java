@@ -222,12 +222,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 구간제거_when_중간_구간() {
         //given
         //구간을_노선에_등록_요청
-
+        // [서울]==[회현]==[충무로]
+        구간을_노선에_등록_요청(사호선_ID, 서울_회현_요청);
+        
         // when
         //구간을_노선에_제거_요청
+        ExtractableResponse<Response> response = 구간을_노선에서_제거_요청(사호선_ID, 회현역.getId());
 
         // then
         //구간_제거_완료
+        구간_OK_응답(response);
+        List<Long> expectedOrderId = Arrays.asList(서울역.getId(), 충무로역.getId());
+        노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
     }
 
     @DisplayName("구간제거 예외상황 : 노선에 구간이 단 한 개인 경우")
