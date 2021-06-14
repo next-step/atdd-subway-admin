@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -44,7 +45,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철역을 모두 조회한다.")
     @Test
     void getStations() {
         /// given
@@ -65,6 +66,19 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    @DisplayName("특정한 지하철역을 조회한다.")
+    @Test
+    void 특정_지하철역_조회() {
+        /// given
+        Station 강남역 = 지하철_역_등록되어_있음("강남역").as(Station.class);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_역_조회_요청(강남역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
@@ -81,5 +95,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     public ExtractableResponse<Response> 지하철_역_등록되어_있음(String name) {
         return httpPost(ROOT_STATION_REQUEST_URI, new StationRequest(name));
+    }
+
+    public ExtractableResponse<Response> 지하철_역_조회_요청(Long id) {
+        return httpGet(ROOT_STATION_REQUEST_URI + "/" + id);
     }
 }
