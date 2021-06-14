@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Embeddable
@@ -15,6 +16,17 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void addSection(Section section) {
+        boolean isUpStationExist = isStationExist(section.getUpStation());
+        boolean isDownStationExist = isStationExist(section.getDownStation());
+        validSection(isUpStationExist, isDownStationExist);
+
+        if (isUpStationExist) {
+            updateUpStation(section);
+        }
+
+        if (isDownStationExist) {
+            updateDownStation(section);
+        }
         sections.add(section);
     }
 
@@ -83,4 +95,27 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(NotFoundException::new);
     }
+
+
+    public boolean isStationExist(Station station) {
+        return getStations().stream()
+                .anyMatch(it -> it == station);
+    }
+
+    public List<Station> getStations() {
+        if (getSections().isEmpty()) {
+            return Arrays.asList();
+        }
+        return orderSection();
+    }
+
+    public void validSection(boolean isUpStationExist, boolean isDownStationExist) {
+        if (!isUpStationExist && !isDownStationExist && !getStations().isEmpty()) {
+            throw new RuntimeException("상/하행선 둘 중 하나는 일치해야 합니다.");
+        }
+        if (isUpStationExist && isDownStationExist) {
+            throw new RuntimeException("동일한 구간은 추가할 수 없습니다.");
+        }
+    }
+
 }

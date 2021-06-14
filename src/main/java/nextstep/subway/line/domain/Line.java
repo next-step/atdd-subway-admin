@@ -57,39 +57,10 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        if (sections.getSections().isEmpty()) {
-            return Arrays.asList();
-        }
-        return sections.orderSection();
+        return sections.getStations();
     }
 
     public void addSection(Section section) {
-        boolean isUpStationExist = isStationExist(section.getUpStation());
-        boolean isDownStationExist = isStationExist(section.getDownStation());
-
-        validSection(isUpStationExist, isDownStationExist);
-
-        if (isUpStationExist) {
-            sections.updateUpStation(section);
-        }
-
-        if (isDownStationExist) {
-            sections.updateDownStation(section);
-        }
         sections.addSection(section);
-    }
-
-    public void validSection(boolean isUpStationExist, boolean isDownStationExist) {
-        if (!isUpStationExist && !isDownStationExist && !getStations().isEmpty()) {
-            throw new RuntimeException("상/하행선 둘 중 하나는 일치해야 합니다.");
-        }
-        if (isUpStationExist && isDownStationExist) {
-            throw new RuntimeException("동일한 구간은 추가할 수 없습니다.");
-        }
-    }
-
-    public boolean isStationExist(Station station) {
-        return getStations().stream()
-                .anyMatch(it -> it == station);
     }
 }
