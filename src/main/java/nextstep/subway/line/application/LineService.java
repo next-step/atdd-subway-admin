@@ -70,8 +70,6 @@ public class LineService {
         List<Section> sections = lineRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("삭제할 Sections가 없습니다.")).getSections();
         for (Section section : sections) {
-            stationRepository.delete(section.getDownStation());
-            stationRepository.delete(section.getUpStation());
             sectionRepository.delete(section);
         }
         lineRepository.deleteById(id);
