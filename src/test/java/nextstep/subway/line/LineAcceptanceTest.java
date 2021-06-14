@@ -79,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = findAllLines();
 
         // then
-        노선에_역_등록됨(response);
+        노선에_역_응답됨(response);
         노선_목록_전체_조회됨(response, createResponse1, createResponse2);
     }
 
@@ -93,7 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = findLineById(1L);
 
         //then
-        노선에_역_등록됨(response);
+        노선에_역_응답됨(response);
         상행역_하행역_순으로_정렬_됨(response, 구일역, 회기역);
     }
 
@@ -107,7 +107,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_수정_요청("2호선","green");
 
         //then
-        노선에_역_등록됨(response);
+        노선에_역_응답됨(response);
         노선에_역_수정됨(response, "2호선", "green");
     }
 
@@ -154,7 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createStation(createStationParams("신길역")).as(StationResponse.class);
     }
 
-    public static void 노선에_역_등록됨(ExtractableResponse<Response> response) {
+    public static void 노선에_역_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
