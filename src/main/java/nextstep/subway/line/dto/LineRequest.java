@@ -3,7 +3,6 @@ package nextstep.subway.line.dto;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
 
-import java.util.Collections;
 
 public class LineRequest {
     private String name;
