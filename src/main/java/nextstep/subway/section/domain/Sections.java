@@ -25,8 +25,7 @@ public class Sections {
 
     public List<Station> stationsFromUpToDown() {
         return sections.stream()
-                .map(section -> Arrays.asList(section.getUpStation(), section.getDownStation()))
-                .flatMap(Collection::stream)
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .collect(Collectors.toList());
     }
 }
