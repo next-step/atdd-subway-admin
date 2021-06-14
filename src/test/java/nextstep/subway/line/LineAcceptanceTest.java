@@ -59,6 +59,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(statusCode(response)).isEqualTo(statusCode(NO_CONTENT));
     }
 
+    @DisplayName("구간이 하나인 노선의 지하철 구간을 삭제한다.")
+    @Test
+    void given_TwoLineStations_when_DeleteStation_then_ReturnBadRequest() {
+        // given
+        지하철_노선_생성_요청(PATH, FIRST);
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_구간에_지하철역_삭제_요청(PATH + "/1/sections?stationId=2");
+
+        // then
+        assertThat(statusCode(response)).isEqualTo(statusCode(BAD_REQUEST));
+    }
+
+    @DisplayName("존재하지 않는 지하철 구간을 삭제한다.")
+    @Test
+    void given_NotExistLineStation_when_DeleteStation_then_ReturnNoContent() {
+        // given
+        지하철_노선_생성_요청(PATH, FIRST);
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_구간에_지하철역_삭제_요청(PATH + "/1/sections?stationId=9");
+
+        // then
+        assertThat(statusCode(response)).isEqualTo(statusCode(NO_CONTENT));
+    }
+
     @DisplayName("지하철 구간을 추가한다.")
     @Test
     void given_Line_when_AddSection_then_ReturnOk() {
