@@ -13,17 +13,17 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
     private int distance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "line_id")
     private Line line;
 
@@ -71,5 +71,13 @@ public class Section extends BaseEntity {
         if (this.distance < distance) {
             throw new IllegalArgumentException("기존 구간보다 긴 거리값은 추가할수 없습니다.");
         }
+    }
+
+    public boolean isEqualsUpStation(Station inputUpStation) {
+        return upStation.equals(inputUpStation);
+    }
+
+    public boolean isEqualsDownStation(Station inputDownStation) {
+        return downStation.equals(inputDownStation);
     }
 }

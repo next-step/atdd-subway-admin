@@ -3,7 +3,6 @@ package nextstep.subway.line;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,8 +61,12 @@ public class LineTest {
     @DisplayName("상/하행선이 동일한 구간 추가 불가")
     @Test
     void addDuplicationSection() {
+        Section 양재_수지구청역 = new Section(신분당선, 양재역, 수지구청역, 30);
+        boolean isUpStationExist = 신분당선.isStationExist(양재_수지구청역.getUpStation());
+        boolean isDownStationExist = 신분당선.isStationExist(양재_수지구청역.getDownStation());
+
         assertThatThrownBy(() -> {
-            신분당선.validSection(new Section(신분당선, 양재역, 수지구청역, 30));
+            신분당선.validSection(isUpStationExist, isDownStationExist);
         }).isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("동일한 구간은 추가할 수 없습니다.");
     }
@@ -71,8 +74,12 @@ public class LineTest {
     @DisplayName("상/하행선 둘중 하나와도 일치하지 않는 구간 추가 불가")
     @Test
     void addSameOneSection() {
+        Section 양재_수지구청역 = new Section(신분당선, 양재숲역, 판교역, 30);
+        boolean isUpStationExist = 신분당선.isStationExist(양재_수지구청역.getUpStation());
+        boolean isDownStationExist = 신분당선.isStationExist(양재_수지구청역.getDownStation());
+
         assertThatThrownBy(() -> {
-            신분당선.validSection(new Section(신분당선, 양재숲역, 판교역, 30));
+            신분당선.validSection(isUpStationExist, isDownStationExist);
         }).isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("상/하행선 둘 중 하나는 일치해야 합니다.");
     }
