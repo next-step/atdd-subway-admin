@@ -45,28 +45,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setup() {
-        Map<String, String> params = new HashMap<>();
-        params.put(PARAM_NAME, "강남역");
+        Map<String, String> 요청_내용 = new HashMap<>();
+        요청_내용.put(PARAM_NAME, "강남역");
 
-        RestAssured.given()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .extract();
+        역_생성_요청(요청_내용);
 
-        params = new HashMap<>();
-        params.put(PARAM_NAME, "양재역");
+        요청_내용 = new HashMap<>();
+        요청_내용.put(PARAM_NAME, "양재역");
 
-        RestAssured.given()
-                .body(params)
-
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .extract();
+        역_생성_요청(요청_내용);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -94,11 +81,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> 응답 = 노선생성_요청(신분당선);
+        ExtractableResponse<Response> 노선생성_응답 = 노선생성_요청(신분당선);
 
         // then
         // 지하철_노선_생성_실패됨
-        노선_생성_요청_실패(응답);
+        노선_생성_요청_실패(노선생성_응답);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -188,8 +175,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_제거_요청
-        String 요청_주소 = 신분당선_생성_응답.header(LOCATION);
-        ExtractableResponse<Response> 노선_삭제_응답 = 노선_삭제_요청(요청_주소);
+        ExtractableResponse<Response> 노선_삭제_응답 = 노선_삭제_요청(신분당선_생성_응답);
 
         // then
         // 지하철_노선_삭제됨
@@ -216,28 +202,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 노선_조회_요청(ExtractableResponse<Response> 응답) {
+    private ExtractableResponse<Response> 노선_조회_요청(ExtractableResponse<Response> 역_생성_응답) {
         return RestAssured.given().log().all()
                 .when()
-                .get("/lines/" + 응답.body().jsonPath().get("id").toString())
+                .get("/lines/" + 역_생성_응답.body().jsonPath().get("id").toString())
                 .then().log().all()
                 .extract();
     }
 
-    private ExtractableResponse<Response> 노선_조회_요청(String pathVariable) {
+    private ExtractableResponse<Response> 노선_조회_요청(String 역_번호) {
         return RestAssured.given().log().all()
                 .when()
-                .get("/lines/" + pathVariable)
+                .get("/lines/" + 역_번호)
                 .then().log().all()
                 .extract();
     }
 
-    private ExtractableResponse<Response> 노선_수정_요청(Map<String, String> param, String pathVariable) {
+    private ExtractableResponse<Response> 노선_수정_요청(Map<String, String> 수정_내용, String 역_번호) {
         return RestAssured.given().log().all()
-                .body(param)
+                .body(수정_내용)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/" + pathVariable)
+                .put("/lines/" + 역_번호)
                 .then().log().all()
                 .extract();
     }
@@ -250,10 +236,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 노선_삭제_요청(String uri) {
+    private ExtractableResponse<Response> 노선_삭제_요청(ExtractableResponse<Response> 노선_생성_응답) {
         return RestAssured.given().log().all()
                 .when()
-                .delete(uri)
+                .delete(노선_생성_응답.header(LOCATION))
                 .then().log().all()
                 .extract();
     }
@@ -268,22 +254,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    private void 지하철_노선_생성됨(ExtractableResponse<Response> 응답) {
-        assertThat(응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(응답.header(LOCATION)).isNotBlank();
+    private void 지하철_노선_생성됨(ExtractableResponse<Response> 노선_생성_응답) {
+        assertThat(노선_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(노선_생성_응답.header(LOCATION)).isNotBlank();
     }
 
-    private void 노선_생성_요청_실패(ExtractableResponse<Response> 응답) {
-        assertThat(응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    private void 노선_생성_요청_실패(ExtractableResponse<Response> 노선_생성_실패_응답) {
+        assertThat(노선_생성_실패_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void 노선_이름_색_검사(ExtractableResponse<Response> 노선_수정_응답, String 분당선이름, String 노란색) {
+    private void 노선_이름_색_검사(ExtractableResponse<Response> 노선_수정_응답, String 분당선이름, String 색) {
         assertThat(노선_수정_응답.body().jsonPath().get(PARAM_NAME).toString()).isEqualTo(분당선이름);
-        assertThat(노선_수정_응답.body().jsonPath().get(PARAM_COLOR).toString()).isEqualTo(노란색);
+        assertThat(노선_수정_응답.body().jsonPath().get(PARAM_COLOR).toString()).isEqualTo(색);
     }
 
-    private void 노선_삭제_검사(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    private void 노선_삭제_검사(ExtractableResponse<Response> 노선_삭제_응답) {
+        assertThat(노선_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private void 노선_출발_종점_역_검사(ExtractableResponse<Response> 노선_조회_응답, String 시작종점, String 도착종점) {
@@ -311,5 +297,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_응답_정상_검사(ExtractableResponse<Response> 노선_목록_조회_응답) {
         assertThat(노선_목록_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 역_생성_요청(Map<String, String> 요청_사항) {
+        RestAssured.given()
+                .body(요청_사항)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then()
+                .extract();
     }
 }
