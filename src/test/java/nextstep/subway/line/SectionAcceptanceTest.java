@@ -2,6 +2,8 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,16 +66,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.body(new SectionRequest(stationId1, stationId3, 4))
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
-			.post("/lines" + "/" + lineId)
+			.post("/lines" + "/" + lineId + "/sections")
 			.then().log().all()
 			.extract();
 
 		// then
 		// 지하철_구간_생성됨
-		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		// 지하철_역_추가_조회
 		ExtractableResponse<Response> findResponse = LineAcceptanceMethod.findLine(lineId);
-		assertThat(findResponse.jsonPath().getList(".", LineResponse.class).size()).isEqualTo(3);
+		assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getStations()
+			.stream().map(it -> it.getId()).collect(Collectors.toList())).containsExactly(1L,
+			3L, 2L);
 	}
 
 	@DisplayName("새로운 역을 상행 종점으로 등록한다.")

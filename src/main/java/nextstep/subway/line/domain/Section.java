@@ -1,8 +1,5 @@
 package nextstep.subway.line.domain;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -44,8 +41,8 @@ public class Section {
 		this.distance = distance;
 	}
 
-	public List<Station> getStations() {
-		return Arrays.asList(upStation, downStation);
+	public Line getLine() {
+		return line;
 	}
 
 	public Station getUpStation() {
@@ -56,7 +53,23 @@ public class Section {
 		return downStation;
 	}
 
+	public int getDistance() {
+		return distance;
+	}
+
 	public void setLine(Line line) {
 		this.line = line;
+	}
+
+	public boolean isPossibleWithUpStationIntersected(Section section) {
+		return this.upStation.equals(section.getUpStation())
+			&& !this.downStation.equals(section.getDownStation())
+			&& this.distance > section.distance;
+	}
+
+	public boolean isPossilbeWithDownStationIntersected(Section section) {
+		return !this.upStation.equals(section.getUpStation())
+			&& this.downStation.equals(section.getDownStation())
+			&& this.distance > section.distance;
 	}
 }

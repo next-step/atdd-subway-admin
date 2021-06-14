@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -16,10 +15,43 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-	List<Section> list = new LinkedList<>();
+	List<Section> list = new ArrayList<>();
 
-	public void add(Section section) {
-		list.add(section);
+	public void add(Section candidate) {
+		if (list.size() == 0) {
+			list.add(candidate);
+
+			return;
+		}
+
+		Section targetSection = getTargetSection(candidate);
+
+		if (targetSection.isPossibleWithUpStationIntersected(candidate)) {
+			addList(targetSection, candidate, candidate.getDownStation(), targetSection.getDownStation());
+
+			return;
+		}
+
+		addList(targetSection, candidate, targetSection.getUpStation(), candidate.getUpStation());
+
+		return;
+	}
+
+	private void addList(Section targetSection, Section candidate, Station upStation, Station downStation) {
+		list.add(
+			new Section(targetSection.getLine(), upStation, downStation,
+				targetSection.getDistance() - candidate.getDistance()));
+		list.add(candidate);
+		list.remove(targetSection);
+	}
+
+	private Section getTargetSection(Section candidate) {
+		return list.stream()
+			.filter(
+				element -> element.isPossibleWithUpStationIntersected(candidate)
+					|| element.isPossilbeWithDownStationIntersected(candidate))
+			.findFirst()
+			.orElseThrow(() -> new NoSuchElementException("There is no such section"));
 	}
 
 	public List<Station> getOrderedStations() {

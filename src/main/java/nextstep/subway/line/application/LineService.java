@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -65,5 +67,13 @@ public class LineService {
 	public void deleteLineById(Long id) {
 		Line line = lines.findById(id).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
 		lines.delete(line);
+	}
+
+	public void addSection(Long lineId, SectionRequest sectionRequest) {
+		Line line = lines.findById(lineId).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
+		Station startStation = getStation(sectionRequest.getUpStationId());
+		Station endStation = getStation(sectionRequest.getDownStationId());
+
+		line.addSection(new Section(line, startStation, endStation, sectionRequest.getDistance()));
 	}
 }
