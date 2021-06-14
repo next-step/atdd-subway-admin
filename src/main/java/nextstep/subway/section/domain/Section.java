@@ -47,65 +47,33 @@ public class Section extends BaseEntity {
         return this.downStation.compareName(section.upStation());
     }
 
-    public void positioningAt(List<Section> sections) {
-        DockingPosition position = DockingPosition.none();
-        while (position.isNotDockedYet()) {
-            position = this.dockingPositionOn(sections, position);
-            position.nextIndex();
-        }
-        position.subIndex();
-
-        sections.add(position.positionIndex(), this);
-    }
-
-    private DockingPosition dockingPositionOn(List<Section> sections, DockingPosition position) {
-        Section section = sections.get(position.index());
-        if (this.isInFrontOf(section)) {
-            handleAttributesOfFrontSection(sections, section);
-            return position.frontType();
-        }
-        if (this.isInMidFrontOf(section)) {
-            section.handleAttributesToConnectBehindOf(this);
-            return position.midFrontType();
-        }
-        if (this.isInMidRearOf(section)) {
-            section.handleAttributesToConnectInFrontOf(this);
-            return position.midRearType();
-        }
-        if (this.isBehindOf(section)) {
-            handleAttributesOfBackSection(sections, section);
-            return position.rearType();
-        }
-        return position.noneType();
-    }
-
-    private boolean isInMidFrontOf(Section section) {
+    protected boolean isInMidFrontOf(Section section) {
         return this.upStation.compareName(section.upStation());
     }
 
-    private boolean isInMidRearOf(Section section) {
+    protected boolean isInMidRearOf(Section section) {
         return this.downStation.compareName(section.downStation());
     }
 
-    private boolean isBehindOf(Section section) {
+    protected boolean isBehindOf(Section section) {
         return this.upStation.compareName(section.downStation());
     }
 
-    private void handleAttributesOfFrontSection(List<Section> sections, Section sectionIn) {
+    protected void handleAttributesOfFrontSection(List<Section> sections, Section sectionIn) {
         sections.stream()
                 .filter(it -> it.downStationName().equals(sectionIn.upStationName()))
                 .findAny()
                 .ifPresent(it -> it.handleAttributesToConnectInFrontOf(this));
     }
 
-    private void handleAttributesOfBackSection(List<Section> sections, Section section) {
+    protected void handleAttributesOfBackSection(List<Section> sections, Section section) {
         sections.stream()
                 .filter(it -> it.upStationName().equals(section.downStationName()))
                 .findAny()
                 .ifPresent(it -> it.handleAttributesToConnectBehindOf(this));
     }
 
-    private void handleAttributesToConnectBehindOf(Section section) {
+    protected void handleAttributesToConnectBehindOf(Section section) {
         this.shortenDistance(section.distance());
         this.upStation = section.downStation();
     }

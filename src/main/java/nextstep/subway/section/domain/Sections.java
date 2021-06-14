@@ -33,7 +33,40 @@ public class Sections {
             return;
         }
 
-        section.positioningAt(sections);
+        DockingPosition position = findSectionPosition(section);
+        sections.add(position.positionIndex(), section);
+    }
+
+    private DockingPosition findSectionPosition(Section section) {
+        DockingPosition position = DockingPosition.none();
+        while (position.isNotDockedYet()) {
+            position = this.dockingPositionOn(position, section);
+            position.nextIndex();
+        }
+        position.subIndex();
+
+        return position;
+    }
+
+    private DockingPosition dockingPositionOn(DockingPosition position, Section section) {
+        Section existSection = sections.get(position.index());
+        if (section.isInFrontOf(existSection)) {
+            section.handleAttributesOfFrontSection(sections, existSection);
+            return position.frontType();
+        }
+        if (section.isInMidFrontOf(existSection)) {
+            existSection.handleAttributesToConnectBehindOf(section);
+            return position.midFrontType();
+        }
+        if (section.isInMidRearOf(existSection)) {
+            existSection.handleAttributesToConnectInFrontOf(section);
+            return position.midRearType();
+        }
+        if (section.isBehindOf(existSection)) {
+            section.handleAttributesOfBackSection(sections, existSection);
+            return position.rearType();
+        }
+        return position.noneType();
     }
 
     public void delete(Station station) {
