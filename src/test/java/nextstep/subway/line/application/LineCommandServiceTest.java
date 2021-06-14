@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.application.exception.LineDuplicatedException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.StationQueryUseCase;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,7 +48,10 @@ class LineCommandServiceTest {
         lineRequest2 = new LineRequest("2호선", "green", 1L, 2L, 10);
         line1 = new Line("1호선", "blue");
         upStation = new Station("용산역");
+        ReflectionTestUtils.setField(upStation, "id", 1L);
         downStation = new Station("서울역");
+        ReflectionTestUtils.setField(downStation, "id", 2L);
+        line1.addSection(Section.of(upStation, downStation, 10));
     }
 
     @DisplayName("요청한 지하철 노선을 저장하고 저장된 지하철 노선을 리턴한다.")

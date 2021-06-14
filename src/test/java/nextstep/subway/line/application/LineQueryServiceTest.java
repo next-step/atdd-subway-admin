@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,11 +39,15 @@ class LineQueryServiceTest {
     void setUp() {
         lineQueryService = new LineQueryService(lineRepository);
         Station upStation1 = new Station("upStation1");
+        ReflectionTestUtils.setField(upStation1, "id", 1L);
         Station upStation2 = new Station("upStation2");
+        ReflectionTestUtils.setField(upStation2, "id", 2L);
         Station downStation1 = new Station("downStation1");
+        ReflectionTestUtils.setField(downStation1, "id", 3L);
         Station downStation2 = new Station("downStation2");
-        line1 = new Line("1호선", "blue", new Section(upStation1, downStation1, 10));
-        line2 = new Line("2호선", "green", new Section(upStation2, downStation2, 10));
+        ReflectionTestUtils.setField(downStation2, "id", 4L);
+        line1 = new Line("1호선", "blue", Section.of(upStation1, downStation1, 10));
+        line2 = new Line("2호선", "green", Section.of(upStation2, downStation2, 10));
     }
 
     @DisplayName("지하철 목록 조회를 하면 존재하는 모든 노선들을 리턴한다.")
