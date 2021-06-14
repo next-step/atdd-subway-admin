@@ -44,4 +44,8 @@ public class LineService {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다. : " + id));
     }
+
+    public void deleteById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
