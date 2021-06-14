@@ -90,10 +90,47 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 }),
 
                 // then
-                // 1호선으로 등록된 지하철 갯수
+                // 추가 등록 오류
                 DynamicTest.dynamicTest("추가 등록 오류 조건", () -> {
-                    assertThatThrownBy(() -> 지하철_노선_추가_등록(new SectionRequest(1L, 5L, 11), 1L))
-                            .isInstanceOf(IllegalArgumentException.class);
+                    // when
+                    // 상행역 또는 하행역 둘 중 하나라도 존재해야함
+                    ExtractableResponse<Response> expected = 지하철_노선_추가_등록(new SectionRequest(6L, 5L, 11), 1L);
+                    // then
+                    assertThat(expected.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+                    // when
+                    // 기존 구간 보다 같거나 크면 안됨.
+                    expected = 지하철_노선_추가_등록(new SectionRequest(2L, 5L, 11), 1L);
+                    // then
+                    assertThat(expected.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                })
+        );
+    }
+
+    @DisplayName("구간 중간 삽입 테스트")
+    @TestFactory
+    Stream<DynamicTest> insert_section(){
+        return Stream.of(
+                // given
+                // 지하철 노선 등록되어 있음
+                DynamicTest.dynamicTest("지하철 노선과 구간 등록", () -> {
+                    //when
+                    지하철역_여러_생성();
+                    지하철_노선_등록(new LineRequest("1호선", "Purple", 1L, 2L, 10));
+                    지하철_노선_추가_등록(new SectionRequest(2L, 3L, 10), 1L);
+                    지하철_노선_추가_등록(new SectionRequest(3L, 4L, 10), 1L);
+
+                    // when and
+                    // 중간 삽입
+                    ExtractableResponse<Response> expected = 지하철_노선_추가_등록(new SectionRequest(2L, 5L, 5), 1L);
+                }),
+
+                // then
+                // 중간 등록됨
+                DynamicTest.dynamicTest("구간 중간 등록 확인", () -> {
+                    ExtractableResponse<Response> response = 노선_구간_목록_조회(1L);
+                    List<SectionResponse> expected = response.jsonPath().getList(".", SectionResponse.class);
+                    assertThat(expected.size()).isEqualTo(4);
                 })
         );
     }
@@ -142,6 +179,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get("/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    ExtractableResponse<Response> 노선_구간_목록_조회(Long id) {
+        return RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/{id}/sections", id)
                 .then().log().all()
                 .extract();
     }

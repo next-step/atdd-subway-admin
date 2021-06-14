@@ -36,6 +36,51 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public boolean isUpFinalSection(Section newSection) {
+        return newSection.isSameDownStation(upStation);
+    }
+
+    public boolean isDownFinalSection(Section newSection) {
+        return newSection.isSameUpStation(downStation);
+    }
+
+    public void checkSameUpStationAndDownStation(Section newSection) {
+        if(newSection.isSameUpStation(upStation) && newSection.isSameDownStation(downStation)){
+            throw new IllegalArgumentException("상행역과 하행역이 모두 동일한 구간은 추가할 수 없습니다.");
+        }
+    }
+
+    public boolean isUpSection(Section newSection) {
+        if(newSection.isSameUpStation(upStation)){
+            newSection.checkShortDistance(distance);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isDownSection(Section newSection) {
+        if(newSection.isSameDownStation(downStation)){
+            newSection.checkShortDistance(distance);
+            return true;
+        }
+        return false;
+    }
+
+    private void checkShortDistance(Distance originDistance) {
+        if (!distance.isShortDistance(originDistance)) {
+            throw new IllegalArgumentException("신규 구간은 기존 구간보다 길이가 짧아야 합니다.");
+        }
+        originDistance.adjustmentDistance(distance);
+    }
+
+    private boolean isSameUpStation(Station originUpStation) {
+        return this.upStation.equals(originUpStation);
+    }
+
+    private boolean isSameDownStation(Station originDownStation) {
+        return this.downStation.equals(originDownStation);
+    }
+
     public Long getId() {
         return id;
     }

@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("노선과 역의 일대다 / 다대일 관계 테스트")
+@DisplayName("노선과 역의 관계")
 public class LineStationAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {

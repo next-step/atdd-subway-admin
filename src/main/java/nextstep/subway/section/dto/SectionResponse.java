@@ -37,4 +37,6 @@ public class SectionResponse {
     public Long getLineId() {
         return lineId;
     }
+
 }
+

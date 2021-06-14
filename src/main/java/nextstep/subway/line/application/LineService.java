@@ -40,6 +40,7 @@ public class LineService {
         Station upStation = stationService.findStationById(lineRequest.getUpStationId());
         Station downStation = stationService.findStationById(lineRequest.getDownStationId());
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
+
         LineStation upLineStation = lineStationService.findByLineIdAndStationId(persistLine, upStation);
         persistLine.addLineStation(upLineStation);
         upStation.addLineStation(upLineStation);
@@ -75,5 +76,9 @@ public class LineService {
     public void deleteLineById(Long id) {
         sectionRepository.deleteByLineId(id);
         lineRepository.deleteById(id);
+    }
+
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 }

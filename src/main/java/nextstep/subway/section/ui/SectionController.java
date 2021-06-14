@@ -29,6 +29,11 @@ public class SectionController {
         return ResponseEntity.ok().body(sectionService.findAllSections());
     }
 
+    @GetMapping(value = "/lines/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<SectionResponse>> showLineSections(@PathVariable Long id){
+        return ResponseEntity.ok().body(sectionService.findSectionsByLineId(id));
+    }
+
     @GetMapping(value = "/sections/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SectionResponse> showSection(@PathVariable Long id) {
         return ResponseEntity.ok().body(sectionService.findById(id));
