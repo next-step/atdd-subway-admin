@@ -6,7 +6,7 @@ import java.util.Objects;
 
 @Embeddable
 public class Distance {
-    public static final String INVALID_DISTANCE_EXCEPTION_MESSAGE = "거리는 0보다 커야합니다.";
+    public static final String INVALID_DISTANCE_EXCEPTION_MESSAGE = "구간 거리는 0보다 커야합니다.";
 
     @Column
     private int distance;
@@ -14,9 +14,13 @@ public class Distance {
     protected Distance() {
     }
 
-    public Distance(int distance) {
+    private Distance(int distance) {
         validate(distance);
         this.distance = distance;
+    }
+
+    public static Distance valueOf(int distance){
+        return new Distance(distance);
     }
 
     private void validate(int distance) {
@@ -27,6 +31,14 @@ public class Distance {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Distance minus(Distance distanceToMinus) {
+        return Distance.valueOf(distance - distanceToMinus.getDistance());
+    }
+
+    public boolean isAvailableMinus(Distance distanceToMinus){
+        return distance > distanceToMinus.getDistance();
     }
 
     @Override

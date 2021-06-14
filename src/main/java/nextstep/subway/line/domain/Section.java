@@ -9,6 +9,7 @@ import java.util.List;
 
 @Entity
 public class Section extends BaseEntity {
+    public static final String BIGGER_THAN_DISTANCE_EXCEPTION_MESSAGE = "역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,10 +33,14 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public static Section of(Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, distance);
+    }
+
+    private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = new Distance(distance);
+        this.distance = Distance.valueOf(distance);
     }
 
     public Station getUpStation() {
@@ -54,7 +59,46 @@ public class Section extends BaseEntity {
         return line;
     }
 
-    public List<Station> toStations(){
+    public List<Station> toStations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    public void addInsideOfSection(Section sectionToAdd) {
+        if (isEqualsToUpStation(sectionToAdd)) {
+            updateUpStation(sectionToAdd);
+        }
+        if (isEqualsToDownStation(sectionToAdd)) {
+            updateDownStation(sectionToAdd);
+        }
+    }
+
+    private void checkDistanceValidationToMinus(Section sectionToAdd) {
+        if (!distance.isAvailableMinus(sectionToAdd.getDistance())) {
+            throw new IllegalArgumentException(BIGGER_THAN_DISTANCE_EXCEPTION_MESSAGE);
+        }
+    }
+
+    private void updateUpStation(Section sectionToAdd) {
+        checkDistanceValidationToMinus(sectionToAdd);
+        this.distance = distance.minus(sectionToAdd.getDistance());
+        this.upStation = sectionToAdd.getDownStation();
+    }
+
+    private void updateDownStation(Section sectionToAdd) {
+        checkDistanceValidationToMinus(sectionToAdd);
+        this.distance = distance.minus(sectionToAdd.getDistance());
+        this.downStation = sectionToAdd.getUpStation();
+    }
+
+    public Distance getDistance() {
+        return distance;
+    }
+
+    private boolean isEqualsToUpStation(Section sectionToAdd) {
+        return upStation.equals(sectionToAdd.getUpStation());
+    }
+
+    private boolean isEqualsToDownStation(Section sectionToAdd) {
+        return downStation.equals(sectionToAdd.getDownStation());
     }
 }

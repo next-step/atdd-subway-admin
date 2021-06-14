@@ -9,4 +9,6 @@ public interface StationQueryUseCase {
     List<StationResponse> findAllStations();
 
     Station findById(Long id);
+
+    List<Station> findAllByIds(List<Long> ids);
 }

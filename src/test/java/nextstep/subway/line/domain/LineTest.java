@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -30,10 +31,12 @@ class LineTest {
         String expectedName = "1호선";
         String expectedColor = "blue";
         Station upStation1 = new Station("상행1");
+        ReflectionTestUtils.setField(upStation1, "id", 1L);
         Station downStation1 = new Station("하행1");
+        ReflectionTestUtils.setField(downStation1, "id", 2L);
 
         //when
-        Line actual = new Line(expectedName, expectedColor, new Section(upStation1, downStation1, 10));
+        Line actual = new Line(expectedName, expectedColor, Section.of(upStation1, downStation1, 10));
 
         //then
         assertAll(() ->{

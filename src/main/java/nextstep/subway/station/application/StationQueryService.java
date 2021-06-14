@@ -34,4 +34,9 @@ public class StationQueryService implements StationQueryUseCase {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new StationNotFoundException(STATION_ID_NOT_FOUND_EXCEPTION_MESSAGE));
     }
+
+    @Override
+    public List<Station> findAllByIds(List<Long> ids) {
+        return stationRepository.findAllById(ids);
+    }
 }
