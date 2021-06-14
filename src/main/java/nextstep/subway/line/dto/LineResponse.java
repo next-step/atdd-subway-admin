@@ -7,7 +7,9 @@ import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -30,14 +32,9 @@ public class LineResponse {
     }
 
     private List<StationResponse> getStationResponse(List<Section> sections) {
-        List<StationResponse> stationResponses = new ArrayList<>();
-        for (Section section : sections) {
-            Station upStation = section.getUpStation();
-            Station downStation = section.getDownStation();
-            stationResponses.add(StationResponse.of(upStation));
-            stationResponses.add(StationResponse.of(downStation));
-        }
-        return stationResponses;
+        return sections.stream()
+                .flatMap(list -> list.getStations().stream().map(StationResponse::of)).
+                collect(Collectors.toList());
     }
 
     public static LineResponse of(Line line) {

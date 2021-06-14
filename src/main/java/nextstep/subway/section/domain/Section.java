@@ -5,9 +5,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.HashMap;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.lang.reflect.Array;
+import java.util.*;
 
 @Entity
 public class Section extends BaseEntity {
@@ -47,12 +46,10 @@ public class Section extends BaseEntity {
         line.addSection(this);
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        stations.add(upStation);
+        stations.add(downStation);
+        return stations;
     }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
 }
