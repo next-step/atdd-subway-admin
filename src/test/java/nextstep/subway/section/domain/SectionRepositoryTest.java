@@ -8,9 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
 class SectionRepositoryTest {
@@ -22,20 +21,23 @@ class SectionRepositoryTest {
     SectionRepository sectionRepository;
 
     @Test
-    @DisplayName("만들어진 역에서 역을 하나 더 추가하면 UnsupportedOperationException가 발생한다.")
-    void sectionTest() {
+    @DisplayName("라인과 상행,하행을 만들어서 섹션값과 맞는지 확인한다.")
+    void sectionExceptionTest() {
         // given
         Line line = new Line("2호선", "color-green");
         Station upStation = stationRepository.save(new Station("강남역")); // 상행
         Station downStation = stationRepository.save(new Station("역삼역")); // 하행
-        Section section = sectionRepository.save(new Section(line, upStation, downStation, 5L));
 
         // when
-        Station station = new Station("서울대입구역");
-        List<Station> stations = section.getStations();
+        Section section = sectionRepository.save(new Section(line, upStation, downStation, 5L));
 
         // then
-        assertThatExceptionOfType(UnsupportedOperationException.class)
-                .isThrownBy(() -> stations.add(station));
+        assertAll(
+                () -> assertThat(section).isNotNull(),
+                () -> assertThat(section.getUpStation().getName()).isEqualTo(upStation.getName()),
+                () -> assertThat(section.getDownStation().getName()).isEqualTo(downStation.getName()),
+                () -> assertThat(section.getDistance().get()).isEqualTo(5L)
+        );
+
     }
 }

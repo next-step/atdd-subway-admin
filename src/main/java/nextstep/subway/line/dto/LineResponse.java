@@ -28,7 +28,10 @@ public class LineResponse {
         this.color = color;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        stations.forEach(station -> this.stations.add(StationResponse.of(station)));
+        stations.forEach(station -> {
+            if(station != null)
+                this.stations.add(StationResponse.of(station));
+        });
     }
 
     public static LineResponse of(Line line) {
