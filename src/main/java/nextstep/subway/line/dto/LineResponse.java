@@ -7,7 +7,6 @@ import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class LineResponse {
@@ -16,7 +15,7 @@ public class LineResponse {
     private String color;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private List<StationResponse> stations;
+    private List<StationResponse> stationResponse;
 
     public LineResponse() {
     }
@@ -25,18 +24,18 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = getStations(sections);
+        this.stationResponse = getStationResponse(sections);
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
 
-    private List<StationResponse> getStations(List<Section> sections) {
+    private List<StationResponse> getStationResponse(List<Section> sections) {
         List<StationResponse> stationResponses = new ArrayList<>();
-        HashMap<String, Station> stations = new HashMap<>();
         for (Section section : sections) {
-            stations = section.getStations();
-            stationResponses.add(StationResponse.of(stations.get("upStation")));
-            stationResponses.add(StationResponse.of(stations.get("downStation")));
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
+            stationResponses.add(StationResponse.of(upStation));
+            stationResponses.add(StationResponse.of(downStation));
         }
         return stationResponses;
     }
@@ -57,8 +56,8 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStations() {
-        return stations;
+    public List<StationResponse> getStationResponse() {
+        return stationResponse;
     }
 
     public LocalDateTime getCreatedDate() {

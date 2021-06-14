@@ -55,11 +55,4 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public HashMap<String, Station> getStations() {
-        HashMap<String ,Station> stations = new HashMap<>();
-        stations.put("upStation", this.upStation);
-        stations.put("downStation", this.downStation);
-
-        return stations;
-    }
 }
