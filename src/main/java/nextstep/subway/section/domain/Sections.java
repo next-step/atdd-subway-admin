@@ -12,7 +12,7 @@ import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
     public Sections() {
@@ -22,13 +22,9 @@ public class Sections {
         sections.add(section);
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
     public List<Station> getStations() {
-        return sections.stream().map(Section::stations)
-                .flatMap(List::stream)
+        return sections.stream()
+                .flatMap(section -> section.getUpDownStations().stream())
                 .collect(Collectors.toList());
     }
 }
