@@ -62,21 +62,21 @@ public class Section extends BaseEntity {
         Section section = sections.get(position.index());
         if (this.isInFrontOf(section)) {
             handleAttributesOfFrontSection(sections, section);
-            return position.isFront();
+            return position.frontType();
         }
         if (this.isInMidFrontOf(section)) {
             section.handleAttributesToConnectBehindOf(this);
-            return position.isMidFront();
+            return position.midFrontType();
         }
         if (this.isInMidRearOf(section)) {
             section.handleAttributesToConnectInFrontOf(this);
-            return position.isMidRear();
+            return position.midRearType();
         }
         if (this.isBehindOf(section)) {
             handleAttributesOfBackSection(sections, section);
-            return position.isRear();
+            return position.rearType();
         }
-        return position.isNone();
+        return position.noneType();
     }
 
     private boolean isInMidFrontOf(Section section) {
@@ -210,6 +210,14 @@ public class Section extends BaseEntity {
 
     public void setDownStation(Station station) {
         downStation = station;
+    }
+
+    public boolean upStationIsEqualsWith(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean downStationIsEqualsWith(Station station) {
+        return this.downStation.equals(station);
     }
 
 }

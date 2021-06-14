@@ -28,27 +28,27 @@ public class DockingPosition {
         return new DockingPosition(DockingType.REAR);
     }
 
-    public DockingPosition isFront() {
+    public DockingPosition frontType() {
         dockingType = DockingType.FRONT;
         return this;
     }
 
-    public DockingPosition isRear() {
+    public DockingPosition rearType() {
         dockingType = DockingType.REAR;
         return this;
     }
 
-    public DockingPosition isMidFront() {
+    public DockingPosition midFrontType() {
         dockingType = DockingType.MID_FRONT;
         return this;
     }
 
-    public DockingPosition isMidRear() {
+    public DockingPosition midRearType() {
         dockingType = DockingType.MID_REAR;
         return this;
     }
 
-    public DockingPosition isNone() {
+    public DockingPosition noneType() {
         dockingType = DockingType.NONE;
         return this;
     }

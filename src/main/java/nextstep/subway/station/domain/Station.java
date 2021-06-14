@@ -45,59 +45,6 @@ public class Station extends BaseEntity {
         return new Station(name);
     }
 
-    public void deleteFrom(List<Section> sections) {
-        DeletePosition deletePosition = DeletePosition.None();
-        while (deletePosition.isNone() && deletePosition.index() < sections.size()) {
-            deletePosition = checkDeletePosition(sections, deletePosition);
-            deletePosition.nextIndex();
-        }
-        deletePosition.subtractIndex();
-        deletePosition.validate();
-
-        handleDeletion(sections, deletePosition);
-    }
-
-    private DeletePosition checkDeletePosition(List<Section> sections, DeletePosition position) {
-        int index = position.index();
-        Section currentSection = sections.get(index);
-        if (currentSection.upStation().equals(this) && index == 0) {
-            return position.typeUpInHead();
-        }
-        if (currentSection.upStation().equals(this) && index == sections.size() - 1) {
-            return position.typeUpInTail();
-        }
-        if (currentSection.upStation().equals(this)) {
-            return position.typeUpInMiddles();
-        }
-        if (currentSection.downStation().equals(this) && index == sections.size() - 1) {
-            return position.typeDownInTail();
-        }
-        return position;
-    }
-
-    private void handleDeletion(List<Section> sections, DeletePosition deletePosition) {
-        int index = deletePosition.index();
-        Section prevSection;
-        Section nextSection;
-        if (deletePosition.isUpInHead()) {
-            sections.remove(index);
-        }
-        if (deletePosition.isUpInTail()) {
-            prevSection = sections.get(index-1);
-            prevSection.handleAttributesToDeleteOnTail(sections.get(index));
-            sections.remove(index);
-        }
-        if (deletePosition.isUpInMiddles()) {
-            prevSection = sections.get(index-1);
-            nextSection = sections.get(index+1);
-            prevSection.handleAttributesToDeleteInFrontOf(nextSection);
-            sections.remove(index);
-        }
-        if (deletePosition.isDownInTail()) {
-            sections.remove(index);
-        }
-    }
-
     public Long getId() {
         return id;
     }
