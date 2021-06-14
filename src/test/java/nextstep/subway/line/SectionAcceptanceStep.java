@@ -29,7 +29,7 @@ public class SectionAcceptanceStep {
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/" + lineId + RESOURCES)
+                .when().post("/lines/" + lineId + RESOURCES)
                 .then().log().all().extract();
     }
 

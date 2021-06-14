@@ -41,8 +41,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams = new HashMap<>();
         createParams.put("name", "신분당선");
         createParams.put("color", "bg-red-600");
-        createParams.put("upStation", 강남역.getId() + "");
-        createParams.put("downStation", 광교역.getId() + "");
+        createParams.put("upStationId", 강남역.getId() + "");
+        createParams.put("downStationId", 광교역.getId() + "");
         createParams.put("distance", 10 + "");
         신분당선 = 지하철_노선_등록되어_있음(createParams).as(LineResponse.class);
     }
@@ -51,7 +51,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 광교역.getId(), 10);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 정자역.getId(), 1);
 
         // then
         지하철_노선에_지하철역_등록됨(response);
@@ -61,14 +61,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void getSortedStations() {
         // given
-        지하철_노선에_지하철역_등록되어_있음(신분당선.getId(), 강남역.getId(), 광교역.getId(), 10);
-        지하철_노선에_지하철역_등록되어_있음(신분당선.getId(), 광교역.getId(), 광교중앙역.getId(), 10);
-        지하철_노선에_지하철역_등록되어_있음(신분당선.getId(), 정자역.getId(), 강남역.getId(), 10);
+        지하철_노선에_지하철역_등록되어_있음(신분당선.getId(), 강남역.getId(), 광교중앙역.getId(), 1);
+        지하철_노선에_지하철역_등록되어_있음(신분당선.getId(), 정자역.getId(), 광교역.getId(), 1);
         List<StationResponse> expected = Arrays.asList(
-                정자역,
                 강남역,
-                광교역,
-                광교중앙역
+                정자역,
+                광교중앙역,
+                광교역
         );
 
         // when
