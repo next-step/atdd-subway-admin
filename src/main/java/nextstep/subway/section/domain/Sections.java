@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.station.domain.Station;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
@@ -31,9 +33,7 @@ public class Sections {
     private int sectionLocation(Section newSection) {
         int sectionIdx = 0;
         Section originSection = sections.get(sectionIdx);
-        if (isUpFinalSection(originSection, newSection)) {
-            return sectionIdx;
-        }
+        if (isUpFinalSection(originSection, newSection)) return sectionIdx;
         boolean createUpSection = false;
         boolean createDownSection = false;
         while (!createUpSection && !createDownSection && sectionIdx < sections.size()) {
@@ -42,18 +42,9 @@ public class Sections {
             createDownSection = checkDownSectionValidation(originSection, newSection);
             sectionIdx++;
         }
-
-        if (createUpSection) {
-            return sectionIdx;
-        }
-
-        if (createDownSection) {
-            return sectionIdx + 1;
-        }
-
-        if (isDownFinalSection(originSection, newSection)) {
-            return sections.size();
-        }
+        if (createUpSection) return sectionIdx;
+        if (createDownSection) return sectionIdx + 1;
+        if (isDownFinalSection(originSection, newSection)) return sections.size();
         throw new IllegalArgumentException("상행역과 하행역 둘 중 하나라도 기존 구간에 존재해야 합니다.");
     }
 
@@ -82,5 +73,40 @@ public class Sections {
 
     public List<Section> getSection() {
         return this.sections;
+    }
+
+    public List<Station> getStationList() {
+        List<Station> stationList = new ArrayList<>();
+        Section upFinalSection = getUpFinalStation();
+        stationList.add(upFinalSection.getUpStation());
+        Station nextStation;
+        Section nextSection = upFinalSection;
+        while(nextSection != null){
+            nextStation = nextSection.getDownStation();
+            stationList.add(nextStation);
+            nextSection = getNextStation(nextStation);
+        }
+        return stationList;
+    }
+
+    private Section getUpFinalStation() {
+        return sections.stream()
+                .filter(it -> getDownStationOfUpStation(it.getUpStation()) == null)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section getDownStationOfUpStation(Station upStation) {
+        return sections.stream()
+                .filter(it -> it.getDownStation().equals(upStation))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Section getNextStation(Station downStation) {
+        return sections.stream()
+                .filter(it -> it.getUpStation().equals(downStation))
+                .findFirst()
+                .orElse(null);
     }
 }

@@ -34,10 +34,13 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stationResponses = line.getSectionsList().stream()
+        List<StationResponse> stationResponses = line.getStationList().stream()
+                .map(station -> StationResponse.of(station))
+                .collect(Collectors.toList());
+                /*line.getSectionsList().stream()
                 .map(section -> Arrays.asList(StationResponse.of(section.getUpStation()), (StationResponse.of(section.getDownStation()))))
                 .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(NoSuchElementException::new);*/
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses, line.getCreatedDate(), line.getModifiedDate());
     }
 
