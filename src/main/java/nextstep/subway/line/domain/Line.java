@@ -2,11 +2,10 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.enums.SectionAddType;
-import nextstep.subway.lineStation.domain.LineStation;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.LineStation;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.wrappers.Distance;
 import nextstep.subway.wrappers.LineStations;
-import nextstep.subway.wrappers.Sections;
 
 import javax.persistence.*;
 import java.util.List;
@@ -75,7 +74,7 @@ public class Line extends BaseEntity {
         return lineStations.generateStations();
     }
 
-    public Optional<LineStation> updateLineStationAndSection(SectionAddType sectionAddType, LineStation lineStation) {
+    public void updateLineStation(SectionAddType sectionAddType, LineStation lineStation) {
         if (sectionAddType.equals(SectionAddType.NEW_UP)) {
             lineStations.updateFirstLineStation(lineStation);
             lineStation.update(lineStation.getPreStation(), null, lineStation.getDistance());
@@ -83,9 +82,9 @@ public class Line extends BaseEntity {
         if (sectionAddType.equals(SectionAddType.NEW_BETWEEN)) {
             LineStation updateTargetLineStation = lineStations.findLineStationByPreStation(lineStation);
             updateTargetLineStation.validDistance(lineStation);
-            return Optional.of(updateTargetLineStation);
+            Distance newDistance = new Distance(updateTargetLineStation.getDistance().subtractionDistance(lineStation.getDistance()));
+            updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getStation(), newDistance);
         }
-        return Optional.empty();
     }
 
     public void checkValidLineStation(LineStation lineStation) {

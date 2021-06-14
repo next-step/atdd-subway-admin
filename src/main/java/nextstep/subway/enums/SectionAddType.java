@@ -1,6 +1,6 @@
 package nextstep.subway.enums;
 
-import nextstep.subway.lineStation.domain.LineStation;
+import nextstep.subway.section.domain.LineStation;
 import nextstep.subway.wrappers.LineStations;
 
 public enum SectionAddType {

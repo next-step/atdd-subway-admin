@@ -1,18 +1,12 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.lineStation.domain.LineStation;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.LineStation;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("지하철 노선 response 테스트")
 class LineResponseTest {

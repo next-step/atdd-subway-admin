@@ -1,7 +1,7 @@
 package nextstep.subway.wrappers;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.lineStation.domain.LineStation;
+import nextstep.subway.section.domain.LineStation;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

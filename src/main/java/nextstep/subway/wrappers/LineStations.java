@@ -1,7 +1,7 @@
 package nextstep.subway.wrappers;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.lineStation.domain.LineStation;
+import nextstep.subway.section.domain.LineStation;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -92,7 +92,7 @@ public class LineStations {
         return lineStations.stream().filter(LineStation::isNullPreStation).findFirst();
     }
 
-    private Optional<LineStation> findNextLineStation(LineStation lineStation) {
+    public Optional<LineStation> findNextLineStation(LineStation lineStation) {
         return lineStations
                 .stream()
                 .filter(ls -> ls.isNextLineStation(lineStation))

@@ -1,10 +1,8 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.wrappers.Sections;
-import nextstep.subway.lineStation.domain.LineStation;
+import nextstep.subway.section.domain.LineStation;
 import nextstep.subway.wrappers.LineStations;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,16 +32,6 @@ class LineRequestTest {
     @DisplayName("지하철 노선 파라미터를 이용하여 Line entity 정상 생성")
     void toLine() {
         assertThat(lineRequest.toLine()).isEqualTo(new Line("신분당선", "bg-red-600"));
-    }
-
-    @Test
-    @DisplayName("지하철 노선 파라미터를 이용하여 section entity 생성")
-    void toSection() {
-        Station upStation = new Station("강남역");
-        Station downStation = new Station("광교역");
-        Section expected = new Section(upStation, downStation, lineRequest.getDistance());
-
-        assertThat(lineRequest.toSection(upStation, downStation)).isEqualTo(expected);
     }
 
     @Test
