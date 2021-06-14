@@ -22,25 +22,20 @@ public class LineService {
     public static final String NOT_FOUND_STATION = "존재하지 않는 역입니다";
 
     private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Station upStation = getStation(request.getUpStationId());
         Station downStation = getStation(request.getDownStationId());
 
-        Line persistLine = lineRepository.save(request.toLine());
-        Section section = Section.getInstance(persistLine, upStation, downStation, request.getDistance());
+        Line line = lineRepository.save(new Line(request, upStation, downStation));
 
-        sectionRepository.save(section);
-
-        return LineResponse.of(persistLine);
+        return LineResponse.of(line);
     }
 
     @Transactional(readOnly = true)
