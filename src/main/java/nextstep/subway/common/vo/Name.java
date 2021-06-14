@@ -13,7 +13,7 @@ public class Name {
 	private static final int MAX_LENGTH = 255;
 	private static final String COLUMN_DESCRIPTION = "역 이름 또는 노선 이름";
 
-	@Column(unique = true, length = MAX_LENGTH)
+	@Column(unique = true)
 	private String name;
 
 	protected Name() {

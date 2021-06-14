@@ -319,7 +319,7 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
 - [x] 3.분석 및 설계
     - [x] 3-1.step01.md 초안 작성
     - [x] 3-2.ATDD 작성
-- [ ] 4.구현
+- [x] 4.구현
     - [x] 4-1.ATDD 작성
         - [x] 4-1-1.`StationAcceptanceTest`
         - [x] 4-1-2.`LineAcceptanceTest`
@@ -341,10 +341,12 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
     - [x] 4-6.controller 작성
         - [x] 4-6-1.`StationController`
         - [x] 4-6-2.`LineController`
-    - [ ] 4-7.추가 리팩터링
-        - [ ] 4-7-1.엔티티 매핑
-            - [ ] 4-7-1-1.`Station`
-            - [ ] 4-7-1-2.`Line`
+    - [x] 4-7.추가 리팩터링
+        - [x] 4-7-1.일급콜렉션 적용
+            - [x] 4-7-1-1.`StationGroup`
+        - [x] 4-7-2.엔티티 연관과계 매핑
+            - [x] 4-7-2-1.`Station`
+            - [x] 4-7-2-2.`Line`
 - [ ] 5.테스트
     - [ ] 5-1.Gradle build Success 확인
     - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)

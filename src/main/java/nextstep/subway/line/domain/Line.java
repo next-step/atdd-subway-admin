@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Embedded;
@@ -11,6 +12,8 @@ import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.vo.Color;
 import nextstep.subway.common.vo.Name;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationGroup;
 
 @Entity
 public class Line extends BaseEntity {
@@ -25,12 +28,16 @@ public class Line extends BaseEntity {
 	@Embedded
 	private Color color;
 
+	@Embedded
+	private StationGroup stations;
+
 	protected Line() {
 	}
 
 	public Line(String name, String color) {
 		this.name = Name.generate(name);
 		this.color = Color.generate(color);
+		this.stations = new StationGroup();
 	}
 
 	public void update(Line line) {
@@ -50,21 +57,27 @@ public class Line extends BaseEntity {
 		return color.value();
 	}
 
+	public List<Station> stations() {
+		return stations.stations();
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
 		}
-		if (!(object instanceof Line)) {
+		if (object == null || getClass() != object.getClass()) {
 			return false;
 		}
 		Line line = (Line)object;
-		return Objects.equals(id, line.id) && Objects.equals(name, line.name)
-			&& Objects.equals(color, line.color);
+		return Objects.equals(id, line.id) &&
+			Objects.equals(name, line.name) &&
+			Objects.equals(color, line.color) &&
+			Objects.equals(stations, line.stations);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, name, color);
+		return Objects.hash(id, name, color, stations);
 	}
 }
