@@ -50,8 +50,7 @@ public class LineService {
 	}
 
 	public LineResponse getLine(long lineId) {
-		Line line = this.lineRepository.findById(lineId)
-			.orElseThrow(this.getEntityNotFoundExceptionSupplier());
+		Line line = this.findByLineId(lineId);
 		return LineResponse.of(line);
 	}
 
@@ -60,22 +59,26 @@ public class LineService {
 	}
 
 	public LineResponse updateLine(long lineId, LineRequest lineRequest) {
-		Line line = this.lineRepository.findById(lineId).orElseThrow(this.getEntityNotFoundExceptionSupplier());
+		Line line = this.findByLineId(lineId);
 		line.update(lineRequest.toLine());
 		return LineResponse.of(this.lineRepository.save(line));
 	}
 
 	public void deleteLine(long lineId) {
-		this.lineRepository.findById(lineId).orElseThrow(this.getEntityNotFoundExceptionSupplier());
+		this.findByLineId(lineId);
 		this.lineRepository.deleteById(lineId);
 	}
 
 	public LineResponse addSection(long lineId, SectionRequest sectionRequest) {
-		Line line = this.lineRepository.findById(lineId).orElseThrow(this.getEntityNotFoundExceptionSupplier());
+		Line line = this.findByLineId(lineId);
 		Station upStation = this.stationService.getStation(sectionRequest.getUpStationId());
 		Station downStation = this.stationService.getStation(sectionRequest.getDownStationId());
 		Section newSection = new Section(line, upStation, downStation, sectionRequest.getDistance());
 		line.addSection(newSection);
 		return LineResponse.of(this.lineRepository.save(line));
+	}
+
+	private Line findByLineId(long lineId) {
+		return this.lineRepository.findById(lineId).orElseThrow(this.getEntityNotFoundExceptionSupplier());
 	}
 }
