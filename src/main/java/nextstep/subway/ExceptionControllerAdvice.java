@@ -1,5 +1,7 @@
-package nextstep.subway.exception;
+package nextstep.subway;
 
+import nextstep.subway.exception.DataNotFoundException;
+import nextstep.subway.exception.DuplicateDataExistsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,5 +17,10 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<Void> handleDataNotFoundException(DataNotFoundException e) {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().build();
     }
 }

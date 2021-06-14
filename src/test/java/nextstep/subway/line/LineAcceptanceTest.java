@@ -6,7 +6,6 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
-import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,20 +26,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private final StationAcceptanceTest stationAcceptanceTest = new StationAcceptanceTest();
 
-    private StationRequest 강남역;
-    private StationRequest 광교중앙역;
-    private StationRequest 광교역;
-
-
     @BeforeEach
     void setVariables() {
-        강남역 = new StationRequest("강남역");
-        광교중앙역 = new StationRequest("광교중앙역");
-        광교역 = new StationRequest("광교역");
-
-        stationAcceptanceTest.지하철_역_등록되어_있음(강남역);
-        stationAcceptanceTest.지하철_역_등록되어_있음(광교중앙역);
-        stationAcceptanceTest.지하철_역_등록되어_있음(광교역);
+        stationAcceptanceTest.지하철_역_등록되어_있음("강남역");
+        stationAcceptanceTest.지하철_역_등록되어_있음("광교중앙역");
+        stationAcceptanceTest.지하철_역_등록되어_있음("광교역");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -165,7 +155,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(respondedLineId).isEqualTo(expectedLineId);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest request) {
+    public ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest request) {
         return httpPost(ROOT_REQUEST_URI, request);
     }
 
