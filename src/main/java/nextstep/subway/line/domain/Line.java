@@ -18,8 +18,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-	private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -51,12 +51,7 @@ public class Line extends BaseEntity {
         sections.add(section);
     }
 
-    public List<Station> getStationNames() {
-        List<Station> stations = new ArrayList<>();
-        for (Section section : sections) {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
-        }
-        return stations;
+    public List<Station> getStations() {
+        return sections.stations();
     }
 }

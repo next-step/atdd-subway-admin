@@ -33,7 +33,7 @@ public class LineAndStationResponse {
 
     public static LineAndStationResponse of(Line line) {
         return new LineAndStationResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(),
-            line.getModifiedDate(), line.getStationNames());
+            line.getModifiedDate(), line.getStations());
     }
 
     public Long getId() {
