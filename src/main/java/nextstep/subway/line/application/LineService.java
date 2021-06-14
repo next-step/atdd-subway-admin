@@ -29,10 +29,19 @@ public class LineService {
         return LineResponses.of(lines);
     }
 
-    public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다. : " + id));
+    public LineResponse retrieveById(Long id) {
+        Line line = findById(id);
 
         return LineResponse.of(line);
+    }
+
+    public void modify(Long id, LineRequest request) {
+        Line line = findById(id);
+        line.update(request.toLine());
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다. : " + id));
     }
 }
