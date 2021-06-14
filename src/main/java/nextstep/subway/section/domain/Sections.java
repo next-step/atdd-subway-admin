@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+	private static final String INVALID_SECTION_MESSAGE = "노선 설정이 잘못되었습니다.";
 
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
 	private final List<Section> sections = new ArrayList<>();
@@ -64,8 +66,7 @@ public class Sections {
 
 	private void validateAlreadyExistSection(Section newSection) {
 		List<Station> orderedStations = this.getOrderedStations();
-		if (orderedStations.contains(newSection.getDownStation()) && orderedStations.contains(
-			newSection.getUpStation())) {
+		if (orderedStations.containsAll(Arrays.asList(newSection.getUpStation(), newSection.getDownStation()))) {
 			throw new SubwayLogicException("해당구간은 이미 구성되어있어 추가할 수 없습니다.");
 		}
 	}
@@ -83,7 +84,7 @@ public class Sections {
 	}
 
 	public List<Station> getOrderedStations() {
-		Optional<Section> currentSection = this.findUpStationEndPointSection();
+		Section currentSection = this.findUpStationEndPointSection();
 		Stream<Station> stations = this.getStationStream(currentSection);
 
 		do {
@@ -97,30 +98,34 @@ public class Sections {
 		return stations.collect(Collectors.toList());
 	}
 
-	private Stream<Station> getStationStream(Optional<Section> section) {
-		return section.map(value -> Stream.of(value.getUpStation(), value.getDownStation())).orElseGet(Stream::empty);
+	private Stream<Station> getStationStream(Section section) {
+		if (section == null) {
+			return Stream.empty();
+		}
+		return Stream.of(section.getUpStation(), section.getDownStation());
 	}
 
-	private boolean hasNext(Optional<Section> currentSection) {
-		return currentSection.filter(value -> this.sections.stream()
-			.anyMatch(section -> section.getUpStation().equals(value.getDownStation()))).isPresent();
+	private boolean hasNext(Section currentSection) {
+		if (currentSection == null) {
+			return false;
+		}
+		return this.sections.stream()
+			.anyMatch(section -> section.getUpStation().equals(currentSection.getDownStation()));
 	}
 
-	private Optional<Section> nextSection(Optional<Section> currentSection) {
-		return currentSection.flatMap(value -> this.sections.stream()
-			.filter(section -> section.getUpStation().equals(value.getDownStation()))
-			.findAny());
-
+	private Section nextSection(Section currentSection) {
+		return this.sections.stream()
+			.filter(section -> section.getUpStation().equals(currentSection.getDownStation()))
+			.findAny().orElse(null);
 	}
 
-	private Optional<Section> findUpStationEndPointSection() {
+	private Section findUpStationEndPointSection() {
 		List<Station> downStations = this.sections.stream()
 			.map(Section::getDownStation)
 			.collect(Collectors.toList());
 
 		return this.sections.stream()
 			.filter(section -> !downStations.contains(section.getUpStation()))
-			.findAny();
+			.findFirst().orElseThrow(() -> new SubwayLogicException(INVALID_SECTION_MESSAGE));
 	}
-
 }
