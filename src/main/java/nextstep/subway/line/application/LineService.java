@@ -28,4 +28,11 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
         return LineResponses.of(lines);
     }
+
+    public LineResponse findById(Long id) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다. : " + id));
+
+        return LineResponse.of(line);
+    }
 }
