@@ -20,7 +20,7 @@ public class StationService {
     }
 
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(new Station(stationRequest.name()));
+        Station persistStation = stationRepository.save(new Station(stationRequest.getName()));
         return StationResponse.of(persistStation);
     }
 

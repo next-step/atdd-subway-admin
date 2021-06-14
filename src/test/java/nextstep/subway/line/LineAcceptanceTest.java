@@ -1,5 +1,7 @@
 package nextstep.subway.line;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -7,8 +9,10 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -23,27 +27,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
-	void createLine() {
+	void createLine() throws JsonProcessingException {
 		// given, when 지하철_노선_생성_요청 + 상행, 하행 정보 요청 파라미터에 함께 추가
 		StationRequest stationRequest = new StationRequest();
-		stationRequest.name("잠실역");
-		지하철역_생성_요청(stationRequest);
+		stationRequest.setName("잠실역");
+		ExtractableResponse<Response> response1 = 지하철역_생성_요청(stationRequest);
 
-		LineRequest lineRequest = new LineRequest("2호선", "yellow", 1L, 1L, 1);
+		StationResponse stationResponse = objectMapper.readValue(response1.asString(), StationResponse.class);
+
+		LineRequest lineRequest = new LineRequest("2호선", "yellow", stationResponse.getId(), stationResponse.getId(), 1);
 		ExtractableResponse<Response> response = 노선정보세팅_메소드(lineRequest);
 
 		// then 지하철_노선_생성됨
+		System.out.println(response);
+		System.out.println(response.statusCode());
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
 	@Test
-	void createLine2() {
+	void createLine2() throws JsonProcessingException {
 		// given 지하철_노선_등록되어_있음 + 상행, 하행 정보 요청 파라미터에 함께 추가
 		StationRequest stationRequest = new StationRequest();
-		stationRequest.name("잠실역");
+		stationRequest.setName("잠실역");
 		지하철역_생성_요청(stationRequest);
 
 		String dupName = "2호선";
@@ -61,11 +72,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("지하철 노선 목록을 조회한다.")
 	@Test
-	void getLines() {
+	void getLines() throws JsonProcessingException {
 		// given
 		// 지하철_노선_등록되어_있음 + 상행, 하행 정보 요청 파라미터에 함께 추가
 		StationRequest stationRequest = new StationRequest();
-		stationRequest.name("잠실역");
+		stationRequest.setName("잠실역");
 		지하철역_생성_요청(stationRequest);
 
 		LineRequest lineRequest = new LineRequest("2호선", "yellow", 1L, 1L, 1);
@@ -98,11 +109,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("지하철 노선을 조회한다.")
 	@Test
-	void getLine() {
+	void getLine() throws JsonProcessingException {
 		// given
 		// 지하철_노선_등록되어_있음 + 상행, 하행 정보 요청 파라미터에 함께 추가
 		StationRequest stationRequest = new StationRequest();
-		stationRequest.name("잠실역");
+		stationRequest.setName("잠실역");
 		지하철역_생성_요청(stationRequest);
 
 		String name = "2호선";
@@ -124,11 +135,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("지하철 노선을 수정한다.")
 	@Test
-	void updateLine() {
+	void updateLine() throws JsonProcessingException {
 		// given
 		// 지하철_노선_등록되어_있음 + 상행, 하행 정보 요청 파라미터에 함께 추가
 		StationRequest stationRequest = new StationRequest();
-		stationRequest.name("잠실역");
+		stationRequest.setName("잠실역");
 		지하철역_생성_요청(stationRequest);
 
 		String name = "2호선";
@@ -155,11 +166,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	@DisplayName("지하철 노선을 제거한다.")
 	@Test
-	void deleteLine() {
+	void deleteLine() throws JsonProcessingException {
 		// given
 		// 지하철_노선_등록되어_있음 + 상행, 하행 정보 요청 파라미터에 함께 추가
 		StationRequest stationRequest = new StationRequest();
-		stationRequest.name("잠실역");
+		stationRequest.setName("잠실역");
 		지하철역_생성_요청(stationRequest);
 
 		String name = "2호선";
@@ -180,9 +191,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
-	private ExtractableResponse<Response> 노선정보세팅_메소드(LineRequest request) {
+	private ExtractableResponse<Response> 노선정보세팅_메소드(LineRequest request) throws JsonProcessingException {
+		String req = objectMapper.writeValueAsString(request);
+
 		return RestAssured.given().log().all()
-				.body(request)
+				.body(req)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when()
 				.post("/lines")
@@ -190,9 +203,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 				.extract();
 	}
 
-	private ExtractableResponse<Response> 지하철역_생성_요청(StationRequest request) {
+	private ExtractableResponse<Response> 지하철역_생성_요청(StationRequest request) throws JsonProcessingException {
+		String req = objectMapper.writeValueAsString(request);
+
 		return  RestAssured.given().log().all()
-				.body(request)
+				.body(req)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when()
 				.post("/stations")
