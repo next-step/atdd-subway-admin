@@ -285,6 +285,84 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
 
 > 학습 내용 간단히 정리 [[Markdown 보기]](./summary.md)
 
+
+#### 2.1.2. Response에서 빈 배열이 표출되지 않는 이유
+
+    결론 : get~ 메서드를 생성하지 않아서 빈 배열의 내용이 표출되지 않았다.
+
+1. 현상
+    ```json
+    HTTP/1.1 200 
+    Content-Type: application/json
+    Transfer-Encoding: chunked
+    Date: Mon, 14 Jun 2021 22:44:34 GMT
+    Keep-Alive: timeout=60
+    Connection: keep-alive
+    
+    [
+    {
+        "id": 1,
+        "name": "2호선",
+        "color": "#FFFFFF",
+        "stations": [
+    
+            ],
+            "createdDate": "2021-06-15T07:44:33.909713",
+            "modifiedDate": "2021-06-15T07:44:33.909713"
+        },
+        {
+            "id": 2,
+            "name": "4호선",
+            "color": "#000000",
+            "stations": [
+                
+            ],
+            "createdDate": "2021-06-15T07:44:33.919948",
+            "modifiedDate": "2021-06-15T07:44:33.919948"
+        }
+    ]
+    ```
+
+2. 코드 추가
+    ```java
+    public List<Station> getStations() {
+        return stations;
+    }
+    ```
+
+3. 결과
+    ```json
+    HTTP/1.1 200 
+    Content-Type: application/json
+    Transfer-Encoding: chunked
+    Date: Mon, 14 Jun 2021 22:44:34 GMT
+    Keep-Alive: timeout=60
+    Connection: keep-alive
+    
+    [
+        {
+        "id": 1,
+        "name": "2호선",
+        "color": "#FFFFFF",
+        "stations": [
+    
+            ],
+            "createdDate": "2021-06-15T07:44:33.909713",
+            "modifiedDate": "2021-06-15T07:44:33.909713"
+        },
+        {
+            "id": 2,
+            "name": "4호선",
+            "color": "#000000",
+            "stations": [
+                
+            ],
+            "createdDate": "2021-06-15T07:44:33.919948",
+            "modifiedDate": "2021-06-15T07:44:33.919948"
+        }
+    ]
+    ```
+
 ### 2.2. Todo List
 
 - [x] 0.기본 세팅
@@ -354,14 +432,14 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 5-3-1.핵심 단위 로직 테스트
     - [x] 5-4.인수 테스트 확인
     - [x] 5-5.UI 테스트 확인
-- [ ] 6.인수인계
-    - [ ] 6-1.소감 및 피드백 정리
-        - [ ] 6-1-1.느낀점 & 배운점 작성
-        - [ ] 6-1-2.피드백 요청 정리
-    - [ ] 6-2.코드리뷰 요청 및 피드백
-        - [ ] 6-1-1.step1를 gregolee/atdd-subway-admin로 push : `git push origin step1`
-        - [ ] 6-1-2.pull request(PR) 작성
-    - [ ] 6-3.Slack을 통해 merge가 되는지 확인한 후에 미션 종료
+- [x] 6.인수인계
+    - [x] 6-1.소감 및 피드백 정리
+        - [x] 6-1-1.느낀점 & 배운점 작성
+        - [x] 6-1-2.피드백 요청 정리
+    - [x] 6-2.코드리뷰 요청 및 피드백
+        - [x] 6-1-1.step1를 gregolee/atdd-subway-admin로 push : `git push origin step1`
+        - [x] 6-1-2.pull request(PR) 작성
+    - [x] 6-3.Slack을 통해 merge가 되는지 확인한 후에 미션 종료
 
 ### 2.3. ATDD 작성
 
@@ -373,12 +451,24 @@ ATDD 작성 [Markdown 보기](./atdd.md)
 
 #### 3.1.1. 느낀점
 
--
+- 마일스톤 같은 ATDD
+    - TDD를 진행하면서 길을 많이 잃었습니다.
+        - 진행하다보면 도메인 간 책임과 역할이 꼬여버려 리팩토링하는데 생각보다 많은 시간을 소요했습니다.
+    - 개발자만의 공유가 아닌 기획자, 개발자 등 여러 참여자의 의사소통이 원활히 가능할 것 같습니다.
+        - 특히 개발자 간의 소통이 잘 이루어지기 어려운 경우가 많았습니다.
+        - 기술적으로 설명하기엔 각자 알고 있는 지식 수준의 차이가 있고, 문서화하기엔 많은 시간이 필요합니다.
+        - 인수테스트를 통하여 공유 가능한 방식으로 소통하는 점을 간접 경험할 수 있어서 좋다고 생각합니다.
+    
 
 #### 3.1.2. 배운점
 
--
+- TDD는 개발자가 구현하는 코드에 집중한다면, ATDD는 추상적인 개념을 구체화하는 것에 집중하는 것을 배웠습니다.
+    - TDD를 통해 테스트 및 그 테스트에 도달하는 코드를 작성하는데 집중합니다.
+    - ATDD는 하나의 주제(기능, 인수 조건 등)을 구체화하여 동일한 내용으로 구상토록 집중합니다.
+    - 보통 SI/SM 사업에서 고생하는 이유는 하나의 요구사항을 서로 다른 관점으로 바라보는데서 시간과 개발 공수가 차이가 납니다.
+    - ATDD를 적용하면 프로젝트의 팀원들과 공유함으로써 적어도 하나의 합의된 목표에 도달할 수 있다는 장점이 있습니다.
+    - 다만 이러한 방향을 팀원 모두가 공유하고 문화 정착을 위해서는 시행착오가 오래 걸릴 것으로 생각합니다.
 
 ### 3.2. 피드백 요청
 
-- 
+- 이번 단계에서는 피드백 요청 드릴 사항이 없습니다.
