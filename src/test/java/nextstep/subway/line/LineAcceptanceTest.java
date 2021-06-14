@@ -20,19 +20,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청();
+
+        // then
+        지하철_노선_생성됨(response);
+    }
+
+    private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청() {
         LineRequest line = new LineRequest("1호선", "red");
 
-        ExtractableResponse<Response> response = RestAssured
+        return RestAssured
                 .given().log().all()
                 .body(line)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all().extract();
-
-        // then
-        // 지하철_노선_생성됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
