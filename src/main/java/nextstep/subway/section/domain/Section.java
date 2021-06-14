@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
@@ -40,6 +41,14 @@ public class Section extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pre_section_id")
+    private Section preSection;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_section_id")
+    private Section postSection;
 
     protected Section() {
     }
@@ -136,6 +145,10 @@ public class Section extends BaseEntity {
         return this.upStation.equals(targetStation);
     }
 
+    public boolean hasSameDownStationAs(Station targetStation) {
+        return this.downStation.equals(targetStation);
+    }
+
     public boolean hasSameUpStationAsUpStationOf(Section targetSection) {
         return this.upStation.equals(targetSection.upStation);
     }
@@ -156,6 +169,84 @@ public class Section extends BaseEntity {
         this.distance.plusDistance(section.distance);
     }
 
+    public void connectPreSection(Section preSection) {
+        this.preSection = preSection;
+        preSection.postSection = this;
+    }
+
+    public void connectPostSection(Section postSection) {
+        this.postSection = postSection;
+        postSection.preSection = this;
+    }
+
+    public void interceptPreSection(Section baseSection) {
+        if (baseSection.preSection != null) {
+            baseSection.preSection.postSection = this;
+        }
+        this.preSection = baseSection.preSection;
+        baseSection.preSection = this;
+        this.postSection = baseSection;
+    }
+
+    public void interceptPostSection(Section baseSection) {
+        if (baseSection.postSection != null) {
+            baseSection.postSection.preSection = this;
+        }
+        this.postSection = baseSection.postSection;
+        baseSection.postSection = this;
+        this.preSection = baseSection;
+    }
+
+    public Section getPostSection() {
+        return this.postSection;
+    }
+
+    public Section getPreSection() {
+        return this.preSection;
+    }
+
+    public boolean isPostSectionOf(Section targetSection) {
+        return targetSection.postSection.equals(this);
+    }
+
+    public boolean isPreSectionOf(Section targetSection) {
+        return targetSection.preSection.equals(this);
+    }
+
+    public boolean hasPostSection() {
+        return this.postSection != null;
+    }
+
+    public boolean hasPreSection() {
+        return this.preSection != null;
+    }
+
+    public void connectPreToPost() {
+        if (this.preSection != null) {
+            this.preSection.postSection = this.postSection;
+        }
+        if (this.postSection != null) {
+            this.postSection.preSection = this.preSection;
+        }
+        this.preSection = null;
+        this.postSection = null;
+    }
+
+    public boolean containStations(Section targetSection) {
+        return targetSection.containStation(this.upStation) || targetSection.containStation(this.downStation);
+    }
+
+    public boolean containStation(Station targetStation) {
+        return this.upStation.equals(targetStation) || this.downStation.equals(targetStation);
+    }
+
+    public void updatePreSectionInfo() {
+        if (preSection != null) {
+            preSection.downStation = this.downStation;
+            preSection.sumDistanceWith(this);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -171,17 +262,6 @@ public class Section extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, distance, line);
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", upStation=" + upStation.toString() +
-                ", downStation=" + downStation.toString() +
-                ", distance=" + distance +
-                ", lineId=" + line.getId() +
-                '}';
     }
 
     private void validateSameStations(Station upStation, Station downStation) {

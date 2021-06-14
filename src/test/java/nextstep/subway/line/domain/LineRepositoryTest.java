@@ -58,12 +58,15 @@ class LineRepositoryTest {
         lineStations = Arrays.asList(station2, station3, station1, station4, station5, station6);
         stationRepository.saveAll(lineStations);
         greenLine = new Line("2호선", "green");
+        lineRepository.save(greenLine);
         section1 = new Section(station1, station2, 3, greenLine);
         section2 = new Section(station2, station3, 5, greenLine);
         section3 = new Section(station3, station4, 2, greenLine);
         section4 = new Section(station4, station5, 4, greenLine);
-        sections = new Sections(Arrays.asList(section1, section2, section3, section4));
-        lineRepository.save(greenLine);
+        sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section2);
+        sections.addSection(section3);
+        sections.addSection(section4);
     }
 
     @Test

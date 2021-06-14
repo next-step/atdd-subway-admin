@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
@@ -221,8 +222,9 @@ class LineServiceTest {
         // 기존에 저장된 노선과 구간들
         Line greenLine = new Line("2호선", "green");
         new Section(station1, station2, 3, greenLine);
-        new Section(station2, station3, 3, greenLine);
-        new Section(station3, station4, 3, greenLine);
+        Sections sections = greenLine.createSections();
+        sections.addSection(new Section(station2, station3, 3, greenLine));
+        sections.addSection(new Section(station3, station4, 3, greenLine));
 
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, 7);
         LineResponse line = greenLine.toLineResponse();
@@ -232,7 +234,6 @@ class LineServiceTest {
         given(stationRepository.findById(2L)).willReturn(Optional.of(station5));
 
         LineResponse lineResponse = service.appendNewSectionToLine(1L, sectionRequest);
-        System.out.println(lineResponse.toString());
 
         // then
         List<String> resultStationNames = lineResponse.getStations()
@@ -263,8 +264,9 @@ class LineServiceTest {
         // 기존에 저장된 노선과 구간들
         Line greenLine = new Line("2호선", "green");
         new Section(station1, station2, 3, greenLine);
-        new Section(station2, station3, 3, greenLine);
-        new Section(station3, station4, 3, greenLine);
+        Sections sections = greenLine.createSections();
+        sections.addSection(new Section(station2, station3, 3, greenLine));
+        sections.addSection(new Section(station3, station4, 3, greenLine));
 
         given(lineRepository.findById(anyLong())).willReturn(Optional.ofNullable(greenLine));
         given(stationRepository.findById(anyLong())).willReturn(Optional.ofNullable(station2));

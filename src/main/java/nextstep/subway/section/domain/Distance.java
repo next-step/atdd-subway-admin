@@ -17,7 +17,7 @@ public class Distance {
         this.distance = distance;
     }
 
-    public static Distance copyDistanceOn(Section section) {
+    public static Distance copyOn(Section section) {
         return new Distance(section.getDistance().distance);
     }
 
@@ -51,10 +51,6 @@ public class Distance {
     public Distance plusDistance(Section section) {
         section.addDistanceTo(this);
         return this;
-    }
-
-    public boolean isGreaterThanOrEqualTo(Section section) {
-        return section.hasDistanceShorterThanOrEqualTo(this);
     }
 
     @Override
