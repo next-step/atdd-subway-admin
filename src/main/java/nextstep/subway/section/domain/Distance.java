@@ -29,6 +29,11 @@ public class Distance {
         }
     }
 
+    public int distanceDiffWithOtherDistance(Distance other) {
+        int distanceDiff = this.distance - other.getDistance();
+        return distanceDiff;
+    }
+
     public int getDistance() {
         return distance;
     }

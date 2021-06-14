@@ -17,4 +17,18 @@ public class DistanceTest {
                 () -> assertThatThrownBy(() -> Distance.from(-1)).isInstanceOf(IllegalArgumentException.class)
         );
     }
+
+    @DisplayName("other 거리를 입력하면 거리간의 차이값이 구해진다.")
+    @Test
+    void distanceDiffWithOtherDistance() {
+        // given
+        int distance = 10;
+        int otherDistance = 5;
+
+        // when
+        int distanceDiff = Distance.from(distance).distanceDiffWithOtherDistance(Distance.from(otherDistance));
+
+        // then
+        assertThat(distanceDiff).isEqualTo(distance - otherDistance);
+    }
 }

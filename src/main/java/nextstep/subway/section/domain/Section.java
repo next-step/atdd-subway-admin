@@ -22,7 +22,6 @@ import static java.util.stream.Collectors.toList;
 @Table(name = "section")
 @Entity
 public class Section extends BaseEntity {
-    private static final String NEW_SECTION_MUST_SHORTER_THAN_EXIST_SECTION = "새로 등록되는 구간 길이가 기존 역 사이 길이보다 크거나 같을 수 없습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -106,23 +105,15 @@ public class Section extends BaseEntity {
     }
 
     private void updateDownStation(Section newSection) {
-        int distanceDiff = distanceDiffWithNewSection(newSection.distance);
-        this.downStation = newSection.upStation;
+        int distanceDiff = distance.distanceDiffWithOtherDistance(newSection.distance);
         this.distance = Distance.from(distanceDiff);
+        this.downStation = newSection.upStation;
     }
 
     private void updateUpStation(Section newSection) {
-        int distanceDiff = distanceDiffWithNewSection(newSection.distance);
-        this.upStation = newSection.downStation;
+        int distanceDiff = distance.distanceDiffWithOtherDistance(newSection.distance);
         this.distance = Distance.from(distanceDiff);
-    }
-
-    private int distanceDiffWithNewSection(Distance newSectionDistacne) {
-        int distanceDiff = this.distance.getDistance() - newSectionDistacne.getDistance();
-        if (distanceDiff <= 0) {
-            throw new IllegalArgumentException(NEW_SECTION_MUST_SHORTER_THAN_EXIST_SECTION);
-        }
-        return distanceDiff;
+        this.upStation = newSection.downStation;
     }
 
     public void setLine(Line line) {
