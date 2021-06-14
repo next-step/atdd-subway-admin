@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.section;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -11,9 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.utils.SectionAddAcceptanceTestRequest.*;
-import static nextstep.subway.utils.SectionAddAcceptanceTestResponse.지하철_노선_구간_등록_예외_케이스로_등록되지_않음;
-import static nextstep.subway.utils.SectionAddAcceptanceTestResponse.지하철_노선에_지하철역_등록됨;
+import static nextstep.subway.utils.SectionAcceptanceTestRequest.*;
+import static nextstep.subway.utils.SectionAcceptanceTestResponse.지하철_노선_구간_등록_예외_케이스로_등록되지_않음;
+import static nextstep.subway.utils.SectionAcceptanceTestResponse.지하철_노선에_지하철역_등록됨;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선에 역 등록 관련 기능")

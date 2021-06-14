@@ -13,7 +13,7 @@ import java.util.Map;
 import static nextstep.subway.utils.LineAcceptanceTestRequest.지하철_노선_등록되어_있음;
 import static nextstep.subway.utils.LineAcceptanceTestRequest.지하철_노선_요청_생성;
 
-public class SectionAddAcceptanceTestRequest {
+public class SectionAcceptanceTestRequest {
     public static ExtractableResponse<Response> 노선에_지하철역_등록_요청(Long lineId, Long upStationId, Long downStationId, long distance) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
@@ -47,6 +47,16 @@ public class SectionAddAcceptanceTestRequest {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                 post("/stations").
+                then().
+                log().all().
+                extract();
+    }
+
+    public static ExtractableResponse<Response> 노선에_지하철역_제거_요청(Long lineId, Long removeStationId) {
+        return RestAssured.given().log().all().
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                delete("/lines/{lineId}/sections?stationId={stationId}", lineId, removeStationId).
                 then().
                 log().all().
                 extract();
