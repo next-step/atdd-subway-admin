@@ -1,9 +1,11 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.LineStation;
+import nextstep.subway.wrappers.LineStations;
 import nextstep.subway.station.domain.Station;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class LineRequest {
@@ -53,8 +55,15 @@ public class LineRequest {
         return new Line(name, color);
     }
 
-    public Section toSection(Station upStation, Station downStation) {
-        return new Section(upStation, downStation, distance);
+    public Line toLine(LineStations lineStations) {
+        return new Line(name, color).lineStationsBy(lineStations);
+    }
+
+    public LineStations toLineStations(Station upStation, Station downStation) {
+        return new LineStations(Arrays.asList(
+                        new LineStation(upStation, null, 0),
+                        new LineStation(downStation, upStation, distance))
+        );
     }
 
     @Override
