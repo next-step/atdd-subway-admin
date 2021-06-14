@@ -297,15 +297,15 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 0-1-6.branch : `git checkout -b step1`
     - [x] 0-2.요구사항 정리
     - [x] 0-3.[AngularJS Commit Message Conventions](https://gist.github.com/stephenparish/9941e89d80e2bc58a153#generating-changelogmd) 참고
-    - [ ] 0-4.Slack을 통해 merge가 되는지 확인한 후에 코드 리뷰 2단계 과정으로 다음 단계 미션을 진행
-        - [ ] 0-4-1.gregolee(master) branch로 체크아웃 : `git checkout gregolee`
-        - [ ] 0-4-2.step1 branch 삭제 : `git branch -D step1`
-        - [ ] 0-4-3.step1 branch 삭제 확인 : `git branch -a`
-        - [ ] 0-4-4.원본(next-step) git repository를 remote로 연결 (미션 당 1회) : `git remote add -t gregolee upstream https://github.com/next-step/atdd-subway-admin`
-        - [ ] 0-4-5.원본(next-step) git repository를 remote로 연결 확인 : `git remote -v`
-        - [ ] 0-4-6.원본(next-step) git repository에서 merge된 나의 branch(gregolee)를 fetch : `git fetch upstream gregolee`
-        - [ ] 0-4-7.remote에서 가져온 나의 branch로 rebase : `git rebase upstream/gregolee`
-        - [ ] 0-4-7.gregolee -> step2로 체크아웃 : `git checkout -b step2`
+    - [x] 0-4.Slack을 통해 merge가 되는지 확인한 후에 코드 리뷰 2단계 과정으로 다음 단계 미션을 진행
+        - [x] 0-4-1.gregolee(master) branch로 체크아웃 : `git checkout gregolee`
+        - [x] 0-4-2.step1 branch 삭제 : `git branch -D step1`
+        - [x] 0-4-3.step1 branch 삭제 확인 : `git branch -a`
+        - [x] 0-4-4.원본(next-step) git repository를 remote로 연결 (미션 당 1회) : `git remote add -t gregolee upstream https://github.com/next-step/atdd-subway-admin`
+        - [x] 0-4-5.원본(next-step) git repository를 remote로 연결 확인 : `git remote -v`
+        - [x] 0-4-6.원본(next-step) git repository에서 merge된 나의 branch(gregolee)를 fetch : `git fetch upstream gregolee`
+        - [x] 0-4-7.remote에서 가져온 나의 branch로 rebase : `git rebase upstream/gregolee`
+        - [x] 0-4-7.gregolee -> step2로 체크아웃 : `git checkout -b step2`
     - [x] 0-5.리뷰어님의 리뷰를 반영한 코드로 수정
         - [x] 0-5-1.적용사항 없음
 - [x] 1.자바 코드 컨벤션을 위한 세팅
@@ -347,11 +347,13 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 4-7-2.엔티티 연관과계 매핑
             - [x] 4-7-2-1.`Station`
             - [x] 4-7-2-2.`Line`
-- [ ] 5.테스트
-    - [ ] 5-1.Gradle build Success 확인
-    - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)
-    - [ ] 5-3.요구사항 조건들 충족했는지 확인
-        - [ ] 5-3-1.핵심 단위 로직 테스트
+- [x] 5.테스트
+    - [x] 5-1.Gradle build Success 확인
+    - [x] 5-2.checkstyle 문제없는지 확인 (Java Convention)
+    - [x] 5-3.요구사항 조건들 충족했는지 확인
+        - [x] 5-3-1.핵심 단위 로직 테스트
+    - [x] 5-4.인수 테스트 확인
+    - [x] 5-5.UI 테스트 확인
 - [ ] 6.인수인계
     - [ ] 6-1.소감 및 피드백 정리
         - [ ] 6-1-1.느낀점 & 배운점 작성
