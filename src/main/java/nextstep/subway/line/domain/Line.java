@@ -1,24 +1,29 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.Name;
 
 import javax.persistence.*;
 
 @Entity
 public class Line extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String name;
-    private String color;
+
+    @Embedded
+    private Name name;
+
+    @Embedded
+    private Color color;
 
     public Line() {
     }
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this.name = new Name(name);
+        this.color = new Color(color);
     }
 
     public void update(Line line) {
@@ -30,11 +35,11 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public String getName() {
+    public Name getName() {
         return name;
     }
 
-    public String getColor() {
+    public Color getColor() {
         return color;
     }
 }
