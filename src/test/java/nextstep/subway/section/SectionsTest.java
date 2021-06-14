@@ -173,6 +173,27 @@ public class SectionsTest {
         assertThat(sections.contains(회현_명동)).isFalse();
     }
 
+    @DisplayName("지하철역 제거 : 중간구간 제거")
+    @Test
+    void 지하철역_제거_중간구간() {
+        //given
+        Section 회현_명동 = new Section(회현역, 명동역, 30);
+        Section 명동_충무로 = new Section(명동역, 충무로역, 30);
+        Section 회현_충무로 = new Section(회현역, 충무로역, 60);
+
+        sections.add(회현_명동);
+        sections.add(명동_충무로);
+
+        //when
+        sections.removeStation(명동역);
+
+        //then
+        assertThat(sections.getStations()).hasSize(2)
+                .containsExactly(회현역, 충무로역);
+        assertThat(sections.getSections().get(0)).isEqualTo(회현_충무로);
+        assertThat(sections.getSections().get(0).getDistance()).isEqualTo(60);
+    }
+
     @DisplayName("예외상황 - 지하철역 제거 : 마지막 구간 제거")
     @Test
     void 예외상황_마지막_구간_제거() {
@@ -183,6 +204,21 @@ public class SectionsTest {
         //when
         assertThatThrownBy(() -> sections.removeStation(명동역))
                 .isInstanceOf(CannotDeleteException.class)
-        .hasMessage("마지막 구간은 삭제할 수 없습니다.");
+                .hasMessage("마지막 구간은 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("예외상황 - 지하철역 제거 : 등록되지 않은 구간 제거")
+    @Test
+    void 예외상황_미등록_구간_제거() {
+        //given
+        Section 회현_명동 = new Section(회현역, 명동역, 30);
+        sections.add(회현_명동);
+
+        Station 강남역 = new Station("강남역");
+
+        //when
+        assertThatThrownBy(() -> sections.removeStation(강남역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("등록된 구간만 삭제할 수 있습니다");
     }
 }

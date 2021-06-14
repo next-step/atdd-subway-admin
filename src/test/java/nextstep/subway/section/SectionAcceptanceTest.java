@@ -252,13 +252,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 구간제거예외상황_when_존재하지_않는_구간() {
         //given
-        //구간을_노선에_등록_요청
+        구간을_노선에_등록_요청(사호선_ID, 서울_회현_요청);
+        Station 강남역 = stationAcceptanceTest.지하철_역_등록되어_있음("강남역").as(Station.class);
 
         // when
         //구간을_노선에_제거_요청
+        ExtractableResponse<Response> response = 구간을_노선에서_제거_요청(사호선_ID, 강남역.getId());
 
         // then
-        //구간_제거_완료
+        //구간_등록_BAD_REQUEST_응답
+        구간_등록_BAD_REQUEST_응답(response);
     }
 
     private void 구간_OK_응답(ExtractableResponse<Response> response) {

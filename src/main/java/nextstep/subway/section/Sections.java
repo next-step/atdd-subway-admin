@@ -22,6 +22,10 @@ public class Sections {
     public Sections() {
     }
 
+    public List<Section> getSections() {
+        return this.sections;
+    }
+
     public void add(Section section) {
         if (sections.contains(section)) {
             return;
@@ -154,6 +158,10 @@ public class Sections {
     }
 
     private void validateBeforeRemove(Station station) {
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException("등록된 구간만 삭제할 수 있습니다");
+        }
+
         if (sections.size() < MINIMUM_REMOVABLE_SIZE) {
             throw new CannotDeleteException("마지막 구간은 삭제할 수 없습니다.");
         }
