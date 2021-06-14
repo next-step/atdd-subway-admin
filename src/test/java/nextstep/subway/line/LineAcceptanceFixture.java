@@ -61,7 +61,36 @@ public class LineAcceptanceFixture {
         }
     }
 
-    static ExtractableResponse<Response> NEW_지하철_노선_생성_요청(final String path, final LineFixture lineFixture) {
+    enum SectionFixture {
+        SECTION("2", "3", "50"),
+        DUPLICATED_SECTION("1", "2", "50"),
+        SECTION_NEW_STATION("3", "4", "50"),
+        TOO_LONG_DISTANCE("1", "3", "100");
+
+        private final String upStation;
+        private final String downStation;
+        private final String distance;
+
+        SectionFixture(final String upStation, final String downStation, final String distance) {
+            this.upStation = upStation;
+            this.downStation = downStation;
+            this.distance = distance;
+        }
+
+        public String getUpStation() {
+            return upStation;
+        }
+
+        public String getDownStation() {
+            return downStation;
+        }
+
+        public String getDistance() {
+            return distance;
+        }
+    }
+
+    static ExtractableResponse<Response> 지하철_노선_생성_요청(final String path, final LineFixture lineFixture) {
         final Map<String, String> params = new HashMap<>();
         params.put("name", lineFixture.getName());
         params.put("color", lineFixture.getColor());
@@ -72,10 +101,11 @@ public class LineAcceptanceFixture {
         return post(path, params);
     }
 
-    static ExtractableResponse<Response> 지하철_노선_생성_요청(final String path, final LineFixture lineFixture) {
+    static ExtractableResponse<Response> 지하철_구간에_지하철역_등록_요청(final String path, final SectionFixture sectionFixture) {
         final Map<String, String> params = new HashMap<>();
-        params.put("name", lineFixture.getName());
-        params.put("color", lineFixture.getColor());
+        params.put("downStationId", sectionFixture.getDownStation());
+        params.put("upStationId", sectionFixture.getUpStation());
+        params.put("distance", sectionFixture.getDistance());
 
         return post(path, params);
     }

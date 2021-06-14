@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import nextstep.subway.DuplicatedSectionException;
 import nextstep.subway.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 
 @RestController
 @RequestMapping("/lines")
@@ -44,6 +46,13 @@ public class LineController {
 
     private URI createUri(final LineResponse line) {
         return URI.create("/lines/" + line.getId());
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<LineResponse> addSection(@PathVariable final Long id,
+        @RequestBody final SectionRequest sectionRequest) {
+
+        return ResponseEntity.ok(lineService.addSection(id, sectionRequest));
     }
 
     @GetMapping
@@ -77,8 +86,9 @@ public class LineController {
             .build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<LineResponse> handleIllegalArgsException(final DataIntegrityViolationException e) {
+    @ExceptionHandler({DataIntegrityViolationException.class, DuplicatedSectionException.class,
+        IllegalArgumentException.class})
+    public ResponseEntity<LineResponse> handleIllegalArgsException(final RuntimeException e) {
         return ResponseEntity.badRequest()
             .build();
     }
