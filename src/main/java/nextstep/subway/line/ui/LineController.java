@@ -6,10 +6,8 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
@@ -69,20 +67,5 @@ public class LineController {
     @GetMapping(value = "/{lineId}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity showSection(@PathVariable Long lineId) {
         return ResponseEntity.ok().body(lineService.findAllSection());
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(final DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity handleIllegalArgsException(final IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-        return ResponseEntity.badRequest().build();
     }
 }
