@@ -2,7 +2,6 @@ plugins {
 	id 'org.springframework.boot' version '2.4.0-SNAPSHOT'
 	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
 	id 'java'
-	id "org.ec4j.editorconfig" version "0.0.3"
 	id 'checkstyle'
 }
 
@@ -20,13 +19,6 @@ repositories {
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 // 1. end
-
-// 2. editorconfig plugin setting
-editorconfig {
-	excludes = ['build']
-}
-check.dependsOn editorconfigCheck
-// 2. end
 
 // 3. Checkstyle plugin setting
 checkstyle {

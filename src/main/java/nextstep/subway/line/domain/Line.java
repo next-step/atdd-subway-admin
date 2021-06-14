@@ -70,10 +70,10 @@ public class Line extends BaseEntity {
 			return false;
 		}
 		Line line = (Line)object;
-		return Objects.equals(id, line.id) &&
-			Objects.equals(name, line.name) &&
-			Objects.equals(color, line.color) &&
-			Objects.equals(stations, line.stations);
+		return Objects.equals(id, line.id)
+			&& Objects.equals(name, line.name)
+			&& Objects.equals(color, line.color)
+			&& Objects.equals(stations, line.stations);
 	}
 
 	@Override
