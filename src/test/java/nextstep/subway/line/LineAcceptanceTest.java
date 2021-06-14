@@ -46,7 +46,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then 지하철_노선_생성됨
 		System.out.println(response);
 		System.out.println(response.statusCode());
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+    assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
