@@ -83,20 +83,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> createdFirstLine = 지하철_노선_생성_요청(TEST_FIRST_LINE);
         long createdId = extractIdByLocationHeader(createdFirstLine);
 
         // when
-        // 지하철_노선_조회_요청
-        // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().get("/lines/" + createdId)
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdId);
 
         // then
         지하철_노선_목록_응답됨(response);
+        지하철_노선_같음(createdId, response);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(long createdId) {
+        return RestAssured
+                    .given().log().all()
+                    .when().get("/lines/" + createdId)
+                    .then().log().all().extract();
+    }
+
+    private void 지하철_노선_같음(long createdId, ExtractableResponse<Response> response) {
         assertThat(createdId).isEqualTo(response.body().as(LineResponse.class).getId());
     }
 
