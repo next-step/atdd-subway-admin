@@ -112,4 +112,16 @@ public class LineStationsTest {
 
         assertThatThrownBy(() -> lineStations.findLineStationByPreStation(station)).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void 노선_지하철_연결_테이블_entity를_이용하여_지하철목록_리스트_생성() {
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(preStation, null, 0);
+        LineStations lineStations = new LineStations(Arrays.asList(lineStation1, lineStation2));
+
+        List<Station> stations = lineStations.generateStations();
+        assertThat(stations.size()).isEqualTo(2);
+        assertThat(stations).containsExactly(preStation, station);
+
+    }
 }

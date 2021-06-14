@@ -73,6 +73,21 @@ public class LineStations {
         return getLineStationsOrderByAsc().get(lineStations.size() - 1).isSameStation(lineStation.getPreStation());
     }
 
+    public boolean isNotContainStations(LineStation lineStation) {
+        return lineStations.stream().anyMatch(ls -> ls.isNotContainStation(lineStation));
+    }
+
+    public List<Station> generateStations() {
+        List<Station> stations = new LinkedList<>();
+        Optional<LineStation> preLineStation = findFirstLineStation();
+        while (preLineStation.isPresent()) {
+            LineStation lineStation = preLineStation.get();
+            stations.add(lineStation.getStation());
+            preLineStation = findNextLineStation(lineStation);
+        }
+        return stations;
+    }
+
     private Optional<LineStation> findFirstLineStation() {
         return lineStations.stream().filter(LineStation::isNullPreStation).findFirst();
     }
@@ -82,10 +97,6 @@ public class LineStations {
                 .stream()
                 .filter(ls -> ls.isNextLineStation(lineStation))
                 .findFirst();
-    }
-
-    public boolean isNotContainStations(LineStation lineStation) {
-        return lineStations.stream().anyMatch(ls -> ls.isNotContainStation(lineStation));
     }
 
     @Override

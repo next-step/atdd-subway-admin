@@ -34,17 +34,6 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("노선 정보에 구간 정보 add")
-    void addSection() {
-        Line line = new Line("신분당선", "bg - red - 600");
-        Station upStation = new Station("강남역");
-        Station downStation = new Station("광교역");
-        Section section = new Section(upStation, downStation, 100);
-        Line actual = line.addSection(section);
-        assertThat(actual).isEqualTo(new Line("신분당선", "bg - red - 600", new Sections(Arrays.asList(section))));
-    }
-
-    @Test
     void 노선_정보에_노선_지하철역_연결_테이블_정보_추가() {
         Station station = new Station(2L, "정자역");
         Station preStation = new Station(1L, "양재역");

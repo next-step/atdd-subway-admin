@@ -10,10 +10,12 @@ import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.wrappers.Distance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -41,8 +43,16 @@ public class SectionService {
         LineStation lineStation = sectionRequest.toLineStation(upStation, downStation);
         line.checkValidLineStation(lineStation);
         SectionAddType sectionAddType = line.calcAddType(lineStation);
-        line.updateLineStationAndSection(sectionAddType, lineStation);
+        Optional<LineStation> updateTargetLineStation = line.updateLineStationAndSection(sectionAddType, lineStation);
+        if (updateTargetLineStation.isPresent()) {
+            LineStation updateLineStation = updateTargetLineStation.get();
+            Section findSection = sectionRepository.findByLineAndDownStation(line, updateLineStation.getStation());
+            Distance newDistance = new Distance(updateLineStation.getDistance().subtractionDistance(lineStation.getDistance()));
+            updateLineStation.update(updateLineStation.getStation(), lineStation.getStation(), newDistance);
+            findSection.update(line, updateLineStation.getPreStation(), findSection.downStation(), newDistance);
+        }
+
         line.addLineStation(lineStation);
-        return SectionResponse.of(sectionRepository.save(Section.of(lineStation)));
+        return SectionResponse.of(sectionRepository.save(sectionRequest.toSection(line, upStation, downStation)));
     }
 }

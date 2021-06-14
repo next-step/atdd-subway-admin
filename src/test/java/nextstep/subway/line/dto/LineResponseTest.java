@@ -22,11 +22,9 @@ class LineResponseTest {
     void of() {
         Station upStation = new Station(1L, "강남역");
         Station downStation = new Station(2L, "양재역");
-        Section section = new Section(upStation, downStation, 10);
         LineStation lineStation1 = new LineStation(upStation, null, 0);
         LineStation lineStation2 = new LineStation(downStation, upStation, 10);
         Line line = new Line("신분당선", "bg-red-600");
-        line.addSection(section);
         line.addLineStation(lineStation1);
         line.addLineStation(lineStation2);
         LineResponse lineResponse = LineResponse.of(line);

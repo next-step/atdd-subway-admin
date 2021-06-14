@@ -63,8 +63,7 @@ class LineRequestTest {
         Station downStation = new Station("광교역");
         LineStations lineStations = lineRequest.toLineStations(upStation, downStation);
 
-        Section section = lineRequest.toSection(upStation, downStation);
-        Line line = lineRequest.toLine(section, lineStations);
-        assertThat(line).isEqualTo(new Line("신분당선", "bg-red-600", new Sections(Arrays.asList(section)), lineStations));
+        Line line = lineRequest.toLine(lineStations);
+        assertThat(line).isEqualTo(new Line("신분당선", "bg-red-600", lineStations));
     }
 }

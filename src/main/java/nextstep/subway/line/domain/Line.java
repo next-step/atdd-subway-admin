@@ -2,12 +2,11 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.enums.SectionAddType;
-import nextstep.subway.wrappers.Distance;
-import nextstep.subway.wrappers.Sections;
 import nextstep.subway.lineStation.domain.LineStation;
-import nextstep.subway.wrappers.LineStations;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.wrappers.LineStations;
+import nextstep.subway.wrappers.Sections;
 
 import javax.persistence.*;
 import java.util.List;
@@ -29,9 +28,6 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();
-
-    @Embedded
     private LineStations lineStations = new LineStations();
 
     public Line() {
@@ -42,16 +38,9 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, Sections sections) {
+    public Line(String name, String color, LineStations lineStations) {
         this.name = name;
         this.color = color;
-        this.sections = sections;
-    }
-
-    public Line(String name, String color, Sections sections, LineStations lineStations) {
-        this.name = name;
-        this.color = color;
-        this.sections = sections;
         this.lineStations = lineStations;
     }
 
@@ -62,12 +51,6 @@ public class Line extends BaseEntity {
     public Line lineStationsBy(LineStations lineStations) {
         this.lineStations = lineStations;
         lineStations.addLine(this);
-        return this;
-    }
-
-    public Line addSection(Section section) {
-        sections.addSection(section);
-        section.lineBy(this);
         return this;
     }
 
@@ -89,24 +72,20 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> stations() {
-        return sections.generateStations();
+        return lineStations.generateStations();
     }
 
-    public List<LineStation> getLineStationsOrderByAse() {
-        return this.lineStations.getLineStationsOrderByAsc();
-    }
-
-    public void updateLineStationAndSection(SectionAddType sectionAddType, LineStation lineStation) {
+    public Optional<LineStation> updateLineStationAndSection(SectionAddType sectionAddType, LineStation lineStation) {
         if (sectionAddType.equals(SectionAddType.NEW_UP)) {
             lineStations.updateFirstLineStation(lineStation);
+            lineStation.update(lineStation.getPreStation(), null, lineStation.getDistance());
         }
         if (sectionAddType.equals(SectionAddType.NEW_BETWEEN)) {
             LineStation updateTargetLineStation = lineStations.findLineStationByPreStation(lineStation.getPreStation());
             updateTargetLineStation.validDistance(lineStation);
-            Distance newDistance = new Distance(updateTargetLineStation.getDistance().subtractionDistance(lineStation.getDistance()));
-            updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getStation(), newDistance);
-            sections.updateSectionByDownStation(updateTargetLineStation, newDistance);
+            return Optional.of(updateTargetLineStation);
         }
+        return Optional.empty();
     }
 
     public void checkValidLineStation(LineStation lineStation) {
@@ -149,12 +128,11 @@ public class Line extends BaseEntity {
         return Objects.equals(id, line.id) &&
                 Objects.equals(name, line.name) &&
                 Objects.equals(color, line.color) &&
-                Objects.equals(sections, line.sections) &&
                 Objects.equals(lineStations, line.lineStations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, sections, lineStations);
+        return Objects.hash(id, name, color, lineStations);
     }
 }

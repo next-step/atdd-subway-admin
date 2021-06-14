@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.wrappers.LineStations;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.application.StationService;
@@ -24,11 +25,15 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationService stationService;
+    private final SectionRepository sectionRepository;
 
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository,
+                       StationService stationService,
+                       SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -37,7 +42,9 @@ public class LineService {
             Station downStation = stationService.findStationById(request.getDownStationId());
             Section section = request.toSection(upStation, downStation);
             LineStations lineStations = request.toLineStations(upStation, downStation);
-            Line line = request.toLine(section, lineStations);
+            Line line = request.toLine(lineStations);
+            section.lineBy(line);
+            sectionRepository.save(section);
             return LineResponse.of(lineRepository.save(line));
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateValueException(String.format(DUPLICATE_VALUE_ERROR_MESSAGE, request.getName()));
@@ -64,6 +71,8 @@ public class LineService {
     public void deleteLineById(Long id) {
         Optional<Line> findLine = lineRepository.findById(id);
         Line line = Line.getNotNullLine(findLine);
+        List<Section> sections = sectionRepository.findByLine(line);
+        sectionRepository.deleteAll(sections);
         lineRepository.delete(line);
     }
 
