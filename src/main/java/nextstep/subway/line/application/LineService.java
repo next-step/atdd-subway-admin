@@ -43,4 +43,13 @@ public class LineService {
 
         return LineResponse.of(line);
     }
+
+    public LineResponse updateLineBy(Long id, LineRequest lineRequest) {
+        Line line = lineRepository
+            .findById(id)
+            .orElseThrow(EntityNotFoundException::new)
+            .getUpdatedLineBy(lineRequest);
+
+        return LineResponse.of(line);
+    }
 }
