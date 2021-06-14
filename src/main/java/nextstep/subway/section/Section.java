@@ -43,17 +43,26 @@ public class Section extends BaseEntity {
         }
     }
 
-    public void updateDownStation(Section section) {
-        updateDistance(section.getDistance());
+    public void connectDownStationTo(Section section) {
+        reduceDistance(section.getDistance());
         this.downStation = section.upStation;
     }
 
-    public void updateUpStation(Section section) {
-        updateDistance(section.getDistance());
+    public void connectUpStationTo(Section section) {
+        reduceDistance(section.getDistance());
         this.upStation = section.downStation;
     }
 
-    private void updateDistance(int newDistance) {
+    public void disconnectDownStationFrom(Section section) {
+        increaseDistance(section.getDistance());
+        this.downStation = section.downStation;
+    }
+
+    private void increaseDistance(int newDistance) {
+        this.distance += newDistance;
+    }
+
+    private void reduceDistance(int newDistance) {
         if (this.distance <= newDistance) {
             throw new IllegalArgumentException("기존 역 사이의 길이와 같거나 긴 구간을 등록할 수 없습니다.");
         }
@@ -65,6 +74,20 @@ public class Section extends BaseEntity {
         this.line = line;
         /* 연관관계의 주인인 Section에서 Line에 Section을 연결시켜준다 */
         line.getSections().add(this);
+    }
+
+    public boolean isDownStation(Station station){
+        if(station.equals(downStation)){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isUpStation(Station station){
+        if(station.equals(upStation)){
+            return true;
+        }
+        return false;
     }
 
     public Station getUpStation() {

@@ -60,4 +60,22 @@ public class LineTest {
         //Then
         assertThat(line.getSections().contains(section)).isTrue();
     }
+
+    @DisplayName("노선에서 구간 삭제")
+    @Test
+    void 노선에서_구간삭제(){
+        //Given
+        Line line = new Line("4호선", "blue");
+        Section section = new Section(서울역, 명동역, 30);
+        Section secondSection = new Section(명동역, 동역문역, 20);
+
+        line.addSection(section);
+        line.addSection(secondSection);
+
+        //When
+        line.removeSection(동역문역);
+
+        //Then
+        assertThat(line.getSections().contains(secondSection)).isFalse();
+    }
 }

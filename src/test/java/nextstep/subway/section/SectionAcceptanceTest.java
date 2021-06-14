@@ -72,7 +72,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         //구간_등록_완료
-        구간_등록_OK_응답(response);
+        구간_OK_응답(response);
         노선에_지하철이_포함되었는지_점검(response, 충무로역);
         노선에_지하철이_포함되었는지_점검(response, 회현역);
         노선에_지하철이_포함되었는지_점검(response, 서울역);
@@ -88,7 +88,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         //구간_등록_완료
-        구간_등록_OK_응답(response);
+        구간_OK_응답(response);
         List<Long> expectedOrderId = Arrays.asList(서울역.getId(), 회현역.getId(), 충무로역.getId());
         노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
 
@@ -104,7 +104,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         //구간_등록_완료
-        구간_등록_OK_응답(response);
+        구간_OK_응답(response);
         List<Long> expectedOrderId = Arrays.asList(회현역.getId(), 충무로역.getId(), 동역문역.getId());
         노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
     }
@@ -119,7 +119,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         //구간_등록_완료
-        구간_등록_OK_응답(response);
+        구간_OK_응답(response);
         List<Long> expectedOrderId = Arrays.asList(회현역.getId(), 명동역.getId(), 충무로역.getId());
         노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
     }
@@ -134,7 +134,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         //구간_등록_완료
-        구간_등록_OK_응답(response);
+        구간_OK_응답(response);
         List<Long> expectedOrderId = Arrays.asList(회현역.getId(), 명동역.getId(), 충무로역.getId());
         노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
     }
@@ -184,13 +184,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 구간제거_when_마지막_구간() {
         //given
         //구간을_노선에_등록_요청
+        // [회현]==[충무로]==[동역문]
+        구간을_노선에_등록_요청(사호선_ID, 충무로_동역문_요청);
 
         // when
-        //구간을_노선에_제거_요청
+        //구간을_노선에서_제거_요청
+        ExtractableResponse<Response> response = 구간을_노선에서_제거_요청(사호선_ID, 동역문역.getId());
 
         // then
         //구간_제거_완료
-   }
+        구간_OK_응답(response);
+        List<Long> expectedOrderId = Arrays.asList(회현역.getId(), 충무로역.getId());
+        노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
+    }
 
     @DisplayName("구간 제거 : 노선의 첫번째 구간 제거")
     @Test
@@ -243,7 +249,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         //구간_제거_완료
     }
-    private void 구간_등록_OK_응답(ExtractableResponse<Response> response) {
+
+    private void 구간_OK_응답(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -253,6 +260,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 구간을_노선에_등록_요청(Long lineId, SectionRequest request) {
         return httpPost(BASE_REQUEST_URI + lineId + SECTION_ADD_URI, request);
+    }
+
+    private ExtractableResponse<Response> 구간을_노선에서_제거_요청(Long lineId, Long stationId) {
+        return httpDelete(BASE_REQUEST_URI + lineId + SECTION_ADD_URI + "?stationId=" + stationId);
     }
 
     private void 노선에_지하철이_포함되었는지_점검(ExtractableResponse<Response> response, Station station) {

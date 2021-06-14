@@ -8,6 +8,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -62,7 +63,7 @@ public class Sections {
                 .orElse(null);
         if (existingSection != null) {
             int indexOfExisting = sections.indexOf(existingSection);
-            existingSection.updateDownStation(section);
+            existingSection.connectDownStationTo(section);
             sections.add(indexOfExisting + 1, section);
         }
     }
@@ -77,7 +78,7 @@ public class Sections {
                 .orElse(null);
         if (existingSection != null) {
             int indexOfExisting = sections.indexOf(existingSection);
-            existingSection.updateUpStation(section);
+            existingSection.connectUpStationTo(section);
             sections.add(indexOfExisting, section);
         }
     }
@@ -128,5 +129,30 @@ public class Sections {
 
         stations.add(section.getDownStation());
         return stations;
+    }
+
+    public void removeStation(Station station) {
+        Optional<Section> downStationMatchingSection = sections.stream()
+                .filter(section -> section.isDownStation(station)).findFirst();
+        Optional<Section> upStationMatchingSection = sections.stream()
+                .filter(section -> section.isUpStation(station)).findFirst();
+        //상행종점
+        if (!downStationMatchingSection.isPresent()) {
+            sections.remove(upStationMatchingSection.get());
+            return;
+        }
+        //하행종점
+        if (!upStationMatchingSection.isPresent()) {
+            sections.remove(downStationMatchingSection.get());
+            return;
+        }
+
+        disconnectMiddleSection(downStationMatchingSection.get(), upStationMatchingSection.get());
+    }
+
+    //중간에 있는 지하철역의 경우에는 앞구간의 하행역을 수정하고, 뒷구간을 삭제처리한다
+    private void disconnectMiddleSection(Section upSection, Section downSection) {
+        upSection.disconnectDownStationFrom(downSection);
+        sections.remove(downSection);
     }
 }

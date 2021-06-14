@@ -84,6 +84,14 @@ public class LineService {
         return LineResponse.of(foundLine);
     }
 
+    public LineResponse deleteSectionByStationId(Long lineId, Long stationId) {
+        Line foundLine = findById(lineId);
+        Station station = findStationById(stationId);
+        foundLine.removeSection(station);
+
+        return LineResponse.of(foundLine);
+    }
+
     private Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("해당하는 지하철 노선을 찾을 수 없습니다."));
