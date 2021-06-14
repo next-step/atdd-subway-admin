@@ -64,9 +64,10 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        validSection(section);
-        Boolean isUpStationExist = isUpStationExist(section);
-        Boolean isDownStationExist = isDownStationExist(section);
+        boolean isUpStationExist = isStationExist(section.getUpStation());
+        boolean isDownStationExist = isStationExist(section.getDownStation());
+
+        validSection(isUpStationExist, isDownStationExist);
 
         if (isUpStationExist) {
             sections.updateUpStation(section);
@@ -78,23 +79,17 @@ public class Line extends BaseEntity {
         sections.addSection(section);
     }
 
-    public void validSection(Section section) {
-        Boolean isUpStationExist = isUpStationExist(section);
-        Boolean isDownStationExist = isDownStationExist(section);
-
+    public void validSection(boolean isUpStationExist, boolean isDownStationExist) {
         if (!isUpStationExist && !isDownStationExist && !getStations().isEmpty()) {
             throw new RuntimeException("상/하행선 둘 중 하나는 일치해야 합니다.");
         }
-        if (sections.validDuplicationSection(section)) {
+        if (isUpStationExist && isDownStationExist) {
             throw new RuntimeException("동일한 구간은 추가할 수 없습니다.");
         }
     }
 
-    public boolean isUpStationExist(Section section) {
-        return getStations().stream().anyMatch(it -> it.equals(section.getUpStation()));
-    }
-
-    public boolean isDownStationExist(Section section) {
-        return getStations().stream().anyMatch(it -> it.equals(section.getDownStation()));
+    public boolean isStationExist(Station station) {
+        return getStations().stream()
+                .anyMatch(it -> it == station);
     }
 }

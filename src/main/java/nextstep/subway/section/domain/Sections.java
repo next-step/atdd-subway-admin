@@ -8,7 +8,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -23,15 +22,10 @@ public class Sections {
         return sections;
     }
 
-    public boolean validDuplicationSection(Section section) {
-        return sections.stream().anyMatch(it -> it.getUpStation().equals(section.getUpStation())
-                   && it.getDownStation().equals(section.getDownStation()));
-    }
-
     public void updateUpStation(Section section) {
         Station inputUpStation = section.getUpStation();
         sections.stream()
-                .filter(it -> it.getUpStation().equals(inputUpStation))
+                .filter(it -> it.isEqualsUpStation(inputUpStation))
                 .findFirst()
                 .ifPresent(it -> it.updateUpStation(section));
     }
@@ -39,7 +33,7 @@ public class Sections {
     public void updateDownStation(Section section) {
         Station inputDownStation = section.getDownStation();
         sections.stream()
-                .filter(it -> it.getDownStation().equals(inputDownStation))
+                .filter(it -> it.isEqualsDownStation(inputDownStation))
                 .findFirst()
                 .ifPresent(it -> it.updateDownStation(section));
     }
@@ -58,11 +52,13 @@ public class Sections {
     }
 
     public boolean isBeforeSection(Station station) {
-        return sections.stream().anyMatch(it -> it.getDownStation().equals(station));
+        return sections.stream()
+                .anyMatch(it -> it.isEqualsDownStation(station));
     }
 
     public boolean isAfterSection(Station station) {
-        return sections.stream().anyMatch(it -> it.getUpStation().equals(station));
+        return sections.stream()
+                .anyMatch(it -> it.isEqualsUpStation(station));
     }
 
     public Station getFirstSection() {
@@ -76,14 +72,14 @@ public class Sections {
 
     public Section findBeforeSection(Station station) {
         return sections.stream()
-                .filter(it -> it.getDownStation().equals(station))
+                .filter(it -> it.isEqualsDownStation(station))
                 .findFirst()
                 .orElseThrow(NotFoundException::new);
     }
 
     private Section findAfterSection(Station station) {
         return sections.stream()
-                .filter(it -> it.getUpStation().equals(station))
+                .filter(it -> it.isEqualsUpStation(station))
                 .findFirst()
                 .orElseThrow(NotFoundException::new);
     }
