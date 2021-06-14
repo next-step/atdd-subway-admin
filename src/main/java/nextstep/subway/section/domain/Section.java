@@ -132,6 +132,26 @@ public class Section extends BaseEntity {
         return this.distance.isGreaterThan(targetDistance);
     }
 
+    public boolean hasSameUpStationAs(Station targetStation) {
+        return this.upStation.equals(targetStation);
+    }
+
+    public boolean hasSameUpStationAsUpStationOf(Section targetSection) {
+        return this.upStation.equals(targetSection.upStation);
+    }
+
+    public boolean hasSameUpStationAsDownStationOf(Section targetSection) {
+        return this.upStation.equals(targetSection.downStation);
+    }
+
+    public boolean hasSameDownStationAsUpStationOf(Section targetSection) {
+        return this.downStation.equals(targetSection.upStation);
+    }
+
+    public boolean hasSameDownStationAsDownStationOf(Section targetSection) {
+        return this.downStation.equals(targetSection.downStation);
+    }
+
     public void sumDistanceWith(Section section) {
         this.distance.plusDistance(section.distance);
     }

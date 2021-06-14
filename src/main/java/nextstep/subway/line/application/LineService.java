@@ -86,26 +86,10 @@ public class LineService {
     }
 
     public void removeSectionByStationId(Long lineId, Long stationId) {
-        List<Section> findSections = findSectionByLineIdWithValidate(lineId);
+        Line findLine = findLineByIdOrThrow(lineId, "노선이 존재하지 않습니다.");
         Station station = findStationByIdOrThrow(stationId, "등록된 역이 아닙니다.");
-        Section removedSection = new Sections(findSections).removeSectionByStation(station);
-        try {
-            sectionRepository.delete(removedSection);
-        } catch (DataIntegrityViolationException exception) {
-            throw new NoSuchElementException("구간 삭제 과정에서 에러가 발생했습니다.");
-        }
-    }
-
-    private List<Section> findSectionByLineIdWithValidate(Long lineId) {
-        List<Section> findSections = sectionRepository.findByLineId(lineId);
-        validateResultSections(findSections);
-        return findSections;
-    }
-
-    private void validateResultSections(List<Section> findSections) {
-        if (findSections.isEmpty()) {
-            throw new NoSuchElementException("노선이 존재하지 않습니다.");
-        }
+        Section removedSection = findLine.createSections().removeSectionByStation(station);
+        findLine.removeSection(removedSection);
     }
 
     private Section makeSection(Long upStationId, Long downStationId, int distance, Line line) {

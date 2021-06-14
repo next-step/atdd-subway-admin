@@ -83,8 +83,8 @@ public class Sections {
     }
 
     private boolean isPlacedInFrontOrRearFor(Section newSection) {
-        return getBeginSection().getUpStation().equals(newSection.getDownStation())
-                || getEndSection().getDownStation().equals(newSection.getUpStation());
+        return getBeginSection().hasSameUpStationAsDownStationOf(newSection)
+                || getEndSection().hasSameDownStationAsUpStationOf(newSection);
     }
 
     private void initSectionsWithSort(List<Section> newSections) {
@@ -171,7 +171,7 @@ public class Sections {
 
     private Section findTargetSection(Section newSection, List<Section> sections, Distance totalDistance) {
         Section targetSection = sections.stream().skip(SKIP_COUNT_ONE).filter(section ->
-                totalDistance.plusDistance(section).isGreaterThanOrEqualTo(newSection))
+                newSection.hasDistanceShorterThanOrEqualTo(totalDistance.plusDistance(section)))
                 .findAny()
                 .orElse(sections.get(getLastIndexOf(sections)));
         validateSameDistance(newSection, totalDistance);

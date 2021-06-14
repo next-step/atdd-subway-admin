@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -22,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
@@ -262,29 +260,26 @@ class LineServiceTest {
         Station station2 = new Station("교대역");
         Station station3 = new Station("서초역");
         Station station4 = new Station("방배역");
-        Station station5 = new Station("사당역");
         // 기존에 저장된 노선과 구간들
         Line greenLine = new Line("2호선", "green");
         new Section(station1, station2, 3, greenLine);
         new Section(station2, station3, 3, greenLine);
         new Section(station3, station4, 3, greenLine);
-        Sections sections = greenLine.createSections();
 
-        given(sectionRepository.findByLineId(anyLong())).willReturn(sections.getSections());
+        given(lineRepository.findById(anyLong())).willReturn(Optional.ofNullable(greenLine));
         given(stationRepository.findById(anyLong())).willReturn(Optional.ofNullable(station2));
 
         service.removeSectionByStationId(1L, 2L);
 
         // then
-        verify(sectionRepository).delete(any(Section.class));
+        assertThat(greenLine.createSections().getSections().size()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("노선기준 구간 목록이 등록되지 않은 경우 예외처리")
     void delete_section_exception1() {
         // given
-        List<Section> sections = new ArrayList<>();
-        given(sectionRepository.findByLineId(anyLong())).willReturn(sections);
+        given(lineRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
 
         // then
         assertThatThrownBy(() -> service.removeSectionByStationId(1L, 2L))
@@ -300,15 +295,13 @@ class LineServiceTest {
         Station station2 = new Station("교대역");
         Station station3 = new Station("서초역");
         Station station4 = new Station("방배역");
-        Station station5 = new Station("사당역");
         // 기존에 저장된 노선과 구간들
         Line greenLine = new Line("2호선", "green");
         new Section(station1, station2, 3, greenLine);
         new Section(station2, station3, 3, greenLine);
         new Section(station3, station4, 3, greenLine);
-        Sections sections = greenLine.createSections();
 
-        given(sectionRepository.findByLineId(anyLong())).willReturn(sections.getSections());
+        given(lineRepository.findById(anyLong())).willReturn(Optional.ofNullable(greenLine));
         given(stationRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
 
         // then
@@ -331,9 +324,8 @@ class LineServiceTest {
         new Section(station1, station2, 3, greenLine);
         new Section(station2, station3, 3, greenLine);
         new Section(station3, station4, 3, greenLine);
-        Sections sections = greenLine.createSections();
 
-        given(sectionRepository.findByLineId(anyLong())).willReturn(sections.getSections());
+        given(lineRepository.findById(anyLong())).willReturn(Optional.ofNullable(greenLine));
         given(stationRepository.findById(anyLong())).willReturn(Optional.ofNullable(station5));
 
         // then
