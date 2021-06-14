@@ -152,4 +152,24 @@ public class SectionsTest {
                 .containsExactly(회현역, 명동역);
         assertThat(sections.contains(명동_충무로)).isFalse();
     }
+
+    @DisplayName("지하철역 제거 : 상행종점 제거")
+    @Test
+    void 지하철역_제거_상행종점() {
+        //given
+        Section 회현_명동 = new Section(회현역, 명동역, 30);
+        Section 명동_충무로 = new Section(명동역, 충무로역, 30);
+
+        sections.add(회현_명동);
+        sections.add(명동_충무로);
+
+        //when
+        sections.removeStation(회현역);
+
+        //then
+        assertThat(sections.getStations()).hasSize(2)
+                .containsExactly(명동역, 충무로역);
+        assertThat(sections.contains(회현_명동)).isFalse();
+    }    
+    
 }
