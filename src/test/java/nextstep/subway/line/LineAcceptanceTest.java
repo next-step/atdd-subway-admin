@@ -5,6 +5,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -24,8 +26,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        StationResponse upStation = StationAcceptanceTest.saveStation("강남역");
+        StationResponse downStation = StationAcceptanceTest.saveStation("교대역");
+        Map<String, String> params = generateLineParam("2호선","green", upStation.getId(), downStation.getId(), 1000);
 
         // when
         ExtractableResponse<Response> response = saveLine(params);
@@ -40,7 +45,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        Map<String, String> params = generateLineParam("2호선","green", 1l, 2l, 1000);
         saveLine(params);
 
         // when
@@ -56,9 +61,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        Map<String, String> params = generateLineParam("2호선","green", 1l, 2l, 1000);
         saveLine(params);
-        Map<String, String> newParams = generateLineParam("3호선","orange");
+        Map<String, String> newParams = generateLineParam("3호선","orange", 1l, 2l, 1000);
         saveLine(newParams);
 
         // when
@@ -77,7 +82,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        Map<String, String> params = generateLineParam("2호선","green", 1l, 2l, 1000);
         ExtractableResponse<Response> expect = saveLine(params);
         LineResponse savedLine = expect.jsonPath().getObject(".", LineResponse.class);
 
@@ -95,7 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLineWithWrongId() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        Map<String, String> params = generateLineParam("2호선","green", 1l, 2l, 1000);
         saveLine(params);
 
         // when
@@ -110,10 +115,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        Map<String, String> params = generateLineParam("2호선","green", 1l, 2l, 1000);
         ExtractableResponse<Response> expect = saveLine(params);
         LineResponse savedLine = expect.jsonPath().getObject(".", LineResponse.class);
-        Map<String, String> updatedParam = generateLineParam("3호선","orange");
+        Map<String, String> updatedParam = generateLineParam("3호선","orange", 1l, 2l, 1000);
 
         // when
         ExtractableResponse<Response> response = editLine(savedLine.getId(), updatedParam);
@@ -131,7 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        Map<String, String> params = generateLineParam("2호선","green", 1l, 2l, 1000);
         ExtractableResponse<Response> expect = saveLine(params);
         LineResponse savedLine = expect.jsonPath().getObject(".", LineResponse.class);
 
@@ -152,10 +157,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private Map<String, String> generateLineParam(String name, String color) {
+    private Map<String, String> generateLineParam(String name, String color, long upStationId, long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", String.valueOf(upStationId));
+        params.put("downStationId", String.valueOf(downStationId));
+        params.put("distance", String.valueOf(distance));
         return params;
     }
 
@@ -197,5 +205,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+
 
 }
