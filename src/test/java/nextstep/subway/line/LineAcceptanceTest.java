@@ -45,6 +45,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         잠실역 = 지하철역_생성_요청("잠실역", StationAcceptanceFixture::toStation);
     }
 
+    @DisplayName("지하철 구간을 삭제한다.")
+    @Test
+    void given_Line_when_DeleteStation_then_ReturnNoContent() {
+        // given
+        지하철_노선_생성_요청(PATH, FIRST);
+        지하철_구간에_지하철역_등록_요청(PATH + "/1/sections", SECTION);
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_구간에_지하철역_삭제_요청(PATH + "/1/sections?stationId=2");
+
+        // then
+        assertThat(statusCode(response)).isEqualTo(statusCode(NO_CONTENT));
+    }
+
     @DisplayName("지하철 구간을 추가한다.")
     @Test
     void given_Line_when_AddSection_then_ReturnOk() {
