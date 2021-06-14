@@ -92,28 +92,28 @@ public class Section extends BaseEntity {
         return this.upStation.equals(other.getDownStation());
     }
 
-    public List<Section> insertNewSection(Section newSection) {
+    public void updateSectionStationByAddNewSection(Section newSection) {
         if (isSameUpStation(newSection)) {
             updateUpStation(newSection);
-            return Stream.of(this, newSection).collect(toList());
         }
         if (isSameDownStation(newSection)) {
             updateDownStation(newSection);
-            return Stream.of(this, newSection).collect(toList());
         }
-        return Stream.of(this, newSection).collect(toList());
     }
 
     private void updateDownStation(Section newSection) {
-        int distanceDiff = distance.distanceDiffWithOtherDistance(newSection.distance);
-        this.distance = Distance.from(distanceDiff);
+        changeDistanceByNewSectionDistance(newSection.distance);
         this.downStation = newSection.upStation;
     }
 
     private void updateUpStation(Section newSection) {
-        int distanceDiff = distance.distanceDiffWithOtherDistance(newSection.distance);
-        this.distance = Distance.from(distanceDiff);
+        changeDistanceByNewSectionDistance(newSection.distance);
         this.upStation = newSection.downStation;
+    }
+
+    private void changeDistanceByNewSectionDistance(Distance newSectionDistance) {
+        int distanceDiff = this.distance.distanceDiffWithOtherDistance(newSectionDistance);
+        this.distance = Distance.from(distanceDiff);
     }
 
     public void setLine(Line line) {
@@ -125,11 +125,11 @@ public class Section extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance);
+        return Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, line, upStation, downStation, distance);
+        return Objects.hash(id, upStation, downStation, distance);
     }
 }

@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toSet;
 
 @Embeddable
 public class Sections {
@@ -34,14 +34,19 @@ public class Sections {
             add(newSection);
             return;
         }
-        validateNewSection(newSection);
-        this.sections = sections.stream()
-                .flatMap(section -> section.insertNewSection(newSection).stream())
-                .collect(toList());
+        addAfterFirstAddition(newSection);
     }
 
     private boolean isFirstAdd() {
-        return this.sections.size() == 0;
+        return this.sections.isEmpty();
+    }
+
+    private void addAfterFirstAddition(Section newSection) {
+        validateNewSection(newSection);
+        for (Section section : this.sections) {
+            section.updateSectionStationByAddNewSection(newSection);
+        }
+        add(newSection);
     }
 
     private void validateNewSection(Section newSection) {
