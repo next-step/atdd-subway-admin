@@ -6,6 +6,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.RestAssuredCRUD;
 import org.junit.jupiter.api.BeforeEach;
@@ -192,10 +193,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 StationAcceptanceTest.지하철역_등록되어_있음("포함안된역_2")
                         .as(StationResponse.class);
 
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 포함안된역_1.getId() + "");
-        createParams.put("downStationId", 포함안된역_2.getId() + "");
-        createParams.put("distance", 5 + "");
+        createParams = requestSectionOf(포함안된역_1, 포함안된역_2, 5);
 
         ExtractableResponse<Response> response = RestAssuredCRUD
                 .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
@@ -210,10 +208,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 상행역_하행역_둘다_이미_등록되어있다_예외테스트() {
         // when
         // 지하철_노선에_이미등록된_지하철역_등록_요청
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 강남역.getId() + "");
-        createParams.put("downStationId", 광교역.getId() + "");
-        createParams.put("distance", 5 + "");
+        createParams = requestSectionOf(강남역, 광교역, 5);
 
         ExtractableResponse<Response> response = RestAssuredCRUD
                 .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
@@ -232,10 +227,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 StationAcceptanceTest.지하철역_등록되어_있음("강남역과_광교역_사이의_역")
                         .as(StationResponse.class);
 
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 강남역과_광교역_사이의_역.getId() + "");
-        createParams.put("downStationId", 광교역.getId() + "");
-        createParams.put("distance", 10 + "");
+        createParams = requestSectionOf(강남역과_광교역_사이의_역, 광교역, 10);
 
         ExtractableResponse<Response> response = RestAssuredCRUD
                 .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
@@ -253,10 +245,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 StationAcceptanceTest.지하철역_등록되어_있음("강남역_보다_상행역")
                         .as(StationResponse.class);
 
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 강남역_보다_상행역.getId() + "");
-        createParams.put("downStationId", 강남역.getId() + "");
-        createParams.put("distance", 5 + "");
+        createParams = requestSectionOf(강남역_보다_상행역, 강남역, 5);
 
         ExtractableResponse<Response> response = RestAssuredCRUD
                 .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
@@ -281,10 +270,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 StationAcceptanceTest.지하철역_등록되어_있음("광교역_보다_하행역")
                         .as(StationResponse.class);
 
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 광교역.getId() + "");
-        createParams.put("downStationId", 광교역_보다_하행역.getId() + "");
-        createParams.put("distance", 5 + "");
+        createParams = requestSectionOf(광교역, 광교역_보다_하행역, 5);
 
         ExtractableResponse<Response> response = RestAssuredCRUD
                 .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
@@ -310,10 +296,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 StationAcceptanceTest.지하철역_등록되어_있음("강남역과_광교역_사이의_역")
                         .as(StationResponse.class);
 
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 강남역과_광교역_사이의_역.getId() + "");
-        createParams.put("downStationId", 광교역.getId() + "");
-        createParams.put("distance", 5 + "");
+        createParams = requestSectionOf(강남역과_광교역_사이의_역, 광교역, 5);
 
         ExtractableResponse<Response> response = RestAssuredCRUD
                 .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
@@ -339,10 +322,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 StationAcceptanceTest.지하철역_등록되어_있음("강남역과_광교역_사이의_역")
                         .as(StationResponse.class);
 
-        createParams = new HashMap<>();
-        createParams.put("upStationId", 강남역.getId() + "");
-        createParams.put("downStationId", 강남역과_광교역_사이의_역.getId() + "");
-        createParams.put("distance", 5 + "");
+        createParams = requestSectionOf(강남역, 강남역과_광교역_사이의_역, 5);
 
         ExtractableResponse<Response> response = RestAssuredCRUD
                 .postRequest("/lines/" + 신분당선.getId() + "/sections", createParams);
@@ -378,5 +358,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         createParams.put("downStationId", 팟타이역.getId() + "");
         createParams.put("distance", 15 + "");
         RestAssuredCRUD.postRequest("/lines/"+신분당선.getId()+"/sections", createParams);
+    }
+
+    private Map<String, String> requestSectionOf(StationResponse upStation, StationResponse downStation, int distance) {
+        createParams = new HashMap<>();
+        createParams.put("upStationId", upStation.getId() + "");
+        createParams.put("downStationId", downStation.getId() + "");
+        createParams.put("distance", distance + "");
+
+        return createParams;
     }
 }
