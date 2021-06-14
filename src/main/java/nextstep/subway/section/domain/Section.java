@@ -94,9 +94,13 @@ public class Section extends BaseEntity {
 	}
 
 	public void validateSectionDistance(Section newSection) {
-		if (this.distance.isShorter(newSection.getDistance())) {
+		if (this.isShorter(newSection)) {
 			throw new SubwayLogicException("기존 구간의 길이가 추가하려는 구간보다 짧습니다.");
 		}
+	}
+
+	private boolean isShorter(Section newSection) {
+		return this.distance.isShorter(newSection.getDistance());
 	}
 
 	public void rebuildUpstation(Section newSection) {
