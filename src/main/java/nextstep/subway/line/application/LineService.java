@@ -6,9 +6,11 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.SectionNotFoundException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -33,15 +35,15 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public LineResponse appendSection(final Long id, final SectionRequest request) {
+    public SectionResponse appendSection(final Long id, final SectionRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException());
 
-        registerSection(request, line);
+        Section section = registerSection(request, line);
 
-        return LineResponse.of(line);
+        return SectionResponse.of(section);
     }
 
-    private void registerSection(final SectionRequest request, final Line line) {
+    private Section registerSection(final SectionRequest request, final Line line) {
         Station upStation = stationRepository.findById(request.getUpStationId())
                 .orElseThrow(() -> new StationNotFoundException());
 
@@ -56,7 +58,7 @@ public class LineService {
 
         section.registerLine(line);
 
-        sectionRepository.save(section);
+        return sectionRepository.save(section);
     }
 
     @Transactional(readOnly = true)
@@ -74,6 +76,23 @@ public class LineService {
                  .orElseThrow(() -> new LineNotFoundException());
 
         return LineResponse.of(line);
+    }
+
+    @Transactional(readOnly = true)
+    public SectionResponse findSection(final Long id) {
+        Section section = sectionRepository.findById(id)
+                .orElseThrow(() -> new SectionNotFoundException());
+
+        return SectionResponse.of(section);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SectionResponse> findAllSection() {
+        List<Section> sections = sectionRepository.findAll();
+
+        return sections.stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList());
     }
 
     public void updateLine(final Long id, final LineRequest request) {

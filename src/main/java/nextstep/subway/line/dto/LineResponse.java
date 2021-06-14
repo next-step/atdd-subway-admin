@@ -15,15 +15,17 @@ public class LineResponse {
     private String name;
     private String color;
     private List<StationResponse> stations;
+    private List<Integer> distances;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     @Builder
-    private LineResponse(final Long id, final String name, final String color, final List<StationResponse> stations, final LocalDateTime createdDate, final LocalDateTime modifiedDate) {
+    private LineResponse(final Long id, final String name, final String color, final List<StationResponse> stations, final List<Integer> distances, final LocalDateTime createdDate, final LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
+        this.distances = distances;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
@@ -34,6 +36,8 @@ public class LineResponse {
             .map(StationResponse::of)
             .collect(Collectors.toList());
 
+        List<Integer> distances = line.getDistances();
+
         return LineResponse.builder()
                 .id(line.getId())
                 .name(line.getName())
@@ -41,6 +45,7 @@ public class LineResponse {
                 .createdDate(line.getCreatedDate())
                 .modifiedDate(line.getModifiedDate())
                 .stations(stationResponse)
+                .distances(distances)
                 .build();
     }
 }
