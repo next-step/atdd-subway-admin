@@ -1,5 +1,6 @@
 package nextstep.subway.section;
 
+import nextstep.subway.exception.CannotDeleteException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -12,6 +13,8 @@ import java.util.Optional;
 
 @Embeddable
 public class Sections {
+
+    private final int MINIMUM_REMOVABLE_SIZE = 2;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new LinkedList<>();
@@ -132,22 +135,28 @@ public class Sections {
     }
 
     public void removeStation(Station station) {
+        validateBeforeRemove(station);
         Optional<Section> downStationMatchingSection = sections.stream()
                 .filter(section -> section.isDownStation(station)).findFirst();
         Optional<Section> upStationMatchingSection = sections.stream()
                 .filter(section -> section.isUpStation(station)).findFirst();
         //상행종점
-        if (!downStationMatchingSection.isPresent()) {
+        if (!downStationMatchingSection.isPresent() && upStationMatchingSection.isPresent()) {
             sections.remove(upStationMatchingSection.get());
             return;
         }
         //하행종점
-        if (!upStationMatchingSection.isPresent()) {
+        if (!upStationMatchingSection.isPresent() && downStationMatchingSection.isPresent()) {
             sections.remove(downStationMatchingSection.get());
             return;
         }
-
         disconnectMiddleSection(downStationMatchingSection.get(), upStationMatchingSection.get());
+    }
+
+    private void validateBeforeRemove(Station station) {
+        if (sections.size() < MINIMUM_REMOVABLE_SIZE) {
+            throw new CannotDeleteException("마지막 구간은 삭제할 수 없습니다.");
+        }
     }
 
     //중간에 있는 지하철역의 경우에는 앞구간의 하행역을 수정하고, 뒷구간을 삭제처리한다

@@ -1,5 +1,6 @@
 package nextstep.subway.section;
 
+import nextstep.subway.exception.CannotDeleteException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -170,6 +171,18 @@ public class SectionsTest {
         assertThat(sections.getStations()).hasSize(2)
                 .containsExactly(명동역, 충무로역);
         assertThat(sections.contains(회현_명동)).isFalse();
-    }    
-    
+    }
+
+    @DisplayName("예외상황 - 지하철역 제거 : 마지막 구간 제거")
+    @Test
+    void 예외상황_마지막_구간_제거() {
+        //given
+        Section 회현_명동 = new Section(회현역, 명동역, 30);
+        sections.add(회현_명동);
+
+        //when
+        assertThatThrownBy(() -> sections.removeStation(명동역))
+                .isInstanceOf(CannotDeleteException.class)
+        .hasMessage("마지막 구간은 삭제할 수 없습니다.");
+    }
 }

@@ -239,14 +239,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간제거 예외상황 : 노선에 구간이 단 한 개인 경우")
     @Test
     void 구간제거예외상황_when_구간이_단_한개() {
-        //given
-        //구간을_노선에_등록_요청
-
         // when
         //구간을_노선에_제거_요청
+        ExtractableResponse<Response> response = 구간을_노선에서_제거_요청(사호선_ID, 회현역.getId());
 
         // then
-        //구간_제거_완료
+        //구간_등록_BAD_REQUEST_응답
+        구간_등록_BAD_REQUEST_응답(response);
     }
 
     @DisplayName("구간제거 예외상황 : 노선에 없는 구간인 경우")
