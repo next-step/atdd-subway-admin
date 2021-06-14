@@ -37,13 +37,12 @@ public class Line extends BaseEntity {
     }
 
     public Line(final String name, final String color) {
-        this(null, name, color);
+        this.name = name;
+        this.color = color;
     }
 
     private Line(final Section section, final String name, final String color) {
-        if (section != null) {
-            addSection(section);
-        }
+        addSection(section);
         this.name = name;
         this.color = color;
     }
@@ -55,9 +54,9 @@ public class Line extends BaseEntity {
         return new Line(section, name, color);
     }
 
-    public void update(final Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+    public void update(final String name, final String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {

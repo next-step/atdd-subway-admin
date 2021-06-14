@@ -4,7 +4,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -20,12 +19,10 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class LineService {
     private LineRepository lineRepository;
-    private SectionRepository sectionRepository;
     private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
     }
 
@@ -33,8 +30,8 @@ public class LineService {
     public LineResponse saveLine(final LineRequest request) {
         final Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(EntityNotFoundException::new);
         final Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(EntityNotFoundException::new);
-        final Line line = request.toLine(upStation, downStation);
-        final Line persistLine = lineRepository.save(line);
+        final Line newLine = Line.of(upStation, downStation, request.getName(), request.getColor(), request.getDistance());
+        final Line persistLine = lineRepository.save(newLine);
         return LineResponse.of(persistLine);
     }
 
@@ -53,7 +50,7 @@ public class LineService {
     @Transactional
     public void updateLine(final Long id, final LineRequest request) {
         final Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException(id));
-        line.update(request.toLine());
+        line.update(request.getName(), request.getColor());
     }
 
     @Transactional
@@ -70,4 +67,5 @@ public class LineService {
         line.addSection(upStation, downStation, request.getDistance());
         return LineResponse.of(lineRepository.save(line));
     }
+
 }

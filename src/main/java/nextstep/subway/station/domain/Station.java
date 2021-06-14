@@ -25,7 +25,7 @@ public class Station extends BaseEntity {
     }
 
     public Station(String name) {
-        this(null, name);
+        this.name = name;
     }
 
     private Station(Long id, String name) {
