@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import javax.persistence.EntityNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -32,5 +33,14 @@ public class LineService {
             .stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse findLineBy(Long id) {
+        Line line = lineRepository
+            .findById(id)
+            .orElseThrow(EntityNotFoundException::new);
+
+        return LineResponse.of(line);
     }
 }
