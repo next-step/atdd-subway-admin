@@ -4,7 +4,7 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,9 +13,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 @Table(name = "section")
 @Entity
@@ -37,8 +39,8 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    @Column(name = "distance", nullable = false)
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
@@ -46,11 +48,72 @@ public class Section extends BaseEntity {
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = Distance.from(distance);
     }
 
-    public List<Station> getStation() {
-        return Arrays.asList(upStation, downStation);
+    public Long getId() {
+        return id;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance.getDistance();
+    }
+
+    public List<Station> getUpAndDownStation() {
+        return Stream.of(upStation, downStation)
+                .collect(toList());
+    }
+
+    public boolean isSameEdges(Section other) {
+        return this.upStation.equals(other.getUpStation()) && this.downStation.equals(other.getDownStation());
+    }
+
+    public boolean isSameDownStation(Section other) {
+        return this.downStation.equals(other.getDownStation());
+    }
+
+    private boolean isSameUpStation(Section other) {
+        return this.upStation.equals(other.getUpStation());
+    }
+
+    public boolean isAfter(Section other) {
+        return this.upStation.equals(other.getDownStation());
+    }
+
+    public void updateSectionStationByAddNewSection(Section newSection) {
+        if (isSameUpStation(newSection)) {
+            updateUpStation(newSection);
+        }
+        if (isSameDownStation(newSection)) {
+            updateDownStation(newSection);
+        }
+    }
+
+    private void updateDownStation(Section newSection) {
+        changeDistanceByNewSectionDistance(newSection.distance);
+        this.downStation = newSection.upStation;
+    }
+
+    private void updateUpStation(Section newSection) {
+        changeDistanceByNewSectionDistance(newSection.distance);
+        this.upStation = newSection.downStation;
+    }
+
+    private void changeDistanceByNewSectionDistance(Distance newSectionDistance) {
+        int distanceDiff = this.distance.distanceDiffWithOtherDistance(newSectionDistance);
+        this.distance = Distance.from(distanceDiff);
     }
 
     public void setLine(Line line) {
@@ -62,21 +125,11 @@ public class Section extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return Objects.equals(id, section.id);
+        return Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", distance=" + distance +
-                '}';
+        return Objects.hash(id, upStation, downStation, distance);
     }
 }

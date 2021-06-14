@@ -64,3 +64,33 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 구간 domain 추가
 - [X] 노선에서 구간 연관관계 매핑
 - [X] 노선의 역 목록을 조회하는 기능 구현
+
+# ATDD 3단계 - 구간 추가 기능
+## 구현 목록 
+- 인수 테스트 작성
+  - [X] 역 사이에 새로운 역을 등록할 경우
+  - [X] 새로운 역을 상행 종점으로 등록할 경우
+  - [X] 새로운 역을 하행 종점으로 등록할 경우
+  - [X] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+  - [X] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+  - [X] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+- 기능 구현
+  - [X] 구간 추가 API 
+  - [X] 예외 처리 
+    - [X] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+    - [X] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+    - [X] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+
+## 구간 등록 API Request
+```
+POST /lines/1/sections HTTP/1.1
+accept: */*
+content-type: application/json; charset=UTF-8
+host: localhost:52165
+
+{
+    "downStationId": "4",
+    "upStationId": "2",
+    "distance": 10
+}
+```

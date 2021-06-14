@@ -26,6 +26,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final Map<String, String> 양재역 = new HashMap<>();
     private static final Map<String, String> 신림역 = new HashMap<>();
     private static final Map<String, String> 봉천역 = new HashMap<>();
+    private static final Long 강남역_ID = 1L;
+    private static final Long 양재역_ID = 2L;
+    private static final Long 신림역_ID = 3L;
+    private static final Long 봉천역_ID = 4L;
 
     static {
         강남역.put("name", "강남역");
@@ -38,7 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 양재역_ID, 10);
 
         // when
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
@@ -51,11 +55,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 양재역_ID, 10);
         지하철_노선_생성_요청(신분당선, 강남역, 양재역);
 
         // when
-        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
+        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
 
         // then
         지하철_노선_생성_실패됨(생성된_신분당선);
@@ -65,8 +69,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-        LineRequest 이호선 = new LineRequest("2호선", "bg-green-600", 3L, 4L, 10);
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 양재역_ID, 10);
+        LineRequest 이호선 = new LineRequest("2호선", "bg-green-600", 신림역_ID, 봉천역_ID, 10);
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
         ExtractableResponse<Response> 생성된_이호선 = 지하철_노선_생성_요청(이호선, 신림역, 봉천역);
 
@@ -82,7 +86,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 양재역_ID, 10);
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
         int expectedStationCount = 2;
 
@@ -91,14 +95,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_응답됨(조회된_노선, 신분당선, expectedStationCount);
-        지하철_노선_역_응답됨(조회된_노선, 신분당선, 강남역, 양재역);
+        지하철_노선_역_응답됨(조회된_노선, 신분당선, 강남역.get("name"), 양재역.get("name"));
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
-        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 양재역_ID, 10);
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
         Map<String, String> params = createParams("구분당선", "bg-blue-600");
 
@@ -113,7 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 양재역_ID, 10);
         ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선, 강남역, 양재역);
 
         // when
@@ -166,19 +170,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_역_응답됨(ExtractableResponse<Response> response, LineRequest lineRequest,
-                              Map<String, String> upStationParam, Map<String, String> downStationParam) {
+                              String expectedUpStationName, String expectedDownStationName) {
 
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
         StationResponse upStation = lineResponse.getStations().get(0);
         assertAll(
                 () -> assertThat(upStation.getId()).isEqualTo(lineRequest.getUpStationId()),
-                () -> assertThat(upStation.getName()).isEqualTo(upStationParam.get("name"))
+                () -> assertThat(upStation.getName()).isEqualTo(expectedUpStationName)
         );
 
         StationResponse downStation = lineResponse.getStations().get(1);
         assertAll(
                 () -> assertThat(downStation.getId()).isEqualTo(lineRequest.getDownStationId()),
-                () -> assertThat(downStation.getName()).isEqualTo(downStationParam.get("name"))
+                () -> assertThat(downStation.getName()).isEqualTo(expectedDownStationName)
         );
     }
 
