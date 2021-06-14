@@ -210,20 +210,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 노선_조회_요청(String 역_번호) {
+    private ExtractableResponse<Response> 노선_조회_요청(String 역_ID) {
         return RestAssured.given().log().all()
                 .when()
-                .get("/lines/" + 역_번호)
+                .get("/lines/" + 역_ID)
                 .then().log().all()
                 .extract();
     }
 
-    private ExtractableResponse<Response> 노선_수정_요청(Map<String, String> 수정_내용, String 역_번호) {
+    private ExtractableResponse<Response> 노선_수정_요청(Map<String, String> 수정_내용, String 역_ID) {
         return RestAssured.given().log().all()
                 .body(수정_내용)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/" + 역_번호)
+                .put("/lines/" + 역_ID)
                 .then().log().all()
                 .extract();
     }
