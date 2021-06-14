@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 
 import nextstep.subway.NotFoundException;
 import nextstep.subway.linestation.exception.DuplicateLineStationException;
+import nextstep.subway.linestation.exception.MethodNotAllowedException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -76,9 +77,10 @@ public class LineStations {
         }
 
         upStation.next(lineStation, distance);
-        if (lineStation.getPreviousStation() != null && lineStation.getPreviousDistance() != null) {
-            upStation.previous(lineStation.getPreviousStation(), lineStation.getPreviousDistance() - distance);
-        }
+        lineStation.getPreviousStation().ifPresent(
+            ls -> upStation.previous(lineStation.getPreviousStation().get(),
+                lineStation.getPreviousDistance().orElse(0) - distance)
+        );
 
         return upStation;
     }
@@ -87,8 +89,8 @@ public class LineStations {
         final LineStation lineStation) {
 
         downStation.previous(lineStation, distance);
-        if (lineStation.getNextStation() != null && lineStation.getNextDistance() != null) {
-            downStation.next(lineStation.getNextStation(), lineStation.getNextDistance() - distance);
+        if (lineStation.getNextStation().isPresent()) {
+            downStation.next(lineStation.getNextStation().get(), lineStation.getNextDistance().orElse(0) - distance);
         }
 
         return downStation;
@@ -102,7 +104,7 @@ public class LineStations {
 
     public List<Station> orderedStations() {
         Optional<LineStation> optLIneStation = lineStations.stream()
-            .filter(lineStation -> lineStation.getPreviousStation() == null)
+            .filter(lineStation -> !lineStation.getPreviousStation().isPresent())
             .findFirst();
 
         final List<Station> stations = new ArrayList<>();
@@ -111,9 +113,22 @@ public class LineStations {
             final Station station = lineStation.getStation();
             stations.add(station);
 
-            optLIneStation = Optional.ofNullable(lineStation.getNextStation());
+            optLIneStation = lineStation.getNextStation();
         }
 
         return stations;
+    }
+
+    public void removeStation(final LineStation lineStation) {
+        validateLineStationsSize();
+        final LineStation currentStation = persistedLineStation(lineStation);
+        currentStation.mergePrevAndNext();
+        lineStations.remove(currentStation);
+    }
+
+    private void validateLineStationsSize() {
+        if (lineStations.size() == 2) {
+            throw new MethodNotAllowedException();
+        }
     }
 }

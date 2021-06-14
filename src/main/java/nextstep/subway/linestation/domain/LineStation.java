@@ -62,20 +62,20 @@ public class LineStation {
         return station;
     }
 
-    public LineStation getPreviousStation() {
-        return previousStation;
+    public Optional<LineStation> getPreviousStation() {
+        return Optional.ofNullable(previousStation);
     }
 
-    public Integer getPreviousDistance() {
-        return previousDistance;
+    public Optional<Integer> getPreviousDistance() {
+        return Optional.ofNullable(previousDistance);
     }
 
-    public LineStation getNextStation() {
-        return nextStation;
+    public Optional<LineStation> getNextStation() {
+        return Optional.ofNullable(nextStation);
     }
 
-    public Integer getNextDistance() {
-        return nextDistance;
+    public Optional<Integer> getNextDistance() {
+        return Optional.ofNullable(nextDistance);
     }
 
     public void previous(final LineStation previousStation, final Integer previousDistance) {
@@ -84,13 +84,21 @@ public class LineStation {
     }
 
     private LineStation validStation(final LineStation lineStation) {
-        return Optional.ofNullable(lineStation)
+        if (lineStation == null) {
+            return null;
+        }
+
+        return Optional.of(lineStation)
             .filter(ls -> ls.getStation().getName() != null && !ls.equals(this))
             .orElseThrow(IllegalArgumentException::new);
     }
 
-    private int validDistance(final Integer distance) {
-        return Optional.ofNullable(distance)
+    private Integer validDistance(final Integer distance) {
+        if (distance == null) {
+            return null;
+        }
+
+        return Optional.of(distance)
             .filter(d -> d > 0)
             .orElseThrow(IllegalArgumentException::new);
     }
@@ -164,5 +172,31 @@ public class LineStation {
     @Override
     public int hashCode() {
         return Objects.hash(line, station);
+    }
+
+    public void mergeNext(final LineStation lineStation, final Integer distance) {
+        nextStation = lineStation;
+        nextDistance += distance;
+    }
+
+    public void mergePrevious(final LineStation lineStation, final Integer distance) {
+        previousStation = lineStation;
+        previousDistance += distance;
+    }
+
+    public void mergePrevAndNext() {
+        final Integer distance = mergeDistance();
+        Optional.ofNullable(previousStation)
+            .ifPresent(s -> s.next(nextStation, distance));
+        Optional.ofNullable(nextStation)
+            .ifPresent(s -> s.previous(previousStation, distance));
+    }
+
+    private Integer mergeDistance() {
+        if (previousDistance == null || nextDistance == null) {
+            return null;
+        }
+
+        return previousDistance + nextDistance;
     }
 }

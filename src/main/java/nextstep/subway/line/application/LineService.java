@@ -126,4 +126,14 @@ public class LineService {
             .findFirst()
             .orElseThrow(NotFoundException::new);
     }
+
+    public void deleteLineStationByStationId(final Long id, final Long stationId) {
+        final Line line = findById(id);
+        line.removeStation(new LineStation(line, findStationById(stationId)));
+    }
+
+    private Station findStationById(final Long stationId) {
+        return stationRepository.findById(stationId)
+            .orElseThrow(NotFoundException::new);
+    }
 }
