@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/lines")
@@ -30,4 +31,10 @@ public class LineController {
         LineResponses lines = lineService.findAll();
         return ResponseEntity.ok(lines);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+        return ResponseEntity.ok(new LineResponse(id, "일호선", "red", LocalDateTime.now(), LocalDateTime.now()));
+    }
+
 }
