@@ -139,9 +139,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
     }
 
-    @DisplayName("예외 상황 : 상행/하행역 모두 이미 등록되어 있음")
+    @DisplayName("구간등록 예외 상황 : 상행/하행역 모두 이미 등록되어 있음")
     @Test
-    void 예외상황_when_상행하행_모두_이미_등록되어있음() {
+    void 구간등록예외상황_when_상행하행_모두_이미_등록되어있음() {
         // when
         //구간을_노선에_등록_요청
         ExtractableResponse<Response> response = 구간을_노선에_등록_요청(사호선_ID, 회현_충무로_요청);
@@ -151,9 +151,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_등록_BAD_REQUEST_응답(response);
     }
 
-    @DisplayName("예외 상황 : 상행/하행역 모두 등록되어 있지 않음")
+    @DisplayName("구간등록 예외 상황 : 상행/하행역 모두 등록되어 있지 않음")
     @Test
-    void 예외상황_when_상행하행_모두_등록되어_있지_않음() {
+    void 구간등록예외상황_when_상행하행_모두_등록되어_있지_않음() {
         // when
         //구간을_노선에_등록_요청
         SectionRequest 서울_동역문_요청 = new SectionRequest(서울역.getId(), 동역문역.getId(), 40);
@@ -164,9 +164,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_등록_BAD_REQUEST_응답(response);
     }
 
-    @DisplayName("예외 상황 : 역사이에 추가하는 구간의 길이가 기존 길이와 같거나 긺")
+    @DisplayName("구간등록 예외 상황 : 역사이에 추가하는 구간의 길이가 기존 길이와 같거나 긺")
     @Test
-    void 예외상황_when_역사이에_구간을_추가할때_구간길이가_기존_구간길이와_같거나_긴_경우() {
+    void 구간등록예외상황_when_역사이에_구간을_추가할때_구간길이가_기존_구간길이와_같거나_긴_경우() {
         // when
         //구간을_노선에_등록_요청
         // [회현]==[충무로]에서 ([회현]==[명동])==[충무로]
@@ -179,6 +179,70 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_등록_BAD_REQUEST_응답(response);
     }
 
+    @DisplayName("구간 제거 : 노선의 마지막 구간 제거")
+    @Test
+    void 구간제거_when_마지막_구간() {
+        //given
+        //구간을_노선에_등록_요청
+
+        // when
+        //구간을_노선에_제거_요청
+
+        // then
+        //구간_제거_완료
+   }
+
+    @DisplayName("구간 제거 : 노선의 첫번째 구간 제거")
+    @Test
+    void 구간제거_when_첫번째_구간() {
+        //given
+        //구간을_노선에_등록_요청
+
+        // when
+        //구간을_노선에_제거_요청
+
+        // then
+        //구간_제거_완료
+    }
+
+    @DisplayName("구간 제거 : 노선의 중간 구간 제거")
+    @Test
+    void 구간제거_when_중간_구간() {
+        //given
+        //구간을_노선에_등록_요청
+
+        // when
+        //구간을_노선에_제거_요청
+
+        // then
+        //구간_제거_완료
+    }
+
+    @DisplayName("구간제거 예외상황 : 노선에 구간이 단 한 개인 경우")
+    @Test
+    void 구간제거예외상황_when_구간이_단_한개() {
+        //given
+        //구간을_노선에_등록_요청
+
+        // when
+        //구간을_노선에_제거_요청
+
+        // then
+        //구간_제거_완료
+    }
+
+    @DisplayName("구간제거 예외상황 : 노선에 없는 구간인 경우")
+    @Test
+    void 구간제거예외상황_when_존재하지_않는_구간() {
+        //given
+        //구간을_노선에_등록_요청
+
+        // when
+        //구간을_노선에_제거_요청
+
+        // then
+        //구간_제거_완료
+    }
     private void 구간_등록_OK_응답(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
