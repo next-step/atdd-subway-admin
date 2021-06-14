@@ -76,6 +76,11 @@ public class LineController {
         return ResponseEntity.badRequest().build();
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleIllegalArgsException(final IllegalArgumentException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         return ResponseEntity.badRequest().build();
