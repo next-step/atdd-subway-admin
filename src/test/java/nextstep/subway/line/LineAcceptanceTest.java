@@ -61,10 +61,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green", 1l, 2l, 1000);
+        StationResponse upStation = StationAcceptanceTest.saveStation("강남역");
+        StationResponse downStation = StationAcceptanceTest.saveStation("교대역");
+        Map<String, String> params = generateLineParam("2호선","green", upStation.getId(), downStation.getId(), 1000);
         saveLine(params);
-        Map<String, String> newParams = generateLineParam("3호선","orange", 1l, 2l, 1000);
-        saveLine(newParams);
 
         // when
         ExtractableResponse<Response> response = searchLines();
@@ -75,7 +75,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(lineResponse -> lineResponse.getName())
                 .collect(Collectors.toList());
         assertThat(names).contains(params.get("name"));
-        assertThat(names).contains(newParams.get("name"));
+
+        LineResponse lineResponseList = response.jsonPath().getList(".", LineResponse.class).get(0);
+        assertThat(lineResponseList.getStations().get(0).getName()).isEqualTo(upStation.getName());
+        assertThat(lineResponseList.getStations().get(1).getName()).isEqualTo(downStation.getName());
     }
 
     @DisplayName("지하철 노선을 조회한다.")

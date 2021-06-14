@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.dto.Stations;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 
@@ -47,5 +48,9 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public Stations getStations() {
+        return sections.getStations();
     }
 }
