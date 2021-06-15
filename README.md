@@ -76,3 +76,33 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [x] 노선에 등록된 구간을 순서대로 정렬하여 상행종점부터 하행 종점까지 목록을 응답
   - [x] 노선 구간(or 역)의 관계를 새로 맺는다.
 
+## Step3
+
+- [x] 지하철 구간 등록시 등록 가능여부 판단
+  - [x] 추가할 구간의 상,하행 역이 모두 포함이면 이미 존재하는 구간으로 오류발생
+  - [x] 새로운 구간의 상,하행 역 둘중 하나도 어느구간에 포함되지 않는 경우 오류발생
+- [x] 지하철 구간 등록기능 구현
+- [x] 역 사이에 새로운 역을 등록하는 경우
+    - [x] 상행역을 기준으로 재구성
+  - [x] 하행역을 기준으로 재구성
+  - [x] 상행 종점으로 역을 등록하는 경우
+- [x] 하행 종점으로 역을 등록하는 경우
+
+#### API
+
+```http
+POST /lines/1/sections HTTP/1.1
+accept: */*
+content-type: application/json; charset=UTF-8
+host: localhost:52165
+
+{
+    "downStationId": "4",
+    "upStationId": "2",
+    "distance": 10
+}
+```
+
+- 인수테스트 작성
+
+- 예외 케이스 처리 인수테스트 작성

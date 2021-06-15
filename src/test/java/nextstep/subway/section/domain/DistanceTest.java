@@ -18,6 +18,6 @@ class DistanceTest {
 		Assertions.assertThatThrownBy(() -> {
 			new Distance(0);
 		}).isInstanceOf(SubwayLogicException.class)
-			.hasMessageContaining("distance는 0이상입력 해주세요");
+			.hasMessageContaining("distance는 0이상 이어야 합니다.");
 	}
 }

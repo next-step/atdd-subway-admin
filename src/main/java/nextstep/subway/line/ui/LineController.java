@@ -1,8 +1,9 @@
 package nextstep.subway.line.ui;
 
-import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
+import java.net.URI;
+import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-import java.util.List;
-
-import javax.persistence.EntityNotFoundException;
+import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 
 @RestController
 @RequestMapping("/lines")
@@ -49,7 +50,7 @@ public class LineController {
 	@PutMapping("/{lineId}")
 	public ResponseEntity updateLine(@PathVariable("lineId") long lineId,
 		@RequestBody LineRequest lineRequest) {
-		this.lineService.updateLine(lineId,lineRequest);
+		this.lineService.updateLine(lineId, lineRequest);
 		return ResponseEntity.ok().build();
 	}
 
@@ -57,6 +58,13 @@ public class LineController {
 	public ResponseEntity deleteLine(@PathVariable("lineId") long lineId) {
 		this.lineService.deleteLine(lineId);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{lineId}/sections")
+	public ResponseEntity<LineResponse> addSection(@PathVariable("lineId") long lineId,
+		@RequestBody SectionRequest sectionRequest) {
+		LineResponse lineResponse = this.lineService.addSection(lineId, sectionRequest);
+		return ResponseEntity.ok().body(lineResponse);
 	}
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
