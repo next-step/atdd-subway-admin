@@ -8,7 +8,9 @@ import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -54,12 +56,11 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<StationResponse> getStations() {
-        List<StationResponse> stations = new ArrayList<>();
-        for (Section section: sections.getSections()) {
-            stations.add(StationResponse.of(section.getUpStation()));
-            stations.add(StationResponse.of(section.getDownStation()));
-        }
-        return stations;
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
     }
 }
