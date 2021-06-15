@@ -1,10 +1,8 @@
 package nextstep.subway.linestation.domain;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -91,19 +89,8 @@ public class LineStations {
     }
 
     public List<Station> orderedStations() {
-        Optional<LineStation> optLIneStation = lineStations.stream()
-            .filter(lineStation -> !lineStation.getPreviousStation().isPresent())
-            .findFirst();
-
-        final List<Station> stations = new ArrayList<>();
-        while (optLIneStation.isPresent()) {
-            final LineStation lineStation = optLIneStation.get();
-            final Station station = lineStation.getStation();
-            stations.add(station);
-
-            optLIneStation = lineStation.getNextStation();
-        }
-
-        return stations;
+        return lineStations.stream()
+            .map(LineStation::getStation)
+            .collect(Collectors.toList());
     }
 }
