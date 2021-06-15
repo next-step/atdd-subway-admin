@@ -52,3 +52,19 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+
+
+## 기능 명세서
+- [X] 기능 구현 전 인수 테스트 작성
+    - [X] 생성
+    - [X] 목록 조회
+    - [X] 조회
+    - [X] 수정 
+    - [X] 삭제 
+- [X] 기능 구현 후 인수 테스트 리팩터링
+    - [X] 생성
+    - [X] 목록 조회
+    - [X] 조회
+    - [X] 수정 
+    - [X] 삭제 
