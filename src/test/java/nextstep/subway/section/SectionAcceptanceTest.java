@@ -214,9 +214,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         //구간_제거_완료
         구간_OK_응답(response);
-
-        ExtractableResponse<Response> readResponse = 상행역으로_구간_조회_요청(서울역.getId());
-        구간_등록_BAD_REQUEST_응답(readResponse);
     }
 
     @DisplayName("구간 제거 : 노선의 중간 구간 제거")
@@ -234,8 +231,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         //구간_제거_완료
         구간_OK_응답(response);
-        List<Long> expectedOrderId = Arrays.asList(서울역.getId(), 충무로역.getId());
-        노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
+        ExtractableResponse<Response> readResponse = 상행역으로_구간_조회_요청(회현역.getId());
+        구간_등록_BAD_REQUEST_응답(readResponse);
     }
 
     @DisplayName("구간제거 예외상황 : 노선에 구간이 단 한 개인 경우")
