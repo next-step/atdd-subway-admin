@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.application.exceptions.AlreadyExistsLineNameException;
+import nextstep.subway.line.application.exceptions.NotFoundLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -84,9 +85,9 @@ public class LineController {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException illegalArgumentException) {
-        String message = illegalArgumentException.getMessage();
+    @ExceptionHandler({IllegalArgumentException.class, NotFoundLineException.class})
+    public ResponseEntity<String> handleIllegalArgumentException(RuntimeException runtimeException) {
+        String message = runtimeException.getMessage();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 }

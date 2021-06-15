@@ -138,7 +138,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 5);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선, 양재역);
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선.getId(), 양재역.getId());
 
 		// then
 		지하철_노선에_구간이_제거됨(response, 신분당선.getId(), 강남역.getId(), 광교역.getId());
@@ -155,7 +155,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 5);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선, 강남역);
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선.getId(), 강남역.getId());
 
 		// then
 		지하철_노선에_구간이_제거됨(response, 신분당선.getId(), 양재역.getId(), 광교역.getId());
@@ -173,7 +173,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 5);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선, 목동역);
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선.getId(), 목동역.getId());
 
 		// then
 		지하철_노선에_구간이_제거_실패됨(response);
@@ -188,7 +188,38 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10).as(LineResponse.class);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선, 강남역);
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선.getId(), 강남역.getId());
+
+		// then
+		지하철_노선에_구간이_제거_실패됨(response);
+	}
+
+	@DisplayName("데이터베이스에 저장되지 없는 노선을 제거한다.")
+	@Test
+	void removeNonExistsLine() {
+		// given
+		StationResponse 강남역 = 지하철역_생성_요청("강남역").as(StationResponse.class);
+		long DB에_저장되지_않은_노선_ID = 1L;
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(DB에_저장되지_않은_노선_ID, 강남역.getId());
+
+		// then
+		지하철_노선에_구간이_제거_실패됨(response);
+	}
+
+	@DisplayName("데이터베이스에 저장되지 없는 역을 제거한다.")
+	@Test
+	void removeNonExistsStation() {
+		// given
+		StationResponse 강남역 = 지하철역_생성_요청("강남역").as(StationResponse.class);
+		StationResponse 양재역 = 지하철역_생성_요청("양재역").as(StationResponse.class);
+		long DB에_저장되지_않은_지하철역_ID = 3L;
+		LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 양재역.getId(), 10).as(LineResponse.class);
+		지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 5);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선.getId(), DB에_저장되지_않은_지하철역_ID);
 
 		// then
 		지하철_노선에_구간이_제거_실패됨(response);
@@ -209,14 +240,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		        .then().log().all().extract();
 	}
 
-	private ExtractableResponse<Response> 지하철_노선에_구간_제거_요청(LineResponse line, StationResponse stationToDelete) {
+	private ExtractableResponse<Response> 지하철_노선에_구간_제거_요청(long lineId, long stationId) {
 		// when
 		Map<String, String> params = new HashMap<>();
 		return RestAssured
 			.given().log().all()
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when().delete(LINE_API_ROOT + "/" + line.getId() + "/sections" + "?stationId=" + stationToDelete.getId())
+			.when().delete(LINE_API_ROOT + "/" + lineId + "/sections" + "?stationId=" + stationId)
 			.then().log().all().extract();
 	}
 
