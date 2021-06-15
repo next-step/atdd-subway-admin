@@ -45,15 +45,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setup() {
-        Map<String, String> 요청_내용 = new HashMap<>();
-        요청_내용.put(PARAM_NAME, "강남역");
-
-        역_생성_요청(요청_내용);
-
-        요청_내용 = new HashMap<>();
-        요청_내용.put(PARAM_NAME, "양재역");
-
-        역_생성_요청(요청_내용);
+        역_생성_요청(강남역, 빨간색);
+        역_생성_요청(양재역, 빨간색);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -299,9 +292,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(노선_목록_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private void 역_생성_요청(Map<String, String> 요청_사항) {
+    private void 역_생성_요청(String 이름, String 색) {
+        Map<String, String> 요청_내용 = new HashMap<>();
+        요청_내용.put(PARAM_NAME, 이름);
+        요청_내용.put(PARAM_COLOR, 색);
         RestAssured.given()
-                .body(요청_사항)
+                .body(요청_내용)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
