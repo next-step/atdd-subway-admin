@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,18 +24,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
+        //given && when
+        ExtractableResponse<Response> response = requestCreateStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -102,11 +93,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
@@ -135,5 +126,20 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static ExtractableResponse<Response> requestCreateStation(String name) {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        // when
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
     }
 }
