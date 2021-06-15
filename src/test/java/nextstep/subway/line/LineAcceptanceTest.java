@@ -35,7 +35,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 구간_길이);
 
         // when
         // 지하철_노선_생성_요청
@@ -51,7 +51,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineDuplicate() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 구간_길이);
         노선생성_요청(신분당선);
 
         // when
@@ -69,10 +69,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 구간_길이);
         ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
-        Map<String, String> 이호선 = 노선_파라미터_생성(이호선_이름, 녹색, 시작_종점, 도착_종점, 거리);
+        Map<String, String> 이호선 = 노선_파라미터_생성(이호선_이름, 녹색, 시작_종점, 도착_종점, 구간_길이);
         ExtractableResponse<Response> 이호선_생성_응답 = 노선생성_요청(이호선);
 
         // when
@@ -91,7 +91,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 구간_길이);
         ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
         // when
@@ -108,7 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLineNew() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 구간_길이);
         ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
         // when
@@ -126,10 +126,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 구간_길이);
         ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
-        Map<String, String> 신분당선_수정 = 노선_파라미터_생성(분당선_이름, 노란색, 시작_종점, 도착_종점, 거리);
+        Map<String, String> 신분당선_수정 = 노선_파라미터_생성(분당선_이름, 노란색, 시작_종점, 도착_종점, 구간_길이);
 
         // when
         // 지하철_노선_수정_요청
@@ -145,7 +145,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 구간_길이);
         ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
         // when

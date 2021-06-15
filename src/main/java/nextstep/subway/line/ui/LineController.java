@@ -3,6 +3,7 @@ package nextstep.subway.line.ui;
 import java.net.URI;
 import java.util.List;
 
+import nextstep.subway.common.dto.ErrorResponse;
 import nextstep.subway.section.application.SectionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
@@ -61,12 +62,19 @@ public class LineController {
 
     @PostMapping("/lines/{id}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        LineResponse line =sectionService.addSection(id, lineRequest);
+        LineResponse line = sectionService.addSection(id, lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class})
     public ResponseEntity<LineResponse> handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+                .build();
+    }
+
+    @ExceptionHandler({RuntimeException.class})
+    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(e.getLocalizedMessage()));
     }
 }

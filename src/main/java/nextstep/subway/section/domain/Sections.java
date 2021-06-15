@@ -1,6 +1,6 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.station.domain.Station;
+import static nextstep.subway.common.ErrorMessage.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +10,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.station.domain.Station;
+
 @Embeddable
 public class Sections {
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
@@ -34,12 +37,12 @@ public class Sections {
         return sections.stream()
                 .findFirst()
                 .filter(section -> section.isContain(upStation) || section.isContain(downStation))
-                .orElseThrow(() -> new IllegalArgumentException("역이 모두 구간에 포함되어 있지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_STATIONS_SECTION));
     }
 
     private void checkDuplicateSectionStations(Station upStation, Station downStation) {
         if (isContain(upStation) && isContain(downStation)) {
-            throw new IllegalArgumentException("역이 모두 구간에 포함되어 있습니다.");
+            throw new IllegalArgumentException(STATIONS_ARE_ALREADY_CONTAINS_SECTION);
         }
     }
 
