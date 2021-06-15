@@ -3,7 +3,6 @@ package nextstep.subway.line.dto;
 import nextstep.subway.line.domain.Line;
 
 import javax.validation.constraints.NotBlank;
-import java.util.Objects;
 
 public class LineRequest {
     @NotBlank
