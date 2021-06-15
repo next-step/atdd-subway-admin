@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.utils.ExtractableResponseUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -69,9 +70,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선_목록_조회_성공_데이터없음() {
         // when
         ExtractableResponse response = 지하철_노선_목록_조회_요청();
+        LinesResponse expectedResult = new LinesResponse(response.jsonPath().getList("lineResponses", LineResponse.class));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(expectedResult.size()).isEqualTo(0);
+        assertThat(expectedResult.isEmpty()).isTrue();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철_노선_검색_성공")
@@ -99,9 +103,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선_검색_성공_데이터없음() {
         // when
         ExtractableResponse response = 지하철_노선_검색_요청(new LineRequest("", "00FF00"));
+        LinesResponse expectedResult = new LinesResponse(response.jsonPath().getList("lineResponses", LineResponse.class));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(expectedResult.size()).isEqualTo(0);
+        assertThat(expectedResult.isEmpty()).isTrue();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철_노선_PK_조건_조회_성공")
