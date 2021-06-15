@@ -54,11 +54,11 @@ public class Section extends BaseEntity {
         return Objects.equals(upStation, section.getDownStation());
     }
 
-    protected boolean isUpStation(Section section) {
+    protected boolean hasSameUpStation(Section section) {
         return Objects.equals(upStation, section.getUpStation());
     }
 
-    protected boolean isDownStation(Section section) {
+    protected boolean hasSameDownStation(Section section) {
         return Objects.equals(downStation, section.getDownStation());
     }
 

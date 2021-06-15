@@ -24,7 +24,7 @@ public class Sections {
     public void add(final Section newSection) {
         if (isNotEmpty()) {
             validation(newSection);
-            overrideIfexistsUpstation(newSection);
+            overrideIfExistsUpStation(newSection);
             overrideIfExistsDownStation(newSection);
         }
 
@@ -131,16 +131,16 @@ public class Sections {
         }
     }
 
-    private void overrideIfexistsUpstation(final Section newSection) {
+    private void overrideIfExistsUpStation(final Section newSection) {
         sections.stream()
-                .filter(section -> newSection.isUpStation(section))
+                .filter(section -> newSection.hasSameUpStation(section))
                 .findFirst()
                 .ifPresent(section -> section.overrideUpStation(newSection));
     }
 
     private void overrideIfExistsDownStation(final Section newSection) {
         sections.stream()
-                .filter(section -> newSection.isDownStation(section))
+                .filter(section -> newSection.hasSameDownStation(section))
                 .findFirst()
                 .ifPresent(section -> section.overrideDownStation(newSection));
     }
