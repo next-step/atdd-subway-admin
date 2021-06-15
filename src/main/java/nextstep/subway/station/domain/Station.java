@@ -34,6 +34,10 @@ public class Station extends BaseEntity {
         return name;
     }
 
+    public boolean isStationIdMatch(Long stationId) {
+        return this.id.equals(stationId);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

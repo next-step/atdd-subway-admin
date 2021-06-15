@@ -83,23 +83,9 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public void changeDownStation(Section section) {
-        this.downStation = section.getUpStation();
-        this.distance = this.distance.minus(section.distance);
-    }
-
-    public void changeUpStation(Section section) {
-        this.upStation = section.getDownStation();
-        this.distance = this.distance.minus(section.distance);
-    }
-
     public boolean containsAllStations(Section section) {
-        return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
-    }
-
-    public boolean containsNoneStations(Section section) {
-        return getStations().stream()
-                .noneMatch(v -> v.equals(section.downStation) || v.equals(section.upStation));
+        return this.upStation.equals(section.upStation) &&
+                this.downStation.equals(section.downStation);
     }
 
     public List<Station> getStations() {
@@ -108,6 +94,61 @@ public class Section extends BaseEntity {
 
     public Stream<Station> getProcessStations() {
         return Stream.of(upStation, downStation);
+    }
+
+    public boolean hasStationId(Long stationId) {
+        return upStation.isStationIdMatch(stationId) || this.downStation.isStationIdMatch(stationId);
+    }
+
+    public boolean isUpToDownConnected(Section section) {
+        return upStation.equals(section.downStation);
+    }
+
+    public boolean isDownToUpConnected(Section section) {
+        return downStation.equals(section.upStation);
+    }
+
+    public void changeUpward(Section section) {
+        this.downStation = section.downStation;
+        this.distance = distance.plus(section.distance);
+    }
+
+    public void updateUpStation(Section section) {
+        this.upStation = section.downStation;
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return this.upStation.equals(section.upStation);
+    }
+
+    public boolean isSameUpStation(Long stationId) {
+        return this.upStation.isStationIdMatch(stationId);
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return this.downStation.equals(section.downStation);
+    }
+
+    public boolean isSameDownStation(Long stationId) {
+        return downStation.isStationIdMatch(stationId);
+    }
+
+    public void updateMinusDistance(Section section) {
+        this.distance = this.distance.minus(section.distance);
+    }
+
+    public boolean hasDownStation(Section section) {
+        return this.downStation.equals(section.upStation) ||
+                this.downStation.equals(section.downStation);
+    }
+
+    public boolean hasUpStation(Section section) {
+        return this.upStation.equals(section.upStation) ||
+                this.upStation.equals(section.downStation);
+    }
+
+    public void updateDownStation(Section section) {
+        this.downStation = section.upStation;
     }
 
     @Override

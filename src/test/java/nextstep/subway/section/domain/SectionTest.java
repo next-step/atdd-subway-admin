@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionTest {
@@ -29,25 +28,5 @@ class SectionTest {
     void createWithInvalidStation() {
         assertThatThrownBy(() -> new Section(line, station1, null, 10))
                 .isInstanceOf(StationNotFoundException.class);
-    }
-
-    @DisplayName("주어진 상행역 정보를 새로운 구간 하행역으로 수정한다.")
-    @Test
-    void changeUpStation() {
-        Section section = new Section(line, station1, station2, 10);
-        Section newSection = new Section(line, station2, station3, 5);
-        section.changeUpStation(newSection);
-
-        assertThat(section.getUpStation()).extracting("name").isEqualTo("교대역");
-    }
-
-    @DisplayName("주어진 하행역 정보를 새로운 구간 상행역으로 수정한다.")
-    @Test
-    void changeDownStation() {
-        Section section = new Section(line, station1, station2, 10);
-        Section newSection = new Section(line, station1, station3, 5);
-        section.changeDownStation(newSection);
-
-        assertThat(section.getDownStation()).extracting("name").isEqualTo("강남역");
     }
 }

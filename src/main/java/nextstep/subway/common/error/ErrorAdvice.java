@@ -59,6 +59,12 @@ public class ErrorAdvice {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(IllegalStateException.class)
+    public ErrorResponse handleIllegalState() {
+        return new ErrorResponse(SEVER_ERROR);
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Throwable.class)
     public ErrorResponse handleException() {
         return new ErrorResponse(SEVER_ERROR);
