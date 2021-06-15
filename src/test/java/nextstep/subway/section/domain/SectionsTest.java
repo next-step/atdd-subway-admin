@@ -109,4 +109,34 @@ class SectionsTest {
 		}).isInstanceOf(SubwayLogicException.class)
 			.hasMessageContaining("기존 구간의 길이가 추가하려는 구간보다 짧습니다.");
 	}
+
+	@Test
+	@DisplayName("구간 제거 테스트 - 하나의 구간만 존재하고 그 구간을 제거시 오류")
+	void test_유일한구간제거() {
+		Sections sections = new Sections();
+		Section section = new Section(line, this.강남역, this.선릉역, 20);
+		sections.addSection(section);
+
+		Assertions.assertThatThrownBy(() -> {
+			sections.removeSection(this.강남역);
+		}).isInstanceOf(SubwayLogicException.class)
+			.hasMessageContaining("노선의 유일한 구간으로 제거할 수 없습니다.");
+	}
+
+	@Test
+	@DisplayName("구간 제거 테스트 - 구간내에 존재하지 않는 역으로 제거시 오류")
+	void test_없는역으로구간제거() {
+		Sections sections = new Sections();
+		Section section1 = new Section(line, this.강남역, this.선릉역, 20);
+		Section section2 = new Section(line, this.선릉역, this.종합운동장역, 10);
+
+		sections.addSection(section1);
+		sections.addSection(section2);
+
+		Assertions.assertThatThrownBy(() -> {
+			sections.removeSection(this.잠실역);
+		}).isInstanceOf(SubwayLogicException.class)
+			.hasMessageContaining("제거 가능한 구간이 없습니다");
+	}
+
 }

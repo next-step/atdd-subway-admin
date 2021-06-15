@@ -76,8 +76,28 @@ public class Sections {
 		}
 	}
 
-	public void removeSection(Section section) {
-		this.sections.remove(section);
+	public void removeSection(Station station) {
+		this.validateRemovable(station);
+
+		//TODO station 이 들어간 section을 찾는다.
+	}
+
+	private void validateRemovable(Station station) {
+		int sectionSize = this.sections.size();
+		List<Section> removableSections = this.getRemovableSections(station);
+		if ((sectionSize == 1) && (sectionSize == removableSections.size())) {
+			throw new SubwayLogicException("노선의 유일한 구간으로 제거할 수 없습니다.");
+		}
+
+		if (removableSections.isEmpty()) {
+			throw new SubwayLogicException("제거 가능한 구간이 없습니다");
+		}
+	}
+
+	private List<Section> getRemovableSections(Station station) {
+		return this.sections.stream()
+			.filter(section -> section.containStation(station))
+			.collect(Collectors.toList());
 	}
 
 	public List<Station> getOrderedStations() {

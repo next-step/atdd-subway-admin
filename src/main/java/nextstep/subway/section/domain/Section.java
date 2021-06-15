@@ -120,4 +120,8 @@ public class Section extends BaseEntity {
 	private boolean isBuildableUpStation(Section newSection) {
 		return this.upStation.equals(newSection.getUpStation());
 	}
+
+	public boolean containStation(Station station) {
+		return this.downStation.equals(station) || this.upStation.equals(station);
+	}
 }

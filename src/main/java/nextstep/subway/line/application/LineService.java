@@ -83,6 +83,9 @@ public class LineService {
 	}
 
 	public void removeSectionByStationId(Long lineId, Long stationId) {
-		//TODO
+		Line line = this.findByLineId(lineId);
+		Station station = this.stationService.getStation(stationId);
+		line.removeSectionByStation(station);
+
 	}
 }
