@@ -2,12 +2,12 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.exception.TooLongDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "section")
@@ -60,17 +60,21 @@ public class Section extends BaseEntity {
 		return distance;
 	}
 
-	public void updateUpStation(Station station) {
+	public void updateUpStation(Station station, Integer distance) {
+		checkDistance(distance);
 		upStation = station;
+		this.distance -= distance;
 	}
 
-	public void updateDownStation(Station station) {
+	public void updateDownStation(Station station, Integer distance) {
+		checkDistance(distance);
 		downStation = station;
+		this.distance -= distance;
 	}
 
-	private void validate(Section section) {
-		if (this.distance <= section.getDistance()) {
-
+	private void checkDistance(Integer distance) {
+		if (this.distance <= distance) {
+			throw new TooLongDistanceException();
 		}
 	}
 }

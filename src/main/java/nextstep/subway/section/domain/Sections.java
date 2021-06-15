@@ -56,11 +56,11 @@ public class Sections {
 	public void addSection(Section section) {
 		sections.stream().filter(existedSection -> existedSection.getUpStation().equals(section.getUpStation()))
 				.findFirst()
-				.ifPresent(it -> it.updateUpStation(section.getDownStation()));
+				.ifPresent(existedSection -> existedSection.updateUpStation(section.getDownStation(), section.getDistance()));
 
 		sections.stream().filter(existedSection -> existedSection.getDownStation().equals(section.getDownStation()))
 				.findFirst()
-				.ifPresent(existedSection -> existedSection.updateDownStation(section.getUpStation()));
+				.ifPresent(existedSection -> existedSection.updateDownStation(section.getUpStation(), section.getDistance()));
 
 		sections.add(section);
 	}

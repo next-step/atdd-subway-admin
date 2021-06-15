@@ -34,5 +34,6 @@ public class SectionService {
 		Station downStation = stationService.findById(stationsIds.get(1));
 		Section section = new Section(upStation, downStation, distance);
 		section.toLine(line);
+		return;
 	}
 }

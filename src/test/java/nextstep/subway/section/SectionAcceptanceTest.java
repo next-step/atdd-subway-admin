@@ -114,4 +114,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// then
 		노선에_새로_등록된_역이_순서대로_조회된다(response, 강남역.getName(), 광교역.getName(), 광교아래역.getName());
 	}
+
+	@Test
+	@DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+	void checkDistance() {
+		// given
+		StationResponse 양재역 = StationAcceptanceTest.지하철역을_생성한다("양재역").as(StationResponse.class);
+
+		Map<String, String> sectionParams = new HashMap<>();
+		sectionParams.put("upStationId", 강남역.getId().toString());
+		sectionParams.put("downStationId", 양재역.getId().toString());
+		sectionParams.put("distance", "10");
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_새로운_구간_등록_요청(신분당선.header("Location"), sectionParams);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
 }
