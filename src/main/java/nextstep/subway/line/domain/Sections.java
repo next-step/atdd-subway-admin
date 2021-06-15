@@ -1,7 +1,7 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -72,19 +72,24 @@ public class Sections {
 	}
 
 	private void validateCandidate(Section candidate) {
-		Set<Station> stations = new HashSet<>();
+		Set<Station> stations = list.stream()
+			.map(x -> Arrays.asList(x.getUpStation(), x.getDownStation()))
+			.flatMap(y -> y.stream())
+			.collect(Collectors.toSet());
 
-		for (Section section : list) {
-			stations.add(section.getUpStation());
-			stations.add(section.getDownStation());
-		}
+		validateAlreadyExistTwoStations(candidate, stations);
+		validateTwoStationsExist(candidate, stations);
+	}
 
-		if (stations.contains(candidate.getUpStation()) && stations.contains(candidate.getDownStation())) {
-			throw new IllegalArgumentException("Each two stations are already in the line");
-		}
-
+	private void validateTwoStationsExist(Section candidate, Set<Station> stations) {
 		if (!stations.contains(candidate.getUpStation()) && !stations.contains(candidate.getDownStation())) {
 			throw new NoSuchElementException("There is no such section");
+		}
+	}
+
+	private void validateAlreadyExistTwoStations(Section candidate, Set<Station> stations) {
+		if (stations.contains(candidate.getUpStation()) && stations.contains(candidate.getDownStation())) {
+			throw new IllegalArgumentException("Each two stations are already in the line");
 		}
 	}
 
