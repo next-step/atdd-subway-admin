@@ -34,27 +34,14 @@ public class Sections {
 		this.validateAlreadyExistSection(newSection);
 		this.validateStationsNotContained(newSection);
 
-		this.rebuildSectionByUpStation(newSection);
-		this.rebuildSectionByDownStation(newSection);
+		this.rebuildSection(newSection);
+	}
+
+	private void rebuildSection(Section newSection) {
+		this.sections.stream()
+			.filter(section -> section.isBuildable(newSection))
+			.findAny().ifPresent(section -> section.rebuildStation(newSection));
 		this.sections.add(newSection);
-	}
-
-	private void rebuildSectionByUpStation(Section newSection) {
-		this.sections.stream()
-			.filter(section -> section.getUpStation().equals(newSection.getUpStation()))
-			.findAny().ifPresent(section -> {
-			section.validateSectionDistance(newSection);
-			section.rebuildUpstation(newSection);
-		});
-	}
-
-	private void rebuildSectionByDownStation(Section newSection) {
-		this.sections.stream()
-			.filter(section -> section.getDownStation().equals(newSection.getDownStation()))
-			.findAny().ifPresent(section -> {
-			section.validateSectionDistance(newSection);
-			section.rebuildDownStation(newSection);
-		});
 	}
 
 	private boolean isEntryPointSection(Section newSection) {

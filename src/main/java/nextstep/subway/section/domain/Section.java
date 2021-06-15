@@ -103,14 +103,29 @@ public class Section extends BaseEntity {
 		return this.distance.isShorter(newSection.getDistance());
 	}
 
-	public void rebuildUpstation(Section newSection) {
+	public void rebuildStation(Section newSection) {
+		this.validateSectionDistance(newSection);
 		this.distance = this.distance.minus(newSection.getDistance());
-		this.upStation = newSection.getDownStation();
+
+		if (this.isBuildableUpStation(newSection)) {
+			this.upStation = newSection.getDownStation();
+			return;
+		}
+
+		if (this.isBuildableDownStation(newSection)) {
+			this.downStation = newSection.getUpStation();
+		}
 	}
 
-	public void rebuildDownStation(Section newSection) {
-		this.distance = this.distance.minus(newSection.getDistance());
-		this.downStation = newSection.getUpStation();
+	public boolean isBuildable(Section newSection) {
+		return this.isBuildableDownStation(newSection) || this.isBuildableUpStation(newSection);
 	}
 
+	private boolean isBuildableDownStation(Section newSection) {
+		return this.downStation.equals(newSection.getDownStation());
+	}
+
+	private boolean isBuildableUpStation(Section newSection) {
+		return this.upStation.equals(newSection.getUpStation());
+	}
 }
