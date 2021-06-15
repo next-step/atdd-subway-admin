@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.exception.CannotRemoveSectionSizeException;
 import nextstep.subway.section.exception.ExistSameStationsException;
 import nextstep.subway.section.exception.NotExistAnySameStationException;
 import nextstep.subway.section.exception.NotUnderSectionDistanceException;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
     public void add(Section newSection) {
@@ -31,25 +32,17 @@ public class Sections {
         this.sections.add(newSection);
     }
 
+    public void delete(Station station) {
+        if (sections.size() <= 1) {
+            throw new CannotRemoveSectionSizeException();
+        }
+    }
+
     public List<Station> getStations() {
         return getOrderedSections().stream()
                 .flatMap(section -> section.getStations().stream())
                 .distinct()
                 .collect(Collectors.toList());
-    }
-
-    private void connectIfExistSameDownStation(Section newSection) {
-        sections.stream()
-                .filter(section -> section.hasSameDownStation(newSection.getDownStation()))
-                .findFirst()
-                .ifPresent(section -> section.updateDownStationToUpStation(newSection));
-    }
-
-    private void connectIfExistSameUpStation(Section newSection) {
-        sections.stream()
-                .filter(section -> section.hasSameUpStation(newSection.getUpStation()))
-                .findFirst()
-                .ifPresent(section -> section.updateUpStationToDownStation(newSection));
     }
 
     public List<Section> getOrderedSections() {
@@ -66,6 +59,20 @@ public class Sections {
         }
 
         return result;
+    }
+
+    private void connectIfExistSameDownStation(Section newSection) {
+        sections.stream()
+                .filter(section -> section.hasSameDownStation(newSection.getDownStation()))
+                .findFirst()
+                .ifPresent(section -> section.updateDownStationToUpStation(newSection));
+    }
+
+    private void connectIfExistSameUpStation(Section newSection) {
+        sections.stream()
+                .filter(section -> section.hasSameUpStation(newSection.getUpStation()))
+                .findFirst()
+                .ifPresent(section -> section.updateUpStationToDownStation(newSection));
     }
 
     private Optional<Section> findFirstSection() {

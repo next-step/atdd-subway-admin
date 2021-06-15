@@ -2,6 +2,7 @@ package nextstep.subway.line.exception;
 
 import nextstep.subway.common.ErrorCode;
 import nextstep.subway.common.ErrorResponse;
+import nextstep.subway.section.exception.CannotRemoveSectionSizeException;
 import nextstep.subway.section.exception.ExistSameStationsException;
 import nextstep.subway.section.exception.NotExistAnySameStationException;
 import nextstep.subway.section.exception.NotUnderSectionDistanceException;
@@ -42,5 +43,11 @@ public class LineControllerAdvice {
     @ExceptionHandler(NotFoundStationException.class)
     public ErrorResponse handleNotFoundStationException() {
         return new ErrorResponse(ErrorCode.NOT_FOUND_STATION_MESSAGE.getCode(), ErrorCode.NOT_FOUND_STATION_MESSAGE.getDescription());
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(CannotRemoveSectionSizeException.class)
+    public ErrorResponse handleCannotRemoveSectionException() {
+        return new ErrorResponse(ErrorCode.CANNOT_REMOVE_SECTION_SIZE_MESSAGE.getCode(), ErrorCode.CANNOT_REMOVE_SECTION_SIZE_MESSAGE.getDescription());
     }
 }

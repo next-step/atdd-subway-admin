@@ -1,6 +1,5 @@
 package nextstep.subway.section;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -20,6 +19,7 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineSteps.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.LineSteps.지하철_노선_조회_요청;
+import static nextstep.subway.section.SectionSteps.노선에서_지하철역_제거_요청;
 import static nextstep.subway.section.SectionSteps.지하철_노선에_지하철역_등록_요청;
 import static nextstep.subway.station.StationSteps.지하철_역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -178,14 +178,31 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 등록 되어있지 않은 역을 제거한다")
     @Test
     void deleteSectionExceptionTest1() {
+        // given
+        long stationId = 3;
+
         // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .queryParam("stationId", 3)
-                .when().delete("/lines/1/sections")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 노선에서_지하철역_제거_요청(신분당선.getId(), stationId);
 
         // then
+        지하철_노선에_제거할_지하철역이_없음(response);
+    }
+
+    @DisplayName("구간이 하나인 노선의 지하철 역을 제거한다")
+    @Test
+    void deleteSectionExceptionTest2() {
+        // when
+        ExtractableResponse<Response> response = 노선에서_지하철역_제거_요청(신분당선.getId(), 강남역.getId());
+
+        // then
+        지하철_역_제거_실패됨(response);
+    }
+
+    private void 지하철_역_제거_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철_노선에_제거할_지하철역이_없음(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
