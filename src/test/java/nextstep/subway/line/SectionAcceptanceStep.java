@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.common.error.ErrorResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,6 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.line.application.LineQueryService.LINE_NAME_DUPLICATED_EXCEPTION_MESSAGE;
+import static nextstep.subway.line.domain.Distance.BIGGER_THAN_DISTANCE_EXCEPTION_MESSAGE;
+import static nextstep.subway.line.domain.Sections.EXISTS_SECTION_EXCEPTION_MESSAGE;
+import static nextstep.subway.line.domain.Sections.NOT_EXISTS_ALL_STATIONS_EXCEPTION_MESSAGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -48,5 +53,24 @@ public class SectionAcceptanceStep {
                 actual.get(i).equals(expected.get(i));
             }
         });
+    }
+
+    public static void 지하철_노선_구간_생성_요청_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static void 지하철_노선_기존_구간_거리보다_커서_등록할수_없음(ExtractableResponse<Response> response) {
+        assertThat(response.jsonPath().getObject("", ErrorResponse.class).getMessage())
+                .isEqualTo(BIGGER_THAN_DISTANCE_EXCEPTION_MESSAGE);
+    }
+
+    public static void 지하철_노선에_이미_지하철역_등록됨(ExtractableResponse<Response> response) {
+        assertThat(response.jsonPath().getObject("", ErrorResponse.class).getMessage())
+                .isEqualTo(EXISTS_SECTION_EXCEPTION_MESSAGE);
+    }
+
+    public static void 지하철_노선에_지하철역_존재하지않아_등록할수_없음(ExtractableResponse<Response> response) {
+        assertThat(response.jsonPath().getObject("", ErrorResponse.class).getMessage())
+                .isEqualTo(NOT_EXISTS_ALL_STATIONS_EXCEPTION_MESSAGE);
     }
 }
