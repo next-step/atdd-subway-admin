@@ -1,33 +1,47 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.common.Constants.*;
 import static nextstep.subway.line.LineAcceptanceRequests.*;
+import static nextstep.subway.station.StationAcceptanceRequests.requestCreateStation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    private StationRepository stationRepository;
+
+    private Long createStation(String stationName) {
+
+        Station stationSaved = stationRepository.save(new Station(stationName));
+        return stationSaved.getId();
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = requestCreateLine(NEW_BUNDANG_LINE_COLOR, NEW_BUNDANG_LINE_NAME);
+        LineRequest lineRequest = new LineRequest(NEW_BUNDANG_LINE_NAME, NEW_BUNDANG_LINE_COLOR,
+                createStation("강남역"), createStation("역삼역"), 10);
+        ExtractableResponse<Response> response = requestCreateLine(lineRequest);
 
         // then
         // 지하철_노선_생성됨
@@ -37,28 +51,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void createLine_error() {
         // given
         // 지하철_노선_등록되어_있음
-        requestCreateLine(NEW_BUNDANG_LINE_COLOR, NEW_BUNDANG_LINE_NAME);
+        LineRequest lineRequest = new LineRequest(NEW_BUNDANG_LINE_NAME, NEW_BUNDANG_LINE_COLOR,
+                createStation("강남역"), createStation("역삼역"), 10);
+        requestCreateLine(lineRequest);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = requestCreateLine(NEW_BUNDANG_LINE_COLOR, NEW_BUNDANG_LINE_NAME);
+        ExtractableResponse<Response> response = requestCreateLine(lineRequest);
 
         // then
         // 지하철_노선_생성_실패됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
         // given
+        // 지하철역 강남역 등록되어 있음
+        Long stationKang = createStation("강남역");
+        // 지하철역 역삼역 등록되어 있음
+        Long stationYeok = createStation("역삼역");
         // 지하철_노선_등록되어_있음
+        LineRequest lineRequestFirst = new LineRequest(NEW_BUNDANG_LINE_NAME, NEW_BUNDANG_LINE_COLOR, stationKang, stationYeok, 10);
+        ExtractableResponse<Response> createResponse1 = requestCreateLine(lineRequestFirst);
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse1 = requestCreateLine(NEW_BUNDANG_LINE_COLOR, NEW_BUNDANG_LINE_NAME);
-        ExtractableResponse<Response> createResponse2 = requestCreateLine(SECOND_LINE_COLOR, SECOND_LINE_NAME);
+        LineRequest lineRequestSecond = new LineRequest(SECOND_LINE_COLOR, SECOND_LINE_NAME, stationKang, stationYeok, 5);
+        ExtractableResponse<Response> createResponse2 = requestCreateLine(lineRequestSecond);
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = requestShowLines();
@@ -76,17 +99,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
-        // given
-        // 지하철_노선_등록되어_있음
-        requestCreateLine(NEW_BUNDANG_LINE_COLOR, NEW_BUNDANG_LINE_NAME);
+        // 지하철 노선이 등록되어 있음
+        LineRequest lineRequest = new LineRequest(NEW_BUNDANG_LINE_NAME, NEW_BUNDANG_LINE_COLOR,
+                createStation("강남역"), createStation("역삼역"), 10);
+        ExtractableResponse<Response> createResponseLine = requestCreateLine(lineRequest);
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = requestShowLine("1");
+        ExtractableResponse<Response> response = requestShowLine(createResponseLine.jsonPath().getLong("id"));
 
         // then
         // 지하철_노선_응답됨
@@ -98,12 +121,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = requestCreateLine(NEW_BUNDANG_LINE_COLOR, NEW_BUNDANG_LINE_NAME);
+        LineRequest lineRequestNew = new LineRequest(NEW_BUNDANG_LINE_COLOR, NEW_BUNDANG_LINE_NAME,
+                createStation("강남역"), createStation("역삼역"), 10);
+        ExtractableResponse<Response> createResponse = requestCreateLine(lineRequestNew);
 
         // when
         // 지하철_노선_수정_요청
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = requestUpdateLine(uri, OLD_BUNDANG_LINE_COLOR, OLD_BUNDANG_LINE_NAME);
+        LineRequest lineRequestOld = new LineRequest(OLD_BUNDANG_LINE_COLOR, OLD_BUNDANG_LINE_NAME, 1L, 2L, 10);
+        ExtractableResponse<Response> response = requestUpdateLine(uri, lineRequestOld);
 
         // then
         // 지하철_노선_수정됨
@@ -115,7 +141,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = requestCreateLine(NEW_BUNDANG_LINE_COLOR, NEW_BUNDANG_LINE_NAME);
+        LineRequest lineRequestNew = new LineRequest(NEW_BUNDANG_LINE_COLOR, NEW_BUNDANG_LINE_NAME,
+                createStation("강남역"), createStation("역삼역"), 10);
+        ExtractableResponse<Response> createResponse = requestCreateLine(lineRequestNew);
 
         // when
         // 지하철_노선_제거_요청
