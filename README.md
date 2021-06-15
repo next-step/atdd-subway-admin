@@ -54,6 +54,15 @@
     - [x] 여러 응답에 대해 Location 헤더를 사용한 id 추출 기능 분리 및 적용
   - [x] LinesResponse
     - [x] getIds() 구현 및 적용
+  
+# 피드백 목록
+- [ ] Line id 조건 조회 절에 NPE 대신 EntityNotFoundException 적용
+- [ ] EntityNotFoundException에 해당하는 ControllerAdvice 메소드 구현
+- [ ] Line 서비스에서 update 처리하도록 수정
+- [ ] Bean Validation 적용
+- [ ] Line 목록 조회시 204 No content 대신 빈 배열 반환 처리
+- [ ] LineControllerTest 클래스 명을 LineControllerTestSnippet 으로 변경
+- [ ] 불필요한 getIds() 제거
 ---
 
 <p align="center">
