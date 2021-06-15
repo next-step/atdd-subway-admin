@@ -62,6 +62,7 @@ public class LineController {
     public ResponseEntity<LineResponse> addSection(
             @PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
         // TODO 기능 구현
-        return null;
+        LineResponse line = lineService.saveSection(id, sectionRequest);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 }

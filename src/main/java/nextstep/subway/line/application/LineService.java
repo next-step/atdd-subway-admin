@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.exception.DuplicateLineException;
 import nextstep.subway.line.exception.NoSuchLineException;
 import nextstep.subway.station.domain.Station;
@@ -31,10 +32,10 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         checkLineExistence(request.getName());
+        Line line = request.toLine();
+
         Station upStation = getStationById(request.getUpStationId());
         Station downStation = getStationById(request.getDownStationId());
-
-        Line line = request.toLine();
         line.addSection(new Section(upStation, downStation, request.getDistance()));
         Line persistLine = lineRepository.save(line);
 
@@ -78,5 +79,17 @@ public class LineService {
     private Line getLineById(Long id) {
         return lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchLineException("존재하지 않는 노선 ID 입니다."));
+    }
+
+    public LineResponse saveSection(Long lineId, SectionRequest request) {
+        Line line = getLineById(lineId);
+
+        Station upStation = getStationById(request.getUpStationId());
+        Station downStation = getStationById(request.getDownStationId());
+        line.addSection(new Section(upStation, downStation, request.getDistance()));
+        Line persistLine = lineRepository.save(line);
+
+        return LineResponse.of(persistLine);
+
     }
 }
