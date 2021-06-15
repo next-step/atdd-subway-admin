@@ -1,6 +1,8 @@
 package nextstep.subway.section;
 
 import nextstep.subway.exception.CannotDeleteException;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

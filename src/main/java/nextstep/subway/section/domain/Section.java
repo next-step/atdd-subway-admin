@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
@@ -77,17 +77,11 @@ public class Section extends BaseEntity {
     }
 
     public boolean isDownStation(Station station){
-        if(station.equals(downStation)){
-            return true;
-        }
-        return false;
+        return station.equals(downStation);
     }
 
     public boolean isUpStation(Station station){
-        if(station.equals(upStation)){
-            return true;
-        }
-        return false;
+        return station.equals(upStation);
     }
 
     public Station getUpStation() {

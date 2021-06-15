@@ -6,6 +6,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
@@ -215,6 +216,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_OK_응답(response);
         List<Long> expectedOrderId = Arrays.asList(회현역.getId(), 충무로역.getId());
         노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
+
+
     }
 
     @DisplayName("구간 제거 : 노선의 중간 구간 제거")
