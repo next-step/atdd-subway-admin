@@ -35,7 +35,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.as(LineResponse.class);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 3);
+		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), 3);
 
 		// then
 		지하철_노선에_구간_등록됨(response);
@@ -52,7 +52,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.as(LineResponse.class);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 10);
+		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), 10);
 
 		// then
 		지하철_노선에_구간_등록됨(response);
@@ -69,7 +69,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.as(LineResponse.class);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 양재역, 광교역, 10);
+		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선.getId(), 양재역.getId(), 광교역.getId(), 10);
 
 		// then
 		지하철_노선에_구간_등록됨(response);
@@ -87,7 +87,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.as(LineResponse.class);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, longDistance);
+		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), longDistance);
 
 		// then
 		지하철_노선에_구간_등록_실패됨(response);
@@ -103,7 +103,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.as(LineResponse.class);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 강남역, 광교역, 5);
+		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선.getId(), 강남역.getId(), 광교역.getId(), 5);
 
 		// then
 		지하철_노선에_구간_등록_실패됨(response);
@@ -121,7 +121,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.as(LineResponse.class);
 
 		// when
-		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선, 판교역, 정자역, 5);
+		ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선.getId(), 판교역.getId(), 정자역.getId(), 5);
 
 		// then
 		지하철_노선에_구간_등록_실패됨(response);
@@ -135,7 +135,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		StationResponse 양재역 = 지하철역_생성_요청("양재역").as(StationResponse.class);
 		StationResponse 광교역 = 지하철역_생성_요청("광교역").as(StationResponse.class);
 		LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10).as(LineResponse.class);
-		지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 5);
+		지하철_노선에_구간_등록_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), 5);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선.getId(), 양재역.getId());
@@ -152,7 +152,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		StationResponse 양재역 = 지하철역_생성_요청("양재역").as(StationResponse.class);
 		StationResponse 광교역 = 지하철역_생성_요청("광교역").as(StationResponse.class);
 		LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10).as(LineResponse.class);
-		지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 5);
+		지하철_노선에_구간_등록_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), 5);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선.getId(), 강남역.getId());
@@ -170,7 +170,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		StationResponse 광교역 = 지하철역_생성_요청("광교역").as(StationResponse.class);
 		StationResponse 목동역 = 지하철역_생성_요청("목동역").as(StationResponse.class);
 		LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10).as(LineResponse.class);
-		지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 5);
+		지하철_노선에_구간_등록_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), 5);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선.getId(), 목동역.getId());
@@ -216,7 +216,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		StationResponse 양재역 = 지하철역_생성_요청("양재역").as(StationResponse.class);
 		long DB에_저장되지_않은_지하철역_ID = 3L;
 		LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 양재역.getId(), 10).as(LineResponse.class);
-		지하철_노선에_구간_등록_요청(신분당선, 강남역, 양재역, 5);
+		지하철_노선에_구간_등록_요청(신분당선.getId(), 강남역.getId(), 양재역.getId(), 5);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선.getId(), DB에_저장되지_않은_지하철역_ID);
@@ -225,18 +225,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_구간이_제거_실패됨(response);
 	}
 
-	private ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(LineResponse line, StationResponse upStation,
-		StationResponse downStation, int distance) {
+	private ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(long lineId, long upStationId, long downStationId, int distance) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("downStationId", downStation.getId());
-		params.put("upStationId", upStation.getId());
+		params.put("downStationId", downStationId);
+		params.put("upStationId", upStationId);
 		params.put("distance", distance);
 
 		return RestAssured
 		        .given().log().all()
 		        .body(params)
 		        .contentType(MediaType.APPLICATION_JSON_VALUE)
-		        .when().post(LINE_API_ROOT + "/" + line.getId() + "/sections")
+		        .when().post(LINE_API_ROOT + "/" + lineId + "/sections")
 		        .then().log().all().extract();
 	}
 
