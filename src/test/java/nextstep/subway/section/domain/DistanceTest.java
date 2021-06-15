@@ -46,4 +46,15 @@ public class DistanceTest {
         // when & then
         Assertions.assertThrows(IllegalArgumentException.class, () -> distance.subtractDiffDistance(input));
     }
+
+    @Test
+    @DisplayName("거리 더하기 테스트")
+    void addDistance() {
+        // given
+        Distance distance = Distance.of(5);
+        // when
+        distance.addDistance(5);
+        // then
+        assertThat(distance.toNumber()).isEqualTo(10);
+    }
 }

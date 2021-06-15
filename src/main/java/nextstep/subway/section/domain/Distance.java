@@ -36,6 +36,10 @@ public class Distance {
         this.distance = diff;
     }
 
+    public void addDistance(int distance) {
+        this.distance += distance;
+    }
+
     public int toNumber() {
         return distance;
     }
