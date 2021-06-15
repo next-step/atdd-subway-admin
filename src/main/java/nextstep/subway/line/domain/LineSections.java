@@ -15,7 +15,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class LineSections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> lineSections = new ArrayList<>();
 
     public LineSections(List<Section> lineSections) {
@@ -26,7 +26,7 @@ public class LineSections {
     }
 
     public void add(Section section) {
-        this.lineSections.add(section);
+        lineSections.add(section);
     }
 
     public List<Section> getSections() {
@@ -41,7 +41,7 @@ public class LineSections {
         return stations;
     }
 
-    public List<Section> getOrderLineSections() {
+    public List<Section> getOrderedLineSections() {
         List<Section> orderedSections = new ArrayList<>();
         orderedSections.add(findFirstSection());
 
@@ -74,7 +74,7 @@ public class LineSections {
             .isPresent();
     }
 
-    public List<Station> getOrderStation() {
+    public List<Station> getOrderedStation() {
         List<Station> orderStations = new ArrayList<>();
         Section curSection = findFirstSection();
         orderStations.add(curSection.getUpStation());
