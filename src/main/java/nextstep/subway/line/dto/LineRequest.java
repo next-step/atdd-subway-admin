@@ -1,7 +1,10 @@
 package nextstep.subway.line.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import nextstep.subway.line.domain.Line;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LineRequest {
     private String name;
     private String color;

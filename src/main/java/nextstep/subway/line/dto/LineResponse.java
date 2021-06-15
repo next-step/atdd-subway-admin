@@ -5,6 +5,9 @@ import nextstep.subway.line.domain.Line;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LineResponse {
     private Long id;
     private String name;
