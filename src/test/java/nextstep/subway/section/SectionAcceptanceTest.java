@@ -84,6 +84,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_추가_요청_실패(구간_추가_요청_실패_응답);
     }
 
+    @DisplayName("구간 추가시 지정한 거리가 너무 커 추가가 되지 않는다.")
+    @Test
+    void 구간_추가_거리가_너무_큰_경우() {
+        // given
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 강남역_번호, 양재역_번호, 거리);
+        ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
+
+        // when
+        // 지하철_구간_생성_요청
+        ExtractableResponse<Response> 구간_추가_요청_실패_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 판교역_번호, 강남역_번호, Integer.toString(Integer.MAX_VALUE));
+
+        //then
+        //지하철_구간_생성_실패
+        구간_추가_요청_실패(구간_추가_요청_실패_응답);
+    }
+
     @DisplayName("지하철 구간을 상단 종점에 한다.")
     @Test
     void 지하철_구간_생성_상단_종점() {

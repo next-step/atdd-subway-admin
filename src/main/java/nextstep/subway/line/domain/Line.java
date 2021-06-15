@@ -4,6 +4,7 @@ import javax.persistence.*;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -63,8 +64,15 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    //TODO 계속해서 Line -> Sections로 넘어가는데 괜찮을까?
-    public void checkSectionStations(Station upStation, Station downStation) {
-        sections.checkSectionStations(upStation, downStation);
+    public void addSection(Station upStation, Station downStation, Distance distance) {
+        Section existsSection = sections.getExistsSection(upStation, downStation);
+        if (existsSection.getDistance().getValue() <= distance.getValue()) {
+            throw new IllegalArgumentException("거리가 너무 깁니다");
+        }
+    }
+
+    public Section getSectionStations(Station upStation, Station downStation) {
+        return sections.getExistsSection(upStation, downStation);
+
     }
 }

@@ -43,14 +43,14 @@ public class Section {
     public Section() {
     }
 
-    private Section(Line line, Station upStation, Station downStation, int distance) {
+    private Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
-        this.distance = new Distance(distance);
+        this.distance = distance;
         this.upStation = upStation;
         this.downStation = downStation;
     }
 
-    public static Section getInstance(Line line, Station upStation, Station downStation, int distance) {
+    public static Section getInstance(Line line, Station upStation, Station downStation, Distance distance) {
         Section section = new Section(line, upStation, downStation, distance);
         line.addSection(section);
         return section;
@@ -62,6 +62,10 @@ public class Section {
 
     public boolean isContain(Station station) {
         return upStation.equals(station) || downStation.equals(station);
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
     @Override
