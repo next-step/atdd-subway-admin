@@ -104,6 +104,6 @@ class SectionTest {
         //when
         assertThatThrownBy(() -> section.addInsideOfSection(newSection))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(Section.BIGGER_THAN_DISTANCE_EXCEPTION_MESSAGE);
+                .hasMessage(Distance.BIGGER_THAN_DISTANCE_EXCEPTION_MESSAGE);
     }
 }

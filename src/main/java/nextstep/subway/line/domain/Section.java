@@ -9,7 +9,6 @@ import java.util.List;
 
 @Entity
 public class Section extends BaseEntity {
-    public static final String BIGGER_THAN_DISTANCE_EXCEPTION_MESSAGE = "역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,20 +71,12 @@ public class Section extends BaseEntity {
         }
     }
 
-    private void checkDistanceValidationToMinus(Section sectionToAdd) {
-        if (!distance.isAvailableMinus(sectionToAdd.getDistance())) {
-            throw new IllegalArgumentException(BIGGER_THAN_DISTANCE_EXCEPTION_MESSAGE);
-        }
-    }
-
     private void updateUpStation(Section sectionToAdd) {
-        checkDistanceValidationToMinus(sectionToAdd);
         this.distance = distance.minus(sectionToAdd.getDistance());
         this.upStation = sectionToAdd.getDownStation();
     }
 
     private void updateDownStation(Section sectionToAdd) {
-        checkDistanceValidationToMinus(sectionToAdd);
         this.distance = distance.minus(sectionToAdd.getDistance());
         this.downStation = sectionToAdd.getUpStation();
     }

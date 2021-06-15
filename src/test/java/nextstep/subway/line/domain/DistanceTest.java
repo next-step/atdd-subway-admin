@@ -43,9 +43,8 @@ class DistanceTest {
     @Test
     void isAvailableMinus() {
         //when
-        boolean actual = Distance.valueOf(10).isAvailableMinus(Distance.valueOf(11));
-
-        //then
-        assertThat(actual).isFalse();
+        assertThatThrownBy(() -> Distance.valueOf(10).minus(Distance.valueOf(11)))
+                .isInstanceOf(IllegalArgumentException.class) //then
+                .hasMessage(Distance.BIGGER_THAN_DISTANCE_EXCEPTION_MESSAGE);
     }
 }

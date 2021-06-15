@@ -7,6 +7,7 @@ import java.util.Objects;
 @Embeddable
 public class Distance {
     public static final String INVALID_DISTANCE_EXCEPTION_MESSAGE = "구간 거리는 0보다 커야합니다.";
+    public static final String BIGGER_THAN_DISTANCE_EXCEPTION_MESSAGE = "역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.";
 
     @Column
     private int distance;
@@ -34,10 +35,13 @@ public class Distance {
     }
 
     public Distance minus(Distance distanceToMinus) {
+        if (!isAvailableMinus(distanceToMinus)) {
+            throw new IllegalArgumentException(BIGGER_THAN_DISTANCE_EXCEPTION_MESSAGE);
+        }
         return Distance.valueOf(distance - distanceToMinus.getDistance());
     }
 
-    public boolean isAvailableMinus(Distance distanceToMinus){
+    private boolean isAvailableMinus(Distance distanceToMinus){
         return distance > distanceToMinus.getDistance();
     }
 
