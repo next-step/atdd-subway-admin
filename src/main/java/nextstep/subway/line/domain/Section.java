@@ -85,13 +85,16 @@ public class Section {
 		}
 	}
 
-	void removeConnectingStation(Station station, Section adjacentSection) {
+	boolean removeConnectingStation(Station station, Section adjacentSection) {
 		if (isConnectedInUpwardByStation(adjacentSection, station)) {
 			removeDownwardStation(adjacentSection);
+			return true;
 		}
 		if (isConnectedInDownwardByStation(adjacentSection, station)) {
 			removeUpwardStation(adjacentSection);
+			return true;
 		}
+		return false;
 	}
 
 	boolean contain(Station station) {

@@ -60,4 +60,27 @@ class SectionTest {
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("추가할 구간이 기존 구간 보다 같거나 길 수 없습니다.");
 	}
+
+	@Test
+	@DisplayName("두 구간을 연결하는 역을 삭제하면, 두 구간이 합쳐진다.")
+	public void removeConnectingStationTest() {
+		Section 강남_양재 = new Section(신분당선, 강남, 양재, Distance.valueOf(5));
+		Section 양재_양재시민의숲 = new Section(신분당선, 양재, 양재시민의숲, Distance.valueOf(6));
+
+		강남_양재.removeConnectingStation(양재, 양재_양재시민의숲);
+
+		assertThat(강남_양재.getStreamOfStations()).containsExactly(강남, 양재시민의숲);
+		assertThat(강남_양재.getDistance()).isEqualTo(Distance.valueOf(11));
+	}
+
+	@Test
+	@DisplayName("두 구간을 연결하는 역이 아닌 역을 삭제하면, 삭제되지 않는다.")
+	public void removeEndStationTest() {
+		Section 강남_양재 = new Section(신분당선, 강남, 양재, Distance.valueOf(5));
+		Section 양재_양재시민의숲 = new Section(신분당선, 양재, 양재시민의숲, Distance.valueOf(6));
+
+		boolean isRemoved = 강남_양재.removeConnectingStation(강남, 양재_양재시민의숲);
+
+		assertThat(isRemoved).isFalse();
+	}
 }
