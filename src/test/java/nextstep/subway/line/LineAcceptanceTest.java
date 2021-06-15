@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.Constant.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
@@ -24,29 +25,10 @@ import nextstep.subway.line.dto.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    public static final String 신분당선_이름 = "신분당선";
-    public static final String 빨간색 = "bg-red-600";
-    public static final String 노란색 = "bg-yellow-500";
-    public static final String 분당선_이름 = "분당선";
-    public static final String 이호선 = "2호선";
-    public static final String 녹색 = "bg-green-100";
-    public static final String PARAM_NAME = "name";
-    public static final String PARAM_COLOR = "color";
-    private static final String PARAM_UP_STATION = "upStationId";
-    private static final String PARAM_DOWN_STATION = "downStationId";
-    private static final String PARAM_DISTANCE = "distance";
-    private static final String 시작_종점 = "1";
-    private static final String 도착_종점 = "2";
-    private static final String 거리 = "10";
-    public static final String STATION_LIST = "stationList";
-    public static final String LOCATION = "Location";
-    public static final String 강남역 = "강남역";
-    public static final String 양재역 = "양재역";
-
     @BeforeEach
     void setup() {
-        역_생성_요청(강남역, 빨간색);
-        역_생성_요청(양재역, 빨간색);
+        역_생성_요청(강남역_이름, 빨간색);
+        역_생성_요청(양재역_이름, 빨간색);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -90,7 +72,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 시작_종점, 도착_종점, 거리);
         ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
 
-        Map<String, String> 이호선 = 노선_파라미터_생성(LineAcceptanceTest.이호선, 녹색, 시작_종점, 도착_종점, 거리);
+        Map<String, String> 이호선 = 노선_파라미터_생성(이호선_이름, 녹색, 시작_종점, 도착_종점, 거리);
         ExtractableResponse<Response> 이호선_생성_응답 = 노선생성_요청(이호선);
 
         // when
@@ -277,8 +259,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(역_목록.size()).isEqualTo(2);
         assertThat(역_id.size()).isEqualTo(2);
 
-        assertThat(역_목록.get(0)).isEqualTo(강남역);
-        assertThat(역_목록.get(1)).isEqualTo(양재역);
+        assertThat(역_목록.get(0)).isEqualTo(강남역_이름);
+        assertThat(역_목록.get(1)).isEqualTo(양재역_이름);
 
         assertThat(역_id.get(0)).isEqualTo(Long.parseLong(시작종점));
         assertThat(역_id.get(1)).isEqualTo(Long.parseLong(도착종점));
