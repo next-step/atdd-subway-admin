@@ -20,7 +20,7 @@ class SectionsTest {
     @BeforeAll
     public static void setup() {
         //given
-        A = new Station(1L, "A");
+        A = new Station(1L,"A");
         B = new Station(2L,"B");
         C = new Station(3L,"C");
         D = new Station(4L,"D");
@@ -29,7 +29,7 @@ class SectionsTest {
 
     @Test
     @DisplayName("한 구간에 시발역과 종착역")
-    public void step0() {
+    public void step0_1() {
         Section section1 = Section.builder().id(1L)
                 .upStation(A).downStation(B)
                 .distance(2)
@@ -65,7 +65,7 @@ class SectionsTest {
 
     @Test
     @DisplayName("한 구간에 시작구간과 마지막구간")
-    public void step50() {
+    public void step0_2() {
         Section section1 = Section.builder().id(1L)
                 .upStation(A).downStation(B)
                 .distance(2)
@@ -100,8 +100,8 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정")
-    public void step1() {
+    @DisplayName("역 사이에 새로운 역을 등록할 경우. [상행선]이 일치하는 경우")
+    public void step1_1() {
         Section section1 = Section.builder().id(1L)
                 .upStation(A).downStation(C)
                 .distance(7)
@@ -134,7 +134,41 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+    @DisplayName("역 사이에 새로운 역을 등록할 경우. [하행선]이 일치하는 경우")
+    public void step1_2() {
+        Section section1 = Section.builder().id(1L)
+                .upStation(A).downStation(C)
+                .distance(7)
+                .build();
+
+        Section section2 = Section.builder().id(2L)
+                .upStation(B).downStation(C)
+                .distance(4)
+                .build();
+
+        Sections sections = appendSectionAndPrint(section1, section2);
+
+        List<Station> sortedStations = sections.sortedStations();
+        List<Section> sortedSections = sections.sortedSections();
+
+        assertAll(
+            //갯수 확인
+            () -> assertThat(sortedStations.size()).isEqualTo(3),
+
+            //순서 확인
+            () -> assertThat(sortedStations).containsExactly(A, B, C),
+            () -> assertThat(sections.firstStation()).isEqualTo(A),
+            () -> assertThat(sections.lastStation()).isEqualTo(C),
+
+            //길이 확인
+            () -> assertThat(sortedSections.get(0).getDistance()).isEqualTo(3),
+            () -> assertThat(sortedSections.get(1).getDistance()).isEqualTo(4),
+            () -> assertThat(sections.totalDistance()).isEqualTo(7)
+        );
+    }
+
+    @Test
+    @DisplayName("새로운 역을 [상행 종점]으로 등록할 경우")
     public void step2() {
         Section section1 = Section.builder().id(1L)
                 .upStation(A).downStation(C)
@@ -168,7 +202,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @DisplayName("새로운 역을 [하행 종점]으로 등록할 경우")
     public void step3() {
         Section section1 = Section.builder().id(1L)
                 .upStation(A).downStation(C)
@@ -198,40 +232,6 @@ class SectionsTest {
             () -> assertThat(sortedSections.get(0).getDistance()).isEqualTo(7),
             () -> assertThat(sortedSections.get(1).getDistance()).isEqualTo(3),
             () -> assertThat(sections.totalDistance()).isEqualTo(10)
-        );
-    }
-
-    @Test
-    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
-    public void step5() {
-        Section section1 = Section.builder().id(2L)
-                .upStation(B).downStation(C)
-                .distance(7)
-                .build();
-
-        Section section2 = Section.builder().id(4L)
-                .upStation(B).downStation(E)
-                .distance(4)
-                .build();
-
-        Sections sections = appendSectionAndPrint(section1, section2);
-
-        List<Station> actual = sections.sortedStations();
-        List<Section> sorted = sections.sortedSections();
-
-        assertAll(
-            //갯수 확인
-            () -> assertThat(actual.size()).isEqualTo(3),
-
-            //순서 확인
-            () -> assertThat(actual).containsExactly(B, E, C),
-            () -> assertThat(sections.firstStation()).isEqualTo(B),
-            () -> assertThat(sections.lastStation()).isEqualTo(C),
-
-            //길이 확인
-            () -> assertThat(sorted.get(0).getDistance()).isEqualTo(4),
-            () -> assertThat(sorted.get(1).getDistance()).isEqualTo(3),
-            () -> assertThat(sections.totalDistance()).isEqualTo(7)
         );
     }
 
