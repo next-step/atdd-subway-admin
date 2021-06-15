@@ -75,8 +75,14 @@ public class LineService {
         Line line = Line.getNotNullLine(lineRepository.findById(lineId));
         LineStation lineStation = sectionRequest.toLineStation(upStation, downStation);
         line.checkValidLineStation(lineStation);
-        SectionAddType sectionAddType = line.calcAddType(lineStation);
-        line.updateLineStation(sectionAddType, lineStation);
+        line.updateLineStation(lineStation);
         line.addLineStation(lineStation);
+    }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Station deleteTargetStation = stationService.findStationById(stationId);
+        Line line = Line.getNotNullLine(lineRepository.findById(lineId));
+        line.checkValidSingleSection();
+        LineStation lineStation = line.findLineStationByStation(deleteTargetStation);
     }
 }

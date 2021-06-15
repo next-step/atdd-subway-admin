@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Embeddable
 public class LineStations {
 
+    public static final String NOT_FOUND_STATION_ERROR_MESSAGE = "%s을 종점으로 하는 구간은 존재하지 않습니다.";
+    public static final int MIN_STATION_COUNT = 2;
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<LineStation> lineStations = new ArrayList<>();
 
@@ -88,15 +90,28 @@ public class LineStations {
         return stations;
     }
 
-    private Optional<LineStation> findFirstLineStation() {
-        return lineStations.stream().filter(LineStation::isNullPreStation).findFirst();
-    }
-
     public Optional<LineStation> findNextLineStation(LineStation lineStation) {
         return lineStations
                 .stream()
                 .filter(ls -> ls.isNextLineStation(lineStation))
                 .findFirst();
+    }
+
+    private Optional<LineStation> findFirstLineStation() {
+        return lineStations.stream().filter(LineStation::isNullPreStation).findFirst();
+    }
+
+    public LineStation findLineStationByStation(Station station) {
+        return lineStations.stream()
+                .filter(lineStation -> lineStation.isSameStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format(NOT_FOUND_STATION_ERROR_MESSAGE, station.getName())
+                ));
+    }
+
+    public boolean isSingleSection() {
+        return getLineStationsOrderByAsc().size() == MIN_STATION_COUNT;
     }
 
     @Override

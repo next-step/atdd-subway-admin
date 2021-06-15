@@ -122,6 +122,43 @@ public class LineStationsTest {
         List<Station> stations = lineStations.generateStations();
         assertThat(stations.size()).isEqualTo(2);
         assertThat(stations).containsExactly(preStation, station);
+    }
 
+    @Test
+    void lineStations_객체에서_지하철역_기준_lineStation_객체_찾기() {
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(preStation, null, 0);
+        LineStations lineStations = new LineStations(Arrays.asList(lineStation1, lineStation2));
+
+        LineStation lineStation = lineStations.findLineStationByStation(station);
+        assertThat(lineStation).isEqualTo(lineStation1);
+    }
+
+    @Test
+    void lineStations에_소속된_지하철역이_2개인지_확인() {
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(preStation, null, 0);
+        LineStations lineStations = new LineStations(Arrays.asList(lineStation1, lineStation2));
+        assertThat(lineStations.isSingleSection()).isTrue();
+    }
+
+    @Test
+    void lineStations중_station_기준_지하철역_찾기() {
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(preStation, null, 0);
+        LineStations lineStations = new LineStations(Arrays.asList(lineStation1, lineStation2));
+
+        assertThat(lineStations.findLineStationByStation(station)).isEqualTo(lineStation1);
+    }
+
+    @Test
+    void lineStations중_station_기준_지하철역이_미존재_시_에러발생() {
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(preStation, null, 0);
+        LineStations lineStations = new LineStations(Arrays.asList(lineStation1, lineStation2));
+
+        assertThatThrownBy(() -> lineStations.findLineStationByStation(new Station(10L, "고속버스터미널역")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("고속버스터미널역을 종점으로 하는 구간은 존재하지 않습니다.");
     }
 }

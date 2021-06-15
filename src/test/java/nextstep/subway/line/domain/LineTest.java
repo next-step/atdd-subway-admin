@@ -67,4 +67,33 @@ class LineTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역 교대역, 하행역 매봉역을 둘중 하나라도 포함하는 구간이 존재하지않습니다.");
     }
+
+    @Test
+    @DisplayName("노선에 속한 구간이 하나만 존재할 시 에러 발생")
+    void checkValidSingleSection() {
+        Station station = new Station(2L, "정자역");
+        Station preStation = new Station(1L, "양재역");
+        Line line = new Line("신분당선", "bg - red - 600");
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(preStation, null, 0);
+        line.addLineStation(lineStation1);
+        line.addLineStation(lineStation2);
+        assertThatThrownBy(() -> line.checkValidSingleSection())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간이 하나만 존재하는 경우 구간을 삭제할 수 없습니다.");
+    }
+
+    @Test
+    void 지하철역_기준으로_lineStation_찾기() {
+        Station station = new Station(2L, "정자역");
+        Station preStation = new Station(1L, "양재역");
+        Line line = new Line("신분당선", "bg - red - 600");
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(preStation, null, 0);
+        line.addLineStation(lineStation1);
+        line.addLineStation(lineStation2);
+
+        assertThat(line.findLineStationByStation(station)).isEqualTo(lineStation1);
+        assertThat(line.findLineStationByStation(preStation)).isEqualTo(lineStation2);
+    }
 }

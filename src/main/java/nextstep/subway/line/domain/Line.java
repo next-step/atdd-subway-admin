@@ -13,9 +13,10 @@ import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
-    private static final String NOT_FOUND_LINE_ERROR_MESSAGE = "요청한 id 기준 노선이 존재하지않습니다.";
-    public static final String DUPLICATE_LINE_STATION_ERROR_MESSAGE = "상행역 %s 하행역 %s은 이미 등록된 구간 입니다.";
-    public static final String NOT_CONTAION_STATIONS_ERROR_MESSAGE = "상행역 %s, 하행역 %s을 둘중 하나라도 포함하는 구간이 존재하지않습니다.";
+    private static final String NOT_FOUND_LINE_ERROR_MESSAGE = "요청한 line id 기준 노선이 존재하지않습니다.";
+    private static final String DUPLICATE_LINE_STATION_ERROR_MESSAGE = "상행역 %s 하행역 %s은 이미 등록된 구간 입니다.";
+    private static final String NOT_CONTAION_STATIONS_ERROR_MESSAGE = "상행역 %s, 하행역 %s을 둘중 하나라도 포함하는 구간이 존재하지않습니다.";
+    private static final String NOT_DELTED_SINGLE_SECTION_ERROR_MESSAGE = "구간이 하나만 존재하는 경우 구간을 삭제할 수 없습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +43,7 @@ public class Line extends BaseEntity {
         this.lineStations = lineStations;
     }
 
-    public SectionAddType calcAddType(LineStation lineStation) {
+    private SectionAddType calcAddType(LineStation lineStation) {
         return SectionAddType.calcAddType(lineStations, lineStation);
     }
 
@@ -73,7 +74,8 @@ public class Line extends BaseEntity {
         return lineStations.generateStations();
     }
 
-    public void updateLineStation(SectionAddType sectionAddType, LineStation lineStation) {
+    public void updateLineStation(LineStation lineStation) {
+        SectionAddType sectionAddType = calcAddType(lineStation);
         if (sectionAddType.equals(SectionAddType.NEW_UP)) {
             lineStations.updateFirstLineStation(lineStation);
             lineStation.update(lineStation.getPreStation(), null, lineStation.getDistance());
@@ -85,9 +87,19 @@ public class Line extends BaseEntity {
         }
     }
 
+    public LineStation findLineStationByStation(Station deleteTargetStation) {
+        return lineStations.findLineStationByStation(deleteTargetStation);
+    }
+
     public void checkValidLineStation(LineStation lineStation) {
         checkValidDuplicateLineStation(lineStation);
         checkValidNotContainStations(lineStation);
+    }
+
+    public void checkValidSingleSection() {
+        if (lineStations.isSingleSection()) {
+            throw new IllegalArgumentException(NOT_DELTED_SINGLE_SECTION_ERROR_MESSAGE);
+        }
     }
 
     private void checkValidDuplicateLineStation(LineStation lineStation) {
