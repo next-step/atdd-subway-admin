@@ -97,7 +97,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean hasStationId(Long stationId) {
-        return upStation.isStationIdMatch(stationId) || downStation.isStationIdMatch(stationId);
+        return upStation.isStationIdMatch(stationId) || this.downStation.isStationIdMatch(stationId);
     }
 
     public boolean isUpToDownConnected(Section section) {
@@ -122,7 +122,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean isSameUpStation(Long stationId) {
-        return upStation.isStationIdMatch(stationId);
+        return this.upStation.isStationIdMatch(stationId);
     }
 
     public boolean isSameDownStation(Section section) {
@@ -133,8 +133,8 @@ public class Section extends BaseEntity {
         return downStation.isStationIdMatch(stationId);
     }
 
-    public void updateMinusDistance(Section compareSection) {
-        this.distance = this.distance.minus(compareSection.distance);
+    public void updateMinusDistance(Section section) {
+        this.distance = this.distance.minus(section.distance);
     }
 
     public boolean hasDownStation(Section section) {
