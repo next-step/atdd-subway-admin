@@ -76,8 +76,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// 지하철_역_추가_조회
 		ExtractableResponse<Response> findResponse = LineAcceptanceMethod.findLine(lineId);
 		assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getStations()
-			.stream().map(it -> it.getId()).collect(Collectors.toList())).containsExactly(1L,
-			3L, 2L);
+			.stream().map(it -> it.getName()).collect(Collectors.toList())).containsExactly("교대역", "강남역", "역삼역");
 	}
 
 	@DisplayName("새로운 역을 상행 종점으로 등록한다.")
@@ -85,14 +84,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void addSectionAsUpStation() {
 		// given
 		// 지하철_역_등록되어_있음
-		setUpStations();
 
 		// when
 		// 지하철_역_상행_종점으로_구간_추가_요청
+		Long stationId3 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("강남역")));
+
+		ExtractableResponse<Response> addResponse = RestAssured
+			.given().log().all()
+			.body(new SectionRequest(stationId3, stationId1, 4))
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines" + "/" + lineId + "/sections")
+			.then().log().all()
+			.extract();
 
 		// then
 		// 지하철_구간_생성됨
-		// 지하철_상행_종점_확인
+		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		// 지하철_역_추가_조회
+		ExtractableResponse<Response> findResponse = LineAcceptanceMethod.findLine(lineId);
+		assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getStations()
+			.stream().map(it -> it.getName()).collect(Collectors.toList())).containsExactly("강남역", "교대역", "역삼역");
 	}
 
 	@DisplayName("새로운 역을 하행 종점으로 등록한다.")
@@ -100,14 +113,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void addSectionAsDownStation() {
 		// given
 		// 지하철_역_등록되어_있음
-		setUpStations();
 
 		// when
 		// 지하철_역_하행_종점으로_구간_추가_요청
+		Long stationId3 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("강남역")));
+
+		ExtractableResponse<Response> addResponse = RestAssured
+			.given().log().all()
+			.body(new SectionRequest(stationId2, stationId3, 4))
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines" + "/" + lineId + "/sections")
+			.then().log().all()
+			.extract();
 
 		// then
 		// 지하철_구간_생성됨
+		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		// 지하철_하행_종점_확인
+		ExtractableResponse<Response> findResponse = LineAcceptanceMethod.findLine(lineId);
+		assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getStations()
+			.stream().map(it -> it.getName()).collect(Collectors.toList())).containsExactly("교대역", "역삼역", "강남역");
 	}
 
 	@DisplayName("역 사이에 새로운 역 등록 시 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.")
@@ -115,13 +142,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void sectionLengthCantNotExceedTwoStationDistance() {
 		// given
 		// 지하철_역_등록되어_있음
-		setUpStations();
 
 		// when
 		// 지하철_구간_추가_요청(구간 사이 거리가 기존 등록한 거리보다 크거나 같음)
+		Long stationId3 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("강남역")));
 
 		// then
 		// 에러_발생
+		assertThatThrownBy(() -> RestAssured
+			.given().log().all()
+			.body(new SectionRequest(stationId1, stationId3, 8))
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines" + "/" + lineId + "/sections")
+			.then().log().all()
+			.extract()).isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@DisplayName("상행역과 하행역이 이미 노선에 등록되어 있으면 추가할 수 없다.")
