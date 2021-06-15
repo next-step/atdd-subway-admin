@@ -71,4 +71,12 @@ public class LineService {
         line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
         return LineResponse.of(line);
     }
+
+    public void deleteSection(Long id, Long stationId) {
+        Line line = lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
+        Station findStation = line.getStations().stream()
+                .filter(station -> station.getId().equals(stationId))
+                .findFirst()
+                .orElseThrow(NotFoundStationException::new);
+    }
 }

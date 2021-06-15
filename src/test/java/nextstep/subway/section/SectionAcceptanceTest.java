@@ -1,5 +1,6 @@
 package nextstep.subway.section;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -172,6 +173,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록_실패됨(response);
+    }
+
+    @DisplayName("노선에 등록 되어있지 않은 역을 제거한다")
+    @Test
+    void deleteSectionExceptionTest1() {
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .queryParam("stationId", 3)
+                .when().delete("/lines/1/sections")
+                .then().log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private void 지하철_노선에_지하철역_순서_정렬됨(ExtractableResponse<Response> response, List<Long> expectedStationIds) {
