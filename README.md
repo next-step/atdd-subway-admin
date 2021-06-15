@@ -60,7 +60,7 @@
 - [x] EntityNotFoundException에 해당하는 ControllerAdvice 메소드 구현
 - [ ] Line 서비스에서 update 처리하도록 수정
 - [ ] Bean Validation 적용
-- [ ] Line 목록 조회시 204 No content 대신 빈 배열 반환 처리
+- [X] Line 목록 조회시 204 No content 대신 빈 배열 반환 처리
 - [ ] LineControllerTest 클래스 명을 LineControllerTestSnippet 으로 변경
 - [ ] 불필요한 getIds() 제거
 ---
