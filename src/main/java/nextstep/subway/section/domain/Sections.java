@@ -28,9 +28,13 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void checkSectionContainStations(Station upStation, Station downStation) {
+    public void checkSectionStations(Station upStation, Station downStation) {
         if (isContain(upStation) && isContain(downStation)) {
             throw new IllegalArgumentException("역이 모두 구간에 포함되어 있습니다.");
+        }
+
+        if (!isContain(upStation) && !isContain(downStation)) {
+            throw new IllegalArgumentException("역이 모두 구간에 포함되어 있지 않습니다.");
         }
     }
 

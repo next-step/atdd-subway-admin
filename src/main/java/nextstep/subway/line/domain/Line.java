@@ -64,7 +64,7 @@ public class Line extends BaseEntity {
     }
 
     //TODO 계속해서 Line -> Sections로 넘어가는데 괜찮을까?
-    public void checkSectionContainStations(Station upStation, Station downStation) {
-        sections.checkSectionContainStations(upStation, downStation);
+    public void checkSectionStations(Station upStation, Station downStation) {
+        sections.checkSectionStations(upStation, downStation);
     }
 }

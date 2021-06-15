@@ -11,10 +11,6 @@ import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
 @Service
 @Transactional
 public class SectionService {
@@ -34,14 +30,10 @@ public class SectionService {
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("역이 없습니다."));
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("역이 없습니다."));
 
+        line.checkSectionStations(upStation, downStation);
         line.addSection(Section.getInstance(line, upStation, downStation, lineRequest.getDistance()));
 
-        // 역이 없는지 체크
-        // 역이 이미 구간에 모두 추가되어 있는지 검사
         // 구간에 대한 유효성 검사
-
-
-        System.out.println("test controller");
         return null;
     }
 }
