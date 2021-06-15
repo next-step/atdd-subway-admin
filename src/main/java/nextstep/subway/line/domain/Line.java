@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -32,6 +34,15 @@ public class Line extends BaseEntity {
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public List<Station> getStations(){
+        List<Station> stations = new ArrayList<>();
+        for (Section section : sections
+             ) {
+            stations.addAll(section.getStations());
+        }
+        return stations;
     }
 
     public Long getId() {

@@ -39,6 +39,11 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    public Station findById(long id){
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역 id 입니다."));
+    }
+
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
