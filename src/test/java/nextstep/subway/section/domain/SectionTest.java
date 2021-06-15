@@ -108,4 +108,15 @@ public class SectionTest {
         // when & then
         Assertions.assertThrows(IllegalArgumentException.class, () -> 강남_판교_구간.isContainSection(강남_판교_구간_2));
     }
+
+    @Test
+    @DisplayName("구간 내 상행선 변경 테스트")
+    void changeUpStation() {
+        // given
+        Section 강남_판교_구간 = new Section(5L, 강남역, 판교역, 10);
+        // when
+        강남_판교_구간.changeUpStation(광교역);
+        // then
+        assertThat(강남_판교_구간.getUpStation()).isEqualTo(광교역);
+    }
 }

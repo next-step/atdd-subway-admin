@@ -60,7 +60,7 @@ public class Section extends BaseEntity {
         this.distance = Distance.of(distance);
     }
 
-    private void validate(Station upStation, Station downStation)  {
+    private void validate(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException(CAN_NOT_STATION_CREATE);
         }
@@ -73,6 +73,10 @@ public class Section extends BaseEntity {
             return;
         }
         downStation = newSection.upStation;
+    }
+
+    public void changeUpStation(Station upStation) {
+        this.upStation = upStation;
     }
 
     public boolean isContainSection(Section section) {
