@@ -76,12 +76,20 @@ public class Section extends BaseEntity {
         line.getSections().add(this);
     }
 
-    public boolean isDownStation(Station station){
+    public boolean isDownStation(Station station) {
         return station.equals(downStation);
     }
 
-    public boolean isUpStation(Station station){
+    public boolean isUpStation(Station station) {
         return station.equals(upStation);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getLineId() {
+        return line.getId();
     }
 
     public Station getUpStation() {

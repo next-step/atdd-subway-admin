@@ -206,7 +206,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //구간을_노선에_등록_요청
         // [서울]==[회현]==[충무로]
         구간을_노선에_등록_요청(사호선_ID, 서울_회현_요청);
-        
+
         // when
         //구간을_노선에_제거_요청
         ExtractableResponse<Response> response = 구간을_노선에서_제거_요청(사호선_ID, 서울역.getId());
@@ -216,8 +216,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_OK_응답(response);
         List<Long> expectedOrderId = Arrays.asList(회현역.getId(), 충무로역.getId());
         노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
-
-
     }
 
     @DisplayName("구간 제거 : 노선의 중간 구간 제거")
@@ -227,7 +225,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //구간을_노선에_등록_요청
         // [서울]==[회현]==[충무로]
         구간을_노선에_등록_요청(사호선_ID, 서울_회현_요청);
-        
+
         // when
         //구간을_노선에_제거_요청
         ExtractableResponse<Response> response = 구간을_노선에서_제거_요청(사호선_ID, 회현역.getId());
@@ -265,6 +263,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         //구간_등록_BAD_REQUEST_응답
         구간_등록_BAD_REQUEST_응답(response);
+    }
+
+    @DisplayName("상행역으로 구간조회")
+    @Test
+    void 상행역으로_구간조회() {
+        //when
+        //상행역으로_구간_조회_요청
+        ExtractableResponse<Response> response = 상행역으로_구간_조회_요청(회현역.getId());
+
+        //then
+        구간_OK_응답(response);
+
+        Long upStationIdFromResponse = response.jsonPath().getLong("upStationId");
+        assertThat(upStationIdFromResponse).isEqualTo(회현역.getId());
+    }
+
+    private ExtractableResponse<Response> 상행역으로_구간_조회_요청(Long upStationId) {
+        return httpGet("/section?upStationId=" + upStationId);
     }
 
     private void 구간_OK_응답(ExtractableResponse<Response> response) {
