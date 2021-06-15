@@ -132,7 +132,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		// 에러 발생
-		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@DisplayName("상행역과 하행역이 이미 노선에 등록되어 있으면 추가할 수 없다.")
@@ -149,7 +149,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		// 에러_발생
-		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@DisplayName("상행역과 하행역 둘 중 하나라도 포함되어 있지 않으면 등록할 수 없다.")
@@ -170,7 +170,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// 지하철_구간_추가_요청(상행역과 하행역 둘 중 하나도 포함되어 있지 않음)
 		ExtractableResponse<Response> addResponse = SectionAcceptanceMethod.addSection(lineId,
 			new SectionRequest(stationId3, stationId4, 5));
-		
+
 		// then
 		// 에러_발생
 		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
