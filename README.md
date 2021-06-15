@@ -62,7 +62,7 @@
 - [ ] Bean Validation 적용
 - [X] Line 목록 조회시 204 No content 대신 빈 배열 반환 처리
 - [x] LineControllerTest 클래스 명을 LineControllerTestSnippet 으로 변경
-- [ ] 불필요한 getIds() 제거
+- [x] 불필요한 getIds() 제거
 ---
 
 <p align="center">
