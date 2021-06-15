@@ -8,9 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -60,15 +58,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// 지하철_구간_추가_요청
 		Long stationId3 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
 			new StationRequest("강남역")));
-
-		ExtractableResponse<Response> addResponse = RestAssured
-			.given().log().all()
-			.body(new SectionRequest(stationId1, stationId3, 4))
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines" + "/" + lineId + "/sections")
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> addResponse = SectionAcceptanceMethod.addSection(lineId,
+			new SectionRequest(stationId1, stationId3, 4));
 
 		// then
 		// 지하철_구간_생성됨
@@ -84,20 +75,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void addSectionAsUpStation() {
 		// given
 		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
 
 		// when
 		// 지하철_역_상행_종점으로_구간_추가_요청
 		Long stationId3 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
 			new StationRequest("강남역")));
-
-		ExtractableResponse<Response> addResponse = RestAssured
-			.given().log().all()
-			.body(new SectionRequest(stationId3, stationId1, 4))
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines" + "/" + lineId + "/sections")
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> addResponse = SectionAcceptanceMethod.addSection(lineId,
+			new SectionRequest(stationId3, stationId1, 4));
 
 		// then
 		// 지하철_구간_생성됨
@@ -113,20 +98,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void addSectionAsDownStation() {
 		// given
 		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
 
 		// when
 		// 지하철_역_하행_종점으로_구간_추가_요청
 		Long stationId3 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
 			new StationRequest("강남역")));
-
-		ExtractableResponse<Response> addResponse = RestAssured
-			.given().log().all()
-			.body(new SectionRequest(stationId2, stationId3, 4))
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines" + "/" + lineId + "/sections")
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> addResponse = SectionAcceptanceMethod.addSection(lineId,
+			new SectionRequest(stationId2, stationId3, 4));
 
 		// then
 		// 지하철_구간_생성됨
@@ -142,20 +121,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void sectionLengthCantNotExceedTwoStationDistance() {
 		// given
 		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
 
 		// when
 		// 지하철_구간_추가_요청(구간 사이 거리가 기존 등록한 거리보다 크거나 같음)
 		Long stationId3 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
 			new StationRequest("강남역")));
-
-		ExtractableResponse<Response> addResponse = RestAssured
-			.given().log().all()
-			.body(new SectionRequest(stationId1, stationId3, 8))
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines" + "/" + lineId + "/sections")
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> addResponse = SectionAcceptanceMethod.addSection(lineId,
+			new SectionRequest(stationId1, stationId3, 8));
 
 		// then
 		// 에러 발생
@@ -167,17 +140,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void stationThatIsAlreadyRegisteredCantBeRegistered() {
 		// given
 		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
 
 		// when
 		// 지하철_구간_추가_요청(상행역, 하행역이 이미 노선에 존재)
-		ExtractableResponse<Response> addResponse = RestAssured
-			.given().log().all()
-			.body(new SectionRequest(stationId1, stationId2, 5))
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines" + "/" + lineId + "/sections")
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> addResponse = SectionAcceptanceMethod.addSection(lineId,
+			new SectionRequest(stationId1, stationId2, 5));
 
 		// then
 		// 에러_발생
@@ -189,6 +157,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void stationsInSectionMustHaveOneStationInLine() {
 		// given
 		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
 
 		// when
 		// 새로운_지하철_역_추가
@@ -199,15 +168,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			new StationRequest("선릉역")));
 
 		// 지하철_구간_추가_요청(상행역과 하행역 둘 중 하나도 포함되어 있지 않음)
-		ExtractableResponse<Response> addResponse = RestAssured
-			.given().log().all()
-			.body(new SectionRequest(stationId3, stationId4, 5))
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/lines" + "/" + lineId + "/sections")
-			.then().log().all()
-			.extract();
-
+		ExtractableResponse<Response> addResponse = SectionAcceptanceMethod.addSection(lineId,
+			new SectionRequest(stationId3, stationId4, 5));
+		
 		// then
 		// 에러_발생
 		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
