@@ -78,7 +78,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ## 3단계 요구사항
 
-* Tdd 를 통하여 지하철과 지하철 노선에 대한 맵핑 테이블 개발
 * 구간 등록 인수 테스트 작성하고 BeforeEach 작성
 * 인수테스트에 관련 된 컨트롤러 작성
 * 테스트케이스 작성 후 개발
