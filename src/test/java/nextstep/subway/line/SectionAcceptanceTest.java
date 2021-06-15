@@ -148,16 +148,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		Long stationId3 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
 			new StationRequest("강남역")));
 
-		// then
-		// 에러_발생
-		assertThatThrownBy(() -> RestAssured
+		ExtractableResponse<Response> addResponse = RestAssured
 			.given().log().all()
 			.body(new SectionRequest(stationId1, stationId3, 8))
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
 			.post("/lines" + "/" + lineId + "/sections")
 			.then().log().all()
-			.extract()).isInstanceOf(IllegalArgumentException.class);
+			.extract();
+
+		// then
+		// 에러 발생
+		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
 	@DisplayName("상행역과 하행역이 이미 노선에 등록되어 있으면 추가할 수 없다.")
