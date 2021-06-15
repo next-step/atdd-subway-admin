@@ -17,10 +17,15 @@ public class SectionSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선의_구간_목록_조회됨(long lineId) {
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_되어있음(SectionRequest params, long lineId) {
+        return 지하철_노선에_지하철역_등록_요청(params, lineId);
+    }
+
+    public static ExtractableResponse<Response> 노선에서_지하철역_제거_요청(long lineId, long stationId) {
         return RestAssured
                 .given().log().all()
-                .when().get("/lines/{lineId}/sections", lineId)
+                .queryParam("stationId", stationId)
+                .when().delete("/lines/{lineId}/sections", lineId)
                 .then().log().all().extract();
     }
 }

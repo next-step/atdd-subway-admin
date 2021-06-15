@@ -14,7 +14,7 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "line_id")
     private Line line;
 
@@ -77,18 +77,31 @@ public class Section {
         this.line = line;
     }
 
-    public void updateUpStationToDownStation(Section newSection) {
-        this.upStation = newSection.getDownStation();
-        updateDistance(newSection.getDistance());
+    public void updateUpStation(Section section, boolean isConnect) {
+
+        if (isConnect) {
+            this.upStation = section.getDownStation();
+            updateDistance(-section.getDistance());
+            return;
+        }
+        this.upStation = section.getUpStation();
+        updateDistance(section.getDistance());
     }
 
-    public void updateDownStationToUpStation(Section newSection) {
-        this.downStation = newSection.getUpStation();
-        updateDistance(newSection.getDistance());
+    public void updateDownStation(Section section, boolean isConnect) {
+
+        if (isConnect) {
+            this.downStation = section.getUpStation();
+            updateDistance(-section.getDistance());
+            return;
+        }
+
+        this.downStation = section.getDownStation();
+        updateDistance(section.getDistance());
     }
 
     private void updateDistance(int distance) {
-        this.distance -= distance;
+        this.distance += distance;
     }
 
     @Override
