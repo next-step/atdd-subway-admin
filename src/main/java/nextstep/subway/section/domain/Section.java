@@ -7,6 +7,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "section")
@@ -15,11 +16,11 @@ public class Section extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "upStationId")
 	private Station upStation;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "downStationId")
 	private Station downStation;
 
@@ -28,7 +29,6 @@ public class Section extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "lineId")
 	private Line line;
-
 
 	protected Section() {
 	}
@@ -58,5 +58,19 @@ public class Section extends BaseEntity {
 
 	public Integer getDistance() {
 		return distance;
+	}
+
+	public void updateUpStation(Station station) {
+		upStation = station;
+	}
+
+	public void updateDownStation(Station station) {
+		downStation = station;
+	}
+
+	private void validate(Section section) {
+		if (this.distance <= section.getDistance()) {
+
+		}
 	}
 }
