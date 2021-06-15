@@ -19,7 +19,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
             = 지하철_역_생성_요청("강남역");
 
         // then
-        지하철_역_생성_됨(response);
+        지하철_역_생성됨(response);
     }
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
@@ -33,7 +33,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
             = 지하철_역_생성_요청("강남역");
 
         // then
-        지하철_역_생성_실패됨(response);
+        지하철_역_생성_실패(response);
     }
 
     @DisplayName("지하철역을 조회한다.")

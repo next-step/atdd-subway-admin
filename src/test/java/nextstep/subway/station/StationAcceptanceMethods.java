@@ -70,13 +70,13 @@ public class StationAcceptanceMethods {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    public static void 지하철_역_생성_됨(ExtractableResponse<Response> response) {
+    public static void 지하철_역_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
 
 
-    public static void 지하철_역_생성_실패됨(ExtractableResponse<Response> response) {
+    public static void 지하철_역_생성_실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 

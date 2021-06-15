@@ -1,12 +1,15 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceMethods.*;
+import static nextstep.subway.line.SectionAcceptanceMethods.*;
 import static nextstep.subway.station.StationAcceptanceMethods.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -15,37 +18,57 @@ import nextstep.subway.station.dto.StationResponse;
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-    StationResponse 강남역;
-    StationResponse 광교역;
+    StationResponse 상행종점;
+    StationResponse 하행종점;
+    StationResponse 추가될역;
 
-    LineResponse 신분당선;
+    static LineResponse 신분당선;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
 
         // given
-        강남역 = 지하철_역_등록되어_있음("강남역").as(StationResponse.class);
-        광교역 = 지하철_역_등록되어_있음("광교역").as(StationResponse.class);
+        상행종점 = 지하철_역_등록되어_있음("강남역").as(StationResponse.class);
+        하행종점 = 지하철_역_등록되어_있음("광교역").as(StationResponse.class);
+        추가될역 = 지하철_역_등록되어_있음("광교중앙역").as(StationResponse.class);
+
         신분당선 = 지하철_노선_등록되어_있음(
                     new LineRequest("신분당선", "red darken-1",
-                        강남역.getId(), 광교역.getId(), 120)).as(LineResponse.class);
+                        상행종점.getId(), 하행종점.getId(), 120)).as(LineResponse.class);
     }
 
     @Test
     @DisplayName("역 사이에 새로운 역을 등록할 경우")
-    void name() { // TODO Happy Path 메서드명 바꾸고 시작
+    void createSection() {
+        // when
+        ExtractableResponse<Response> response
+            = 지하철_구간_생성_요청(상행종점, 추가될역, 60);
+
+        // then
+        지하철_구간_생성됨(response);
     }
 
     @Test
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
-    void name2() { // TODO Happy Path 메서드명 바꾸고 시작
+    void createSectionWithUpStation() {
+        // when
+        ExtractableResponse<Response> response
+            = 지하철_구간_생성_요청(추가될역, 상행종점, 40);
+
+        // then
+        지하철_구간_생성됨(response);
     }
 
     @Test
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
-    void name3() { // TODO Happy Path 메서드명 바꾸고 시작
+    void createSectionWithDownStation() {
+        // when
+        ExtractableResponse<Response> response
+            = 지하철_구간_생성_요청(하행종점, 추가될역, 40);
 
+        // then
+        지하철_구간_생성됨(response);
     }
 
     @Test
