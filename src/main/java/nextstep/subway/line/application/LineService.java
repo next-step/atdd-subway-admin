@@ -20,41 +20,41 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
-	private final StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
-	public LineService(LineRepository lineRepository, StationRepository stationRepository) {
-		this.lineRepository = lineRepository;
-		this.stationRepository = stationRepository;
-	}
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+        this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
+    }
 
-	public LineResponse saveLine(LineRequest request) {
-		Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NotFoundException::new);
-		Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFoundException::new);
+    public LineResponse saveLine(LineRequest request) {
+        Station upStation = stationRepository.findById(request.getUpStationId())
+            .orElseThrow(NotFoundException::new);
+        Station downStation = stationRepository.findById(request.getDownStationId())
+            .orElseThrow(NotFoundException::new);
 
-		Line line = request.toLine();
-		line.addSection(new Section(upStation, downStation));
-		Line persistLine = lineRepository.save(line);
+        Line line = request.toLine();
+        line.addSection(new Section(upStation, downStation));
+        Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
 
     public List<LineAndStationResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-        return lines.stream()
-            .map(LineAndStationResponse::of)
-            .collect(Collectors.toList());
+        return lines.stream().map(LineAndStationResponse::of).collect(Collectors.toList());
     }
 
-	public LineAndStationResponse findByLine(Long id) {
-		return LineAndStationResponse.of(lineRepository.findById(id).orElseThrow(NotFoundException::new));
-	}
+    public LineAndStationResponse findByLine(Long id) {
+        return LineAndStationResponse.of(lineRepository.findById(id).orElseThrow(NotFoundException::new));
+    }
 
-	public void updateLineById(Long id, LineRequest lineRequest) {
-		lineRepository
-			.findById(id)
-			.ifPresent(line -> line.update(lineRequest.toLine()));
-	}
+    public void updateLineById(Long id, LineRequest lineRequest) {
+        lineRepository
+            .findById(id)
+            .ifPresent(line -> line.update(lineRequest.toLine()));
+    }
 
-	public void deleteStationById(Long id) {
-		lineRepository.deleteById(id);
-	}
+    public void deleteStationById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
