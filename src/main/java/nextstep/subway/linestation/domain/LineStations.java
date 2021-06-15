@@ -2,8 +2,10 @@ package nextstep.subway.linestation.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -19,7 +21,7 @@ import nextstep.subway.station.domain.Station;
 public class LineStations {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private final List<LineStation> lineStations = new ArrayList<>();
+    private final List<LineStation> lineStations = new LinkedList<>();
 
     public void addLineStation(final LineStation lineStation) {
         if (lineStations.contains(lineStation)) {
@@ -31,30 +33,36 @@ public class LineStations {
 
     public void addLineStation(final LineStation upStation, final LineStation downStation, final int distance) {
         final List<LineStation> stations = Arrays.asList(upStation, downStation);
-        validateStations(stations);
-        final LineStation persistedLineStation = persistedLineStation(findLineStation(stations));
-        final LineStation newLineStation = makeLineStation(upStation, downStation, distance, persistedLineStation);
-        updateExistingLineStation(upStation, downStation, distance, persistedLineStation);
-        this.lineStations.add(newLineStation);
+        final LineStation lineStation = findLineStation(validLineStation(stations));
+        lineStation.update(upStation, downStation, distance);
+        addLineStation(upStation, downStation, lineStation);
     }
 
-    private LineStation persistedLineStation(final LineStation lineStation) {
-        return lineStations.stream()
-            .filter(ls -> ls.equals(lineStation))
-            .findFirst()
-            .orElseThrow(NotFoundException::new);
-    }
+    private void addLineStation(final LineStation upStation, final LineStation downStation, final LineStation lineStation) {
+        int index = lineStations.indexOf(lineStation);
+        if (!lineStations.contains(upStation)) {
+            lineStations.add(index, upStation);
+        }
 
-    private void validateStations(final List<LineStation> stations) {
-        if (countStations(stations) != 1) {
-            throw new IllegalArgumentException();
+        if (!lineStations.contains(downStation)) {
+            lineStations.add(++index, downStation);
         }
     }
 
-    public int countStations(final List<LineStation> stations) {
-        return (int)stations.stream()
+    private LineStation validLineStation(final List<LineStation> stations) {
+        final List<LineStation> lineStations = findStations(stations);
+
+        if (lineStations.size() != 1) {
+            throw new IllegalArgumentException();
+        }
+
+        return lineStations.get(0);
+    }
+
+    public List<LineStation> findStations(final List<LineStation> stations) {
+        return stations.stream()
             .filter(this::containsStation)
-            .count();
+            .collect(Collectors.toList());
     }
 
     public boolean containsStation(final LineStation lineStation) {
@@ -62,44 +70,24 @@ public class LineStations {
             .anyMatch(ls -> ls.equals(lineStation));
     }
 
-    private LineStation findLineStation(final List<LineStation> stations) {
-        return stations.stream()
-            .filter(this::containsStation)
+    private LineStation findLineStation(final LineStation lineStation) {
+        return lineStations.stream()
+            .filter(ls -> ls.equals(lineStation))
             .findFirst()
             .orElseThrow(NotFoundException::new);
     }
 
-    private LineStation makeLineStation(final LineStation upStation, final LineStation downStation, final int distance,
-        final LineStation lineStation) {
-
-        if (lineStation.equals(upStation)) {
-            return initializeLineStation(downStation, distance, lineStation);
-        }
-
-        upStation.next(lineStation, distance);
-        lineStation.getPreviousStation().ifPresent(
-            ls -> upStation.previous(lineStation.getPreviousStation().get(),
-                lineStation.getPreviousDistance().orElse(0) - distance)
-        );
-
-        return upStation;
+    public void removeStation(final LineStation lineStation) {
+        validateLineStationsSize();
+        final LineStation currentStation = findLineStation(lineStation);
+        currentStation.mergePrevAndNext();
+        lineStations.remove(currentStation);
     }
 
-    private LineStation initializeLineStation(final LineStation downStation, final int distance,
-        final LineStation lineStation) {
-
-        downStation.previous(lineStation, distance);
-        if (lineStation.getNextStation().isPresent()) {
-            downStation.next(lineStation.getNextStation().get(), lineStation.getNextDistance().orElse(0) - distance);
+    private void validateLineStationsSize() {
+        if (lineStations.size() == 2) {
+            throw new MethodNotAllowedException();
         }
-
-        return downStation;
-    }
-
-    private void updateExistingLineStation(final LineStation upStation, final LineStation downStation,
-        final int distance, final LineStation lineStation) {
-
-        lineStation.update(upStation, downStation, distance);
     }
 
     public List<Station> orderedStations() {
@@ -117,18 +105,5 @@ public class LineStations {
         }
 
         return stations;
-    }
-
-    public void removeStation(final LineStation lineStation) {
-        validateLineStationsSize();
-        final LineStation currentStation = persistedLineStation(lineStation);
-        currentStation.mergePrevAndNext();
-        lineStations.remove(currentStation);
-    }
-
-    private void validateLineStationsSize() {
-        if (lineStations.size() == 2) {
-            throw new MethodNotAllowedException();
-        }
     }
 }

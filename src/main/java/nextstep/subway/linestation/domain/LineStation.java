@@ -84,7 +84,7 @@ public class LineStation {
     }
 
     private LineStation validStation(final LineStation lineStation) {
-        if (lineStation == null) {
+        if (lineStation == null || this.equals(lineStation)) {
             return null;
         }
 
@@ -94,7 +94,7 @@ public class LineStation {
     }
 
     private Integer validDistance(final Integer distance) {
-        if (distance == null) {
+        if (distance == null || distance < 0) {
             return null;
         }
 
@@ -103,9 +103,9 @@ public class LineStation {
             .orElseThrow(IllegalArgumentException::new);
     }
 
-    public void next(final LineStation nextStation, final Integer nextDistance) {
-        this.nextStation = validStation(nextStation);
-        this.nextDistance = validDistance(nextDistance);
+    public void next(final LineStation lineStation, final Integer distance) {
+        this.nextStation = validStation(lineStation);
+        this.nextDistance = validDistance(distance);
     }
 
     public boolean isSameLine(final Line line) {
@@ -118,19 +118,27 @@ public class LineStation {
     }
 
     private void updatePrevious(final LineStation upStation, final LineStation downStation, final int distance) {
-        if (upStation.equals(previousStation)) {
-            validateDistance(distance, previousDistance);
-            previousStation = downStation;
-            previousDistance -= distance;
-
+        if (!this.equals(downStation)) {
             return;
         }
 
-        if (this.equals(downStation)) {
-            validateDistance(distance, previousDistance);
-            previousStation = upStation;
-            previousDistance = distance;
+        validateDistance(distance, previousDistance);
+
+        final Integer subtractedDistance = distance(previousDistance, distance);
+        upStation.previous(previousStation, subtractedDistance);
+        upStation.next(this, distance);
+        if (previousStation != null) {
+            previousStation.next(upStation, subtractedDistance);
         }
+        this.previous(upStation, distance);
+    }
+
+    Integer distance(final Integer distance, final int newDistance) {
+        if (distance == null) {
+            return null;
+        }
+
+        return distance - newDistance;
     }
 
     private void validateDistance(final int distance, final Integer targetDistance) {
@@ -144,44 +152,19 @@ public class LineStation {
     }
 
     private void updateNext(final LineStation upStation, final LineStation downStation, final int distance) {
-        if (downStation.equals(nextStation)) {
-            validateDistance(distance, nextDistance);
-            nextStation = upStation;
-            nextDistance -= distance;
-
+        if (!this.equals(upStation)) {
             return;
         }
 
-        if (this.equals(upStation)) {
-            validateDistance(distance, nextDistance);
-            nextStation = downStation;
-            nextDistance = distance;
+        validateDistance(distance, nextDistance);
+
+        final Integer subtractedDistance = distance(nextDistance, distance);
+        downStation.previous(this, distance);
+        downStation.next(nextStation, subtractedDistance);
+        if (nextStation != null) {
+            nextStation.previous(downStation, subtractedDistance);
         }
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        final LineStation that = (LineStation)o;
-        return line.equals(that.line) && station.equals(that.station);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(line, station);
-    }
-
-    public void mergeNext(final LineStation lineStation, final Integer distance) {
-        nextStation = lineStation;
-        nextDistance += distance;
-    }
-
-    public void mergePrevious(final LineStation lineStation, final Integer distance) {
-        previousStation = lineStation;
-        previousDistance += distance;
+        this.next(downStation, distance);
     }
 
     public void mergePrevAndNext() {
@@ -199,4 +182,20 @@ public class LineStation {
 
         return previousDistance + nextDistance;
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        final LineStation that = (LineStation)o;
+        return line.equals(that.line) && station.equals(that.station);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(line, station);
+    }
+
 }

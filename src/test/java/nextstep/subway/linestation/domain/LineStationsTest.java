@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,11 +63,11 @@ public class LineStationsTest {
         lineStations.addLineStation(lineStation);
 
         // when
-        final long actual = lineStations.countStations(
+        final List<LineStation> actual = lineStations.findStations(
             Arrays.asList(new LineStation(line, 신도림역), new LineStation(line, 서울역)));
 
         // then
-        assertThat(actual).isEqualTo(1);
+        assertThat(actual.size()).isEqualTo(1);
     }
 
     @DisplayName("LineStation 을 삭제하면 이전과 다음 역의 정보가 업데이트 되지는 테스트")
