@@ -72,10 +72,10 @@ public class LineStationTest {
 
         // then
         assertAll(
-            () -> assertThat(lineStation.getPreviousStation()).isEqualTo(new LineStation(line, 구일역)),
-            () -> assertThat(lineStation.getPreviousDistance()).isEqualTo(100 - previousDistance),
-            () -> assertThat(lineStation.getNextStation()).isEqualTo(new LineStation(line, 영등포역)),
-            () -> assertThat(lineStation.getNextDistance()).isEqualTo(200 - nextDistance)
+            () -> assertThat(lineStation.getPreviousStation().orElse(null)).isEqualTo(new LineStation(line, 구일역)),
+            () -> assertThat(lineStation.getPreviousDistance().orElse(null)).isEqualTo(100 - previousDistance),
+            () -> assertThat(lineStation.getNextStation().orElse(null)).isEqualTo(new LineStation(line, 영등포역)),
+            () -> assertThat(lineStation.getNextDistance().orElse(null)).isEqualTo(200 - nextDistance)
         );
     }
 
@@ -103,10 +103,10 @@ public class LineStationTest {
 
         // then
         assertAll(
-            () -> assertThat(lineStation.getPreviousStation()).isEqualTo(new LineStation(line, 구로역)),
-            () -> assertThat(lineStation.getPreviousDistance()).isEqualTo(100),
-            () -> assertThat(lineStation.getNextStation()).isEqualTo(new LineStation(line, 신길역)),
-            () -> assertThat(lineStation.getNextDistance()).isEqualTo(200)
+            () -> assertThat(lineStation.getPreviousStation().orElse(null)).isEqualTo(new LineStation(line, 구로역)),
+            () -> assertThat(lineStation.getPreviousDistance().orElse(null)).isEqualTo(100),
+            () -> assertThat(lineStation.getNextStation().orElse(null)).isEqualTo(new LineStation(line, 신길역)),
+            () -> assertThat(lineStation.getNextDistance().orElse(null)).isEqualTo(200)
         );
     }
 
@@ -132,10 +132,10 @@ public class LineStationTest {
 
         // then
         assertAll(
-            () -> assertThat(lineStation.getPreviousStation()).isEqualTo(new LineStation(line, 구일역)),
-            () -> assertThat(lineStation.getPreviousDistance()).isEqualTo(previousDistance),
-            () -> assertThat(lineStation.getNextStation()).isEqualTo(new LineStation(line, 영등포역)),
-            () -> assertThat(lineStation.getNextDistance()).isEqualTo(nextDistance)
+            () -> assertThat(lineStation.getPreviousStation().orElse(null)).isEqualTo(new LineStation(line, 구일역)),
+            () -> assertThat(lineStation.getPreviousDistance().orElse(null)).isEqualTo(previousDistance),
+            () -> assertThat(lineStation.getNextStation().orElse(null)).isEqualTo(new LineStation(line, 영등포역)),
+            () -> assertThat(lineStation.getNextDistance().orElse(null)).isEqualTo(nextDistance)
         );
     }
 }

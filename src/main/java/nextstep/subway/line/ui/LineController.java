@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.DuplicatedSectionException;
@@ -20,6 +21,7 @@ import nextstep.subway.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.linestation.exception.MethodNotAllowedException;
 import nextstep.subway.section.dto.SectionRequest;
 
 @RestController
@@ -78,6 +80,16 @@ public class LineController {
             .build();
     }
 
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity<LineResponse> deleteLineStation(@PathVariable final Long id,
+        @RequestParam final Long stationId) {
+
+        lineService.deleteLineStationByStationId(id, stationId);
+
+        return ResponseEntity.noContent()
+            .build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<LineResponse> deleteLine(@PathVariable final Long id) {
         lineService.deleteLineById(id);
@@ -87,7 +99,7 @@ public class LineController {
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class, DuplicatedSectionException.class,
-        IllegalArgumentException.class})
+        IllegalArgumentException.class, MethodNotAllowedException.class})
     public ResponseEntity<LineResponse> handleIllegalArgsException(final RuntimeException e) {
         return ResponseEntity.badRequest()
             .build();

@@ -101,6 +101,10 @@ public class LineAcceptanceFixture {
         return post(path, params);
     }
 
+    static ExtractableResponse<Response> 지하철_구간에_지하철역_삭제_요청(final String path) {
+        return delete(path);
+    }
+
     static ExtractableResponse<Response> 지하철_구간에_지하철역_등록_요청(final String path, final SectionFixture sectionFixture) {
         final Map<String, String> params = new HashMap<>();
         params.put("downStationId", sectionFixture.getDownStation());
