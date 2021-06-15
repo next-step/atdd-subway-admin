@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.exception.InvalidSectionException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class SectionService {
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
 		Line line = lineRepository.findById(lineId)
 				.orElseThrow(() -> new LineNotFoundException(lineId));
+		validateSection(line.getStationsInSections(), sectionRequest.getStationIds());
 		addSectionToLine(line, sectionRequest.getStationIds(), sectionRequest.getDistance());
 	}
 
@@ -34,6 +36,15 @@ public class SectionService {
 		Station downStation = stationService.findById(stationsIds.get(1));
 		Section section = new Section(upStation, downStation, distance);
 		section.toLine(line);
-		return;
+
+	}
+
+	private void validateSection(List<Station> stations, List<Long> stationsIdsToAdd) {
+		boolean result = stations.stream().map(Station::getId)
+				.anyMatch(stationsIdsToAdd::contains);
+
+		if (!result) {
+			throw new InvalidSectionException();
+		}
 	}
 }

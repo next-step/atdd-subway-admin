@@ -151,4 +151,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// then
 		노선에_역이_등록되지_않는다(response);
 	}
+
+	@Test
+	@DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다")
+	void checkIncluded() {
+		// given
+		StationResponse 뚝섬역 = StationAcceptanceTest.지하철역을_생성한다("뚝섬역").as(StationResponse.class);
+		StationResponse 서울숲역 = StationAcceptanceTest.지하철역을_생성한다("서울숲역").as(StationResponse.class);
+
+		Map<String, String> sectionParams = new HashMap<>();
+		sectionParams.put("upStationId", 뚝섬역.getId().toString());
+		sectionParams.put("downStationId", 서울숲역.getId().toString());
+		sectionParams.put("distance", "3");
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_새로운_구간_등록_요청(신분당선.header("Location"), sectionParams);
+
+		// then
+		노선에_역이_등록되지_않는다(response);
+	}
 }
