@@ -1,8 +1,7 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.wrappers.Distance;
+import nextstep.subway.line.domain.wrappers.Distance;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -11,7 +10,7 @@ import java.util.Objects;
 @Entity
 public class LineStation extends BaseEntity {
 
-    private static final String OUT_BOUND_DISTANCE_ERROR_MESSAGE = "구간 사이에 새로운 역을 등록 시 구간거리는 기존 등록된 구간 거리보다 작아야합니다.";
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,10 +67,8 @@ public class LineStation extends BaseEntity {
         return this.station.getId() == lineStation.station.getId();
     }
 
-    public void validDistance(LineStation lineStation) {
-        if (this.distance.subtractionDistance(lineStation.distance) <= 0) {
-            throw new IllegalArgumentException(OUT_BOUND_DISTANCE_ERROR_MESSAGE);
-        }
+    public Distance creatNewDistance(LineStation lineStation) {
+        return this.distance.subtractionDistance(lineStation.distance);
     }
 
     public boolean isSame(LineStation other) {

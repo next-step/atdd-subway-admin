@@ -1,7 +1,7 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.LineStation;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

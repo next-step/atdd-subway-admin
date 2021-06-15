@@ -1,16 +1,12 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
-import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.wrappers.Distance;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.wrappers.Distance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 노선 지하철역 연결 테이블 테스트")
 public class LineStationTest {
@@ -70,16 +66,6 @@ public class LineStationTest {
         LineStation expected2 = new LineStation(preStation, station, 10);
         assertThat(lineStation.isSamePreStation(expected1)).isTrue();
         assertThat(lineStation.isSamePreStation(expected2)).isFalse();
-    }
-
-    @ParameterizedTest
-    @DisplayName("노선 지하철역 entity들의 구간 거리가 크거나 같을 경우 에러 발생")
-    @ValueSource(ints = {10, 11})
-    void valid_distance(int distance) {
-        LineStation lineStation = new LineStation(new Station(5L, "시민의 숲역"), preStation, distance);
-        assertThatThrownBy(() -> this.lineStation.validDistance(lineStation))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("구간 사이에 새로운 역을 등록 시 구간거리는 기존 등록된 구간 거리보다 작아야합니다.");
     }
 
     @Test

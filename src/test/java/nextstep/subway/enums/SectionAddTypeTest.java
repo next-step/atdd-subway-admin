@@ -1,8 +1,8 @@
 package nextstep.subway.enums;
 
-import nextstep.subway.section.domain.LineStation;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.wrappers.LineStations;
+import nextstep.subway.line.domain.wrappers.LineStations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

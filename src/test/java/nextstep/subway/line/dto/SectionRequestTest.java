@@ -1,4 +1,4 @@
-package nextstep.subway.section.dto;
+package nextstep.subway.line.dto;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

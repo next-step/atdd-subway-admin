@@ -2,10 +2,9 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.enums.SectionAddType;
-import nextstep.subway.section.domain.LineStation;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.wrappers.Distance;
-import nextstep.subway.wrappers.LineStations;
+import nextstep.subway.line.domain.wrappers.Distance;
+import nextstep.subway.line.domain.wrappers.LineStations;
 
 import javax.persistence.*;
 import java.util.List;
@@ -81,8 +80,7 @@ public class Line extends BaseEntity {
         }
         if (sectionAddType.equals(SectionAddType.NEW_BETWEEN)) {
             LineStation updateTargetLineStation = lineStations.findLineStationByPreStation(lineStation);
-            updateTargetLineStation.validDistance(lineStation);
-            Distance newDistance = new Distance(updateTargetLineStation.getDistance().subtractionDistance(lineStation.getDistance()));
+            Distance newDistance = updateTargetLineStation.creatNewDistance(lineStation);
             updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getStation(), newDistance);
         }
     }

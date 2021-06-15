@@ -1,6 +1,6 @@
-package nextstep.subway.section.dto;
+package nextstep.subway.line.dto;
 
-import nextstep.subway.section.domain.LineStation;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.station.domain.Station;
 
 public class SectionRequest {
