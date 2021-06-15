@@ -31,6 +31,7 @@ public class SectionService {
     }
 
     public Section findByUpStationId(Long id) {
-        return sectionRepository.findByUpStationId(id);
+        return sectionRepository.findByUpStationId(id)
+                .orElseThrow(() -> new DataNotFoundException("일치하는 구간을 찾을 수 없습니다."));
     }
 }
