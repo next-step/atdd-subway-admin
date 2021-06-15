@@ -31,13 +31,6 @@ public class LinesResponse {
         return this.lineResponses.isEmpty();
     }
 
-    @JsonIgnore
-    public List<Long> getIds() {
-        return lineResponses.stream()
-                .map(LineResponse::getId)
-                .collect(Collectors.toList());
-    }
-
     public List<LineResponse> getLineResponses() {
         return lineResponses;
     }
