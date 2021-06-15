@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -75,5 +76,9 @@ public class Line extends BaseEntity {
 			", name='" + name + '\'' +
 			", color='" + color + '\'' +
 			'}';
+	}
+
+	public void removeSectionByStation(Station station) {
+		//TODO
 	}
 }

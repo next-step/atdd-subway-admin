@@ -81,4 +81,8 @@ public class LineService {
 	private Line findByLineId(long lineId) {
 		return this.lineRepository.findById(lineId).orElseThrow(this.getEntityNotFoundExceptionSupplier());
 	}
+
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		//TODO
+	}
 }

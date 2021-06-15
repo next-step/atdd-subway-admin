@@ -41,14 +41,6 @@ public class Section extends BaseEntity {
 		this.distance = new Distance(distance);
 	}
 
-	public void changeLine(Line line) {
-		if (this.line != null) {
-			line.getSections().removeSection(this);
-		}
-		this.line = line;
-		line.getSections().addSection(this);
-	}
-
 	public Line getLine() {
 		return line;
 	}
