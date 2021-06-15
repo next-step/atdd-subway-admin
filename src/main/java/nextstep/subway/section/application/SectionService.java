@@ -53,4 +53,12 @@ public class SectionService {
             .filter(section -> section.isContainSection(newSection))
             .findFirst();
     }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(EntityNotFoundException::new);
+        Station removeStation = stationRepository.findById(stationId)
+            .orElseThrow(EntityNotFoundException::new);
+        line.removeSectionByStation(removeStation);
+    }
 }

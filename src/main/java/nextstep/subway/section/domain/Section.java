@@ -79,6 +79,10 @@ public class Section extends BaseEntity {
         this.upStation = upStation;
     }
 
+    public void addDistance(int distance) {
+        this.distance.addDistance(distance);
+    }
+
     public boolean isContainSection(Section section) {
         if (upStation.isSame(section.upStation) && downStation.isSame(section.downStation)) {
             throw new IllegalArgumentException(EXISTS_SAME_SECTION);

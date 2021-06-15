@@ -14,6 +14,8 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class LineSections {
+    private final static String NOT_EXISTS_STATION = "존재하지 않는 역입니다.";
+    private final static String CAN_NOT_DELETE_SECTION = "등록된 구간이 유일하여 역을 삭제할 수 없습니다";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> lineSections = new ArrayList<>();
@@ -85,5 +87,35 @@ public class LineSections {
             orderStations.add(curSection.getDownStation());
         }
         return orderStations;
+    }
+
+    private void validateLineSectionsHasOnly() {
+        if (lineSections.size() <= 1) {
+            throw new RuntimeException(CAN_NOT_DELETE_SECTION);
+        }
+    }
+
+    public void removeSectionByStation(Station station) {
+        validateLineSectionsHasOnly();
+        Section removeSection = findSectionToRemove(station);
+        updateSectionByRemove(station, removeSection);
+        lineSections.remove(removeSection);
+    }
+
+    private Section findSectionToRemove(Station station) {
+        return lineSections.stream()
+            .filter(section -> section.isContainStation(station))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTS_STATION));
+    }
+
+    private void updateSectionByRemove(Station station, Section removeSection) {
+        lineSections.stream()
+            .filter(section -> section.getUpStation().isSame(station))
+            .findFirst()
+            .ifPresent(section -> {
+                section.changeUpStation(removeSection.getUpStation());
+                section.addDistance(removeSection.getDistance());
+            });
     }
 }
