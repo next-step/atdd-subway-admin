@@ -2,11 +2,14 @@ package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 public class LineRequest {
-    private static final LineRequest EMPYTY = new LineRequest("", "");
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String color;
 
     public LineRequest() {
