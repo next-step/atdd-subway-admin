@@ -46,9 +46,19 @@ public class Sections {
 
 	private boolean isEntryPointSection(Section newSection) {
 		List<Station> orderedStations = this.getOrderedStations();
+		Station firstUpStation = orderedStations.get(0);
+		Station lastDownStation = orderedStations.get(orderedStations.size() - 1);
 
-		return orderedStations.get(0).equals(newSection.getDownStation()) || orderedStations.get(
-			orderedStations.size() - 1).equals(newSection.getUpStation());
+		return this.isUpStationEntryPointSection(newSection, firstUpStation) || this.isDownStationEntryPointSection(
+			newSection, lastDownStation);
+	}
+
+	private boolean isDownStationEntryPointSection(Section newSection, Station lastDownStation) {
+		return lastDownStation.equals(newSection.getUpStation());
+	}
+
+	private boolean isUpStationEntryPointSection(Section newSection, Station firstUpStation) {
+		return firstUpStation.equals(newSection.getDownStation());
 	}
 
 	private void validateAlreadyExistSection(Section newSection) {
