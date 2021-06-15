@@ -1,10 +1,14 @@
 package nextstep.subway.section.domain;
 
+import static javax.persistence.FetchType.LAZY;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,8 +18,6 @@ import javax.persistence.ManyToOne;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
-
-import static javax.persistence.FetchType.LAZY;
 
 @Entity
 public class Section {
@@ -35,14 +37,15 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section() {
     }
 
     private Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
-        this.distance = distance;
+        this.distance = new Distance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
     }
