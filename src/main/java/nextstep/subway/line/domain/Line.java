@@ -1,40 +1,83 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.common.BaseEntity;
+import java.util.List;
+import java.util.Objects;
 
-import javax.persistence.*;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.vo.Color;
+import nextstep.subway.common.vo.Name;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationGroup;
 
 @Entity
 public class Line extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
-    private String name;
-    private String color;
 
-    public Line() {
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
+	@Embedded
+	private Name name;
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
+	@Embedded
+	private Color color;
 
-    public Long getId() {
-        return id;
-    }
+	@Embedded
+	private StationGroup stations;
 
-    public String getName() {
-        return name;
-    }
+	protected Line() {
+	}
 
-    public String getColor() {
-        return color;
-    }
+	public Line(String name, String color) {
+		this.name = Name.generate(name);
+		this.color = Color.generate(color);
+		this.stations = new StationGroup();
+	}
+
+	public void update(Line line) {
+		this.name = Name.generate(line.name());
+		this.color = Color.generate(line.color());
+	}
+
+	public Long id() {
+		return id;
+	}
+
+	public String name() {
+		return name.value();
+	}
+
+	public String color() {
+		return color.value();
+	}
+
+	public List<Station> stations() {
+		return stations.stations();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+		if (object == null || getClass() != object.getClass()) {
+			return false;
+		}
+		Line line = (Line)object;
+		return Objects.equals(id, line.id)
+			&& Objects.equals(name, line.name)
+			&& Objects.equals(color, line.color)
+			&& Objects.equals(stations, line.stations);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, name, color, stations);
+	}
 }

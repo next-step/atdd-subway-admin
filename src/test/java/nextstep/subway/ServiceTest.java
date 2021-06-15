@@ -9,7 +9,7 @@ import io.restassured.RestAssured;
 import nextstep.subway.utils.DatabaseCleanup;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AcceptanceTest {
+public class ServiceTest {
 	@LocalServerPort
 	int port;
 
