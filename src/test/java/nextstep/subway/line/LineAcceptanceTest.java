@@ -54,15 +54,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성됨(response);
     }
 
-    private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
-        return post(request, "/lines");
-
-    }
-
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
@@ -75,14 +66,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_생성_실패됨(response);
-    }
-
-    private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest request) {
-        return 지하철_노선_생성_요청(request);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -103,6 +86,72 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_응답됨(response);
         지하철_노선_목록_포함됨(requests, response);
         지하철_노선_목록_구역_포함됨(requests, response);
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLine() {
+        // given
+        LineRequest request = createLineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(request);
+        Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
+
+        // when
+        response = 지하철_노선_조회_요청(createId);
+
+        // then
+        지하철_노선_응답됨(response, createId);
+    }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        LineRequest request = createLineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(request);
+        Long id = response.jsonPath().getObject(".", LineResponse.class).getId();
+
+        // when
+        LineRequest updateRequest = createLineRequest("구분당선", "bg-blue-600", 1L, 2L, 10);
+        response = 지하철_노선_수정_요청(id, updateRequest);
+
+        // then
+        지하철_노선_수정됨(response);
+    }
+
+    @DisplayName("지하철 노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        LineRequest request = createLineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(request);
+        Long id = response.jsonPath().getObject(".", LineResponse.class).getId();
+
+        // when
+        response = 지하철_노선_제거_요청(id);
+
+        // then
+        지하철_노선_삭제됨(response);
+    }
+
+    private LineRequest createLineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return new LineRequest(name, color, upStationId, downStationId, distance);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
+        return post(request, "/lines");
+    }
+
+    private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest request) {
+        return 지하철_노선_생성_요청(request);
     }
 
     private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
@@ -134,22 +183,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return get("/lines");
-
-    }
-
-    @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void getLine() {
-        // given
-        LineRequest request = createLineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(request);
-        Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
-
-        // when
-        response = 지하철_노선_조회_요청(createId);
-
-        // then
-        지하철_노선_응답됨(response, createId);
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
@@ -162,23 +195,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineAndStationResponse.getId()).isEqualTo(createId);
     }
-
-    @DisplayName("지하철 노선을 수정한다.")
-    @Test
-    void updateLine() {
-        // given
-        LineRequest request = createLineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(request);
-        Long id = response.jsonPath().getObject(".", LineResponse.class).getId();
-
-        // when
-        LineRequest updateRequest = createLineRequest("구분당선", "bg-blue-600", 1L, 2L, 10);
-        response = 지하철_노선_수정_요청(id, updateRequest);
-
-        // then
-        지하철_노선_수정됨(response);
-    }
-
     private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
@@ -186,31 +202,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineRequest request) {
         return put(request, "/lines/" + id);
     }
-
-    @DisplayName("지하철 노선을 제거한다.")
-    @Test
-    void deleteLine() {
-        // given
-        LineRequest request = createLineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
-        ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(request);
-        Long id = response.jsonPath().getObject(".", LineResponse.class).getId();
-
-        // when
-        response = 지하철_노선_제거_요청(id);
-
-        // then
-        지하철_노선_삭제됨(response);
-    }
-
     private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
         return delete("/lines/" + id);
     }
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private LineRequest createLineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
-        return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 }
