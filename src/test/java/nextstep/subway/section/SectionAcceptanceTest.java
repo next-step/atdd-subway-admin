@@ -31,8 +31,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         판교역_번호 = ID_추출(역_생성_요청(판교역_이름, 빨간색));
     }
 
+    @DisplayName("구간에 등록하려는 역들이 이미 구간에 포함되어 있다.")
     @Test
+    void 지하철_구간_생성_실패_구간에_이미_모두_등록_되어있는_경우() {
+        // given
+        Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 강남역_번호, 양재역_번호, 거리);
+        ExtractableResponse<Response> 신분당선_생성_응답 = 노선생성_요청(신분당선);
+
+        // when
+        // 지하철_구간_생성_요청
+        ExtractableResponse<Response> 구간_추가_요청_실패_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 강남역_번호, 양재역_번호, "5");
+        ExtractableResponse<Response> 구간_추가_요청_반대_경우_실패_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 양재역_번호, 강남역_번호, "5");
+
+        //then
+        //지하철_구간_생성_실패
+        구간_추가_요청_실패(구간_추가_요청_실패_응답);
+        구간_추가_요청_실패(구간_추가_요청_반대_경우_실패_응답);
+    }
+
     @DisplayName("지하철 구간을 상단 종점에 한다.")
+    @Test
     void 지하철_구간_생성_상단_종점() {
         // given
         Map<String, String> 신분당선 = 노선_파라미터_생성(신분당선_이름, 빨간색, 강남역_번호, 양재역_번호, 거리);
@@ -40,7 +58,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_구간_생성_요청
-        ExtractableResponse<Response> 구간추가_응답 = 구간추가_요청(ID_추출(신분당선_생성_응답), 판교역_번호, 강남역_번호, "5");
+        ExtractableResponse<Response> 구간추가_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 판교역_번호, 강남역_번호, "5");
 
         // then
         // 지하철_구간_생성됨
@@ -84,7 +102,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return 응답.body().jsonPath().get("id").toString();
     }
 
-    private ExtractableResponse<Response> 구간추가_요청(String 역_번호) {
+    private ExtractableResponse<Response> 구간_추가_요청(String 역_번호) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -93,7 +111,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 구간추가_요청(String 노선_번호, String 상행_번호, String 하행_번호, String 거리) {
+    private ExtractableResponse<Response> 구간_추가_요청(String 노선_번호, String 상행_번호, String 하행_번호, String 거리) {
         Map<String, String> param = new HashMap<>();
         param.put(PARAM_UP_STATION, 상행_번호);
         param.put(PARAM_DOWN_STATION, 하행_번호);
@@ -111,5 +129,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private void 지하철_구간_생성됨(ExtractableResponse<Response> 구간_생성_응답) {
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(구간_생성_응답.header(LOCATION)).isNotBlank();
+    }
+
+    private void 구간_추가_요청_실패(ExtractableResponse<Response> 구간_추가_요청_실패_응답) {
+        assertThat(HttpStatus.INTERNAL_SERVER_ERROR.value()).isEqualTo(구간_추가_요청_실패_응답.statusCode());
     }
 }

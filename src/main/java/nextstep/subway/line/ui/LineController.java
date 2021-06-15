@@ -61,11 +61,11 @@ public class LineController {
 
     @PostMapping("/lines/{id}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        sectionService.addSection(id, lineRequest);
-        return ResponseEntity.noContent().build();
+        LineResponse line =sectionService.addSection(id, lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ExceptionHandler({DataIntegrityViolationException.class})
     public ResponseEntity<LineResponse> handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }

@@ -27,4 +27,17 @@ public class Sections {
                 .flatMap(section -> section.getUpDownStations().stream())
                 .collect(Collectors.toList());
     }
+
+    public void checkSectionContainStations(Station upStation, Station downStation) {
+        if (isContain(upStation) && isContain(downStation)) {
+            throw new IllegalArgumentException("역이 모두 구간에 포함되어 있습니다.");
+        }
+    }
+
+    private boolean isContain(Station station) {
+        return sections.stream()
+                .findFirst()
+                .filter(section -> section.isContain(station))
+                .isPresent();
+    }
 }
