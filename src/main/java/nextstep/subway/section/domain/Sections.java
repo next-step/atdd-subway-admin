@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import nextstep.subway.line.dto.Stations;
 import nextstep.subway.station.domain.Station;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -12,8 +13,8 @@ import java.util.Set;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line")
-    private List<Section> sections = new ArrayList<>();
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Section> sections = new HashSet<>();
 
     public Sections() {
     }

@@ -26,7 +26,7 @@ class SectionRepositoryTest {
         Station downStation = new Station("교대역");
         stationRepository.save(upStation);
         stationRepository.save(downStation);
-        Section section = new Section(upStation, downStation, 1000);
+        Section section = Section.of(upStation, downStation, 1000);
 
         Section savedSection = sectionRepository.save(section);
 

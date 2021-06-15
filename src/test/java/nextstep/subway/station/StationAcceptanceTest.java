@@ -39,6 +39,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         Map<String, String> params = generateParams("강남역");
+        post(params);
 
         // when
         ExtractableResponse<Response> response = post(params);

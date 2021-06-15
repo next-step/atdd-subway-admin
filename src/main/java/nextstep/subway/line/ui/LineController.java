@@ -28,9 +28,7 @@ public class LineController {
     public ResponseEntity saveLine(@RequestBody LineRequest lineRequest) {
         lineService.validateCheck(lineRequest);
         Section section = sectionService.saveSection(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
-        Line line = lineRequest.toLine();
-        line.addSection(section);
-        LineResponse response = lineService.saveLine(line);
+        LineResponse response = lineService.saveLine(lineRequest, section);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 

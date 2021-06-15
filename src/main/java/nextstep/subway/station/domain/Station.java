@@ -2,6 +2,7 @@ package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 
 import javax.persistence.*;
 
@@ -12,6 +13,12 @@ public class Station extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
+
+    @Embedded
+    private Sections sections = new Sections();
+
+
+
 
     public Station() {
     }

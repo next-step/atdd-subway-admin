@@ -45,7 +45,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green", 1l, 2l, 1000);
+        StationResponse upStation = StationAcceptanceTest.saveStation("강남역");
+        StationResponse downStation = StationAcceptanceTest.saveStation("교대역");
+        Map<String, String> params = generateLineParam("2호선","green", upStation.getId(), downStation.getId(), 1000);
         saveLine(params);
 
         // when
@@ -85,18 +87,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green", 1l, 2l, 1000);
+        StationResponse upStation = StationAcceptanceTest.saveStation("강남역");
+        StationResponse downStation = StationAcceptanceTest.saveStation("교대역");
+        Map<String, String> params = generateLineParam("2호선","green", upStation.getId(), downStation.getId(), 1000);
         ExtractableResponse<Response> expect = saveLine(params);
-        LineResponse savedLine = expect.jsonPath().getObject(".", LineResponse.class);
+        long savedId = convertToId(expect.header("Location"));
 
         // when
-        ExtractableResponse<Response> response = searchLine(savedLine.getId());
+        ExtractableResponse<Response> response = searchLine(savedId);
         LineResponse searchedLine = response.jsonPath().getObject(".", LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(savedLine.getId()).isEqualTo(searchedLine.getId());
-        assertThat(savedLine.getName()).isEqualTo(searchedLine.getName());
+        assertThat(params.get("name")).isEqualTo(searchedLine.getName());
+    }
+
+    private long convertToId(String location) {
+        return Long.valueOf(location.replaceAll("/lines/",""));
+
     }
 
     @DisplayName("지하철 노선 조회 실패")
@@ -118,13 +126,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green", 1l, 2l, 1000);
+        StationResponse upStation = StationAcceptanceTest.saveStation("강남역");
+        StationResponse downStation = StationAcceptanceTest.saveStation("교대역");
+        Map<String, String> params = generateLineParam("2호선","green", upStation.getId(), downStation.getId(), 1000);
         ExtractableResponse<Response> expect = saveLine(params);
+        long savedId = convertToId(expect.header("Location"));
         LineResponse savedLine = expect.jsonPath().getObject(".", LineResponse.class);
-        Map<String, String> updatedParam = generateLineParam("3호선","orange", 1l, 2l, 1000);
+        Map<String, String> updatedParam = generateLineParam("3호선","orange",upStation.getId(), downStation.getId(), 1000);
 
         // when
-        ExtractableResponse<Response> response = editLine(savedLine.getId(), updatedParam);
+        ExtractableResponse<Response> response = editLine(savedId, updatedParam);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -139,12 +150,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green", 1l, 2l, 1000);
+        StationResponse upStation = StationAcceptanceTest.saveStation("강남역");
+        StationResponse downStation = StationAcceptanceTest.saveStation("교대역");
+        Map<String, String> params = generateLineParam("2호선","green", upStation.getId(), downStation.getId(), 1000);
         ExtractableResponse<Response> expect = saveLine(params);
-        LineResponse savedLine = expect.jsonPath().getObject(".", LineResponse.class);
+        long savedId = convertToId(expect.header("Location"));
 
         // when
-        ExtractableResponse<Response> response = removeLine(savedLine.getId());
+        ExtractableResponse<Response> response = removeLine(savedId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -197,7 +210,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
-
 
     private ExtractableResponse<Response> editLine(long lineId, Map<String, String> params) {
         return RestAssured.given().log().all()

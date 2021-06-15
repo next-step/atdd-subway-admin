@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,9 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(Line line) {
+    public LineResponse saveLine(LineRequest lineRequest, Section section) {
+        Line line = lineRequest.toLine();
+        line.addSection(section);
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
@@ -55,5 +58,6 @@ public class LineService {
             throw new DuplicateNameException("이미 존재하는 노선 이름입니다.");
         }
     }
+
 
 }

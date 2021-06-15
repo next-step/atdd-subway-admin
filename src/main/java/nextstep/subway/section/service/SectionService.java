@@ -1,6 +1,5 @@
 package nextstep.subway.section.service;
 
-import nextstep.subway.exception.NoSuchDataException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.application.StationService;
@@ -22,7 +21,7 @@ public class SectionService {
     public Section saveSection(long upStationId, long downStationId, int distance) {
         Station upStation = stationService.findStation(upStationId);
         Station downStation = stationService.findStation(downStationId);
-        return sectionRepository.save(new Section(upStation, downStation, distance));
+        return sectionRepository.save(Section.of(upStation, downStation, distance));
 
     }
 }
