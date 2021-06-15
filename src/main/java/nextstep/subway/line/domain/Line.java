@@ -38,11 +38,6 @@ public class Line extends BaseEntity {
         addSection(Section.getInstance(this, upStation, downStation, request.getDistance()));
     }
 
-    public void updateNameColor(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
-
     public Long getId() {
         return id;
     }
@@ -61,5 +56,10 @@ public class Line extends BaseEntity {
 
     public List<Station> stations() {
         return sections.getStations();
+    }
+
+    public void updateNameColor(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 }
