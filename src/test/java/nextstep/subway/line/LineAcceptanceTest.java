@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -25,8 +26,10 @@ import nextstep.subway.station.dto.StationResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+	@BeforeEach
 	public void initStation() {
 		List<StationRequest> stationRequests = new ArrayList<>();
+
 		stationRequests.add(new StationRequest("강남역"));
 		stationRequests.add(new StationRequest("역삼역"));
 		stationRequests.add(new StationRequest("신촌역"));
@@ -49,7 +52,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine() {
 		//given
-		initStation();
 		LineRequest request = createLineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 
 		// when
@@ -77,7 +79,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine2() {
 		// given
-		initStation();
 		LineRequest request = createLineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 		지하철_노선_등록되어_있음(request);
 
@@ -100,7 +101,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-		initStation();
 		LineRequest request1 = createLineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         지하철_노선_등록되어_있음(request1);
 
@@ -156,7 +156,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-		initStation();
 		LineRequest request = createLineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 		ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(request);
         Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
@@ -186,7 +185,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-		initStation();
 		LineRequest request = createLineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(request);
         Long id = response.jsonPath().getObject(".", LineResponse.class).getId();
@@ -217,7 +215,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-		initStation();
 		LineRequest request = createLineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         ExtractableResponse<Response> response = 지하철_노선_등록되어_있음(request);
         Long id = response.jsonPath().getObject(".", LineResponse.class).getId();
