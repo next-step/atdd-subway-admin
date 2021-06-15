@@ -36,6 +36,29 @@ public class Sections {
         if (sections.size() <= 1) {
             throw new CannotRemoveSectionSizeException();
         }
+
+        Optional<Section> upSection = sections.stream()
+                .filter(section -> section.hasSameDownStation(station))
+                .findFirst();
+
+        Optional<Section> downSection = sections.stream()
+                .filter(section -> section.hasSameUpStation(station))
+                .findFirst();
+
+        if (!upSection.isPresent()) {
+            sections.remove(downSection.get());
+        }
+
+        if (!downSection.isPresent()) {
+            sections.remove(upSection.get());
+        }
+
+        disconnectSection(upSection.get(), downSection.get());
+    }
+
+    private void disconnectSection(Section upSection, Section downSection) {
+        upSection.updateDownStation(downSection, false);
+        sections.remove(downSection);
     }
 
     public List<Station> getStations() {
@@ -65,14 +88,14 @@ public class Sections {
         sections.stream()
                 .filter(section -> section.hasSameDownStation(newSection.getDownStation()))
                 .findFirst()
-                .ifPresent(section -> section.updateDownStationToUpStation(newSection));
+                .ifPresent(section -> section.updateDownStation(newSection, true));
     }
 
     private void connectIfExistSameUpStation(Section newSection) {
         sections.stream()
                 .filter(section -> section.hasSameUpStation(newSection.getUpStation()))
                 .findFirst()
-                .ifPresent(section -> section.updateUpStationToDownStation(newSection));
+                .ifPresent(section -> section.updateUpStation(newSection, true));
     }
 
     private Optional<Section> findFirstSection() {

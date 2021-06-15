@@ -19,14 +19,12 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineSteps.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.LineSteps.지하철_노선_조회_요청;
-import static nextstep.subway.section.SectionSteps.노선에서_지하철역_제거_요청;
-import static nextstep.subway.section.SectionSteps.지하철_노선에_지하철역_등록_요청;
+import static nextstep.subway.section.SectionSteps.*;
 import static nextstep.subway.station.StationSteps.지하철_역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
-
 
     private StationResponse 강남역;
     private StationResponse 광교역;
@@ -196,6 +194,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_역_제거_실패됨(response);
+    }
+
+    @DisplayName("노선의 지하철역을 제거한다")
+    @Test
+    void deleteSectionTest() {
+        // given
+        StationResponse 정자역 = 지하철_역_등록되어_있음(new StationRequest("정자역")).as(StationResponse.class);
+        SectionRequest params = new SectionRequest(정자역.getId(), 강남역.getId(), 3);
+        LineResponse before = 지하철_노선에_지하철역_등록_되어있음(params, 신분당선.getId()).as(LineResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = 노선에서_지하철역_제거_요청(신분당선.getId(), 강남역.getId());
+        LineResponse after = 지하철_노선_조회_요청(this.신분당선.getId()).as(LineResponse.class);
+
+        // then
+        지하철_역_제거됨(response, before, after);
+    }
+
+    private void 지하철_역_제거됨(ExtractableResponse<Response> response, LineResponse before, LineResponse after) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(after.getStations()).hasSize(before.getStations().size() - 1);
     }
 
     private void 지하철_역_제거_실패됨(ExtractableResponse<Response> response) {
