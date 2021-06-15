@@ -60,4 +60,12 @@ public class Section {
 	public void setLine(Line line) {
 		this.line = line;
 	}
+
+	public boolean hasSameUpStation(Section section) {
+		return this.upStation.equals(section.getUpStation());
+	}
+
+	public boolean hasSameDownStation(Section section) {
+		return this.downStation.equals(section.getDownStation());
+	}
 }
