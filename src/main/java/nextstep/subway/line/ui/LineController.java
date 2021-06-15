@@ -3,6 +3,7 @@ package nextstep.subway.line.ui;
 import java.net.URI;
 import java.util.List;
 
+import nextstep.subway.section.application.SectionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,11 @@ import nextstep.subway.line.dto.LineResponse;
 @RestController
 public class LineController {
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(final LineService lineService) {
+    public LineController(final LineService lineService, final SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping(value = "/lines")
@@ -53,6 +56,12 @@ public class LineController {
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/lines/{id}/sections")
+    public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        sectionService.addSection(id, lineRequest);
         return ResponseEntity.noContent().build();
     }
 
