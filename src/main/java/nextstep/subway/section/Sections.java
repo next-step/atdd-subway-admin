@@ -16,7 +16,7 @@ public class Sections {
 
     private final int MINIMUM_REMOVABLE_SIZE = 2;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new LinkedList<>();
 
     public Sections() {
@@ -144,12 +144,12 @@ public class Sections {
                 .filter(section -> section.isDownStation(station)).findFirst();
         Optional<Section> upStationMatchingSection = sections.stream()
                 .filter(section -> section.isUpStation(station)).findFirst();
-        //상행종점
+        //상행종점 제거하는 경우
         if (!downStationMatchingSection.isPresent() && upStationMatchingSection.isPresent()) {
             sections.remove(upStationMatchingSection.get());
             return;
         }
-        //하행종점
+        //하행종점 제거하는 경우
         if (!upStationMatchingSection.isPresent() && downStationMatchingSection.isPresent()) {
             sections.remove(downStationMatchingSection.get());
             return;
