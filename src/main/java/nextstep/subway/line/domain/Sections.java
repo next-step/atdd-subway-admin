@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -22,8 +23,7 @@ public class Sections {
 	public List<Station> stations() {
 		List<Station> stations = new ArrayList<>();
 		for (Section section : sections) {
-			stations.add(section.getUpStation());
-			stations.add(section.getDownStation());
+			stations.addAll(Arrays.asList(section.getUpStation(), section.getDownStation()));
 		}
 		return stations;
 	}
