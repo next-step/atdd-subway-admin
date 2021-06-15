@@ -65,13 +65,13 @@ public class Sections {
     private void addUpToUpSection(Section section) {
         Section oldSection = findUpToUpSection(section);
         sections.add(new Section(oldSection.getLine(), section.getDownStation(), oldSection.getDownStation(), getUpStationDistance(section, oldSection)));
-        sections.remove(oldSection);
+        remove(oldSection);
     }
 
     private void addDownToDownSection(Section section) {
         Section oldSection = findDownToDownSection(section);
         sections.add(new Section(oldSection.getLine(), oldSection.getUpStation(), section.getUpStation(), section.getDistance().get()));
-        sections.remove(oldSection);
+        remove(oldSection);
     }
 
     private Section findUpToUpSection(Section section) {
@@ -122,7 +122,6 @@ public class Sections {
         validateStationExist(containsCount);
     }
 
-    // 시작
     private int getContainsStationCount(Section section) {
         List<Station> stations = this.getStations();
         int containsStationCount = CONTAINS_COUNT_ZERO;
@@ -140,5 +139,9 @@ public class Sections {
         if (containsCount == CONTAINS_COUNT_ZERO) {
             throw new IllegalArgumentException("상행역과 하행역 중 노선에 등록된 역이 없습니다.");
         }
+    }
+
+    public void remove(Section section) {
+        sections.remove(section);
     }
 }
