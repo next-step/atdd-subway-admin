@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,17 +41,20 @@ public class SectionsTest {
     void setUp() {
         line = new Line("2호선", "green");
         blueLine = new Line("4호선", "blue");
+        station1 = new Station("강남역");
         station2 = new Station("역삼역");
         station3 = new Station("교대역");
-        station1 = new Station("강남역");
         station4 = new Station("서초역");
         station5 = new Station("방배역");
         lineStations = Arrays.asList(station2, station3, station1, station4, station5);
         section1 = new Section(station2, station3, 3, line);
+        section4 = new Section(station3, station1, 3, line);
         section2 = new Section(station1, station4, 10, line);
         section3 = new Section(station4, station5, 3, line);
-        section4 = new Section(station3, station1, 3, line);
-        sections = new Sections(Arrays.asList(section1, section2, section3, section4));
+        sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section4);
+        sections.addSection(section2);
+        sections.addSection(section3);
     }
 
     @Test
@@ -58,7 +62,7 @@ public class SectionsTest {
     void getStationResponses() {
         // when
         List<Station> createStations = sections.getSortedStations();
-
+        System.out.println();
         // then
         List<StationResponse> targetStationResponses = lineStations.stream()
                 .map(Station::toStationResponse)
@@ -87,7 +91,9 @@ public class SectionsTest {
         Section section3 = new Section(station3, station4, 4, blueLine);
         Section addSection1 = new Section(station1, station4, 6, blueLine);
         Section addSection2 = new Section(station3, station2, 6, blueLine);
-        Sections sections = new Sections(Arrays.asList(section1, section2, section3));
+        Sections sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section2);
+        sections.addSection(section3);
 
         // then
         assertAll(
@@ -109,7 +115,9 @@ public class SectionsTest {
         Section section3 = new Section(station3, station4, 4, blueLine);
         Section addSection1 = new Section(station1, station5, 5, blueLine);
         Section addSection2 = new Section(station3, station5, 4, blueLine);
-        Sections sections = new Sections(Arrays.asList(section1, section2, section3));
+        Sections sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section2);
+        sections.addSection(section3);
 
         // then
         assertAll(
@@ -130,7 +138,8 @@ public class SectionsTest {
         Section section2 = new Section(station2, station3, 3, blueLine);
         Section frontSection = new Section(station4, station1, 3, blueLine);
         Section endSection = new Section(station3, station5, 3, blueLine);
-        Sections sections = new Sections(Arrays.asList(section1, section2));
+        Sections sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section2);
 
         // when
         sections.addSection(frontSection);
@@ -154,7 +163,9 @@ public class SectionsTest {
         Section section2 = new Section(station2, station3, 3, blueLine);
         Section section3 = new Section(station3, station4, 4, blueLine);
         Section addSection = new Section(station1, station5, 6, blueLine);
-        Sections sections = new Sections(Arrays.asList(section1, section2, section3));
+        Sections sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section2);
+        sections.addSection(section3);
 
         // when
         Section section = sections.addSection(addSection);
@@ -163,10 +174,10 @@ public class SectionsTest {
         assertAll(
                 () -> assertThat(section.getUpStation()).isSameAs(station3),
                 () -> assertThat(section.getDownStation()).isSameAs(station5),
-                () -> assertThat(section.getDistance().isEqualTo(1)).isTrue(),
+                () -> assertThat(section.hasSameDistanceAs(1)).isTrue(),
                 () -> assertThat(section3.getUpStation()).isSameAs(station5),
                 () -> assertThat(section3.getDownStation()).isSameAs(station4),
-                () -> assertThat(section3.getDistance().isEqualTo(3)).isTrue()
+                () -> assertThat(section3.hasSameDistanceAs(3)).isTrue()
         );
     }
 
@@ -178,7 +189,9 @@ public class SectionsTest {
         Section section2 = new Section(station2, station3, 3, blueLine);
         Section section3 = new Section(station3, station4, 4, blueLine);
         Section addSection = new Section(station1, station5, 12, blueLine);
-        Sections sections = new Sections(Arrays.asList(section1, section2, section3));
+        Sections sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section2);
+        sections.addSection(section3);
 
         // when
         Section resultSection = sections.addSection(addSection);
@@ -187,10 +200,10 @@ public class SectionsTest {
         assertAll(
                 () -> assertThat(resultSection.getUpStation()).isSameAs(station4),
                 () -> assertThat(resultSection.getDownStation()).isSameAs(station5),
-                () -> assertThat(resultSection.getDistance().isEqualTo(3)).isTrue(),
+                () -> assertThat(resultSection.hasSameDistanceAs(3)).isTrue(),
                 () -> assertThat(section3.getUpStation()).isSameAs(station3),
                 () -> assertThat(section3.getDownStation()).isSameAs(station4),
-                () -> assertThat(section3.getDistance().isEqualTo(4)).isTrue()
+                () -> assertThat(section3.hasSameDistanceAs(4)).isTrue()
         );
     }
 
@@ -202,7 +215,9 @@ public class SectionsTest {
         Section section2 = new Section(station2, station3, 3, blueLine);
         Section section3 = new Section(station3, station4, 4, blueLine);
         Section addSection = new Section(station5, station3, 4, blueLine);
-        Sections sections = new Sections(Arrays.asList(section1, section2, section3));
+        Sections sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section2);
+        sections.addSection(section3);
 
         // when
         Section resultSection = sections.addSection(addSection);
@@ -211,10 +226,10 @@ public class SectionsTest {
         assertAll(
                 () -> assertThat(resultSection.getUpStation()).isSameAs(station5),
                 () -> assertThat(resultSection.getDownStation()).isSameAs(station2),
-                () -> assertThat(resultSection.getDistance().isEqualTo(1)).isTrue(),
+                () -> assertThat(resultSection.hasSameDistanceAs(1)).isTrue(),
                 () -> assertThat(section1.getUpStation()).isSameAs(station1),
                 () -> assertThat(section1.getDownStation()).isSameAs(station5),
-                () -> assertThat(section1.getDistance().isEqualTo(1)).isTrue()
+                () -> assertThat(section1.hasSameDistanceAs(1)).isTrue()
         );
     }
 
@@ -226,7 +241,9 @@ public class SectionsTest {
         Section section2 = new Section(station2, station3, 3, blueLine);
         Section section3 = new Section(station3, station4, 4, blueLine);
         Section addSection = new Section(station5, station3, 11, blueLine);
-        Sections sections = new Sections(Arrays.asList(section1, section2, section3));
+        Sections sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section2);
+        sections.addSection(section3);
 
         // when
         Section resultSection = sections.addSection(addSection);
@@ -235,10 +252,245 @@ public class SectionsTest {
         assertAll(
                 () -> assertThat(resultSection.getUpStation()).isSameAs(station5),
                 () -> assertThat(resultSection.getDownStation()).isSameAs(station1),
-                () -> assertThat(resultSection.getDistance().isEqualTo(6)).isTrue(),
+                () -> assertThat(resultSection.hasSameDistanceAs(6)).isTrue(),
                 () -> assertThat(section1.getUpStation()).isSameAs(station1),
                 () -> assertThat(section1.getDownStation()).isSameAs(station2),
-                () -> assertThat(section1.getDistance().isEqualTo(2)).isTrue()
+                () -> assertThat(section1.hasSameDistanceAs(2)).isTrue()
+        );
+    }
+
+    @Test
+    @DisplayName("구간 목록에서 중간에 존재하는 구간 삭제 및 구간 역 조정")
+    void delete_section_by_station1() {
+        // when
+        int size = sections.getSections().size();
+        Distance distance = Distance.copyOn(section1);
+        distance.plusDistance(Distance.copyOn(section4));
+        Section section = sections.removeSectionByStation(station3);
+
+        // then
+        List<String> resultStationNames = sections.getSortedStations().stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        List<String> targetStationNames = Arrays.asList(station2, station1, station4, station5).stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(Arrays.equals(resultStationNames.toArray(), targetStationNames.toArray())).isTrue(),
+                () -> assertThat(section).isSameAs(section4),
+                () -> assertThat(section1.hasSameDistanceAs(distance)),
+                () -> assertThat(sections.getSections().size()).isEqualTo(size - 1)
+        );
+    }
+
+    @Test
+    @DisplayName("구간 목록에서 가장 처음에 존재하는 역을 포함하는 구간 삭제 및 구간 역 조정")
+    void delete_section_by_station2() {
+        // when
+        int size = sections.getSections().size();
+        Section section = sections.removeSectionByStation(station2);
+
+        // then
+        List<String> resultStationNames = sections.getSortedStations().stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        List<String> targetStationNames = Arrays.asList(station3, station1, station4, station5).stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(Arrays.equals(resultStationNames.toArray(), targetStationNames.toArray())).isTrue(),
+                () -> assertThat(section).isSameAs(section1),
+                () -> assertThat(sections.getSections().size()).isEqualTo(size - 1)
+        );
+    }
+
+    @Test
+    @DisplayName("구간 목록에서 가장 마지막에 존재하는 구간 삭제 및 구간 역 조정")
+    void delete_section_by_station3() {
+        // when
+        int size = sections.getSections().size();
+        Section section = sections.removeSectionByStation(station4);
+
+        // then
+        List<String> resultStationNames = sections.getSortedStations().stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        List<String> targetStationNames = Arrays.asList(station2, station3, station1, station5).stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(Arrays.equals(resultStationNames.toArray(), targetStationNames.toArray())).isTrue(),
+                () -> assertThat(section).isSameAs(section3),
+                () -> assertThat(sections.getSections().size()).isEqualTo(size - 1)
+        );
+    }
+
+    @Test
+    @DisplayName("구간 목록에서 가장 마지막 역을 포함하는 구간 삭제 및 구간 역 조정")
+    void delete_section_by_station4() {
+        // when
+        int size = sections.getSections().size();
+        Section section = sections.removeSectionByStation(station5);
+
+        // then
+        List<String> resultStationNames = sections.getSortedStations().stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        List<String> targetStationNames = Arrays.asList(station2, station3, station1, station4).stream()
+                .map(Station::toStationResponse)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(Arrays.equals(resultStationNames.toArray(), targetStationNames.toArray())).isTrue(),
+                () -> assertThat(section).isSameAs(section3),
+                () -> assertThat(sections.getSections().size()).isEqualTo(size - 1)
+        );
+    }
+
+    @Test
+    @DisplayName("노선 구간에 포함되지 않는 역 삭제 요청 시 예외처리")
+    void delete_section_by_notIncludingStation_exception() {
+        // given
+        Station station = new Station("신림역");
+
+        // then
+        assertThatThrownBy(() -> sections.removeSectionByStation(station))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("구간에 포함된 역이 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("마지막 남은 구간에 포함된 역 삭제 시도 시 예외처리")
+    void delete_section_by_lastStation_exception() {
+        // given
+        sections.removeSectionByStation(station2);
+        sections.removeSectionByStation(station3);
+        sections.removeSectionByStation(station1);
+
+        // then
+        assertAll(
+                () -> assertThatThrownBy(() -> sections.removeSectionByStation(station4))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage("마지막 구간에 포함된 역은 삭제할 수 없습니다."),
+                () -> assertThatThrownBy(() -> sections.removeSectionByStation(station5))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage("마지막 구간에 포함된 역은 삭제할 수 없습니다.")
+        );
+    }
+
+    @Test
+    @DisplayName("구간 추가 시 전, 후 구간 입력 확인")
+    void name() {
+        // given
+        Section section1 = new Section(station1, station2, 3);
+        Section section2 = new Section(station2, station3, 3);
+        Section section3 = new Section(station3, station4, 3);
+        Section section4 = new Section(station2, station5, 4);
+        Sections sections = new Sections(Arrays.asList(section1));
+
+        // when
+        sections.addSection(section2);
+        sections.addSection(section3);
+        sections.addSection(section4);
+
+        // then
+        assertAll(
+                () -> assertThat(section1.hasPreSection()).isFalse(),
+                () -> assertThat(section1.isPreSectionOf(section2)).isTrue(),
+                () -> assertThat(section2.isPreSectionOf(section4)).isTrue(),
+                () -> assertThat(section4.isPreSectionOf(section3)).isTrue(),
+                () -> assertThat(section3.hasPostSection()).isFalse(),
+                () -> assertThat(section3.isPostSectionOf(section4)).isTrue(),
+                () -> assertThat(section4.isPostSectionOf(section2)).isTrue(),
+                () -> assertThat(section2.isPostSectionOf(section1)).isTrue()
+        );
+    }
+
+    @Test
+    @DisplayName("중간 구간 제거 후 전후 구간 확인.")
+    void delete_section() {
+        // given
+        Section section1 = new Section(station1, station2, 3);
+        Section section2 = new Section(station2, station3, 3);
+        Section section3 = new Section(station3, station4, 3);
+        Section section4 = new Section(station4, station5, 4);
+        Sections sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section2);
+        sections.addSection(section3);
+        sections.addSection(section4);
+
+        // when
+        sections.removeSectionByStation(station2);
+
+        // then
+        assertAll(
+                () -> assertThat(section1.hasPreSection()).isFalse(),
+                () -> assertThat(section1.isPreSectionOf(section3)).isTrue(),
+                () -> assertThat(section3.isPreSectionOf(section4)).isTrue(),
+                () -> assertThat(section4.hasPostSection()).isFalse(),
+                () -> assertThat(section4.isPostSectionOf(section3)).isTrue(),
+                () -> assertThat(section3.isPostSectionOf(section1)).isTrue()
+        );
+    }
+
+    @Test
+    @DisplayName("선두 구간 제거 후 전후 구간 확인.")
+    void delete_section1() {
+        // given
+        Section section1 = new Section(station1, station2, 3);
+        Section section2 = new Section(station2, station3, 3);
+        Section section3 = new Section(station3, station4, 3);
+        Section section4 = new Section(station4, station5, 4);
+        Sections sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section2);
+        sections.addSection(section3);
+        sections.addSection(section4);
+
+        // when
+        sections.removeSectionByStation(station1);
+
+        // then
+        assertAll(
+                () -> assertThat(section2.hasPreSection()).isFalse(),
+                () -> assertThat(section2.isPreSectionOf(section3)).isTrue(),
+                () -> assertThat(section3.isPreSectionOf(section4)).isTrue(),
+                () -> assertThat(section4.hasPostSection()).isFalse(),
+                () -> assertThat(section4.isPostSectionOf(section3)).isTrue(),
+                () -> assertThat(section3.isPostSectionOf(section2)).isTrue()
+        );
+    }
+
+    @Test
+    @DisplayName("후미 구간 제거 후 전후 구간 확인.")
+    void delete_section2() {
+        // given
+        Section section1 = new Section(station1, station2, 3);
+        Section section2 = new Section(station2, station3, 3);
+        Section section3 = new Section(station3, station4, 3);
+        Section section4 = new Section(station4, station5, 4);
+        Sections sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section2);
+        sections.addSection(section3);
+        sections.addSection(section4);
+
+        // when
+        sections.removeSectionByStation(station5);
+
+        // then
+        assertAll(
+                () -> assertThat(section1.hasPreSection()).isFalse(),
+                () -> assertThat(section1.isPreSectionOf(section2)).isTrue(),
+                () -> assertThat(section2.isPreSectionOf(section3)).isTrue(),
+                () -> assertThat(section3.hasPostSection()).isFalse(),
+                () -> assertThat(section3.isPostSectionOf(section2)).isTrue(),
+                () -> assertThat(section2.isPostSectionOf(section1)).isTrue()
         );
     }
 }

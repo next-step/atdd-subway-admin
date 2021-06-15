@@ -85,6 +85,13 @@ public class LineService {
         return line.toLineResponse();
     }
 
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line findLine = findLineByIdOrThrow(lineId, "노선이 존재하지 않습니다.");
+        Station station = findStationByIdOrThrow(stationId, "등록된 역이 아닙니다.");
+        Section removedSection = findLine.createSections().removeSectionByStation(station);
+        findLine.removeSection(removedSection);
+    }
+
     private Section makeSection(Long upStationId, Long downStationId, int distance, Line line) {
         Station upStation = findStationByIdOrThrow(upStationId, "요청한 상행역은 등록되지 않은 역입니다.");
         Station downStation = findStationByIdOrThrow(downStationId, "요청한 하행역은 등록되지 않은 역입니다.");

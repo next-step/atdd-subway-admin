@@ -74,7 +74,10 @@ public class SectionRepositoryTest {
         section2 = new Section(station2, station3, 5, line);
         section3 = new Section(station3, station4, 2, line);
         section4 = new Section(station4, station5, 4, line);
-        sections = new Sections(Arrays.asList(section1, section2, section3, section4));
+        sections = new Sections(Arrays.asList(section1));
+        sections.addSection(section2);
+        sections.addSection(section3);
+        sections.addSection(section4);
         lineRepository.save(line);
     }
 
@@ -135,7 +138,7 @@ public class SectionRepositoryTest {
         assertAll(
                 () -> assertThat(savedSection.getUpStation()).isSameAs(station3),
                 () -> assertThat(savedSection.getDownStation()).isSameAs(station6),
-                () -> assertThat(savedSection.getDistance().isEqualTo(1)).isTrue()
+                () -> assertThat(savedSection.hasSameDistanceAs(1)).isTrue()
         );
     }
 }

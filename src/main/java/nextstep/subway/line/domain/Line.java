@@ -31,7 +31,7 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Line() {
@@ -57,6 +57,10 @@ public class Line extends BaseEntity {
 
     public Sections createSections() {
         return new Sections(this.sections);
+    }
+
+    public void removeSection(Section removedSection) {
+        this.sections.remove(removedSection);
     }
 
     public LineResponse toLineResponse() {

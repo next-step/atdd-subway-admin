@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
@@ -212,7 +213,7 @@ class LineServiceTest {
     @Test
     @DisplayName("기존 노선에 신규구간 추가")
     void createNewSection_toLine() {
-        // given -
+        // given
         Station station1 = new Station("강남역");
         Station station2 = new Station("교대역");
         Station station3 = new Station("서초역");
@@ -221,8 +222,9 @@ class LineServiceTest {
         // 기존에 저장된 노선과 구간들
         Line greenLine = new Line("2호선", "green");
         new Section(station1, station2, 3, greenLine);
-        new Section(station2, station3, 3, greenLine);
-        new Section(station3, station4, 3, greenLine);
+        Sections sections = greenLine.createSections();
+        sections.addSection(new Section(station2, station3, 3, greenLine));
+        sections.addSection(new Section(station3, station4, 3, greenLine));
 
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, 7);
         LineResponse line = greenLine.toLineResponse();
@@ -232,7 +234,6 @@ class LineServiceTest {
         given(stationRepository.findById(2L)).willReturn(Optional.of(station5));
 
         LineResponse lineResponse = service.appendNewSectionToLine(1L, sectionRequest);
-        System.out.println(lineResponse.toString());
 
         // then
         List<String> resultStationNames = lineResponse.getStations()
@@ -250,5 +251,88 @@ class LineServiceTest {
                 () -> assertThat(Arrays.equals(resultStationNames.toArray(), comparisonTargetStationNames.toArray()))
                         .isTrue()
         );
+    }
+
+    @Test
+    @DisplayName("구간 삭제 성공")
+    void delete_section() {
+        // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("교대역");
+        Station station3 = new Station("서초역");
+        Station station4 = new Station("방배역");
+        // 기존에 저장된 노선과 구간들
+        Line greenLine = new Line("2호선", "green");
+        new Section(station1, station2, 3, greenLine);
+        Sections sections = greenLine.createSections();
+        sections.addSection(new Section(station2, station3, 3, greenLine));
+        sections.addSection(new Section(station3, station4, 3, greenLine));
+
+        given(lineRepository.findById(anyLong())).willReturn(Optional.ofNullable(greenLine));
+        given(stationRepository.findById(anyLong())).willReturn(Optional.ofNullable(station2));
+
+        service.removeSectionByStationId(1L, 2L);
+
+        // then
+        assertThat(greenLine.createSections().getSections().size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("노선기준 구간 목록이 등록되지 않은 경우 예외처리")
+    void delete_section_exception1() {
+        // given
+        given(lineRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
+
+        // then
+        assertThatThrownBy(() -> service.removeSectionByStationId(1L, 2L))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("노선이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("조회된 역이 등록되지 않은 경우 예외처리")
+    void delete_section_exception2() {
+        // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("교대역");
+        Station station3 = new Station("서초역");
+        Station station4 = new Station("방배역");
+        // 기존에 저장된 노선과 구간들
+        Line greenLine = new Line("2호선", "green");
+        new Section(station1, station2, 3, greenLine);
+        new Section(station2, station3, 3, greenLine);
+        new Section(station3, station4, 3, greenLine);
+
+        given(lineRepository.findById(anyLong())).willReturn(Optional.ofNullable(greenLine));
+        given(stationRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
+
+        // then
+        assertThatThrownBy(() -> service.removeSectionByStationId(1L, 2L))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("등록된 역이 아닙니다. 역 ID : 2");
+    }
+
+    @Test
+    @DisplayName("노선 구간에 포함된 역이 아닌 경우 예외처리")
+    void delete_section_exception3() {
+        // given
+        Station station1 = new Station("강남역");
+        Station station2 = new Station("교대역");
+        Station station3 = new Station("서초역");
+        Station station4 = new Station("방배역");
+        Station station5 = new Station("사당역");
+        // 기존에 저장된 노선과 구간들
+        Line greenLine = new Line("2호선", "green");
+        new Section(station1, station2, 3, greenLine);
+        new Section(station2, station3, 3, greenLine);
+        new Section(station3, station4, 3, greenLine);
+
+        given(lineRepository.findById(anyLong())).willReturn(Optional.ofNullable(greenLine));
+        given(stationRepository.findById(anyLong())).willReturn(Optional.ofNullable(station5));
+
+        // then
+        assertThatThrownBy(() -> service.removeSectionByStationId(1L, 2L))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("구간에 포함된 역이 아닙니다.");
     }
 }

@@ -185,6 +185,84 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_요청_실패_메시지_확인됨(response, "상,하행역 모두 기존 노선에 포함된 역이 아닙니다.");
     }
 
+    @Test
+    @DisplayName("지하철 구간 삭제 요청")
+    void remove_section() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(greenLineResponse.getId(), 서초역.getId());
+
+        // then
+        지하철_구간_삭제됨(response);
+        조회된_노선에서_삭제된_역_포함되지_않음_확인(greenLineResponse.getId(), 서초역);
+    }
+
+    @Test
+    @DisplayName("등록되지 않은 노선으로 구간 삭제 요청 시 예외처리")
+    void remove_section_exception1() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(10L, 서초역.getId());
+
+        // then
+        등록되지_않은_지하철_구간_삭제요청_실패함(response);
+        지하철_구간_요청_실패_메시지_확인됨(response, "노선이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("등록되지 않은 역 삭제 요청 시 예외처리")
+    void remove_section_by_not_exist_station_exception() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(greenLineResponse.getId(), 1000L);
+
+        // then
+        등록되지_않은_지하철_역_삭제요청_실패함(response);
+        지하철_구간_요청_실패_메시지_확인됨(response, "등록된 역이 아닙니다. 역 ID : 1000");
+    }
+
+    @Test
+    @DisplayName("노선에 포함되지 않은 역 삭제 요청 시 예외처리")
+    void remove_section_by_notIncludingStation_exception() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(greenLineResponse.getId(), 대림역.getId());
+
+        // then
+        노선구간에_포함되지_않은_지하철_역_삭제요청_실패함(response);
+        지하철_구간_요청_실패_메시지_확인됨(response, "구간에 포함된 역이 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("마지막 하나의 구간만 남아있을 경우 구간에 포함 된 역 삭제 요청 시 예외처리")
+    void remove_section_by_lastSection_exception() {
+        // given
+        지하철_구간_삭제되어_있음(greenLineResponse.getId(), 강남역.getId());
+        지하철_구간_삭제되어_있음(greenLineResponse.getId(), 교대역.getId());
+        지하철_구간_삭제되어_있음(greenLineResponse.getId(), 서초역.getId());
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제_요청(greenLineResponse.getId(), 사당역.getId());
+
+        // then
+        마지막_남은_구간에_포함된_지하철_역_삭제요청_실패함(response);
+        지하철_구간_요청_실패_메시지_확인됨(response, "마지막 구간에 포함된 역은 삭제할 수 없습니다.");
+    }
+
+    private void 지하철_구간_삭제되어_있음(Long lineId, Long stationId) {
+        RestAssured.given().log().all()
+                .when()
+                .accept(MediaType.ALL_VALUE)
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_구간_삭제_요청(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .when()
+                .accept(MediaType.ALL_VALUE)
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .then().log().all()
+                .extract();
+    }
+
     private LineResponse 지하철_구간_생성되어_있음(LineResponse greenLineResponse, StationResponse upStationResponse,
                                         StationResponse downStationResponse, int distance) {
         return 지하철_구간_생성_요청(greenLineResponse.getId(), new SectionRequest(upStationResponse.getId(),
@@ -207,6 +285,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private void 지하철_노선_역_순서_확인됨(ExtractableResponse<Response> response, List<StationResponse> targetStations) {
         List<StationResponse> findStations = response.jsonPath().getList("stations", StationResponse.class);
         assertThat(findStations.containsAll(targetStations)).isTrue();
+    }
+
+    private void 조회된_노선에서_삭제된_역_포함되지_않음_확인(Long lineId, StationResponse 서초역) {
+        List<String> resultStationNames = LineAcceptanceTest.지하철_노선_조회_요청_공용(lineId)
+                .jsonPath()
+                .getList("stations", StationResponse.class)
+                .stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertThat(resultStationNames.contains(서초역.getName())).isFalse();
     }
 
     private void 지하철_구간_생성됨(ExtractableResponse<Response> response) {
@@ -243,6 +331,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 기존_구간에_등록되지_않은_역들_추가등록_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철_구간_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 등록되지_않은_지하철_구간_삭제요청_실패함(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 등록되지_않은_지하철_역_삭제요청_실패함(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 노선구간에_포함되지_않은_지하철_역_삭제요청_실패함(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 마지막_남은_구간에_포함된_지하철_역_삭제요청_실패함(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

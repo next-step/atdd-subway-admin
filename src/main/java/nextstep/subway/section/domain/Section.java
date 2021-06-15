@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
@@ -41,6 +42,14 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pre_section_id")
+    private Section preSection;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_section_id")
+    private Section postSection;
+
     protected Section() {
     }
 
@@ -66,7 +75,7 @@ public class Section extends BaseEntity {
         this.line.addSection(this);
     }
 
-    private Section(Station upStation, Station downStation) {
+    public Section(Station upStation, Station downStation) {
         this.upStation = Optional.ofNullable(upStation).orElseThrow(() ->
                 new IllegalArgumentException("상행역으로 Null을 입력할 수 없습니다."));
         this.downStation = Optional.ofNullable(downStation).orElseThrow(() ->
@@ -98,15 +107,144 @@ public class Section extends BaseEntity {
         return new ArrayList<>(Arrays.asList(this.upStation, this.downStation));
     }
 
-    public boolean containsStation(Station station) {
-        return upStation.equals(station) || downStation.equals(station);
+    public void updateDistance(Section section, Distance totalDistance) {
+        this.distance.plusDistance(section.distance).minusDistance(totalDistance);
+        section.distance.minusDistance(this.distance);
     }
 
-    public Section updateSection(Section section) {
-        this.upStation = section.upStation;
-        this.downStation = section.downStation;
-        this.distance = section.distance;
-        return this;
+    public void updateDistance(Distance totalDistance) {
+        this.distance.minusDistance(totalDistance);
+    }
+
+    public void updateStations(Section updateSection) {
+        this.upStation = updateSection.upStation;
+        this.downStation = updateSection.downStation;
+    }
+
+    public boolean hasSameDistanceAs(Distance targetDistance) {
+        return this.distance.isEqualTo(targetDistance);
+    }
+
+    public boolean hasSameDistanceAs(int distance) {
+        return this.distance.isEqualTo(distance);
+    }
+
+    public void addDistanceTo(Distance targetDistance) {
+        targetDistance.plusDistance(this.distance);
+    }
+
+    public boolean hasDistanceShorterThanOrEqualTo(Distance targetDistance) {
+        return targetDistance.isGreaterThanOrEqualTo(this.distance);
+    }
+
+    public boolean hasLongerDistanceThan(Distance targetDistance) {
+        return this.distance.isGreaterThan(targetDistance);
+    }
+
+    public boolean hasSameUpStationAs(Station targetStation) {
+        return this.upStation.equals(targetStation);
+    }
+
+    public boolean hasSameDownStationAs(Station targetStation) {
+        return this.downStation.equals(targetStation);
+    }
+
+    public boolean hasSameUpStationAsUpStationOf(Section targetSection) {
+        return this.upStation.equals(targetSection.upStation);
+    }
+
+    public boolean hasSameUpStationAsDownStationOf(Section targetSection) {
+        return this.upStation.equals(targetSection.downStation);
+    }
+
+    public boolean hasSameDownStationAsUpStationOf(Section targetSection) {
+        return this.downStation.equals(targetSection.upStation);
+    }
+
+    public boolean hasSameDownStationAsDownStationOf(Section targetSection) {
+        return this.downStation.equals(targetSection.downStation);
+    }
+
+    public void sumDistanceWith(Section section) {
+        this.distance.plusDistance(section.distance);
+    }
+
+    public void connectPreSection(Section preSection) {
+        this.preSection = preSection;
+        preSection.postSection = this;
+    }
+
+    public void connectPostSection(Section postSection) {
+        this.postSection = postSection;
+        postSection.preSection = this;
+    }
+
+    public void interceptPreSection(Section baseSection) {
+        if (baseSection.preSection != null) {
+            baseSection.preSection.postSection = this;
+        }
+        this.preSection = baseSection.preSection;
+        baseSection.preSection = this;
+        this.postSection = baseSection;
+    }
+
+    public void interceptPostSection(Section baseSection) {
+        if (baseSection.postSection != null) {
+            baseSection.postSection.preSection = this;
+        }
+        this.postSection = baseSection.postSection;
+        baseSection.postSection = this;
+        this.preSection = baseSection;
+    }
+
+    public Section getPostSection() {
+        return this.postSection;
+    }
+
+    public Section getPreSection() {
+        return this.preSection;
+    }
+
+    public boolean isPostSectionOf(Section targetSection) {
+        return targetSection.postSection.equals(this);
+    }
+
+    public boolean isPreSectionOf(Section targetSection) {
+        return targetSection.preSection.equals(this);
+    }
+
+    public boolean hasPostSection() {
+        return this.postSection != null;
+    }
+
+    public boolean hasPreSection() {
+        return this.preSection != null;
+    }
+
+    public void connectPreToPost() {
+        if (this.preSection != null) {
+            this.preSection.postSection = this.postSection;
+        }
+        if (this.postSection != null) {
+            this.postSection.preSection = this.preSection;
+        }
+        this.preSection = null;
+        this.postSection = null;
+    }
+
+    public boolean containStations(Section targetSection) {
+        return targetSection.containStation(this.upStation) || targetSection.containStation(this.downStation);
+    }
+
+    public boolean containStation(Station targetStation) {
+        return this.upStation.equals(targetStation) || this.downStation.equals(targetStation);
+    }
+
+    public void updatePreSectionInfo() {
+        if (preSection != null) {
+            preSection.downStation = this.downStation;
+            preSection.sumDistanceWith(this);
+        }
     }
 
     @Override
@@ -124,17 +262,6 @@ public class Section extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, distance, line);
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", upStation=" + upStation.toString() +
-                ", downStation=" + downStation.toString() +
-                ", distance=" + distance +
-                ", lineId=" + line.getId() +
-                '}';
     }
 
     private void validateSameStations(Station upStation, Station downStation) {
