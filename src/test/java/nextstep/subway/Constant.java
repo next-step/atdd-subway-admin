@@ -19,4 +19,5 @@ public class Constant {
     public static final String LOCATION = "Location";
     public static final String 강남역_이름 = "강남역";
     public static final String 양재역_이름 = "양재역";
+    public static final String 판교역_이름 = "판교역";
 }
