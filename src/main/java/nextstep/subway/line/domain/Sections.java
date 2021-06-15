@@ -27,45 +27,40 @@ public class Sections {
 
     public List<Station> getSortedStations() {
         List<Station> sortedStations = new ArrayList<>();
-        Section firstSection = findFirstStation();
-        addFirstSection(sortedStations, firstSection);
-        addNextStation(sortedStations, firstSection.getDownStation());
+        Section firstSection = findFirstSection();
+        firstSection.addStations(sortedStations);
+        addNextStation(sortedStations, firstSection);
         return sortedStations;
     }
 
-    private void addFirstSection(List<Station> sortedStations, Section firstSection) {
-        sortedStations.add(firstSection.getUpStation());
-        sortedStations.add(firstSection.getDownStation());
-    }
-
-    private void addNextStation(List<Station> stations, Station downStation) {
-        Optional<Section> nextSection = findNextSection(downStation);
-        while(nextSection.isPresent()){
-            Station currentStation = nextSection.get().getDownStation();
-            stations.add(currentStation);
-            nextSection = findNextSection(currentStation);
+    private void addNextStation(List<Station> stations, Section previousSection) {
+        Optional<Section> nextSection = findNextSection(previousSection);
+        while (nextSection.isPresent()) {
+            Section currentSection = nextSection.get();
+            currentSection.addNextStation(stations);
+            nextSection = findNextSection(currentSection);
         }
     }
 
-    private Optional<Section> findNextSection(Station station) {
+    private Optional<Section> findNextSection(Section previousSection) {
         return sections.stream()
-                .filter(section -> section.getUpStation().equals(station))
+                .filter(section -> section.isNextSection(previousSection))
                 .findFirst();
     }
 
-    private Section findFirstStation() {
+    private Section findFirstSection() {
         Section firstSection = sections.get(0);
-        Optional<Section> beforeSection = findPreviousSection(firstSection.getUpStation());
-        while(beforeSection.isPresent()){
-            firstSection = beforeSection.get();
-            beforeSection = findPreviousSection(firstSection.getUpStation());
+        Optional<Section> previousSection = findPreviousSection(firstSection);
+        while (previousSection.isPresent()) {
+            firstSection = previousSection.get();
+            previousSection = findPreviousSection(firstSection);
         }
         return firstSection;
     }
 
-    private Optional<Section> findPreviousSection(Station station) {
+    private Optional<Section> findPreviousSection(Section nextSection) {
         return sections.stream()
-                .filter(section -> section.getDownStation().equals(station))
+                .filter(section -> section.isPreviousSection(nextSection))
                 .findFirst();
     }
 
@@ -94,15 +89,15 @@ public class Sections {
                 .map(Section::toStations)
                 .flatMap(Collection::stream)
                 .distinct()
-                .noneMatch(station -> station.equals(sectionToAdd.getDownStation()) ||
-                        station.equals(sectionToAdd.getUpStation()));
+                .noneMatch(station -> sectionToAdd.isDownStationEqualsToStation(station) ||
+                        sectionToAdd.isUpStationEqualsToStation(station));
     }
 
     private boolean exists(Section sectionToAdd) {
         return sections.stream()
-                .anyMatch(section -> section.getUpStation().equals(sectionToAdd.getUpStation())) &&
+                .anyMatch(section -> section.isEqualsToUpStation(sectionToAdd)) &&
                 sections.stream()
-                        .anyMatch(section -> section.getDownStation().equals(sectionToAdd.getDownStation()));
+                        .anyMatch(section -> section.isEqualsToDownStation(sectionToAdd));
     }
 
     public List<Section> getSections() {

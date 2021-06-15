@@ -85,11 +85,44 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    private boolean isEqualsToUpStation(Section sectionToAdd) {
+    public boolean isEqualsToUpStation(Section sectionToAdd) {
         return upStation.equals(sectionToAdd.getUpStation());
     }
 
-    private boolean isEqualsToDownStation(Section sectionToAdd) {
+    public boolean isEqualsToDownStation(Section sectionToAdd) {
         return downStation.equals(sectionToAdd.getDownStation());
+    }
+
+    public void addStations(List<Station> stations) {
+        stations.add(upStation);
+        stations.add(downStation);
+    }
+
+    public boolean isNextSection(Section previousSection) {
+        return previousSection.isEqualsDownStationAndUpStation(upStation);
+    }
+
+    private boolean isEqualsDownStationAndUpStation(Station upStation) {
+        return downStation.equals(upStation);
+    }
+
+    public void addNextStation(List<Station> stations) {
+        stations.add(downStation);
+    }
+
+    public boolean isPreviousSection(Section nextSection) {
+        return nextSection.isEqualsUpStationAndDownStation(downStation);
+    }
+
+    private boolean isEqualsUpStationAndDownStation(Station downStation) {
+        return upStation.equals(downStation);
+    }
+
+    public boolean isDownStationEqualsToStation(Station station) {
+        return station.equals(downStation);
+    }
+
+    public boolean isUpStationEqualsToStation(Station station) {
+        return station.equals(upStation);
     }
 }
