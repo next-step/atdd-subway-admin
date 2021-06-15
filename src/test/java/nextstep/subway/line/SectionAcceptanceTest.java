@@ -191,9 +191,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// 지하철_역_등록되어_있음
 
 		// when
+		// 새로운_지하철_역_추가
+		Long stationId3 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("강남역")));
+
+		Long stationId4 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("선릉역")));
+
 		// 지하철_구간_추가_요청(상행역과 하행역 둘 중 하나도 포함되어 있지 않음)
+		ExtractableResponse<Response> addResponse = RestAssured
+			.given().log().all()
+			.body(new SectionRequest(stationId3, stationId4, 5))
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines" + "/" + lineId + "/sections")
+			.then().log().all()
+			.extract();
 
 		// then
 		// 에러_발생
+		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 }
