@@ -80,6 +80,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 * 구간 등록 인수 테스트 작성하고 BeforeEach 작성
 * 인수테스트에 관련 된 컨트롤러 작성
+* distance 원시 값을 포장 하도록 개발
 * 예외 처리 개발
     * 역 사이의 길이가 정상 적이지 않는 경우 테스트케이스 작성
     * 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
