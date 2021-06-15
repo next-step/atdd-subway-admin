@@ -60,16 +60,4 @@ public class Section {
 	public void setLine(Line line) {
 		this.line = line;
 	}
-
-	public boolean isPossibleWithUpStationIntersected(Section section) {
-		return this.upStation.equals(section.getUpStation())
-			&& !this.downStation.equals(section.getDownStation())
-			&& this.distance > section.distance;
-	}
-
-	public boolean isPossilbeWithDownStationIntersected(Section section) {
-		return !this.upStation.equals(section.getUpStation())
-			&& this.downStation.equals(section.getDownStation())
-			&& this.distance > section.distance;
-	}
 }
