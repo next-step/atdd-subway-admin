@@ -28,35 +28,45 @@ public class Sections {
 
 		validateCandidate(candidate);
 
-		Section sameUpStationSection = null;
-
-		for (Section section : list) {
-			if (candidate.getUpStation().equals(section.getUpStation())) {
-				sameUpStationSection = section;
-			}
-		}
-
-		if (sameUpStationSection != null) {
-			addList(sameUpStationSection, candidate, candidate.getDownStation(), sameUpStationSection.getDownStation());
-
+		if (addSectionWithCommonUpStation(candidate)) {
 			return;
 		}
 
-		Section sameDownStationSection = null;
-
-		for (Section section : list) {
-			if (candidate.getDownStation().equals(section.getDownStation())) {
-				sameDownStationSection = section;
-			}
-		}
-
-		if (sameDownStationSection != null) {
-			addList(sameDownStationSection, candidate, sameUpStationSection.getUpStation(), candidate.getUpStation());
-
+		if (addSectionWithCommonDownStation(candidate)) {
 			return;
 		}
 
 		list.add(candidate);
+	}
+
+	private boolean addSectionWithCommonDownStation(Section candidate) {
+		Section commonDownStationSection = list.stream()
+			.filter(x -> x.hasSameDownStation(candidate))
+			.findFirst().orElse(null);
+
+		if (commonDownStationSection != null) {
+			addList(commonDownStationSection, candidate, commonDownStationSection.getUpStation(),
+				candidate.getUpStation());
+
+			return true;
+		}
+		
+		return false;
+	}
+
+	private boolean addSectionWithCommonUpStation(Section candidate) {
+		Section commonUpStationSection = list.stream()
+			.filter(x -> x.hasSameUpStation(candidate))
+			.findFirst().orElse(null);
+
+		if (commonUpStationSection != null) {
+			addList(commonUpStationSection, candidate, candidate.getDownStation(),
+				commonUpStationSection.getDownStation());
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private void addList(Section targetSection, Section candidate, Station upStation, Station downStation) {
