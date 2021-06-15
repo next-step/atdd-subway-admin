@@ -40,7 +40,7 @@ public class Sections {
     private DockingPosition findSectionPosition(Section section) {
         DockingPosition position = DockingPosition.none();
         while (position.isNotDockedYet()) {
-            position = this.dockingPositionOn(position, section);
+            position = section.dockingPositionOn(sections, position);
             position.nextIndex();
         }
         position.subIndex();
@@ -48,36 +48,15 @@ public class Sections {
         return position;
     }
 
-    private DockingPosition dockingPositionOn(DockingPosition position, Section section) {
-        Section existSection = sections.get(position.index());
-        if (section.isInFrontOf(existSection)) {
-            section.handleAttributesOfFrontSection(sections, existSection);
-            return position.frontType();
-        }
-        if (section.isInMidFrontOf(existSection)) {
-            existSection.handleAttributesToConnectBehindOf(section);
-            return position.midFrontType();
-        }
-        if (section.isInMidRearOf(existSection)) {
-            existSection.handleAttributesToConnectInFrontOf(section);
-            return position.midRearType();
-        }
-        if (section.isBehindOf(existSection)) {
-            section.handleAttributesOfBackSection(sections, existSection);
-            return position.rearType();
-        }
-        return position.noneType();
-    }
-
     public void delete(Station station) {
         if (sections.size() <= 1) {
             throw new IllegalStateException("구간이 1개라서 삭제 할 수 없습니다.");
         }
 
-        handleDeletion(findPosition(station));
+        handleDeletion(findDeletePostion(station));
     }
 
-    private DeletePosition findPosition(Station station) {
+    private DeletePosition findDeletePostion(Station station) {
         DeletePosition deletePosition = DeletePosition.None();
         while (deletePosition.isNone() && deletePosition.index() < sections.size()) {
             deletePosition = checkDeletePosition(deletePosition, station);

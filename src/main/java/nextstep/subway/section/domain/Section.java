@@ -43,7 +43,28 @@ public class Section extends BaseEntity {
         return new Section(upStation, downStation, distance);
     }
 
-    public boolean isInFrontOf(Section section) {
+    protected DockingPosition dockingPositionOn(List<Section> sections, DockingPosition position) {
+        Section existSection = sections.get(position.index());
+        if (this.isInFrontOf(existSection)) {
+            this.handleAttributesOfFrontSection(sections, existSection);
+            return position.frontType();
+        }
+        if (this.isInMidFrontOf(existSection)) {
+            existSection.handleAttributesToConnectBehindOf(this);
+            return position.midFrontType();
+        }
+        if (this.isInMidRearOf(existSection)) {
+            existSection.handleAttributesToConnectInFrontOf(this);
+            return position.midRearType();
+        }
+        if (this.isBehindOf(existSection)) {
+            this.handleAttributesOfBackSection(sections, existSection);
+            return position.rearType();
+        }
+        return position.noneType();
+    }
+
+    protected boolean isInFrontOf(Section section) {
         return this.downStation.compareName(section.upStation());
     }
 
