@@ -130,6 +130,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선에_새로운_구간_등록_요청(신분당선.header("Location"), sectionParams);
 
 		// then
+		노선에_역이_등록되지_않는다(response);
+	}
+
+	private void 노선에_역이_등록되지_않는다(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@Test
+	@DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 익셉션 발생")
+	void checkDuplication() {
+		Map<String, String> sectionParams = new HashMap<>();
+		sectionParams.put("upStationId", 강남역.getId().toString());
+		sectionParams.put("downStationId", 광교역.getId().toString());
+		sectionParams.put("distance", "1");
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_새로운_구간_등록_요청(신분당선.header("Location"), sectionParams);
+
+		// then
+		노선에_역이_등록되지_않는다(response);
 	}
 }

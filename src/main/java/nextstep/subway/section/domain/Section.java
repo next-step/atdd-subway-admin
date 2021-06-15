@@ -2,7 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.exception.TooLongDistanceException;
+import nextstep.subway.section.exception.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Entity
-@Table(name = "section")
+@Table(name = "section", uniqueConstraints = {@UniqueConstraint(columnNames = {"upStationId", "downStationId"})})
 public class Section extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,7 +74,7 @@ public class Section extends BaseEntity {
 
 	private void checkDistance(Integer distance) {
 		if (this.distance <= distance) {
-			throw new TooLongDistanceException();
+			throw new InvalidSectionException();
 		}
 	}
 }
