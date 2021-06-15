@@ -119,4 +119,13 @@ public class SectionTest {
         // then
         assertThat(강남_판교_구간.getUpStation()).isEqualTo(광교역);
     }
+
+    @Test
+    @DisplayName("구간 내 역 존재 확인 테스트")
+    void isContainStation() {
+        // given & when & then
+        assertThat(강남_판교_구간.isContainStation(강남역)).isTrue();
+        assertThat(강남_판교_구간.isContainStation(판교역)).isTrue();
+        assertThat(강남_판교_구간.isContainStation(광교역)).isFalse();
+    }
 }
