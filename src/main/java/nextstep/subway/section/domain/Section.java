@@ -112,8 +112,7 @@ public class Section extends BaseEntity {
     }
 
     private void changeDistanceByNewSectionDistance(Distance newSectionDistance) {
-        int distanceDiff = this.distance.distanceDiffWithOtherDistance(newSectionDistance);
-        this.distance = Distance.from(distanceDiff);
+        this.distance = distance.distanceDiffWithOtherDistance(newSectionDistance);
     }
 
     public void setLine(Line line) {

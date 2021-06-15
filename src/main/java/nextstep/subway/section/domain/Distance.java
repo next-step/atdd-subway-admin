@@ -29,9 +29,9 @@ public class Distance {
         }
     }
 
-    public int distanceDiffWithOtherDistance(Distance other) {
+    public Distance distanceDiffWithOtherDistance(Distance other) {
         int distanceDiff = this.distance - other.getDistance();
-        return distanceDiff;
+        return Distance.from(distanceDiff);
     }
 
     public int getDistance() {
