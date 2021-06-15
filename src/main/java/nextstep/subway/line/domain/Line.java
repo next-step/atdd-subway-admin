@@ -34,6 +34,8 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
         this.addSection(section);
+        this.addLineStation(section.getUpStation());
+        this.addLineStation(section.getDownStation());
     }
 
     public void addSection(Section section) {
@@ -41,7 +43,8 @@ public class Line extends BaseEntity {
         section.setLine(this);
     }
 
-    public void addLineStation(LineStation lineStation){
+    public void addLineStation(Station station){
+        LineStation lineStation = new LineStation(station);
         this.lineStations.add(lineStation);
         lineStation.setLine(this);
     }

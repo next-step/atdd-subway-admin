@@ -20,7 +20,11 @@ public class LineStation extends BaseEntity {
     @JoinColumn(name = "station_id", foreignKey = @ForeignKey(name = "fk_lineStation_to_station"))
     private Station station;
 
-    public LineStation() {
+    protected LineStation() {
+    }
+
+    public LineStation(Station station) {
+        this.station = station;
     }
 
     public LineStation(Line line, Station station) {

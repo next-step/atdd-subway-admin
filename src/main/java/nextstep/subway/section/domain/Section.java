@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.lineStation.domain.LineStation;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
