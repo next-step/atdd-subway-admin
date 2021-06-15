@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 
 @ControllerAdvice(basePackages = "nextstep.subway.line.ui")
@@ -26,10 +27,10 @@ public class LineControllerAdvice {
         return response;
     }
 
-    @ExceptionHandler(NullPointerException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public void nullPointerException(NullPointerException e) {
+    public void entityNotFoundException(EntityNotFoundException e) {
         e.printStackTrace();
     }
 }

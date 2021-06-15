@@ -8,6 +8,7 @@ import nextstep.subway.line.dto.LinesResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -28,7 +29,7 @@ public class LineService {
 
     public LineResponse getLineById(Long id) {
         Optional<Line> line = lineRepository.findById(id);
-        return LineResponse.of(line.orElseThrow(() -> new NullPointerException(format("id가 %d인 노선이 존재 하지 않습니다.", id))));
+        return LineResponse.of(line.orElseThrow(() -> new EntityNotFoundException(format("id가 %d인 노선이 존재 하지 않습니다.", id))));
     }
 
     public LinesResponse getLines(LineRequest lineRequest) {
@@ -37,7 +38,7 @@ public class LineService {
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Optional<Line> line = lineRepository.findById(id);
-        Line updatingLine = line.orElseThrow(() -> new NullPointerException(format("id가 %d인 노선이 존재 하지 않습니다.", id)));
+        Line updatingLine = line.orElseThrow(() -> new EntityNotFoundException((format("id가 %d인 노선이 존재 하지 않습니다.", id))));
         lineRequest.changeValues(updatingLine);
 
         return LineResponse.of(lineRepository.save(updatingLine));
@@ -45,7 +46,7 @@ public class LineService {
 
     public void deleteLine(Long id) {
         Optional<Line> line = lineRepository.findById(id);
-        Line deletingLine = line.orElseThrow(() -> new NullPointerException(format("id가 %d인 노선이 존재 하지 않습니다.", id)));
+        Line deletingLine = line.orElseThrow(() -> new EntityNotFoundException((format("id가 %d인 노선이 존재 하지 않습니다.", id))));
         lineRepository.delete(deletingLine);
     }
 }
