@@ -37,7 +37,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params.put("name", "신분당선");
         params.put("upStationId", 양재역.getId() + "");
         params.put("downStationId", 정자역.getId() + "");
-        params.put("distance", "10");
+        params.put("distance", "20");
         신분당선 = 지하철_노선이_등록되어_있음(params);
     }
 
@@ -99,7 +99,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse 판교역 = 지하철역이_등록되어_있음("판교역");
 
         // when: 양재역, 판교역 구간 등록을 요청한다. 등록 시 구간 거리를 양재역, 정자역 구간 거리와 같은 값을 입력한다.
-        Map<String, String> params = 신규_구간_생성_파라미터(양재역.getId(), 판교역.getId(), 10);
+        Map<String, String> params = 신규_구간_생성_파라미터(양재역.getId(), 판교역.getId(), 20);
         ExtractableResponse<Response> response = 신규_구간_등록(params, 신분당선.getId());
 
         // then: 양재역, 판교역 구간 등록이 실패한다.
@@ -113,7 +113,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         StationResponse 판교역 = 지하철역이_등록되어_있음("판교역");
 
         // when: 양재역, 판교역 구간 등록을 요청한다. 등록 시 구간 거리를 양재역, 정자역 구간 거리보다 큰값을 입력한다.
-        Map<String, String> params = 신규_구간_생성_파라미터(양재역.getId(), 판교역.getId(), 11);
+        Map<String, String> params = 신규_구간_생성_파라미터(양재역.getId(), 판교역.getId(), 21);
         ExtractableResponse<Response> response = 신규_구간_등록(params, 신분당선.getId());
 
         // then: 양재역, 판교역 구간 등록이 실패한다.
@@ -142,6 +142,111 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 신규_구간_등록(params, 신분당선.getId());
         // then: 교대역, 매봉역 구간 등록이 실패한다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 구간_제거_구간_사이의_역_제거() {
+        // given: 양재역, 판교역, 정자역이 등록되어 있음
+        // given: 양재역-판교역(구간거리: 10), 판교역-정자역(구간거리: 10) 구간이 포함된 신분당선 노선이 등록되어 있음
+        Long 판교역_아이디 = 양재역_판교역_정자역_지하철_노선_생성();
+
+        // when: 판교역 구간을 제거 요청 한다
+        ExtractableResponse<Response> response = 구간_제거(신분당선.getId(), 판교역_아이디);
+
+        // then: 판교역 구간이 제거된다
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // then: 신분당선 노선 지하철역은 양재역, 정자역이다.
+        List<String> stationNames = 신분당선_노선_조회(신분당선.getId())
+                .getStations().stream().map(StationResponse::getName).collect(Collectors.toList());
+        assertThat(stationNames).containsExactly("양재역", "정자역");
+    }
+
+    @Test
+    void 구간_제거_상행_종점_제거() {
+        // given: 양재역, 판교역, 정자역이 등록되어 있음
+        // given: 양재역-판교역(구간거리: 10), 판교역-정자역(구간거리: 10) 구간이 포함된 신분당선 노선이 등록되어 있음
+        양재역_판교역_정자역_지하철_노선_생성();
+
+        // when: 양재역 구간을 제거 요청 한다
+        ExtractableResponse<Response> response = 구간_제거(신분당선.getId(), 양재역.getId());
+
+        // then: 양재역 구간이 제거된다
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // then: 신분당선 노선 지하철역은 판교역, 정자역이다.
+        List<String> stationNames = 신분당선_노선_조회(신분당선.getId())
+                .getStations().stream().map(StationResponse::getName).collect(Collectors.toList());
+        assertThat(stationNames).containsExactly("판교역", "정자역");
+    }
+
+    @Test
+    void 구간_제거_하행_종점_제거() {
+        // given: 양재역, 판교역, 정자역이 등록되어 있음
+        // given: 양재역-판교역(구간거리: 10), 판교역-정자역(구간거리: 10) 구간이 포함된 신분당선 노선이 등록되어 있음
+        양재역_판교역_정자역_지하철_노선_생성();
+
+        // when: 정자역 구간을 제거 요청 한다
+        ExtractableResponse<Response> response = 구간_제거(신분당선.getId(), 정자역.getId());
+
+        // then: 정자역 구간이 제거 된다
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // then: 신분당선 노선 지하철역은 판교역, 정자역이다.
+        List<String> stationNames = 신분당선_노선_조회(신분당선.getId())
+                .getStations().stream().map(StationResponse::getName).collect(Collectors.toList());
+        assertThat(stationNames).containsExactly("양재역", "판교역");
+    }
+
+    @Test
+    void 구간_제거_예외_존재하지_않는_노선의_구간을_삭제_요청() {
+        // given: 양재역, 판교역, 정자역이 등록되어 있음
+        // given: 양재역-판교역(구간거리: 10), 판교역-정자역(구간거리: 10) 구간이 포함된 신분당선 노선이 등록되어 있음
+        양재역_판교역_정자역_지하철_노선_생성();
+
+        // when: 정자역 구간을 제거 요청 한다
+        ExtractableResponse<Response> response = 구간_제거(99L, 양재역.getId());
+
+        // then: 양재역 구간 제거가 실패한다
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 구간_제거_예외_노선에_포함되어_있지_않은_지하철역_구간을_삭제_요청() {
+        // given: 양재역, 판교역, 정자역이 등록되어 있음
+        // given: 양재역-판교역(구간거리: 10), 판교역-정자역(구간거리: 10) 구간이 포함된 신분당선 노선이 등록되어 있음
+        양재역_판교역_정자역_지하철_노선_생성();
+
+        // given: 고속버스터미널역이 등록되어 있다
+        StationResponse 고속버스터미널역 = 지하철역이_등록되어_있음("고속버스터미널역");
+
+        // when: 고속버스터미널역 구간을 제거 요청 한다
+        ExtractableResponse<Response> response = 구간_제거(신분당선.getId(), 고속버스터미널역.getId());
+
+        // then: 고속버스터미널역 구간 제거가 실패한다
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 구간_제거_예외_구간이_하나만_존재하는_구간의_지하철역_구간을_삭제_요청() {
+        // given: 양재역, 정자역이 등록되어 있음
+        // when: 양재역 구간을 제거 요청 한다
+        ExtractableResponse<Response> response = 구간_제거(신분당선.getId(), 양재역.getId());
+
+        // then: 양재역 구간 삭제가 실패한다
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> 구간_제거(Long 노선_아이디, Long 지하철역_아이디) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete(String.format("/lines/%s/sections?stationId=%s", 노선_아이디, 지하철역_아이디))
+                .then().log().all()
+                .extract();
+    }
+
+    private Long 양재역_판교역_정자역_지하철_노선_생성() {
+        StationResponse 판교역 = 지하철역이_등록되어_있음("판교역");
+        Map<String, String> params = 신규_구간_생성_파라미터(양재역.getId(), 판교역.getId(), 10);
+        신규_구간_등록(params, 신분당선.getId());
+        return 판교역.getId();
     }
 
     private ExtractableResponse<Response> 신규_구간_등록(Map<String, String> params, Long 신분당선_노선_아이디) {
