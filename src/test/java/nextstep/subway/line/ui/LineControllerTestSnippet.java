@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import org.springframework.http.MediaType;
 
-public class LineControllerTest {
+public class LineControllerTestSnippet {
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
         return RestAssured.given().log().all()

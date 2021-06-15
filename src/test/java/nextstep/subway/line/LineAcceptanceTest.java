@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.line.ui.LineControllerTest.*;
+import static nextstep.subway.line.ui.LineControllerTestSnippet.*;
 import static nextstep.subway.utils.ExtractableResponseUtil.extractIdInResponses;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
