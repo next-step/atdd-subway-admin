@@ -29,7 +29,7 @@ public class SectionService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId)
             .orElseThrow(EntityNotFoundException::new);
-        List<Section> sections = line.getOrderLineSections();
+        List<Section> sections = line.getOrderedLineSections();
         Section newSection = getSection(sectionRequest);
         Optional<Section> containSection = getContainsSection(sections, newSection);
 
