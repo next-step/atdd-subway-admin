@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +22,15 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+    public LineResponse saveLine(LineRequest lineRequest, Section section) {
+        Line line = lineRequest.toLine();
+        line.addSection(section);
+        Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
 
     @Transactional(readOnly = true)
-    public List<LineResponse> searchLineAll() {
+    public List<LineResponse> findAllLine() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
                 .map(LineResponse::of)
@@ -35,7 +38,7 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse searchLine(Long lineId) {
+    public LineResponse findLine(Long lineId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선 ID입니다."));
         return LineResponse.of(line);
     }
@@ -55,5 +58,6 @@ public class LineService {
             throw new DuplicateNameException("이미 존재하는 노선 이름입니다.");
         }
     }
+
 
 }

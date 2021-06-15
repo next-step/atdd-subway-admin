@@ -1,11 +1,11 @@
 package nextstep.subway.line.ui;
 
-import nextstep.subway.exception.DuplicateNameException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.springframework.dao.DataIntegrityViolationException;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.service.SectionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,27 +16,31 @@ import java.util.List;
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(final LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
+
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity saveLine(@RequestBody LineRequest lineRequest) {
         lineService.validateCheck(lineRequest);
-        LineResponse line = lineService.saveLine(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+        Section section = sectionService.saveSection(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        LineResponse response = lineService.saveLine(lineRequest, section);
+        return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
     @GetMapping
     public ResponseEntity getLines() {
-        List<LineResponse> line = lineService.searchLineAll();
+        List<LineResponse> line = lineService.findAllLine();
         return ResponseEntity.ok(line);
     }
 
     @GetMapping("/{lineId}")
     public ResponseEntity getLine(@PathVariable Long lineId) {
-        LineResponse line = lineService.searchLine(lineId);
+        LineResponse line = lineService.findLine(lineId);
         return ResponseEntity.ok(line);
     }
 

@@ -5,6 +5,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -24,8 +26,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        StationResponse upStation = StationAcceptanceTest.saveStation("강남역");
+        StationResponse downStation = StationAcceptanceTest.saveStation("교대역");
+        Map<String, String> params = generateLineParam("2호선","green", upStation.getId(), downStation.getId(), 1000);
 
         // when
         ExtractableResponse<Response> response = saveLine(params);
@@ -40,7 +45,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        StationResponse upStation = StationAcceptanceTest.saveStation("강남역");
+        StationResponse downStation = StationAcceptanceTest.saveStation("교대역");
+        Map<String, String> params = generateLineParam("2호선","green", upStation.getId(), downStation.getId(), 1000);
         saveLine(params);
 
         // when
@@ -56,10 +63,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        StationResponse upStation = StationAcceptanceTest.saveStation("강남역");
+        StationResponse downStation = StationAcceptanceTest.saveStation("교대역");
+        Map<String, String> params = generateLineParam("2호선","green", upStation.getId(), downStation.getId(), 1000);
         saveLine(params);
-        Map<String, String> newParams = generateLineParam("3호선","orange");
-        saveLine(newParams);
 
         // when
         ExtractableResponse<Response> response = searchLines();
@@ -70,32 +77,41 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(lineResponse -> lineResponse.getName())
                 .collect(Collectors.toList());
         assertThat(names).contains(params.get("name"));
-        assertThat(names).contains(newParams.get("name"));
+
+        LineResponse lineResponseList = response.jsonPath().getList(".", LineResponse.class).get(0);
+        assertThat(lineResponseList.getStations().get(0).getName()).isEqualTo(upStation.getName());
+        assertThat(lineResponseList.getStations().get(1).getName()).isEqualTo(downStation.getName());
     }
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        StationResponse upStation = StationAcceptanceTest.saveStation("강남역");
+        StationResponse downStation = StationAcceptanceTest.saveStation("교대역");
+        Map<String, String> params = generateLineParam("2호선","green", upStation.getId(), downStation.getId(), 1000);
         ExtractableResponse<Response> expect = saveLine(params);
-        LineResponse savedLine = expect.jsonPath().getObject(".", LineResponse.class);
+        long savedId = convertToId(expect.header("Location"));
 
         // when
-        ExtractableResponse<Response> response = searchLine(savedLine.getId());
+        ExtractableResponse<Response> response = searchLine(savedId);
         LineResponse searchedLine = response.jsonPath().getObject(".", LineResponse.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(savedLine.getId()).isEqualTo(searchedLine.getId());
-        assertThat(savedLine.getName()).isEqualTo(searchedLine.getName());
+        assertThat(params.get("name")).isEqualTo(searchedLine.getName());
+    }
+
+    private long convertToId(String location) {
+        return Long.valueOf(location.replaceAll("/lines/",""));
+
     }
 
     @DisplayName("지하철 노선 조회 실패")
     @Test
     void getLineWithWrongId() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        Map<String, String> params = generateLineParam("2호선","green", 1l, 2l, 1000);
         saveLine(params);
 
         // when
@@ -110,13 +126,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        StationResponse upStation = StationAcceptanceTest.saveStation("강남역");
+        StationResponse downStation = StationAcceptanceTest.saveStation("교대역");
+        Map<String, String> params = generateLineParam("2호선","green", upStation.getId(), downStation.getId(), 1000);
         ExtractableResponse<Response> expect = saveLine(params);
+        long savedId = convertToId(expect.header("Location"));
         LineResponse savedLine = expect.jsonPath().getObject(".", LineResponse.class);
-        Map<String, String> updatedParam = generateLineParam("3호선","orange");
+        Map<String, String> updatedParam = generateLineParam("3호선","orange",upStation.getId(), downStation.getId(), 1000);
 
         // when
-        ExtractableResponse<Response> response = editLine(savedLine.getId(), updatedParam);
+        ExtractableResponse<Response> response = editLine(savedId, updatedParam);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -131,12 +150,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Map<String, String> params = generateLineParam("2호선","green");
+        StationResponse upStation = StationAcceptanceTest.saveStation("강남역");
+        StationResponse downStation = StationAcceptanceTest.saveStation("교대역");
+        Map<String, String> params = generateLineParam("2호선","green", upStation.getId(), downStation.getId(), 1000);
         ExtractableResponse<Response> expect = saveLine(params);
-        LineResponse savedLine = expect.jsonPath().getObject(".", LineResponse.class);
+        long savedId = convertToId(expect.header("Location"));
 
         // when
-        ExtractableResponse<Response> response = removeLine(savedLine.getId());
+        ExtractableResponse<Response> response = removeLine(savedId);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -152,10 +173,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private Map<String, String> generateLineParam(String name, String color) {
+    private Map<String, String> generateLineParam(String name, String color, long upStationId, long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", String.valueOf(upStationId));
+        params.put("downStationId", String.valueOf(downStationId));
+        params.put("distance", String.valueOf(distance));
         return params;
     }
 
@@ -187,7 +211,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-
     private ExtractableResponse<Response> editLine(long lineId, Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
@@ -197,5 +220,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+
 
 }
