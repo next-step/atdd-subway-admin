@@ -1,9 +1,11 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -24,20 +26,44 @@ public class Sections {
 			return;
 		}
 
-		Section targetSection = getTargetSection(candidate);
+		validateCandidate(candidate);
 
-		if (targetSection.isPossibleWithUpStationIntersected(candidate)) {
-			addList(targetSection, candidate, candidate.getDownStation(), targetSection.getDownStation());
+		Section sameUpStationSection = null;
+
+		for (Section section : list) {
+			if (candidate.getUpStation().equals(section.getUpStation())) {
+				sameUpStationSection = section;
+			}
+		}
+
+		if (sameUpStationSection != null) {
+			addList(sameUpStationSection, candidate, candidate.getDownStation(), sameUpStationSection.getDownStation());
 
 			return;
 		}
 
-		addList(targetSection, candidate, targetSection.getUpStation(), candidate.getUpStation());
+		Section sameDownStationSection = null;
 
-		return;
+		for (Section section : list) {
+			if (candidate.getDownStation().equals(section.getDownStation())) {
+				sameDownStationSection = section;
+			}
+		}
+
+		if (sameDownStationSection != null) {
+			addList(sameDownStationSection, candidate, sameUpStationSection.getUpStation(), candidate.getUpStation());
+
+			return;
+		}
+
+		list.add(candidate);
 	}
 
 	private void addList(Section targetSection, Section candidate, Station upStation, Station downStation) {
+		if (targetSection.getDistance() - candidate.getDistance() <= 0) {
+			throw new IllegalArgumentException("The distance between new section must be less than target section");
+		}
+
 		list.add(
 			new Section(targetSection.getLine(), upStation, downStation,
 				targetSection.getDistance() - candidate.getDistance()));
@@ -45,13 +71,21 @@ public class Sections {
 		list.remove(targetSection);
 	}
 
-	private Section getTargetSection(Section candidate) {
-		return list.stream()
-			.filter(
-				element -> element.isPossibleWithUpStationIntersected(candidate)
-					|| element.isPossilbeWithDownStationIntersected(candidate))
-			.findFirst()
-			.orElseThrow(() -> new NoSuchElementException("There is no such section"));
+	private void validateCandidate(Section candidate) {
+		Set<Station> stations = new HashSet<>();
+
+		for (Section section : list) {
+			stations.add(section.getUpStation());
+			stations.add(section.getDownStation());
+		}
+
+		if (stations.contains(candidate.getUpStation()) && stations.contains(candidate.getDownStation())) {
+			throw new IllegalArgumentException("Each two stations are already in the line");
+		}
+
+		if (!stations.contains(candidate.getUpStation()) && !stations.contains(candidate.getDownStation())) {
+			throw new NoSuchElementException("There is no such section");
+		}
 	}
 
 	public List<Station> getOrderedStations() {
