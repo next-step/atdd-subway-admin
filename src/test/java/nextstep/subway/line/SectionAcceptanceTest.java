@@ -167,13 +167,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void stationThatIsAlreadyRegisteredCantBeRegistered() {
 		// given
 		// 지하철_역_등록되어_있음
-		setUpStations();
 
 		// when
 		// 지하철_구간_추가_요청(상행역, 하행역이 이미 노선에 존재)
+		ExtractableResponse<Response> addResponse = RestAssured
+			.given().log().all()
+			.body(new SectionRequest(stationId1, stationId2, 5))
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/lines" + "/" + lineId + "/sections")
+			.then().log().all()
+			.extract();
 
 		// then
 		// 에러_발생
+		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
 	@DisplayName("상행역과 하행역 둘 중 하나라도 포함되어 있지 않으면 등록할 수 없다.")
@@ -181,7 +189,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void stationsInSectionMustHaveOneStationInLine() {
 		// given
 		// 지하철_역_등록되어_있음
-		setUpStations();
 
 		// when
 		// 지하철_구간_추가_요청(상행역과 하행역 둘 중 하나도 포함되어 있지 않음)
