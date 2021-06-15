@@ -58,8 +58,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## 미션 단계
 
 ### Step3
-- [ ] 기능 구현 전 Happy Path 인수 테스트 작성
-- [ ] 예외 케이스 처리 인수 테스트 작성
+- [x] 기능 구현 전 Happy Path 인수 테스트 작성
+- [x] 예외 케이스 처리 인수 테스트 작성
 - [ ] 구간등록 기능 구현 및 테스트 통과하기
 
 ### Step2
