@@ -13,12 +13,6 @@ import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 public class SectionAcceptanceMethods {
-
-    public static void 지하철_구간_생성됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        // TODO 응답값이 존재할 경우 추가 검증
-    }
-
     public static ExtractableResponse<Response> 지하철_구간_생성_요청(
         StationResponse upStation, StationResponse downStation, int distance) {
         SectionRequest request = new SectionRequest(upStation.getId(), downStation.getId(), distance);
@@ -29,5 +23,15 @@ public class SectionAcceptanceMethods {
             .when().post("/lines/{id}/sections", 신분당선.getId())
             .then().log().all().extract();
         return response;
+    }
+
+    public static void 지하철_구간_생성됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+        // TODO 응답값이 존재할 경우 추가 검증
+    }
+
+    public static void 지하철_구간_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
