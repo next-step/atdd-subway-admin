@@ -1,3 +1,70 @@
+# Step1 - 지하철 노선 관리
+## 요구사항
+- [x] 지하철 노선 관련 기능의 인수 테스트를 작성하기(LineAcceptanceTest)
+  - [x] 기능 목록: 생성 / 목록 조회 / 조회 / 수정 / 삭제 
+  - [x] 기능 구현 전 인수 테스트 작성 
+  - [x] 기능 구현 후 인수 테스트 리팩터링
+
+## 기능 구현 목록
+- [x] 인수 테스트 작성
+  - [x] 노선 생성
+  - [x] 노선 생성 예외, 중복된 이름
+  - [x] 노선 목록 조회
+  - [x] 노선 목록 조회 예외, 데이터 없는 경우
+  - [x] 노선 목록 검색
+  - [x] 노선 목록 검색 예외, 데이터 없는 경우
+  - [X] 노선 ID 조건 조회
+  - [X] 노선 ID 조건 조회 예외, 데이터 없는 경우
+  - [x] 노선 수정
+  - [x] 노선 수정 예외, 데이터 없는 경우
+  - [x] 노선 수정 예외, 중복된 이름
+  - [x] 노선 삭제
+    
+- [x] 기능 구현
+  - [x] 노선 생성
+  - [x] 노선 생성 예외, 중복된 이름
+  - [x] 노선 목록 조회
+  - [x] 노선 목록 조회 예외, 데이터 없는 경우
+  - [x] 노선 목록 검색
+  - [x] 노선 목록 검색 예외, 데이터 없는 경우
+  - [X] 노선 ID 조건 조회
+  - [X] 노선 ID 조건 조회 예외, 데이터 없는 경우
+  - [x] 노선 수정
+  - [x] 노선 수정 예외, 데이터 없는 경우
+  - [x] 노선 수정 예외, 중복된 이름
+  - [x] 노선 삭제
+    
+- [x] 기능 리팩토링
+  - [x] 노선 생성
+  - [x] 노선 생성 예외, 중복된 이름
+  - [x] 노선 목록 조회
+  - [x] 노선 목록 조회 예외, 데이터 없는 경우
+  - [x] 노선 목록 검색
+  - [x] 노선 목록 검색 예외, 데이터 없는 경우
+  - [x] 노선 ID 조건 조회
+  - [x] 노선 ID 조건 조회 예외, 데이터 없는 경우
+  - [x] 노선 수정
+  - [x] 노선 수정 예외, 데이터 없는 경우
+  - [x] 노선 수정 예외, 중복된 이름
+  - [x] 노선 삭제
+
+- [x] 테스트 리팩토링
+  - [x] ExtractableResponse
+    - [x] 단일 응답에 대해 Location 헤더를 사용한 id 추출 기능 분리 및 적용
+    - [x] 여러 응답에 대해 Location 헤더를 사용한 id 추출 기능 분리 및 적용
+  - [x] LinesResponse
+    - [x] getIds() 구현 및 적용
+  
+# 피드백 목록
+- [x] Line id 조건 조회 절에 NPE 대신 EntityNotFoundException 적용
+- [x] EntityNotFoundException에 해당하는 ControllerAdvice 메소드 구현
+- [x] Line 서비스에서 update 처리하도록 수정
+- [x] Bean Validation 적용
+- [X] Line 목록 조회시 204 No content 대신 빈 배열 반환 처리
+- [x] LineControllerTest 클래스 명을 LineControllerTestSnippet 으로 변경
+- [x] 불필요한 getIds() 제거
+---
+
 <p align="center">
     <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
 </p>

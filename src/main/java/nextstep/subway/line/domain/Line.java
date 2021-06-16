@@ -1,6 +1,6 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.entity.BaseEntity;
 
 import javax.persistence.*;
 
@@ -13,7 +13,7 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
