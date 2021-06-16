@@ -12,11 +12,11 @@ import org.springframework.http.MediaType;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.AcceptanceTest.ID_POSITION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineStepTest {
 
-    public static final int ID_POSITION = 2;
     public static final String BASE_LINE_URL = "/lines";
 
     static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {

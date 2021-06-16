@@ -56,7 +56,7 @@ public class StationStepTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    static long 지하철_역_등록되어_있음(StationRequest request) {
+    public static long 지하철_역_등록되어_있음(StationRequest request) {
         ExtractableResponse<Response> createdStation = 지하철_역_생성_요청(request);
         return extractIdByLocationHeader(createdStation);
     }

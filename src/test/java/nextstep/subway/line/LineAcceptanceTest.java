@@ -8,6 +8,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.line.LineStepTest.*;
+import static nextstep.subway.station.StationAcceptanceTest.TEST_GANGNAM_STATION;
+import static nextstep.subway.station.StationAcceptanceTest.TEST_YUCKSAM_STATION;
+import static nextstep.subway.station.StationStepTest.지하철_역_등록되어_있음;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -20,6 +23,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(TEST_FIRST_LINE);
+
+        // then
+        지하철_노선_생성됨(response);
+    }
+
+    @DisplayName("두 종점역은 구간의 형태로 관리되는 지하철 노선을 생성한다.")
+    @Test
+    void createLineWithSection() {
+        //given
+        long kangnamId = 지하철_역_등록되어_있음(TEST_GANGNAM_STATION);
+        long yucksamId = 지하철_역_등록되어_있음(TEST_YUCKSAM_STATION);
+
+        LineRequest firstLine = new LineRequest("1호선", "red", kangnamId, yucksamId, 10L);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(firstLine);
 
         // then
         지하철_노선_생성됨(response);
