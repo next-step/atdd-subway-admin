@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.section.SectionAcceptanceTest.지하철_구간_추가;
 import static nextstep.subway.station.StationAcceptanceTest.지하철_역_생성되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,10 +25,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private LineRequest lineRequest;
+    private long 서울역;
+    private long 의정부역;
 
     @BeforeEach
     public void setup() {
-        lineRequest = new LineRequest("4호선", "blue", getStationId("서울역"), getStationId("안산역"), 5);
+        서울역 = getStationId("서울역");
+        의정부역 = getStationId("의정부역");
+        lineRequest = new LineRequest("4호선", "blue", 서울역, getStationId("안산역"), 10);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -70,6 +76,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         //given
         String createdLocationUri = 지하철_노선_등록되어_있음(lineRequest);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선_조회(createdLocationUri);
+
+        //then
+        지하철_노선_조회됨(createdLocationUri, response);
+    }
+
+    @DisplayName("지하철 노선 추가 후 노선을 조회한다.")
+    @Test
+    void getSectionAddedLine() {
+        //given
+        String createdLocationUri = 지하철_노선_등록되어_있음(lineRequest);
+        String lineId = createdLocationUri.split("/")[2];
+        지하철_구간_추가(lineId, new SectionRequest(서울역, getStationId("사당역"), 5));
+        지하철_구간_추가(lineId, new SectionRequest(의정부역, 서울역, 10));
 
         //when
         ExtractableResponse<Response> response = 지하철_노선_조회(createdLocationUri);
