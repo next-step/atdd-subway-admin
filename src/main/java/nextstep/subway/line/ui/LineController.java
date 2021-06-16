@@ -57,12 +57,4 @@ public class LineController {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
-
-    @PostMapping(value = "/{id}/sections")
-    public ResponseEntity<LineResponse> addSection(
-            @PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        // TODO 기능 구현
-        LineResponse line = lineService.saveSection(id, sectionRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
-    }
 }

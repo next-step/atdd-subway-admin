@@ -32,11 +32,15 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         checkLineExistence(request.getName());
-        Line line = request.toLine();
 
-        Station upStation = getStationById(request.getUpStationId());
-        Station downStation = getStationById(request.getDownStationId());
-        line.addSection(new Section(upStation, downStation, request.getDistance()));
+        Line line = request.toLine();
+        return saveLine(line, request);
+    }
+
+    public LineResponse saveLine(Line line, SectionRequest section) {
+        Station upStation = getStationById(section.getUpStationId());
+        Station downStation = getStationById(section.getDownStationId());
+        line.addSection(new Section(upStation, downStation, section.getDistance()));
         Line persistLine = lineRepository.save(line);
 
         return LineResponse.of(persistLine);
@@ -76,20 +80,8 @@ public class LineService {
         lineRepository.delete(line);
     }
 
-    private Line getLineById(Long id) {
+    public Line getLineById(Long id) {
         return lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchLineException("존재하지 않는 노선 ID 입니다."));
-    }
-
-    public LineResponse saveSection(Long lineId, SectionRequest request) {
-        Line line = getLineById(lineId);
-
-        Station upStation = getStationById(request.getUpStationId());
-        Station downStation = getStationById(request.getDownStationId());
-        line.addSection(new Section(upStation, downStation, request.getDistance()));
-        Line persistLine = lineRepository.save(line);
-
-        return LineResponse.of(persistLine);
-
     }
 }
