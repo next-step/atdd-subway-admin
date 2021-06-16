@@ -31,7 +31,7 @@ public class StationResponse {
 
 	public static List<StationResponse> ofList(List<Station> stations) {
 		return stations.stream()
-			.map(station -> StationResponse.of(station))
+			.map(StationResponse::of)
 			.collect(Collectors.toList());
 	}
 
