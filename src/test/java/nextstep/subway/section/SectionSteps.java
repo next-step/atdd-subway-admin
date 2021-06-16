@@ -23,7 +23,7 @@ public class SectionSteps {
         Integer lineId = response.jsonPath().get("id");
         return RestAssured.given().log().all()
                 .when()
-                .delete("/lines" + lineId + "/sections?stationId=" + stationId)
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
                 .then().log().all()
                 .extract();
     }
