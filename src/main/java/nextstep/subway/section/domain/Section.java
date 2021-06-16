@@ -50,4 +50,16 @@ public class Section extends BaseEntity {
     public Station getDownStation() {
         return downStation;
     }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
 }
