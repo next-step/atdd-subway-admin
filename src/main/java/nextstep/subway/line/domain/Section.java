@@ -1,9 +1,6 @@
 package nextstep.subway.line.domain;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -62,9 +59,35 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public List<Station> getStations() {
-        return Stream.of(upStation, downStation)
-            .collect(Collectors.toList());
+    public boolean isLongerThan(Section section) {
+        return this.distance > section.distance;
+    }
+
+    public boolean mergeable(Section section) {
+        return upStation == section.upStation
+                ^ downStation == section.downStation;
+    }
+
+    public Section reducedBy(Section section) {
+        validateReducible(section);
+
+        if (this.upStation == section.upStation) {
+            return new Section(
+                section.downStation, this.downStation, this.distance - section.distance);
+        }
+
+        return new Section(
+            this.upStation, section.upStation, this.distance - section.distance);
+    }
+
+    private void validateReducible(Section section) {
+        if (!this.mergeable(section)) {
+            throw new InvalidSectionException("구간을 축소하려면 병합 가능해야 합니다");
+        }
+
+        if (!this.isLongerThan(section)) {
+            throw new InvalidSectionException("0 이하로 축소할 수 없습니다.");
+        }
     }
 
     public void setLine(Line line) {

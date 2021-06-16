@@ -5,6 +5,7 @@ import static nextstep.subway.line.domain.SectionConverter.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -17,9 +18,6 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
-    private static final long NO_MATCH = 0L;
-    private static final long ALL_MATCH = 2L;
-
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> values = new LinkedList<>();
 
@@ -27,7 +25,7 @@ public class Sections {
     }
 
     public List<Station> getStationsInAscending() {
-        return stationsInOrder(values);
+        return getStationsInOrder(values);
     }
 
     public boolean contains(Section section) {
@@ -37,38 +35,35 @@ public class Sections {
     public void addSection(Section section) {
         validateSection(section);
 
-        if (values.isEmpty()) {
-            values.add(section);
-            return;
-        }
-
-        // TODO merge
-        validateStations(section);
+        updateSection(section);
         values.add(section);
+    }
+
+    private void updateSection(Section section) {
+        Optional<Section> target = values.stream()
+            .filter(s -> s.mergeable(section))
+            .findAny();
+
+        if (target.isPresent()) {
+            Section oldSection = target.get();
+            values.remove(oldSection);
+            values.add(oldSection.reducedBy(section));
+        }
     }
 
     private void validateSection(Section section) {
         if (Objects.isNull(section)) {
             throw new IllegalArgumentException("null 인 구간을 추가할 수는 없습니다.");
         }
-    }
 
-    private void validateStations(Section section) {
-        long matchCount = containsCount(section);
-        if (matchCount == NO_MATCH) {
-            throw new InvalidSectionException("연결할 역이 없습니다.");
-        }
-
-        if (matchCount == ALL_MATCH) {
-            throw new InvalidSectionException("두 역은 이미 연결되어 있습니다.");
+        if (!values.isEmpty() && allOrNothingMatches(section)) {
+            throw new InvalidSectionException("구간의 역은 오직 하나만 노선에 존재해야 합니다.");
         }
     }
 
-    private long containsCount(Section section) {
+    private boolean allOrNothingMatches(Section section) { // XOR Existence Check
         Set<Station> stations = getStations(values);
-        return section.getStations()
-            .stream()
-            .filter(stations::contains)
-            .count();
+        return stations.contains(section.upStation())
+                == stations.contains(section.downStation());
     }
 }

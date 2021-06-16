@@ -14,11 +14,15 @@ import nextstep.subway.station.domain.Station;
 
 public class SectionConverter {
 
-    // TODO 구간 길이가 적절한지 검증
+    public static Set<Station> getStations(List<Section> sections) {
+        return getRelations(sections)
+            .entrySet()
+            .stream()
+            .flatMap(e -> Stream.of(e.getKey(), e.getValue()))
+            .collect(toSet());
+    }
 
-    // TODO 새로운 역을 연결하는 방법에 대해 고민
-
-    public static List<Station> stationsInOrder(List<Section> sections) {
+    public static List<Station> getStationsInOrder(List<Section> sections) {
         Map<Station, Station> relations = getRelations(sections);
 
         List<Station> stations = new ArrayList<>();
@@ -39,14 +43,6 @@ public class SectionConverter {
             .filter(s -> !relations.containsValue(s))
             .findAny()
             .orElseThrow(() -> new TerminusNotFoundException("출발역이 존재하지 않습니다."));
-    }
-
-    public static Set<Station> getStations(List<Section> sections) {
-        return getRelations(sections)
-            .entrySet()
-            .stream()
-            .flatMap(e -> Stream.of(e.getKey(), e.getValue()))
-            .collect(toSet());
     }
 
     private static Map<Station, Station> getRelations(List<Section> sections) {
