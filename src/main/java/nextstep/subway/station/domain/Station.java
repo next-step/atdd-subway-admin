@@ -1,8 +1,11 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.lineStation.domain.LineStation;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Station extends BaseEntity {
@@ -13,11 +16,19 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
+    @OneToMany(mappedBy = "station", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LineStation> lineStations = new ArrayList<>();
+
     public Station() {
     }
 
     public Station(String name) {
         this.name = name;
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        this.lineStations.add(lineStation);
+        lineStation.setStation(this);
     }
 
     public Long getId() {
@@ -26,5 +37,9 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public List<LineStation> getLineStations() {
+        return this.lineStations;
     }
 }

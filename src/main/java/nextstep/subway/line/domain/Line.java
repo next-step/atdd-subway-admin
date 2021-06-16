@@ -1,10 +1,13 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.lineStation.domain.LineStation;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,6 +24,9 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LineStation> lineStations = new ArrayList<>();
+
     protected Line() {
     }
 
@@ -28,11 +34,19 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
         this.addSection(section);
+        this.addLineStation(section.getUpStation());
+        this.addLineStation(section.getDownStation());
     }
 
-    private void addSection(Section section) {
+    public void addSection(Section section) {
         this.sections.addSection(section);
         section.setLine(this);
+    }
+
+    public void addLineStation(Station station){
+        LineStation lineStation = new LineStation(station);
+        this.lineStations.add(lineStation);
+        lineStation.setLine(this);
     }
 
     public void update(Line line) {
@@ -56,8 +70,8 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    public List<Section> getSectionsList(){
-        return sections.getSection();
+    public List<Station> getStationList(){
+        return sections.getStationList();
     }
 
     public void updateLine(Line updateLine) {

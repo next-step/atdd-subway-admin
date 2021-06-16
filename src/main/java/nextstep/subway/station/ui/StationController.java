@@ -30,14 +30,14 @@ public class StationController {
         return ResponseEntity.ok().body(stationService.findAllStations());
     }
 
+    @GetMapping(value = "/stations/{id}")
+    public ResponseEntity showStation(@PathVariable Long id) {
+        return ResponseEntity.ok().body(stationService.findById(id));
+    }
+
     @DeleteMapping("/stations/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
     }
 }

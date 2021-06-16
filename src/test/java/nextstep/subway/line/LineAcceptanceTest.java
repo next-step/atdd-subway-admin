@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
@@ -106,16 +107,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         지하철역_여러_생성();
         지하철_노선_등록(new LineRequest("1호선", "Purple", 1L, 2L, 10));
-
+        지하철_노선_추가_등록(new SectionRequest(2L, 3L, 10), 1L);
+        지하철_노선_추가_등록(new SectionRequest(3L, 4L, 10), 1L);
+        지하철_노선_추가_등록(new SectionRequest(2L, 5L, 5), 1L);
+        
         // when
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> searchLine = 지하철_노선_조회(1L);
 
         // then
         // 지하철_노선_응답됨
-        assertThat(searchLine.jsonPath().getList("stations").size()).isEqualTo(2);
+        assertThat(searchLine.jsonPath().getList("stations").size()).isEqualTo(5);
         assertThat(searchLine.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(searchLine.jsonPath().getString("name")).isEqualTo("1호선");
+        assertThat(searchLine.jsonPath().getString("stations[2].name")).isEqualTo("강남역");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -223,6 +227,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(stationRequest)
                 .when()
                 .post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    ExtractableResponse<Response> 지하철_노선_추가_등록(SectionRequest sectionRequest, Long lineId) {
+        return RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{id}/sections", lineId)
                 .then().log().all()
                 .extract();
     }

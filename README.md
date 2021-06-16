@@ -137,7 +137,9 @@ host: localhost:49468
 
 ---
 
-## 2단계 - 인수 테스트 리팩터링
+<details>
+<summary style="font-Weight: bold; font-siz:25px;"> 2단계 - 인수 테스트 리팩터링 </summary>
+<div>
 
 ### 요구사항
 
@@ -179,3 +181,39 @@ public class Line {
 * section 과 station 관계 설정
 * (수정) section 에 upStation과 downStation, distance가 상태값으로 있는 구조로 수정
   * 1호선엔 a-b 구간 b-c 구간 으로 관리 되어야함
+
+</div>
+</details>
+
+---
+
+## 3단계 - 구간 추가 기능
+
+### 요구사항 정의
+#### 역 사이에 새로운 역을 등록할 경우
+* 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
+```
+asis A-C 7m  추가 구간 A-B 4m
+beto A-B, B-C 각각 4m, 3m
+```
+#### 새로운 역을 상행 종점으로 등록할 경우
+```
+asis A-B 4m 추가 구간 C-A 3m
+beto C-A, A-B 각각 3m, 4m
+```
+#### 새로운 역을 하행 종점으로 등록할 경우
+```
+asis A-B 4m 추가 구간 B-C 3m
+beto A-B, B-C 각각 4m, 3m
+```
+
+### 예외 케이스
+* 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+* 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+* 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+    
+### 수정 내역 피드백
+* Line과 Station 의 N:M 연관관계를 매핑하는 LineStation add 로직 관계를 알 수 있도록 구현
+* 동일 선의 Service 레이어는 서로 의존을 지양한다. -> 계속해서 의존하게 되면 스파게티 코드가 될 수 있음.
+* (추가 수정) 각 컴포넌트의 공통 Exception 을 핸들러해주는 ```@RestControllerAdvice``` 를 구현 ( 컨트롤러의 모든 Exception을 핸들함 )
+    * ```@RestController``` 는 하나의 컨트롤러만 핸들러
