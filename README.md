@@ -60,3 +60,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 2단계 - 인수 테스트 리팩터링
 [바로가기](./markdown/step2.md)
+
+3단계 - 구간 추가 기능
+[바로가기](./markdown/step3.md)

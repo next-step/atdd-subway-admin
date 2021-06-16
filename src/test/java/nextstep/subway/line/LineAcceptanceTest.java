@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,20 +13,28 @@ import static nextstep.subway.station.StationAcceptanceStep.지하철역_등록�
 
 @DisplayName("지하철 노선 관련 기능") //Feature
 public class LineAcceptanceTest extends AcceptanceTest {
+    private StationResponse 용산역;
+    private StationResponse 서울역;
+    private StationResponse 신도림역;
+    private StationResponse 구로역;
 
     //Background
     @BeforeEach
     public void setUp() {
         super.setUp();
-        지하철역_등록되어_있음("용산역");
-        지하철역_등록되어_있음("서울역");
+
+        // given
+        용산역 = 지하철역_등록되어_있음("용산역").as(StationResponse.class);
+        서울역 = 지하철역_등록되어_있음("서울역").as(StationResponse.class);
+        신도림역 = 지하철역_등록되어_있음("신도림역").as(StationResponse.class);
+        구로역 = 지하철역_등록되어_있음("구로역").as(StationResponse.class);
     }
 
     @DisplayName("지하철 노선을 생성할 때 두 종점역을 추가하여 생성한다.") //Scenario
     @Test
     void createSectionsLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("1호선", "blue", 1L,2L, 10);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("1호선", "blue", 용산역.getId(), 서울역.getId(), 10);
 
         // then
         지하철_노선_생성됨(response);
@@ -35,10 +44,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        지하철_노선_등록되어_있음("1호선", "blue", 1L,2L, 10);
+        지하철_노선_등록되어_있음("1호선", "blue", 용산역.getId(), 서울역.getId(), 10);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("1호선", "blue", 1L,2L, 10);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("1호선", "blue", 용산역.getId(), 서울역.getId(), 10);
 
         // then
         지하철_노선_생성_실패됨(response);
@@ -48,8 +57,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        ExtractableResponse<Response> expected1 = 지하철_노선_등록되어_있음("1호선", "blue", 1L,2L, 10);
-        ExtractableResponse<Response> expected2 = 지하철_노선_등록되어_있음("2호선", "green", 1L,2L, 10);
+        ExtractableResponse<Response> expected1 = 지하철_노선_등록되어_있음("1호선", "blue", 용산역.getId(), 서울역.getId(), 10);
+        ExtractableResponse<Response> expected2 = 지하철_노선_등록되어_있음("2호선", "green", 신도림역.getId(), 구로역.getId(), 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -63,7 +72,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> expected = 지하철_노선_등록되어_있음("2호선", "green", 1L,2L, 10);
+        ExtractableResponse<Response> expected = 지하철_노선_등록되어_있음("2호선", "green", 용산역.getId(), 서울역.getId(), 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(expected);
@@ -76,7 +85,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> givenResponse = 지하철_노선_등록되어_있음("1호선", "blue", 1L,2L, 10);
+        ExtractableResponse<Response> givenResponse = 지하철_노선_등록되어_있음("1호선", "blue", 용산역.getId(), 서울역.getId(), 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(givenResponse, "1호선", "pink");
@@ -89,7 +98,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> givenResponse = 지하철_노선_등록되어_있음("1호선", "blue", 1L,2L, 10);
+        ExtractableResponse<Response> givenResponse = 지하철_노선_등록되어_있음("1호선", "blue", 용산역.getId(), 서울역.getId(), 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(givenResponse);
