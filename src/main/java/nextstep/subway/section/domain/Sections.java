@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -9,11 +10,13 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
     private static final String ONE_MUST_MATCH_EXCEPTION = "상/하행선 둘 중 하나는 일치해야 합니다.";
     private static final String SAME_SECTION_ADD_EXCEPTION = "동일한 구간은 추가할 수 없습니다.";
+    private static final String CANNOT_DELETE_EXCEPTION = "역을 제거할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Section> sections = new ArrayList<>();
@@ -117,6 +120,46 @@ public class Sections {
         }
         if (isUpStationExist && isDownStationExist) {
             throw new RuntimeException(SAME_SECTION_ADD_EXCEPTION);
+        }
+    }
+
+    public void deleteSection(Line line, Station station) {
+        validDeleteSection(station);
+        deleteMiddleSection(line, station);
+        deleteEndSection(station);
+    }
+
+    private List<Section> deleteSectionList(Station station) {
+        return sections.stream()
+                .filter(it -> it.upStation() != station && it.downStation() != station)
+                .collect(Collectors.toList());
+    }
+
+    private void deleteMiddleSection(Line line, Station station) {
+        if (deleteCondition(station)) {
+            Section upSection = findBeforeSection(station);
+            Section downSection = findAfterSection(station);
+            Section section = new Section(line, upSection.upStation(), downSection.downStation(), upSection.distance()+downSection.distance());
+            this.sections = deleteSectionList(station);
+            addSection(section);
+        }
+    }
+
+    private void deleteEndSection(Station station) {
+        if (!deleteCondition(station)) {
+            this.sections = deleteSectionList(station);
+        }
+    }
+
+    private boolean deleteCondition(Station station) {
+        boolean hasBefore= isBeforeSection(station);
+        boolean hasAfter = isAfterSection(station);
+        return hasBefore && hasAfter;
+    }
+
+    private void validDeleteSection(Station station) {
+        if (!isStationExist(station) || sections.size() == 1) {
+            throw new RuntimeException(CANNOT_DELETE_EXCEPTION);
         }
     }
 }
