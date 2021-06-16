@@ -58,25 +58,53 @@ class SectionsTest {
     @DisplayName("역 사이에 새로운 역을 등록한다.")
     @Test
     void registerNewSectionTest() {
-        //given
+        // given
         Station 양재시민의숲역 = Station.of(7L, "양재시민의숲역");
         Section given = new Section(양재역, 양재시민의숲역, 1);
 
-        //when
+        // when
         sections.registerNewSection(given);
 
-        //then
+        // then
         assertThat(sections.getSortedStations()).containsExactly(강남역, 양재역, 양재시민의숲역, 청계산입구역, 판교역, 수지구청역, 광교역);
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 때 기존의 역 간격보다 큰 간격을 등록할 수 없다.")
     @Test
     void registerNewSectionFailTest() {
-        //given
+        // given
         Station 양재시민의숲역 = Station.of(7L, "양재시민의숲역");
         Section given = new Section(양재역, 양재시민의숲역, 10);
 
         // when & then
-        assertThatThrownBy(() -> sections.registerNewSection(given)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> sections.registerNewSection(given))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("존재하지 않는 역을 제거하려고 하면 예외가 발생한다.")
+    @Test
+    void canNotRemoveNotFoundStationTest() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(강남역, 양재역, 2));
+        sections.add(new Section(양재역, 청계산입구역, 2));
+
+        // when & then
+        assertThatThrownBy(() -> sections.removeSectionByStation(판교역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("등록되어있지 않은 역으로 구간을 제거할 수 없습니다.");
+    }
+
+    @DisplayName("구간이 한개만 존재할때 구간을 제거하려고 하면 예외가 발생한다.")
+    @Test
+    void canNotRemoveExistOnlyOneSection() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(강남역, 양재역, 2));
+
+        // when & then
+        assertThatThrownBy(() -> sections.removeSectionByStation(강남역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간이 하나만 존재할 경우 제거할 수 없습니다.");
     }
 }

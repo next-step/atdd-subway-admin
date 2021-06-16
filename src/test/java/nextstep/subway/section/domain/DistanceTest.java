@@ -18,12 +18,12 @@ public class DistanceTest {
         );
     }
 
-    @DisplayName("other 거리를 입력하면 거리간의 차이값이 절대값으로 구해진다.")
+    @DisplayName("other 거리를 입력하면 거리간의 차이값이 구해진다.")
     @Test
     void distanceDiffWithOtherDistance() {
         // given
-        Distance standard = Distance.from(10);
-        Distance other = Distance.from(15);
+        Distance standard = Distance.from(15);
+        Distance other = Distance.from(10);
         Distance expected = Distance.from(5);
 
         // when
