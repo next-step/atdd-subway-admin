@@ -4,7 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineResponses;
+import nextstep.subway.line.dto.LinesResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +24,9 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public LineResponses findAll() {
+    public LinesResponse findAll() {
         List<Line> lines = lineRepository.findAll();
-        return LineResponses.of(lines);
+        return LinesResponse.of(lines);
     }
 
     public LineResponse retrieveById(Long id) {

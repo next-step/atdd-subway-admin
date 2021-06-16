@@ -5,8 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineResponses;
-import org.assertj.core.api.Assertions;
+import nextstep.subway.line.dto.LinesResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -74,7 +73,7 @@ public class LineStepTest {
     }
 
     static void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, Long...ids) {
-        LineResponses lines = response.body().as(LineResponses.class);
+        LinesResponse lines = response.body().as(LinesResponse.class);
         List<Long> resultIds = lines.getLines().stream()
                 .map(line -> line.getId())
                 .collect(Collectors.toList());
