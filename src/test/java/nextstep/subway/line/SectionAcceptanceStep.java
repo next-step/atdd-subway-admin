@@ -12,15 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static nextstep.subway.line.application.LineQueryService.LINE_NAME_DUPLICATED_EXCEPTION_MESSAGE;
 import static nextstep.subway.line.domain.Distance.BIGGER_THAN_DISTANCE_EXCEPTION_MESSAGE;
-import static nextstep.subway.line.domain.Sections.EXISTS_SECTION_EXCEPTION_MESSAGE;
-import static nextstep.subway.line.domain.Sections.NOT_EXISTS_ALL_STATIONS_EXCEPTION_MESSAGE;
+import static nextstep.subway.line.domain.Sections.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SectionAcceptanceStep {
-    public static final String RESOURCES = "/sections";
+    public static final String SECTION_RESOURCES = "/sections";
+    public static final String LINE_RESOURCES = "/lines";
     public static final String UP_STATION_ID = "upStationId";
     public static final String DOWN_STATION_ID = "downStationId";
     public static final String DISTANCE = "distance";
@@ -34,7 +33,7 @@ public class SectionAcceptanceStep {
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/" + lineId + RESOURCES)
+                .when().post(LINE_RESOURCES + "/" + lineId + SECTION_RESOURCES)
                 .then().log().all().extract();
     }
 
@@ -72,5 +71,31 @@ public class SectionAcceptanceStep {
     public static void 지하철_노선에_지하철역_존재하지않아_등록할수_없음(ExtractableResponse<Response> response) {
         assertThat(response.jsonPath().getObject("", ErrorResponse.class).getMessage())
                 .isEqualTo(NOT_EXISTS_ALL_STATIONS_EXCEPTION_MESSAGE);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_구간_삭제_요청(Long lineId, Long stationId) {
+        return RestAssured
+                .given().log().all()
+                .param("stationId", stationId)
+                .when().delete(LINE_RESOURCES + "/" + lineId + "/sections")
+                .then().log().all().extract();
+    }
+
+    public static void 지하철_노선_구간_삭제_요청_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 지하철_노선_구간_삭제_요청_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static void 지하철_노선에_지하철역_존재하지않아_삭제할수_없음(ExtractableResponse<Response> response) {
+        assertThat(response.jsonPath().getObject("", ErrorResponse.class).getMessage())
+                .isEqualTo(NOT_EXISTS_STATION_EXCEPTION_MESSAGE);
+    }
+
+    public static void 지하철_노선에_지하철역_한개만_존재할수_없음(ExtractableResponse<Response> response) {
+        assertThat(response.jsonPath().getObject("", ErrorResponse.class).getMessage())
+                .isEqualTo(AT_LEAST_ONE_SECTION_EXCEPTION_MESSAGE);
     }
 }

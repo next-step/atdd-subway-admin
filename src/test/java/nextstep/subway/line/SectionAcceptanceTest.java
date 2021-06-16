@@ -21,7 +21,6 @@ import static nextstep.subway.station.StationAcceptanceStep.지하철역_등록�
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
-    private Map<String, String> createParams;
     private StationResponse 강남역;
     private StationResponse 광교역;
     private StationResponse 정자역;
@@ -39,7 +38,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         정자역 = 지하철역_등록되어_있음("정자역").as(StationResponse.class);
         광교중앙역 = 지하철역_등록되어_있음("광교중앙역").as(StationResponse.class);
 
-        createParams = new HashMap<>();
+        Map<String, String> createParams = new HashMap<>();
         createParams.put("name", "신분당선");
         createParams.put("color", "bg-red-600");
         createParams.put("upStationId", 강남역.getId() + "");
@@ -109,5 +108,80 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_구간_생성_요청_실패됨(response);
         지하철_노선에_지하철역_존재하지않아_등록할수_없음(response);
+    }
+
+    @DisplayName("요청한 구간의 중간역을 제거하면 제거된 역을 기준으로 상행, 하행역을 이어준다.")
+    @Test
+    void removeMiddleSection() {
+        // given
+        지하철_노선에_지하철역_등록되어_있음(신분당선.getId(), 강남역.getId(), 광교중앙역.getId(), 1);
+        지하철_노선에_지하철역_등록되어_있음(신분당선.getId(), 정자역.getId(), 광교역.getId(), 1);
+        List<StationResponse> expected = Arrays.asList(
+                강남역,
+                광교중앙역,
+                광교역
+        );
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(신분당선.getId(), 정자역.getId());
+
+        // then
+        지하철_노선_구간_삭제_요청_응답됨(response);
+
+        // when
+        LineResponse lineResponse = 지하철_노선_조회_요청(신분당선.getId()).as(LineResponse.class);
+
+        // then
+        지하철_노선에_정렬된_지하철역_목록_포함됨(expected, lineResponse.getStations());
+    }
+
+    @DisplayName("요청한 구간의 종점역을 제거한다.")
+    @Test
+    void removeStartOrEndSection() {
+        // given
+        지하철_노선에_지하철역_등록되어_있음(신분당선.getId(), 강남역.getId(), 광교중앙역.getId(), 1);
+        지하철_노선에_지하철역_등록되어_있음(신분당선.getId(), 정자역.getId(), 광교역.getId(), 1);
+        List<StationResponse> expected = Arrays.asList(
+                강남역,
+                정자역,
+                광교중앙역
+        );
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(신분당선.getId(), 광교역.getId());
+
+        // then
+        지하철_노선_구간_삭제_요청_응답됨(response);
+
+        // when
+        LineResponse lineResponse = 지하철_노선_조회_요청(신분당선.getId()).as(LineResponse.class);
+
+        // then
+        지하철_노선에_정렬된_지하철역_목록_포함됨(expected, lineResponse.getStations());
+    }
+
+    @DisplayName("삭제할 구간이 존재하지 않을 경우 삭제할 수 없다.")
+    @Test
+    void removeEmptySection() {
+        // given
+        지하철_노선에_지하철역_등록되어_있음(신분당선.getId(), 정자역.getId(), 광교역.getId(), 1);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(신분당선.getId(), 광교중앙역.getId());
+
+        // then
+        지하철_노선_구간_삭제_요청_실패됨(response);
+        지하철_노선에_지하철역_존재하지않아_삭제할수_없음(response);
+    }
+
+    @DisplayName("삭제할 구간이 하나만 존재할 경우 삭제할 수 없다.")
+    @Test
+    void removeOnlyOneSection() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제_요청(신분당선.getId(), 강남역.getId());
+
+        // then
+        지하철_노선_구간_삭제_요청_실패됨(response);
+        지하철_노선에_지하철역_한개만_존재할수_없음(response);
     }
 }
