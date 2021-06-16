@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ResponseBodyExtractionOptions;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
@@ -39,11 +40,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
         //given 상행선&&하행선을 포함한 노선1,2 생성
-        ExtractableResponse<Response> responseUpStation = StationAcceptanceTest.requestCreateStation("상행선");
-        ExtractableResponse<Response> responseDownStation = StationAcceptanceTest.requestCreateStation("하행선");
-
-        savedUpStationId = responseUpStation.jsonPath().getObject(".", StationResponse.class).getId();
-        savedDownStationId = responseDownStation.jsonPath().getObject(".", StationResponse.class).getId();
+        savedUpStationId = StationAcceptanceTest.requestCreateStation("상행선").as(StationResponse.class).getId();
+        savedDownStationId = StationAcceptanceTest.requestCreateStation("하행선").as(StationResponse.class).getId();
 
         savedLineResponse1 = requestCreateLine(FIRST_LINE_NAME, BLACK_LINE_COLOR, savedUpStationId, savedDownStationId, 10);
         savedLineResponse2 = requestCreateLine(SECOND_LINE_NAME, RED_LINE_COLOR, savedUpStationId, savedDownStationId, 5);
@@ -78,7 +76,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertHttpStatus(response, HttpStatus.OK);
         assertThat(response.jsonPath().getObject(".", LineResponse.class)).isNotNull();
         assertThat(response.jsonPath().getList("stations").size()).isEqualTo(2);
-
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -153,10 +150,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> requestCreateLine(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public static ExtractableResponse<Response> requestCreateLine(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = makeParams(name, color, upStationId, downStationId, distance);
+        return requestCreateLine(params);
+    }
+    public static ExtractableResponse<Response> requestCreateLine(Map<String, String> createParams) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(createParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(LINE_REQUEST_PATH)
@@ -164,7 +164,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> requestUpdateLine(Map<String, String> params, Long id) {
+    public static ExtractableResponse<Response> requestUpdateLine(Map<String, String> params, Long id) {
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -173,21 +173,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> requestDeleteLine(Long id) {
+    public static ExtractableResponse<Response> requestDeleteLine(Long id) {
         return RestAssured
                 .given().log().all()
                 .when().delete(LINE_REQUEST_PATH + "/" + id)
                 .then().log().all().extract();
     }
 
-    private Map<String, String> makeParams(String name, String color) {
+    public static Map<String, String> makeParams(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
         return params;
     }
 
-    private Map<String, String> makeParams(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public static Map<String, String> makeParams(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);

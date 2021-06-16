@@ -117,7 +117,34 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 새로운_역을_상행종점으로_등록할때() {
-        // 강남역-광교역 + 판교역-강남역 = 판교역-강남역-광교역
+        // when 지하철_노선에_지하철역_등록_요청
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId",판교역.getId() + "");
+        params.put("downStationId",강남역.getId() + "");
+        params.put("distance", 4 + "");
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/"+신분당선.getId()+"/sections")
+                .then().log().all().extract();
+        // then 지하철_노선에_지하철역_등록됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // 역순서 확인 강남역-광교역 + 판교역-강남역 = 판교역-강남역-광교역
+        List<String> expectedLineIds = Stream.of(판교역, 강남역, 광교역)
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        ExtractableResponse<Response> lineResponse = RestAssured
+                .given().log().all()
+                .when().get("lines/1")
+                .then().log().all().extract();
+
+        List<String> actualLineIds = lineResponse.jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+        assertThat(actualLineIds).isEqualTo(expectedLineIds);
     }
 
     @Test
