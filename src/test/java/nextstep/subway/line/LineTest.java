@@ -40,7 +40,7 @@ public class LineTest {
         구간_등록(강남역, 양재역, 30);
         구간_등록(양재역, 판교역, 20);
 
-        List<Station> result = 신분당선.getStations();
+        List<Station> result = 신분당선.assembleStations();
 
         assertThat(result).contains(강남역);
         assertThat(result).contains(판교역);
@@ -52,7 +52,7 @@ public class LineTest {
         구간_등록(강남역, 양재역, 30);
         구간_등록(양재역, 판교역, 20);
 
-        List<Station> result = 신분당선.getStations();
+        List<Station> result = 신분당선.assembleStations();
 
         입력한_모든_역이_존재함(result);
         입력한_역이_정렬됨(result);

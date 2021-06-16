@@ -30,7 +30,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        if(line.getStations().isEmpty()) {
+        if(line.assembleStations().isEmpty()) {
             return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList(), line.getCreatedDate(), line.getModifiedDate());
         }
         return new LineResponse(line.getId(), line.getName(), line.getColor(), getStations(line), line.getCreatedDate(), line.getModifiedDate());
@@ -61,7 +61,7 @@ public class LineResponse {
     }
 
     private static List<StationResponse> getStations(Line line) {
-        return line.getStations().stream()
+        return line.assembleStations().stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
     }

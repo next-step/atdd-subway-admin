@@ -12,12 +12,15 @@ import java.util.List;
 
 @Embeddable
 public class Sections {
+    private static final String ONE_MUST_MATCH_EXCEPTION = "상/하행선 둘 중 하나는 일치해야 합니다.";
+    private static final String SAME_SECTION_ADD_EXCEPTION = "동일한 구간은 추가할 수 없습니다.";
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Section> sections = new ArrayList<>();
 
     public void addSection(Section section) {
-        boolean isUpStationExist = isStationExist(section.getUpStation());
-        boolean isDownStationExist = isStationExist(section.getDownStation());
+        boolean isUpStationExist = isStationExist(section.upStation());
+        boolean isDownStationExist = isStationExist(section.downStation());
         validSection(isUpStationExist, isDownStationExist);
 
         if (isUpStationExist) {
@@ -30,59 +33,66 @@ public class Sections {
         sections.add(section);
     }
 
-    public List<Section> getSections() {
+    public List<Station> assembleStations() {
+        if (sections().isEmpty()) {
+            return Arrays.asList();
+        }
+        return orderSection();
+    }
+
+    private List<Station> orderSection() {
+        List<Station> stations = new ArrayList<>();
+        Station station = findFirstSection();
+        stations.add(station);
+
+        while (isAfterSection(station)) {
+            Section afterStation = findAfterSection(station);
+            station = afterStation.downStation();
+            stations.add(station);
+        }
+        return stations;
+    }
+
+    private List<Section> sections() {
         return sections;
     }
 
-    public void updateUpStation(Section section) {
-        Station inputUpStation = section.getUpStation();
+    private void updateUpStation(Section section) {
+        Station inputUpStation = section.upStation();
         sections.stream()
                 .filter(it -> it.isEqualsUpStation(inputUpStation))
                 .findFirst()
                 .ifPresent(it -> it.updateUpStation(section));
     }
 
-    public void updateDownStation(Section section) {
-        Station inputDownStation = section.getDownStation();
+    private void updateDownStation(Section section) {
+        Station inputDownStation = section.downStation();
         sections.stream()
                 .filter(it -> it.isEqualsDownStation(inputDownStation))
                 .findFirst()
                 .ifPresent(it -> it.updateDownStation(section));
     }
 
-    public List<Station> orderSection() {
-        List<Station> stations = new ArrayList<>();
-        Station station = getFirstSection();
-        stations.add(station);
-
-        while (isAfterSection(station)) {
-            Section afterStation = findAfterSection(station);
-            station = afterStation.getDownStation();
-            stations.add(station);
-        }
-        return stations;
-    }
-
-    public boolean isBeforeSection(Station station) {
+    private boolean isBeforeSection(Station station) {
         return sections.stream()
                 .anyMatch(it -> it.isEqualsDownStation(station));
     }
 
-    public boolean isAfterSection(Station station) {
+    private boolean isAfterSection(Station station) {
         return sections.stream()
                 .anyMatch(it -> it.isEqualsUpStation(station));
     }
 
-    public Station getFirstSection() {
-        Station station = sections.get(0).getUpStation();
+    private Station findFirstSection() {
+        Station station = sections.get(0).upStation();
         while (isBeforeSection(station)) {
             Section section = findBeforeSection(station);
-            station = section.getUpStation();
+            station = section.upStation();
         }
         return station;
     }
 
-    public Section findBeforeSection(Station station) {
+    private Section findBeforeSection(Station station) {
         return sections.stream()
                 .filter(it -> it.isEqualsDownStation(station))
                 .findFirst()
@@ -96,26 +106,17 @@ public class Sections {
                 .orElseThrow(NotFoundException::new);
     }
 
-
     public boolean isStationExist(Station station) {
-        return getStations().stream()
+        return assembleStations().stream()
                 .anyMatch(it -> it == station);
     }
 
-    public List<Station> getStations() {
-        if (getSections().isEmpty()) {
-            return Arrays.asList();
-        }
-        return orderSection();
-    }
-
-    public void validSection(boolean isUpStationExist, boolean isDownStationExist) {
-        if (!isUpStationExist && !isDownStationExist && !getStations().isEmpty()) {
-            throw new RuntimeException("상/하행선 둘 중 하나는 일치해야 합니다.");
+    private void validSection(boolean isUpStationExist, boolean isDownStationExist) {
+        if (!isUpStationExist && !isDownStationExist && !assembleStations().isEmpty()) {
+            throw new RuntimeException(ONE_MUST_MATCH_EXCEPTION);
         }
         if (isUpStationExist && isDownStationExist) {
-            throw new RuntimeException("동일한 구간은 추가할 수 없습니다.");
+            throw new RuntimeException(SAME_SECTION_ADD_EXCEPTION);
         }
     }
-
 }

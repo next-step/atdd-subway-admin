@@ -9,6 +9,7 @@ import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
+    private static final String LONGER_EXISTING_SECTION_EXCEPTION = "기존 구간보다 긴 거리값은 추가할수 없습니다.";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,40 +37,33 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public Station getUpStation() {
+    public Station upStation() {
         return upStation;
     }
 
-    public Station getDownStation() {
+    public Station downStation() {
         return downStation;
     }
 
-    public int getDistance() {
+    public int distance() {
         return distance;
     }
 
-    public void update(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
     public void updateUpStation(Section newSection) {
-        checkDistance(newSection.getDistance());
-        this.upStation = newSection.getDownStation();
-        this.distance -= newSection.getDistance();
+        checkDistance(newSection.distance());
+        this.upStation = newSection.downStation();
+        this.distance -= newSection.distance();
     }
 
     public void updateDownStation(Section newSection) {
-        checkDistance(newSection.getDistance());
-        this.downStation = newSection.getUpStation();
-        this.distance -= newSection.getDistance();
+        checkDistance(newSection.distance());
+        this.downStation = newSection.upStation();
+        this.distance -= newSection.distance();
     }
 
     private void checkDistance(int distance){
         if (this.distance < distance) {
-            throw new IllegalArgumentException("기존 구간보다 긴 거리값은 추가할수 없습니다.");
+            throw new IllegalArgumentException(LONGER_EXISTING_SECTION_EXCEPTION);
         }
     }
 
