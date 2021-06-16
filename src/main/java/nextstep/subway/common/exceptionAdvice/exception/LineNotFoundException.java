@@ -1,9 +1,9 @@
 package nextstep.subway.common.exceptionAdvice.exception;
 
-public class LineNotFoundException extends RuntimeException {
-    private static final String MESSAGE = "%d 라인은 존재하지 않는 라인 입니다.";
+import nextstep.subway.common.exceptionAdvice.ErrorCode;
 
+public class LineNotFoundException extends RuntimeException {
     public LineNotFoundException(Long id) {
-        super(String.format(MESSAGE, id));
+        super(String.format(ErrorCode.LINE_NOT_FOUND_EXCEPTION.getErrorMessage(), id));
     }
 }

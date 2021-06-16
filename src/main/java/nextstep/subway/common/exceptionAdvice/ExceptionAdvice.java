@@ -15,8 +15,13 @@ public class ExceptionAdvice {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler({LineNotFoundException.class, StationNotFoundException.class})
-    public ResponseEntity<ErrorResponse> handleIllegalArgsException(Exception e) {
-        return ResponseEntity.badRequest().body(ErrorResponse.of(6000, e.getMessage()));
+    @ExceptionHandler(LineNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgsException(LineNotFoundException e) {
+        return ResponseEntity.badRequest().body(ErrorResponse.of(ErrorCode.LINE_NOT_FOUND_EXCEPTION.getErrorCode(), e.getMessage()));
+    }
+
+    @ExceptionHandler(StationNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgsException(StationNotFoundException e) {
+        return ResponseEntity.badRequest().body(ErrorResponse.of(ErrorCode.STATION_NOT_FOUND_EXCEPTION.getErrorCode(), e.getMessage()));
     }
 }
