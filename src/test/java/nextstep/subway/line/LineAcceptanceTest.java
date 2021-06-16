@@ -113,7 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> searchLine = 지하철_노선_조회(1L);
+        ExtractableResponse<Response> searchLine = 지하철_노선_조회(2L);
 
         // then
         // 지하철_노선_응답됨

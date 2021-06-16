@@ -1,5 +1,7 @@
 package nextstep.subway.lineStation.application;
 
+import nextstep.subway.common.exceptionAdvice.exception.LineNotFoundException;
+import nextstep.subway.common.exceptionAdvice.exception.StationNotFoundException;
 import nextstep.subway.lineStation.domain.LineStation;
 import nextstep.subway.lineStation.domain.LineStationRepository;
 import nextstep.subway.lineStation.dto.LineStationResponse;
@@ -26,14 +28,14 @@ public class LineStationService {
     }
 
     public List<LineStationResponse> findByStationId(Long id) {
-        List<LineStation> lineStations = lineStationRepository.findByStationId(id);
+        List<LineStation> lineStations = lineStationRepository.findByStationId(id).orElseThrow(() -> new StationNotFoundException(id));
         return lineStations.stream()
                 .map(it -> LineStationResponse.of(it))
                 .collect(Collectors.toList());
     }
 
     public List<LineStationResponse> findByLineId(Long id) {
-        List<LineStation> lineStations = lineStationRepository.findByLineId(id);
+        List<LineStation> lineStations = lineStationRepository.findByLineId(id).orElseThrow(() -> new LineNotFoundException(id));
         return lineStations.stream()
                 .map(it -> LineStationResponse.of(it))
                 .collect(Collectors.toList());

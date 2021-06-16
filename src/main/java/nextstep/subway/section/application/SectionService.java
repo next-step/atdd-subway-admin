@@ -1,5 +1,7 @@
 package nextstep.subway.section.application;
 
+import nextstep.subway.common.exceptionAdvice.exception.LineNotFoundException;
+import nextstep.subway.common.exceptionAdvice.exception.StationNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.section.domain.Distance;
@@ -30,10 +32,10 @@ public class SectionService {
     }
 
     public SectionResponse saveSection(SectionRequest sectionRequest, Long lineId) {
-        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(NoSuchElementException::new);
-        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(NoSuchElementException::new);
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new StationNotFoundException(sectionRequest.getUpStationId()));
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new StationNotFoundException(sectionRequest.getDownStationId()));
         Section section = sectionRequest.toSection(upStation, downStation, new Distance(sectionRequest.getDistance()));
-        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new LineNotFoundException(lineId));
         line.addSection(section);
 
         Section persistSection = sectionRepository.save(section);
@@ -52,7 +54,7 @@ public class SectionService {
     }
 
     public List<SectionResponse> findSectionsByLineId(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException(id));
         List<Section> sections = line.getSections().getSection();
         return sections.stream()
                 .map(it -> SectionResponse.of(it))
