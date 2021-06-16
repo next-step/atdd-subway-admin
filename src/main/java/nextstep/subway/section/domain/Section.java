@@ -77,11 +77,11 @@ public class Section {
         return downStation;
     }
 
-    private boolean isUpStation(Station station) {
+    public boolean isUpStation(Station station) {
         return upStation.equals(station);
     }
 
-    private boolean isDownStation(Station station) {
+    public boolean isDownStation(Station station) {
         return downStation.equals(station);
     }
 

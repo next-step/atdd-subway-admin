@@ -37,9 +37,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setup() {
-        강남역_번호 = ID_추출(역_생성_요청(강남역_이름, 빨간색));
-        양재역_번호 = ID_추출(역_생성_요청(양재역_이름, 빨간색));
-        판교역_번호 = ID_추출(역_생성_요청(판교역_이름, 빨간색));
+        강남역_번호 = 번호_추출(역_생성_요청(강남역_이름, 빨간색));
+        양재역_번호 = 번호_추출(역_생성_요청(양재역_이름, 빨간색));
+        판교역_번호 = 번호_추출(역_생성_요청(판교역_이름, 빨간색));
 
         신분당선_생성_응답 = 노선생성_요청(노선_파라미터_생성(신분당선_이름, 빨간색, 강남역_번호, 양재역_번호, 구간_길이));
     }
@@ -51,8 +51,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_구간_생성_요청
-        ExtractableResponse<Response> 구간_추가_요청_실패_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 강남역_번호, 양재역_번호, 구간_추가_요청_길이_값);
-        ExtractableResponse<Response> 구간_추가_요청_반대_경우_실패_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 양재역_번호, 강남역_번호, 구간_추가_요청_길이_값);
+        ExtractableResponse<Response> 구간_추가_요청_실패_응답 = 구간_추가_요청(번호_추출(신분당선_생성_응답), 강남역_번호, 양재역_번호, 구간_추가_요청_길이_값);
+        ExtractableResponse<Response> 구간_추가_요청_반대_경우_실패_응답 = 구간_추가_요청(번호_추출(신분당선_생성_응답), 양재역_번호, 강남역_번호, 구간_추가_요청_길이_값);
 
         //then
         //지하철_구간_생성_실패
@@ -67,7 +67,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_구간_생성_요청
-        ExtractableResponse<Response> 구간_추가_요청_실패_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 강남역_번호, 존재하지_않는_역_번호, 구간_추가_요청_길이_값);
+        ExtractableResponse<Response> 구간_추가_요청_실패_응답 = 구간_추가_요청(번호_추출(신분당선_생성_응답), 강남역_번호, 존재하지_않는_역_번호, 구간_추가_요청_길이_값);
 
         //then
         //지하철_구간_생성_실패
@@ -78,12 +78,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_역들이_구간에_모두_등록되지_않은_경우() {
         // given
-        String 광교역_번호 = ID_추출(역_생성_요청("광교역", 빨간색));
-        String 미금역_번호 = ID_추출(역_생성_요청("미금역", 빨간색));
+        String 광교역_번호 = 번호_추출(역_생성_요청("광교역", 빨간색));
+        String 미금역_번호 = 번호_추출(역_생성_요청("미금역", 빨간색));
 
         // when
         // 지하철_구간_생성_요청
-        ExtractableResponse<Response> 구간_추가_요청_실패_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 광교역_번호, 미금역_번호, 구간_추가_요청_길이_값);
+        ExtractableResponse<Response> 구간_추가_요청_실패_응답 = 구간_추가_요청(번호_추출(신분당선_생성_응답), 광교역_번호, 미금역_번호, 구간_추가_요청_길이_값);
 
         //then
         //지하철_구간_생성_실패
@@ -97,7 +97,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_구간_생성_요청
-        ExtractableResponse<Response> 구간_추가_요청_실패_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 판교역_번호, 강남역_번호, 구간_추가_요청_잘못된_큰_값);
+        ExtractableResponse<Response> 구간_추가_요청_실패_응답 = 구간_추가_요청(번호_추출(신분당선_생성_응답), 판교역_번호, 강남역_번호, 구간_추가_요청_잘못된_큰_값);
 
         //then
         //지하철_구간_생성_실패
@@ -111,7 +111,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_구간_생성_요청
-        ExtractableResponse<Response> 구간추가_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 강남역_번호, 판교역_번호, 구간_추가_요청_길이_값);
+        ExtractableResponse<Response> 구간추가_응답 = 구간_추가_요청(번호_추출(신분당선_생성_응답), 강남역_번호, 판교역_번호, 구간_추가_요청_길이_값);
 
         // then
         // 지하철_구간_생성됨
@@ -127,7 +127,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_구간_생성_요청
-        ExtractableResponse<Response> 구간추가_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 판교역_번호, 강남역_번호, 구간_추가_요청_길이_값);
+        ExtractableResponse<Response> 구간추가_응답 = 구간_추가_요청(번호_추출(신분당선_생성_응답), 판교역_번호, 강남역_번호, 구간_추가_요청_길이_값);
 
         // then
         // 지하철_구간_생성됨
@@ -143,7 +143,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_구간_생성_요청
-        ExtractableResponse<Response> 구간추가_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 양재역_번호, 판교역_번호, 구간_추가_요청_길이_값);
+        ExtractableResponse<Response> 구간추가_응답 = 구간_추가_요청(번호_추출(신분당선_생성_응답), 양재역_번호, 판교역_번호, 구간_추가_요청_길이_값);
 
         // then
         // 지하철_구간_생성됨
@@ -185,7 +185,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private String ID_추출(ExtractableResponse<Response> 응답) {
+    private String 번호_추출(ExtractableResponse<Response> 응답) {
         return 응답.body().jsonPath().get("id").toString();
     }
 

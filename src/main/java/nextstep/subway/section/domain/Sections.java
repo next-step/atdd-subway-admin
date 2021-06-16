@@ -3,7 +3,6 @@ package nextstep.subway.section.domain;
 import static nextstep.subway.common.ErrorMessage.*;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +21,10 @@ public class Sections {
     public Sections() {
     }
 
+    public Section getFirstSection() {
+        return sections.get(0);
+    }
+
     public void addSection(Section section) {
         sections.add(section);
     }
@@ -31,49 +34,45 @@ public class Sections {
         section.updateStation(upStation, downStation, requestDistance);
     }
 
-    public List<Station> getOrderedStations() {
-        List<Station> result = new LinkedList<>();
-        result.add(sections.get(0).getUpStation());
-        result.add(sections.get(0).getDownStation());
-
-        addUpStation(result, result.get(0));
-        addDownStation(result, result.get(result.size() - 1));
-
-        return result;
+    public Section findSectionByDownStation(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.isDownStation(downStation))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException(NOT_FOUND_SECTION))
+                ;
     }
 
-    private void addUpStation(List<Station> result, Station findStation) {
-        Optional<Section> findSection = sections.stream()
-                .filter(section -> section.getDownStation().equals(findStation))
-                .findAny();
-
-        if (!findSection.isPresent()) {
-            return;
-        }
-
-        result.add(0, findSection.get().getUpStation());
-        addUpStation(result, findSection.get().getUpStation());
+    public Section findSectionByUpStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(upStation))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException(NOT_FOUND_SECTION))
+                ;
     }
 
-    private void addDownStation(List<Station> result, Station findStation) {
-        Optional<Section> findSection = sections.stream()
-                .filter(section -> section.getUpStation().equals(findStation))
-                .findAny();
+    public boolean hasDownStation(Station findStation) {
+        return sections.stream()
+                .anyMatch(section -> section.isDownStation(findStation));
+    }
 
-        if (!findSection.isPresent()) {
-            return;
-        }
-
-        result.add(findSection.get().getDownStation());
-        addDownStation(result, findSection.get().getDownStation());
+    public boolean hasUpStation(Station findStation) {
+        return sections.stream()
+                .anyMatch(section -> section.isUpStation(findStation));
     }
 
     private Section getSection(Station upStation, Station downStation) {
-        Optional<Section> findSectionByUpStation = findSection(upStation);
-        Optional<Section> findSectionByDownStation = findSection(downStation);
+        Optional<Section> findSectionByUpStation = findContainSection(upStation);
+        Optional<Section> findSectionByDownStation = findContainSection(downStation);
         checkDuplicateSectionStations(findSectionByUpStation, findSectionByDownStation);
 
         return findSectionByUpStation.orElseGet(findSectionByDownStation::get);
+    }
+
+    private Optional<Section> findContainSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isContain(station))
+                .findFirst()
+                ;
     }
 
     private void checkDuplicateSectionStations(Optional<Section> findSectionByUpStation, Optional<Section> findSectionByDownStation) {
@@ -83,12 +82,5 @@ public class Sections {
         if (!findSectionByUpStation.isPresent() && !findSectionByDownStation.isPresent()) {
             throw new IllegalArgumentException(NOT_FOUND_STATIONS_SECTION);
         }
-    }
-
-    private Optional<Section> findSection(Station station) {
-        return sections.stream()
-                .findFirst()
-                .filter(section -> section.isContain(station))
-                ;
     }
 }

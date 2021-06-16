@@ -61,8 +61,8 @@ public class Line extends BaseEntity {
         sections.addSection(Section.getInstance(this, upStation, downStation, requestDistance));
     }
 
-    public List<Station> stations() {
-        return sections.getOrderedStations();
+    public Sections stations() {
+        return sections;
     }
 
     public void updateNameColor(String name, String color) {
