@@ -23,6 +23,10 @@ public class Distance {
         return new Distance(value);
     }
 
+    public Distance sumDistance(Distance other) {
+        return new Distance(distance + other.distance);
+    }
+
     private void checkValidNegative(int distance) {
         if (distance < 0) {
             throw new IllegalArgumentException(NEGATIVE_NUMBER_ERROR_MESSAGE);

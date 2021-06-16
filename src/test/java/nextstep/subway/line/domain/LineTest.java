@@ -27,7 +27,9 @@ class LineTest {
         Line expected = new Line("분당선", "bg-red-600");
         Line updateLine = new Line("구분당선", "bg-red-600");
         expected.update(updateLine);
-        assertThat(expected).isEqualTo(updateLine);
+        assertThat(expected.getId()).isEqualTo(updateLine.getId());
+        assertThat(expected.getName()).isEqualTo(updateLine.getName());
+        assertThat(expected.getColor()).isEqualTo(updateLine.getColor());
     }
 
     @Test
@@ -37,8 +39,8 @@ class LineTest {
         Line line = new Line("신분당선", "bg - red - 600");
         LineStation lineStation = new LineStation(station, preStation, 10);
         line.addLineStation(lineStation);
-
-        assertThat(line).isEqualTo(new Line("신분당선", "bg - red - 600").lineStationsBy(new LineStations(Arrays.asList(lineStation))));
+        Line expected = new Line("신분당선", "bg - red - 600").lineStationsBy(new LineStations(Arrays.asList(lineStation)));
+        assertThat(line.stations()).isEqualTo(expected.stations());
     }
 
     @Test

@@ -71,8 +71,12 @@ public class LineStation extends BaseEntity {
         return station.isSameId(other);
     }
 
-    public Distance creatNewDistance(LineStation lineStation) {
+    public Distance subtractionDistance(LineStation lineStation) {
         return this.distance.subtractionDistance(lineStation.distance);
+    }
+
+    public Distance sumDistance(LineStation lineStation) {
+        return this.distance.sumDistance(lineStation.distance);
     }
 
     public boolean isSame(LineStation other) {
@@ -116,6 +120,16 @@ public class LineStation extends BaseEntity {
         return distance;
     }
 
+    public boolean isNotContainStation(LineStation lineStation) {
+        if (Objects.isNull(preStation)) {
+            return !(Objects.nonNull(lineStation.preStation) || station.isSameId(lineStation.preStation) || station.isSameId(lineStation.station));
+        }
+        return !(preStation.isSameId(lineStation.preStation)
+                || preStation.isSameId(lineStation.station)
+                || station.isSameId(lineStation.preStation)
+                || station.isSameId(lineStation.station));
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -131,15 +145,5 @@ public class LineStation extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, station, preStation, distance, line);
-    }
-
-    public boolean isNotContainStation(LineStation lineStation) {
-        if (Objects.isNull(preStation)) {
-            return !(Objects.nonNull(lineStation.preStation) || station.isSameId(lineStation.preStation) || station.isSameId(lineStation.station));
-        }
-        return !(preStation.isSameId(lineStation.preStation)
-                || preStation.isSameId(lineStation.station)
-                || station.isSameId(lineStation.preStation)
-                || station.isSameId(lineStation.station));
     }
 }

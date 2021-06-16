@@ -118,6 +118,14 @@ public class LineStations {
         lineStations.remove(lineStation);
     }
 
+    public boolean isSameLineStation(LineStation other) {
+        boolean isSame = false;
+        for (LineStation lineStation : lineStations) {
+            isSame = lineStation.isSame(other);
+        }
+        return isSame;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -129,13 +137,5 @@ public class LineStations {
     @Override
     public int hashCode() {
         return Objects.hash(lineStations);
-    }
-
-    public boolean isSameLineStation(LineStation other) {
-        boolean isSame = false;
-        for (LineStation lineStation : lineStations) {
-            isSame = lineStation.isSame(other);
-        }
-        return isSame;
     }
 }

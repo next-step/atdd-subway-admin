@@ -35,6 +35,14 @@ class DistanceTest {
         assertThat(distance.subtractionDistance(new Distance(value))).isEqualTo(new Distance(expected));
     }
 
+    @ParameterizedTest
+    @DisplayName("두개의 구간 거리 값 더하기")
+    @CsvSource(value = {"7:17", "8:18"}, delimiter = ':')
+    void sumDistance(int value, int expected) {
+        Distance distance = new Distance(10);
+        assertThat(distance.sumDistance(new Distance(value))).isEqualTo(new Distance(expected));
+    }
+
 
     @ParameterizedTest
     @DisplayName("두개의 구간 거리 뺄셈 결과가 0이나 음수인 경우 에러 발생")
