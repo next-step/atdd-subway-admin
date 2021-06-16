@@ -1,6 +1,5 @@
 package nextstep.subway.section.domain;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,6 +62,94 @@ public class Section {
 
 	public Distance getDistance() {
 		return this.distance;
+	}
+
+	public boolean isUpStationEqualsUpStation(Section section) {
+		return this.upStation.equals(section.upStation);
+	}
+
+	public boolean isDownStationEqualsDownStation(Section section) {
+		return this.downStation.equals(section.downStation);
+	}
+
+	public boolean isUpStationEqualsDownStation(Section section) {
+		return this.upStation.equals(section.downStation);
+	}
+
+	public boolean isDownStationEqualsUpStation(Section section) {
+		return this.downStation.equals(section.upStation);
+	}
+
+	//ex
+	//A 2 B / B 3 C / C 4 D
+	//A 1 E
+	//result
+	//A 1 E / B 3 C / C 4 D
+	//1 < 2
+	//E (2-1) B
+
+	//ex
+	//A 2 B / B 3 C / C 4 D
+	//A 3 E
+	//2 < 3
+	//A 2 B / B 3 C / C 4 D
+	//B (3-2) E
+	public void setWhenUpStationEqualsUpStation(Section section) {
+		if (this.distance.isMoreThan(section.distance)) {
+			Station tempDownStation = this.downStation;
+			this.downStation = section.downStation;
+			this.distance = section.distance;
+			section.upStation = section.downStation;
+			section.downStation = tempDownStation;
+			section.distance = this.distance.getDifferenceDistance(section.distance);
+		} else {
+			section.upStation = this.downStation;
+			section.distance = this.distance.getDifferenceDistance(section.distance);
+		}
+	}
+
+	//ex
+	//A 1 E / B 3 C / C 4 D
+	//E 1 B
+	//A 1 E / E 1 B / C 4 D
+	//B 3 C
+
+	//A 1 E / B 3 C / C 4 D
+	//E 4 B
+	public void setWhenUpStationEqualsDownStation(Section section) {
+		Station tempUpStation = this.upStation;
+		Station tempDownStation = this.downStation;
+		Distance tempDistance = this.distance;
+		this.upStation = section.upStation;
+		this.downStation = section.downStation;
+		this.distance = section.distance;
+		section.upStation = tempUpStation;
+		section.downStation = tempDownStation;
+		section.distance = tempDistance;
+	}
+	//A 3 B / B 3 C / C 4 D
+	//E 1 B
+	//A 1 E / B 3 C / C 4 D
+	//E (3-1) B
+
+	//A 3 B / B 3 C / C 4 D
+	//E 4 B
+	//E 4-3 A / B 3 C / C 4 D
+	//A 3 B
+
+	public void setWhenDownStationEqualsDownStation(Section section) {
+		if (this.distance.isMoreThan(section.distance)) {
+			Station tempUpStation = this.upStation;
+			Distance tempDistance = this.distance;
+			this.upStation = section.upStation;
+			this.distance = this.distance.getDifferenceDistance(section.distance);
+			section.upStation = tempUpStation;
+			section.distance = tempDistance;
+		} else {
+			this.downStation = section.upStation;
+			this.distance = section.distance;
+			section.distance = this.distance.getDifferenceDistance(section.distance);
+		}
 	}
 
 	public void setLine(Line line) {

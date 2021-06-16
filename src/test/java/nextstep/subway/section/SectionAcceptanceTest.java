@@ -22,6 +22,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	Long sungSuStationId;
 	Long gangNamStationId;
+	Long saDangStationId;
 	Long lineNumber2Id;
 
 	@BeforeEach
@@ -30,20 +31,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		gangNamStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("강남역"));
 		LineRequest lineNumber2 = new LineRequest("2호선", "Green", sungSuStationId, gangNamStationId, 10);
 		lineNumber2Id = LineAcceptanceTest.지하철_노선_생성되어_있음(lineNumber2);
+		saDangStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("사당역"));
+		SectionRequest sectionRequest = new SectionRequest(gangNamStationId, saDangStationId, 5);
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(sectionRequest);
 	}
 
 	@DisplayName("노선에 구간을 뒤에 등록한다.")
 	@Test
 	void 노선에_구간_뒤에_등록한다() {
 		// when
-		Long saDangStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("사당역"));
-		SectionRequest sectionRequest = new SectionRequest(gangNamStationId, saDangStationId, 5);
+		Long seoulDaeStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("서울대입구역"));
+		SectionRequest sectionRequest = new SectionRequest(saDangStationId, seoulDaeStationId, 5);
 		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(sectionRequest);
 		// then
 		// 지하철_노선에_지하철역_등록됨
 		assertThat(response.body().jsonPath().getString("stations[0].name")).isEqualTo("성수역");
 		assertThat(response.body().jsonPath().getString("stations[1].name")).isEqualTo("강남역");
 		assertThat(response.body().jsonPath().getString("stations[2].name")).isEqualTo("사당역");
+		assertThat(response.body().jsonPath().getString("stations[3].name")).isEqualTo("서울대입구역");
 	}
 
 	@DisplayName("노선에 구간을 앞에 등록한다.")
@@ -58,6 +63,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(response.body().jsonPath().getString("stations[0].name")).isEqualTo("뚝섬역");
 		assertThat(response.body().jsonPath().getString("stations[1].name")).isEqualTo("성수역");
 		assertThat(response.body().jsonPath().getString("stations[2].name")).isEqualTo("강남역");
+		assertThat(response.body().jsonPath().getString("stations[3].name")).isEqualTo("사당역");
 	}
 
 	@DisplayName("노선에 구간을 중간에 등록한다.")
@@ -65,13 +71,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	void 노선에_구간_중간에_등록한다() {
 		// when
 		Long gunDaeStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("건대입구역"));
-		SectionRequest sectionRequest = new SectionRequest(sungSuStationId, gunDaeStationId, 2);
+		SectionRequest sectionRequest = new SectionRequest(gunDaeStationId, gangNamStationId, 2);
 		ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(sectionRequest);
 		// then
 		// 지하철_노선에_지하철역_등록됨
 		assertThat(response.body().jsonPath().getString("stations[0].name")).isEqualTo("성수역");
 		assertThat(response.body().jsonPath().getString("stations[1].name")).isEqualTo("건대입구역");
 		assertThat(response.body().jsonPath().getString("stations[2].name")).isEqualTo("강남역");
+		assertThat(response.body().jsonPath().getString("stations[3].name")).isEqualTo("사당역");
 	}
 
 	ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(SectionRequest sectionRequest) {
