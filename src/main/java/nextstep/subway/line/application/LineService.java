@@ -27,8 +27,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(final LineRequest request) {
-        final Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(EntityNotFoundException::new);
-        final Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(EntityNotFoundException::new);
+        final Station upStation = findStationByStationId(request.getUpStationId());
+        final Station downStation = findStationByStationId(request.getDownStationId());
         final Line newLine = Line.of(upStation, downStation, request.getName(), request.getColor(), request.getDistance());
         final Line persistLine = lineRepository.save(newLine);
         return LineResponse.of(persistLine);
@@ -43,25 +43,25 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLineById(final Long id) {
-        return LineResponse.of(lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException(id)));
+        return LineResponse.of(findLineByLineId(id));
     }
 
     @Transactional
     public void updateLine(final Long id, final LineRequest request) {
-        final Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException(id));
+        final Line line = findLineByLineId(id);
         line.update(request.getName(), request.getColor());
     }
 
     @Transactional
     public void deleteLineById(final Long id) {
-        final Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException(id));
+        final Line line = findLineByLineId(id);
         lineRepository.delete(line);
     }
 
     @Transactional
     public LineResponse addSectionToLine(Long id, SectionRequest request) {
-        final Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(EntityNotFoundException::new);
-        final Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(EntityNotFoundException::new);
+        final Station upStation = findStationByStationId(request.getUpStationId());
+        final Station downStation = findStationByStationId(request.getDownStationId());
         Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException(id));
         line.addSection(upStation, downStation, request.getDistance());
         return LineResponse.of(lineRepository.save(line));
@@ -69,13 +69,17 @@ public class LineService {
 
     @Transactional
     public LineResponse removeSectionByStationId(Long id, Long stationId) {
-        Station targetStation = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
-        Line line = findByLineId(id);
+        Station targetStation = findStationByStationId(stationId);
+        Line line = findLineByLineId(id);
         line.removeSectionByStation(targetStation);
         return LineResponse.of(lineRepository.save(line));
     }
 
-    private Line findByLineId(Long id) {
-        return lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException(id));
+    private Line findLineByLineId(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(() -> new LineNotFoundException(lineId));
+    }
+
+    private Station findStationByStationId(Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
     }
 }
