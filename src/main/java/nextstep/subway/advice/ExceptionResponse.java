@@ -1,4 +1,4 @@
-package nextstep.subway.common.exception;
+package nextstep.subway.advice;
 
 public class ExceptionResponse {
     private final String message;
