@@ -34,13 +34,7 @@ public class Sections {
 
     public void updateSection(Station upStation, Station downStation, Distance requestDistance) {
         Section section = getSection(upStation, downStation);
-        if (section.isUpStation(upStation)) {
-            section.setUpStation(downStation);
-        }
-        if (section.isDownStation(downStation)) {
-            section.setDownStation(upStation);
-        }
-        section.setDistance(section.calculateDistance(requestDistance));
+        section.updateStation(upStation, downStation, requestDistance);
     }
 
 

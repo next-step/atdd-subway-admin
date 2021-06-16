@@ -34,11 +34,6 @@ public class Line extends BaseEntity {
     public Line() {
     }
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
     public Line(LineRequest request, Station upStation, Station downStation) {
         this.name = request.getName();
         this.color = request.getColor();

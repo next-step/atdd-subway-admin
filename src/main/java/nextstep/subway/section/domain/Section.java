@@ -59,32 +59,34 @@ public class Section {
         return new ArrayList<>(Arrays.asList(upStation, downStation));
     }
 
-    public boolean isContain(Station station) {
-        return upStation.equals(station) || downStation.equals(station);
+    public void updateStation(Station upStation, Station downStation, Distance distance) {
+        if (isUpStation(upStation)) {
+            this.upStation = downStation;
+        }
+        if (isDownStation(downStation)) {
+            this.downStation = upStation;
+        }
+        this.distance = calculateDistance(distance);
     }
 
-    public boolean isUpStation(Station station) {
+    public boolean isContain(Station station) {
+        return isUpStation(station) || isDownStation(station);
+    }
+
+    private boolean isUpStation(Station station) {
         return upStation.equals(station);
     }
 
-    public boolean isDownStation(Station station) {
+    private boolean isDownStation(Station station) {
         return downStation.equals(station);
     }
 
-    public Distance getDistance() {
-        return distance;
+    private Distance calculateDistance(Distance requestDistance) {
+        return calculate(requestDistance);
     }
 
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
-    }
-
-    public void setDistance(Distance distance) {
-        this.distance = distance;
+    private Distance calculate(Distance requestDistance) {
+        return new Distance(distance.getValue() - requestDistance.getValue());
     }
 
     @Override
@@ -98,13 +100,5 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
-    }
-
-    public Distance calculateDistance(Distance requestDistance) {
-        return calculate(requestDistance);
-    }
-
-    private Distance calculate(Distance requestDistance) {
-        return new Distance(distance.getValue() - requestDistance.getValue());
     }
 }
