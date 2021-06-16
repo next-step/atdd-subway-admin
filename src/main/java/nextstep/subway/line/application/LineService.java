@@ -57,4 +57,9 @@ public class LineService {
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new LineNotFoundException(lineId));
+        line.removeStation(stationRepository.findById(stationId).orElseThrow(() -> new StationNotFoundException(stationId)));
+    }
 }

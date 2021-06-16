@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.exceptionAdvice.exception.RemoveSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -106,5 +107,11 @@ public class Sections {
                 .filter(it -> it.getUpStation().equals(downStation))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void removeStation(Station removeStation) {
+        if (sections.size() < 2) {
+            throw new RemoveSectionException();
+        }
     }
 }

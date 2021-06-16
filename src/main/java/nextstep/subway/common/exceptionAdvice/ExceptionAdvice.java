@@ -2,6 +2,7 @@ package nextstep.subway.common.exceptionAdvice;
 
 import nextstep.subway.common.exceptionAdvice.dto.ErrorResponse;
 import nextstep.subway.common.exceptionAdvice.exception.LineNotFoundException;
+import nextstep.subway.common.exceptionAdvice.exception.RemoveSectionException;
 import nextstep.subway.common.exceptionAdvice.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -23,5 +24,10 @@ public class ExceptionAdvice {
     @ExceptionHandler(StationNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgsException(StationNotFoundException e) {
         return ResponseEntity.badRequest().body(ErrorResponse.of(ErrorCode.STATION_NOT_FOUND_EXCEPTION.getErrorCode(), e.getMessage()));
+    }
+
+    @ExceptionHandler(RemoveSectionException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgsException(RemoveSectionException e) {
+        return ResponseEntity.badRequest().body(ErrorResponse.of(ErrorCode.REMOVE_SECTION_EXCEPTION.getErrorCode(), e.getMessage()));
     }
 }
