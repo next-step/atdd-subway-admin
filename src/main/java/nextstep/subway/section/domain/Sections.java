@@ -18,8 +18,10 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 	private static final String INVALID_SECTION_MESSAGE = "노선 설정이 잘못되었습니다.";
+	public static final int EMPTY_REMOVABLE_SECTION_COUNT = 0;
+	public static final int SECTION_COUNT_ONE = 1;
 
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Section> sections = new ArrayList<>();
 
 	public Sections() {
@@ -79,25 +81,46 @@ public class Sections {
 	public void removeSection(Station station) {
 		this.validateRemovable(station);
 
-		//TODO station 이 들어간 section을 찾는다.
+		Optional<Section> upSectionOpt = this.findUpSectionByDownStation(station);
+		Optional<Section> downSectionOpt = this.findDownSectionByUpStation(station);
+		if (upSectionOpt.isPresent() && downSectionOpt.isPresent()) {
+			this.addCombineSection(upSectionOpt.get(), downSectionOpt.get());
+		}
+		upSectionOpt.ifPresent(this.sections::remove);
+		downSectionOpt.ifPresent(this.sections::remove);
+	}
+
+	private void addCombineSection(Section upSection, Section downSection) {
+		Section combineSection = new Section(upSection.getLine(), upSection.getUpStation(),
+			downSection.getDownStation(),
+			upSection.combineSectionDistance(downSection));
+		this.sections.add(combineSection);
+	}
+
+	private Optional<Section> findDownSectionByUpStation(Station station) {
+		return this.sections.stream().filter(section -> section.getUpStation().equals(station)).findAny();
+	}
+
+	private Optional<Section> findUpSectionByDownStation(Station station) {
+		return this.sections.stream().filter(section -> section.getDownStation().equals(station)).findAny();
 	}
 
 	private void validateRemovable(Station station) {
 		int sectionSize = this.sections.size();
-		List<Section> removableSections = this.getRemovableSections(station);
-		if ((sectionSize == 1) && (sectionSize == removableSections.size())) {
+		long removableSectionsCount = this.getRemovableSections(station);
+		if ((sectionSize == SECTION_COUNT_ONE) && (sectionSize == removableSectionsCount)) {
 			throw new SubwayLogicException("노선의 유일한 구간으로 제거할 수 없습니다.");
 		}
 
-		if (removableSections.isEmpty()) {
+		if (removableSectionsCount == EMPTY_REMOVABLE_SECTION_COUNT) {
 			throw new SubwayLogicException("제거 가능한 구간이 없습니다");
 		}
 	}
 
-	private List<Section> getRemovableSections(Station station) {
+	private long getRemovableSections(Station station) {
 		return this.sections.stream()
 			.filter(section -> section.containStation(station))
-			.collect(Collectors.toList());
+			.count();
 	}
 
 	public List<Station> getOrderedStations() {

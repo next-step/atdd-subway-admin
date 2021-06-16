@@ -86,6 +86,7 @@ public class LineService {
 		Line line = this.findByLineId(lineId);
 		Station station = this.stationService.getStation(stationId);
 		line.removeSectionByStation(station);
+		this.lineRepository.save(line);
 
 	}
 }

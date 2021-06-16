@@ -124,4 +124,8 @@ public class Section extends BaseEntity {
 	public boolean containStation(Station station) {
 		return this.downStation.equals(station) || this.upStation.equals(station);
 	}
+
+	public int combineSectionDistance(Section downSection) {
+		return this.distance.addDistance(downSection.getDistance());
+	}
 }

@@ -58,4 +58,8 @@ public class Distance {
 	public Distance minus(Distance distance) {
 		return new Distance(this.distance - distance.getDistance());
 	}
+
+	public int addDistance(Distance distance) {
+		return this.distance + distance.getDistance();
+	}
 }

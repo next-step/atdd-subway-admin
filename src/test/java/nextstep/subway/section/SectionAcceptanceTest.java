@@ -62,6 +62,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		//when 노선의 역제거
 		ExtractableResponse<Response> removeLineStationResponse = this.노선의역_제거요청(신분당선.getId(), 판교역.getId());
 		assertThat(removeLineStationResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+		ExtractableResponse<Response> lineResponse = LineAcceptanceTest.지하철노선을_조회한다(신분당선.getId());
+		assertThat(lineResponse.response().as(LineResponse.class).getStations()).containsExactly(강남역, 광교역);
 	}
 
 	private ExtractableResponse<Response> 노선의역_제거요청(long lineId, long stationId) {
