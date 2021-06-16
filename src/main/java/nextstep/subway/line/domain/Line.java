@@ -62,7 +62,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> stations() {
-        return sections.getStations();
+        return sections.getOrderedStations();
     }
 
     public void updateNameColor(String name, String color) {

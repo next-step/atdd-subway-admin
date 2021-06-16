@@ -30,8 +30,6 @@ public class SectionService {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_STATION));
 
         line.addSection(upStation, downStation, lineRequest.getDistance());
-
-        // 구간에 대한 유효성 검사
         return LineResponse.of(line);
     }
 }

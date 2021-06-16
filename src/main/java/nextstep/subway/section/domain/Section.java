@@ -55,10 +55,6 @@ public class Section {
         return section;
     }
 
-    public List<Station> getUpDownStations() {
-        return new ArrayList<>(Arrays.asList(upStation, downStation));
-    }
-
     public void updateStation(Station upStation, Station downStation, Distance distance) {
         if (isUpStation(upStation)) {
             this.upStation = downStation;

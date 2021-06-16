@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -27,7 +26,12 @@ public class Sections {
         sections.add(section);
     }
 
-    public List<Station> getStations() {
+    public void updateSection(Station upStation, Station downStation, Distance requestDistance) {
+        Section section = getSection(upStation, downStation);
+        section.updateStation(upStation, downStation, requestDistance);
+    }
+
+    public List<Station> getOrderedStations() {
         List<Station> result = new LinkedList<>();
         result.add(sections.get(0).getUpStation());
         result.add(sections.get(0).getDownStation());
@@ -38,64 +42,53 @@ public class Sections {
         return result;
     }
 
-    public void updateSection(Station upStation, Station downStation, Distance requestDistance) {
-        Section section = getSection(upStation, downStation);
-        section.updateStation(upStation, downStation, requestDistance);
-    }
-
     private void addUpStation(List<Station> result, Station findStation) {
-        while (findDownStation(findStation)) {
-            Station copyStation = findStation;
-            Section findSection = sections.stream()
-                    .filter(section -> section.getDownStation().equals(copyStation))
-                    .findAny().orElseThrow(() -> new RuntimeException(NOT_FOUND_STATION));
+        Optional<Section> findSection = sections.stream()
+                .filter(section -> section.getDownStation().equals(findStation))
+                .findAny();
 
-            result.add(0, findSection.getUpStation());
-            findStation = findSection.getUpStation();
+        if (!findSection.isPresent()) {
+            return;
         }
+
+        result.add(0, findSection.get().getUpStation());
+        addUpStation(result, findSection.get().getUpStation());
     }
 
     private void addDownStation(List<Station> result, Station findStation) {
-        while (findUpStation(findStation)) {
-            Station copyStation = findStation;
-            Section findSection = sections.stream()
-                    .filter(section -> section.getUpStation().equals(copyStation))
-                    .findAny().orElseThrow(() -> new RuntimeException(NOT_FOUND_STATION));
+        Optional<Section> findSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(findStation))
+                .findAny();
 
-            result.add(findSection.getDownStation());
-            findStation = findSection.getDownStation();
+        if (!findSection.isPresent()) {
+            return;
         }
-    }
 
-    private boolean findDownStation(Station findStation) {
-        return sections.stream()
-                .anyMatch(section -> section.getDownStation().equals(findStation));
-    }
-
-    private boolean findUpStation(Station findStation) {
-        return sections.stream()
-                .anyMatch(section -> section.getUpStation().equals(findStation));
+        result.add(findSection.get().getDownStation());
+        addDownStation(result, findSection.get().getDownStation());
     }
 
     private Section getSection(Station upStation, Station downStation) {
-        checkDuplicateSectionStations(upStation, downStation);
+        Optional<Section> findSectionByUpStation = findSection(upStation);
+        Optional<Section> findSectionByDownStation = findSection(downStation);
+        checkDuplicateSectionStations(findSectionByUpStation, findSectionByDownStation);
 
-        return sections.stream()
-                .findFirst()
-                .filter(section -> section.isContain(upStation) || section.isContain(downStation))
-                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_STATIONS_SECTION));
+        return findSectionByUpStation.orElseGet(findSectionByDownStation::get);
     }
 
-    private void checkDuplicateSectionStations(Station upStation, Station downStation) {
-        if (isContain(upStation) && isContain(downStation)) {
+    private void checkDuplicateSectionStations(Optional<Section> findSectionByUpStation, Optional<Section> findSectionByDownStation) {
+        if (findSectionByUpStation.isPresent() && findSectionByDownStation.isPresent()) {
             throw new IllegalArgumentException(STATIONS_ARE_ALREADY_CONTAINS_SECTION);
+        }
+        if (!findSectionByUpStation.isPresent() && !findSectionByDownStation.isPresent()) {
+            throw new IllegalArgumentException(NOT_FOUND_STATIONS_SECTION);
         }
     }
 
-    private boolean isContain(Station station) {
+    private Optional<Section> findSection(Station station) {
         return sections.stream()
                 .findFirst()
                 .filter(section -> section.isContain(station))
-                .isPresent();
+                ;
     }
 }
