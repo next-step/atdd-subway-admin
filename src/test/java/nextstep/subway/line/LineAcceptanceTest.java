@@ -169,7 +169,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("구간이 하나인 노선은 역을 제거할 수 없음")
     @Test
-    void deleteStation() {
+    void exception_delete_one_section_station() {
         // given
         // 지하철_노선_등록되어_있음
         지하철역_여러_생성();
@@ -183,6 +183,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 제거할 수 없음
         ErrorResponse response = deleteStation.jsonPath().getObject(".", ErrorResponse.class);
         assertThat(response.getErrorCode()).isEqualTo(6500);
+    }
+
+    @DisplayName("구간이 하나인 노선은 역을 제거할 수 없음")
+    @Test
+    void exception_delete_not_exist_section_station() {
+        // given
+        // 지하철_노선_등록되어_있음
+        지하철역_여러_생성();
+        지하철_노선_등록(new LineRequest("화곡역", "Purple", 1L, 2L, 10));
+        지하철_노선_추가_등록(new SectionRequest(2L, 4L, 10), 1L);
+
+        // when
+        // 지하철 노선 제거_요청
+        ExtractableResponse<Response> deleteStation = 노선_지하철역_구간_제거(1L, 3L);
+
+        // then
+        // 제거할 수 없음
+        ErrorResponse response = deleteStation.jsonPath().getObject(".", ErrorResponse.class);
+        assertThat(response.getErrorCode()).isEqualTo(6501);
     }
 
     ExtractableResponse<Response> 노선_지하철역_구간_제거(Long lineId, Long stationId) {

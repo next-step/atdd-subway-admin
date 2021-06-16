@@ -4,6 +4,7 @@ import nextstep.subway.common.exceptionAdvice.dto.ErrorResponse;
 import nextstep.subway.common.exceptionAdvice.exception.LineNotFoundException;
 import nextstep.subway.common.exceptionAdvice.exception.RemoveSectionException;
 import nextstep.subway.common.exceptionAdvice.exception.StationNotFoundException;
+import nextstep.subway.common.exceptionAdvice.exception.StationOfLineNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,5 +30,10 @@ public class ExceptionAdvice {
     @ExceptionHandler(RemoveSectionException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgsException(RemoveSectionException e) {
         return ResponseEntity.badRequest().body(ErrorResponse.of(ErrorCode.REMOVE_SECTION_EXCEPTION.getErrorCode(), e.getMessage()));
+    }
+
+    @ExceptionHandler(StationOfLineNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgsException(StationOfLineNotFoundException e) {
+        return ResponseEntity.badRequest().body(ErrorResponse.of(ErrorCode.STATION_OF_LINE_NOT_FOUND_EXCEPTION.getErrorCode(), e.getMessage()));
     }
 }

@@ -1,6 +1,8 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.common.exceptionAdvice.exception.RemoveSectionException;
+import nextstep.subway.common.exceptionAdvice.exception.StationNotFoundException;
+import nextstep.subway.common.exceptionAdvice.exception.StationOfLineNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -8,6 +10,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Embeddable
@@ -113,5 +116,13 @@ public class Sections {
         if (sections.size() < 2) {
             throw new RemoveSectionException();
         }
+        if (hasRemoveStation(removeStation)) {
+            throw new StationOfLineNotFoundException(removeStation.getId());
+        }
+    }
+
+    private boolean hasRemoveStation(Station removeStation) {
+        return sections.stream()
+                .noneMatch(section -> section.getUpStation().equals(removeStation) || section.getDownStation().equals(removeStation));
     }
 }
