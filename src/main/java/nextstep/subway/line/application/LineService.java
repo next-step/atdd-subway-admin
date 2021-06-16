@@ -62,4 +62,12 @@ public class LineService {
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line persistLine = lineRepository.findById(lineId)
+                .orElseThrow(NoSuchElementException::new);
+        Station persistStation = stationRepository.findById(stationId)
+                .orElseThrow(NoSuchElementException::new);
+        persistLine.delete(persistStation);
+    }
 }

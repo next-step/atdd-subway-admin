@@ -40,6 +40,7 @@ public class SectionTest {
 
         assertThat(expectUpStation.getName()).isEqualTo(upStation.getName());
         assertThat(expectDownStation.getName()).isEqualTo(downStation.getName());
+        assertThat(section.distance()).isEqualTo(5);
     }
 
     @Test

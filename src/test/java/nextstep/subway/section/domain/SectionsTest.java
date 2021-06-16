@@ -39,7 +39,7 @@ public class SectionsTest {
         sections.add(section3);
         sections.add(section4);
 
-        List<Station> actualStations = sections.orderedStations();
+        List<Station> actualStations = sections.stations();
         assertThat(actualStations.get(0).getName()).isEqualTo("1번역");
         assertThat(actualStations.get(1).getName()).isEqualTo("2번역");
         assertThat(actualStations.get(2).getName()).isEqualTo("3번역");
