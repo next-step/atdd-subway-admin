@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -89,6 +90,52 @@ public class LineTest {
                 .hasMessageContaining("기존 구간보다 긴 거리값은 추가할수 없습니다.");
     }
 
+    @DisplayName("종점역 삭제")
+    @Test
+    void deleteEndStation() {
+        구간_등록(강남역, 양재역, 30);
+        구간_등록(양재역, 판교역, 20);
+
+        신분당선.deleteSection(강남역);
+        신분당선.deleteSection(수지구청역);
+
+        List<Station> result = 신분당선.assembleStations();
+
+        종점역_삭제됨(result);
+    }
+
+    @DisplayName("중간역 삭제")
+    @Test
+    void deleteMiddleStation() {
+        구간_등록(강남역, 양재역, 30);
+        구간_등록(양재역, 판교역, 20);
+
+        신분당선.deleteSection(양재역);
+        신분당선.deleteSection(판교역);
+
+        List<Station> result = 신분당선.assembleStations();
+        중간역_삭제됨(result);
+    }
+
+    @DisplayName("노선에 등록되어있지 않은 역을 제거시 예외 발생")
+    @Test
+    void deleteStationException1() {
+        구간_등록(강남역, 양재역, 30);
+        assertThatThrownBy(() -> {
+            신분당선.deleteSection(판교역);
+        }).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("역을 제거할 수 없습니다.");
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거시 예외 발생")
+    @Test
+    void deleteStationException2() {
+        assertThatThrownBy(() -> {
+            신분당선.deleteSection(강남역);
+        }).isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("역을 제거할 수 없습니다.");
+    }
+
     private void 노선_생성() {
         양재역 = new Station("양재역");
         수지구청역 = new Station("수지구청역");
@@ -116,5 +163,17 @@ public class LineTest {
         allInputStation.add(판교역);
         allInputStation.add(수지구청역);
         assertThat(result).containsExactlyElementsOf(allInputStation);
+    }
+
+    private void 종점역_삭제됨(List<Station> result){
+        List<Station> stations = new ArrayList<>();
+        stations.addAll(Arrays.asList(양재역, 판교역));
+        assertThat(result).containsExactlyElementsOf(stations);
+    }
+
+    private void 중간역_삭제됨(List<Station> result) {
+        List<Station> stations = new ArrayList<>();
+        stations.addAll(Arrays.asList(강남역, 수지구청역));
+        assertThat(result).containsExactlyElementsOf(stations);
     }
 }
