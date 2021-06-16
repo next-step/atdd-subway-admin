@@ -32,7 +32,7 @@ public class Sections {
     }
 
     private List<Station> unSortedStations() {
-        Set<Station> stationLink = new LinkedHashSet();
+        Set<Station> stationLink = new LinkedHashSet<>();
 
         for (Section section : sections) {
             stationLink.add(section.getUpStation());

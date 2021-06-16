@@ -12,21 +12,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class BaseController {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(final DataIntegrityViolationException e) {
+    public ResponseEntity<String> handleIllegalArgsException(final DataIntegrityViolationException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity handleIllegalArgsException(final IllegalArgumentException e) {
+    public ResponseEntity<String> handleIllegalArgsException(final IllegalArgumentException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+    public ResponseEntity<String> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         log.warn(e.getMessage());
 
         return ResponseEntity.badRequest().build();

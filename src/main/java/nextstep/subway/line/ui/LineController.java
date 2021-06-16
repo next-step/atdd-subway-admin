@@ -23,7 +23,7 @@ public class LineController {
     private final LineService lineService;
 
     @PostMapping
-    public ResponseEntity createLine(@Valid @RequestBody final LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@Valid @RequestBody final LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create(LINE + "/" + line.getId())).body(line);
     }
@@ -39,20 +39,20 @@ public class LineController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity updateLine(@PathVariable final Long id, @RequestBody final LineRequest lineRequest) {
+    public ResponseEntity<String> updateLine(@PathVariable final Long id, @RequestBody final LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest);
 
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable final Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable final Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+    public ResponseEntity<SectionResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
         SectionResponse sectionResponse = lineService.appendSection(id, sectionRequest);
 
         String uri = String.format("%s/%s%s/%s", LINE, sectionResponse.getLineId(), SECTION, sectionResponse.getId());
@@ -60,12 +60,12 @@ public class LineController {
     }
 
     @GetMapping(value = "/{lineId}/sections/{sectionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity showSection(@PathVariable Long lineId, @PathVariable Long sectionId) {
+    public ResponseEntity<SectionResponse> showSection(@PathVariable Long lineId, @PathVariable Long sectionId) {
         return ResponseEntity.ok().body(lineService.findSection(sectionId));
     }
 
     @GetMapping(value = "/{lineId}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity showSection(@PathVariable Long lineId) {
+    public ResponseEntity<List<SectionResponse>> showSection(@PathVariable Long lineId) {
         return ResponseEntity.ok().body(lineService.findAllSection());
     }
 }
