@@ -1,6 +1,9 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,7 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.exception.NoSuchSectionException;
+import nextstep.subway.line.exception.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -59,8 +62,9 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public boolean isAllocated() {
-        return Objects.nonNull(this.line);
+    public List<Station> getStations() {
+        return Stream.of(upStation, downStation)
+            .collect(Collectors.toList());
     }
 
     public void setLine(Line line) {
@@ -73,8 +77,12 @@ public class Section extends BaseEntity {
             throw new IllegalArgumentException("소속 노선은 null 이 될 수 없습니다.");
         }
 
+        if (!Objects.isNull(this.line)) {
+            throw new InvalidSectionException("소속 노선을 재 정의 할 수는 없습니다.");
+        }
+
         if (!line.contains(this)) {
-            throw new NoSuchSectionException("해당 노선에 본 구간이 존재하지 않습니다. Line.addSection 을 사용해주세요.");
+            throw new InvalidSectionException("해당 노선과의 연관관계가 확인되지 않습니다.");
         }
     }
 
