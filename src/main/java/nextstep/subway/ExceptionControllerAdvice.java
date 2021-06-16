@@ -26,7 +26,7 @@ public class ExceptionControllerAdvice {
     }
 
     @ExceptionHandler(CannotDeleteException.class)
-    public ResponseEntity<Void> CannotDeleteException(CannotDeleteException e) {
+    public ResponseEntity<Void> cannotDeleteException(CannotDeleteException e) {
         return ResponseEntity.badRequest().build();
     }
 }

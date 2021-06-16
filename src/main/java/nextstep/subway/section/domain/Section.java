@@ -88,10 +88,6 @@ public class Section extends BaseEntity {
         return id;
     }
 
-    public Long getLineId() {
-        return line.getId();
-    }
-
     public Station getUpStation() {
         return upStation;
     }

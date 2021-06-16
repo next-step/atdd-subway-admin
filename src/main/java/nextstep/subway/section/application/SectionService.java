@@ -21,17 +21,14 @@ public class SectionService {
         this.stationRepository = stationRepository;
     }
 
-    public SectionResponse findSectionById(Long id) {
-        return SectionResponse.of(findById(id));
-    }
-
     public Section findById(Long id) {
         return sectionRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("일치하는 구간을 찾을 수 없습니다."));
     }
 
     public SectionResponse findSectionByUpStationId(Long upStationId) {
-        Station station = stationRepository.findById(upStationId).get();
+        Station station = stationRepository.findById(upStationId)
+                .orElseThrow(() -> new DataNotFoundException("일치하는 지하철역을 찾을 수 없습니다."));
         return SectionResponse.of(findByUpStationId(station));
     }
 
