@@ -30,18 +30,18 @@ public class LineService {
         return LinesResponse.of(lines);
     }
 
-    public LineResponse retrieveById(Long id) {
-        Line line = findById(id);
+    public LineResponse findById(Long id) {
+        Line line = findByIdOrThrow(id);
 
         return LineResponse.of(line);
     }
 
     public void modify(Long id, LineRequest request) {
-        Line line = findById(id);
+        Line line = findByIdOrThrow(id);
         line.update(request.toLine());
     }
 
-    private Line findById(Long id) {
+    private Line findByIdOrThrow(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotExistLineException(id));
     }

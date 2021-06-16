@@ -33,7 +33,7 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        LineResponse line = lineService.retrieveById(id);
+        LineResponse line = lineService.findById(id);
         return ResponseEntity.ok(line);
     }
 
