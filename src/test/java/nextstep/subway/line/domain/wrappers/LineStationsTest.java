@@ -161,4 +161,14 @@ public class LineStationsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("고속버스터미널역을 종점으로 하는 구간은 존재하지 않습니다.");
     }
+
+    @Test
+    void lineStations_에_속해있는_lineStation_객체_제거() {
+        LineStation lineStation1 = new LineStation(station, preStation, 10);
+        LineStation lineStation2 = new LineStation(preStation, null, 0);
+        LineStations lineStations = new LineStations(new ArrayList<>(Arrays.asList(lineStation1, lineStation2)));
+
+        lineStations.delete(lineStation2);
+        assertThat(lineStations).isEqualTo(new LineStations(Arrays.asList(lineStation1)));
+    }
 }

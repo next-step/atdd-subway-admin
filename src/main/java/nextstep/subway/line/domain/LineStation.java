@@ -86,6 +86,10 @@ public class LineStation extends BaseEntity {
         return this.station.isSameId(lineStation.preStation);
     }
 
+    public boolean isFirstLineStation() {
+        return Objects.isNull(preStation);
+    }
+
     public void update(Station station, Station preStation, Distance distance) {
         this.preStation = preStation;
         this.station = station;

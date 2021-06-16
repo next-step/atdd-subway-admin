@@ -96,6 +96,14 @@ public class Line extends BaseEntity {
         checkValidNotContainStations(lineStation);
     }
 
+    public void removeSectionByStation(LineStation lineStation) {
+        if (lineStation.isFirstLineStation()) {
+            lineStations.findNextLineStation(lineStation)
+                    .ifPresent(ls -> ls.update(ls.getStation(), null, ls.getDistance()));
+        }
+        lineStations.delete(lineStation);
+    }
+
     public void checkValidSingleSection() {
         if (lineStations.isSingleSection()) {
             throw new IllegalArgumentException(NOT_DELTED_SINGLE_SECTION_ERROR_MESSAGE);

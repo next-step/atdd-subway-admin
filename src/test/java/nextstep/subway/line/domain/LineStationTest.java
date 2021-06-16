@@ -76,4 +76,12 @@ public class LineStationTest {
         assertThat(lineStation.isSame(new LineStation(station, new Station(7L, "교대역"), 10))).isFalse();
         assertThat(lineStation.isSame(new LineStation(new Station(7L, "교대역"), preStation, 10))).isFalse();
     }
+
+    @Test
+    void 지하철_노선_entity가_첫번째_지하철_노선인지_확인() {
+        LineStation lineStation1 = new LineStation(station, null, 10);
+        LineStation lineStation2 = new LineStation(station, preStation, 10);
+        assertThat(lineStation1.isFirstLineStation()).isTrue();
+        assertThat(lineStation2.isFirstLineStation()).isFalse();
+    }
 }

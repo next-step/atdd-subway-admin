@@ -15,7 +15,7 @@ public class LineStations {
 
     public static final String NOT_FOUND_STATION_ERROR_MESSAGE = "%s을 종점으로 하는 구간은 존재하지 않습니다.";
     public static final int MIN_STATION_COUNT = 2;
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LineStation> lineStations = new ArrayList<>();
 
     public LineStations() {
@@ -112,6 +112,10 @@ public class LineStations {
 
     public boolean isSingleSection() {
         return getLineStationsOrderByAsc().size() == MIN_STATION_COUNT;
+    }
+
+    public void delete(LineStation lineStation) {
+        lineStations.remove(lineStation);
     }
 
     @Override
