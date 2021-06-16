@@ -195,8 +195,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         //구간_제거_완료
         구간_OK_응답(response);
-        List<Long> expectedOrderId = Arrays.asList(회현역.getId(), 충무로역.getId());
-        노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
+        ExtractableResponse<Response> readResponse = 상행역으로_구간_조회_요청(동역문역.getId());
+        구간_등록_NOT_FOUND_응답(readResponse);
     }
 
     @DisplayName("구간 제거 : 노선의 첫번째 구간 제거")
@@ -214,6 +214,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         //구간_제거_완료
         구간_OK_응답(response);
+        ExtractableResponse<Response> readResponse = 상행역으로_구간_조회_요청(서울역.getId());
+        구간_등록_NOT_FOUND_응답(readResponse);
     }
 
     @DisplayName("구간 제거 : 노선의 중간 구간 제거")
@@ -232,7 +234,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //구간_제거_완료
         구간_OK_응답(response);
         ExtractableResponse<Response> readResponse = 상행역으로_구간_조회_요청(회현역.getId());
-        구간_등록_BAD_REQUEST_응답(readResponse);
+        구간_등록_NOT_FOUND_응답(readResponse);
     }
 
     @DisplayName("구간제거 예외상황 : 노선에 구간이 단 한 개인 경우")
@@ -287,6 +289,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void 구간_등록_BAD_REQUEST_응답(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 구간_등록_NOT_FOUND_응답(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private ExtractableResponse<Response> 구간을_노선에_등록_요청(Long lineId, SectionRequest request) {
