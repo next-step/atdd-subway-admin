@@ -12,6 +12,8 @@ import java.util.*;
 public class Sections {
     public static final String EXISTS_SECTION_EXCEPTION_MESSAGE = "상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.";
     public static final String NOT_EXISTS_ALL_STATIONS_EXCEPTION_MESSAGE = "상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.";
+    public static final String AT_LEAST_ONE_SECTION_EXCEPTION_MESSAGE = "구간은 최소 한개 이상이어야만 합니다.";
+    public static final String NOT_EXISTS_STATION_EXCEPTION_MESSAGE = "해당 노선에 요청한 지하철역 ID를 가진 구간이 존재하지 않습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     @ReadOnlyProperty
@@ -95,13 +97,41 @@ public class Sections {
 
     private boolean exists(Section sectionToAdd) {
         return sections.stream()
-                .anyMatch(section -> section.isEqualsToUpStation(sectionToAdd)) &&
+                .anyMatch(section -> section.isUpStationEqualsToUpStationInSection(sectionToAdd)) &&
                 sections.stream()
-                        .anyMatch(section -> section.isEqualsToDownStation(sectionToAdd));
+                        .anyMatch(section -> section.isDownStationEqualsToDownStationInSection(sectionToAdd));
     }
 
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
     }
 
+    public Section remove(Station station) {
+        checkValidationFromSingleSection();
+        Section sectionToRemove = findSectionToRemove(station);
+        this.sections.remove(sectionToRemove);
+        return sectionToRemove;
+    }
+
+    private Section findSectionToRemove(Station station) {
+        Optional<Section> upSection = this.sections.stream()
+                .filter(section -> section.isDownStationEqualsToStation(station))
+                .findFirst();
+        Optional<Section> downSection = this.sections.stream()
+                .filter(section -> section.isUpStationEqualsToStation(station))
+                .findFirst();
+        if (!upSection.isPresent() && !downSection.isPresent()) {
+            throw new IllegalArgumentException(NOT_EXISTS_STATION_EXCEPTION_MESSAGE);
+        }
+        if (upSection.isPresent() && downSection.isPresent()) {
+            downSection.get().removeUpSection(upSection.get());
+        }
+        return upSection.orElseGet(downSection::get);
+    }
+
+    private void checkValidationFromSingleSection() {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException(AT_LEAST_ONE_SECTION_EXCEPTION_MESSAGE);
+        }
+    }
 }
