@@ -3,6 +3,10 @@ package nextstep.subway.line;
 import static nextstep.subway.line.SectionAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -25,10 +29,13 @@ public class SectionAcceptanceMethods {
         return response;
     }
 
-    public static void 지하철_구간_생성됨(ExtractableResponse<Response> response) {
+    public static void 지하철_구간_생성됨(ExtractableResponse<Response> response, StationResponse... stationsInOrder) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
-        // TODO 응답값이 존재할 경우 추가 검증
+
+        List<StationResponse> actual = response.jsonPath().getList("stations", StationResponse.class);
+        List<StationResponse> expected = new ArrayList<>(Arrays.asList(stationsInOrder));
+        assertThat(actual).isEqualTo(expected);
     }
 
     public static void 지하철_구간_생성_실패됨(ExtractableResponse<Response> response) {

@@ -45,10 +45,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void createSection() {
         // when
         ExtractableResponse<Response> response
-            = 지하철_구간_생성_요청(상행종점, 추가될역, 60);
+            = 지하철_구간_생성_요청(상행종점, 추가될역, 30);
 
         // then
-        지하철_구간_생성됨(response);
+        지하철_구간_생성됨(response, 상행종점, 추가될역, 하행종점);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             = 지하철_구간_생성_요청(추가될역, 상행종점, 40);
 
         // then
-        지하철_구간_생성됨(response);
+        지하철_구간_생성됨(response, 추가될역, 상행종점, 하행종점);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             = 지하철_구간_생성_요청(하행종점, 추가될역, 40);
 
         // then
-        지하철_구간_생성됨(response);
+        지하철_구간_생성됨(response, 상행종점, 하행종점, 추가될역);
     }
 
     @Test
