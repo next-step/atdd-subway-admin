@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.line.LineSteps.지하철_노선_생성_요청;
-import static nextstep.subway.section.SectionSteps.지하철_구간_생성_요청;
+import static nextstep.subway.section.SectionSteps.*;
 import static nextstep.subway.station.StationSteps.지하철_역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -130,6 +130,81 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(구간이_추가된_신분당선.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행 종점을 제거한다.")
+    @Test
+    void removeEndPointOfUpStation() {
+        // given
+        ExtractableResponse<Response> 구간이_추가된_신분당선 = 강남역_양재역_퍈교역_구간이_포함된_신분당선_등록();
+
+        // when
+        ExtractableResponse<Response> 구간이_제거된_신분당선 = 지하철_구간_제거_요청(구간이_추가된_신분당선, 강남역_ID);
+
+        // then
+        assertThat(구간이_제거된_신분당선.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("하행 종점을 제거한다.")
+    @Test
+    void removeEndPointOfDownStation() {
+        // given
+        ExtractableResponse<Response> 구간이_추가된_신분당선 = 강남역_양재역_퍈교역_구간이_포함된_신분당선_등록();
+
+        // when
+        ExtractableResponse<Response> 구간이_제거된_신분당선 = 지하철_구간_제거_요청(구간이_추가된_신분당선, 판교역_ID);
+
+        // then
+        assertThat(구간이_제거된_신분당선.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("상행 종점과 하행 종점 사이에 중간역을 제거한다.")
+    @Test
+    void remove_between_상행_종점_and_하행_종점() {
+        // given
+        ExtractableResponse<Response> 구간이_추가된_신분당선 = 강남역_양재역_퍈교역_구간이_포함된_신분당선_등록();
+
+        // when
+        ExtractableResponse<Response> 구간이_제거된_신분당선 = 지하철_구간_제거_요청(구간이_추가된_신분당선, 양재역_ID);
+
+        // then
+        assertThat(구간이_제거된_신분당선.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("노선에 등록되어있지 않은 역은 제거할 수 없다.")
+    @Test
+    void canNotRemoveNotFoundStation() {
+        // given
+        ExtractableResponse<Response> 구간이_추가된_신분당선 = 강남역_양재역_퍈교역_구간이_포함된_신분당선_등록();
+
+        // when
+        ExtractableResponse<Response> 구간이_제거된_신분당선 = 지하철_구간_제거_요청(구간이_추가된_신분당선, 정자역_ID);
+
+        // then
+        assertThat(구간이_제거된_신분당선.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    @DisplayName("노선에 구간이 1개만 등록되어있다면 제거할 수 없다.")
+    @Test
+    void canNotRemoveOneSectionExists() {
+        // given
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 판교역_ID, 20);
+        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
+
+        // when
+        ExtractableResponse<Response> 구간이_제거된_신분당선 = 지하철_구간_제거_요청(생성된_신분당선, 판교역_ID);
+
+        // then
+        assertThat(구간이_제거된_신분당선.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> 강남역_양재역_퍈교역_구간이_포함된_신분당선_등록() {
+        LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600", 양재역_ID, 판교역_ID, 10);
+        ExtractableResponse<Response> 생성된_신분당선 = 지하철_노선_생성_요청(신분당선);
+
+        SectionRequest sectionRequest = new SectionRequest(강남역_ID, 양재역_ID, 10);
+        return 지하철_구간_생성_요청(생성된_신분당선, sectionRequest);
     }
 
 }

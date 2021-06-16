@@ -18,4 +18,13 @@ public class SectionSteps {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_구간_제거_요청(ExtractableResponse<Response> response, Long stationId) {
+        Integer lineId = response.jsonPath().get("id");
+        return RestAssured.given().log().all()
+                .when()
+                .delete("/lines" + lineId + "/sections?stationId=" + stationId)
+                .then().log().all()
+                .extract();
+    }
 }
