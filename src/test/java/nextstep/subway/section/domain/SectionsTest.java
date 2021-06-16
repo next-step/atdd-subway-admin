@@ -11,20 +11,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("역 사이에 새로운 역을 등록할 경우")
 class SectionsTest {
-    private static Station A;
-    private static Station B;
-    private static Station C;
-    private static Station D;
-    private static Station E;
+    private static Station A, B, C, D, E, F;
+    private static Station X, Y, Z;
 
     @BeforeAll
     public static void setup() {
         //given
-        A = new Station(1L,"A");
-        B = new Station(2L,"B");
-        C = new Station(3L,"C");
-        D = new Station(4L,"D");
-        E = new Station(5L,"E");
+        A = new Station(1L,"A");    B = new Station(2L,"B");    C = new Station(3L,"C");
+        D = new Station(4L,"D");    E = new Station(5L,"E");    F = new Station(6L,"F");
+        X = new Station(24L,"X");   Y = new Station(25L,"Y");   Z = new Station(26L,"Z");
     }
 
     @Test
@@ -232,6 +227,120 @@ class SectionsTest {
             () -> assertThat(sortedSections.get(0).getDistance()).isEqualTo(7),
             () -> assertThat(sortedSections.get(1).getDistance()).isEqualTo(3),
             () -> assertThat(sections.totalDistance()).isEqualTo(10)
+        );
+    }
+
+    @Test
+    @DisplayName("역 사이에 새로운 역을 등록할 경우")
+    public void step4() {
+        Section section1 = Section.builder().id(1L)
+                .upStation(A).downStation(D)
+                .distance(10)
+                .build();
+
+        Section section2 = Section.builder().id(2L)
+                .upStation(A).downStation(B)
+                .distance(4)
+                .build();
+
+        Section section3 = Section.builder().id(3L)
+                .upStation(B).downStation(C)
+                .distance(2)
+                .build();
+
+        Sections sections = appendSectionAndPrint(section1, section2, section3);
+
+        List<Station> actual = sections.sortedStations();
+        List<Section> sorted = sections.sortedSections();
+
+        assertAll(
+            //갯수 확인
+            () -> assertThat(actual.size()).isEqualTo(4),
+
+            //순서 확인
+            () -> assertThat(actual).containsExactly(A, B, C, D),
+            () -> assertThat(sections.firstStation()).isEqualTo(A),
+            () -> assertThat(sections.lastStation()).isEqualTo(D),
+
+            //길이 확인
+            () -> assertThat(sorted.get(0).getDistance()).isEqualTo(4),
+            () -> assertThat(sorted.get(1).getDistance()).isEqualTo(2),
+            () -> assertThat(sorted.get(2).getDistance()).isEqualTo(4),
+            () -> assertThat(sections.totalDistance()).isEqualTo(10)
+        );
+    }
+
+    @Test
+    @DisplayName("다중 역등록 테스트")
+    public void step5() {
+        Section section1 = Section.builder().id(1L)
+                .upStation(A).downStation(B)
+                .distance(2)
+                .build();
+
+        Section section2 = Section.builder().id(2L)
+                .upStation(B).downStation(D)
+                .distance(4)
+                .build();
+
+        Section section3 = Section.builder().id(3L)
+                .upStation(B).downStation(C)
+                .distance(2)
+                .build();
+
+        Section section4 = Section.builder().id(4L)
+                .upStation(D).downStation(F)
+                .distance(4)
+                .build();
+
+        Section section5 = Section.builder().id(5L)
+                .upStation(D).downStation(E)
+                .distance(2)
+                .build();
+
+        Section section6 = Section.builder().id(6L)
+                .upStation(F).downStation(Z)
+                .distance(40)
+                .build();
+
+        Section section7 = Section.builder().id(7L)
+                .upStation(X).downStation(Z)
+                .distance(4)
+                .build();
+
+        Section section8 = Section.builder().id(8L)
+                .upStation(Y).downStation(Z)
+                .distance(2)
+                .build();
+
+        Sections sections = appendSectionAndPrint(
+            section1, section2, section3, section4,
+            section5, section6, section7, section8
+        );
+
+        List<Station> actual = sections.sortedStations();
+        List<Section> sorted = sections.sortedSections();
+
+        assertAll(
+            //갯수 확인
+            () -> assertThat(actual.size()).isEqualTo(9),
+
+            //순서 확인
+            () -> assertThat(actual).containsExactly(A, B, C, D, E, F, X, Y, Z),
+            () -> assertThat(sections.firstStation()).isEqualTo(A),
+            () -> assertThat(sections.lastStation()).isEqualTo(Z),
+
+            //길이 확인
+            () -> assertThat(sorted.get(0).getDistance()).isEqualTo(2),
+            () -> assertThat(sorted.get(1).getDistance()).isEqualTo(2),
+            () -> assertThat(sorted.get(2).getDistance()).isEqualTo(2),
+            () -> assertThat(sorted.get(3).getDistance()).isEqualTo(2),
+            () -> assertThat(sorted.get(4).getDistance()).isEqualTo(2),
+
+            () -> assertThat(sorted.get(5).getDistance()).isEqualTo(36),
+            () -> assertThat(sorted.get(6).getDistance()).isEqualTo(2),
+            () -> assertThat(sorted.get(7).getDistance()).isEqualTo(2),
+            () -> assertThat(sections.totalDistance()).isEqualTo(50)
         );
     }
 

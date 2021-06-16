@@ -74,14 +74,14 @@ public class Sections {
 
     private Section firstSection(List<Section> sections) {
         return sections.stream()
-            .filter(this::isBeforeNoneMatch)
+            .filter(section -> isBeforeNoneMatch(sections, section))
             .findFirst()
             .orElse(sections.get(0));
     }
 
     private Section lastSection(List<Section> sections) {
         return sections.stream()
-            .filter(this::isAfterNoneMatch)
+            .filter(section -> isAfterNoneMatch(sections, section))
             .findFirst()
             .orElse(sections.get(0));
     }
@@ -102,11 +102,11 @@ public class Sections {
         return lastSection().getDownStation();
     }
 
-    private boolean isBeforeNoneMatch(Section section) {
+    private boolean isBeforeNoneMatch(List<Section> sections, Section section) {
         return sections.stream().noneMatch(x -> x.isBefore(section));
     }
 
-    private boolean isAfterNoneMatch(Section section) {
+    private boolean isAfterNoneMatch(List<Section> sections, Section section) {
         return sections.stream().noneMatch(x -> x.isAfter(section));
     }
 
