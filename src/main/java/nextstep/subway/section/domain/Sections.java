@@ -5,9 +5,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Embeddable
 public class Sections {
@@ -19,13 +17,15 @@ public class Sections {
     }
 
     public List<Station> stations() {
-        List<Station> stations = new ArrayList<>();
+        Set<Station> stations = new LinkedHashSet<>();
+
+        sections.sort(Comparator.comparingInt(Section::sectionOrder));
 
         for (Section section : sections) {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
+            stations.add(section.upStation());
+            stations.add(section.downStation());
         }
 
-        return Collections.unmodifiableList(stations);
+        return Collections.unmodifiableList(new ArrayList<>(stations));
     }
 }
