@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class Distance {
+public class Distance implements Comparable<Distance> {
 
 	@Column(nullable = false)
 	private int distance;
@@ -24,8 +24,16 @@ public class Distance {
 		}
 	}
 
-	public static Distance valueOf(int distance) {
+	static Distance valueOf(int distance) {
 		return new Distance(distance);
+	}
+
+	Distance minus(Distance otherSection) {
+		return Distance.valueOf(this.distance - otherSection.distance);
+	}
+
+	Distance plus(Distance otherSection) {
+		return Distance.valueOf(this.distance + otherSection.distance);
 	}
 
 	@Override
@@ -43,16 +51,13 @@ public class Distance {
 		return Objects.hash(distance);
 	}
 
-	public boolean isLessThan(Distance other) {
-		return this.distance <= other.distance;
-	}
-
-	public Distance minus(Distance otherSection) {
-		return Distance.valueOf(this.distance - otherSection.distance);
-	}
-
 	@Override
 	public String toString() {
 		return "Distance{" + "distance=" + distance + '}';
+	}
+
+	@Override
+	public int compareTo(Distance otherDistance) {
+		return Integer.compare(this.distance, otherDistance.distance);
 	}
 }

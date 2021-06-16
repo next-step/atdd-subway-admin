@@ -18,6 +18,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 	private static final int ORDER_START_SECTION_IDX = 0;
+	private static final int MIN_SIZE = 1;
 
 	@OneToMany(fetch = LAZY, mappedBy = "line", cascade = ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
@@ -32,12 +33,31 @@ public class Sections {
 		return new Sections(new ArrayList<>(asList(sections)));
 	}
 
-	void add(Section otherSection) {
+	void addSection(Section otherSection) {
 		checkValidation(otherSection);
+
 		for (Section section : sections) {
 			section.addInnerSection(otherSection);
 		}
+
 		sections.add(otherSection);
+	}
+
+	void removeSectionBy(Station station) {
+		validateMinSize();
+
+		Section sectionToRemove = findSectionToRemoveBy(station);
+
+		removeConnectingStation(station, sectionToRemove);
+
+		sections.remove(sectionToRemove);
+	}
+
+	Distance sumDistance() {
+		return sections.stream()
+			.map(Section::getDistance)
+			.reduce(Distance::plus)
+			.orElseThrow(IllegalStateException::new);
 	}
 
 	List<Station> orderedStations() {
@@ -47,35 +67,41 @@ public class Sections {
 			.collect(toList());
 	}
 
+	private void removeConnectingStation(Station station, Section sectionToRemove) {
+		for (Section section : sections) {
+			section.removeConnectingStation(station, sectionToRemove);
+		}
+	}
+
 	private Stream<Section> orderedSections() {
 		Section currentSection = sections.get(ORDER_START_SECTION_IDX);
 		return Stream.concat(
-			findUpDirectionSectionsClosed(currentSection),
-			findDownDirectionSectionsClosed(currentSection))
+			findUpwardSectionsClosed(currentSection),
+			findDownwardSectionsClosed(currentSection))
 			.distinct();
 	}
 
-	private Stream<Section> findUpDirectionSectionsClosed(Section currentSection) {
+	private Stream<Section> findUpwardSectionsClosed(Section currentSection) {
 		Optional<Section> previousSection = sections.stream()
-			.filter(section -> section.isUpDirectionOf(currentSection))
+			.filter(section -> section.isUpwardOf(currentSection))
 			.findFirst();
 
 		Stream<Section> current = Stream.of(currentSection);
 
 		return previousSection
-			.map(section -> Stream.concat(findUpDirectionSectionsClosed(section), current))
+			.map(section -> Stream.concat(findUpwardSectionsClosed(section), current))
 			.orElse(current);
 	}
 
-	private Stream<Section> findDownDirectionSectionsClosed(Section currentSection) {
+	private Stream<Section> findDownwardSectionsClosed(Section currentSection) {
 		Optional<Section> nextSection = sections.stream()
-			.filter(section -> section.isDownDirectionOf(currentSection))
+			.filter(section -> section.isDownwardOf(currentSection))
 			.findFirst();
 
 		Stream<Section> current = Stream.of(currentSection);
 
 		return nextSection
-			.map(section -> Stream.concat(current, findDownDirectionSectionsClosed(section)))
+			.map(section -> Stream.concat(current, findDownwardSectionsClosed(section)))
 			.orElse(current);
 	}
 
@@ -93,15 +119,28 @@ public class Sections {
 
 	private boolean exists(Section otherSection) {
 		boolean existsSameUpStation = sections.stream()
-			.anyMatch(section -> section.isSameUpStation(otherSection));
+			.anyMatch(section -> section.hasEqualUpStation(otherSection));
 
 		return sections.stream()
-			.anyMatch(section -> existsSameUpStation && section.isSameDownStation(otherSection));
+			.anyMatch(section -> existsSameUpStation && section.hasEqualDownStation(otherSection));
 	}
 
 	private boolean notExistsUpAndDownStations(Section otherSection) {
 		return sections.stream()
 			.flatMap(Section::getStreamOfStations)
-			.noneMatch(otherSection::contains);
+			.noneMatch(otherSection::contain);
+	}
+
+	private Section findSectionToRemoveBy(Station station) {
+		return sections.stream()
+			.filter(section -> section.contain(station))
+			.findAny()
+			.orElseThrow(() -> new IllegalArgumentException("노선에 없는 역의 구간은 제거할 수 없습니다."));
+	}
+
+	private void validateMinSize() {
+		if (sections.size() == MIN_SIZE) {
+			throw new IllegalArgumentException("노선의 남은 구간이 하나 밖에 없어 제거할 수 없습니다.");
+		}
 	}
 }
