@@ -73,6 +73,14 @@ public class Section {
         return isUpStation(station) || isDownStation(station);
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
     private boolean isUpStation(Station station) {
         return upStation.equals(station);
     }

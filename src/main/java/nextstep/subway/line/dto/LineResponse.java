@@ -27,8 +27,6 @@ public class LineResponse {
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
         this.stationList = stations.stream()
-                .distinct()
-                .sorted(Comparator.comparing(Station::getId))
                 .map(this::stationResponse)
                 .collect(Collectors.toList());
     }

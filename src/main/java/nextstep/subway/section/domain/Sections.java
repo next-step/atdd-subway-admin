@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import static nextstep.subway.common.ErrorMessage.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,7 @@ import nextstep.subway.station.domain.Station;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<Section> sections = new LinkedList<>();
+    private final List<Section> sections = new ArrayList<>();
 
     public Sections() {
     }
@@ -27,9 +28,14 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        return sections.stream()
-                .flatMap(section -> section.getUpDownStations().stream())
-                .collect(Collectors.toList());
+        List<Station> result = new LinkedList<>();
+        result.add(sections.get(0).getUpStation());
+        result.add(sections.get(0).getDownStation());
+
+        addUpStation(result, result.get(0));
+        addDownStation(result, result.get(result.size() - 1));
+
+        return result;
     }
 
     public void updateSection(Station upStation, Station downStation, Distance requestDistance) {
@@ -37,6 +43,39 @@ public class Sections {
         section.updateStation(upStation, downStation, requestDistance);
     }
 
+    private void addUpStation(List<Station> result, Station findStation) {
+        while (findDownStation(findStation)) {
+            Station copyStation = findStation;
+            Section findSection = sections.stream()
+                    .filter(section -> section.getDownStation().equals(copyStation))
+                    .findAny().orElseThrow(() -> new RuntimeException(NOT_FOUND_STATION));
+
+            result.add(0, findSection.getUpStation());
+            findStation = findSection.getUpStation();
+        }
+    }
+
+    private void addDownStation(List<Station> result, Station findStation) {
+        while (findUpStation(findStation)) {
+            Station copyStation = findStation;
+            Section findSection = sections.stream()
+                    .filter(section -> section.getUpStation().equals(copyStation))
+                    .findAny().orElseThrow(() -> new RuntimeException(NOT_FOUND_STATION));
+
+            result.add(findSection.getDownStation());
+            findStation = findSection.getDownStation();
+        }
+    }
+
+    private boolean findDownStation(Station findStation) {
+        return sections.stream()
+                .anyMatch(section -> section.getDownStation().equals(findStation));
+    }
+
+    private boolean findUpStation(Station findStation) {
+        return sections.stream()
+                .anyMatch(section -> section.getUpStation().equals(findStation));
+    }
 
     private Section getSection(Station upStation, Station downStation) {
         checkDuplicateSectionStations(upStation, downStation);

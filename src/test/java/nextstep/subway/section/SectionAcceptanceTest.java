@@ -3,14 +3,17 @@ package nextstep.subway.section;
 import static nextstep.subway.Constant.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
 import nextstep.subway.common.ErrorMessage;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -113,6 +116,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_구간_생성됨
         지하철_구간_생성됨(구간추가_응답);
+        지하철_구간_순서_번호로_검사(구간추가_응답, 강남역_번호, 판교역_번호, 양재역_번호);
+        지하철_구간_순서_이름으로_검사(구간추가_응답, 강남역_이름, 판교역_이름, 양재역_이름);
     }
 
     @DisplayName("지하철 구간을 상단 종점에 한다.")
@@ -127,6 +132,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_구간_생성됨
         지하철_구간_생성됨(구간추가_응답);
+        지하철_구간_순서_번호로_검사(구간추가_응답, 판교역_번호, 강남역_번호, 양재역_번호);
+        지하철_구간_순서_이름으로_검사(구간추가_응답, 판교역_이름, 강남역_이름, 양재역_이름);
     }
 
     @DisplayName("지하철 구간을 하단 종점에 한다.")
@@ -141,6 +148,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_구간_생성됨
         지하철_구간_생성됨(구간추가_응답);
+        지하철_구간_순서_번호로_검사(구간추가_응답, 강남역_번호, 양재역_번호, 판교역_번호);
+        지하철_구간_순서_이름으로_검사(구간추가_응답, 강남역_이름, 양재역_이름, 판교역_이름);
     }
 
     private ExtractableResponse<Response> 역_생성_요청(String 이름, String 색) {
@@ -212,5 +221,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private void 구간_추가_요청_실패(ExtractableResponse<Response> 구간_추가_요청_실패_응답, String expectMessage) {
         assertThat(HttpStatus.BAD_REQUEST.value()).isEqualTo(구간_추가_요청_실패_응답.statusCode());
         assertThat(expectMessage).isEqualTo(구간_추가_요청_실패_응답.body().jsonPath().get("message"));
+    }
+
+    private void 지하철_구간_순서_번호로_검사(ExtractableResponse<Response> 구간_생성_응답, String 첫_번째_역_번호, String 두_번째_역_번호, String 세_번째_역_번호) {
+        List<Long> 역_id = 구간_생성_응답.jsonPath().getList(STATION_LIST, LineResponse.class).stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+
+        assertThat(역_id.size()).isEqualTo(3);
+        assertThat(역_id.get(0)).isEqualTo(Long.parseLong(첫_번째_역_번호));
+        assertThat(역_id.get(1)).isEqualTo(Long.parseLong(두_번째_역_번호));
+        assertThat(역_id.get(2)).isEqualTo(Long.parseLong(세_번째_역_번호));
+    }
+
+    private void 지하철_구간_순서_이름으로_검사(ExtractableResponse<Response> 구간_생성_응답, String 첫_번째_역_이름, String 두_번째_역_이름, String 세_번째_역_이름) {
+        List<String> 역_목록 = 구간_생성_응답.jsonPath().getList(STATION_LIST, LineResponse.class).stream()
+                .map(it -> it.getName())
+                .collect(Collectors.toList());
+
+        assertThat(역_목록.size()).isEqualTo(3);
+        assertThat(역_목록.get(0)).isEqualTo(첫_번째_역_이름);
+        assertThat(역_목록.get(1)).isEqualTo(두_번째_역_이름);
+        assertThat(역_목록.get(2)).isEqualTo(세_번째_역_이름);
     }
 }
