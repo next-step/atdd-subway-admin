@@ -101,6 +101,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_추가_요청_실패(구간_추가_요청_실패_응답, 에러_메시지_구간이_너무_김);
     }
 
+    @DisplayName("지하철 구간을 역사이에 추가 한다.")
+    @Test
+    void 지하철_구간_추가_역_사이() {
+        // given
+
+        // when
+        // 지하철_구간_생성_요청
+        ExtractableResponse<Response> 구간추가_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 강남역_번호, 판교역_번호, 구간_추가_요청_길이_값);
+
+        // then
+        // 지하철_구간_생성됨
+        지하철_구간_생성됨(구간추가_응답);
+    }
+
     @DisplayName("지하철 구간을 상단 종점에 한다.")
     @Test
     void 지하철_구간_생성_상단_종점() {
@@ -109,6 +123,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_구간_생성_요청
         ExtractableResponse<Response> 구간추가_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 판교역_번호, 강남역_번호, 구간_추가_요청_길이_값);
+
+        // then
+        // 지하철_구간_생성됨
+        지하철_구간_생성됨(구간추가_응답);
+    }
+
+    @DisplayName("지하철 구간을 하단 종점에 한다.")
+    @Test
+    void 지하철_구간_생성_하단_종점() {
+        // given
+
+        // when
+        // 지하철_구간_생성_요청
+        ExtractableResponse<Response> 구간추가_응답 = 구간_추가_요청(ID_추출(신분당선_생성_응답), 양재역_번호, 판교역_번호, 구간_추가_요청_길이_값);
 
         // then
         // 지하철_구간_생성됨

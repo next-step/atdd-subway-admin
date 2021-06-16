@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -40,7 +39,7 @@ public class Section {
     @Embedded
     private Distance distance;
 
-    public Section() {
+    protected Section() {
     }
 
     private Section(Line line, Station upStation, Station downStation, Distance distance) {
@@ -64,8 +63,28 @@ public class Section {
         return upStation.equals(station) || downStation.equals(station);
     }
 
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
     public Distance getDistance() {
         return distance;
+    }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void setDistance(Distance distance) {
+        this.distance = distance;
     }
 
     @Override
@@ -79,5 +98,13 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
+    }
+
+    public Distance calculateDistance(Distance requestDistance) {
+        return calculate(requestDistance);
+    }
+
+    private Distance calculate(Distance requestDistance) {
+        return new Distance(distance.getValue() - requestDistance.getValue());
     }
 }

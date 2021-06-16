@@ -2,8 +2,9 @@ package nextstep.subway.section.domain;
 
 import static nextstep.subway.common.ErrorMessage.*;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -16,7 +17,7 @@ import nextstep.subway.station.domain.Station;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new LinkedList<>();
 
     public Sections() {
     }
@@ -31,7 +32,19 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public Section getExistsSection(Station upStation, Station downStation) {
+    public void updateSection(Station upStation, Station downStation, Distance requestDistance) {
+        Section section = getSection(upStation, downStation);
+        if (section.isUpStation(upStation)) {
+            section.setUpStation(downStation);
+        }
+        if (section.isDownStation(downStation)) {
+            section.setDownStation(upStation);
+        }
+        section.setDistance(section.calculateDistance(requestDistance));
+    }
+
+
+    private Section getSection(Station upStation, Station downStation) {
         checkDuplicateSectionStations(upStation, downStation);
 
         return sections.stream()

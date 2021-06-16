@@ -1,7 +1,5 @@
 package nextstep.subway.line.domain;
 
-import static nextstep.subway.common.ErrorMessage.*;
-
 import java.util.List;
 
 import javax.persistence.Column;
@@ -63,6 +61,11 @@ public class Line extends BaseEntity {
         sections.addSection(section);
     }
 
+    public void addSection(Station upStation, Station downStation, Distance requestDistance) {
+        sections.updateSection(upStation, downStation, requestDistance);
+        sections.addSection(Section.getInstance(this, upStation, downStation, requestDistance));
+    }
+
     public List<Station> stations() {
         return sections.getStations();
     }
@@ -70,17 +73,5 @@ public class Line extends BaseEntity {
     public void updateNameColor(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public void addSection(Station upStation, Station downStation, Distance distance) {
-        Section existsSection = sections.getExistsSection(upStation, downStation);
-        if (existsSection.getDistance().getValue() <= distance.getValue()) {
-            throw new IllegalArgumentException(DISTANCE_TOO_LONG);
-        }
-    }
-
-    public Section getSectionStations(Station upStation, Station downStation) {
-        return sections.getExistsSection(upStation, downStation);
-
     }
 }

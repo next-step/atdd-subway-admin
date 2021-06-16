@@ -9,7 +9,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -31,7 +30,6 @@ public class SectionService {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_STATION));
 
         line.addSection(upStation, downStation, lineRequest.getDistance());
-        line.addSection(Section.getInstance(line, upStation, downStation, lineRequest.getDistance()));
 
         // 구간에 대한 유효성 검사
         return LineResponse.of(line);
