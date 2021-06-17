@@ -10,6 +10,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -18,7 +19,7 @@ public class Sections {
     private static final String SAME_SECTION_ADD_EXCEPTION = "동일한 구간은 추가할 수 없습니다.";
     private static final String CANNOT_DELETE_EXCEPTION = "역을 제거할 수 없습니다.";
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void addSection(Section section) {
@@ -49,11 +50,20 @@ public class Sections {
         stations.add(station);
 
         while (isAfterSection(station)) {
-            Section afterStation = findAfterSection(station);
-            station = afterStation.downStation();
+            Optional<Section> afterStation = findAfterSection(station);
+            station = afterStation.get().downStation();
             stations.add(station);
         }
         return stations;
+    }
+
+    public void deleteSection(Line line, Station station) {
+        validDeleteSection(station);
+        Optional<Section> upSection = findBeforeSection(station);
+        Optional<Section> downSection = findAfterSection(station);
+
+        createSection(line, upSection, downSection);
+        deleteUpOrDownSection( upSection, downSection);
     }
 
     private List<Section> sections() {
@@ -89,24 +99,22 @@ public class Sections {
     private Station findFirstSection() {
         Station station = sections.get(0).upStation();
         while (isBeforeSection(station)) {
-            Section section = findBeforeSection(station);
-            station = section.upStation();
+            Optional<Section> section = findBeforeSection(station);
+            station = section.get().upStation();
         }
         return station;
     }
 
-    private Section findBeforeSection(Station station) {
+    private Optional<Section> findBeforeSection(Station station) {
         return sections.stream()
                 .filter(it -> it.isEqualsDownStation(station))
-                .findFirst()
-                .orElseThrow(NotFoundException::new);
+                .findFirst();
     }
 
-    private Section findAfterSection(Station station) {
+    private Optional<Section> findAfterSection(Station station) {
         return sections.stream()
                 .filter(it -> it.isEqualsUpStation(station))
-                .findFirst()
-                .orElseThrow(NotFoundException::new);
+                .findFirst();
     }
 
     public boolean isStationExist(Station station) {
@@ -123,38 +131,18 @@ public class Sections {
         }
     }
 
-    public void deleteSection(Line line, Station station) {
-        validDeleteSection(station);
-        deleteMiddleSection(line, station);
-        deleteEndSection(station);
-    }
-
-    private List<Section> deleteSectionList(Station station) {
-        return sections.stream()
-                .filter(it -> it.upStation() != station && it.downStation() != station)
-                .collect(Collectors.toList());
-    }
-
-    private void deleteMiddleSection(Line line, Station station) {
-        if (deleteCondition(station)) {
-            Section upSection = findBeforeSection(station);
-            Section downSection = findAfterSection(station);
-            Section section = new Section(line, upSection.upStation(), downSection.downStation(), upSection.distance()+downSection.distance());
-            this.sections = deleteSectionList(station);
-            addSection(section);
+    private void createSection(Line line, Optional<Section> upSection, Optional<Section> downSection) {
+        if (upSection.isPresent() && downSection.isPresent()) {
+            Station upStation = upSection.get().upStation();
+            Station  downStation = downSection.get().downStation();
+            int distance = upSection.get().distance() + downSection.get().distance();
+            sections.add(new Section(line, upStation, downStation, distance));
         }
     }
 
-    private void deleteEndSection(Station station) {
-        if (!deleteCondition(station)) {
-            this.sections = deleteSectionList(station);
-        }
-    }
-
-    private boolean deleteCondition(Station station) {
-        boolean hasBefore= isBeforeSection(station);
-        boolean hasAfter = isAfterSection(station);
-        return hasBefore && hasAfter;
+    private void deleteUpOrDownSection(Optional<Section> upSection, Optional<Section> downSection) {
+        upSection.ifPresent(it -> sections.remove(it));
+        downSection.ifPresent(it -> sections.remove(it));
     }
 
     private void validDeleteSection(Station station) {

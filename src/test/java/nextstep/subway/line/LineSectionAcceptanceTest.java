@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.line.LineAcceptanceTest.findLineById;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 추가 관련 기능")

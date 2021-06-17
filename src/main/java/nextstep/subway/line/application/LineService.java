@@ -51,7 +51,7 @@ public class LineService {
         line.update(request.toLine());
     }
 
-    public void deleteStationById(Long id) {
+    public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
@@ -60,5 +60,11 @@ public class LineService {
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(NotFoundException::new);
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(NotFoundException::new);
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+    }
+
+    public void deleteLineStation(Long lineId, Long stationId) {
+        Station station = stationRepository.findById(stationId).orElseThrow(NotFoundException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
+        line.deleteSection(station);
     }
 }
