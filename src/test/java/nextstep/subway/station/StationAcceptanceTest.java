@@ -3,9 +3,7 @@ package nextstep.subway.station;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,21 +16,19 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-	private Map<String, String> 강남역_파라메터;
-	private Map<String, String> 역삼역_파라메터;
+	private StationRequest 강남역;
+	private StationRequest 역삼역;
 
 	@BeforeEach
 	void 초기화() {
-		강남역_파라메터 = new HashMap<>();
-		강남역_파라메터.put("name", "강남역");
-
-		역삼역_파라메터 = new HashMap<>();
-		역삼역_파라메터.put("name", "역삼역");
+		강남역 = new StationRequest("강남역");
+		역삼역 = new StationRequest("역삼역");
 	}
 
 	@DisplayName("지하철역을 생성한다.")
@@ -41,63 +37,63 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		// given
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(강남역_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(강남역);
 
 		// then
-		지하철역이_생성된다(생성_응답);
+		지하철역이_생성_응답된다(생성_응답);
+		지하철역_정보가_동일하다(강남역, 생성_응답);
 	}
 
-	@DisplayName("지하철 역 이름을 전달하지 않고 생성한다.")
+
+	@DisplayName("지하철역을 생성하는 경우 지하철 역 이름을 전달하지 않으면 등록되지 않는다.")
 	@Test
 	void createStationWithNullName() {
 		// given
-		Map<String, String> 역이름_없는_파라메터 = new HashMap<>();
+		StationRequest 역이름_없음 = new StationRequest(null);
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(역이름_없는_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(역이름_없음);
 
 		// then
 		지하철역이_생성_실패된다(생성_응답);
 	}
 
-	@DisplayName("지하철 역 이름을 공백(\"\")으로 생성한다.")
+	@DisplayName("지하철역을 생성하는 경우 지하철 역 이름을 공백(\"\")으로 전달하면 등록되지 않는다.")
 	@Test
 	void createStationWithBlankName() {
 		// given
-		Map<String, String> 공백_역이름_파라메터 = new HashMap<>();
-		공백_역이름_파라메터.put("name", "");
+		StationRequest 역이름_공백 = new StationRequest("");
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(공백_역이름_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(역이름_공백);
 
 		// then
 		지하철역이_생성_실패된다(생성_응답);
 	}
 
-	@DisplayName("지하철 역 이름을 상당히 길게 작성하여 생성한다.")
+	@DisplayName("지하철역을 생성하는 경우 지하철 역 이름을 상당히 길게 작성하면 등록되지 않는다.")
 	@Test
 	void createStationWithLongName() {
 		// given
 		String 이백오십육바이트_이름 = "역이름 또는 노선이름 255바이트 넘기려고 지은 이름입니다. 이름이 아닌 것 같지만 이름 맞습니다. "
 			+ "Character Set이 UTF-8로 맞춰서 256 바이트 길이가 딱 맞는 이름입니다. 확인하지 않으셔도 됩니다.";
-		Map<String, String> 긴_역이름_파라메터 = new HashMap<>();
-		긴_역이름_파라메터.put("name", 이백오십육바이트_이름);
+		StationRequest 역이름_너무_김 = new StationRequest(이백오십육바이트_이름);
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(긴_역이름_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(역이름_너무_김);
 
 		// then
 		지하철역이_생성_실패된다(생성_응답);
 	}
 
-	@DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+	@DisplayName("지하철역을 생성하는 경우 기존에 존재하는 지하철역 이름으로 전달하면 지하철역을 등록하지 못한다.")
 	@Test
 	void createStationWithDuplicateName() {
 		// given
-		지하철역_생성_요청(강남역_파라메터);
+		지하철_역_등록되어_있음(강남역);
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(강남역_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(강남역);
 
 		// then
 		지하철역이_생성_실패된다(생성_응답);
@@ -107,99 +103,97 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getStations() {
 		/// given
-		ExtractableResponse<Response> 강남역_생성_응답 = 지하철역_생성_요청(강남역_파라메터);
-		ExtractableResponse<Response> 역삼역_생성_응답 = 지하철역_생성_요청(역삼역_파라메터);
+		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
+		String 역삼역_응답 = 지하철_역_등록되어_있음(역삼역);
 
 		// when
 		ExtractableResponse<Response> 목록_조회_응답 = 지하철역_목록_조회_요청();
 
 		// then
 		지하철역이_응답된다(목록_조회_응답);
-		지하철역이_포함되어_있다(강남역_생성_응답, 역삼역_생성_응답, 목록_조회_응답);
+		지하철역이_포함되어_있다(목록_조회_응답, Arrays.asList(강남역_응답, 역삼역_응답));
 	}
 
 	@DisplayName("지하철역을 조회한다.")
 	@Test
 	void getStation() {
 		/// given
-		ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청(강남역_파라메터);
+		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
 
 		// when
-		ExtractableResponse<Response> 조회_응답 = 지하철역_조회_요청(지하철역_생성_응답);
+		ExtractableResponse<Response> 조회_응답 = 지하철역_조회_요청(강남역_응답);
 
 		// then
 		지하철역이_응답된다(조회_응답);
-		지하철역이_동일하다(지하철역_생성_응답, 조회_응답);
+		지하철역_정보가_동일하다(강남역, 조회_응답);
 	}
 
 	@DisplayName("지하철역을 수정한다.")
 	@Test
 	void updateStation() {
 		// given
-		ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청(강남역_파라메터);
+		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
 
 		// when
-		ExtractableResponse<Response> 지하철역_수정_응답 = 지하철역_수정_요청(지하철역_생성_응답, 역삼역_파라메터);
+		ExtractableResponse<Response> 지하철역_수정_응답 = 지하철역_수정_요청(강남역_응답, 역삼역);
 
 		// then
 		지하철역이_수정된다(지하철역_수정_응답);
 	}
 
-	@DisplayName("지하철 역 이름을 전달하지 않고 수정한다.")
+	@DisplayName("지하철역을 수정하는 경우 지하철 역 이름을 전달하지 않으면 수정할 수 없다.")
 	@Test
 	void updateStationWithNullName() {
 		// given
-		ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청(강남역_파라메터);
-		Map<String, String> 역이름_없는_파라메터 = new HashMap<>();
+		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
+		StationRequest 역이름_없음 = new StationRequest(null);
 
 		// when
-		ExtractableResponse<Response> 지하철역_수정_응답 = 지하철역_수정_요청(지하철역_생성_응답, 역이름_없는_파라메터);
+		ExtractableResponse<Response> 지하철역_수정_응답 = 지하철역_수정_요청(강남역_응답, 역이름_없음);
 
 		// then
 		지하철역이_수정이_실패된다(지하철역_수정_응답);
 	}
 
-	@DisplayName("지하철 역 이름을 공백(\"\")으로 수정한다.")
+	@DisplayName("지하철역을 수정하는 경우 지하철 역 이름을 공백(\"\")으로 전달하면 수정할 수 없다.")
 	@Test
 	void updateStationWithBlankName() {
 		// given
-		ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청(강남역_파라메터);
-		Map<String, String> 공백_역이름_파라메터 = new HashMap<>();
-		공백_역이름_파라메터.put("name", "");
+		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
+		StationRequest 역이름_공백 = new StationRequest("");
 
 		// when
-		ExtractableResponse<Response> 지하철역_수정_응답 = 지하철역_수정_요청(지하철역_생성_응답, 공백_역이름_파라메터);
+		ExtractableResponse<Response> 지하철역_수정_응답 = 지하철역_수정_요청(강남역_응답, 역이름_공백);
 
 		// then
 		지하철역이_수정이_실패된다(지하철역_수정_응답);
 	}
 
-	@DisplayName("지하철 역 이름을 상당히 길게 작성하여 수정한다.")
+	@DisplayName("지하철역을 수정하는 경우 지하철 역 이름을 상당히 길게 작성하면 수정할 수 없다.")
 	@Test
 	void updateStationWithLongName() {
 		// given
-		ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청(강남역_파라메터);
+		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
 		String 이백오십육바이트_이름 = "역이름 또는 노선이름 255바이트 넘기려고 지은 이름입니다. 이름이 아닌 것 같지만 이름 맞습니다. "
 			+ "Character Set이 UTF-8로 맞춰서 256 바이트 길이가 딱 맞는 이름입니다. 확인하지 않으셔도 됩니다.";
-		Map<String, String> 긴_역이름_파라메터 = new HashMap<>();
-		긴_역이름_파라메터.put("name", 이백오십육바이트_이름);
+		StationRequest 역이름_너무_김 = new StationRequest(이백오십육바이트_이름);
 
 		// when
-		ExtractableResponse<Response> 지하철역_수정_응답 = 지하철역_수정_요청(지하철역_생성_응답, 긴_역이름_파라메터);
+		ExtractableResponse<Response> 지하철역_수정_응답 = 지하철역_수정_요청(강남역_응답, 역이름_너무_김);
 
 		// then
 		지하철역이_수정이_실패된다(지하철역_수정_응답);
 	}
 
-	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 수정한다.")
+	@DisplayName("지하철역을 수정하는 경우 기존에 존재하는 지하철 노선 이름으로 전달하면 지하철 역을 수정할 수 없다.")
 	@Test
 	void updateStationWithDuplicateName() {
 		// given
-		ExtractableResponse<Response> 강남역_생성_응답 = 지하철역_생성_요청(강남역_파라메터);
-		ExtractableResponse<Response> 역삼역_생성_응답 = 지하철역_생성_요청(역삼역_파라메터);
+		지하철_역_등록되어_있음(강남역);
+		String 역삼역_응답 = 지하철_역_등록되어_있음(역삼역);
 
 		// when
-		ExtractableResponse<Response> 지하철역_수정_응답 = 지하철역_수정_요청(역삼역_생성_응답, 강남역_파라메터);
+		ExtractableResponse<Response> 지하철역_수정_응답 = 지하철역_수정_요청(역삼역_응답, 강남역);
 
 		// then
 		지하철역이_수정이_실패된다(지하철역_수정_응답);
@@ -209,16 +203,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteStation() {
 		// given
-		ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청(강남역_파라메터);
+		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
 
 		// when
-		ExtractableResponse<Response> 지하철역_삭제_응답 = 지하철역_삭제_요청(지하철역_생성_응답);
+		ExtractableResponse<Response> 지하철역_삭제_응답 = 지하철역_삭제_요청(강남역_응답);
 
 		// then
 		지하철역이_삭제된다(지하철역_삭제_응답);
 	}
 
-	private ExtractableResponse<Response> 지하철역_생성_요청(Map<String, String> params) {
+	private ExtractableResponse<Response> 지하철역_생성_요청(StationRequest params) {
 		return RestAssured.given().log().all()
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -228,24 +222,32 @@ public class StationAcceptanceTest extends AcceptanceTest {
 			.extract();
 	}
 
-	private void 지하철역이_생성된다(ExtractableResponse<Response> 생성_응답) {
+	private void 지하철역이_생성_응답된다(ExtractableResponse<Response> 생성_응답) {
 		assertThat(생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(생성_응답.header("Location")).isNotBlank();
+	}
+
+	private void 지하철역_정보가_동일하다(StationRequest 역정보, ExtractableResponse<Response> 생성_응답) {
+		String 생성된_역_이름 = 생성_응답.jsonPath().get("name");
+		assertThat(생성된_역_이름).isEqualTo(역정보.getName());
 	}
 
 	private void 지하철역이_생성_실패된다(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
+	private String 지하철_역_등록되어_있음(StationRequest 역정보) {
+		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(역정보);
+		return 생성_응답.header("Location");
+	}
+
 	private void 지하철역이_응답된다(ExtractableResponse<Response> 목록_조회_응답) {
 		assertThat(목록_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
-	private void 지하철역이_포함되어_있다(ExtractableResponse<Response> 강남역_생성_응답,
-		ExtractableResponse<Response> 역삼역_생성_응답,
-		ExtractableResponse<Response> 목록_조회_응답) {
-		List<Long> 예상_지하철역_아이디들 = 생성_응답에서_지하철역_아이디_추출하기(강남역_생성_응답, 역삼역_생성_응답);
-		List<Long> 비교할_지하철역_아이디들 = 목록_조회_응답에서_지하철역_아이디_추출하기(목록_조회_응답);
+	private void 지하철역이_포함되어_있다(ExtractableResponse<Response> 목록_조회_응답, List<String> 예상_지하철역_응답들) {
+		List<Long> 예상_지하철역_아이디들 = 예상_지하철역_응답들에서_지하철역_아이디_추출하기(예상_지하철역_응답들);
+ 		List<Long> 비교할_지하철역_아이디들 = 목록_조회_응답에서_지하철역_아이디_추출하기(목록_조회_응답);
 		assertThat(비교할_지하철역_아이디들).containsAll(예상_지하철역_아이디들);
 	}
 
@@ -256,10 +258,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		return resultLineIds;
 	}
 
-	private List<Long> 생성_응답에서_지하철역_아이디_추출하기(ExtractableResponse<Response> 강남역_생성_응답,
-		ExtractableResponse<Response> 역삼역_생성_응답) {
-		List<Long> expectedLineIds = Arrays.asList(강남역_생성_응답, 역삼역_생성_응답).stream()
-			.map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+	private List<Long> 예상_지하철역_응답들에서_지하철역_아이디_추출하기(List<String> 예상_지하철역_응답들) {
+		List<Long> expectedLineIds = 예상_지하철역_응답들.stream()
+			.map(it -> Long.parseLong(it.split("/")[2]))
 			.collect(Collectors.toList());
 		return expectedLineIds;
 	}
@@ -273,30 +274,21 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		return response;
 	}
 
-	private ExtractableResponse<Response> 지하철역_조회_요청(ExtractableResponse<Response> 지하철역_생성_응답) {
-		String uri = 지하철역_생성_응답.header("Location");
+	private ExtractableResponse<Response> 지하철역_조회_요청(String 지하철역_URI) {
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.when()
-			.get(uri)
+			.get(지하철역_URI)
 			.then().log().all()
 			.extract();
 		return response;
 	}
 
-	private void 지하철역이_동일하다(ExtractableResponse<Response> 지하철역_생성_응답, ExtractableResponse<Response> 조회_응답) {
-		StationResponse 생성시_응답 = 지하철역_생성_응답.jsonPath().getObject(".", StationResponse.class);
-		StationResponse 조회후_응답 = 조회_응답.jsonPath().getObject(".", StationResponse.class);
-		assertThat(생성시_응답.equals(조회후_응답)).isTrue();
-	}
-
-	private ExtractableResponse<Response> 지하철역_수정_요청(ExtractableResponse<Response> 지하철역_생성_응답,
-		Map<String, String> 파라메터) {
-		String uri = 지하철역_생성_응답.header("Location");
+	private ExtractableResponse<Response> 지하철역_수정_요청(String 지하철역_URI, StationRequest 수정_역정보) {
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
-			.body(파라메터)
+			.body(수정_역정보)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
-			.put(uri)
+			.put(지하철역_URI)
 			.then().log().all()
 			.extract();
 		return response;
@@ -310,11 +302,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		assertThat(지하철역_수정_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	private ExtractableResponse<Response> 지하철역_삭제_요청(ExtractableResponse<Response> 지하철역_생성_응답) {
-		String uri = 지하철역_생성_응답.header("Location");
+	private ExtractableResponse<Response> 지하철역_삭제_요청(String 지하철역_URI) {
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.when()
-			.delete(uri)
+			.delete(지하철역_URI)
 			.then().log().all()
 			.extract();
 		return response;

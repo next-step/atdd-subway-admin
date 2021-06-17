@@ -3,9 +3,7 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,28 +16,21 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-	private Map<String, String> 초록색_라인_파라메터;
-	private Map<String, String> 새로운_라인_초록색_라인과_같은_색상_파라메터;
-	private Map<String, String> 파란색_라인_파라메터;
+	private LineRequest 이호선;
+	private LineRequest 삼호선_이호선과_같은_색상;
+	private LineRequest 사호선;
 
 	@BeforeEach
 	void 초기화() {
-		초록색_라인_파라메터 = new HashMap<>();
-		초록색_라인_파라메터.put("name", "2호선");
-		초록색_라인_파라메터.put("color", "#FFFFFF");
-
-		새로운_라인_초록색_라인과_같은_색상_파라메터 = new HashMap<>();
-		새로운_라인_초록색_라인과_같은_색상_파라메터.put("name", "3호선");
-		새로운_라인_초록색_라인과_같은_색상_파라메터.put("color", "#FFFFFF");
-
-		파란색_라인_파라메터 = new HashMap<>();
-		파란색_라인_파라메터.put("name", "4호선");
-		파란색_라인_파라메터.put("color", "#000000");
+		이호선 = new LineRequest("2호선", "#FFFFFF");
+		삼호선_이호선과_같은_색상 = new LineRequest("3호선", "#FFFFFF");
+		사호선 = new LineRequest("4호선", "#000000");
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
@@ -48,125 +39,115 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// given
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(이호선);
 
 		// then
 		노선이_생성된다(생성_응답);
 	}
 
-	@DisplayName("지하철 노선 이름을 전달하지 않고 생성한다.")
+	@DisplayName("지하철 노선을 등록할 경우 지하철 노선 이름을 전달하지 않으면 등록할 수 없다.")
 	@Test
 	void createLineWithNullName() {
 		// given
-		Map<String, String> 노선이름_없는_파라메터 = new HashMap<>();
-		노선이름_없는_파라메터.put("color", "#FFFFFF");
+		LineRequest 노선이름_없음 = new LineRequest(null, "#FFFFFF");
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(노선이름_없는_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(노선이름_없음);
 
 		// then
 		노선이_생성_실패된다(생성_응답);
 	}
 
-	@DisplayName("지하철 노선 이름을 공백(\"\")으로 생성한다.")
+	@DisplayName("지하철 노선을 등록할 경우 지하철 노선 이름을 공백(\"\")으로 전달하면 등록할 수 없다.")
 	@Test
 	void createLineWithBlankName() {
 		// given
-		Map<String, String> 공백_노선이름_파라메터 = new HashMap<>();
-		공백_노선이름_파라메터.put("name", "");
-		공백_노선이름_파라메터.put("color", "#FFFFFF");
+		LineRequest 노선이름_공백 = new LineRequest("", "#FFFFFF");
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(공백_노선이름_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(노선이름_공백);
 
 		// then
 		노선이_생성_실패된다(생성_응답);
 	}
 
-	@DisplayName("지하철 노선 이름을 상당히 길게 작성하여 생성한다.")
+	@DisplayName("지하철 노선을 등록할 경우 지하철 노선 이름을 상당히 길게 작성하면 등록할 수 없다.")
 	@Test
 	void createLineWithLongName() {
 		// given
 		String 이백오십육바이트_이름 = "역이름 또는 노선이름 255바이트 넘기려고 지은 이름입니다. 이름이 아닌 것 같지만 이름 맞습니다. "
 			+ "Character Set이 UTF-8로 맞춰서 256 바이트 길이가 딱 맞는 이름입니다. 확인하지 않으셔도 됩니다.";
-		Map<String, String> 긴_노선이름_파라메터 = new HashMap<>();
-		긴_노선이름_파라메터.put("name", 이백오십육바이트_이름);
-		긴_노선이름_파라메터.put("color", "#FFFFFF");
+		LineRequest 노선이름_너무_김 = new LineRequest(이백오십육바이트_이름, "#FFFFFF");
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(긴_노선이름_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(노선이름_너무_김);
 
 		// then
 		노선이_생성_실패된다(생성_응답);
 	}
 
-	@DisplayName("지하철 노선 색상을 전달하지 않고 생성한다.")
+	@DisplayName("지하철 노선을 등록할 경우 지하철 노선 색상을 전달하지 않으면 등록할 수 없다.")
 	@Test
 	void createLineWithNullColor() {
 		// given
-		Map<String, String> 색상_없는_파라메터 = new HashMap<>();
-		색상_없는_파라메터.put("name", "1호선");
+		LineRequest 색상_없음 = new LineRequest("1호선", null);
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(색상_없는_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(색상_없음);
 
 		// then
 		노선이_생성_실패된다(생성_응답);
 	}
 
-	@DisplayName("지하철 노선 색상을 공백(\"\")으로 생성한다.")
+	@DisplayName("지하철 노선을 등록할 경우 지하철 노선 색상을 공백(\"\")으로 전달하면 등록할 수 없다.")
 	@Test
 	void createLineWithBlankColor() {
 		// given
-		Map<String, String> 공백_색상_파라메터 = new HashMap<>();
-		공백_색상_파라메터.put("name", "1호선");
-		공백_색상_파라메터.put("color", "");
+		LineRequest 색상_공백 = new LineRequest("1호선", "");
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(공백_색상_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(색상_공백);
 
 		// then
 		노선이_생성_실패된다(생성_응답);
 	}
 
-	@DisplayName("지하철 노선 색상을 상당히 길게 작성하여 생성한다.")
+	@DisplayName("지하철 노선을 등록할 경우 지하철 노선 색상을 상당히 길게 작성하면 등록할 수 없다.")
 	@Test
 	void createLineWithLongColor() {
 		// given
 		String 이백오십육바이트_색상 = "색상 255바이트 넘기려고 지은 색상입니다. 색상이 아닌 것 같지만 색상 맞습니다. "
 			+ "Character Set이 UTF-8로 맞춰서 256 바이트 길이가 딱 맞는 색상입니다. 색상들의 길이는 확인하지 않으셔도 됩니다.";
-		Map<String, String> 긴_색상_파라메터 = new HashMap<>();
-		긴_색상_파라메터.put("name", "1호선");
-		긴_색상_파라메터.put("color", 이백오십육바이트_색상);
+		LineRequest 색상_너무_김 = new LineRequest("1호선", 이백오십육바이트_색상);
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(긴_색상_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(색상_너무_김);
 
 		// then
 		노선이_생성_실패된다(생성_응답);
 	}
 
-	@DisplayName("기존에 존재하는 지하철 노선 색상으로 지하철 노선을 생성한다.")
+	@DisplayName("지하철 노선을 등록할 경우 기존에 존재하는 지하철 노선 색상으로 전달해도 지하철 노선을 생성할 수 있다.")
 	@Test
 	void createLineWithDuplicateColor() {
 		// given
-		노선_생성_요청(초록색_라인_파라메터);
+		노선_생성_요청(이호선);
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(새로운_라인_초록색_라인과_같은_색상_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(삼호선_이호선과_같은_색상);
 
 		// then
 		노선이_생성된다(생성_응답);
 	}
 
-	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+	@DisplayName("지하철 노선을 등록할 경우 기존에 존재하는 지하철 노선 이름으로 작성하면 등록할 수 없다.")
 	@Test
 	void createLineWithDuplicateName() {
 		// given
-		노선_생성_요청(초록색_라인_파라메터);
+		노선_생성_요청(이호선);
 
 		// when
-		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(이호선);
 
 		// then
 		노선이_생성_실패된다(생성_응답);
@@ -176,8 +157,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
-		ExtractableResponse<Response> 초록색_라인_생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
-		ExtractableResponse<Response> 파란색_라인_생성_응답 = 노선_생성_요청(파란색_라인_파라메터);
+		ExtractableResponse<Response> 초록색_라인_생성_응답 = 노선_생성_요청(이호선);
+		ExtractableResponse<Response> 파란색_라인_생성_응답 = 노선_생성_요청(사호선);
 
 		// when
 		ExtractableResponse<Response> 목록_조회_응답 = 노선_목록_조회_요청();
@@ -191,7 +172,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
-		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
+		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(이호선);
 
 		// when
 		ExtractableResponse<Response> 조회_응답 = 노선_조회_요청(노선_생성_응답);
@@ -205,22 +186,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
-		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
+		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(이호선);
 
 		// when
-		ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(노선_생성_응답, 파란색_라인_파라메터);
+		ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(노선_생성_응답, 사호선);
 
 		// then
 		노선이_수정된다(노선_수정_응답);
 	}
 
-	@DisplayName("지하철 노선 이름을 전달하지 않고 수정한다.")
+	@DisplayName("지하철 노선을 수정할 경우 지하철 노선 이름을 전달하지 않으면 수정할 수 없다.")
 	@Test
 	void updateLineWithNullName() {
 		// given
-		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
-		Map<String, String> 노선이름_없는_파라메터 = new HashMap<>();
-		노선이름_없는_파라메터.put("color", "#FFFFFF");
+		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(이호선);
+		LineRequest 노선이름_없는_파라메터 = new LineRequest(null, "#FFFFFF");
 
 		// when
 		ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(노선_생성_응답, 노선이름_없는_파라메터);
@@ -229,14 +209,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		노선이_수정_실패된다(노선_수정_응답);
 	}
 
-	@DisplayName("지하철 노선 이름을 공백(\"\")으로 수정한다.")
+	@DisplayName("지하철 노선을 수정할 경우 지하철 노선 이름을 공백(\"\")으로 전달하면 수정할 수 없다.")
 	@Test
 	void updateLineWithBlankName() {
 		// given
-		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
-		Map<String, String> 공백_노선이름_파라메터 = new HashMap<>();
-		공백_노선이름_파라메터.put("name", "");
-		공백_노선이름_파라메터.put("color", "#FFFFFF");
+		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(이호선);
+		LineRequest 공백_노선이름_파라메터 = new LineRequest("", "#FFFFFF");
 
 		// when
 		ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(노선_생성_응답, 공백_노선이름_파라메터);
@@ -245,16 +223,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		노선이_수정_실패된다(노선_수정_응답);
 	}
 
-	@DisplayName("지하철 노선 이름을 상당히 길게 작성하여 수정한다.")
+	@DisplayName("지하철 노선을 수정할 경우 지하철 노선 이름을 상당히 길게 작성하면 수정할 수 없다.")
 	@Test
 	void updateLineWithLongName() {
 		// given
-		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
+		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(이호선);
 		String 이백오십육바이트_이름 = "역이름 또는 노선이름 255바이트 넘기려고 지은 이름입니다. 이름이 아닌 것 같지만 이름 맞습니다. "
 			+ "Character Set이 UTF-8로 맞춰서 256 바이트 길이가 딱 맞는 이름입니다. 확인하지 않으셔도 됩니다.";
-		Map<String, String> 긴_노선이름_파라메터 = new HashMap<>();
-		긴_노선이름_파라메터.put("name", 이백오십육바이트_이름);
-		긴_노선이름_파라메터.put("color", "#FFFFFF");
+		LineRequest 긴_노선이름_파라메터 = new LineRequest(이백오십육바이트_이름, "#FFFFFF");
 
 		// when
 		ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(노선_생성_응답, 긴_노선이름_파라메터);
@@ -263,13 +239,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		노선이_수정_실패된다(노선_수정_응답);
 	}
 
-	@DisplayName("지하철 노선 색상을 전달하지 않고 수정한다.")
+	@DisplayName("지하철 노선을 수정할 경우 지하철 노선 색상을 전달하지 않으면 수정할 수 없다.")
 	@Test
 	void updateLineWithNullColor() {
 		// given
-		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
-		Map<String, String> 색상_없는_파라메터 = new HashMap<>();
-		색상_없는_파라메터.put("name", "1호선");
+		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(이호선);
+		LineRequest 색상_없는_파라메터 = new LineRequest("1호선", null);
 
 		// when
 		ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(노선_생성_응답, 색상_없는_파라메터);
@@ -278,14 +253,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		노선이_수정_실패된다(노선_수정_응답);
 	}
 
-	@DisplayName("지하철 노선 색상을 공백(\"\")으로 수정한다.")
+	@DisplayName("지하철 노선을 수정할 경우 지하철 노선 색상을 공백(\"\")으로 전달하면 수정할 수 없다.")
 	@Test
 	void updateLineWithBlankColor() {
 		// given
-		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
-		Map<String, String> 공백_색상_파라메터 = new HashMap<>();
-		공백_색상_파라메터.put("name", "1호선");
-		공백_색상_파라메터.put("color", "");
+		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(이호선);
+		LineRequest 공백_색상_파라메터 = new LineRequest("1호선", "");
 
 		// when
 		ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(노선_생성_응답, 공백_색상_파라메터);
@@ -294,16 +267,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		노선이_수정_실패된다(노선_수정_응답);
 	}
 
-	@DisplayName("지하철 노선 색상을 상당히 길게 작성하여 수정한다.")
+	@DisplayName("지하철 노선을 수정할 경우 지하철 노선 색상을 상당히 길게 작성하면 수정할 수 없다.")
 	@Test
 	void updateLineWithLongColor() {
 		// given
-		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
+		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(이호선);
 		String 이백오십육바이트_색상 = "색상 255바이트 넘기려고 지은 색상입니다. 색상이 아닌 것 같지만 색상 맞습니다. "
 			+ "Character Set이 UTF-8로 맞춰서 256 바이트 길이가 딱 맞는 색상입니다. 색상들의 길이는 확인하지 않으셔도 됩니다.";
-		Map<String, String> 긴_색상_파라메터 = new HashMap<>();
-		긴_색상_파라메터.put("name", "1호선");
-		긴_색상_파라메터.put("color", 이백오십육바이트_색상);
+		LineRequest 긴_색상_파라메터 = new LineRequest("2호선", 이백오십육바이트_색상);
 
 		// when
 		ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(노선_생성_응답, 긴_색상_파라메터);
@@ -312,28 +283,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		노선이_수정_실패된다(노선_수정_응답);
 	}
 
-	@DisplayName("기존에 존재하는 지하철 노선 색상으로 지하철 노선을 수정한다.")
+	@DisplayName("지하철 노선을 수정할 경우 기존에 존재하는 지하철 노선 색상으로 지하철 노선을 수정할 수 있다.")
 	@Test
 	void updateLineWithDuplicateColor() {
 		// given
-		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
+		ExtractableResponse<Response> 노선_생성_응답 = 노선_생성_요청(이호선);
 
 		// when
-		ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(노선_생성_응답, 새로운_라인_초록색_라인과_같은_색상_파라메터);
+		ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(노선_생성_응답, 삼호선_이호선과_같은_색상);
 
 		// then
 		노선이_수정된다(노선_수정_응답);
 	}
 
-	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 수정한다.")
+	@DisplayName("지하철 노선을 수정할 경우 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 수정할 수 없다.")
 	@Test
 	void updateLineWithDuplicateName() {
 		// given
-		ExtractableResponse<Response> 초록색_라인_생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
-		ExtractableResponse<Response> 파란색_라인_생성_응답 = 노선_생성_요청(파란색_라인_파라메터);
+		ExtractableResponse<Response> 초록색_라인_생성_응답 = 노선_생성_요청(이호선);
+		ExtractableResponse<Response> 파란색_라인_생성_응답 = 노선_생성_요청(사호선);
 
 		// when
-		ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(파란색_라인_생성_응답, 초록색_라인_파라메터);
+		ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(파란색_라인_생성_응답, 이호선);
 
 		// then
 		노선이_수정_실패된다(노선_수정_응답);
@@ -343,7 +314,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
-		ExtractableResponse<Response> 초록색_라인_생성_응답 = 노선_생성_요청(초록색_라인_파라메터);
+		ExtractableResponse<Response> 초록색_라인_생성_응답 = 노선_생성_요청(이호선);
 
 		// when
 		ExtractableResponse<Response> 노선_삭제_응답 = 노선_삭제_요청(초록색_라인_생성_응답);
@@ -352,7 +323,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		노선이_삭제된다(노선_삭제_응답);
 	}
 
-	private ExtractableResponse<Response> 노선_생성_요청(Map<String, String> params) {
+	private ExtractableResponse<Response> 노선_생성_요청(LineRequest params) {
 		return RestAssured.given().log().all()
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -424,7 +395,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private ExtractableResponse<Response> 노선_수정_요청(ExtractableResponse<Response> 노선_생성_응답,
-		Map<String, String> 파라메터) {
+		LineRequest 파라메터) {
 		String uri = 노선_생성_응답.header("Location");
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.body(파라메터)
