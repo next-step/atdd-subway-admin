@@ -35,6 +35,14 @@ public class Distance {
         return originDistance - this.distance;
     }
 
+    public Distance sumDistance(Distance originDistance) {
+        return new Distance(originDistance.getSumDistance(this.distance));
+    }
+
+    private int getSumDistance(int distance) {
+        return this.distance + distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

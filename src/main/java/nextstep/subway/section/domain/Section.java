@@ -76,11 +76,11 @@ public class Section extends BaseEntity {
         originDistance.adjustmentDistance(distance);
     }
 
-    private boolean isSameUpStation(Station originUpStation) {
+    public boolean isSameUpStation(Station originUpStation) {
         return this.upStation.equals(originUpStation);
     }
 
-    private boolean isSameDownStation(Station originDownStation) {
+    public boolean isSameDownStation(Station originDownStation) {
         return this.downStation.equals(originDownStation);
     }
 
@@ -106,5 +106,18 @@ public class Section extends BaseEntity {
 
     public void setLine(Line line) {
         this.line = line;
+    }
+
+    public boolean isContains(Station removeStation) {
+        return upStation.equals(removeStation) || downStation.equals(removeStation);
+    }
+
+    public void changeSectionAndDistance(Section downSection) {
+        this.downStation = downSection.getDownStation();
+        this.distance = downSection.sumDistance(this.distance);
+    }
+
+    private Distance sumDistance(Distance originDistance) {
+        return this.distance.sumDistance(originDistance);
     }
 }

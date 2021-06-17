@@ -100,19 +100,34 @@ public class Sections {
 
     private Section getDownStationOfUpStation(Station upStation) {
         return sections.stream()
-                .filter(it -> it.getDownStation().equals(upStation))
+                .filter(it -> it.isSameDownStation(upStation))
                 .findFirst()
                 .orElse(null);
     }
 
     private Section getNextStation(Station downStation) {
         return sections.stream()
-                .filter(it -> it.getUpStation().equals(downStation))
+                .filter(it -> it.isSameUpStation(downStation))
                 .findFirst()
                 .orElse(null);
     }
 
     public void removeStation(Station removeStation) {
+        isRemoveStationValidate(removeStation);
+        Section upSection = getDownStationOfUpStation(removeStation);
+        Section downSection = getNextStation(removeStation);
+        if (upSection == null) {
+            sections.remove(downSection);
+            return;
+        }
+        if (downSection == null) {
+            sections.remove(upSection);
+            return;
+        }
+        upSection.changeSectionAndDistance(downSection);
+    }
+
+    private void isRemoveStationValidate(Station removeStation) {
         if (sections.size() < 2) {
             throw new RemoveSectionException();
         }
@@ -123,6 +138,6 @@ public class Sections {
 
     private boolean hasRemoveStation(Station removeStation) {
         return sections.stream()
-                .noneMatch(section -> section.getUpStation().equals(removeStation) || section.getDownStation().equals(removeStation));
+                .noneMatch(section -> section.isContains(removeStation));
     }
 }
