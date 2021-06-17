@@ -31,7 +31,7 @@ public class Line extends BaseEntity {
     @Embedded
     private final Sections sections = new Sections();
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(LineRequest request, Station upStation, Station downStation) {
