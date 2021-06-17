@@ -1,5 +1,8 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.exceptionAdvice.exception.RemoveSectionException;
+import nextstep.subway.common.exceptionAdvice.exception.StationNotFoundException;
+import nextstep.subway.common.exceptionAdvice.exception.StationOfLineNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -7,6 +10,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Embeddable
@@ -96,15 +100,45 @@ public class Sections {
 
     private Section getDownStationOfUpStation(Station upStation) {
         return sections.stream()
-                .filter(it -> it.getDownStation().equals(upStation))
+                .filter(it -> it.isSameDownStation(upStation))
                 .findFirst()
                 .orElse(null);
     }
 
     private Section getNextStation(Station downStation) {
         return sections.stream()
-                .filter(it -> it.getUpStation().equals(downStation))
+                .filter(it -> it.isSameUpStation(downStation))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void removeStation(Station removeStation) {
+        isRemoveStationValidate(removeStation);
+        Section upSection = getDownStationOfUpStation(removeStation);
+        Section downSection = getNextStation(removeStation);
+        if (upSection == null) {
+            sections.remove(downSection);
+            return;
+        }
+        if (downSection == null) {
+            sections.remove(upSection);
+            return;
+        }
+        upSection.changeSectionAndDistance(downSection);
+        sections.remove(downSection);
+    }
+
+    private void isRemoveStationValidate(Station removeStation) {
+        if (sections.size() < 2) {
+            throw new RemoveSectionException();
+        }
+        if (hasRemoveStation(removeStation)) {
+            throw new StationOfLineNotFoundException(removeStation.getId());
+        }
+    }
+
+    private boolean hasRemoveStation(Station removeStation) {
+        return sections.stream()
+                .noneMatch(section -> section.isContains(removeStation));
     }
 }

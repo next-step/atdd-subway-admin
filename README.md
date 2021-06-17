@@ -56,7 +56,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ---
 
 <details>
-<summary style="font-Weight: bold; font-siz:25px;">인수 테스트 실습 미션</summary>
+<summary style="font-Weight: bold; font-size:25px;">인수 테스트 실습 미션</summary>
 <div>
 
 ## 기능 구현 
@@ -76,7 +76,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ---
 
 <details>
-<summary style="font-Weight:bold;font-size=25px;">1단계 - 지하철 노선 관리 </summary>
+<summary style="font-Weight:bold;font-size:25px;">1단계 - 지하철 노선 관리 </summary>
 <div>
 
 ### 요구 사항
@@ -138,7 +138,7 @@ host: localhost:49468
 ---
 
 <details>
-<summary style="font-Weight: bold; font-siz:25px;"> 2단계 - 인수 테스트 리팩터링 </summary>
+<summary style="font-Weight:bold; font-size:25px;"> 2단계 - 인수 테스트 리팩터링 </summary>
 <div>
 
 ### 요구사항
@@ -187,7 +187,10 @@ public class Line {
 
 ---
 
-## 3단계 - 구간 추가 기능
+<details>
+<summary style="font-Weight: bold; font-size:25px;">3단계 - 구간 추가 기능</summary>
+
+
 
 ### 요구사항 정의
 #### 역 사이에 새로운 역을 등록할 경우
@@ -217,3 +220,31 @@ beto A-B, B-C 각각 4m, 3m
 * 동일 선의 Service 레이어는 서로 의존을 지양한다. -> 계속해서 의존하게 되면 스파게티 코드가 될 수 있음.
 * (추가 수정) 각 컴포넌트의 공통 Exception 을 핸들러해주는 ```@RestControllerAdvice``` 를 구현 ( 컨트롤러의 모든 Exception을 핸들함 )
     * ```@RestController``` 는 하나의 컨트롤러만 핸들러
+  
+>레이어 의존 관계 참고 자료  
+https://geminikim.medium.com/%EC%A7%80%EC%86%8D-%EC%84%B1%EC%9E%A5-%EA%B0%80%EB%8A%A5%ED%95%9C-%EC%86%8C%ED%94%84%ED%8A%B8%EC%9B%A8%EC%96%B4%EB%A5%BC-%EB%A7%8C%EB%93%A4%EC%96%B4%EA%B0%80%EB%8A%94-%EB%B0%A9%EB%B2%95-97844c5dab63
+
+</details>
+
+---
+
+## 4단계 - 구간 제거 기능
+
+### 요구사항 정의
+* 노선의 구간을 제거하는 기능을 구현하기
+* 구간 삭제 시 예외 케이스를 고려하기
+
+#### 지하철 구간 삭제 request
+```java
+DELETE /lines/1/sections?stationId=2 HTTP/1.1
+accept: */*
+host: localhost:52165
+```
+* 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
+* 중간역이 제거될 경우 재배치를 함
+  * 노선에 A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 됨
+  * 거리는 두 구간의 거리의 합으로 정함
+  
+* 구간 삭제 시 예외 케이스를 고려하기
+  * 노선에 등록되어있지 않은 역을 제거하려 한다.
+  * 구간이 하나인 노선은 역을 지울 수 없음.

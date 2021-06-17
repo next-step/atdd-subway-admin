@@ -4,9 +4,13 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.common.exceptionAdvice.dto.ErrorResponse;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -110,7 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_추가_등록(new SectionRequest(2L, 3L, 10), 1L);
         지하철_노선_추가_등록(new SectionRequest(3L, 4L, 10), 1L);
         지하철_노선_추가_등록(new SectionRequest(2L, 5L, 5), 1L);
-        
+
         // when
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> searchLine = 지하철_노선_조회(1L);
@@ -164,6 +168,107 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("구간이 하나인 노선은 역을 제거할 수 없음")
+    @Test
+    void exception_delete_one_section_station() {
+        // given
+        // 지하철_노선_등록되어_있음
+        지하철역_여러_생성();
+        지하철_노선_등록(new LineRequest("화곡역", "Purple", 1L, 2L, 10));
+
+        // when
+        // 지하철 노선 제거_요청
+        ExtractableResponse<Response> deleteStation = 노선_지하철역_구간_제거(1L, 1L);
+
+        // then
+        // 제거할 수 없음
+        ErrorResponse response = deleteStation.jsonPath().getObject(".", ErrorResponse.class);
+        assertThat(response.getErrorCode()).isEqualTo(6500);
+    }
+
+    @DisplayName("구간이 하나인 노선은 역을 제거할 수 없음")
+    @Test
+    void exception_delete_not_exist_section_station() {
+        // given
+        // 지하철_노선_등록되어_있음
+        지하철역_여러_생성();
+        지하철_노선_등록(new LineRequest("화곡역", "Purple", 1L, 2L, 10));
+        지하철_노선_추가_등록(new SectionRequest(2L, 4L, 10), 1L);
+
+        // when
+        // 지하철 노선 제거_요청
+        ExtractableResponse<Response> deleteStation = 노선_지하철역_구간_제거(1L, 3L);
+
+        // then
+        // 제거할 수 없음
+        ErrorResponse response = deleteStation.jsonPath().getObject(".", ErrorResponse.class);
+        assertThat(response.getErrorCode()).isEqualTo(6501);
+    }
+
+    @DisplayName("구간 종점 제거 후 결과 확인")
+    @Test
+    void remove_section() {
+        // given
+        // 지하철_노선_등록되어_있음
+        지하철역_여러_생성();
+        지하철_노선_등록(new LineRequest("화곡역", "Purple", 1L, 2L, 10));
+        지하철_노선_추가_등록(new SectionRequest(2L, 4L, 10), 1L);
+
+        // when
+        // 지하철 노선 제거_요청
+        노선_지하철역_구간_제거(1L, 4L);
+
+        // then
+        // 지하철_구간_1L_2L만_있음
+        ExtractableResponse<Response> response = 지하철_노선_조회(1L);
+        LineResponse expected = response.jsonPath().getObject(".", LineResponse.class);
+        List<StationResponse> stationResponses = expected.getStations();
+        assertThat(stationResponses.size()).isEqualTo(2);
+        assertThat(stationResponses.stream()
+                .noneMatch(it -> it.getId() == 4L)).isTrue();
+    }
+
+    @DisplayName("중간 구간 제거 후 결과 확인")
+    @Test
+    void remove_middle_section() {
+        // given
+        // 지하철_노선_등록되어_있음
+        지하철역_여러_생성();
+        지하철_노선_등록(new LineRequest("화곡역", "Purple", 1L, 2L, 10));
+        지하철_노선_추가_등록(new SectionRequest(2L, 4L, 10), 1L);
+
+        // when
+        // 지하철 노선 제거_요청
+        노선_지하철역_구간_제거(1L, 2L);
+
+        // then
+        // 지하철_구간_길이_20_확인
+        ExtractableResponse<Response> response = 노선_구간_목록_조회(1L);
+        List<SectionResponse> expected = response.jsonPath().getList(".", SectionResponse.class);
+        assertThat(expected.get(0).getUpStationId()).isEqualTo(1L);
+        assertThat(expected.get(0).getDownStationId()).isEqualTo(4L);
+        assertThat(expected.get(0).getDistance()).isEqualTo(20);
+    }
+
+    ExtractableResponse<Response> 노선_구간_목록_조회(Long id) {
+        return RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/{id}/sections", id)
+                .then().log().all()
+                .extract();
+    }
+
+    ExtractableResponse<Response> 노선_지하철역_구간_제거(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/{lineId}/sections", lineId)
+                .then().log().all()
+                .extract();
     }
 
     void 지하철역_여러_생성() {
