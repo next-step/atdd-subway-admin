@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("역 사이에 새로운 역을 등록할 경우")
+@DisplayName("역 사이에 새로운 역을 등록하거나 삭제하는 경우")
 class SectionsTest {
     private static Station A, B, C, D, E, F;
     private static Station X, Y, Z;
@@ -271,7 +271,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("다중 역등록 테스트")
+    @DisplayName("다중 역등록후 삭제 테스트")
     public void step5() {
         Section section1 = Section.builder().id(1L)
                 .upStation(A).downStation(B)
@@ -321,6 +321,7 @@ class SectionsTest {
         List<Station> actual = sections.sortedStations();
         List<Section> sorted = sections.sortedSections();
 
+        //정상 등록 확인
         assertAll(
             //갯수 확인
             () -> assertThat(actual.size()).isEqualTo(9),
@@ -341,6 +342,25 @@ class SectionsTest {
             () -> assertThat(sorted.get(6).getDistance()).isEqualTo(2),
             () -> assertThat(sorted.get(7).getDistance()).isEqualTo(2),
             () -> assertThat(sections.totalDistance()).isEqualTo(50)
+        );
+
+        //정상 삭제 확인
+        assertAll(
+            () -> {
+                sections.remove(E);
+                assertThat(sections.sortedStations()).containsExactly(A, B, C, D, F, X, Y, Z);
+                assertThat(sections.totalDistance()).isEqualTo(50);
+            },
+            () -> {
+                sections.remove(A);
+                assertThat(sections.sortedStations()).containsExactly(B, C, D, F, X, Y, Z);
+                assertThat(sections.totalDistance()).isEqualTo(48);
+            },
+            () -> {
+                sections.remove(Z);
+                assertThat(sections.sortedStations()).containsExactly(B, C, D, F, X, Y);
+                assertThat(sections.totalDistance()).isEqualTo(46);
+            }
         );
     }
 
@@ -423,6 +443,108 @@ class SectionsTest {
 
         assertThatThrownBy(() -> sections.add(wrongSection1))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("노선의 구간을 제거할때, 가운데 역을 제거하는 경우")
+    public void remove1() {
+        //Given (A---B----C)
+        Sections sections = givenSampleSection();
+
+        //When
+        sections.remove(B);
+
+        //Then
+        List<Station> sortedStations = sections.sortedStations();
+        List<Section> sortedSections = sections.sortedSections();
+
+        assertAll(
+            //갯수 확인
+            () -> assertThat(sortedStations.size()).isEqualTo(2),
+
+            //순서 확인
+            () -> assertThat(sortedStations).containsExactly(A, C),
+            () -> assertThat(sections.firstStation()).isEqualTo(A),
+            () -> assertThat(sections.lastStation()).isEqualTo(C),
+
+            //길이 확인
+            () -> assertThat(sortedSections.get(0).getDistance()).isEqualTo(7),
+            () -> assertThat(sections.totalDistance()).isEqualTo(7)
+        );
+    }
+
+    @Test
+    @DisplayName("노선의 구간을 제거할때, 상행역을 제거하는 경우")
+    public void remove2() {
+        //Given (A---B----C)
+        Sections sections = givenSampleSection();
+
+        //When
+        sections.remove(A);
+
+        //Then
+        List<Station> sortedStations = sections.sortedStations();
+        List<Section> sortedSections = sections.sortedSections();
+
+        assertAll(
+            //갯수 확인
+            () -> assertThat(sortedStations.size()).isEqualTo(2),
+
+            //순서 확인
+            () -> assertThat(sortedStations).containsExactly(B, C),
+            () -> assertThat(sections.firstStation()).isEqualTo(B),
+            () -> assertThat(sections.lastStation()).isEqualTo(C),
+
+            //길이 확인
+            () -> assertThat(sortedSections.get(0).getDistance()).isEqualTo(4),
+            () -> assertThat(sections.totalDistance()).isEqualTo(4)
+        );
+    }
+
+    @Test
+    @DisplayName("노선의 구간을 제거할때, 하행역을 제거하는 경우")
+    public void remove3() {
+        //Given (A---B----C)
+        Sections sections = givenSampleSection();
+
+        //When
+        sections.remove(C);
+
+        //Then
+        List<Station> sortedStations = sections.sortedStations();
+        List<Section> sortedSections = sections.sortedSections();
+
+        assertAll(
+            //갯수 확인
+            () -> assertThat(sortedStations.size()).isEqualTo(2),
+
+            //순서 확인
+            () -> assertThat(sortedStations).containsExactly(A, B),
+            () -> assertThat(sections.firstStation()).isEqualTo(A),
+            () -> assertThat(sections.lastStation()).isEqualTo(B),
+
+            //길이 확인
+            () -> assertThat(sortedSections.get(0).getDistance()).isEqualTo(3),
+            () -> assertThat(sections.totalDistance()).isEqualTo(3)
+        );
+    }
+
+
+    /**
+     * @return
+     */
+    private Sections givenSampleSection() {
+        Section section1 = Section.builder().id(1L)
+                .upStation(A).downStation(B)
+                .distance(3)
+                .build();
+
+        Section section2 = Section.builder().id(2L)
+                .upStation(B).downStation(C)
+                .distance(4)
+                .build();
+
+        return appendSectionAndPrint(section1, section2);
     }
 
     private Sections appendSectionAndPrint(final Section ...items) {

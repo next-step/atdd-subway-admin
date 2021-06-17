@@ -31,6 +31,30 @@ public class Sections {
         sections.add(newSection);
     }
 
+    public boolean containsStation(final Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.contains(station));
+    }
+
+    public boolean remove(final Station deleteStation) {
+        if (containsStation(deleteStation) == false) {
+            return false;
+        }
+
+        List<Section> deleteSections = sections.stream()
+                .filter(section -> section.contains(deleteStation))
+                .collect(Collectors.toList());
+
+        deleteSections.stream()
+                .forEach(sections::remove);
+
+        if (deleteSections.size() > 1) {
+            arrange(firstSection(deleteSections), lastSection(deleteSections));
+        }
+
+        return true;
+    }
+
     private List<Station> unSortedStations() {
         Set<Station> stationLink = new LinkedHashSet<>();
 
@@ -70,6 +94,18 @@ public class Sections {
         if (tempSections.size() > 0) {
             concat(sections, tempSections);
         }
+    }
+
+    private void arrange(final Section firstSection, final Section lastSection) {
+        Section section = Section.builder()
+            .upStation(firstSection.getUpStation())
+            .downStation(lastSection.getDownStation())
+            .distance(firstSection.getDistance() + lastSection.getDistance())
+            .build();
+
+        section.registerLine(firstSection.getLine());
+
+        sections.add(section);
     }
 
     private Section firstSection(List<Section> sections) {
