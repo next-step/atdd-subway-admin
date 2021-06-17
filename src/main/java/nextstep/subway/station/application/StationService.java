@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -34,5 +33,10 @@ public class StationService {
 
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findById(long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(IllegalArgumentException::new);
     }
 }
