@@ -1,7 +1,7 @@
-package nextstep.subway.wrappers;
+package nextstep.subway.line.domain.wrappers;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.LineStation;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -13,7 +13,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Embeddable
 public class LineStations {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    public static final String NOT_FOUND_STATION_ERROR_MESSAGE = "%s을 종점으로 하는 구간은 존재하지 않습니다.";
+    public static final int MIN_STATION_COUNT = 2;
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LineStation> lineStations = new ArrayList<>();
 
     public LineStations() {
@@ -88,15 +90,66 @@ public class LineStations {
         return stations;
     }
 
-    private Optional<LineStation> findFirstLineStation() {
-        return lineStations.stream().filter(LineStation::isNullPreStation).findFirst();
-    }
-
     public Optional<LineStation> findNextLineStation(LineStation lineStation) {
         return lineStations
                 .stream()
                 .filter(ls -> ls.isNextLineStation(lineStation))
                 .findFirst();
+    }
+
+    private Optional<LineStation> findFirstLineStation() {
+        return lineStations.stream().filter(LineStation::isNullPreStation).findFirst();
+    }
+
+    public LineStation findLineStationByStation(Station station) {
+        return lineStations.stream()
+                .filter(lineStation -> lineStation.isSameStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format(NOT_FOUND_STATION_ERROR_MESSAGE, station.getName())
+                ));
+    }
+
+    public boolean isSingleSection() {
+        return getLineStationsOrderByAsc().size() == MIN_STATION_COUNT;
+    }
+
+    public void delete(LineStation lineStation) {
+        lineStations.remove(lineStation);
+    }
+
+    public boolean isSameLineStation(LineStation other) {
+        boolean isSame = false;
+        for (LineStation lineStation : lineStations) {
+            isSame = lineStation.isSame(other);
+        }
+        return isSame;
+    }
+
+    public void updateLineStationsWithAdd(LineStation lineStation) {
+        if (isNewUpLineStation(lineStation)) {
+            updateFirstLineStation(lineStation);
+            lineStation.update(lineStation.getPreStation(), null, lineStation.getDistance());
+            return;
+        }
+        if (!isNewDownLineStation(lineStation)) {
+            LineStation updateTargetLineStation = findLineStationByPreStation(lineStation);
+            Distance newDistance = updateTargetLineStation.subtractionDistance(lineStation);
+            updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getStation(), newDistance);
+        }
+    }
+
+    public void updateLineStationsWithRemove(LineStation lineStation) {
+        Optional<LineStation> nextLineStation = findNextLineStation(lineStation);
+        if (nextLineStation.isPresent()) {
+            LineStation updateTargetLineStation = nextLineStation.get();
+            Distance newDistance = lineStation.sumDistance(lineStation);
+            updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getPreStation(), newDistance);
+            return;
+        }
+        if (lineStation.isFirstLineStation()) {
+            findNextLineStation(lineStation).ifPresent(ls -> ls.update(ls.getStation(), null, ls.getDistance()));
+        }
     }
 
     @Override
@@ -110,13 +163,5 @@ public class LineStations {
     @Override
     public int hashCode() {
         return Objects.hash(lineStations);
-    }
-
-    public boolean isSameLineStation(LineStation other) {
-        boolean isSame = false;
-        for (LineStation lineStation : lineStations) {
-            isSame = lineStation.isSame(other);
-        }
-        return isSame;
     }
 }

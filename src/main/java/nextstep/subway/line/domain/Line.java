@@ -1,22 +1,19 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.enums.SectionAddType;
-import nextstep.subway.section.domain.LineStation;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.wrappers.Distance;
-import nextstep.subway.wrappers.LineStations;
+import nextstep.subway.line.domain.wrappers.LineStations;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
-    private static final String NOT_FOUND_LINE_ERROR_MESSAGE = "요청한 id 기준 노선이 존재하지않습니다.";
-    public static final String DUPLICATE_LINE_STATION_ERROR_MESSAGE = "상행역 %s 하행역 %s은 이미 등록된 구간 입니다.";
-    public static final String NOT_CONTAION_STATIONS_ERROR_MESSAGE = "상행역 %s, 하행역 %s을 둘중 하나라도 포함하는 구간이 존재하지않습니다.";
+    private static final String NOT_FOUND_LINE_ERROR_MESSAGE = "요청한 line id 기준 노선이 존재하지않습니다.";
+    private static final String DUPLICATE_LINE_STATION_ERROR_MESSAGE = "상행역 %s 하행역 %s은 이미 등록된 구간 입니다.";
+    private static final String NOT_CONTAION_STATIONS_ERROR_MESSAGE = "상행역 %s, 하행역 %s을 둘중 하나라도 포함하는 구간이 존재하지않습니다.";
+    private static final String NOT_DELTED_SINGLE_SECTION_ERROR_MESSAGE = "구간이 하나만 존재하는 경우 구간을 삭제할 수 없습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,10 +38,6 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
         this.lineStations = lineStations;
-    }
-
-    public SectionAddType calcAddType(LineStation lineStation) {
-        return SectionAddType.calcAddType(lineStations, lineStation);
     }
 
     public Line lineStationsBy(LineStations lineStations) {
@@ -74,22 +67,28 @@ public class Line extends BaseEntity {
         return lineStations.generateStations();
     }
 
-    public void updateLineStation(SectionAddType sectionAddType, LineStation lineStation) {
-        if (sectionAddType.equals(SectionAddType.NEW_UP)) {
-            lineStations.updateFirstLineStation(lineStation);
-            lineStation.update(lineStation.getPreStation(), null, lineStation.getDistance());
-        }
-        if (sectionAddType.equals(SectionAddType.NEW_BETWEEN)) {
-            LineStation updateTargetLineStation = lineStations.findLineStationByPreStation(lineStation);
-            updateTargetLineStation.validDistance(lineStation);
-            Distance newDistance = new Distance(updateTargetLineStation.getDistance().subtractionDistance(lineStation.getDistance()));
-            updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getStation(), newDistance);
-        }
+    public void updateLineStation(LineStation lineStation) {
+        lineStations.updateLineStationsWithAdd(lineStation);
+    }
+
+    public LineStation findLineStationByStation(Station deleteTargetStation) {
+        return lineStations.findLineStationByStation(deleteTargetStation);
     }
 
     public void checkValidLineStation(LineStation lineStation) {
         checkValidDuplicateLineStation(lineStation);
         checkValidNotContainStations(lineStation);
+    }
+
+    public void removeSectionByStation(LineStation lineStation) {
+        lineStations.delete(lineStation);
+        lineStations.updateLineStationsWithRemove(lineStation);
+    }
+
+    public void checkValidSingleSection() {
+        if (lineStations.isSingleSection()) {
+            throw new IllegalArgumentException(NOT_DELTED_SINGLE_SECTION_ERROR_MESSAGE);
+        }
     }
 
     private void checkValidDuplicateLineStation(LineStation lineStation) {
@@ -117,21 +116,5 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        Line line = (Line) object;
-        return Objects.equals(id, line.id) &&
-                Objects.equals(name, line.name) &&
-                Objects.equals(color, line.color) &&
-                Objects.equals(lineStations, line.lineStations);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, color, lineStations);
     }
 }

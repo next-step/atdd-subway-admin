@@ -3,9 +3,11 @@ package nextstep.subway.line.application;
 import nextstep.subway.exception.DuplicateValueException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.LineStation;
+import nextstep.subway.line.domain.wrappers.LineStations;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.wrappers.LineStations;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -64,5 +66,23 @@ public class LineService {
         Optional<Line> findLine = lineRepository.findById(id);
         Line line = Line.getNotNullLine(findLine);
         lineRepository.delete(line);
+    }
+
+    public void saveSection(Long lineId, SectionRequest sectionRequest) {
+        Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+        Line line = Line.getNotNullLine(lineRepository.findById(lineId));
+        LineStation lineStation = sectionRequest.toLineStation(upStation, downStation);
+        line.checkValidLineStation(lineStation);
+        line.updateLineStation(lineStation);
+        line.addLineStation(lineStation);
+    }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Station deleteTargetStation = stationService.findStationById(stationId);
+        Line line = Line.getNotNullLine(lineRepository.findById(lineId));
+        line.checkValidSingleSection();
+        LineStation lineStation = line.findLineStationByStation(deleteTargetStation);
+        line.removeSectionByStation(lineStation);
     }
 }

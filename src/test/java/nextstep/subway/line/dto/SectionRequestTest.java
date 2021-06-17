@@ -1,4 +1,4 @@
-package nextstep.subway.section.dto;
+package nextstep.subway.line.dto;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,4 @@ class SectionRequestTest {
         assertThat(sectionRequest.getDownStationId()).isEqualTo(2L);
         assertThat(sectionRequest.getDistance()).isEqualTo(10);
     }
-
-
 }

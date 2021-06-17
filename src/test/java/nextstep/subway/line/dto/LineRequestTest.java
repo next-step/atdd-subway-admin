@@ -1,8 +1,8 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.LineStation;
-import nextstep.subway.wrappers.LineStations;
+import nextstep.subway.line.domain.LineStation;
+import nextstep.subway.line.domain.wrappers.LineStations;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +31,10 @@ class LineRequestTest {
     @Test
     @DisplayName("지하철 노선 파라미터를 이용하여 Line entity 정상 생성")
     void toLine() {
-        assertThat(lineRequest.toLine()).isEqualTo(new Line("신분당선", "bg-red-600"));
+        Line line = lineRequest.toLine();
+        Line expected = new Line("신분당선", "bg-red-600");
+        assertThat(line.getName()).isEqualTo(expected.getName());
+        assertThat(line.getColor()).isEqualTo(expected.getColor());
     }
 
     @Test
@@ -47,11 +50,12 @@ class LineRequestTest {
     @Test
     @DisplayName("지하철 노선 파라미터를 이용하여 Line entity 정상 생성 - 구간, 노선 지하철역 연결 테이블 eitity 추가")
     void toLine2() {
-        Station upStation = new Station("강남역");
-        Station downStation = new Station("광교역");
+        Station upStation = new Station(1L, "강남역");
+        Station downStation = new Station(2L, "광교역");
         LineStations lineStations = lineRequest.toLineStations(upStation, downStation);
 
         Line line = lineRequest.toLine(lineStations);
-        assertThat(line).isEqualTo(new Line("신분당선", "bg-red-600", lineStations));
+        Line expected = new Line("신분당선", "bg-red-600", lineStations);
+        assertThat(line.stations()).isEqualTo(expected.stations());
     }
 }
