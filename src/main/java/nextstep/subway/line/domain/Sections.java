@@ -89,12 +89,12 @@ public class Sections {
 	}
 
 	private void validateCandidate(Section candidate) {
-		Set<Station> stations = getDistinceStations();
+		Set<Station> stations = getDistinctStations();
 		validateAlreadyExistsTwoStations(candidate, stations);
 		validateExistsConnectedStationToOldLine(candidate, stations);
 	}
 
-	private Set<Station> getDistinceStations() {
+	private Set<Station> getDistinctStations() {
 		return sections.stream()
 			.map(x -> Arrays.asList(x.getUpStation(), x.getDownStation()))
 			.flatMap(y -> y.stream())
