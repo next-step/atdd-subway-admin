@@ -55,10 +55,6 @@ public class Section extends BaseEntity implements Comparable<Section> {
         return distance;
     }
 
-    public void changeDownStation(Station station) {
-        this.downStation = station;
-    }
-
     public void changeUpStation(Station station) {
         this.upStation = station;
     }
@@ -69,7 +65,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
 
     public void validateSectionDistance(Section newSection) {
         if (newSection.getDistance() >= this.distance) {
-            throw new IllegalArgumentException("새로운 구간이 너무 긴 구간을 가지고 있습니다");
+            throw new IllegalArgumentException("기존 역 사이보다 크거나 같아 등록할 수 없습니다.");
         }
     }
 
