@@ -32,11 +32,15 @@ public class Sections {
 		Section commonUpStationSection = getCommonUpStationSection(candidate);
 		if (isCommonStationExist(commonUpStationSection)) {
 			addSectionWithCommonUpStation(candidate, commonUpStationSection);
+
+			return;
 		}
 
 		Section commonDownStationSection = getCommonDownStationSection(candidate);
 		if (isCommonStationExist(commonDownStationSection)) {
 			addSectionWithCommonDownStation(candidate, commonDownStationSection);
+
+			return;
 		}
 
 		sections.add(candidate);
