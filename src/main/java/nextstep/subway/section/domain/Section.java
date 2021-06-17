@@ -80,76 +80,14 @@ public class Section {
 		return this.downStation.equals(section.upStation);
 	}
 
-	//ex
-	//A 2 B / B 3 C / C 4 D
-	//A 1 E
-	//result
-	//A 1 E / B 3 C / C 4 D
-	//1 < 2
-	//E (2-1) B
-
-	//ex
-	//A 2 B / B 3 C / C 4 D
-	//A 3 E
-	//2 < 3
-	//A 2 B / B 3 C / C 4 D
-	//B (3-2) E
-	public void setWhenUpStationEqualsUpStation(Section section) {
-		if (this.distance.isMoreThan(section.distance)) {
-			Station tempDownStation = this.downStation;
-			this.downStation = section.downStation;
-			this.distance = section.distance;
-			section.upStation = section.downStation;
-			section.downStation = tempDownStation;
-			section.distance = this.distance.getDifferenceDistance(section.distance);
-		} else {
-			section.upStation = this.downStation;
-			section.distance = this.distance.getDifferenceDistance(section.distance);
-		}
+	protected void overrideUpStation(final Section section) {
+		this.distance = this.distance.getDifferenceDistance(section.distance);
+		this.upStation = section.downStation;
 	}
 
-	//ex
-	//A 1 E / B 3 C / C 4 D
-	//E 1 B
-	//A 1 E / E 1 B / C 4 D
-	//B 3 C
-
-	//A 1 E / B 3 C / C 4 D
-	//E 4 B
-	public void setWhenUpStationEqualsDownStation(Section section) {
-		Station tempUpStation = this.upStation;
-		Station tempDownStation = this.downStation;
-		Distance tempDistance = this.distance;
-		this.upStation = section.upStation;
-		this.downStation = section.downStation;
-		this.distance = section.distance;
-		section.upStation = tempUpStation;
-		section.downStation = tempDownStation;
-		section.distance = tempDistance;
-	}
-	//A 3 B / B 3 C / C 4 D
-	//E 1 B
-	//A 1 E / B 3 C / C 4 D
-	//E (3-1) B
-
-	//A 3 B / B 3 C / C 4 D
-	//E 4 B
-	//E 4-3 A / B 3 C / C 4 D
-	//A 3 B
-
-	public void setWhenDownStationEqualsDownStation(Section section) {
-		if (this.distance.isMoreThan(section.distance)) {
-			Station tempUpStation = this.upStation;
-			Distance tempDistance = this.distance;
-			this.upStation = section.upStation;
-			this.distance = this.distance.getDifferenceDistance(section.distance);
-			section.upStation = tempUpStation;
-			section.distance = tempDistance;
-		} else {
-			this.downStation = section.upStation;
-			this.distance = section.distance;
-			section.distance = this.distance.getDifferenceDistance(section.distance);
-		}
+	protected void overrideDownStation(final Section section) {
+		this.distance = this.distance.getDifferenceDistance(section.distance);
+		this.downStation = section.upStation;
 	}
 
 	public void setLine(Line line) {

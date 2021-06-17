@@ -2,7 +2,6 @@ package nextstep.subway.section.domain;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -22,11 +21,10 @@ public class Sections {
 	}
 
 	public void add(Section newSection) {
-		if(!isEmptySection()) {
+		if (!isEmptySection()) {
 			validateSection(newSection);
-			mapUpStationEqualsUpStation(newSection);
-			mapUpStationEqualsDownStation(newSection);
-			mapDownStationEqualsDownStation(newSection);
+			overrideIfExistsUpStation(newSection);
+			overrideIfExistsDownStation(newSection);
 		}
 		this.sections.add(newSection);
 	}
@@ -36,41 +34,14 @@ public class Sections {
 	}
 
 	private void validateSection(Section newSection) {
-		boolean isExistsUpStation = this.toStations().contains(newSection.getUpStation());
-		boolean isExistsDownStation = this.toStations().contains(newSection.getDownStation());
+		boolean isExistsUpStation = isExistsUpStation(newSection);
+		boolean isExistsDownStation = isExistDownStation(newSection);
 		if (isExistsUpStation && isExistsDownStation) {
 			throw new RuntimeException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
 		}
 		if (!isExistsUpStation && !isExistsDownStation) {
 			throw new RuntimeException("상행역과 하행역에 아무것도 포함되지 않습니다.");
 		}
-	}
-
-	private void mapUpStationEqualsUpStation(Section newSection) {
-		this.sections.stream()
-			.forEach(section -> {
-				if(section.isUpStationEqualsUpStation(newSection)){
-					section.setWhenUpStationEqualsUpStation(newSection);
-				}
-			});
-	}
-
-	private void mapUpStationEqualsDownStation(Section newSection) {
-		this.sections.stream()
-			.forEach(section -> {
-				if(section.isUpStationEqualsDownStation(newSection)){
-					section.setWhenUpStationEqualsDownStation(newSection);
-				}
-			});
-	}
-
-	private void mapDownStationEqualsDownStation(Section newSection) {
-		this.sections.stream()
-			.forEach(section -> {
-				if(section.isDownStationEqualsDownStation(newSection)){
-					section.setWhenDownStationEqualsDownStation(newSection);
-				}
-			});
 	}
 
 	public void remove(Section section) {
@@ -83,6 +54,30 @@ public class Sections {
 			.flatMap(station -> station.stream())
 			.distinct()
 			.collect(Collectors.toList());
+	}
+
+	private boolean isExistsUpStation(Section otherSection) {
+		return this.sections.stream()
+			.anyMatch(section -> section.isUpStationEqualsUpStation(otherSection));
+	}
+
+	private boolean isExistDownStation(Section otherSection) {
+		return this.sections.stream()
+			.anyMatch(section -> section.isDownStationEqualsDownStation(otherSection));
+	}
+
+	private void overrideIfExistsUpStation(final Section newSection) {
+		sections.stream()
+			.filter(section -> newSection.isUpStationEqualsDownStation(section))
+			.findFirst()
+			.ifPresent(section -> section.overrideUpStation(newSection));
+	}
+
+	private void overrideIfExistsDownStation(final Section newSection) {
+		sections.stream()
+			.filter(section -> newSection.isDownStationEqualsDownStation(section))
+			.findFirst()
+			.ifPresent(section -> section.overrideDownStation(newSection));
 	}
 
 }
