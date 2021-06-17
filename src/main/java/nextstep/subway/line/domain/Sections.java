@@ -17,11 +17,11 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-	List<Section> list = new ArrayList<>();
+	List<Section> sections = new ArrayList<>();
 
 	public void add(Section candidate) {
-		if (list.size() == 0) {
-			list.add(candidate);
+		if (sections.size() == 0) {
+			sections.add(candidate);
 
 			return;
 		}
@@ -36,11 +36,11 @@ public class Sections {
 			return;
 		}
 
-		list.add(candidate);
+		sections.add(candidate);
 	}
 
 	private boolean addSectionWithCommonDownStation(Section candidate) {
-		Section commonDownStationSection = list.stream()
+		Section commonDownStationSection = sections.stream()
 			.filter(x -> x.hasSameDownStation(candidate))
 			.findFirst().orElse(null);
 
@@ -50,12 +50,12 @@ public class Sections {
 
 			return true;
 		}
-		
+
 		return false;
 	}
 
 	private boolean addSectionWithCommonUpStation(Section candidate) {
-		Section commonUpStationSection = list.stream()
+		Section commonUpStationSection = sections.stream()
 			.filter(x -> x.hasSameUpStation(candidate))
 			.findFirst().orElse(null);
 
@@ -74,15 +74,15 @@ public class Sections {
 			throw new IllegalArgumentException("The distance between new section must be less than target section");
 		}
 
-		list.add(
+		sections.add(
 			new Section(targetSection.getLine(), upStation, downStation,
 				targetSection.getDistance() - candidate.getDistance()));
-		list.add(candidate);
-		list.remove(targetSection);
+		sections.add(candidate);
+		sections.remove(targetSection);
 	}
 
 	private void validateCandidate(Section candidate) {
-		Set<Station> stations = list.stream()
+		Set<Station> stations = sections.stream()
 			.map(x -> Arrays.asList(x.getUpStation(), x.getDownStation()))
 			.flatMap(y -> y.stream())
 			.collect(Collectors.toSet());
@@ -109,7 +109,7 @@ public class Sections {
 	}
 
 	private Map<Station, Station> getStationOrder() {
-		return list.stream().collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+		return sections.stream().collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
 	}
 
 	private List<Station> convertToOrderedList(Map<Station, Station> order) {
