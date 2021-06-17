@@ -2,12 +2,10 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.line.domain.wrappers.Distance;
 import nextstep.subway.line.domain.wrappers.LineStations;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Entity
@@ -70,16 +68,7 @@ public class Line extends BaseEntity {
     }
 
     public void updateLineStation(LineStation lineStation) {
-        if (lineStations.isNewUpLineStation(lineStation)) {
-            lineStations.updateFirstLineStation(lineStation);
-            lineStation.update(lineStation.getPreStation(), null, lineStation.getDistance());
-            return;
-        }
-        if (!lineStations.isNewDownLineStation(lineStation)) {
-            LineStation updateTargetLineStation = lineStations.findLineStationByPreStation(lineStation);
-            Distance newDistance = updateTargetLineStation.subtractionDistance(lineStation);
-            updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getStation(), newDistance);
-        }
+        lineStations.updateLineStationsWithAdd(lineStation);
     }
 
     public LineStation findLineStationByStation(Station deleteTargetStation) {
@@ -93,17 +82,7 @@ public class Line extends BaseEntity {
 
     public void removeSectionByStation(LineStation lineStation) {
         lineStations.delete(lineStation);
-        Optional<LineStation> nextLineStation = lineStations.findNextLineStation(lineStation);
-        if (nextLineStation.isPresent()) {
-            LineStation updateTargetLineStation = nextLineStation.get();
-            Distance newDistance = lineStation.sumDistance(lineStation);
-            updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getPreStation(), newDistance);
-            return;
-        }
-        if (lineStation.isFirstLineStation()) {
-            lineStations.findNextLineStation(lineStation)
-                    .ifPresent(ls -> ls.update(ls.getStation(), null, ls.getDistance()));
-        }
+        lineStations.updateLineStationsWithRemove(lineStation);
     }
 
     public void checkValidSingleSection() {

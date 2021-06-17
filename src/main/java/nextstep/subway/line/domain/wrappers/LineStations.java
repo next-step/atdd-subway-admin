@@ -126,6 +126,32 @@ public class LineStations {
         return isSame;
     }
 
+    public void updateLineStationsWithAdd(LineStation lineStation) {
+        if (isNewUpLineStation(lineStation)) {
+            updateFirstLineStation(lineStation);
+            lineStation.update(lineStation.getPreStation(), null, lineStation.getDistance());
+            return;
+        }
+        if (!isNewDownLineStation(lineStation)) {
+            LineStation updateTargetLineStation = findLineStationByPreStation(lineStation);
+            Distance newDistance = updateTargetLineStation.subtractionDistance(lineStation);
+            updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getStation(), newDistance);
+        }
+    }
+
+    public void updateLineStationsWithRemove(LineStation lineStation) {
+        Optional<LineStation> nextLineStation = findNextLineStation(lineStation);
+        if (nextLineStation.isPresent()) {
+            LineStation updateTargetLineStation = nextLineStation.get();
+            Distance newDistance = lineStation.sumDistance(lineStation);
+            updateTargetLineStation.update(updateTargetLineStation.getStation(), lineStation.getPreStation(), newDistance);
+            return;
+        }
+        if (lineStation.isFirstLineStation()) {
+            findNextLineStation(lineStation).ifPresent(ls -> ls.update(ls.getStation(), null, ls.getDistance()));
+        }
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;

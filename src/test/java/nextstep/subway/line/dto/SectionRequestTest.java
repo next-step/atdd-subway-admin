@@ -15,6 +15,4 @@ class SectionRequestTest {
         assertThat(sectionRequest.getDownStationId()).isEqualTo(2L);
         assertThat(sectionRequest.getDistance()).isEqualTo(10);
     }
-
-
 }
