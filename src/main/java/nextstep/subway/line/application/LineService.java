@@ -69,12 +69,14 @@ public class LineService {
 		lines.delete(line);
 	}
 
-	public void addSection(Long lineId, SectionRequest sectionRequest) {
+	public Section addSectionAndReturnNewSection(Long lineId, SectionRequest sectionRequest) {
 		Line line = getLine(lineId);
 		Station startStation = getStation(sectionRequest.getUpStationId());
 		Station endStation = getStation(sectionRequest.getDownStationId());
+		Section newSection = new Section(line, startStation, endStation, sectionRequest.getDistance());
+		line.addSection(newSection);
 
-		line.addSection(new Section(line, startStation, endStation, sectionRequest.getDistance()));
+		return newSection;
 	}
 
 	private Line getLine(Long id) {

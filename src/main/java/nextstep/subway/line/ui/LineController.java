@@ -60,8 +60,7 @@ public class LineController {
 
 	@PostMapping(value = "/{lineId}/sections")
 	public ResponseEntity addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-		lineService.addSection(lineId, sectionRequest);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok().body(lineService.addSectionAndReturnNewSection(lineId, sectionRequest));
 	}
 
 	@ExceptionHandler(NoSuchElementException.class)

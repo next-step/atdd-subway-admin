@@ -8,10 +8,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -39,6 +40,10 @@ public class Section {
 		this.upStation = upStation;
 		this.downStation = downStaion;
 		this.distance = distance;
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	public Line getLine() {
