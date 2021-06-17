@@ -2,12 +2,10 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.exception.NoSectionException;
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -20,8 +18,8 @@ public class Line extends BaseEntity {
 	private String name;
 	private String color;
 
-	@OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private List<Section> sections = new ArrayList<>();
+	@Embedded
+	private Sections sections = new Sections();
 
 	public Line() {
 	}
@@ -48,16 +46,15 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public List<Section> getSections() {
+	public Sections getSections() {
 		return sections;
 	}
 
-	public Section getLongestSection() {
-		return sections.stream().max(Comparator.comparingInt(Section::getDistance))
-				.orElseThrow(NoSectionException::new);
+	public List<Station> getStationsInSections() {
+		return sections.getStationsInSections();
 	}
 
-	public void addSection(Section... section) {
-		sections.addAll(Arrays.asList(section));
+	public void addSection(Section section) {
+		sections.addSection(section);
 	}
 }
