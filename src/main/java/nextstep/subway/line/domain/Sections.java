@@ -16,11 +16,12 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+	public static final int SIZE_ZERO = 0;
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	List<Section> sections = new ArrayList<>();
 
 	public void add(Section candidate) {
-		if (sections.size() == 0) {
+		if (isSectionsEmpty()) {
 			sections.add(candidate);
 
 			return;
@@ -39,6 +40,10 @@ public class Sections {
 		}
 
 		sections.add(candidate);
+	}
+
+	private boolean isSectionsEmpty() {
+		return sections.size() == SIZE_ZERO;
 	}
 
 	private boolean isCommonStationExist(Section commonUpStationSection) {
