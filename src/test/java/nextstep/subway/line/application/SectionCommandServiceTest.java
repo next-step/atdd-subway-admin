@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationQueryUseCase;
 import nextstep.subway.station.domain.Station;
@@ -25,6 +26,9 @@ class SectionCommandServiceTest {
     @Mock
     private StationQueryUseCase stationQueryUseCase;
 
+    @Mock
+    private SectionRepository sectionRepository;
+
     private Line line1;
     private SectionRequest sectionRequest1;
     private Station upStation;
@@ -32,7 +36,7 @@ class SectionCommandServiceTest {
 
     @BeforeEach
     void setUp() {
-        sectionCommandService = new SectionCommandService(lineQueryUseCase, stationQueryUseCase);
+        sectionCommandService = new SectionCommandService(lineQueryUseCase, stationQueryUseCase, sectionRepository);
         line1 = new Line("1호선", "blue");
         ReflectionTestUtils.setField(line1, "id", 1L);
         sectionRequest1 = new SectionRequest(1L, 2L, 10);

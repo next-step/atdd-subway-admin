@@ -4,4 +4,6 @@ import nextstep.subway.line.dto.SectionRequest;
 
 public interface SectionCommandUseCase {
     void addSection(Long lineId, SectionRequest sectionRequest);
+
+    void removeSectionByStationId(Long lineId, Long stationId);
 }

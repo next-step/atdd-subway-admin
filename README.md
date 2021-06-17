@@ -63,3 +63,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 3단계 - 구간 추가 기능
 [바로가기](./markdown/step3.md)
+
+4단계 - 구간 제거 기능
+[바로가기](./markdown/step4.md)

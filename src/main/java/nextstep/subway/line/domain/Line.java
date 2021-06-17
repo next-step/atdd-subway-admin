@@ -62,4 +62,8 @@ public class Line extends BaseEntity {
     public List<Station> getStations(){
         return sections.getSortedStations();
     }
+
+    public Section removeSection(Station station){
+        return sections.remove(station);
+    }
 }

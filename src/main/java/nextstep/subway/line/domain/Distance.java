@@ -45,6 +45,10 @@ public class Distance {
         return distance > distanceToMinus.getDistance();
     }
 
+    public Distance plus(Distance distanceToPlus) {
+        return Distance.valueOf(distance + distanceToPlus.getDistance());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

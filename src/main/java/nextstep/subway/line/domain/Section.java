@@ -63,10 +63,10 @@ public class Section extends BaseEntity {
     }
 
     public void addInsideOfSection(Section sectionToAdd) {
-        if (isEqualsToUpStation(sectionToAdd)) {
+        if (isUpStationEqualsToUpStationInSection(sectionToAdd)) {
             updateUpStation(sectionToAdd);
         }
-        if (isEqualsToDownStation(sectionToAdd)) {
+        if (isDownStationEqualsToDownStationInSection(sectionToAdd)) {
             updateDownStation(sectionToAdd);
         }
     }
@@ -85,12 +85,12 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public boolean isEqualsToUpStation(Section sectionToAdd) {
-        return upStation.equals(sectionToAdd.getUpStation());
+    public boolean isUpStationEqualsToUpStationInSection(Section sectionToAdd) {
+        return sectionToAdd.isUpStationEqualsToStation(upStation);
     }
 
-    public boolean isEqualsToDownStation(Section sectionToAdd) {
-        return downStation.equals(sectionToAdd.getDownStation());
+    public boolean isDownStationEqualsToDownStationInSection(Section sectionToAdd) {
+        return sectionToAdd.isDownStationEqualsToStation(downStation);
     }
 
     public void addStations(List<Station> stations) {
@@ -99,11 +99,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean isNextSection(Section previousSection) {
-        return previousSection.isEqualsDownStationAndUpStation(upStation);
-    }
-
-    private boolean isEqualsDownStationAndUpStation(Station upStation) {
-        return downStation.equals(upStation);
+        return previousSection.isDownStationEqualsToStation(upStation);
     }
 
     public void addNextStation(List<Station> stations) {
@@ -111,18 +107,19 @@ public class Section extends BaseEntity {
     }
 
     public boolean isPreviousSection(Section nextSection) {
-        return nextSection.isEqualsUpStationAndDownStation(downStation);
-    }
-
-    private boolean isEqualsUpStationAndDownStation(Station downStation) {
-        return upStation.equals(downStation);
+        return nextSection.isUpStationEqualsToStation(downStation);
     }
 
     public boolean isDownStationEqualsToStation(Station station) {
-        return station.equals(downStation);
+        return downStation.equals(station);
     }
 
     public boolean isUpStationEqualsToStation(Station station) {
-        return station.equals(upStation);
+        return upStation.equals(station);
+    }
+
+    public void removeUpSection(Section section){
+        this.distance = distance.plus(section.getDistance());
+        this.upStation = section.getUpStation();
     }
 }
