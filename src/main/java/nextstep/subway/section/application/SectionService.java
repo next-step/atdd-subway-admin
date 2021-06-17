@@ -29,7 +29,7 @@ public class SectionService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId)
             .orElseThrow(EntityNotFoundException::new);
-        List<Section> sections = line.getOrderLineSections();
+        List<Section> sections = line.getOrderedLineSections();
         Section newSection = getSection(sectionRequest);
         Optional<Section> containSection = getContainsSection(sections, newSection);
 
@@ -52,5 +52,13 @@ public class SectionService {
         return sections.stream()
             .filter(section -> section.isContainSection(newSection))
             .findFirst();
+    }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(EntityNotFoundException::new);
+        Station removeStation = stationRepository.findById(stationId)
+            .orElseThrow(EntityNotFoundException::new);
+        line.removeSection(removeStation);
     }
 }

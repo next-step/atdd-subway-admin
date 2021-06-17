@@ -15,15 +15,20 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
 
 public class SectionAcceptanceStep {
-    private static final String LINE_BASE_PATH = "/lines";
-    private static final String SECTION_BASE_PATH = "/sections";
-
     public static ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(Long lineId, SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
             .body(sectionRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .post(LINE_BASE_PATH + "/" + lineId + SECTION_BASE_PATH)
+            .post("/lines/{lineId}/sections", lineId)
+            .then().log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선의_구간_역_제외_요청(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+            .when()
+            .delete("/lines/{lineId}/stations/{stationId}", lineId, stationId)
             .then().log().all()
             .extract();
     }
@@ -43,5 +48,13 @@ public class SectionAcceptanceStep {
             .collect(Collectors.toList());
 
         assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
+    }
+
+    public static void 지하철_노선의_구간_역_제외됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static void 지하철_노선의_구간_역_제외_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

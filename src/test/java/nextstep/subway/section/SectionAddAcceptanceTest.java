@@ -16,8 +16,8 @@ import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceStep;
 import nextstep.subway.station.dto.StationRequest;
 
-@DisplayName("지하철 구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+@DisplayName("지하철 구간 등록 관련 기능")
+public class SectionAddAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("노선에 구간을 등록한다.")
     @Test

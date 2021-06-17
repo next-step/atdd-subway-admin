@@ -25,11 +25,11 @@ public class LineSectionsTest {
 
     @Test
     @DisplayName("구간 정렬 테스트")
-    void getOrderLineSections() {
+    void getOrderedLineSections() {
         // given
         LineSections notOrderedLineSections = new LineSections(Arrays.asList(판교_수지_구간, 수지_광교_구간, 강남_판교_구간));
         // when
-        List<Section> orderLineSections = notOrderedLineSections.getOrderLineSections();
+        List<Section> orderLineSections = notOrderedLineSections.getOrderedLineSections();
         // then
         assertThat(orderLineSections).isEqualTo(lineSections.getSections());
     }
@@ -40,7 +40,7 @@ public class LineSectionsTest {
         // given
         LineSections notOrderedLineSections = new LineSections(Arrays.asList(판교_수지_구간, 수지_광교_구간, 강남_판교_구간));
         // when
-        List<Station> orderStations = notOrderedLineSections.getOrderStation();
+        List<Station> orderStations = notOrderedLineSections.getOrderedStation();
         // then
         assertThat(orderStations).isEqualTo(Arrays.asList(강남역, 판교역, 수지역, 광교역));
     }

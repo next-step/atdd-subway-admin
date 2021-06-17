@@ -55,12 +55,16 @@ public class Line extends BaseEntity {
         return lineSections.toStations();
     }
 
-    public List<Section> getOrderLineSections() {
-        return lineSections.getOrderLineSections();
+    public void removeSection(Station station) {
+        lineSections.removeSection(station);
     }
 
-    public List<Station> getOrderStation() {
-        return lineSections.getOrderStation();
+    public List<Section> getOrderedLineSections() {
+        return lineSections.getOrderedLineSections();
+    }
+
+    public List<Station> getOrderedStation() {
+        return lineSections.getOrderedStation();
     }
 
     public Long getId() {

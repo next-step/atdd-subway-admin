@@ -46,4 +46,16 @@ public class DistanceTest {
         // when & then
         Assertions.assertThrows(IllegalArgumentException.class, () -> distance.subtractDiffDistance(input));
     }
+
+    @ParameterizedTest(name = "거리 더하기 테스트")
+    @CsvSource(value = {"1:6", "3:8", "5:10", "10:15"}, delimiter = ':')
+    void addDistance(int input, int expected) {
+        // given
+        Distance distance = Distance.of(5);
+        // when
+        distance.addDistance(input);
+        // then
+        assertThat(distance.toNumber()).isEqualTo(expected);
+        assertThat(distance).isEqualTo(Distance.of(expected));
+    }
 }
