@@ -60,20 +60,24 @@ public class LineService {
 	}
 
 	public void updateLine(Long id, LineRequest lineRequest) {
-		Line line = lines.findById(id).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
+		Line line = getLine(id);
 		line.update(lineRequest.toLine());
 	}
 
 	public void deleteLineById(Long id) {
-		Line line = lines.findById(id).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
+		Line line = getLine(id);
 		lines.delete(line);
 	}
 
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
-		Line line = lines.findById(lineId).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
+		Line line = getLine(lineId);
 		Station startStation = getStation(sectionRequest.getUpStationId());
 		Station endStation = getStation(sectionRequest.getDownStationId());
 
 		line.addSection(new Section(line, startStation, endStation, sectionRequest.getDistance()));
+	}
+
+	private Line getLine(Long id) {
+		return lines.findById(id).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
 	}
 }
