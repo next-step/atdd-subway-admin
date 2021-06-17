@@ -125,6 +125,7 @@ public class Sections {
             return;
         }
         upSection.changeSectionAndDistance(downSection);
+        sections.remove(downSection);
     }
 
     private void isRemoveStationValidate(Station removeStation) {

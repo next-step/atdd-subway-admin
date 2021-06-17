@@ -8,6 +8,7 @@ import nextstep.subway.common.exceptionAdvice.dto.ErrorResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.*;
@@ -227,6 +228,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(stationResponses.size()).isEqualTo(2);
         assertThat(stationResponses.stream()
                 .noneMatch(it -> it.getId() == 4L)).isTrue();
+    }
+
+    @DisplayName("중간 구간 제거 후 결과 확인")
+    @Test
+    void remove_middle_section() {
+        // given
+        // 지하철_노선_등록되어_있음
+        지하철역_여러_생성();
+        지하철_노선_등록(new LineRequest("화곡역", "Purple", 1L, 2L, 10));
+        지하철_노선_추가_등록(new SectionRequest(2L, 4L, 10), 1L);
+
+        // when
+        // 지하철 노선 제거_요청
+        노선_지하철역_구간_제거(1L, 2L);
+
+        // then
+        // 지하철_구간_길이_20_확인
+        ExtractableResponse<Response> response = 노선_구간_목록_조회(1L);
+        List<SectionResponse> expected = response.jsonPath().getList(".", SectionResponse.class);
+        assertThat(expected.get(0).getUpStationId()).isEqualTo(1L);
+        assertThat(expected.get(0).getDownStationId()).isEqualTo(4L);
+        assertThat(expected.get(0).getDistance()).isEqualTo(20);
+    }
+
+    ExtractableResponse<Response> 노선_구간_목록_조회(Long id) {
+        return RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/lines/{id}/sections", id)
+                .then().log().all()
+                .extract();
     }
 
     ExtractableResponse<Response> 노선_지하철역_구간_제거(Long lineId, Long stationId) {
