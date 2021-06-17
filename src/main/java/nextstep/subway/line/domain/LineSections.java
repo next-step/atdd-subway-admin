@@ -95,7 +95,7 @@ public class LineSections {
         }
     }
 
-    public void removeSectionByStation(Station station) {
+    public void removeSection(Station station) {
         validateLineSectionsHasOnly();
         Section removeSection = findSectionToRemove(station);
         updateSectionByRemove(station, removeSection);

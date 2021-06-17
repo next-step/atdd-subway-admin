@@ -55,8 +55,8 @@ public class Line extends BaseEntity {
         return lineSections.toStations();
     }
 
-    public void removeSectionByStation(Station station) {
-        lineSections.removeSectionByStation(station);
+    public void removeSection(Station station) {
+        lineSections.removeSection(station);
     }
 
     public List<Section> getOrderedLineSections() {

@@ -59,6 +59,6 @@ public class SectionService {
             .orElseThrow(EntityNotFoundException::new);
         Station removeStation = stationRepository.findById(stationId)
             .orElseThrow(EntityNotFoundException::new);
-        line.removeSectionByStation(removeStation);
+        line.removeSection(removeStation);
     }
 }
