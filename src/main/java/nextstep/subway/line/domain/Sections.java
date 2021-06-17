@@ -45,7 +45,7 @@ public class Sections {
 			.findFirst().orElse(null);
 
 		if (commonDownStationSection != null) {
-			addList(commonDownStationSection, candidate, commonDownStationSection.getUpStation(),
+			rearrangeSections(commonDownStationSection, candidate, commonDownStationSection.getUpStation(),
 				candidate.getUpStation());
 
 			return true;
@@ -60,7 +60,7 @@ public class Sections {
 			.findFirst().orElse(null);
 
 		if (commonUpStationSection != null) {
-			addList(commonUpStationSection, candidate, candidate.getDownStation(),
+			rearrangeSections(commonUpStationSection, candidate, candidate.getDownStation(),
 				commonUpStationSection.getDownStation());
 
 			return true;
@@ -69,7 +69,7 @@ public class Sections {
 		return false;
 	}
 
-	private void addList(Section targetSection, Section candidate, Station upStation, Station downStation) {
+	private void rearrangeSections(Section targetSection, Section candidate, Station upStation, Station downStation) {
 		if (targetSection.getDistance() - candidate.getDistance() <= 0) {
 			throw new IllegalArgumentException("The distance between new section must be less than target section");
 		}
