@@ -82,13 +82,16 @@ public class Sections {
 	}
 
 	private void validateCandidate(Section candidate) {
-		Set<Station> stations = sections.stream()
+		Set<Station> stations = getDistinceStations();
+		validateAlreadyExistsTwoStations(candidate, stations);
+		validateExistsConnectedStationToOldLine(candidate, stations);
+	}
+
+	private Set<Station> getDistinceStations() {
+		return sections.stream()
 			.map(x -> Arrays.asList(x.getUpStation(), x.getDownStation()))
 			.flatMap(y -> y.stream())
 			.collect(Collectors.toSet());
-
-		validateAlreadyExistsTwoStations(candidate, stations);
-		validateExistsConnectedStationToOldLine(candidate, stations);
 	}
 
 	private void validateExistsConnectedStationToOldLine(Section candidate, Set<Station> stations) {
