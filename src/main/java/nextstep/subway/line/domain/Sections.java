@@ -107,11 +107,10 @@ public class Sections {
 	}
 
 	public List<Station> getOrderedStations() {
-		Map<Station, Station> order = getStationOrder();
-		return convertToOrderedList(order);
+		return convertToOrderedList(getStationMap());
 	}
 
-	private Map<Station, Station> getStationOrder() {
+	private Map<Station, Station> getStationMap() {
 		return sections.stream().collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
 	}
 
