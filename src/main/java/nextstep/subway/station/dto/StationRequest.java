@@ -14,7 +14,7 @@ public class StationRequest extends BaseDTO<Station> {
     private String name;
 
     @Builder
-    private StationRequest(final String name) {
+    public StationRequest(final String name) {
         this.name = name;
     }
 

@@ -1,11 +1,13 @@
 package nextstep.subway.section.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Getter @NoArgsConstructor
@@ -26,6 +28,12 @@ public class Section extends BaseEntity {
 
     private int distance;
 
+    @Builder
+    public Section(final Long id, final Station upStation, final Station downStation, final int distance) {
+        this.id = id;
+        this.registerStation(upStation, downStation, distance);
+    }
+
     public void registerStation(final Station upStation, final Station downStation, final int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
@@ -36,5 +44,42 @@ public class Section extends BaseEntity {
         this.line = line;
 
         line.appendSection(this);
+    }
+
+    protected boolean isBefore(Section section) {
+        return Objects.equals(downStation, section.getUpStation());
+    }
+
+    protected boolean isAfter(Section section) {
+        return Objects.equals(upStation, section.getDownStation());
+    }
+
+    protected boolean hasSameUpStation(Section section) {
+        return Objects.equals(upStation, section.getUpStation());
+    }
+
+    protected boolean hasSameDownStation(Section section) {
+        return Objects.equals(downStation, section.getDownStation());
+    }
+
+    protected void overrideUpStation(final Section section) {
+        updateDistance(section);
+
+        this.upStation = section.downStation;
+    }
+
+    protected void overrideDownStation(final Section section) {
+        updateDistance(section);
+
+        this.downStation = section.upStation;
+    }
+
+    private void updateDistance(final Section section) {
+        int distance = this.distance - section.getDistance();
+        if (distance < 1) {
+            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+        }
+
+        this.distance = distance;
     }
 }

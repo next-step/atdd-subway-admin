@@ -79,7 +79,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(restAssuredTemplate::getLocationId)
+                .map(RestAssuredTemplate::getLocationId)
                 .collect(Collectors.toList());
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(it -> it.getId())
@@ -107,6 +107,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     public static ExtractableResponse<Response> requestCreateStation(StationRequest param) {
         return restAssuredTemplate.post(param.toMap());
+    }
+
+    public static ExtractableResponse<Response> requestCreateStation(String name) {
+        return requestCreateStation(new StationRequest(name));
     }
 
     public static ExtractableResponse<Response> requestDeleteStation(String uri) {

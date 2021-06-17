@@ -15,7 +15,6 @@
 # 지하철 노선도 미션
 [ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션
 
-
 ## 요구사항 정리
 
 ### 1단계 - 지하철 노선 관리
@@ -30,13 +29,27 @@
 
 ### 3단계 - 구간 추가 기능
 - [ ] 지하철 구간 등록 인수 테스트 작성과 기능 구현
+    - 역 사이에 새로운 역을 등록할 경우
+        - 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
+    - 새로운 역을 상행 종점으로 등록할 경우
+    - 새로운 역을 하행 종점으로 등록할 경우
+    
 - [ ] 구간 등록 시 예외 케이스를 고려하기
+    - 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+    - 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+    - 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
 
 ### 4단계 - 구간 제거 기능
 - [ ] 노선의 구간을 제거하는 기능을 구현하기
 - [ ] 구간 삭제 시 예외 케이스를 고려하기
 
 <br>
+
+## 👁‍ Reference Documentation
+
+* [Spring Boot - Testing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/2.2.6.RELEASE/reference/html/spring-boot-features.html#boot-features-testing-spring-boot-applications)
+* [Testing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.testing.spring-boot-applications)
+* [REST-assured](https://rest-assured.io/)
 
 ## 🚀 Getting Started
 

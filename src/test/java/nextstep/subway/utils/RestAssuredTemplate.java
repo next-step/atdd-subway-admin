@@ -74,7 +74,7 @@ public final class RestAssuredTemplate {
                 .extract();
     }
 
-    public long getLocationId(final ExtractableResponse<Response> response) {
+    public static long getLocationId(final ExtractableResponse<Response> response) {
         String result = response.header("Location").split("/")[2];
 
         return Long.parseLong(result);
