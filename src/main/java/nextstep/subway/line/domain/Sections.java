@@ -87,17 +87,17 @@ public class Sections {
 			.flatMap(y -> y.stream())
 			.collect(Collectors.toSet());
 
-		validateAlreadyExistTwoStations(candidate, stations);
-		validateTwoStationsExist(candidate, stations);
+		validateAlreadyExistsTwoStations(candidate, stations);
+		validateExistsConnectedStationToOldLine(candidate, stations);
 	}
 
-	private void validateTwoStationsExist(Section candidate, Set<Station> stations) {
+	private void validateExistsConnectedStationToOldLine(Section candidate, Set<Station> stations) {
 		if (!stations.contains(candidate.getUpStation()) && !stations.contains(candidate.getDownStation())) {
 			throw new NoSuchElementException("There is no such section");
 		}
 	}
 
-	private void validateAlreadyExistTwoStations(Section candidate, Set<Station> stations) {
+	private void validateAlreadyExistsTwoStations(Section candidate, Set<Station> stations) {
 		if (stations.contains(candidate.getUpStation()) && stations.contains(candidate.getDownStation())) {
 			throw new IllegalArgumentException("Each two stations are already in the line");
 		}
