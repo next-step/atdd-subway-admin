@@ -14,6 +14,7 @@ import java.util.List;
 @Service
 @Transactional
 public class LineService {
+
     private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -41,7 +42,7 @@ public class LineService {
         line.update(request.toLine());
     }
 
-    private Line findByIdOrThrow(Long id) {
+    public Line findByIdOrThrow(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotExistLineException(id));
     }
