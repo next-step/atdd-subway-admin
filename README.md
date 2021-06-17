@@ -52,3 +52,9 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+## 요구사항
+
+### step1
+1. 생성 / 목록조회 / 조회 / 수정 / 삭제에 대한 인수테스트 작성
+2. 기능 구현
