@@ -28,45 +28,43 @@ public class Sections {
 
 		validateCandidate(candidate);
 
-		if (addSectionWithCommonUpStation(candidate)) {
-			return;
+		Section commonUpStationSection = getCommonUpStationSection(candidate);
+		if (isCommonStationExist(commonUpStationSection)) {
+			addSectionWithCommonUpStation(candidate, commonUpStationSection);
 		}
 
-		if (addSectionWithCommonDownStation(candidate)) {
-			return;
+		Section commonDownStationSection = getCommonDownStationSection(candidate);
+		if (isCommonStationExist(commonDownStationSection)) {
+			addSectionWithCommonDownStation(candidate, commonDownStationSection);
 		}
 
 		sections.add(candidate);
 	}
 
-	private boolean addSectionWithCommonDownStation(Section candidate) {
-		Section commonDownStationSection = sections.stream()
-			.filter(x -> x.hasSameDownStation(candidate))
-			.findFirst().orElse(null);
-
-		if (commonDownStationSection != null) {
-			rearrangeSections(commonDownStationSection, candidate, commonDownStationSection.getUpStation(),
-				candidate.getUpStation());
-
-			return true;
-		}
-
-		return false;
+	private boolean isCommonStationExist(Section commonUpStationSection) {
+		return commonUpStationSection != null;
 	}
 
-	private boolean addSectionWithCommonUpStation(Section candidate) {
-		Section commonUpStationSection = sections.stream()
+	private void addSectionWithCommonDownStation(Section candidate, Section commonDownStationSection) {
+		rearrangeSections(commonDownStationSection, candidate, commonDownStationSection.getUpStation(),
+			candidate.getUpStation());
+	}
+
+	private Section getCommonDownStationSection(Section candidate) {
+		return sections.stream()
+			.filter(x -> x.hasSameDownStation(candidate))
+			.findFirst().orElse(null);
+	}
+
+	private void addSectionWithCommonUpStation(Section candidate, Section commonUpStationSection) {
+		rearrangeSections(commonUpStationSection, candidate, candidate.getDownStation(),
+			commonUpStationSection.getDownStation());
+	}
+
+	private Section getCommonUpStationSection(Section candidate) {
+		return sections.stream()
 			.filter(x -> x.hasSameUpStation(candidate))
 			.findFirst().orElse(null);
-
-		if (commonUpStationSection != null) {
-			rearrangeSections(commonUpStationSection, candidate, candidate.getDownStation(),
-				commonUpStationSection.getDownStation());
-
-			return true;
-		}
-
-		return false;
 	}
 
 	private void rearrangeSections(Section targetSection, Section candidate, Station upStation, Station downStation) {
