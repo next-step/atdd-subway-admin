@@ -3,6 +3,8 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -60,6 +62,13 @@ public class LineController {
         lineService.deleteLine(id);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/{lineId}/sections")
+    public ResponseEntity addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        SectionResponse section = lineService.addSection(lineId, sectionRequest);
+
+        return ResponseEntity.ok().body(section);
     }
 
     @ExceptionHandler({NoSuchElementException.class, EmptyResultDataAccessException.class})

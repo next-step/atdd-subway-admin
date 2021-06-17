@@ -5,6 +5,8 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -57,5 +59,16 @@ public class LineService {
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public SectionResponse addSection(Long lineId, SectionRequest request) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new DataIntegrityViolationException("없는 노선입니다."));
+        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(() -> new DataIntegrityViolationException("없는 역입니다."));
+        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new DataIntegrityViolationException("없는 역입니다."));
+
+        Section section = request.toSection(upStation, downStation, request.getDistance());
+
+        Section persistSection = line.addSection(section);
+        return SectionResponse.of(persistSection);
     }
 }
