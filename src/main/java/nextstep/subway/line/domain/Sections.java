@@ -40,15 +40,13 @@ public class Sections {
     }
 
     private void updateSection(Section section) {
-        Optional<Section> target = values.stream()
+        values.stream()
             .filter(s -> s.mergeable(section))
-            .findAny();
-
-        if (target.isPresent()) {
-            Section oldSection = target.get();
-            values.remove(oldSection);
-            values.add(oldSection.reducedBy(section));
-        }
+            .findAny()
+            .ifPresent(oldSection -> {
+                values.remove(oldSection);
+                values.add(oldSection.reducedBy(section));
+            });
     }
 
     private void validateSection(Section section) {
