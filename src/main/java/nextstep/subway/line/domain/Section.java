@@ -26,6 +26,8 @@ public class Section {
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
+	private int distance;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "line_id")
 	private Line line;
@@ -34,9 +36,10 @@ public class Section {
 		/* Empty */
 	}
 
-	public Section(Station upStation, Station downStation) {
+	public Section(Station upStation, Station downStation, int distance) {
 		this.upStation = upStation;
 		this.downStation = downStation;
+		this.distance = distance;
 	}
 
 	public Long getId() {
@@ -49,6 +52,10 @@ public class Section {
 
 	public Station getDownStation() {
 		return downStation;
+	}
+
+	public int getDistance() {
+		return distance;
 	}
 
 	public Line getLine() {

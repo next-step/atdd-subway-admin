@@ -34,7 +34,7 @@ public class LineService {
             .orElseThrow(NotFoundException::new);
 
         Line line = request.toLine();
-        line.addSection(new Section(upStation, downStation));
+        line.addSection(new Section(upStation, downStation, request.getDistance()));
         Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
