@@ -91,10 +91,14 @@ public class Sections {
 	}
 
 	private void addCombineSection(Section upSection, Section downSection) {
-		Section combineSection = new Section(upSection.getLine(), upSection.getUpStation(),
+		Section combineSection = this.createCombineSection(upSection, downSection);
+		this.sections.add(combineSection);
+	}
+
+	private Section createCombineSection(Section upSection, Section downSection) {
+		return new Section(upSection.getLine(), upSection.getUpStation(),
 			downSection.getDownStation(),
 			upSection.combineSectionDistance(downSection));
-		this.sections.add(combineSection);
 	}
 
 	private Optional<Section> findDownSectionByUpStation(Station station) {
@@ -108,12 +112,12 @@ public class Sections {
 	private void validateRemovable(Station station) {
 		int sectionSize = this.sections.size();
 		long removableSectionsCount = this.getRemovableSections(station);
-		if ((sectionSize == SECTION_COUNT_ONE) && (sectionSize == removableSectionsCount)) {
+		if (sectionSize == SECTION_COUNT_ONE) {
 			throw new SubwayLogicException("노선의 유일한 구간으로 제거할 수 없습니다.");
 		}
 
 		if (removableSectionsCount == EMPTY_REMOVABLE_SECTION_COUNT) {
-			throw new SubwayLogicException("제거 가능한 구간이 없습니다");
+			throw new SubwayLogicException("요청한 역에 대해 제거 가능한 구간이 없습니다");
 		}
 	}
 
