@@ -1,4 +1,4 @@
-package nextstep.subway.common.exception;
+package nextstep.subway.advice;
 
 import nextstep.subway.line.application.LineNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 @ResponseBody
-public class ExceptionAdvice {
+public class GlobalExceptionHandler {
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ExceptionHandler(value = {DataIntegrityViolationException.class})
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(LineNotFoundException.class)
+    @ExceptionHandler(value = {LineNotFoundException.class})
     public ExceptionResponse handleLineNotFound(LineNotFoundException e) {
         return new ExceptionResponse(e.getMessage());
     }

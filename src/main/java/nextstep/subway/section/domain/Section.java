@@ -46,9 +46,13 @@ public class Section extends BaseEntity {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
+        this(upStation, downStation, Distance.from(distance));
+    }
+
+    public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = Distance.from(distance);
+        this.distance = distance;
     }
 
     public Long getId() {
@@ -80,23 +84,27 @@ public class Section extends BaseEntity {
         return this.upStation.equals(other.getUpStation()) && this.downStation.equals(other.getDownStation());
     }
 
-    public boolean isSameDownStation(Section other) {
-        return this.downStation.equals(other.getDownStation());
+    public boolean isSameDownStation(Station otherDownStation) {
+        return this.downStation.equals(otherDownStation);
     }
 
-    private boolean isSameUpStation(Section other) {
-        return this.upStation.equals(other.getUpStation());
+    public boolean isSameUpStation(Station otherUpStation) {
+        return this.upStation.equals(otherUpStation);
     }
 
     public boolean isAfter(Section other) {
         return this.upStation.equals(other.getDownStation());
     }
 
+    public boolean isBefore(Section other) {
+        return this.downStation.equals(other.getUpStation());
+    }
+
     public void updateSectionStationByAddNewSection(Section newSection) {
-        if (isSameUpStation(newSection)) {
+        if (isSameUpStation(newSection.getUpStation())) {
             updateUpStation(newSection);
         }
-        if (isSameDownStation(newSection)) {
+        if (isSameDownStation(newSection.getDownStation())) {
             updateDownStation(newSection);
         }
     }
@@ -112,8 +120,13 @@ public class Section extends BaseEntity {
     }
 
     private void changeDistanceByNewSectionDistance(Distance newSectionDistance) {
-        int distanceDiff = this.distance.distanceDiffWithOtherDistance(newSectionDistance);
-        this.distance = Distance.from(distanceDiff);
+        this.distance = distance.distanceDiffWithOtherDistance(newSectionDistance);
+    }
+
+    public Section combineWithDownSection(Section downSection) {
+        Section combinedSection = new Section(this.upStation, downSection.getDownStation(), this.distance.plus(downSection.getDistance()));
+        combinedSection.setLine(this.line);
+        return combinedSection;
     }
 
     public void setLine(Line line) {

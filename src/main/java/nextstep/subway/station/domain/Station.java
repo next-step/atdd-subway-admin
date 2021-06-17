@@ -24,13 +24,17 @@ public class Station extends BaseEntity {
     protected Station() {
     }
 
-    public Station(String name) {
+    private Station(String name) {
         this.name = name;
     }
 
     private Station(Long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public static Station from(String name) {
+        return new Station(name);
     }
 
     public static Station of(Long id, String name) {

@@ -22,13 +22,15 @@ public class DistanceTest {
     @Test
     void distanceDiffWithOtherDistance() {
         // given
-        int distance = 10;
-        int otherDistance = 5;
+        Distance standard = Distance.from(15);
+        Distance other = Distance.from(10);
+        Distance expected = Distance.from(5);
 
         // when
-        int distanceDiff = Distance.from(distance).distanceDiffWithOtherDistance(Distance.from(otherDistance));
+        Distance actualDistance = standard.distanceDiffWithOtherDistance(other);
 
         // then
-        assertThat(distanceDiff).isEqualTo(distance - otherDistance);
+        assertThat(actualDistance).isEqualTo(expected);
     }
+
 }

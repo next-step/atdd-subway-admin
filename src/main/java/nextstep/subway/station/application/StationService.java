@@ -20,8 +20,7 @@ public class StationService {
 
     @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station newStation = new Station(stationRequest.getName());
-        Station persistStation = stationRepository.save(newStation);
+        Station persistStation = stationRepository.save(Station.from(stationRequest.getName()));
         return StationResponse.of(persistStation);
     }
 
