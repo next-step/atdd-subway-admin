@@ -1,5 +1,6 @@
-package nextstep.subway.section;
+package nextstep.subway.section.domain;
 
+import nextstep.subway.exception.CannotDeleteException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -8,14 +9,21 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    private final int MINIMUM_REMOVABLE_SIZE = 2;
+
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new LinkedList<>();
 
     public Sections() {
+    }
+
+    public List<Section> getSections() {
+        return this.sections;
     }
 
     public void add(Section section) {
@@ -62,7 +70,7 @@ public class Sections {
                 .orElse(null);
         if (existingSection != null) {
             int indexOfExisting = sections.indexOf(existingSection);
-            existingSection.updateDownStation(section);
+            existingSection.connectDownStationTo(section);
             sections.add(indexOfExisting + 1, section);
         }
     }
@@ -77,7 +85,7 @@ public class Sections {
                 .orElse(null);
         if (existingSection != null) {
             int indexOfExisting = sections.indexOf(existingSection);
-            existingSection.updateUpStation(section);
+            existingSection.connectUpStationTo(section);
             sections.add(indexOfExisting, section);
         }
     }
@@ -128,5 +136,40 @@ public class Sections {
 
         stations.add(section.getDownStation());
         return stations;
+    }
+
+    public void removeStation(Station station) {
+        validateBeforeRemove(station);
+        Optional<Section> downStationMatchingSection = sections.stream()
+                .filter(section -> section.isDownStation(station)).findFirst();
+        Optional<Section> upStationMatchingSection = sections.stream()
+                .filter(section -> section.isUpStation(station)).findFirst();
+        //상행종점 제거하는 경우
+        if (!downStationMatchingSection.isPresent() && upStationMatchingSection.isPresent()) {
+            sections.remove(upStationMatchingSection.get());
+            return;
+        }
+        //하행종점 제거하는 경우
+        if (!upStationMatchingSection.isPresent() && downStationMatchingSection.isPresent()) {
+            sections.remove(downStationMatchingSection.get());
+            return;
+        }
+        disconnectMiddleSection(downStationMatchingSection.get(), upStationMatchingSection.get());
+    }
+
+    private void validateBeforeRemove(Station station) {
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException("등록된 구간만 삭제할 수 있습니다");
+        }
+
+        if (sections.size() < MINIMUM_REMOVABLE_SIZE) {
+            throw new CannotDeleteException("마지막 구간은 삭제할 수 없습니다.");
+        }
+    }
+
+    //중간에 있는 지하철역의 경우에는 앞구간의 하행역을 수정하고, 뒷구간을 삭제처리한다
+    private void disconnectMiddleSection(Section upSection, Section downSection) {
+        upSection.disconnectDownStationFrom(downSection);
+        sections.remove(downSection);
     }
 }

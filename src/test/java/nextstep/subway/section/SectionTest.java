@@ -1,6 +1,7 @@
 package nextstep.subway.section;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +53,7 @@ public class SectionTest {
         Section 신규구간 = new Section(강남역, 광교중앙역, 30);
 
         //When+Then
-        assertThatThrownBy(() -> 기존구간.updateDownStation(신규구간))
+        assertThatThrownBy(() -> 기존구간.connectDownStationTo(신규구간))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("기존 역 사이의 길이와 같거나 긴 구간을 등록할 수 없습니다.");
     }
@@ -65,7 +66,7 @@ public class SectionTest {
         Section 신규구간 = new Section(광교중앙역, 광교역, 40);
 
         //When+Then
-        assertThatThrownBy(() -> 기존구간.updateUpStation(신규구간))
+        assertThatThrownBy(() -> 기존구간.connectUpStationTo(신규구간))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("기존 역 사이의 길이와 같거나 긴 구간을 등록할 수 없습니다.");
     }

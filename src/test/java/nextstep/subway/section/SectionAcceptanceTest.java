@@ -6,6 +6,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
@@ -72,7 +73,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         //구간_등록_완료
-        구간_등록_OK_응답(response);
+        구간_OK_응답(response);
         노선에_지하철이_포함되었는지_점검(response, 충무로역);
         노선에_지하철이_포함되었는지_점검(response, 회현역);
         노선에_지하철이_포함되었는지_점검(response, 서울역);
@@ -88,7 +89,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         //구간_등록_완료
-        구간_등록_OK_응답(response);
+        구간_OK_응답(response);
         List<Long> expectedOrderId = Arrays.asList(서울역.getId(), 회현역.getId(), 충무로역.getId());
         노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
 
@@ -104,7 +105,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         //구간_등록_완료
-        구간_등록_OK_응답(response);
+        구간_OK_응답(response);
         List<Long> expectedOrderId = Arrays.asList(회현역.getId(), 충무로역.getId(), 동역문역.getId());
         노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
     }
@@ -119,7 +120,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         //구간_등록_완료
-        구간_등록_OK_응답(response);
+        구간_OK_응답(response);
         List<Long> expectedOrderId = Arrays.asList(회현역.getId(), 명동역.getId(), 충무로역.getId());
         노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
     }
@@ -134,14 +135,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         //구간_등록_완료
-        구간_등록_OK_응답(response);
+        구간_OK_응답(response);
         List<Long> expectedOrderId = Arrays.asList(회현역.getId(), 명동역.getId(), 충무로역.getId());
         노선에_지하철이_순서대로_등록되었는지_점검(response, expectedOrderId);
     }
 
-    @DisplayName("예외 상황 : 상행/하행역 모두 이미 등록되어 있음")
+    @DisplayName("구간등록 예외 상황 : 상행/하행역 모두 이미 등록되어 있음")
     @Test
-    void 예외상황_when_상행하행_모두_이미_등록되어있음() {
+    void 구간등록예외상황_when_상행하행_모두_이미_등록되어있음() {
         // when
         //구간을_노선에_등록_요청
         ExtractableResponse<Response> response = 구간을_노선에_등록_요청(사호선_ID, 회현_충무로_요청);
@@ -151,9 +152,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_등록_BAD_REQUEST_응답(response);
     }
 
-    @DisplayName("예외 상황 : 상행/하행역 모두 등록되어 있지 않음")
+    @DisplayName("구간등록 예외 상황 : 상행/하행역 모두 등록되어 있지 않음")
     @Test
-    void 예외상황_when_상행하행_모두_등록되어_있지_않음() {
+    void 구간등록예외상황_when_상행하행_모두_등록되어_있지_않음() {
         // when
         //구간을_노선에_등록_요청
         SectionRequest 서울_동역문_요청 = new SectionRequest(서울역.getId(), 동역문역.getId(), 40);
@@ -164,9 +165,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_등록_BAD_REQUEST_응답(response);
     }
 
-    @DisplayName("예외 상황 : 역사이에 추가하는 구간의 길이가 기존 길이와 같거나 긺")
+    @DisplayName("구간등록 예외 상황 : 역사이에 추가하는 구간의 길이가 기존 길이와 같거나 긺")
     @Test
-    void 예외상황_when_역사이에_구간을_추가할때_구간길이가_기존_구간길이와_같거나_긴_경우() {
+    void 구간등록예외상황_when_역사이에_구간을_추가할때_구간길이가_기존_구간길이와_같거나_긴_경우() {
         // when
         //구간을_노선에_등록_요청
         // [회현]==[충무로]에서 ([회현]==[명동])==[충무로]
@@ -179,7 +180,110 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_등록_BAD_REQUEST_응답(response);
     }
 
-    private void 구간_등록_OK_응답(ExtractableResponse<Response> response) {
+    @DisplayName("구간 제거 : 노선의 마지막 구간 제거")
+    @Test
+    void 구간제거_when_마지막_구간() {
+        //given
+        //구간을_노선에_등록_요청
+        // [회현]==[충무로]==[동역문]
+        구간을_노선에_등록_요청(사호선_ID, 충무로_동역문_요청);
+
+        // when
+        //구간을_노선에서_제거_요청
+        ExtractableResponse<Response> response = 구간을_노선에서_제거_요청(사호선_ID, 동역문역.getId());
+
+        // then
+        //구간_제거_완료
+        구간_OK_응답(response);
+        ExtractableResponse<Response> readResponse = 상행역으로_구간_조회_요청(동역문역.getId());
+        구간_등록_NOT_FOUND_응답(readResponse);
+    }
+
+    @DisplayName("구간 제거 : 노선의 첫번째 구간 제거")
+    @Test
+    void 구간제거_when_첫번째_구간() {
+        //given
+        //구간을_노선에_등록_요청
+        // [서울]==[회현]==[충무로]
+        구간을_노선에_등록_요청(사호선_ID, 서울_회현_요청);
+
+        // when
+        //구간을_노선에_제거_요청
+        ExtractableResponse<Response> response = 구간을_노선에서_제거_요청(사호선_ID, 서울역.getId());
+
+        // then
+        //구간_제거_완료
+        구간_OK_응답(response);
+        ExtractableResponse<Response> readResponse = 상행역으로_구간_조회_요청(서울역.getId());
+        구간_등록_NOT_FOUND_응답(readResponse);
+    }
+
+    @DisplayName("구간 제거 : 노선의 중간 구간 제거")
+    @Test
+    void 구간제거_when_중간_구간() {
+        //given
+        //구간을_노선에_등록_요청
+        // [서울]==[회현]==[충무로]
+        구간을_노선에_등록_요청(사호선_ID, 서울_회현_요청);
+
+        // when
+        //구간을_노선에_제거_요청
+        ExtractableResponse<Response> response = 구간을_노선에서_제거_요청(사호선_ID, 회현역.getId());
+
+        // then
+        //구간_제거_완료
+        구간_OK_응답(response);
+        ExtractableResponse<Response> readResponse = 상행역으로_구간_조회_요청(회현역.getId());
+        구간_등록_NOT_FOUND_응답(readResponse);
+    }
+
+    @DisplayName("구간제거 예외상황 : 노선에 구간이 단 한 개인 경우")
+    @Test
+    void 구간제거예외상황_when_구간이_단_한개() {
+        // when
+        //구간을_노선에_제거_요청
+        ExtractableResponse<Response> response = 구간을_노선에서_제거_요청(사호선_ID, 회현역.getId());
+
+        // then
+        //구간_등록_BAD_REQUEST_응답
+        구간_등록_BAD_REQUEST_응답(response);
+    }
+
+    @DisplayName("구간제거 예외상황 : 노선에 없는 구간인 경우")
+    @Test
+    void 구간제거예외상황_when_존재하지_않는_구간() {
+        //given
+        구간을_노선에_등록_요청(사호선_ID, 서울_회현_요청);
+        Station 강남역 = stationAcceptanceTest.지하철_역_등록되어_있음("강남역").as(Station.class);
+
+        // when
+        //구간을_노선에_제거_요청
+        ExtractableResponse<Response> response = 구간을_노선에서_제거_요청(사호선_ID, 강남역.getId());
+
+        // then
+        //구간_등록_BAD_REQUEST_응답
+        구간_등록_BAD_REQUEST_응답(response);
+    }
+
+    @DisplayName("상행역으로 구간조회")
+    @Test
+    void 상행역으로_구간조회() {
+        //when
+        //상행역으로_구간_조회_요청
+        ExtractableResponse<Response> response = 상행역으로_구간_조회_요청(회현역.getId());
+
+        //then
+        구간_OK_응답(response);
+
+        Long upStationIdFromResponse = response.jsonPath().getLong("upStationId");
+        assertThat(upStationIdFromResponse).isEqualTo(회현역.getId());
+    }
+
+    private ExtractableResponse<Response> 상행역으로_구간_조회_요청(Long upStationId) {
+        return httpGet("/section?upStationId=" + upStationId);
+    }
+
+    private void 구간_OK_응답(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -187,8 +291,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    private void 구간_등록_NOT_FOUND_응답(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     private ExtractableResponse<Response> 구간을_노선에_등록_요청(Long lineId, SectionRequest request) {
         return httpPost(BASE_REQUEST_URI + lineId + SECTION_ADD_URI, request);
+    }
+
+    private ExtractableResponse<Response> 구간을_노선에서_제거_요청(Long lineId, Long stationId) {
+        return httpDelete(BASE_REQUEST_URI + lineId + SECTION_ADD_URI + "?stationId=" + stationId);
     }
 
     private void 노선에_지하철이_포함되었는지_점검(ExtractableResponse<Response> response, Station station) {

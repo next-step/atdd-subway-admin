@@ -1,5 +1,6 @@
 package nextstep.subway;
 
+import nextstep.subway.exception.CannotDeleteException;
 import nextstep.subway.exception.DataNotFoundException;
 import nextstep.subway.exception.DuplicateDataExistsException;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,11 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Void> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(CannotDeleteException.class)
+    public ResponseEntity<Void> cannotDeleteException(CannotDeleteException e) {
         return ResponseEntity.badRequest().build();
     }
 }

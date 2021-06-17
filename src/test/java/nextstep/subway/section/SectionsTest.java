@@ -1,5 +1,8 @@
 package nextstep.subway.section;
 
+import nextstep.subway.exception.CannotDeleteException;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +17,6 @@ public class SectionsTest {
     private Station 회현역;
     private Station 명동역;
     private Station 충무로역;
-    private Station 동역문역;
 
     private Sections sections;
 
@@ -23,6 +25,7 @@ public class SectionsTest {
         서울역 = new Station("서울역");
         회현역 = new Station("회현역");
         명동역 = new Station("명동역");
+        충무로역 = new Station("충무로역");
 
         sections = new Sections();
     }
@@ -132,5 +135,92 @@ public class SectionsTest {
         assertThatThrownBy(() -> sections.add(강남_광교))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간의 상하행역중 하나라도 등록이 되어 있어야 합니다.");
+    }
+
+    @DisplayName("지하철역 제거 : 하행종점 제거")
+    @Test
+    void 지하철역_제거_하행종점() {
+        //given
+        Section 회현_명동 = new Section(회현역, 명동역, 30);
+        Section 명동_충무로 = new Section(명동역, 충무로역, 30);
+
+        sections.add(회현_명동);
+        sections.add(명동_충무로);
+
+        //when
+        sections.removeStation(충무로역);
+
+        //then
+        assertThat(sections.getStations()).hasSize(2)
+                .containsExactly(회현역, 명동역);
+        assertThat(sections.contains(명동_충무로)).isFalse();
+    }
+
+    @DisplayName("지하철역 제거 : 상행종점 제거")
+    @Test
+    void 지하철역_제거_상행종점() {
+        //given
+        Section 회현_명동 = new Section(회현역, 명동역, 30);
+        Section 명동_충무로 = new Section(명동역, 충무로역, 30);
+
+        sections.add(회현_명동);
+        sections.add(명동_충무로);
+
+        //when
+        sections.removeStation(회현역);
+
+        //then
+        assertThat(sections.getStations()).hasSize(2)
+                .containsExactly(명동역, 충무로역);
+        assertThat(sections.contains(회현_명동)).isFalse();
+    }
+
+    @DisplayName("지하철역 제거 : 중간구간 제거")
+    @Test
+    void 지하철역_제거_중간구간() {
+        //given
+        Section 회현_명동 = new Section(회현역, 명동역, 30);
+        Section 명동_충무로 = new Section(명동역, 충무로역, 30);
+        Section 회현_충무로 = new Section(회현역, 충무로역, 60);
+
+        sections.add(회현_명동);
+        sections.add(명동_충무로);
+
+        //when
+        sections.removeStation(명동역);
+
+        //then
+        assertThat(sections.getStations()).hasSize(2)
+                .containsExactly(회현역, 충무로역);
+        assertThat(sections.getSections().get(0)).isEqualTo(회현_충무로);
+        assertThat(sections.getSections().get(0).getDistance()).isEqualTo(60);
+    }
+
+    @DisplayName("예외상황 - 지하철역 제거 : 마지막 구간 제거")
+    @Test
+    void 예외상황_마지막_구간_제거() {
+        //given
+        Section 회현_명동 = new Section(회현역, 명동역, 30);
+        sections.add(회현_명동);
+
+        //when
+        assertThatThrownBy(() -> sections.removeStation(명동역))
+                .isInstanceOf(CannotDeleteException.class)
+                .hasMessage("마지막 구간은 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("예외상황 - 지하철역 제거 : 등록되지 않은 구간 제거")
+    @Test
+    void 예외상황_미등록_구간_제거() {
+        //given
+        Section 회현_명동 = new Section(회현역, 명동역, 30);
+        sections.add(회현_명동);
+
+        Station 강남역 = new Station("강남역");
+
+        //when
+        assertThatThrownBy(() -> sections.removeStation(강남역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("등록된 구간만 삭제할 수 있습니다");
     }
 }
