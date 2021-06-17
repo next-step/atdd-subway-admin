@@ -20,9 +20,9 @@ import nextstep.subway.station.dto.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-	Long stationId1;
-	Long stationId2;
-	int distance;
+	private Long stationId1;
+	private Long stationId2;
+	private int distance;
 
 	private void setUpStations() {
 		stationId1 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
