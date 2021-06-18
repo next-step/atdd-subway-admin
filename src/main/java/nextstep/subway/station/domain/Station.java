@@ -13,7 +13,7 @@ import nextstep.subway.common.BaseEntity;
 @Entity
 public class Station extends BaseEntity implements Comparable<Station> {
 
-    private static final Comparator<Station> COMPARATOR = Comparator.comparingLong((station) -> station.getId());
+    private static final Comparator<Station> COMPARATOR = Comparator.comparingLong(Station::getId);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
