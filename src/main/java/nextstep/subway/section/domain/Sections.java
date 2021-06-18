@@ -23,7 +23,7 @@ public class Sections {
 
     public void add(final Section newSection) {
         if (isNotEmpty()) {
-            validation(newSection);
+            addValidation(newSection);
             overrideIfExistsUpStation(newSection);
             overrideIfExistsDownStation(newSection);
         }
@@ -36,11 +36,12 @@ public class Sections {
                 .anyMatch(section -> section.contains(station));
     }
 
-    public boolean remove(final Station deleteStation) {
-        if (containsStation(deleteStation) == false) {
-            return false;
-        }
+    public void remove(final Station deleteStation) {
+        deleteValidation(deleteStation);
+        delete(deleteStation);
+    }
 
+    private void delete(final Station deleteStation) {
         List<Section> deleteSections = sections.stream()
                 .filter(section -> section.contains(deleteStation))
                 .collect(Collectors.toList());
@@ -51,8 +52,16 @@ public class Sections {
         if (deleteSections.size() > 1) {
             arrange(firstSection(deleteSections), lastSection(deleteSections));
         }
+    }
 
-        return true;
+    private void deleteValidation(final Station deleteStation) {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("구간의 최소 갯수는 1개입니다. 더이상 삭제할수 없습니다.");
+        }
+
+        if (containsStation(deleteStation) == false) {
+            throw new IllegalArgumentException("존재하지 않는 역은 삭제할수 없습니다.");
+        }
     }
 
     private List<Station> unSortedStations() {
@@ -152,7 +161,7 @@ public class Sections {
                 .sum();
     }
 
-    private void validation(final Section newSection) {
+    private void addValidation(final Section newSection) {
         List<Station> stations = unSortedStations();
 
         boolean isExistsUpStation = stations.contains(newSection.getUpStation());

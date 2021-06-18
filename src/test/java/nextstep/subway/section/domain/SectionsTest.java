@@ -529,6 +529,27 @@ class SectionsTest {
         );
     }
 
+    @Test
+    @DisplayName("노선의 구간을 제거할때, 구간이 하나인 노선에서 마지막 구간을 제거할 때 예외 발생한다.")
+    public void removeException1() {
+        //Given (A---B----C)
+        Sections sections = givenSampleSection();
+        sections.remove(B);
+
+        //Then
+        assertThatThrownBy(() -> sections.remove(A))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("노선의 구간을 제거할때, 존재하지 않는 역을 삭제시 예외를 발생한다.")
+    public void removeException2() {
+        //Given (A---B----C)
+        Sections sections = givenSampleSection();
+
+        assertThatThrownBy(() -> sections.remove(X))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 
     /**
      * @return
