@@ -40,6 +40,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo(request.getName());
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo(request.getColor());
+        assertThat(response.body().jsonPath().getLong("stations[0].id")).isEqualTo(request.getUpStationId());
+        assertThat(response.body().jsonPath().getString("stations[0].name")).isEqualTo("강남역");
+        assertThat(response.body().jsonPath().getLong("stations[1].id")).isEqualTo(request.getDownStationId());
+        assertThat(response.body().jsonPath().getString("stations[1].name")).isEqualTo("역삼역");
     }
 
     private ExtractableResponse<Response> createLineAsTestCase(LineRequest request) {

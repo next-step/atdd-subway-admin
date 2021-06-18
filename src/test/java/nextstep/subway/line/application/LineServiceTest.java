@@ -15,6 +15,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
 @DataJpaTest
@@ -36,9 +37,14 @@ class LineServiceTest {
     @Test
     @DisplayName(value = "새로운 Line 을 저장하면 DB에 반영된다")
     void createLine() {
-        LineRequest request = new LineRequest("1호선", "blue");
+        stationRepository.save(new Station(1L, "강남역"));
+        stationRepository.save(new Station(2L, "역삼역"));
+
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         LineResponse response = lineService.saveLine(request);
-        assertThat(response.getColor()).isEqualTo("blue");
+        assertThat(response.getColor()).isEqualTo("bg-red-600");
+        assertThat(response.getName()).isEqualTo("신분당선");
+        assertThat(response.getStations().size()).isEqualTo(2);
     }
 
     @Test
