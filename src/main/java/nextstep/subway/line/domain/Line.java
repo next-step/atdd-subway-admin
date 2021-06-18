@@ -1,8 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.station.domain.Stations;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -16,21 +14,12 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @Embedded
-    @AssociationOverride(name = "stations", joinColumns = {@JoinColumn(name = "line_id")})
-    private Stations stations = new Stations();
-
     public Line() {
     }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public Line(LineRequest request) {
-        this.name = request.getName();
-        this.color = request.getColor();
     }
 
     public void update(Line line) {
@@ -49,8 +38,6 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
-
-    public Stations getStations() { return stations; }
 
     @Override
     public boolean equals(Object o) {
