@@ -2,6 +2,8 @@ package nextstep.subway.section.application;
 
 import static nextstep.subway.common.ErrorMessage.*;
 
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +19,12 @@ import nextstep.subway.station.domain.StationRepository;
 public class SectionService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
-    public SectionService(LineRepository lineRepository, StationRepository stationRepository) {
+    public SectionService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse addSection(Long id, LineRequest lineRequest) {
@@ -29,7 +33,8 @@ public class SectionService {
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_STATION));
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_STATION));
 
-        line.updateAddSection(upStation, downStation, lineRequest.getDistance());
+        Section section = line.updateAddSection(upStation, downStation, lineRequest.getDistance());
+        sectionRepository.save(section);
         return LineResponse.of(line);
     }
 }

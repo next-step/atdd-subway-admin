@@ -40,9 +40,9 @@ public class Line extends BaseEntity {
         addSection(upStation, downStation, request.getDistance());
     }
 
-    public void updateAddSection(Station upStation, Station downStation, Distance requestDistance) {
+    public Section updateAddSection(Station upStation, Station downStation, Distance requestDistance) {
         sections.updateSection(upStation, downStation, requestDistance);
-        addSection(upStation, downStation, requestDistance);
+        return addSection(upStation, downStation, requestDistance);
     }
 
     public Sections sections() {
@@ -66,7 +66,9 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    private void addSection(Station upStation, Station downStation, Distance requestDistance) {
-        sections.addSection(Section.getInstance(this, upStation, downStation, requestDistance));
+    private Section addSection(Station upStation, Station downStation, Distance requestDistance) {
+        Section section = Section.getInstance(this, upStation, downStation, requestDistance);
+        sections.addSection(section);
+        return section;
     }
 }
