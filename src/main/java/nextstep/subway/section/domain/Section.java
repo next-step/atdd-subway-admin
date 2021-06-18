@@ -41,14 +41,6 @@ public class Section extends BaseEntity {
 		this.distance = new Distance(distance);
 	}
 
-	public void changeLine(Line line) {
-		if (this.line != null) {
-			line.getSections().removeSection(this);
-		}
-		this.line = line;
-		line.getSections().addSection(this);
-	}
-
 	public Line getLine() {
 		return line;
 	}
@@ -127,5 +119,13 @@ public class Section extends BaseEntity {
 
 	private boolean isBuildableUpStation(Section newSection) {
 		return this.upStation.equals(newSection.getUpStation());
+	}
+
+	public boolean containStation(Station station) {
+		return this.downStation.equals(station) || this.upStation.equals(station);
+	}
+
+	public int combineSectionDistance(Section downSection) {
+		return this.distance.addDistance(downSection.getDistance());
 	}
 }

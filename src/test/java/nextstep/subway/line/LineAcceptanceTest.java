@@ -133,17 +133,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 지하철_노선_조회_요청
-		ExtractableResponse<Response> response = RestAssured.given().log().all()
-			.when()
-			.get("/lines/" + id)
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> response = 지하철노선을_조회한다(id);
 		// then
 		// 지하철_노선_응답됨
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		LineResponse lineResponse = response.response().getBody().as(LineResponse.class);
 		assertThat(lineResponse.getId()).isEqualTo(id);
 		assertThat(lineResponse.getStations()).containsExactly(upStation, downStation);
+	}
+
+	public static ExtractableResponse<Response> 지하철노선을_조회한다(Long id) {
+		return RestAssured.given().log().all()
+			.when()
+			.get("/lines/" + id)
+			.then().log().all()
+			.extract();
 	}
 
 	@DisplayName("존재하지 않는 노선 업데이트요청시 오류발생확인")
