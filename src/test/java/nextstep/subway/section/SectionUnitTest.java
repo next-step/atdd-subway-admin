@@ -21,6 +21,11 @@ public class SectionUnitTest {
 	private Station 동대구역;
 	private Station 부산역;
 
+	Section 서울광명구간;
+	Section 광명대전구간;
+	Section 대전동대구구간;
+	Section 동대구부산구간;
+
 	@BeforeEach
 	void setUp() {
 		서울역 = new Station("서울역");
@@ -28,32 +33,45 @@ public class SectionUnitTest {
 		대전역 = new Station("대전역");
 		동대구역 = new Station("동대구역");
 		부산역 = new Station("부산역");
+
+		서울광명구간 = new Section(서울역, 광명역, 2);
+		광명대전구간 = new Section(광명역, 대전역, 2);
+		대전동대구구간 = new Section(대전역, 동대구역, 2);
+		동대구부산구간 = new Section(동대구역, 부산역, 2);
 	}
 
 	@Test
-	@DisplayName("하나의 역만 같은 경우인지 체크하는 로직 검증")
+	@DisplayName("구간 내 하나의 역만 일치하는 로직 검증")
 	void matchedOnlyOneStation() {
 		Section 서울대전구간 = new Section(서울역, 대전역, 10);
-		Section 서울광명구간 = new Section(서울역, 광명역, 2);
-		Section 광명동대구역구간 = new Section(광명역, 동대구역, 2);
-		Section 광명대전구간 = new Section(광명역, 대전역, 2);
+		Section 광명동대구구간 = new Section(광명역, 동대구역, 10);
 
 		assertThat(서울대전구간.matchedOnlyOneStation(서울광명구간)).isTrue();
-		assertThat(서울대전구간.matchedOnlyOneStation(광명동대구역구간)).isFalse();
 		assertThat(서울대전구간.matchedOnlyOneStation(광명대전구간)).isTrue();
+
+		assertThat(서울대전구간.matchedOnlyOneStation(광명동대구구간)).isFalse();
 	}
 
 	@Test
 	@DisplayName("상행부터 하행까지 정렬기능 검증")
 	void stationsFromUpToDown() {
-		Section 서울광명구간 = new Section(서울역, 광명역, 2);
-		Section 광명대전구간 = new Section(광명역, 대전역, 2);
-		Section 대전동대구구간 = new Section(대전역, 동대구역, 2);
-		Section 동대구부산구간 = new Section(동대구역, 부산역, 2);
-
 		Sections sections = new Sections(Arrays.asList(광명대전구간, 동대구부산구간, 대전동대구구간, 서울광명구간));
 		List<Station> stations = sections.stationsFromUpToDown();
 
 		assertThat(stations).extracting("name").containsExactly("서울역", "광명역", "대전역", "동대구역", "부산역");
+	}
+
+	@Test
+	@DisplayName("첫번째 역 검증")
+	void findFirst() {
+		Sections sections = new Sections(Arrays.asList(광명대전구간, 동대구부산구간, 대전동대구구간, 서울광명구간));
+		assertThat(sections.findFirst()).isEqualTo(서울역);
+	}
+
+	@Test
+	@DisplayName("마지막 역 검증")
+	void findLast() {
+		Sections sections = new Sections(Arrays.asList(광명대전구간, 동대구부산구간, 대전동대구구간, 서울광명구간));
+		assertThat(sections.findLast()).isEqualTo(부산역);
 	}
 }

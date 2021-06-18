@@ -20,7 +20,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 
-@DisplayName("구간 관련 기능")
+@DisplayName("구간 인수테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
 	private static StationResponse 행신역;

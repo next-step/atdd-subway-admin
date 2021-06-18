@@ -27,6 +27,13 @@ public class Sections {
 			sections.add(addedSection);
 		}
 
+		Station firstStation = findFirst();
+		Station lastStation = findLast();
+
+		if (addedSection.isEqualToUpStation(lastStation) || addedSection.isEqualToDownStation(firstStation)) {
+			sections.add(addedSection);
+		}
+
 		Section persistSection = sections.stream()
 			.filter(section -> section.matchedOnlyOneStation(addedSection))
 			.findFirst()
@@ -54,7 +61,7 @@ public class Sections {
 		return stations;
 	}
 
-	private Station findFirst() {
+	public Station findFirst() {
 		Station standardStation = sections.get(0).getUpStation();
 		return trackUpStation(standardStation);
 	}
@@ -73,12 +80,27 @@ public class Sections {
 		return trackUpStation(station);
 	}
 
+	public Station findLast() {
+		Station standardStation = sections.get(0).getDownStation();
+		return trackDownStation(standardStation);
+	}
+
+	private Station trackDownStation(Station downStation) {
+		Station station = getNextStation(downStation);
+
+		if (station == null) {
+			return downStation;
+		}
+
+		return trackDownStation(station);
+	}
+
 	private Station getNextStation(Station upStation) {
 		return sections.stream()
 			.filter(section -> section.isEqualToUpStation(upStation))
 			.map(Section::getDownStation)
 			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("마지막 역입니다."));
+			.orElse(null);
 	}
 
 	private boolean hasNextStation(Station upStation) {
