@@ -19,6 +19,7 @@ public class SectionService {
 
     public LineResponse saveSection(Long lineId, SectionRequest request) {
         Line line = lineService.getLineById(lineId);
-        return lineService.saveLine(line, request);
+        Line persistLine = lineService.addSection(line, request);
+        return LineResponse.of(persistLine);
     }
 }

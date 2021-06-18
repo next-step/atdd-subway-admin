@@ -34,16 +34,16 @@ public class LineService {
         checkLineExistence(request.getName());
 
         Line line = request.toLine();
-        return saveLine(line, request);
+        Line persistLine = addSection(line, request);
+        return LineResponse.of(persistLine);
     }
 
-    public LineResponse saveLine(Line line, SectionRequest section) {
+    public Line addSection(Line line, SectionRequest section) {
         Station upStation = getStationById(section.getUpStationId());
         Station downStation = getStationById(section.getDownStationId());
         line.addSection(new Section(upStation, downStation, section.getDistance()));
-        Line persistLine = lineRepository.save(line);
 
-        return LineResponse.of(persistLine);
+        return lineRepository.save(line);
     }
 
     private Station getStationById(Long id) {
