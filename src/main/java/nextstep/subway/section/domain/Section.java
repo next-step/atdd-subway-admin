@@ -53,14 +53,14 @@ public class Section {
         return new Section(line, upStation, downStation, distance);
     }
 
-    public void updateStation(Station upStation, Station downStation, Distance distance) {
+    public void updateStation(Station upStation, Station downStation, Distance requestDistance) {
         if (isUpStation(upStation)) {
             this.upStation = downStation;
         }
         if (isDownStation(downStation)) {
             this.downStation = upStation;
         }
-        this.distance = calculateDistance(distance);
+        distance = distance.calculateDistance(requestDistance);
     }
 
     public boolean isContain(Station station) {
@@ -81,14 +81,6 @@ public class Section {
 
     public boolean isDownStation(Station station) {
         return downStation.equals(station);
-    }
-
-    private Distance calculateDistance(Distance requestDistance) {
-        return calculate(requestDistance);
-    }
-
-    private Distance calculate(Distance requestDistance) {
-        return new Distance(distance.getValue() - requestDistance.getValue());
     }
 
     @Override

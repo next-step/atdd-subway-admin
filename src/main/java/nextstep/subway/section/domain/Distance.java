@@ -18,8 +18,12 @@ public class Distance {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
+    public Distance calculateDistance(Distance requestDistance) {
+        return calculate(requestDistance);
+    }
+
+    private Distance calculate(Distance requestDistance) {
+        return new Distance(value - requestDistance.value);
     }
 
     private void checkNegative(int value) {
