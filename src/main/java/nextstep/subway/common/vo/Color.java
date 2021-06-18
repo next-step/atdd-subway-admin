@@ -20,11 +20,11 @@ public class Color {
 	}
 
 	private Color(String color) {
+		validateColor(color);
 		this.color = color;
 	}
 
 	public static Color generate(String color) {
-		validateColor(color);
 		return new Color(color);
 	}
 

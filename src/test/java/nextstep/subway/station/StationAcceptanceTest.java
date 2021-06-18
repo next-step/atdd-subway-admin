@@ -128,6 +128,19 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		지하철역_정보가_동일하다(강남역, 조회_응답);
 	}
 
+	@DisplayName("지하철역을 조회할때 존재하지 않는 지하철역 아이디를 전달하면 조회할 수 없다.")
+	@Test
+	void getStationWithNotExistedId() {
+		/// given
+		String 존재하지_않는_역_URI = "/stations/" + Integer.MIN_VALUE;
+
+		// when
+		ExtractableResponse<Response> 조회_응답 = 지하철역_조회_요청(존재하지_않는_역_URI);
+
+		// then
+		지하철역이_응답이_실패된다(조회_응답);
+	}
+
 	@DisplayName("지하철역을 수정한다.")
 	@Test
 	void updateStation() {
@@ -232,8 +245,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		assertThat(생성된_역_이름).isEqualTo(역정보.getName());
 	}
 
-	private void 지하철역이_생성_실패된다(ExtractableResponse<Response> response) {
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	private void 지하철역이_생성_실패된다(ExtractableResponse<Response> 생성_응답) {
+		assertThat(생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	private String 지하철_역_등록되어_있음(StationRequest 역정보) {
@@ -281,6 +294,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
 			.then().log().all()
 			.extract();
 		return response;
+	}
+
+	private void 지하철역이_응답이_실패된다(ExtractableResponse<Response> 조회_응답) {
+		assertThat(조회_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	private ExtractableResponse<Response> 지하철역_수정_요청(String 지하철역_URI, StationRequest 수정_역정보) {

@@ -20,11 +20,11 @@ public class Name {
 	}
 
 	private Name(String name) {
+		validateName(name);
 		this.name = name;
 	}
 
 	public static Name generate(String name) {
-		validateName(name);
 		return new Name(name);
 	}
 

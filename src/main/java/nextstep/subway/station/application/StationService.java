@@ -1,11 +1,13 @@
 package nextstep.subway.station.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -20,7 +22,6 @@ public class StationService {
 		this.stationRepository = stationRepository;
 	}
 
-	@Transactional
 	public StationResponse saveStation(StationRequest stationRequest) {
 		Station persistStation = stationRepository.save(stationRequest.toStation());
 		return StationResponse.of(persistStation);
@@ -41,15 +42,14 @@ public class StationService {
 	}
 
 	private Station findStationByIdFromRepository(Long id) {
-		return stationRepository.findById(id).get();
+		return Optional.ofNullable(stationRepository.findById(id)).get()
+			.orElseThrow(new NotFoundException("지하철 역을 찾을 수 없습니다. id :" + id));
 	}
 
-	@Transactional
 	public void deleteStationById(Long id) {
 		stationRepository.deleteById(id);
 	}
 
-	@Transactional
 	public void updateStation(Long id, StationRequest stationRequest) {
 		Station sourceStation = findStationByIdFromRepository(id);
 		sourceStation.update(stationRequest.toStation());

@@ -1,11 +1,13 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -22,7 +24,6 @@ public class LineService {
 		this.lineRepository = lineRepository;
 	}
 
-	@Transactional
 	public LineResponse saveLine(LineRequest request) {
 		Line persistLine = lineRepository.save(request.toLine());
 		return LineResponse.of(persistLine);
@@ -31,10 +32,7 @@ public class LineService {
 	@Transactional(readOnly = true)
 	public List<LineResponse> findAllLines() {
 		List<Line> lines = lineRepository.findAll();
-
-		return lines.stream()
-			.map(LineResponse::of)
-			.collect(Collectors.toList());
+		return LineResponse.ofList(lines);
 	}
 
 	@Transactional(readOnly = true)
@@ -43,15 +41,14 @@ public class LineService {
 	}
 
 	private Line findLineByIdFromRepository(Long id) {
-		return lineRepository.findById(id).get();
+		return Optional.ofNullable(lineRepository.findById(id)).get()
+			.orElseThrow(new NotFoundException("지하철 노선을 찾을 수 없습니다. id :" + id));
 	}
 
-	@Transactional
 	public void deleteLineById(Long id) {
 		lineRepository.deleteById(id);
 	}
 
-	@Transactional
 	public void updateLine(Long id, LineRequest lineRequest) {
 		Line sourceLine = findLineByIdFromRepository(id);
 		sourceLine.update(lineRequest.toLine());

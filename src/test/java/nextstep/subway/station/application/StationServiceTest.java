@@ -14,6 +14,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import nextstep.subway.ServiceTest;
+import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -128,7 +129,7 @@ public class StationServiceTest extends ServiceTest {
 
 		//then
 		assertThatThrownBy(() -> stationService.findStationById(존재하지않는_아이디))
-			.isInstanceOf(NoSuchElementException.class);
+			.isInstanceOf(NotFoundException.class);
 	}
 
 	@Test
@@ -220,7 +221,7 @@ public class StationServiceTest extends ServiceTest {
 
 		//then
 		assertThatThrownBy(() -> stationService.findStationById(홍대입구역_응답.getId()))
-			.isInstanceOf(NoSuchElementException.class);
+			.isInstanceOf(NotFoundException.class);
 	}
 
 	@Test

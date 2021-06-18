@@ -217,19 +217,19 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 0-4-6.원본(next-step) git repository에서 merge된 나의 branch(gregolee)를 fetch : `git fetch upstream gregolee`
         - [x] 0-4-7.remote에서 가져온 나의 branch로 rebase : `git rebase upstream/gregolee`
         - [x] 0-4-7.gregolee -> step2로 체크아웃 : `git checkout -b step2`
-    - [ ] 0-5.리뷰어님의 리뷰를 반영한 코드로 수정
+    - [x] 0-5.리뷰어님의 리뷰를 반영한 코드로 수정
         - [x] 0-5-1.강의 자료 학습한 부분만 수정
         - [x] 0-5-2.`body`를 `LineRequest`로 이용하여 요청
-        - [ ] 0-5-3.ATDD 네이밍 변경
+        - [x] 0-5-3.ATDD 네이밍 변경
             - [x] 0-5-3-1.파라메터 명칭 제거토록
             - [x] 0-5-3-2.given, when, then에 해당하는 명칭으로 변경
-            - [ ] 0-5-3-3.지하철 노선 생성이라는 말보단 지하철_노선_등록되어_있음등으로 수정
-        - [ ] 0-5-4.ATDD 값 검증 추가
-        - [ ] 0-5-5.필요없는 `@Transactional`제거
-        - [ ] 0-5-6.`LineService.java` 내 찾지 못했을 경우 Custom Exception 발생
-        - [ ] 0-5-7.`@ExceptionHandler` 중복 제거
-        - [ ] 0-5-8.`validate()` 생성자에 포함하도록 변경
-        - [ ] 0-5-9.`LineService.java` : `LineResponse.ofList()` 를 이용해 캡슐화
+            - [x] 0-5-3-3.지하철 노선 생성이라는 말보단 지하철_노선_등록되어_있음등으로 수정
+        - [x] 0-5-4.ATDD 값 검증 추가
+        - [x] 0-5-5.필요없는 `@Transactional`제거
+        - [x] 0-5-6.`LineService.java` 내 찾지 못했을 경우 Custom Exception 발생
+        - [x] 0-5-7.`@ExceptionHandler` 중복 제거
+        - [x] 0-5-8.`validate()` 생성자에 포함하도록 변경
+        - [x] 0-5-9.`LineService.java` : `LineResponse.ofList()` 를 이용해 캡슐화
 - [x] 1.자바 코드 컨벤션을 위한 세팅
     - [x] 1-1.[gradle-editorconfig](https://naver.github.io/hackday-conventions-java/#editorconfig) 적용
     - [x] 1-2.[gradle-checkstyle](https://naver.github.io/hackday-conventions-java/#checkstyle) 적용
