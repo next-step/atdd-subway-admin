@@ -29,8 +29,19 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public List<StationResponse> findByIds(List<Long> ids){
+        return stationRepository.findAllById(ids).stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    public Station findById(long id){
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역 id 입니다."));
     }
 
     public void deleteStationById(Long id) {
