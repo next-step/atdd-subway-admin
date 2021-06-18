@@ -37,7 +37,21 @@ public class Line extends BaseEntity {
     public Line(LineRequest request, Station upStation, Station downStation) {
         this.name = request.getName();
         this.color = request.getColor();
-        addSection(Section.getInstance(this, upStation, downStation, request.getDistance()));
+        addSection(upStation, downStation, request.getDistance());
+    }
+
+    public void updateAddSection(Station upStation, Station downStation, Distance requestDistance) {
+        sections.updateSection(upStation, downStation, requestDistance);
+        addSection(upStation, downStation, requestDistance);
+    }
+
+    public Sections stations() {
+        return sections;
+    }
+
+    public void updateNameColor(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public Long getId() {
@@ -52,21 +66,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void addSection(Section section) {
-        sections.addSection(section);
-    }
-
-    public void addSection(Station upStation, Station downStation, Distance requestDistance) {
-        sections.updateSection(upStation, downStation, requestDistance);
+    private void addSection(Station upStation, Station downStation, Distance requestDistance) {
         sections.addSection(Section.getInstance(this, upStation, downStation, requestDistance));
-    }
-
-    public Sections stations() {
-        return sections;
-    }
-
-    public void updateNameColor(String name, String color) {
-        this.name = name;
-        this.color = color;
     }
 }

@@ -50,9 +50,7 @@ public class Section {
     }
 
     public static Section getInstance(Line line, Station upStation, Station downStation, Distance distance) {
-        Section section = new Section(line, upStation, downStation, distance);
-        line.addSection(section);
-        return section;
+        return new Section(line, upStation, downStation, distance);
     }
 
     public void updateStation(Station upStation, Station downStation, Distance distance) {

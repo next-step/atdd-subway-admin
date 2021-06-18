@@ -29,7 +29,7 @@ public class SectionService {
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_STATION));
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_STATION));
 
-        line.addSection(upStation, downStation, lineRequest.getDistance());
+        line.updateAddSection(upStation, downStation, lineRequest.getDistance());
         return LineResponse.of(line);
     }
 }
