@@ -15,8 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
 import static nextstep.subway.PageController.URIMapping.LINE;
 import static nextstep.subway.PageController.URIMapping.SECTION;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -219,6 +221,79 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("노선 구간 제거")
+    @Test
+    protected void deleteSection() {
+        // given
+        // 지하철_노선에_지하철역_등록_요청
+        SectionRequest sectionRequest = SectionRequest.builder()
+                .upStationId(stationIdA)
+                .downStationId(stationIdB)
+                .distance(4)
+                .build();
+
+        requestCreatedSection(sectionRequest);
+
+        //when
+        //지하철_역_삭제_요청
+        ExtractableResponse<Response> response = requestDeleteSection(lineId, stationIdB);
+
+        //then
+        assertAll(
+            // 지하철_노선에_지하철역_삭제됨
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+
+            // 삭제된_노선_결과
+            () -> {
+                LineResponse lineResponse = LineAcceptanceTest.requestShowLines(lineId).as(LineResponse.class);
+
+                List<Long> stationResponseIds = lineResponse.getStations()
+                        .stream()
+                        .map(x -> x.getId())
+                        .collect(Collectors.toList());
+
+                //A-------C
+                assertThat(stationResponseIds).containsExactly(stationIdA, stationIdC);
+                assertThat(lineResponse.getDistances()).containsExactly(7);
+            }
+        );
+    }
+
+    @DisplayName("구간이 하나인 노선에서는 구간을 제거할수 없다.")
+    @Test
+    protected void deleteSectionException1() {
+        //when
+        ExtractableResponse<Response> response = requestDeleteSection(lineId, stationIdA);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("존재하지 않는 역을 제거시 예외를 발생한다.")
+    @Test
+    protected void deleteSectionException2() {
+        //given
+        // 지하철_노선에_지하철역_등록_요청
+        SectionRequest sectionRequest = SectionRequest.builder()
+                .upStationId(stationIdA)
+                .downStationId(stationIdB)
+                .distance(4)
+                .build();
+
+        requestCreatedSection(sectionRequest);
+
+        //지하철역_생성_요청
+        Long stationIdX = RestAssuredTemplate.getLocationId(
+            StationAcceptanceTest.requestCreateStation("X")
+        );
+
+        //when
+        ExtractableResponse<Response> response = requestDeleteSection(lineId, stationIdX);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     public ExtractableResponse<Response> requestCreatedSection(final SectionRequest param) {
         return restAssuredTemplate.post(param.toMap());
     }
@@ -229,5 +304,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     public ExtractableResponse<Response> requestShowSection() {
         return restAssuredTemplate.get();
+    }
+
+    public ExtractableResponse<Response> requestDeleteSection(final Long lineId, Long stationId) {
+        String uri = String.format("%s/%s/sections?stationId=%s", LINE, lineId, stationId);
+        return restAssuredTemplate.delete(uri);
     }
 }

@@ -9,6 +9,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.SectionNotFoundException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.StationNotFoundException;
@@ -104,5 +105,16 @@ public class LineService {
 
     public void deleteLineById(final Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public void removeSectionByStationId(final Long lindId, final Long stationId) {
+        Line line = lineRepository.findById(lindId)
+                .orElseThrow(() -> new LineNotFoundException());
+
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(() -> new StationNotFoundException());
+
+        Sections sections = line.getSections();
+        sections.remove(station);
     }
 }

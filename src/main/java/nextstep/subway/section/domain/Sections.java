@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new LinkedList<>();
 
     public boolean isEmpty() {
@@ -192,5 +192,10 @@ public class Sections {
 
     public String format() {
         return sortedStations().stream().map(Station::getName).collect(Collectors.joining("-"));
+    }
+
+    public void update(final Sections sections) {
+        this.sections.clear();
+        this.sections.addAll(sections.sections);
     }
 }

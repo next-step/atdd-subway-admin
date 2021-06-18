@@ -38,7 +38,7 @@ public class Line extends BaseEntity {
     public void update(final Line line) {
         this.name = line.name;
         this.color = line.color;
-        this.sections = line.sections;
+        this.sections.update(line.getSections());
     }
 
     public List<Station> lineUp() {

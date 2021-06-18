@@ -59,6 +59,12 @@ public class LineController {
         return ResponseEntity.created(URI.create(uri)).body(sectionResponse);
     }
 
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<Void> removeSectionByStationId(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping(value = "/{lineId}/sections/{sectionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SectionResponse> showSection(@PathVariable Long lineId, @PathVariable Long sectionId) {
         return ResponseEntity.ok().body(lineService.findSection(sectionId));
