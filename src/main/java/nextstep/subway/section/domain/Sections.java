@@ -1,6 +1,5 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -46,7 +44,7 @@ public class Sections {
 
     private List<Station> orderSection() {
         List<Station> stations = new ArrayList<>();
-        Station station = findFirstSection();
+        Station station = findFirstStation();
         stations.add(station);
 
         while (isAfterSection(station)) {
@@ -70,33 +68,33 @@ public class Sections {
         return sections;
     }
 
-    private void updateUpStation(Section section) {
-        Station inputUpStation = section.upStation();
+    private void updateUpStation(Section inputSection) {
+        Station inputUpStation = inputSection.upStation();
         sections.stream()
-                .filter(it -> it.isEqualsUpStation(inputUpStation))
+                .filter(section -> section.isEqualsUpStation(inputUpStation))
                 .findFirst()
-                .ifPresent(it -> it.updateUpStation(section));
+                .ifPresent(section -> section.updateUpStation(inputSection));
     }
 
-    private void updateDownStation(Section section) {
-        Station inputDownStation = section.downStation();
+    private void updateDownStation(Section inputSection) {
+        Station inputDownStation = inputSection.downStation();
         sections.stream()
-                .filter(it -> it.isEqualsDownStation(inputDownStation))
+                .filter(section -> section.isEqualsDownStation(inputDownStation))
                 .findFirst()
-                .ifPresent(it -> it.updateDownStation(section));
+                .ifPresent(section -> section.updateDownStation(inputSection));
     }
 
     private boolean isBeforeSection(Station station) {
         return sections.stream()
-                .anyMatch(it -> it.isEqualsDownStation(station));
+                .anyMatch(section -> section.isEqualsDownStation(station));
     }
 
     private boolean isAfterSection(Station station) {
         return sections.stream()
-                .anyMatch(it -> it.isEqualsUpStation(station));
+                .anyMatch(section -> section.isEqualsUpStation(station));
     }
 
-    private Station findFirstSection() {
+    private Station findFirstStation() {
         Station station = sections.get(0).upStation();
         while (isBeforeSection(station)) {
             Optional<Section> section = findBeforeSection(station);
@@ -107,19 +105,19 @@ public class Sections {
 
     private Optional<Section> findBeforeSection(Station station) {
         return sections.stream()
-                .filter(it -> it.isEqualsDownStation(station))
+                .filter(section -> section.isEqualsDownStation(station))
                 .findFirst();
     }
 
     private Optional<Section> findAfterSection(Station station) {
         return sections.stream()
-                .filter(it -> it.isEqualsUpStation(station))
+                .filter(section -> section.isEqualsUpStation(station))
                 .findFirst();
     }
 
-    public boolean isStationExist(Station station) {
+    public boolean isStationExist(Station inputStation) {
         return assembleStations().stream()
-                .anyMatch(it -> it == station);
+                .anyMatch(station -> station.equals(inputStation));
     }
 
     private void validSection(boolean isUpStationExist, boolean isDownStationExist) {
@@ -141,8 +139,8 @@ public class Sections {
     }
 
     private void deleteUpOrDownSection(Optional<Section> upSection, Optional<Section> downSection) {
-        upSection.ifPresent(it -> sections.remove(it));
-        downSection.ifPresent(it -> sections.remove(it));
+        upSection.ifPresent(section -> sections.remove(section));
+        downSection.ifPresent(section -> sections.remove(section));
     }
 
     private void validDeleteSection(Station station) {
