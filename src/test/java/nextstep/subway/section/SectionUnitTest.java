@@ -46,10 +46,10 @@ public class SectionUnitTest {
 		Section 서울대전구간 = new Section(서울역, 대전역, 10);
 		Section 광명동대구구간 = new Section(광명역, 동대구역, 10);
 
-		assertThat(서울대전구간.matchedOnlyOneStation(서울광명구간)).isTrue();
-		assertThat(서울대전구간.matchedOnlyOneStation(광명대전구간)).isTrue();
+		assertThat(서울대전구간.matchedOnlyOneStationAndIncludedSection(서울광명구간)).isTrue();
+		assertThat(서울대전구간.matchedOnlyOneStationAndIncludedSection(광명대전구간)).isTrue();
 
-		assertThat(서울대전구간.matchedOnlyOneStation(광명동대구구간)).isFalse();
+		assertThat(서울대전구간.matchedOnlyOneStationAndIncludedSection(광명동대구구간)).isFalse();
 	}
 
 	@Test

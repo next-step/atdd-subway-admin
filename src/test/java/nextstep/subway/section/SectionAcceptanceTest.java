@@ -96,7 +96,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(lineResponse.getStations()).extracting("name").containsExactly("서울역", "대전역", "동대구역");
 	}
 
-	@DisplayName("시작, 종료역이 같은 구간을 추가한다.")
+	@DisplayName("같은 구간을 추가한다. (A-B)가 등록된 경우 (A-B)를 추가한다.")
 	@Test
 	void addSection5() {
 		ExtractableResponse<Response> response = 경부고속선_노선에_구간_등록_요청(서울역.getId(), 대전역.getId(), 5);
@@ -118,6 +118,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSection7() {
 		ExtractableResponse<Response> response = 경부고속선_노선에_구간_등록_요청(서울역.getId(), 동대구역.getId(), 15);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+	}
+
+	@DisplayName("같은 구간을 추가한다. (A-B)가 등록된 경우 (B-A)를 추가한다.")
+	@Test
+	void addSection8() {
+		ExtractableResponse<Response> response = 경부고속선_노선에_구간_등록_요청(대전역.getId(), 서울역.getId(), 5);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());

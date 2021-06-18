@@ -41,6 +41,14 @@ public class Section extends BaseEntity {
 	}
 
 	public Section(Station upStation, Station downStation, Integer distance) {
+		if (upStation.equals(downStation)) {
+			throw new IllegalArgumentException("시작역과 종료역이 같을 수 없습니다.");
+		}
+
+		if (distance <= 0) {
+			throw new IllegalArgumentException("거리가 0보다 작거나 같을 수 없습니다.");
+		}
+
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
@@ -79,7 +87,7 @@ public class Section extends BaseEntity {
 		return downStation.equals(station);
 	}
 
-	public boolean matchedOnlyOneStation(Section addedSection) {
+	public boolean matchedOnlyOneStationAndIncludedSection(Section addedSection) {
 		if (this.equals(addedSection)) {
 			return false;
 		}

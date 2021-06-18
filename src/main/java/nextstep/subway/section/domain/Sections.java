@@ -22,29 +22,37 @@ public class Sections {
 		this.sections = sections;
 	}
 
-	public void add(Section addedSection) {
-		if (sections.isEmpty()) {
-			sections.add(addedSection);
+	public void add(Section section) {
+		if (alreadyExists(section)) {
+			throw new IllegalArgumentException("이미 존재하는 구간입니다.");
 		}
 
-		Station firstStation = findFirst();
-		Station lastStation = findLast();
-
-		if (addedSection.isEqualToUpStation(lastStation) || addedSection.isEqualToDownStation(firstStation)) {
-			sections.add(addedSection);
+		if (sections.isEmpty() || section.isEqualToUpStation(findLast()) || section.isEqualToDownStation(findFirst())) {
+			sections.add(section);
+			return;
 		}
 
+		divideSection(section);
+	}
+
+	private boolean alreadyExists(Section section) {
+		return sections.stream()
+			.anyMatch(
+				s -> (section.isEqualToUpStation(s.getUpStation()) && section.isEqualToDownStation(s.getDownStation()))
+					||
+					(section.isEqualToDownStation(s.getUpStation()) && section.isEqualToUpStation(s.getDownStation())));
+	}
+
+	private void divideSection(Section section) {
 		Section persistSection = sections.stream()
-			.filter(section -> section.matchedOnlyOneStation(addedSection))
+			.filter(s -> s.matchedOnlyOneStationAndIncludedSection(section))
 			.findFirst()
-			.orElse(null);
+			.orElseThrow(() -> new IllegalArgumentException("추가할 수 없습니다."));
 
-		if (persistSection != null) {
-			List<Section> sections = persistSection.divide(addedSection);
+		List<Section> sections = persistSection.divide(section);
 
-			this.sections.remove(persistSection);
-			this.sections.addAll(sections);
-		}
+		this.sections.remove(persistSection);
+		this.sections.addAll(sections);
 	}
 
 	public List<Station> stationsFromUpToDown() {
