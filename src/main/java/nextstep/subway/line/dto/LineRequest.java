@@ -1,9 +1,15 @@
 package nextstep.subway.line.dto;
 
+import javax.validation.constraints.NotBlank;
+
 import nextstep.subway.line.domain.Line;
 
 public class LineRequest extends SectionRequest {
+
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String color;
 
     public LineRequest() {
