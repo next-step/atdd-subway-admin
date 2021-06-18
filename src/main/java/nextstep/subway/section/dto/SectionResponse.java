@@ -9,7 +9,7 @@ public class SectionResponse {
     private final int distance;
 
     public static SectionResponse of(Section section) {
-        return new SectionResponse(section.upStation().getId(), section.downStation().getId(), section.getDistance());
+        return new SectionResponse(section.upStation().getId(), section.downStation().getId(), section.distance());
     }
 
     public SectionResponse(Long upStationId, Long downStationId, Distance distance) {

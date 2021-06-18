@@ -24,7 +24,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private long 사당역;
     private long 의정부역;
     private long 오이도역;
-    private String lineId;
+    private String 사호선;
 
     @BeforeEach
     public void setup() {
@@ -33,7 +33,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         사당역 = getStationId("사당역");
         의정부역 = getStationId("의정부역");
         오이도역 = getStationId("오이도역");
-        lineId = 지하철_노선_등록되어_있음(new LineRequest("4호선", "blue", 서울역, 안산역, 10)).split("/")[2];
+        사호선 = 지하철_노선_등록되어_있음(new LineRequest("4호선", "blue", 서울역, 안산역, 10)).split("/")[2];
     }
 
     @DisplayName("상행 역 다음 위치에 지하철 구간을 추가한다. - 상행 역 기준 추가")
@@ -43,7 +43,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(서울역, 사당역, 5);
 
         //when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_구간_추가(사호선, sectionRequest);
 
         //then
         지하철_구간_추가됨(response);
@@ -56,7 +56,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(의정부역, 서울역, 50);
 
         //when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_구간_추가(사호선, sectionRequest);
 
         //then
         지하철_구간_추가됨(response);
@@ -69,7 +69,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(사당역, 안산역, 5);
 
         //when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_구간_추가(사호선, sectionRequest);
 
         //then
         지하철_구간_추가됨(response);
@@ -82,7 +82,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(안산역, 오이도역, 50);
 
         //when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_구간_추가(사호선, sectionRequest);
 
         //then
         지하철_구간_추가됨(response);
@@ -95,7 +95,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(서울역, 안산역, 5);
 
         //when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_구간_추가(사호선, sectionRequest);
 
         //then
         지하철_구간_추가_실패(response);
@@ -108,7 +108,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(의정부역, 오이도역, 100);
 
         //when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_구간_추가(사호선, sectionRequest);
 
         //then
         지하철_구간_추가_실패(response);
@@ -121,7 +121,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionRequest sectionRequest = new SectionRequest(서울역, 사당역, 10);
 
         //when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_구간_추가(사호선, sectionRequest);
 
         //then
         지하철_구간_추가_실패(response);
