@@ -14,7 +14,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.station.StationAcceptanceBefore;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -27,6 +26,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         super.setUp();
         requestCreateStation(1L, "강남역");
         requestCreateStation(2L, "역삼역");
+        requestCreateStation(3L, "종로3가");
+        requestCreateStation(4L, "청량리");
+        requestCreateStation(5L, "홍제역");
+        requestCreateStation(6L, "충정로");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -63,7 +66,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         createLineAsTestCase(request);
         // when
         // 지하철_노선_생성_요청
@@ -79,15 +82,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        createLineAsTestCase(new LineRequest("1호선", "bg-blue-100"));
+        createLineAsTestCase(new LineRequest("1호선", "bg-blue-100", 3L, 4L, 10));
         // 지하철_노선_등록되어_있음
-        createLineAsTestCase(new LineRequest("2호선", "bg-green-200"));
+        createLineAsTestCase(new LineRequest("2호선", "bg-green-200", 1L, 2L, 10));
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().get(RESOURCES)
-                .then().log().all().extract();
+            .given().log().all()
+            .when().get(RESOURCES)
+            .then().log().all().extract();
 
         // then
         // 지하철_노선_목록_응답됨
@@ -102,13 +105,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> expected = createLineAsTestCase(new LineRequest("3호선", "bg-orange-100"));
+        ExtractableResponse<Response> expected = createLineAsTestCase(
+            new LineRequest("3호선", "bg-orange-100", 1L, 2L, 10));
         // when
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().get(expected.header(PATH_FROM_HEADER))
-                .then().log().all().extract();
+            .given().log().all()
+            .when().get(expected.header(PATH_FROM_HEADER))
+            .then().log().all().extract();
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -119,16 +123,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> expected = createLineAsTestCase(new LineRequest("3호선", "bg-orange-100"));
+        ExtractableResponse<Response> expected = createLineAsTestCase(
+            new LineRequest("3호선", "bg-orange-100", 5L, 6L, 10));
         // when
         // 지하철_노선_수정_요청
         LineRequest updateRequest = new LineRequest("3호선", "bg-orange-300");
         ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(updateRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(expected.header(PATH_FROM_HEADER))
-                .then().log().all().extract();
+            .given().log().all()
+            .body(updateRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put(expected.header(PATH_FROM_HEADER))
+            .then().log().all().extract();
 
         // then
         // 지하철_노선_수정됨
@@ -142,7 +147,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //
         // when
         // DB에 없는 노선에 수정 요청
-        LineRequest updateRequest = new LineRequest("3호선", "bg-orange-300");
+        LineRequest updateRequest = new LineRequest("3호선", "bg-orange-300", 5L, 6L, 10);
+
         ExtractableResponse<Response> response = RestAssured
             .given().log().all()
             .body(updateRequest)
@@ -160,14 +166,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> expected = createLineAsTestCase(new LineRequest("3호선", "bg-orange-100"));
+        ExtractableResponse<Response> expected = createLineAsTestCase(
+            new LineRequest("3호선", "bg-orange-100", 5L, 6L, 10));
         // when
         // 지하철_노선_제거_요청
         // when
         ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().delete(expected.header(PATH_FROM_HEADER))
-                .then().log().all().extract();
+            .given().log().all()
+            .when().delete(expected.header(PATH_FROM_HEADER))
+            .then().log().all().extract();
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
