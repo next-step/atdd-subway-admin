@@ -38,6 +38,12 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public LineResponse saveSection(Long lineId, SectionRequest request) {
+        Line line = getLineById(lineId);
+        Line persistLine = addSection(line, request);
+        return LineResponse.of(persistLine);
+    }
+
     public Line addSection(Line line, SectionRequest section) {
         Station upStation = getStationById(section.getUpStationId());
         Station downStation = getStationById(section.getDownStationId());
