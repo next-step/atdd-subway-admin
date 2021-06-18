@@ -47,7 +47,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStationsInAscending() {
-        return sections.getStationsInAscending();
+        return sections.getStationsInOrder();
     }
 
     public Long getId() {

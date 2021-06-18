@@ -12,13 +12,11 @@ import java.util.stream.Stream;
 import nextstep.subway.line.exception.TerminusNotFoundException;
 import nextstep.subway.station.domain.Station;
 
-public class SectionConverter {
+public class SectionSorter {
 
     public static Set<Station> getStations(List<Section> sections) {
-        return getRelations(sections)
-            .entrySet()
-            .stream()
-            .flatMap(e -> Stream.of(e.getKey(), e.getValue()))
+        return sections.stream()
+            .flatMap(s -> Stream.of(s.upStation(), s.downStation()))
             .collect(toSet());
     }
 

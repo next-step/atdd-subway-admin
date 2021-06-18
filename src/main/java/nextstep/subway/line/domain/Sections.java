@@ -1,6 +1,6 @@
 package nextstep.subway.line.domain;
 
-import static nextstep.subway.line.domain.SectionConverter.*;
+import static nextstep.subway.line.domain.SectionSorter.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,8 +23,8 @@ public class Sections {
     protected Sections() {
     }
 
-    public List<Station> getStationsInAscending() {
-        return getStationsInOrder(values);
+    public List<Station> getStationsInOrder() {
+        return SectionSorter.getStationsInOrder(values);
     }
 
     public boolean contains(Section section) {
