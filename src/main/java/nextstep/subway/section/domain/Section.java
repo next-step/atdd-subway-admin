@@ -73,6 +73,12 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.distance -= newSection.getDistance();
     }
 
+    public void changeStationInMiddle(Section newSection) {
+        validateSectionDistance(newSection);
+        changeUpStation(newSection.getDownStation());
+        calculateDistance(newSection);
+    }
+
     @Override
     public int compareTo(Section o) {
         if (this.getDownStation().equals(o.getUpStation())) {

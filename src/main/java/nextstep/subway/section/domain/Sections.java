@@ -13,42 +13,40 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section newSection) {
-        if (sections.size() == 0) {
+        if (sections.isEmpty()) {
             sections.add(newSection);
             return;
         }
-        validateExistUpAndDownStation(newSection);
-        validateIncludeSameSection(newSection);
-        addSectionInMiddleWhenEqualToUpStation(newSection);
+        validateUpAndDownStation(newSection);
+        changeStationInMiddleWhenEqualToUpStation(newSection);
         sections.add(newSection);
     }
 
-    private void validateExistUpAndDownStation(Section newSection) {
+    private void validateUpAndDownStation(Section newSection) {
+        Station upStation = newSection.getUpStation();
+        Station downStation = newSection.getDownStation();
+        if (isStationInSections(upStation) && isStationInSections(downStation)) {
+            throw new IllegalArgumentException("이미 존재하는 상행선 하행선 입니다.");
+        }
+        if (!isStationInSections(upStation) && !isStationInSections(downStation)) {
+            throw new IllegalArgumentException("기존 구간에 상행역 하행역이 존재하지 않아 등록할 수 없습니다.");
+        }
+    }
+
+    private boolean isStationInSections(Station station) {
         Set<Station> stationSet = new HashSet<>();
         for (Section section : sections) {
             stationSet.add(section.getUpStation());
             stationSet.add(section.getDownStation());
         }
-        if (!(stationSet.contains(newSection.getUpStation()) || stationSet.contains(newSection.getDownStation()))) {
-            throw new IllegalArgumentException("상행선 하행선 모두 등록되어있지 않습니다.");
-        }
+        return stationSet.contains(station);
     }
 
-    private void validateIncludeSameSection(Section newSection) {
-        if (sections.contains(newSection)) {
-            throw new IllegalArgumentException("동일한 구간은 등록할 수 없습니다.");
-        }
-    }
-
-    private void addSectionInMiddleWhenEqualToUpStation(Section newSection) {
+    private void changeStationInMiddleWhenEqualToUpStation(Section newSection) {
         sections.stream()
                 .filter(section -> section.equalsUpStation(newSection))
                 .findFirst()
-                .ifPresent(section -> {
-                    section.validateSectionDistance(newSection);
-                    section.changeUpStation(newSection.getDownStation());
-                    section.calculateDistance(newSection);
-                });
+                .ifPresent(section -> section.changeStationInMiddle(newSection));
     }
 
     public List<Station> getSortedStations() {
