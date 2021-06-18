@@ -71,11 +71,19 @@ public class Section extends BaseEntity {
 		return line;
 	}
 
+	public boolean isEqualToUpStation(Station station) {
+		return upStation.equals(station);
+	}
+
+	public boolean isEqualToDownStation(Station station) {
+		return downStation.equals(station);
+	}
+
 	public boolean matchedOnlyOneStation(Section addedSection) {
 		if (this.equals(addedSection)) {
 			return false;
 		}
-		return upStation.equals(addedSection.getUpStation()) ^ downStation.equals(addedSection.getDownStation());
+		return addedSection.isEqualToUpStation(upStation) ^ addedSection.isEqualToDownStation(downStation);
 	}
 
 	public List<Section> divide(Section addedSection) {
@@ -85,13 +93,13 @@ public class Section extends BaseEntity {
 
 		List<Section> sections = new LinkedList<>();
 
-		if (this.upStation == addedSection.getUpStation()) {
+		if (addedSection.isEqualToUpStation(upStation)) {
 			sections.add(addedSection);
 			sections.add(new Section(addedSection.getDownStation(), this.downStation,
 				this.distance - addedSection.getDistance()));
 		}
 
-		if (this.downStation == addedSection.getDownStation()) {
+		if (addedSection.isEqualToDownStation(downStation)) {
 			sections.add(
 				new Section(this.upStation, addedSection.getUpStation(), this.distance - addedSection.getDistance()));
 			sections.add(addedSection);
