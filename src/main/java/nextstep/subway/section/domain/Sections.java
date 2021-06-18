@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import static nextstep.subway.common.ErrorMessage.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,10 +22,6 @@ public class Sections {
     public Sections() {
     }
 
-    public Section getFirstSection() {
-        return sections.get(0);
-    }
-
     public void addSection(Section section) {
         sections.add(section);
     }
@@ -34,7 +31,23 @@ public class Sections {
         section.updateStation(upStation, downStation, requestDistance);
     }
 
-    public Section findSectionByDownStation(Station downStation) {
+    public List<Station> toStationResponse() {
+        List<Station> result = new LinkedList<>();
+
+        result.add(getFirstSection().getUpStation());
+        result.add(getFirstSection().getDownStation());
+
+        addUpStation(result, result.get(0));
+        addDownStation(result, result.get(result.size() - 1));
+
+        return result;
+    }
+
+    private Section getFirstSection() {
+        return sections.get(0);
+    }
+
+    private Section findSectionByDownStation(Station downStation) {
         return sections.stream()
                 .filter(section -> section.isDownStation(downStation))
                 .findFirst()
@@ -42,7 +55,7 @@ public class Sections {
                 ;
     }
 
-    public Section findSectionByUpStation(Station upStation) {
+    private Section findSectionByUpStation(Station upStation) {
         return sections.stream()
                 .filter(section -> section.isUpStation(upStation))
                 .findFirst()
@@ -50,12 +63,29 @@ public class Sections {
                 ;
     }
 
-    public boolean hasDownStation(Station findStation) {
+    private void addUpStation(List<Station> result, Station findStation) {
+        while (hasDownStation(findStation)) {
+            Section findSection = findSectionByDownStation(findStation);
+            result.add(0, findSection.getUpStation());
+            findStation = findSection.getUpStation();
+        }
+    }
+
+    private void addDownStation(List<Station> result, Station findStation) {
+        while (hasUpStation(findStation)) {
+            Section findSection = findSectionByUpStation(findStation);
+
+            result.add(findSection.getDownStation());
+            findStation = findSection.getDownStation();
+        }
+    }
+
+    private boolean hasDownStation(Station findStation) {
         return sections.stream()
                 .anyMatch(section -> section.isDownStation(findStation));
     }
 
-    public boolean hasUpStation(Station findStation) {
+    private boolean hasUpStation(Station findStation) {
         return sections.stream()
                 .anyMatch(section -> section.isUpStation(findStation));
     }

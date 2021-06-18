@@ -45,7 +45,7 @@ public class Line extends BaseEntity {
         addSection(upStation, downStation, requestDistance);
     }
 
-    public Sections stations() {
+    public Sections sections() {
         return sections;
     }
 
