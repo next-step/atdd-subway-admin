@@ -15,6 +15,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.StationRepository;
 
 @DataJpaTest
 class LineServiceTest {
@@ -22,11 +23,14 @@ class LineServiceTest {
     @Autowired
     private LineRepository lineRepository;
 
+    @Autowired
+    private StationRepository stationRepository;
+
     private LineService lineService;
 
     @BeforeEach
     void init() {
-        lineService = new LineService(lineRepository);
+        lineService = new LineService(lineRepository, stationRepository);
     }
 
     @Test

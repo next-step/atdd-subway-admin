@@ -29,6 +29,11 @@ public class Station extends BaseEntity implements Comparable<Station> {
         this.name = name;
     }
 
+    public Station(long id, String name) {
+        this(name);
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

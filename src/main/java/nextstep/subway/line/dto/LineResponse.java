@@ -1,17 +1,22 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.common.base.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LineResponse {
     private Long id;
     private String name;
     private String color;
+    private List<StationResponse> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
@@ -26,8 +31,24 @@ public class LineResponse {
         this.modifiedDate = modifiedDate;
     }
 
+    public LineResponse(Long id, String name, String color, List<Station> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.stations = stations.stream()
+            .map(StationResponse::of)
+            .sorted()
+            .collect(Collectors.toList());
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+    }
+
     public static LineResponse of(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+    }
+
+    public static LineResponse of(Line line, List<Station> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
@@ -56,14 +77,15 @@ public class LineResponse {
             return true;
         if (!(o instanceof LineResponse))
             return false;
-        LineResponse that = (LineResponse)o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
-            && Objects.equals(color, that.color) && Objects.equals(createdDate, that.createdDate)
-            && Objects.equals(modifiedDate, that.modifiedDate);
+        LineResponse response = (LineResponse)o;
+        return Objects.equal(id, response.id) && Objects.equal(name,
+            response.name) && Objects.equal(color, response.color)
+            && Objects.equal(stations, response.stations) && Objects.equal(
+            createdDate, response.createdDate) && Objects.equal(modifiedDate, response.modifiedDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, createdDate, modifiedDate);
+        return Objects.hashCode(id, name, color, stations, createdDate, modifiedDate);
     }
 }

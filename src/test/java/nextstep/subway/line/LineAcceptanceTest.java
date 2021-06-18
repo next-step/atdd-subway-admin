@@ -1,7 +1,9 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.station.StationAcceptanceBefore.*;
 import static org.assertj.core.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.StationAcceptanceBefore;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -19,19 +22,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final String RESOURCES = "/lines";
     private static final String PATH_FROM_HEADER = "LOCATION";
 
+    @BeforeEach
+    private void init() {
+        super.setUp();
+        requestCreateStation(1L, "강남역");
+        requestCreateStation(2L, "역삼역");
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        LineRequest request = new LineRequest("신분당선", "bg-red-600");
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
         ExtractableResponse<Response> response = createLineAsTestCase(request);
 
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.body().jsonPath().getString("name")).isEqualTo(request.getName());
-        assertThat(response.body().jsonPath().getString("color")).isEqualTo(request.getColor());
     }
 
     private ExtractableResponse<Response> createLineAsTestCase(LineRequest request) {
