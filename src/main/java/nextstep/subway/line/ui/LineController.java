@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 
 @RestController
 @RequestMapping("/lines")
@@ -57,6 +58,11 @@ public class LineController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@PostMapping(value = "/{lineId}/sections")
+	public ResponseEntity addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+		return ResponseEntity.ok().body(lineService.addSectionAndReturnNewSection(lineId, sectionRequest));
+	}
+
 	@ExceptionHandler(NoSuchElementException.class)
 	public ResponseEntity handleNoSuchElementException(NoSuchElementException e) {
 		return ResponseEntity.noContent().build();
@@ -64,6 +70,11 @@ public class LineController {
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+		return ResponseEntity.badRequest().build();
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
 		return ResponseEntity.badRequest().build();
 	}
 }

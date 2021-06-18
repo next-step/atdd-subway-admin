@@ -1,7 +1,4 @@
-package nextstep.subway.section.domain;
-
-import java.util.Arrays;
-import java.util.List;
+package nextstep.subway.line.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,11 +8,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import nextstep.subway.line.domain.Line;
+import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -45,8 +42,12 @@ public class Section {
 		this.distance = distance;
 	}
 
-	public List<Station> getStations() {
-		return Arrays.asList(upStation, downStation);
+	public Long getId() {
+		return id;
+	}
+
+	public Line getLine() {
+		return line;
 	}
 
 	public Station getUpStation() {
@@ -57,7 +58,19 @@ public class Section {
 		return downStation;
 	}
 
+	public int getDistance() {
+		return distance;
+	}
+
 	public void setLine(Line line) {
 		this.line = line;
+	}
+
+	public boolean hasSameUpStation(Section section) {
+		return this.upStation.equals(section.getUpStation());
+	}
+
+	public boolean hasSameDownStation(Section section) {
+		return this.downStation.equals(section.getDownStation());
 	}
 }

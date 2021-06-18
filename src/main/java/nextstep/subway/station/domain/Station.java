@@ -7,11 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
 
 @Entity
 public class Station extends BaseEntity {
@@ -21,10 +18,6 @@ public class Station extends BaseEntity {
 
 	@Column(unique = true)
 	private String name;
-
-	@ManyToOne
-	@JoinColumn(name = "line_id")
-	private Line line;
 
 	public Station() {
 	}
@@ -48,11 +41,12 @@ public class Station extends BaseEntity {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		Station station = (Station)o;
-		return Objects.equals(id, station.id);
+		return Objects.equals(id, station.id) &&
+			Objects.equals(name, station.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, name, line);
+		return Objects.hash(id, name);
 	}
 }
