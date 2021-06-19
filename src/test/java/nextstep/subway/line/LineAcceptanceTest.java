@@ -157,7 +157,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineWithDuplicateColor() {
 		// given
-		노선_생성_요청(이호선);
+		노선_등록되어_있음(이호선);
 
 		// when
 		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(삼호선_이호선과_같은_색상);
@@ -170,10 +170,49 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineWithDuplicateName() {
 		// given
-		노선_생성_요청(이호선);
+		노선_등록되어_있음(이호선);
 
 		// when
 		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(이호선);
+
+		// then
+		노선이_생성_실패된다(생성_응답);
+	}
+
+	@DisplayName("지하철 노선을 등록할 경우 상행역의 아이디를 입력하지 않으면 지하철 노선을 생성할 수 없다.")
+	@Test
+	void createLineWithoutUpStation() {
+		// given
+		LineRequest 상행역_없음 = new LineRequest("2호선", "#FFFFFF", null, 선릉역_아이디, 강남역_선릉역_간격);
+
+		// when
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(상행역_없음);
+
+		// then
+		노선이_생성_실패된다(생성_응답);
+	}
+
+	@DisplayName("지하철 노선을 등록할 경우 하행역의 아이디를 입력하지 않으면 지하철 노선을 생성할 수 없다.")
+	@Test
+	void createLineWithoutDownStation() {
+		// given
+		LineRequest 하행역_없음 = new LineRequest("2호선", "#FFFFFF", 강남역_아이디, null, 강남역_선릉역_간격);
+
+		// when
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(하행역_없음);
+
+		// then
+		노선이_생성_실패된다(생성_응답);
+	}
+
+	@DisplayName("지하철 노선을 등록할 경우 간격을 입력하지 않으면 지하철 노선을 생성할 수 없다.")
+	@Test
+	void createLineWithoutDistance() {
+		// given
+		LineRequest 간격_없음 = new LineRequest("2호선", "#FFFFFF", 강남역_아이디, 선릉역_아이디, null);
+
+		// when
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(간격_없음);
 
 		// then
 		노선이_생성_실패된다(생성_응답);
