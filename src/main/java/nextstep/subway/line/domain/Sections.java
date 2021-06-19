@@ -151,6 +151,10 @@ public class Sections {
 		Section sectionWithSameUpStation = getCommonUpStationSection(targetStation);
 		Section sectionWithSameDownStation = getCommonDownStationSection(targetStation);
 
+		if (sectionWithSameUpStation == null && sectionWithSameDownStation == null) {
+			throw new NoSuchElementException("Request station is not on the line");
+		}
+
 		if (sectionWithSameUpStation != null && sectionWithSameDownStation != null) {
 			sections.add(new Section(sectionWithSameUpStation.getLine(),
 				sectionWithSameDownStation.getUpStation(),
