@@ -9,11 +9,15 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Embeddable
 @Transactional
 public class Sections {
-	@OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private static final int REMAINED_SECTION_INDEX = 0;
+	private static final int REMOVAL_SECTION_INDEX = 1;
+
+	@OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
 	public List<Station> getStationsInSections() {
@@ -63,5 +67,15 @@ public class Sections {
 				.ifPresent(existedSection -> existedSection.updateDownStation(section.getUpStation(), section.getDistance()));
 
 		sections.add(section);
+	}
+
+	public void deleteSectionByStationId(Long stationId) {
+		List<Section> sectionsIncludingStation = sections.stream().filter(section -> section.doesIncludeStation(stationId))
+				.collect(Collectors.toList());
+
+		Section removalSection = sectionsIncludingStation.get(REMOVAL_SECTION_INDEX);
+		Station remainedStation = removalSection.getRemainedStation(stationId);
+		sectionsIncludingStation.get(REMAINED_SECTION_INDEX).joinSection(stationId, remainedStation, removalSection.getDistance());
+		sections.remove(removalSection);
 	}
 }

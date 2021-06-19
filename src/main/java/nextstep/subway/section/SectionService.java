@@ -49,4 +49,10 @@ public class SectionService {
 			throw new InvalidSectionException();
 		}
 	}
+
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		Line line = lineRepository.findById(lineId)
+				.orElseThrow(() -> new LineNotFoundException(lineId));
+		line.deleteSectionByStationId(stationId);
+	}
 }

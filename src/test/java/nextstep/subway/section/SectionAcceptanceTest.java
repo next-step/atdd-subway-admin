@@ -170,4 +170,36 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// then
 		노선에_역이_등록되지_않는다(response);
 	}
+
+	@Test
+	@DisplayName("")
+	void removeSectionTest() {
+		// given
+		StationResponse 양재역 = StationAcceptanceTest.지하철역을_생성한다("양재역").as(StationResponse.class);
+		Map<String, String> sectionParams = new HashMap<>();
+		sectionParams.put("upStationId", 강남역.getId().toString());
+		sectionParams.put("downStationId", 양재역.getId().toString());
+		sectionParams.put("distance", "3");
+		지하철_노선에_새로운_구간_등록_요청(신분당선.header("Location"), sectionParams);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선.header("Location"), 양재역.getId());
+
+		// then
+		노선에_제거된_역이_조회되지않는다(response, 양재역.getName());
+	}
+
+	private ExtractableResponse<Response> 지하철_노선에_구간_제거_요청(String resourcePath, Long stationId) {
+		return RestAssured.given().log().all()
+				.when()
+				.delete(resourcePath + "/sections?stationId=" + stationId)
+				.then().log().all()
+				.extract();
+	}
+
+	private void 노선에_제거된_역이_조회되지않는다(ExtractableResponse<Response> response, String station) {
+		ExtractableResponse<Response> 신분당선_조회_결과 = LineAcceptanceTest.특정_노선을_조회한다(신분당선.header("Location"));
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(신분당선_조회_결과.jsonPath().getList("stations.name")).doesNotContain(station);
+	}
 }
