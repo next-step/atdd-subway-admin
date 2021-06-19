@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Getter @NoArgsConstructor
@@ -41,9 +42,10 @@ public class Section extends BaseEntity {
     }
 
     public void registerLine(Line line) {
-        this.line = line;
-
-        line.appendSection(this);
+        Optional.ofNullable(line).ifPresent(l -> {
+            this.line = line;
+            l.appendSection(this);
+        });
     }
 
     protected boolean isBefore(Section section) {
@@ -52,6 +54,10 @@ public class Section extends BaseEntity {
 
     protected boolean isAfter(Section section) {
         return Objects.equals(upStation, section.getDownStation());
+    }
+
+    protected boolean contains(Station station) {
+        return Objects.equals(upStation, station) || Objects.equals(downStation, station);
     }
 
     protected boolean hasSameUpStation(Section section) {
@@ -81,5 +87,10 @@ public class Section extends BaseEntity {
         }
 
         this.distance = distance;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s - %s (%s)", upStation, downStation, distance);
     }
 }
