@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,5 +27,9 @@ public class LineService {
 
     public List<LineResponse> findAll() {
         return lineRepository.findAll().stream().map(line->LineResponse.of(line)).collect(Collectors.toList());
+    }
+
+    public Optional<Line> findById(Long id) {
+        return lineRepository.findById(id);
     }
 }
