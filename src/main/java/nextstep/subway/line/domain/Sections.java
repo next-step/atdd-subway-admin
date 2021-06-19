@@ -16,7 +16,9 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-	public static final int SIZE_ZERO = 0;
+	private static final int SIZE_ZERO = 0;
+	private static final int MINIMUM_SECTION_COUNT = 1;
+
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	List<Section> sections = new ArrayList<>();
 
@@ -148,6 +150,10 @@ public class Sections {
 	}
 
 	public void remove(Station targetStation) {
+		if (sections.size() <= MINIMUM_SECTION_COUNT) {
+			throw new IllegalArgumentException("Section must be over at leat two count in line");
+		}
+
 		Section sectionWithSameUpStation = getCommonUpStationSection(targetStation);
 		Section sectionWithSameDownStation = getCommonDownStationSection(targetStation);
 
