@@ -24,6 +24,7 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
+
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
@@ -33,7 +34,7 @@ public class LineController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
@@ -44,10 +45,9 @@ public class LineController {
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        LineResponse line = lineService.findLineById(id);
-        return ResponseEntity.ok().body(line);
+        return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

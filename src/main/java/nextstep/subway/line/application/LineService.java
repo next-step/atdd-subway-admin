@@ -1,10 +1,13 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.exception.NotFoundLineIdException;
+import nextstep.subway.exception.NotFoundStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,29 +18,32 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NotFoundStationException::new);
+        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFoundStationException::new);
+
+        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
 
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(NotFoundLineIdException::new);
-
-        return LineResponse.of(line);
+        return lineRepository.findById(id)
+                .map(LineResponse::of)
+                .orElseThrow(NotFoundLineIdException::new);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
-        List<Line> lines = lineRepository.findAll();
-
-        return lines.stream()
+        return lineRepository.findAll().stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
