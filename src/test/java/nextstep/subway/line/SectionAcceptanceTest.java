@@ -8,9 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -192,17 +190,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 두_역_사이의_역을_삭제_요청
-		ExtractableResponse<Response> deleteResponse = RestAssured
-			.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.delete("/lines/" + lineId + "/sections?stationId=" + stationId3)
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> removeResponse = SectionAcceptanceMethod.removeStation(lineId, stationId3);
 
 		// then
 		// 지하철_역_삭제_됨
-		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(removeResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		// 지하철_삭제_조회
 		ExtractableResponse<Response> findResponse = LineAcceptanceMethod.findLine(lineId);
 		assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getStations()
@@ -223,17 +215,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 상행_종점_역을_삭제_요청
-		ExtractableResponse<Response> deleteResponse = RestAssured
-			.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.delete("/lines/" + lineId + "/sections?stationId=" + stationId1)
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> removeResponse = SectionAcceptanceMethod.removeStation(lineId, stationId1);
 
 		// then
 		// 지하철_역_삭제_됨
-		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(removeResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		// 지하철_삭제_조회
 		ExtractableResponse<Response> findResponse = LineAcceptanceMethod.findLine(lineId);
 		assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getStations()
@@ -254,17 +240,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 하행_종점_역을_삭제_요청
-		ExtractableResponse<Response> deleteResponse = RestAssured
-			.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.delete("/lines/" + lineId + "/sections?stationId=" + stationId2)
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> removeResponse = SectionAcceptanceMethod.removeStation(lineId, stationId2);
 
 		// then
 		// 지하철_역_삭제_됨
-		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(removeResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		// 지하철_삭제_조회
 		ExtractableResponse<Response> findResponse = LineAcceptanceMethod.findLine(lineId);
 		assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getStations()
@@ -288,17 +268,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 다른_역을_삭제_요청
-		ExtractableResponse<Response> deleteResponse = RestAssured
-			.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.delete("/lines/" + lineId + "/sections?stationId=" + stationId4)
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> removeResponse = SectionAcceptanceMethod.removeStation(lineId, stationId4);
 
 		// then
 		// 에러 발생
-		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(removeResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
 	@DisplayName("구간이 하나일 때 상행 종점 혹은 하행 종점을 삭제한다.")
@@ -310,26 +284,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 상행_종점_삭제_요청
-		ExtractableResponse<Response> deleteResponse1 = RestAssured
-			.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.delete("/lines/" + lineId + "/sections?stationId=" + stationId1)
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> removeResponse1 = SectionAcceptanceMethod.removeStation(lineId, stationId1);
 
 		// 하행_종점_삭제_요청
-		ExtractableResponse<Response> deleteResponse2 = RestAssured
-			.given().log().all()
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.delete("/lines/" + lineId + "/sections?stationId=" + stationId2)
-			.then().log().all()
-			.extract();
+		ExtractableResponse<Response> removeResponse2 = SectionAcceptanceMethod.removeStation(lineId, stationId2);
 
 		// then
 		// 에러_발생
-		assertThat(deleteResponse1.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(deleteResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(removeResponse1.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(removeResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 }
