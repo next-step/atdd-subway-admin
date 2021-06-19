@@ -22,7 +22,7 @@ public class Sections {
 
 	public void add(Section candidate) {
 		if (isSectionsEmpty()) {
-			sections.add(candidate);
+			addSection(candidate);
 
 			return;
 		}
@@ -43,7 +43,7 @@ public class Sections {
 			return;
 		}
 
-		sections.add(candidate);
+		addSection(candidate);
 	}
 
 	private boolean isSectionsEmpty() {
@@ -55,8 +55,9 @@ public class Sections {
 	}
 
 	private void addSectionWithCommonDownStation(Section candidate, Section commonDownStationSection) {
-		rearrangeSections(commonDownStationSection, candidate, commonDownStationSection.getUpStation(),
+		modifyOldSection(commonDownStationSection, candidate, commonDownStationSection.getUpStation(),
 			candidate.getUpStation());
+		addSection(candidate);
 	}
 
 	private Section getCommonDownStationSection(Section candidate) {
@@ -66,8 +67,13 @@ public class Sections {
 	}
 
 	private void addSectionWithCommonUpStation(Section candidate, Section commonUpStationSection) {
-		rearrangeSections(commonUpStationSection, candidate, candidate.getDownStation(),
+		modifyOldSection(commonUpStationSection, candidate, candidate.getDownStation(),
 			commonUpStationSection.getDownStation());
+		addSection(candidate);
+	}
+
+	private void addSection(Section candidate) {
+		sections.add(candidate);
 	}
 
 	private Section getCommonUpStationSection(Section candidate) {
@@ -76,15 +82,13 @@ public class Sections {
 			.findFirst().orElse(null);
 	}
 
-	private void rearrangeSections(Section targetSection, Section candidate, Station upStation, Station downStation) {
+	private void modifyOldSection(Section targetSection, Section candidate, Station upStation, Station downStation) {
 		if (targetSection.getDistance() - candidate.getDistance() <= 0) {
 			throw new IllegalArgumentException("The distance between new section must be less than target section");
 		}
 
-		sections.add(
-			new Section(targetSection.getLine(), upStation, downStation,
-				targetSection.getDistance() - candidate.getDistance()));
-		sections.add(candidate);
+		addSection(new Section(targetSection.getLine(), upStation, downStation,
+			targetSection.getDistance() - candidate.getDistance()));
 		sections.remove(targetSection);
 	}
 
