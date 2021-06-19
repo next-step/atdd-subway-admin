@@ -202,7 +202,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		// 지하철_역_삭제_됨
-		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		// 지하철_삭제_조회
 		ExtractableResponse<Response> findResponse = LineAcceptanceMethod.findLine(lineId);
 		assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getStations()
@@ -233,7 +233,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		// 지하철_역_삭제_됨
-		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		// 지하철_삭제_조회
 		ExtractableResponse<Response> findResponse = LineAcceptanceMethod.findLine(lineId);
 		assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getStations()
@@ -264,7 +264,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		// 지하철_역_삭제_됨
-		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 		// 지하철_삭제_조회
 		ExtractableResponse<Response> findResponse = LineAcceptanceMethod.findLine(lineId);
 		assertThat(findResponse.jsonPath().getObject(".", LineResponse.class).getStations()
@@ -298,7 +298,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		// 에러 발생
-		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	@DisplayName("구간이 하나일 때 상행 종점 혹은 하행 종점을 삭제한다.")

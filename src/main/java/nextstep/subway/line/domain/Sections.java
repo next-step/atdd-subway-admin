@@ -29,14 +29,14 @@ public class Sections {
 
 		validateCandidate(candidate);
 
-		Section commonUpStationSection = getCommonUpStationSection(candidate);
+		Section commonUpStationSection = getCommonUpStationSection(candidate.getUpStation());
 		if (isCommonStationExist(commonUpStationSection)) {
 			addSectionWithCommonUpStation(candidate, commonUpStationSection);
 
 			return;
 		}
 
-		Section commonDownStationSection = getCommonDownStationSection(candidate);
+		Section commonDownStationSection = getCommonDownStationSection(candidate.getDownStation());
 		if (isCommonStationExist(commonDownStationSection)) {
 			addSectionWithCommonDownStation(candidate, commonDownStationSection);
 
@@ -60,9 +60,9 @@ public class Sections {
 		addSection(candidate);
 	}
 
-	private Section getCommonDownStationSection(Section candidate) {
+	private Section getCommonDownStationSection(Station downStation) {
 		return sections.stream()
-			.filter(x -> x.hasSameDownStation(candidate))
+			.filter(section -> section.hasSameDownStation(downStation))
 			.findFirst().orElse(null);
 	}
 
@@ -76,9 +76,9 @@ public class Sections {
 		sections.add(candidate);
 	}
 
-	private Section getCommonUpStationSection(Section candidate) {
+	private Section getCommonUpStationSection(Station upStation) {
 		return sections.stream()
-			.filter(x -> x.hasSameUpStation(candidate))
+			.filter(section -> section.hasSameUpStation(upStation))
 			.findFirst().orElse(null);
 	}
 
@@ -145,5 +145,20 @@ public class Sections {
 			.filter(x -> !order.containsValue(x))
 			.findFirst()
 			.orElseThrow(() -> new NoSuchElementException("There is no start point"));
+	}
+
+	public void remove(Station targetStation) {
+		Section sectionWithSameUpStation = getCommonUpStationSection(targetStation);
+		Section sectionWithSameDownStation = getCommonDownStationSection(targetStation);
+
+		if (sectionWithSameUpStation != null && sectionWithSameDownStation != null) {
+			sections.add(new Section(sectionWithSameUpStation.getLine(),
+				sectionWithSameDownStation.getUpStation(),
+				sectionWithSameUpStation.getDownStation(),
+				sectionWithSameUpStation.getDistance() + sectionWithSameDownStation.getDistance()));
+		}
+
+		sections.remove(sectionWithSameUpStation);
+		sections.remove(sectionWithSameDownStation);
 	}
 }

@@ -66,11 +66,11 @@ public class Section extends BaseEntity {
 		this.line = line;
 	}
 
-	public boolean hasSameUpStation(Section section) {
-		return this.upStation.equals(section.getUpStation());
+	public boolean hasSameUpStation(Station station) {
+		return this.upStation.equals(station);
 	}
 
-	public boolean hasSameDownStation(Section section) {
-		return this.downStation.equals(section.getDownStation());
+	public boolean hasSameDownStation(Station station) {
+		return this.downStation.equals(station);
 	}
 }

@@ -82,4 +82,10 @@ public class LineService {
 	private Line getLine(Long id) {
 		return lines.findById(id).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
 	}
+
+	public void removeStation(Long lineId, Long stationId) {
+		Line line = getLine(lineId);
+		Station deleteStation = getStation(stationId);
+		line.remove(deleteStation);
+	}
 }
