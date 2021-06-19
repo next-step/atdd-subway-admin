@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import nextstep.subway.exception.ConflictException;
 import nextstep.subway.exception.NotExistLineException;
+import nextstep.subway.exception.NotExistStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -45,6 +46,14 @@ class LineServiceTest {
         assertThat(response.getColor()).isEqualTo("bg-red-600");
         assertThat(response.getName()).isEqualTo("신분당선");
         assertThat(response.getStations().size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName(value = "Line을 저장할 경우 station이 없다면, NotExistStationException을 일으킨다")
+    void errorNotExistStation() {
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        assertThrows(NotExistStationException.class,
+            () -> lineService.saveLine(request));
     }
 
     @Test

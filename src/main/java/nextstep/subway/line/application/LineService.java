@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.exception.ConflictException;
 import nextstep.subway.exception.NotExistLineException;
+import nextstep.subway.exception.NotExistStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
@@ -45,7 +46,7 @@ public class LineService {
 
     private Station findStationBy(Long id) {
         return stationRepository.findById(id).orElseThrow(
-            NotExistLineException::new
+            NotExistStationException::new
         );
     }
 
