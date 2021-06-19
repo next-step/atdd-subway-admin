@@ -3,30 +3,36 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import javax.print.attribute.standard.Media;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+//    @BeforeEach
+//    public void setup() {
+//        String name = "9호선";
+//        String color = "빨강";
+//        ExtractableResponse<Response> response = createLine(name, color);
+//    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
         // 지하철_노선_생성_요청
         String name = "1호선";
-        String color = "빨간색";
+        String color = "빨강";
         ExtractableResponse<Response> response = createLine(name, color);
 
         // then
@@ -84,9 +90,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        Line line1 = createLine("1호선","빨강").body().jsonPath().getObject("$",Line.class);
-        Line line2 = createLine("2호선","파랑").body().jsonPath().getObject("$",Line.class);
-        Line line3 = createLine("3호선","초록").body().jsonPath().getObject("$",Line.class);
+        LineResponse line1 = createLine("1호선","빨강").body().jsonPath().getObject("$",LineResponse.class);
+        LineResponse line2 = createLine("2호선","파랑").body().jsonPath().getObject("$",LineResponse.class);
+        LineResponse line3 = createLine("3호선","초록").body().jsonPath().getObject("$",LineResponse.class);
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -98,7 +104,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Line> array = response.body().jsonPath().getList(".", Line.class);
+        List<LineResponse> array = response.body().jsonPath().getList(".", LineResponse.class);
         assertThat(array).hasSize(3);
         assertThat(array).contains(line1,line2,line3);
     }
