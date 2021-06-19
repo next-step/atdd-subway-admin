@@ -88,7 +88,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    private ExtractableResponse<Response> 지하철_역_생성(StationRequest station) {
+    private static ExtractableResponse<Response> 지하철_역_생성(StationRequest station) {
         return RestAssured.given().log().all()
                 .body(station)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -114,7 +114,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public String 지하철_역_생성되어_있음(String stationName) {
+    public static String 지하철_역_생성되어_있음(String stationName) {
         return 지하철_역_생성(new StationRequest(stationName)).header("Location");
     }
 }

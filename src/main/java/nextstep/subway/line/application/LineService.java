@@ -1,17 +1,20 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.Distance;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -52,5 +55,15 @@ public class LineService {
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public SectionResponse addSection(Long lineId, SectionRequest request) {
+        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NotFoundException::new);
+        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFoundException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
+        Section addSection = line.toSection(upStation, downStation, new Distance(request.getDistance()));
+        lineRepository.save(line);
+
+        return SectionResponse.of(addSection);
     }
 }

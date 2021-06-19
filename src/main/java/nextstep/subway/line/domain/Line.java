@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -54,5 +55,11 @@ public class Line extends BaseEntity {
 
     public List<Station> stations() {
         return sections.stations();
+    }
+
+    public Section toSection(Station upStation, Station downStation, Distance distance) {
+        Section section = new Section(upStation, downStation, distance, this);
+        sections.toSection(section);
+        return section;
     }
 }
