@@ -22,10 +22,6 @@ public class LineService {
 	@Autowired
 	private SectionService sectionService;
 
-	public LineService(LineRepository lineRepository) {
-		this.lineRepository = lineRepository;
-	}
-
 	public LineResponse saveLine(LineRequest request) {
 		Optional<Line> findLine = lineRepository.findByName(request.getName());
 		if (findLine.isPresent()) {

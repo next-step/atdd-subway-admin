@@ -12,6 +12,7 @@ import static javax.persistence.FetchType.LAZY;
  */
 @Entity
 public class Section extends BaseEntity {
+	private static final String DISTANCE_VALID_EXCEPTION = "구간길이정보는 1이상이여합니다.";;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -39,6 +40,9 @@ public class Section extends BaseEntity {
 	}
 
 	public static Section create(Station upStation, Station downStation, int distance) {
+		if (distance < 1) {
+			throw new IllegalArgumentException(DISTANCE_VALID_EXCEPTION);
+		}
 		return new Section(upStation, downStation, distance);
 	}
 
