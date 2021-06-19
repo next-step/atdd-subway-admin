@@ -138,15 +138,13 @@ public class Line {
 
 ![frontend-section-management-image](../documents/step2/frontend-section-management-image.png)
 
-### 1.2. 기능 요구사항 정리 (**_수정할 것_**)
+### 1.2. 기능 요구사항 정리
 
 |구분 | 상세 |구현방법     |
 |:----:  |:------  |:---------|
-|노선 관리|• 지하철 노선 생성|• `LineAcceptanceTest` 작성<br>• 원시값 포장<br>• `Entity` 변경<br>• `LineGroup` 일급콜렉션 생성<br>• `LineService` 생성 기능 수정<br>• `LineController` 생성 기능 수정|
-|노선 관리|• 지하철 노선 목록 조회|• `LineAcceptanceTest` 작성<br>• `LineService` 목록 조회기능 수정<br>• `LineController` 목록 조회 기능|
-|노선 관리|• 지하철 노선 조회|• `LineAcceptanceTest` 작성<br>• `LineService` 조회 기능<br>• `LineController` 조회 기능|
-|노선 관리|• 지하철 노선 수정|• `LineAcceptanceTest` 작성<br>• `LineService` 수정 기능<br>• `LineController` 수정 기능|
-|노선 관리|• 지하철 노선 삭제|• `LineAcceptanceTest` 작성<br>• `LineService` 삭제 기능<br>• `LineController` 삭제 기능|
+|노선 관리|• 지하철 노선 생성 수정|• `LineAcceptanceTest` 작성<br>• 상행역 추가<br>• 하행역 추가<br>• 간격 추가|
+|노선 관리|• 지하철 노선 목록 조회|• `LineAcceptanceTest` 작성<br>• 상행역과 하행역 비교 추가|
+|노선 관리|• 지하철 노선 조회|• `LineAcceptanceTest` 작성<br>• 상행역과 하행역 비교 추가|
 
 ### 1.3. 프로그래밍 요구사항
 
@@ -238,12 +236,25 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
 - [x] 2.학습
     - [x] 2-1.RestAssured 학습 : [[Usage Guide]](https://github.com/rest-assured/rest-assured/wiki/Usage#examples)
     - [x] 2-2.LiveTemplates - IntelliJ
-- [ ] 3.분석 및 설계
+- [x] 3.분석 및 설계
     - [x] 3-1.step02.md 초안 작성
-    - [ ] 3-2.ATDD 작성
+    - [x] 3-2.ATDD 작성
 - [ ] 4.구현
-    - [ ] 4-1.
-        - [ ] 4-1-1.
+    - [ ] 4-1.지하철노선 생성 수정
+        - [ ] 4-1-1.`LineAcceptanceTest` 수정
+        - [ ] 4-1-2.`LineServiceTest` 수정
+        - [ ] 4-1-3.`LineRepositoryTest` 수정
+        - [ ] 4-1-4.`LineTest` 수정
+    - [ ] 4-2.지하철노선 목록조회 수정
+        - [ ] 4-2-1.`LineAcceptanceTest` 수정
+        - [ ] 4-2-2.`LineServiceTest` 수정
+        - [ ] 4-2-3.`LineRepositoryTest` 수정
+        - [ ] 4-2-4.`LineTest` 수정
+    - [ ] 4-3.지하철노선 조회 수정
+        - [ ] 4-3-1.`LineAcceptanceTest` 수정
+        - [ ] 4-3-2.`LineServiceTest` 수정
+        - [ ] 4-3-3.`LineRepositoryTest` 수정
+        - [ ] 4-3-4.`LineTest` 수정
 - [ ] 5.테스트
     - [ ] 5-1.Gradle build Success 확인
     - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)
