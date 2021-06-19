@@ -265,14 +265,14 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 5-3-1.핵심 단위 로직 테스트
     - [x] 5-4.인수 테스트 확인
     - [x] 5-5.UI 테스트 확인
-- [ ] 6.인수인계
-    - [ ] 6-1.소감 및 피드백 정리
-        - [ ] 6-1-1.느낀점 & 배운점 작성
-        - [ ] 6-1-2.피드백 요청 정리
-    - [ ] 6-2.코드리뷰 요청 및 피드백
-        - [ ] 6-1-1.step2를 gregolee/atdd-subway-admin로 push : `git push origin step2`
-        - [ ] 6-1-2.pull request(PR) 작성
-    - [ ] 6-3.Slack을 통해 merge가 되는지 확인한 후에 미션 종료
+- [x] 6.인수인계
+    - [x] 6-1.소감 및 피드백 정리
+        - [x] 6-1-1.느낀점 & 배운점 작성
+        - [x] 6-1-2.피드백 요청 정리
+    - [x] 6-2.코드리뷰 요청 및 피드백
+        - [x] 6-1-1.step2를 gregolee/atdd-subway-admin로 push : `git push origin step2`
+        - [x] 6-1-2.pull request(PR) 작성
+    - [x] 6-3.Slack을 통해 merge가 되는지 확인한 후에 미션 종료
 
 ### 2.3. ATDD 작성
 
@@ -285,15 +285,16 @@ ATDD 작성 [Markdown 보기](./atdd.md)
 #### 3.1.1. 느낀점
 
 - 하향식 ATDD
-  - 도메인을 모른다는 전제로 접근하는데, 정말 어려웠습니다.
-  - ATDD 리팩토링 순서 : acceptanceTest -> ServiceTest -> RepositoryTest -> DomainTest
-  - 도메인의 테스트를 누락하는 경우가 생기게끔 프로덕션 코드를 수정하는 경우가 발생해서 TDD가 제대로 진행되지 않았습니다.
-  - TDD 후 하향식으로 수정하는 연습이 많이 필요할 것 같습니다. 
+    - 도메인을 모른다는 전제로 접근하는데, 정말 어려웠습니다.
+    - ATDD 리팩토링 순서 : acceptanceTest -> ServiceTest -> RepositoryTest -> DomainTest
+    - 도메인의 테스트를 누락하는 경우가 생기게끔 프로덕션 코드를 수정하는 경우가 발생해서 TDD가 제대로 진행되지 않았습니다.
+    - TDD 후 하향식으로 수정하는 연습이 많이 필요할 것 같습니다. 
 
 #### 3.1.2. 배운점
 
-- 
+- 하향식, 상향식을 고집할 필요는 없다.
+    - 경우에 따라 유동적으로 하향식, 상향식을 번갈아 해야한다.
 
 ### 3.2. 피드백 요청
 
-- 
+- 피드백 요청 드릴 사항은 없습니다.
