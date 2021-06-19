@@ -166,7 +166,7 @@ public class Sections {
 
 	private void validateRemovable() {
 		if (sections.size() <= MINIMUM_SECTION_COUNT) {
-			throw new IllegalArgumentException("Section must be over at leat two count in line");
+			throw new IllegalArgumentException("Section must be over at least two count in line");
 		}
 	}
 
