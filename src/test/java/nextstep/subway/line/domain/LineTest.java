@@ -19,8 +19,8 @@ class LineTest {
         Station 판교역 = new Station("판교역");
         Station 이매역 = new Station("이매역");
 
-        Section 상행 = new Section(SectionStatus.UP, 판교역, line);
-        Section 하행 = new Section(SectionStatus.DOWN, 이매역, line);
+        Section 상행 = new Section(SectionStatus.UP, 판교역);
+        Section 하행 = new Section(SectionStatus.DOWN, 이매역);
 
         //when
         Line addedSectionLine = line.addUpSectionAndDownSection(상행, 하행);

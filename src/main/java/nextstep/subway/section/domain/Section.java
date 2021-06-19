@@ -27,9 +27,12 @@ public class Section extends BaseEntity {
     public Section() {
     }
 
-    public Section(SectionStatus status, Station station, Line line) {
+    public Section(SectionStatus status, Station station) {
         this.status = status;
         this.station = station;
+    }
+
+    public void addLine(Line line) {
         this.line = line;
     }
 

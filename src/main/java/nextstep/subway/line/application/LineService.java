@@ -7,7 +7,6 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.domain.SectionStatus;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
@@ -21,27 +20,25 @@ import java.util.List;
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
     private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
         this.stationService = stationService;
     }
 
     public LineResponse save(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        Section upSection = createSectionByFoundStation(request.getUpStationId(), SectionStatus.UP);
+        Section downSection = createSectionByFoundStation(request.getUpStationId(), SectionStatus.DOWN);
 
-        Section upSection = saveSectionByFoundStation(request.getUpStationId(), persistLine, SectionStatus.UP);
-        Section downSection = saveSectionByFoundStation(request.getUpStationId(), persistLine, SectionStatus.DOWN);
+        Line persistLine = lineRepository.save(request.toLine());
 
         return LineResponse.of(persistLine.addUpSectionAndDownSection(upSection, downSection));
     }
 
-    private Section saveSectionByFoundStation(long stationId, Line persistLine, SectionStatus status) {
+    private Section createSectionByFoundStation(long stationId, SectionStatus status) {
         Station upStation = stationService.findById(stationId);
-        return sectionRepository.save(new Section(status, upStation, persistLine));
+        return new Section(status, upStation);
     }
 
     public LinesResponse findAll() {
