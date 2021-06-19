@@ -90,8 +90,8 @@ public class Sections {
 
 	private void validateCandidate(Section candidate) {
 		Set<Station> stations = getDistinctStations();
-		validateAlreadyExistsTwoStations(candidate, stations);
-		validateExistsConnectedStationToOldLine(candidate, stations);
+		validateTwoStationsAlreadyExists(candidate, stations);
+		validateConnectedStationToOldLineExists(candidate, stations);
 	}
 
 	private Set<Station> getDistinctStations() {
@@ -101,13 +101,13 @@ public class Sections {
 			.collect(Collectors.toSet());
 	}
 
-	private void validateExistsConnectedStationToOldLine(Section candidate, Set<Station> stations) {
+	private void validateConnectedStationToOldLineExists(Section candidate, Set<Station> stations) {
 		if (!stations.contains(candidate.getUpStation()) && !stations.contains(candidate.getDownStation())) {
 			throw new NoSuchElementException("There is no such section");
 		}
 	}
 
-	private void validateAlreadyExistsTwoStations(Section candidate, Set<Station> stations) {
+	private void validateTwoStationsAlreadyExists(Section candidate, Set<Station> stations) {
 		if (stations.contains(candidate.getUpStation()) && stations.contains(candidate.getDownStation())) {
 			throw new IllegalArgumentException("Each two stations are already in the line");
 		}
