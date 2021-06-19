@@ -1,13 +1,13 @@
 package nextstep.subway.line.application;
 
+import static nextstep.subway.common.ErrorMessage.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.line.domain.Line;
@@ -18,8 +18,6 @@ import nextstep.subway.line.dto.LineResponse;
 @Service
 @Transactional
 public class LineService {
-    public static final String NOT_FOUND_LINE = "노선을 찾을 수 없습니다.";
-    public static final String NOT_FOUND_STATION = "존재하지 않는 역입니다";
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
@@ -55,7 +53,7 @@ public class LineService {
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line line = getLine(id);
-        line.updateNameColor(lineRequest.toLine());
+        line.updateNameColor(lineRequest.getName(), lineRequest.getColor());
 
         return LineResponse.of(line);
     }

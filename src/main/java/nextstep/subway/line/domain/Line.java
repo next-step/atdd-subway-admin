@@ -1,17 +1,24 @@
 package nextstep.subway.line.domain;
 
-import javax.persistence.*;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
-import java.util.List;
-
 @Entity
 public class Line extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,23 +31,27 @@ public class Line extends BaseEntity {
     @Embedded
     private final Sections sections = new Sections();
 
-    public Line() {
-    }
-
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+    protected Line() {
     }
 
     public Line(LineRequest request, Station upStation, Station downStation) {
         this.name = request.getName();
         this.color = request.getColor();
-        addSection(Section.getInstance(this, upStation, downStation, request.getDistance()));
+        addSection(upStation, downStation, request.getDistance());
     }
 
-    public void updateNameColor(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+    public Section updateAddSection(Station upStation, Station downStation, Distance requestDistance) {
+        sections.updateSection(upStation, downStation, requestDistance);
+        return addSection(upStation, downStation, requestDistance);
+    }
+
+    public Sections sections() {
+        return sections;
+    }
+
+    public void updateNameColor(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public Long getId() {
@@ -55,11 +66,9 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void addSection(Section section) {
+    private Section addSection(Station upStation, Station downStation, Distance requestDistance) {
+        Section section = Section.getInstance(this, upStation, downStation, requestDistance);
         sections.addSection(section);
-    }
-
-    public List<Station> stations() {
-        return sections.getStations();
+        return section;
     }
 }
