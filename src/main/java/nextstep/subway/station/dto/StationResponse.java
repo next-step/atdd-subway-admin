@@ -3,22 +3,21 @@ package nextstep.subway.station.dto;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import nextstep.subway.common.dto.BaseResponse;
 import nextstep.subway.station.domain.Station;
 
-public class StationResponse {
+public class StationResponse extends BaseResponse {
 	private Long id;
 	private String name;
-	private LocalDateTime createdDate;
-	private LocalDateTime modifiedDate;
 
 	protected StationResponse() {
+		super();
 	}
 
 	public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+		super(createdDate,modifiedDate);
 		this.id = id;
 		this.name = name;
-		this.createdDate = createdDate;
-		this.modifiedDate = modifiedDate;
 	}
 
 	public static StationResponse of(Station station) {
@@ -34,14 +33,6 @@ public class StationResponse {
 		return name;
 	}
 
-	public LocalDateTime getCreatedDate() {
-		return createdDate;
-	}
-
-	public LocalDateTime getModifiedDate() {
-		return modifiedDate;
-	}
-
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -51,13 +42,12 @@ public class StationResponse {
 			return false;
 		}
 		StationResponse that = (StationResponse)object;
-		return Objects.equals(id, that.id) && Objects.equals(name, that.name)
-			&& Objects.equals(createdDate, that.createdDate) && Objects.equals(modifiedDate,
-			that.modifiedDate);
+		return Objects.equals(id, that.id)
+			&& Objects.equals(name, that.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, name, createdDate, modifiedDate);
+		return Objects.hash(id, name);
 	}
 }

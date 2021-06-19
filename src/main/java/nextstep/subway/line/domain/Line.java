@@ -9,9 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import nextstep.subway.common.BaseEntity;
-import nextstep.subway.common.vo.Color;
-import nextstep.subway.common.vo.Name;
+import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.common.domain.Color;
+import nextstep.subway.common.domain.Name;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationGroup;
 
@@ -35,9 +35,13 @@ public class Line extends BaseEntity {
 	}
 
 	public Line(String name, String color) {
+		this(name, color, new StationGroup());
+	}
+
+	public Line(String name, String color, StationGroup stationGroup) {
 		this.name = Name.generate(name);
 		this.color = Color.generate(color);
-		this.stations = new StationGroup();
+		this.stations = stationGroup;
 	}
 
 	public void update(Line line) {

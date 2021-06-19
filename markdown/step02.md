@@ -240,11 +240,12 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
     - [x] 3-1.step02.md 초안 작성
     - [x] 3-2.ATDD 작성
 - [ ] 4.구현
-    - [ ] 4-1.지하철노선 생성 수정
-        - [ ] 4-1-1.`LineAcceptanceTest` 수정
-        - [ ] 4-1-2.`LineServiceTest` 수정
-        - [ ] 4-1-3.`LineRepositoryTest` 수정
-        - [ ] 4-1-4.`LineTest` 수정
+    - [x] 4-1.지하철노선 생성 수정
+        - [x] 4-1-1.`LineAcceptanceTest` 수정
+        - [x] 4-1-2.`LineServiceTest` 수정
+        - [x] 4-1-3.`StationServiceTest` 수정
+        - [x] 4-1-4.`LineRepositoryTest` 수정
+        - [x] 4-1-5.`LineTest` 수정
     - [ ] 4-2.지하철노선 목록조회 수정
         - [ ] 4-2-1.`LineAcceptanceTest` 수정
         - [ ] 4-2-2.`LineServiceTest` 수정
@@ -281,7 +282,11 @@ ATDD 작성 [Markdown 보기](./atdd.md)
 
 #### 3.1.1. 느낀점
 
-- 
+- 하향식 ATDD
+  - 도메인을 모른다는 전제로 접근하는데, 정말 어려웠습니다.
+  - ATDD 리팩토링 순서 : acceptanceTest -> ServiceTest -> RepositoryTest -> DomainTest
+  - 도메인의 테스트를 누락하는 경우가 생기게끔 프로덕션 코드를 수정하는 경우가 발생해서 TDD가 제대로 진행되지 않았습니다.
+  - TDD 후 하향식으로 수정하는 연습이 많이 필요할 것 같습니다. 
 
 #### 3.1.2. 배운점
 

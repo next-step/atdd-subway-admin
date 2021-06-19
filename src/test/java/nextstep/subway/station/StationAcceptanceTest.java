@@ -90,7 +90,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createStationWithDuplicateName() {
 		// given
-		지하철_역_등록되어_있음(강남역);
+		지하철_역_등록되어_있음_URI_응답(강남역);
 
 		// when
 		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(강남역);
@@ -103,8 +103,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getStations() {
 		/// given
-		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
-		String 역삼역_응답 = 지하철_역_등록되어_있음(역삼역);
+		String 강남역_응답 = 지하철_역_등록되어_있음_URI_응답(강남역);
+		String 역삼역_응답 = 지하철_역_등록되어_있음_URI_응답(역삼역);
 
 		// when
 		ExtractableResponse<Response> 목록_조회_응답 = 지하철역_목록_조회_요청();
@@ -118,7 +118,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getStation() {
 		/// given
-		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
+		String 강남역_응답 = 지하철_역_등록되어_있음_URI_응답(강남역);
 
 		// when
 		ExtractableResponse<Response> 조회_응답 = 지하철역_조회_요청(강남역_응답);
@@ -145,7 +145,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateStation() {
 		// given
-		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
+		String 강남역_응답 = 지하철_역_등록되어_있음_URI_응답(강남역);
 
 		// when
 		ExtractableResponse<Response> 지하철역_수정_응답 = 지하철역_수정_요청(강남역_응답, 역삼역);
@@ -158,7 +158,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateStationWithNullName() {
 		// given
-		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
+		String 강남역_응답 = 지하철_역_등록되어_있음_URI_응답(강남역);
 		StationRequest 역이름_없음 = new StationRequest(null);
 
 		// when
@@ -172,7 +172,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateStationWithBlankName() {
 		// given
-		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
+		String 강남역_응답 = 지하철_역_등록되어_있음_URI_응답(강남역);
 		StationRequest 역이름_공백 = new StationRequest("");
 
 		// when
@@ -186,7 +186,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateStationWithLongName() {
 		// given
-		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
+		String 강남역_응답 = 지하철_역_등록되어_있음_URI_응답(강남역);
 		String 이백오십육바이트_이름 = "역이름 또는 노선이름 255바이트 넘기려고 지은 이름입니다. 이름이 아닌 것 같지만 이름 맞습니다. "
 			+ "Character Set이 UTF-8로 맞춰서 256 바이트 길이가 딱 맞는 이름입니다. 확인하지 않으셔도 됩니다.";
 		StationRequest 역이름_너무_김 = new StationRequest(이백오십육바이트_이름);
@@ -202,8 +202,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateStationWithDuplicateName() {
 		// given
-		지하철_역_등록되어_있음(강남역);
-		String 역삼역_응답 = 지하철_역_등록되어_있음(역삼역);
+		지하철_역_등록되어_있음_URI_응답(강남역);
+		String 역삼역_응답 = 지하철_역_등록되어_있음_URI_응답(역삼역);
 
 		// when
 		ExtractableResponse<Response> 지하철역_수정_응답 = 지하철역_수정_요청(역삼역_응답, 강남역);
@@ -216,7 +216,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteStation() {
 		// given
-		String 강남역_응답 = 지하철_역_등록되어_있음(강남역);
+		String 강남역_응답 = 지하철_역_등록되어_있음_URI_응답(강남역);
 
 		// when
 		ExtractableResponse<Response> 지하철역_삭제_응답 = 지하철역_삭제_요청(강남역_응답);
@@ -225,7 +225,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		지하철역이_삭제된다(지하철역_삭제_응답);
 	}
 
-	private ExtractableResponse<Response> 지하철역_생성_요청(StationRequest params) {
+	public static ExtractableResponse<Response> 지하철역_생성_요청(StationRequest params) {
 		return RestAssured.given().log().all()
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -249,9 +249,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		assertThat(생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	private String 지하철_역_등록되어_있음(StationRequest 역정보) {
+	private String 지하철_역_등록되어_있음_URI_응답(StationRequest 역정보) {
 		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(역정보);
 		return 생성_응답.header("Location");
+	}
+
+	public static String 지하철_역_등록되어_있음_아이디_응답(StationRequest 역정보) {
+		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(역정보);
+		return 생성_응답.jsonPath().get("id").toString();
 	}
 
 	private void 지하철역이_응답된다(ExtractableResponse<Response> 목록_조회_응답) {

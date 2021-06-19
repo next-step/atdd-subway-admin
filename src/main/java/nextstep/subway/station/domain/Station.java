@@ -8,8 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import nextstep.subway.common.BaseEntity;
-import nextstep.subway.common.vo.Name;
+import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.common.domain.Name;
 
 @Entity
 public class Station extends BaseEntity {

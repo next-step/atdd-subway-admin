@@ -1,9 +1,11 @@
 package nextstep.subway.line.application;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,12 +14,14 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.StationGroup;
 
 @Service
 @Transactional
 public class LineService {
+	@Autowired
+	private StationService stationService;
 	private LineRepository lineRepository;
 
 	public LineService(LineRepository lineRepository) {
@@ -25,8 +29,17 @@ public class LineService {
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		Line persistLine = lineRepository.save(request.toLine());
+		StationGroup stationGroupToAdd = addUpStationAndDownStation(request);
+		Line persistLine = lineRepository.save(request.toLine(stationGroupToAdd));
 		return LineResponse.of(persistLine);
+	}
+
+	private StationGroup addUpStationAndDownStation(LineRequest request) {
+		List<Long> stationIdsToAdd = Arrays.asList(request.getUpStationId(), request.getDownStationId())
+			.stream()
+			.map(Long::parseLong)
+			.collect(Collectors.toList());
+		return stationService.addUpStationAndDownStation(stationIdsToAdd);
 	}
 
 	@Transactional(readOnly = true)

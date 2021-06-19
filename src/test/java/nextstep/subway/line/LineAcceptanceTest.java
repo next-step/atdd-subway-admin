@@ -18,6 +18,9 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -26,11 +29,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	private LineRequest 삼호선_이호선과_같은_색상;
 	private LineRequest 사호선;
 
+	private String 강남역_아이디;
+	private String 선릉역_아이디;
+	private String 고속터미널역_아이디;
+	private String 교대역_아이디;
+	private String 이수역_아이디;
+	private String 사당역_아이디;
+
+	private String 강남역_선릉역_간격;
+	private String 고속터미널역_교대역_간격;
+	private String 이수역_사당역_간격;
+
 	@BeforeEach
 	void 초기화() {
-		이호선 = new LineRequest("2호선", "#FFFFFF");
-		삼호선_이호선과_같은_색상 = new LineRequest("3호선", "#FFFFFF");
-		사호선 = new LineRequest("4호선", "#000000");
+		강남역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("강남역"));
+		선릉역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("선릉역"));
+		고속터미널역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("고속터미널역"));
+		교대역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("교대역"));
+		이수역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("이수역"));
+		사당역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("사당역"));
+
+		강남역_선릉역_간격 = "100";
+		고속터미널역_교대역_간격 = "200";
+		이수역_사당역_간격 = "300";
+
+		이호선 = new LineRequest("2호선", "#FFFFFF", 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
+		삼호선_이호선과_같은_색상 = new LineRequest("3호선", "#FFFFFF", 고속터미널역_아이디, 교대역_아이디, 고속터미널역_교대역_간격);
+		사호선 = new LineRequest("4호선", "#000000", 이수역_아이디, 사당역_아이디, 이수역_사당역_간격);
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
@@ -50,7 +75,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineWithNullName() {
 		// given
-		LineRequest 노선이름_없음 = new LineRequest(null, "#FFFFFF");
+		LineRequest 노선이름_없음 = new LineRequest(null, "#FFFFFF", 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 
 		// when
 		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(노선이름_없음);
@@ -63,7 +88,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineWithBlankName() {
 		// given
-		LineRequest 노선이름_공백 = new LineRequest("", "#FFFFFF");
+		LineRequest 노선이름_공백 = new LineRequest("", "#FFFFFF", 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 
 		// when
 		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(노선이름_공백);
@@ -78,7 +103,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// given
 		String 이백오십육바이트_이름 = "역이름 또는 노선이름 255바이트 넘기려고 지은 이름입니다. 이름이 아닌 것 같지만 이름 맞습니다. "
 			+ "Character Set이 UTF-8로 맞춰서 256 바이트 길이가 딱 맞는 이름입니다. 확인하지 않으셔도 됩니다.";
-		LineRequest 노선이름_너무_김 = new LineRequest(이백오십육바이트_이름, "#FFFFFF");
+		LineRequest 노선이름_너무_김 = new LineRequest(이백오십육바이트_이름, "#FFFFFF", 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 
 		// when
 		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(노선이름_너무_김);
@@ -91,7 +116,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineWithNullColor() {
 		// given
-		LineRequest 색상_없음 = new LineRequest("1호선", null);
+		LineRequest 색상_없음 = new LineRequest("1호선", null, 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 
 		// when
 		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(색상_없음);
@@ -104,7 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineWithBlankColor() {
 		// given
-		LineRequest 색상_공백 = new LineRequest("1호선", "");
+		LineRequest 색상_공백 = new LineRequest("1호선", "", 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 
 		// when
 		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(색상_공백);
@@ -119,7 +144,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// given
 		String 이백오십육바이트_색상 = "색상 255바이트 넘기려고 지은 색상입니다. 색상이 아닌 것 같지만 색상 맞습니다. "
 			+ "Character Set이 UTF-8로 맞춰서 256 바이트 길이가 딱 맞는 색상입니다. 색상들의 길이는 확인하지 않으셔도 됩니다.";
-		LineRequest 색상_너무_김 = new LineRequest("1호선", 이백오십육바이트_색상);
+		LineRequest 색상_너무_김 = new LineRequest("1호선", 이백오십육바이트_색상, 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 
 		// when
 		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(색상_너무_김);
@@ -357,11 +382,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(생성_응답.header("Location")).isNotBlank();
 	}
 
-	private void 노선_정보가_동일하다(LineRequest 역정보, ExtractableResponse<Response> 생성_응답) {
+	private void 노선_정보가_동일하다(LineRequest 노선정보, ExtractableResponse<Response> 생성_응답) {
 		LineResponse 생성_응답_정보 = 생성_응답.jsonPath().getObject(".", LineResponse.class);
-		assertThat(역정보.getName()).isEqualTo(생성_응답_정보.getName());
-		assertThat(역정보.getColor()).isEqualTo(생성_응답_정보.getColor());
+		assertThat(노선정보.getName()).isEqualTo(생성_응답_정보.getName());
+		assertThat(노선정보.getColor()).isEqualTo(생성_응답_정보.getColor());
+		노선에_역정보들_포함_및_순서가_일치한다(노선정보, 생성_응답);
+	}
 
+	private void 노선에_역정보들_포함_및_순서가_일치한다(LineRequest 노선정보, ExtractableResponse<Response> 생성_응답) {
+		List<String> 입력된_역_아이디들 = Arrays.asList(노선정보.getUpStationId(), 노선정보.getDownStationId());
+		List<String> 응답된_역_아이디들 = 생성_응답.jsonPath().getList("stations", StationResponse.class).stream()
+			.map(역정보 -> 역정보.getId().toString())
+			.collect(Collectors.toList());
+		assertThat(응답된_역_아이디들).containsSequence(입력된_역_아이디들);
 	}
 
 	private void 노선이_생성_실패된다(ExtractableResponse<Response> 생성_응답) {
