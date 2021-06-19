@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +20,21 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping
-    public ResponseEntity lines() {
+    public ResponseEntity<List<LineResponse>> lines() {
         List<LineResponse> lines = lineService.findAll();
         return ResponseEntity.ok(lines);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> line(@PathVariable Long id) {
+        Line line = lineService.findById(id)
+                .orElseThrow(()->new IllegalArgumentException("invalid " + id));
+        return ResponseEntity.ok(LineResponse.of(line));
     }
 }
