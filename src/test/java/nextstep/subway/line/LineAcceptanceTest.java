@@ -4,6 +4,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.dto.StationRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,30 +17,29 @@ import static nextstep.subway.station.StationStepTest.지하철_역_등록되어
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    public static final LineRequest TEST_FIRST_LINE = new LineRequest("1호선", "red");
-    public static final LineRequest TEST_SECOND_LINE = new LineRequest("2호선", "blue");
+    public LineRequest testFirstLine;
+    public LineRequest testSecondLine;
 
-    @DisplayName("지하철 노선을 생성한다.")
-    @Test
-    void createLine() {
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(TEST_FIRST_LINE);
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
 
-        // then
-        지하철_노선_생성됨(response);
+        long testKangnamId = 지하철_역_등록되어_있음(TEST_GANGNAM_STATION);
+        long testYucksamId = 지하철_역_등록되어_있음(TEST_YUCKSAM_STATION);
+
+        long testKachisanId = 지하철_역_등록되어_있음(new StationRequest("까치산역"));
+        long testJamsilId = 지하철_역_등록되어_있음(new StationRequest("잠실역"));
+        
+        testFirstLine = new LineRequest("1호선", "red", testKangnamId, testYucksamId, 10L);
+        testSecondLine = new LineRequest("2호선", "blue", testKachisanId, testJamsilId, 20L);
     }
 
     @DisplayName("두 종점역은 구간의 형태로 관리되는 지하철 노선을 생성한다.")
     @Test
     void createLineWithSection() {
-        //given
-        long kangnamId = 지하철_역_등록되어_있음(TEST_GANGNAM_STATION);
-        long yucksamId = 지하철_역_등록되어_있음(TEST_YUCKSAM_STATION);
-
-        LineRequest firstLine = new LineRequest("1호선", "red", kangnamId, yucksamId, 10L);
-
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(firstLine);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(testFirstLine);
 
         // then
         지하철_노선_생성됨(response);
@@ -48,10 +49,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        지하철_노선_등록되어_있음(TEST_FIRST_LINE);
+        지하철_노선_등록되어_있음(testFirstLine);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(TEST_FIRST_LINE);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(testFirstLine);
 
         // then
         지하철_노선_생성_실패됨(response);
@@ -61,8 +62,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        long firstLineId = 지하철_노선_등록되어_있음(TEST_FIRST_LINE);
-        long secondLineId = 지하철_노선_등록되어_있음(TEST_SECOND_LINE);
+        long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
+        long secondLineId = 지하철_노선_등록되어_있음(testSecondLine);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -76,7 +77,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        long createdId = 지하철_노선_등록되어_있음(TEST_FIRST_LINE);
+        long createdId = 지하철_노선_등록되어_있음(testFirstLine);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdId);
@@ -90,7 +91,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        long createdId = 지하철_노선_등록되어_있음(TEST_FIRST_LINE);
+        long createdId = 지하철_노선_등록되어_있음(testFirstLine);
         LineRequest parameter = new LineRequest("1호선", "black");
 
         // when
@@ -104,10 +105,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        long firstLine = 지하철_노선_등록되어_있음(TEST_FIRST_LINE);
+        long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(firstLine);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(firstLineId);
 
         // then
         지하철_노선_삭제됨(response);
