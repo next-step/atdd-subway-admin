@@ -5,8 +5,10 @@ import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.*;
 
 @Entity
@@ -19,8 +21,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Section section;
+    @OneToMany(mappedBy = "line", cascade = ALL)
+    private List<Section> sections = new ArrayList<>();
 
     protected Line() { }
 
@@ -50,7 +52,8 @@ public class Line extends BaseEntity {
     }
 
     public Line setSection(Section station) {
-        this.section = station;
+        this.sections.add(station);
+        station.setLine(this);
         return this;
     }
 }

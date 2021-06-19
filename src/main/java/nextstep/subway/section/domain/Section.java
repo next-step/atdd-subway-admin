@@ -6,6 +6,8 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
+import static javax.persistence.FetchType.LAZY;
+
 /**
  * 라인 등록 시 양끝 종점 정보
  */
@@ -15,14 +17,14 @@ public class Section extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToOne(mappedBy = "section", fetch = FetchType.LAZY)
+	@ManyToOne(fetch = LAZY)
 	private Line line;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = LAZY)
 	@JoinColumn(name = "up_station_id")
 	private Station upStation;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = LAZY)
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
@@ -40,4 +42,8 @@ public class Section extends BaseEntity {
 		return new Section(upStation, downStation, distance);
 	}
 
+	public Section setLine(Line line) {
+		this.line = line;
+		return this;
+	}
 }
