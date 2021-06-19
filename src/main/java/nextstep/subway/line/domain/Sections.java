@@ -85,7 +85,7 @@ public class Sections {
 	}
 
 	private void modifyOldSection(Section targetSection, Section candidate, Station upStation, Station downStation) {
-		if (targetSection.getDistance() - candidate.getDistance() <= 0) {
+		if (targetSection.getDistance() - candidate.getDistance() <= Section.MINIMUM_DISTANCE) {
 			throw new IllegalArgumentException("The distance between new section must be less than target section");
 		}
 

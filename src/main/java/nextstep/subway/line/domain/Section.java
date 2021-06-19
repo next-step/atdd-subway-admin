@@ -13,7 +13,7 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section extends BaseEntity {
-	private static final int MINIMUM_DISTANCE = 0;
+	public static final int MINIMUM_DISTANCE = 0;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
