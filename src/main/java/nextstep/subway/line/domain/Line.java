@@ -19,7 +19,7 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "stations")
+    @OneToMany(mappedBy = "station")
     private List<Section> sections = new ArrayList<>();
 
     public Line() {
@@ -35,6 +35,13 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
+    public Line addUpSectionAndDownSection(Section upSection, Section downSection) {
+        sections.add(upSection);
+        sections.add(downSection);
+
+        return this;
+    }
+
     public Long getId() {
         return id;
     }
@@ -45,5 +52,9 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }
