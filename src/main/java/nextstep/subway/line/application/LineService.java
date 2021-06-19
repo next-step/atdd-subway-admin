@@ -32,4 +32,10 @@ public class LineService {
     public Optional<Line> findById(Long id) {
         return lineRepository.findById(id);
     }
+
+    public void updateLine(Long id, Line newLine) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("invalid "+id));
+        line.update(newLine);
+    }
 }

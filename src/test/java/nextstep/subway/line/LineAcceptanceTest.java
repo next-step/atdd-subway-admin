@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import javax.print.attribute.standard.Media;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -131,9 +132,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(LineRequest.of("2호선", "초록"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/1")
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        response = RestAssured.given().log().all()
+                .when().get("/lines/1")
+                .then().log().all().extract();
+
+        assertThat(response.body().jsonPath().getLong("id")).isEqualTo(1L);
+        assertThat(response.body().jsonPath().getString("name")).isEqualTo("2호선");
+        assertThat(response.body().jsonPath().getString("color")).isEqualTo("초록");
+
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -141,11 +157,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineResponse line1 = createLine("1호선","빨강").body().jsonPath().getObject("$",LineResponse.class);
 
         // when
         // 지하철_노선_제거_요청
-
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().delete("/lines/1")
+                .then().log().all().extract();
         // then
         // 지하철_노선_삭제됨
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        response = RestAssured.given().log().all()
+                .when().get("/lines/1")
+                .then().log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+
     }
 }

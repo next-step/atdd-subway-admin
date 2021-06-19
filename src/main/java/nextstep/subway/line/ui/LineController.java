@@ -37,4 +37,11 @@ public class LineController {
                 .orElseThrow(()->new IllegalArgumentException("invalid " + id));
         return ResponseEntity.ok(LineResponse.of(line));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
+
+        lineService.updateLine(id,new Line(request));
+        return ResponseEntity.ok().build();
+    }
 }
