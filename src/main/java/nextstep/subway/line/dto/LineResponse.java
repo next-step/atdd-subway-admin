@@ -35,7 +35,7 @@ public class LineResponse {
             line.getId(),
             line.getName(),
             line.getColor(),
-            line.getStations()
+            line.getStationsInAscending()
                 .stream()
                 .map(StationResponse::of)
                 .collect(toList()),

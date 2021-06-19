@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import nextstep.subway.line.exception.DuplicateLineException;
+import nextstep.subway.line.exception.InvalidSectionException;
 import nextstep.subway.line.exception.NoSuchLineException;
 
 @ControllerAdvice
@@ -31,5 +32,11 @@ public class GeneralExceptionHandler {
     public ResponseEntity<Void> noSuchResourceException(Exception e) {
         log.debug("존재하지 않는 값이 요청되었습니다.", e);
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(InvalidSectionException.class)
+    public ResponseEntity<Void> invalidSectionException(Exception e) {
+        log.debug("등록 요청 된 구간에 오류가 있습니다.", e);
+        return ResponseEntity.badRequest().build();
     }
 }

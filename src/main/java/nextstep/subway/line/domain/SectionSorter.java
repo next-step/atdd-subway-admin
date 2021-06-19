@@ -6,27 +6,25 @@ import static java.util.stream.Collectors.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import nextstep.subway.line.exception.TerminusNotFoundException;
 import nextstep.subway.station.domain.Station;
 
-public class Relationship {
+public class SectionSorter {
 
-    private final Map<Station, Station> relations;
-
-    public static Relationship of(List<Section> sections) {
-        return new Relationship(sections.stream()
-            .collect(toMap(Section::upStation, Section::downStation)));
+    public static Set<Station> getStations(List<Section> sections) {
+        return sections.stream()
+            .flatMap(s -> Stream.of(s.upStation(), s.downStation()))
+            .collect(toSet());
     }
 
-    public Relationship(Map<Station, Station> relations) {
-        this.relations = relations;
-    }
+    public static List<Station> getStationsInOrder(List<Section> sections) {
+        Map<Station, Station> relations = getRelations(sections);
 
-    public List<Station> getSortedStations() {
         List<Station> stations = new ArrayList<>();
-
-        Station station = upTerminus();
+        Station station = upTerminus(relations);
         while (relations.containsKey(station)) {
             stations.add(station);
             station = relations.get(station);
@@ -37,7 +35,7 @@ public class Relationship {
         return unmodifiableList(stations);
     }
 
-    public Station upTerminus() {
+    private static Station upTerminus(Map<Station, Station> relations) {
         return relations.keySet()
             .stream()
             .filter(s -> !relations.containsValue(s))
@@ -45,11 +43,8 @@ public class Relationship {
             .orElseThrow(() -> new TerminusNotFoundException("출발역이 존재하지 않습니다."));
     }
 
-    public Station downTerminus() {
-        return relations.values()
-            .stream()
-            .filter(s -> !relations.containsKey(s))
-            .findAny()
-            .orElseThrow(() -> new TerminusNotFoundException("종착역이 존재하지 않습니다."));
+    private static Map<Station, Station> getRelations(List<Section> sections) {
+        return sections.stream()
+            .collect(toMap(Section::upStation, Section::downStation));
     }
 }

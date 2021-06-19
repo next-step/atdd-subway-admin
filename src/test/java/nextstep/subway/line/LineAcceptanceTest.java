@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceMethods.*;
+import static nextstep.subway.station.StationAcceptanceMethods.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,10 +24,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        StationResponse 강남역 = createStation("강남역");
-        StationResponse 광교역 = createStation("광교역");
-        StationResponse 왕십리역 = createStation("왕십리역");
-        StationResponse 수원역 = createStation("수원역");
+        StationResponse 강남역 = 지하철_역_생성_요청("강남역").as(StationResponse.class);
+        StationResponse 광교역 = 지하철_역_생성_요청("광교역").as(StationResponse.class);
+        StationResponse 왕십리역 = 지하철_역_생성_요청("왕십리역").as(StationResponse.class);
+        StationResponse 수원역 = 지하철_역_생성_요청("수원역").as(StationResponse.class);
 
         신분당선 = new LineRequest("신분당선", "red darken-1", 강남역.getId(), 광교역.getId(), 120);
         분당선 = new LineRequest("분당선", "yellow light-1", 왕십리역.getId(), 수원역.getId(), 150);
