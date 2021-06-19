@@ -118,4 +118,17 @@ public class LineRepositoryTest {
 		//then
 		assertThat(삭제후_조회한_이호선.isPresent()).isFalse();
 	}
+
+	@Test
+	void 역_그룹_포함_삭제() {
+		//given
+		Line 영속화된_이호선_역_그룹_포함 = lines.save(이호선_역_그룹_포함);
+
+		//when
+		lines.delete(영속화된_이호선_역_그룹_포함);
+		Optional<Line> 삭제후_조회한_이호선_역_그룹_포함 = lines.findById(영속화된_이호선_역_그룹_포함.id());
+
+		//then
+		assertThat(삭제후_조회한_이호선_역_그룹_포함.isPresent()).isFalse();
+	}
 }

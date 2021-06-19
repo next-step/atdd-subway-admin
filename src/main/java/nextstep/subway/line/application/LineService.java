@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,23 +13,27 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.application.SectionService;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.StationGroup;
 
 @Service
 @Transactional
 public class LineService {
-	@Autowired
 	private StationService stationService;
+	private SectionService sectionService;
 	private LineRepository lineRepository;
 
-	public LineService(LineRepository lineRepository) {
+	public LineService(StationService stationService, SectionService sectionService, LineRepository lineRepository) {
+		this.stationService = stationService;
+		this.sectionService = sectionService;
 		this.lineRepository = lineRepository;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
 		StationGroup stationGroupToAdd = addUpStationAndDownStation(request);
 		Line persistLine = lineRepository.save(request.toLine(stationGroupToAdd));
+		sectionService.saveSection(request, persistLine);
 		return LineResponse.of(persistLine);
 	}
 
@@ -59,6 +62,7 @@ public class LineService {
 	}
 
 	public void deleteLineById(Long id) {
+		sectionService.deleteAllByLine(findLineByIdFromRepository(id));
 		lineRepository.deleteById(id);
 	}
 

@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,22 +11,23 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import nextstep.subway.ServiceTest;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.StationAcceptanceTest;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("노선 서비스 테스트")
 public class LineServiceTest extends ServiceTest {
 
 	@Autowired
 	private LineService lineService;
+	@Autowired
+	private StationService stationService;
 
 	private LineRequest 이호선;
 	private LineRequest 삼호선_이호선과_같은_색상;
@@ -46,12 +46,12 @@ public class LineServiceTest extends ServiceTest {
 
 	@BeforeEach
 	void 초기화() {
-		강남역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("강남역"));
-		선릉역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("선릉역"));
-		고속터미널역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("고속터미널역"));
-		교대역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("교대역"));
-		이수역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("이수역"));
-		사당역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("사당역"));
+		강남역_아이디 = 역정보_영속화_후_아이디추출("강남역");
+		선릉역_아이디 = 역정보_영속화_후_아이디추출("선릉역");
+		고속터미널역_아이디 = 역정보_영속화_후_아이디추출("고속터미널역");
+		교대역_아이디 = 역정보_영속화_후_아이디추출("교대역");
+		이수역_아이디 = 역정보_영속화_후_아이디추출("이수역");
+		사당역_아이디 = 역정보_영속화_후_아이디추출("사당역");
 
 		강남역_선릉역_간격 = "100";
 		고속터미널역_교대역_간격 = "200";
@@ -60,6 +60,11 @@ public class LineServiceTest extends ServiceTest {
 		이호선 = new LineRequest("2호선", "#FFFFFF", 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 		삼호선_이호선과_같은_색상 = new LineRequest("3호선", "#FFFFFF", 고속터미널역_아이디, 교대역_아이디, 고속터미널역_교대역_간격);
 		사호선 = new LineRequest("4호선", "#000000", 이수역_아이디, 사당역_아이디, 이수역_사당역_간격);
+	}
+
+	private String 역정보_영속화_후_아이디추출(String 역이름) {
+		StationResponse 영속화된_역정보 = stationService.saveStation(new StationRequest(역이름));
+		return 영속화된_역정보.getId().toString();
 	}
 
 	@Test
@@ -77,8 +82,9 @@ public class LineServiceTest extends ServiceTest {
 	private void 노선에_역_정보가_포함되어_있음(LineRequest 저장요청, LineResponse 저장응답) {
 		List<String> 입력된_역_아이디들 = Arrays.asList(저장요청.getUpStationId(), 저장요청.getDownStationId());
 		List<String> 응답된_역_아이디들 = 저장응답.getStations().stream()
-			.map(역정보 -> 역정보.getId().toString())
-			.collect(Collectors.toList());
+			.map(
+				역정보 -> 역정보.getId().toString()
+			).collect(Collectors.toList());
 		assertThat(응답된_역_아이디들).containsSequence(입력된_역_아이디들);
 	}
 
@@ -378,7 +384,7 @@ public class LineServiceTest extends ServiceTest {
 
 		//then
 		assertThatThrownBy(() -> lineService.deleteLineById(존재하지않는_아이디))
-			.isInstanceOf(EmptyResultDataAccessException.class);
+			.isInstanceOf(NotFoundException.class);
 	}
 
 	@Test

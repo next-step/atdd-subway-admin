@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -13,7 +14,7 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class StationGroup {
 
-	@OneToMany
+	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_station_line"))
 	private List<Station> stations = new ArrayList<>();
 

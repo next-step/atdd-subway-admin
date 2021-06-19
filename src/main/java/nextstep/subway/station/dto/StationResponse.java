@@ -15,7 +15,7 @@ public class StationResponse extends BaseResponse {
 	}
 
 	public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-		super(createdDate,modifiedDate);
+		super(createdDate, modifiedDate);
 		this.id = id;
 		this.name = name;
 	}

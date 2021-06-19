@@ -205,6 +205,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		노선이_생성_실패된다(생성_응답);
 	}
 
+	@DisplayName("지하철 노선을 등록할 경우 상행역과 하행역의 아이디가 같으면 지하철 노선을 생성할 수 없다.")
+	@Test
+	void createLineWithDownStationIsSameUpStation() {
+		// given
+		LineRequest 상행역_하행역_같음 = new LineRequest("2호선", "#FFFFFF", 강남역_아이디, 강남역_아이디, 강남역_선릉역_간격);
+
+		// when
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(상행역_하행역_같음);
+
+		// then
+		노선이_생성_실패된다(생성_응답);
+	}
+
 	@DisplayName("지하철 노선을 등록할 경우 간격을 입력하지 않으면 지하철 노선을 생성할 수 없다.")
 	@Test
 	void createLineWithoutDistance() {
@@ -213,6 +226,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// when
 		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(간격_없음);
+
+		// then
+		노선이_생성_실패된다(생성_응답);
+	}
+
+	@DisplayName("지하철 노선을 등록할 경우 간격을 0이하의 숫자로 입력하면 지하철 노선을 생성할 수 없다.")
+	@Test
+	void createLineWithZeroDistance() {
+		// given
+		LineRequest 간격_0이하 = new LineRequest("2호선", "#FFFFFF", 강남역_아이디, 선릉역_아이디, "0.00");
+
+		// when
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(간격_0이하);
 
 		// then
 		노선이_생성_실패된다(생성_응답);
@@ -256,10 +282,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLineWithNotExistedId() {
 		// given
-		String 존재하지_않는_노선_URI = "/lines/" + Integer.MIN_VALUE;
+		String 존재하지_않는_노선_uri = "/lines/" + Integer.MIN_VALUE;
 
 		// when
-		ExtractableResponse<Response> 조회_응답 = 노선_조회_요청(존재하지_않는_노선_URI);
+		ExtractableResponse<Response> 조회_응답 = 노선_조회_요청(존재하지_않는_노선_uri);
 
 		// then
 		노선이_응답_실패된다(조회_응답);
@@ -430,9 +456,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	private void 노선에_역정보들_포함_및_순서가_일치한다(LineRequest 노선정보, ExtractableResponse<Response> 생성_응답) {
 		List<String> 입력된_역_아이디들 = Arrays.asList(노선정보.getUpStationId(), 노선정보.getDownStationId());
-		List<String> 응답된_역_아이디들 = 생성_응답.jsonPath().getList("stations", StationResponse.class).stream()
-			.map(역정보 -> 역정보.getId().toString())
-			.collect(Collectors.toList());
+		List<String> 응답된_역_아이디들 = 생성_응답.jsonPath().getList("stations", StationResponse.class)
+			.stream()
+			.map(
+				역정보 -> 역정보.getId().toString()
+			).collect(Collectors.toList());
 		assertThat(응답된_역_아이디들).containsSequence(입력된_역_아이디들);
 	}
 
@@ -473,10 +501,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return response;
 	}
 
-	private ExtractableResponse<Response> 노선_조회_요청(String 노선_URI) {
+	private ExtractableResponse<Response> 노선_조회_요청(String 노선_uri) {
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.when()
-			.get(노선_URI)
+			.get(노선_uri)
 			.then().log().all()
 			.extract();
 		return response;
@@ -486,12 +514,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(조회_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	private ExtractableResponse<Response> 노선_수정_요청(String 노선_URI, LineRequest 파라메터) {
+	private ExtractableResponse<Response> 노선_수정_요청(String 노선_uri, LineRequest 파라메터) {
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.body(파라메터)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
-			.put(노선_URI)
+			.put(노선_uri)
 			.then().log().all()
 			.extract();
 		return response;
@@ -505,10 +533,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(노선_수정_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	private ExtractableResponse<Response> 노선_삭제_요청(String 노선_URI) {
+	private ExtractableResponse<Response> 노선_삭제_요청(String 노선_uri) {
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.when()
-			.delete(노선_URI)
+			.delete(노선_uri)
 			.then().log().all()
 			.extract();
 		return response;

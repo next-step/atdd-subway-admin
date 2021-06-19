@@ -17,7 +17,7 @@ public class LineResponse extends BaseResponse {
 
 	protected LineResponse(Long id, String name, String color,
 		List<StationResponse> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-		super(createdDate,modifiedDate);
+		super(createdDate, modifiedDate);
 		this.id = id;
 		this.name = name;
 		this.color = color;

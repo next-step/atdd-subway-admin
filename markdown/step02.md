@@ -239,7 +239,7 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
 - [x] 3.분석 및 설계
     - [x] 3-1.step02.md 초안 작성
     - [x] 3-2.ATDD 작성
-- [ ] 4.구현
+- [x] 4.구현
     - [x] 4-1.Scenario: 지하철 노선을 생성한다.
         - [x] 4-1-1.`LineAcceptanceTest` 수정
         - [x] 4-1-2.`LineServiceTest` 수정
@@ -248,16 +248,16 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 4-1-5.`LineTest` 수정
     - [x] 4-2.Scenario: 지하철 노선을 등록할 경우 상행역의 아이디를 입력하지 않으면 지하철 노선을 생성할 수 없다.
     - [x] 4-3.Scenario: 지하철 노선을 등록할 경우 하행역의 아이디를 입력하지 않으면 지하철 노선을 생성할 수 없다.
-    - [ ] 4-4.Scenario: 지하철 노선을 등록할 경우 간격을 입력하지 않으면 지하철 노선을 생성할 수 없다.
-        - [ ] 4-4-1.`LineAcceptanceTest` 수정
-        - [ ] 4-4-2.`LineServiceTest` 수정
-        - [ ] 4-4-3.`LineRepositoryTest` 수정
-        - [ ] 4-4-4.`LineTest` 수정
-    - [ ] 4-5.Scenario: 지하철 노선을 등록할 경우 간격을 0이하의 숫자로 입력하면 지하철 노선을 생성할 수 없다.
-        - [ ] 4-5-1.`LineAcceptanceTest` 수정
-        - [ ] 4-5-2.`LineServiceTest` 수정
-        - [ ] 4-5-3.`LineRepositoryTest` 수정
-        - [ ] 4-5-4.`LineTest` 수정
+    - [x] 4-4.Scenario: 지하철 노선을 등록할 경우 간격을 입력하지 않으면 지하철 노선을 생성할 수 없다.
+        - [x] 4-4-1.`LineAcceptanceTest` 수정
+        - [x] 4-4-2.`LineServiceTest` 수정
+        - [x] 4-4-3.`LineRepositoryTest` 수정
+        - [x] 4-4-4.`DistanceTest` 수정
+        - [x] 4-4-5.`SectionTest` 수정
+        - [x] 4-4-5.`SectionRepositoryTest` 수정
+        - [x] 4-4-5.`SectionServiceTest` 수정
+    - [x] 4-5.Scenario: 지하철 노선을 등록할 경우 간격을 0이하의 숫자로 입력하면 지하철 노선을 생성할 수 없다.
+    - [x] 4-6.Scenario: 지하철 노선을 등록할 경우 상행역과 하행역의 아이디가 같으면 지하철 노선을 생성할 수 없다.
 - [ ] 5.테스트
     - [ ] 5-1.Gradle build Success 확인
     - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)

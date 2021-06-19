@@ -42,7 +42,8 @@ public class StationService {
 		return StationResponse.of(findStationByIdFromRepository(id));
 	}
 
-	private Station findStationByIdFromRepository(Long id) {
+	@Transactional(readOnly = true)
+	public Station findStationByIdFromRepository(Long id) {
 		return Optional.ofNullable(stationRepository.findById(id)).get()
 			.orElseThrow(new NotFoundException("지하철 역을 찾을 수 없습니다. id :" + id));
 	}
