@@ -60,8 +60,4 @@ public class LineService {
         }
     }
 
-
-    public void saveLineSection(Long lineId, SectionRequest sectionRequest) {
-
-    }
 }

@@ -59,11 +59,9 @@ public class LineController {
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity saveLineSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        lineService.saveLineSection(lineId, sectionRequest);
-        Section section = sectionService.saveSection(sectionRequest.getUpStationId(), sectionRequest.getUpStationId(), sectionRequest.getDistance());
         Line line = lineService.findLine(lineId);
         sectionService.saveSection(line, sectionRequest);
-        return ResponseEntity.created(URI.create("/sections/"+1l)).body(null);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(LineResponse.of(line));
     }
 
     @ExceptionHandler(RuntimeException.class)

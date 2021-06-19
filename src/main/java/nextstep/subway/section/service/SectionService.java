@@ -32,6 +32,6 @@ public class SectionService {
         Station downStation = stationService.findStation(sectionRequest.getDownStationId());
         Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
         line.addAdditionalSection(section);
-
+        sectionRepository.save(section);
     }
 }
