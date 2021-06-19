@@ -13,23 +13,27 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(value = EnumType.STRING)
-    private SectionStatus status;
+    @JoinColumn(name = "up_station_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Station upStation;
 
-    @JoinColumn(name = "station_id")
-    @OneToOne(fetch = FetchType.LAZY)
-    private Station station;
+    @JoinColumn(name = "down_station_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Station downStation;
 
     @JoinColumn(name = "line_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
 
+    private long distance;
+
     public Section() {
     }
 
-    public Section(SectionStatus status, Station station) {
-        this.status = status;
-        this.station = station;
+    public Section(Station upStation, Station downStation, long distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
     public void addLine(Line line) {
@@ -40,15 +44,19 @@ public class Section extends BaseEntity {
         return id;
     }
 
-    public SectionStatus getStatus() {
-        return status;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Station getStation() {
-        return station;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Line getLine() {
         return line;
+    }
+
+    public long getDistance() {
+        return distance;
     }
 }

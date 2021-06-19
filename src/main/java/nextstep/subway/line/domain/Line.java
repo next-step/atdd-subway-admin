@@ -19,7 +19,7 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
 
     public Line() {
@@ -30,11 +30,10 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(Long id, String name, String color, List<Section> sections) {
-        this.id = id;
+    public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.sections = sections;
+        addSection(section);
     }
 
     public void update(Line line) {
@@ -42,12 +41,9 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public Line addUpSectionAndDownSection(Section upSection, Section downSection) {
-        sections.add(upSection);
-        sections.add(downSection);
-
-        upSection.addLine(this);
-        downSection.addLine(this);
+    public Line addSection(Section section) {
+        sections.add(section);
+        section.addLine(this);
 
         return this;
     }
