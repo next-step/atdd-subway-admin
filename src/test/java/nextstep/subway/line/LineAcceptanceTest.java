@@ -24,6 +24,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     private void init() {
         super.setUp();
+        //given (stations)
         requestCreateStation(1L, "강남역");
         requestCreateStation(2L, "역삼역");
         requestCreateStation(3L, "종로3가");
@@ -35,6 +36,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        // given (강남역, 역삼역)
+
         // when
         // 지하철_노선_생성_요청
         LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
