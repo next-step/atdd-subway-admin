@@ -100,8 +100,8 @@ public class Sections {
 
 	private Set<Station> getDistinctStations() {
 		return sections.stream()
-			.map(x -> Arrays.asList(x.getUpStation(), x.getDownStation()))
-			.flatMap(y -> y.stream())
+			.map(section -> Arrays.asList(section.getUpStation(), section.getDownStation()))
+			.flatMap(sections -> sections.stream())
 			.collect(Collectors.toSet());
 	}
 
