@@ -14,8 +14,9 @@ import java.util.stream.Collectors;
 @Embeddable
 @Transactional
 public class Sections {
-	private static final int REMAINED_SECTION_INDEX = 0;
-	private static final int REMOVAL_SECTION_INDEX = 1;
+	private static final int REMOVAL_SECTION_INDEX = 0;
+	private static final int REMAINED_SECTION_INDEX = 1;
+	private static final int NO_NEED_TO_JOIN_SECTION_SIZE = 1;
 
 	@OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
@@ -73,9 +74,14 @@ public class Sections {
 		List<Section> sectionsIncludingStation = sections.stream().filter(section -> section.doesIncludeStation(stationId))
 				.collect(Collectors.toList());
 
-		Section removalSection = sectionsIncludingStation.get(REMOVAL_SECTION_INDEX);
+		if (sectionsIncludingStation.size() == NO_NEED_TO_JOIN_SECTION_SIZE) {
+			sections.remove(sectionsIncludingStation.get(REMOVAL_SECTION_INDEX));
+			return;
+		}
+
+		Section removalSection = sectionsIncludingStation.get(REMAINED_SECTION_INDEX);
 		Station remainedStation = removalSection.getRemainedStation(stationId);
-		sectionsIncludingStation.get(REMAINED_SECTION_INDEX).joinSection(stationId, remainedStation, removalSection.getDistance());
+		sectionsIncludingStation.get(REMOVAL_SECTION_INDEX).joinSection(stationId, remainedStation, removalSection.getDistance());
 		sections.remove(removalSection);
 	}
 }

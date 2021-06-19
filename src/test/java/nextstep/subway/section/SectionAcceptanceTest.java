@@ -172,7 +172,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	}
 
 	@Test
-	@DisplayName("")
+	@DisplayName("노선의 중간역을 제거한다")
 	void removeSectionTest() {
 		// given
 		StationResponse 양재역 = StationAcceptanceTest.지하철역을_생성한다("양재역").as(StationResponse.class);
@@ -187,6 +187,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		노선에_제거된_역이_조회되지않는다(response, 양재역.getName());
+	}
+
+	@Test
+	@DisplayName("노선의 마지막 역을 제거한다")
+	void removeSectionTest2() {
+		// given
+		StationResponse 양재역 = StationAcceptanceTest.지하철역을_생성한다("양재역").as(StationResponse.class);
+		Map<String, String> sectionParams = new HashMap<>();
+		sectionParams.put("upStationId", 강남역.getId().toString());
+		sectionParams.put("downStationId", 양재역.getId().toString());
+		sectionParams.put("distance", "3");
+		지하철_노선에_새로운_구간_등록_요청(신분당선.header("Location"), sectionParams);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선.header("Location"), 강남역.getId());
+
+		// then
+		노선에_제거된_역이_조회되지않는다(response, 강남역.getName());
 	}
 
 	private ExtractableResponse<Response> 지하철_노선에_구간_제거_요청(String resourcePath, Long stationId) {
