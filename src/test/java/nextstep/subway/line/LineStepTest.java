@@ -51,11 +51,11 @@ public class LineStepTest {
                 .then().log().all().extract();
     }
 
-    static ExtractableResponse<Response> 지하철_노선_제거_요청(long firstLine) {
+    static ExtractableResponse<Response> 지하철_노선_제거_요청(long lineId) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete(BASE_LINE_URL + "/" + firstLine)
+                .when().delete(BASE_LINE_URL + "/" + lineId)
                 .then().log().all().extract();
     }
 
