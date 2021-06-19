@@ -175,4 +175,100 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// 에러_발생
 		assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
+
+	@DisplayName("두 역 사이의 역을 삭제한다.")
+	@Test
+	void deleteStationBetweenStations() {
+		// given
+		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
+		// 지하철_역(사이(between)_역)_등록되어 있음
+
+		// when
+		// 두_역_사이의_역을_삭제_요청
+
+		// then
+		// 지하철_역_삭제_됨
+		// 지하철_삭제_조회
+	}
+
+	@DisplayName("상행 종점 역을 삭제한다.")
+	@Test
+	void deleteUpStation() {
+		// given
+		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
+		// 지하철_역(사이(between)_역)_등록되어 있음
+
+		// when
+		// 상행_종점_역을_삭제_요청
+
+		// then
+		// 지하철_역_삭제_됨
+		// 지하철_삭제_조회
+	}
+
+	@DisplayName("하행 종점 역을 삭제한다.")
+	@Test
+	void deleteDownStation() {
+		// given
+		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
+		// 지하철_역(사이(between)_역)_등록되어 있음
+
+		// when
+		// 하행_종점_역을_삭제_요청
+
+		// then
+		// 지하철_역_삭제_됨
+		// 지하철_삭제_조회
+	}
+
+	@DisplayName("노선에 없는 역을 삭제한다.")
+	@Test
+	void deleteNotExistStation() {
+		// given
+		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
+		// 지하철_역(사이(between)_역)_등록되어 있음
+		// 다른_역_등록
+
+		// when
+		// 다른_역을_삭제_요청
+
+		// then
+		// 에러 발생
+	}
+
+	@DisplayName("구간이 하나일 때 상행 종점 혹은 하행 종점을 삭제한다.")
+	@Test
+	void deleteTerminalStationAndSectionIsOnlyOne() {
+		// given
+		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
+
+		// when
+		// 상행_종점_삭제_요청
+		// 하행_종점_삭제_요청
+
+		// then
+		// 에러_발생
+	}
+
+	@DisplayName("다른 노선에 역이 존재할 때 삭제한다.(환승역)")
+	@Test
+	void deleteTransferStation() {
+		// given
+		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
+		// 지하철_역(사이(between)_역)_등록되어 있음
+		// 등록한_지하철_역이_포함된_노선_등록
+
+		// when
+		// 환승역_삭제_요청
+
+		// then
+		// 지하철_역_삭제_됨
+		// 지하철_삭제_조회
+	}
 }
