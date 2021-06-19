@@ -13,6 +13,8 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section extends BaseEntity {
+	private static final int MINIMUM_DISTANCE = 0;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -39,7 +41,14 @@ public class Section extends BaseEntity {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStaion;
+		validateDistance(distance);
 		this.distance = distance;
+	}
+
+	private void validateDistance(int distance) {
+		if (distance <= MINIMUM_DISTANCE) {
+			throw new IllegalArgumentException("Distance must be positive number");
+		}
 	}
 
 	public Long getId() {
