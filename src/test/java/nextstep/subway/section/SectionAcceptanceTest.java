@@ -220,4 +220,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		assertThat(신분당선_조회_결과.jsonPath().getList("stations.name")).doesNotContain(station);
 	}
+
+	@Test
+	@DisplayName("구간이 하나 이하인 노선에서 구간 제거 요청을 하면 익셉션이 발생한다")
+	void removeSectionTest3() {
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(신분당선.header("Location"), 강남역.getId());
+
+		// then
+		요청이_예외를_반환한다(response);
+	}
+
+	private void 요청이_예외를_반환한다(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.exception.DeletingSectionNotPossibleException;
 import nextstep.subway.station.domain.Station;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ public class Sections {
 	private static final int REMOVAL_SECTION_INDEX = 0;
 	private static final int REMAINED_SECTION_INDEX = 1;
 	private static final int NO_NEED_TO_JOIN_SECTION_SIZE = 1;
+	private static final int REMOVABLE_LEAST_SIZE = 2;
 
 	@OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
@@ -71,6 +73,8 @@ public class Sections {
 	}
 
 	public void deleteSectionByStationId(Long stationId) {
+		validateDeletingSectionByStationId();
+
 		List<Section> sectionsIncludingStation = sections.stream().filter(section -> section.doesIncludeStation(stationId))
 				.collect(Collectors.toList());
 
@@ -83,5 +87,11 @@ public class Sections {
 		Station remainedStation = removalSection.getRemainedStation(stationId);
 		sectionsIncludingStation.get(REMOVAL_SECTION_INDEX).joinSection(stationId, remainedStation, removalSection.getDistance());
 		sections.remove(removalSection);
+	}
+
+	private void validateDeletingSectionByStationId() {
+		if (sections.size() < REMOVABLE_LEAST_SIZE) {
+			throw new DeletingSectionNotPossibleException();
+		}
 	}
 }
