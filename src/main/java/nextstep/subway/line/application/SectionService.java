@@ -17,8 +17,8 @@ public class SectionService {
 	@Autowired
 	private StationRepository stationRepository;
 
-	@Transactional (propagation = Propagation.REQUIRES_NEW)
-	public void create (Line line, Long upStationId, Long downStationId, int distance) {
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void create(Line line, Long upStationId, Long downStationId, int distance) {
 		Optional<Station> upStation = stationRepository.findById(upStationId);
 
 		if (!upStation.isPresent()) {

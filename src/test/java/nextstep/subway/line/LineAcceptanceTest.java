@@ -17,9 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -217,7 +215,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	private ExtractableResponse<Response> 지하철역_생성_요청(StationRequest request) throws JsonProcessingException {
 		String req = objectMapper.writeValueAsString(request);
 
-		return  RestAssured.given().log().all()
+		return RestAssured.given().log().all()
 				.body(req)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when()
