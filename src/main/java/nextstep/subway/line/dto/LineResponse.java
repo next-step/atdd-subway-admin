@@ -25,23 +25,43 @@ public class LineResponse {
         return new LineResponse(line.id(), line.name(), line.color(), line.getCreatedDate(), line.getModifiedDate());
     }
 
-    public Long id() {
+    public Long getId () {
         return id;
     }
 
-    public String name() {
+    public void setId (Long id) {
+        this.id = id;
+    }
+
+    public String getName () {
         return name;
     }
 
-    public String color() {
+    public void setName (String name) {
+        this.name = name;
+    }
+
+    public String getColor () {
         return color;
     }
 
-    public LocalDateTime createdDate() {
+    public void setColor (String color) {
+        this.color = color;
+    }
+
+    public LocalDateTime getCreatedDate () {
         return createdDate;
     }
 
-    public LocalDateTime modifiedDate() {
+    public void setCreatedDate (LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public LocalDateTime getModifiedDate () {
         return modifiedDate;
+    }
+
+    public void setModifiedDate (LocalDateTime modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 }

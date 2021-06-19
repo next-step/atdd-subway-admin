@@ -5,7 +5,6 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.AlreadyExistLineException;
-import nextstep.subway.section.application.SectionService;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

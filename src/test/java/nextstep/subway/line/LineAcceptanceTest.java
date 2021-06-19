@@ -36,18 +36,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// given, when 지하철_노선_생성_요청 + 상행, 하행 정보 요청 파라미터에 함께 추가
 		StationRequest stationRequest = new StationRequest();
 		stationRequest.setName("잠실역");
-		ExtractableResponse<Response> response1 = 지하철역_생성_요청(stationRequest);
+		ExtractableResponse<Response> stationRes = 지하철역_생성_요청(stationRequest);
 
-		StationResponse stationResponse = objectMapper.readValue(response1.asString(), StationResponse.class);
+		StationResponse stationResponse = objectMapper.readValue(stationRes.response().asString(), StationResponse.class);
 
+		// when
 		LineRequest lineRequest = new LineRequest("2호선", "yellow", stationResponse.getId(), stationResponse.getId(), 1);
-		ExtractableResponse<Response> response = 노선정보세팅_메소드(lineRequest);
+		String req = objectMapper.writeValueAsString(lineRequest);
 
-		// then 지하철_노선_생성됨
-		System.out.println(response);
-		System.out.println(response.statusCode());
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+				.body(req)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when()
+				.post("/lines")
+				.then().log().all()
+				.extract();
 
-    assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+		LineResponse lineResponse = objectMapper.readValue(response.response().asString(), LineResponse.class);
+
+		assertThat("2호선").isEqualTo(lineResponse.getName());
+		assertThat("yellow").isEqualTo(lineResponse.getColor());
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -102,7 +112,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class)
 				.stream()
-				.map(it -> it.id())
+				.map(it -> it.getId())
 				.collect(Collectors.toList());
 
 		assertThat(resultLineIds).containsAll(expectedLineIds);
