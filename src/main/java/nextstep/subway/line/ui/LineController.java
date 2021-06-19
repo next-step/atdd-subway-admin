@@ -70,6 +70,12 @@ public class LineController {
 		return ResponseEntity.ok().build();
 	}
 
+	@DeleteMapping("/sections")
+	public ResponseEntity removeStation(@RequestParam Long stationId) {
+		lineService.removeStation(stationId);
+		return ResponseEntity.ok().build();
+	}
+
 	@ExceptionHandler(NoSuchElementException.class)
 	public ResponseEntity handleNoSuchElementException(NoSuchElementException e) {
 		return ResponseEntity.noContent().build();

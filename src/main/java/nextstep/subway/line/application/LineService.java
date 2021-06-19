@@ -1,7 +1,9 @@
 package nextstep.subway.line.application;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -87,5 +89,27 @@ public class LineService {
 		Line line = getLine(lineId);
 		Station deleteStation = getStation(stationId);
 		line.remove(deleteStation);
+	}
+
+	public void removeStation(Long stationId) {
+		Set<Long> lineIds = getLineIds(stationId);
+
+		for (Long lineId : lineIds) {
+			Line line = getLine(lineId);
+			Station deleteStation = getStation(stationId);
+			line.remove(deleteStation);
+		}
+	}
+
+	private Set<Long> getLineIds(Long stationId) {
+		Set<Long> lineIds = new HashSet<>();
+		lineIds.addAll(toLineIds(sections.findByUpStationId(stationId)));
+		lineIds.addAll(toLineIds(sections.findByDownStationId(stationId)));
+
+		return lineIds;
+	}
+
+	private Set<Long> toLineIds(List<Section> sections) {
+		return sections.stream().map(section -> section.getLine().getId()).collect(Collectors.toSet());
 	}
 }

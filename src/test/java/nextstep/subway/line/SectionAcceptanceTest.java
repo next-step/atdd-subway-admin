@@ -294,4 +294,84 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(removeResponse1.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 		assertThat(removeResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
+
+	@DisplayName("다른 노선에 역이 존재할 때 해당 노선의 역만 삭제한다.(환승역)")
+	@Test
+	void deleteTransferStation() {
+		// given
+		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
+		// 지하철_역(사이(between)_역)_등록되어 있음
+		Long stationId3 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("강남역")));
+		ExtractableResponse<Response> addResponseStationOnGreen = SectionAcceptanceMethod.addSection(lineId,
+			new SectionRequest(stationId1, stationId3, 4));
+		// 등록한_지하철_역이_포함된_노선_등록
+		Long stationId4 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("고속터미널역")));
+		Long stationId5 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("남부터미널역")));
+		distance = 10;
+
+		ExtractableResponse<Response> createOrangeResponse = LineAcceptanceMethod.createLine(
+			new LineRequest("3호선", "bg-orange-600", stationId4, stationId5, distance));
+		String lineOrangeId = LineAcceptanceMethod.getLineID(createOrangeResponse);
+		ExtractableResponse<Response> addResponseStationOnOrange = SectionAcceptanceMethod.addSection(lineOrangeId,
+			new SectionRequest(stationId4, stationId3, 3));
+
+		// when
+		// 환승역_모든_노선에_대해_삭제_요청
+		ExtractableResponse<Response> removeResponse = SectionAcceptanceMethod.removeStation(lineId, stationId3);
+
+		// then
+		// 지하철_역_삭제_됨
+		assertThat(removeResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		// 지하철_삭제_조회
+		ExtractableResponse<Response> findGreenResponse = LineAcceptanceMethod.findLine(lineId);
+		ExtractableResponse<Response> findOrangeResponse = LineAcceptanceMethod.findLine(lineOrangeId);
+		assertThat(findGreenResponse.jsonPath().getObject(".", LineResponse.class).getStations()
+			.stream().map(it -> it.getName()).collect(Collectors.toList())).containsExactly("교대역", "역삼역");
+		assertThat(findOrangeResponse.jsonPath().getObject(".", LineResponse.class).getStations()
+			.stream().map(it -> it.getName()).collect(Collectors.toList())).containsExactly("고속터미널역", "강남역", "남부터미널역");
+	}
+
+	@DisplayName("다른 노선에 역이 존재할 때 모든 노선에 대해 역을 삭제한다.(환승역)")
+	@Test
+	void deleteTransferStationOnAllLines() {
+		// given
+		// 지하철_역_등록되어_있음
+		// 지하철_노선_등록되어_있음
+		// 지하철_역(사이(between)_역)_등록되어 있음
+		Long stationId3 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("강남역")));
+		ExtractableResponse<Response> addResponseStationOnGreen = SectionAcceptanceMethod.addSection(lineId,
+			new SectionRequest(stationId1, stationId3, 4));
+		// 등록한_지하철_역이_포함된_노선_등록
+		Long stationId4 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("고속터미널역")));
+		Long stationId5 = StationAcceptanceMethod.getStationID(StationAcceptanceMethod.createStations(
+			new StationRequest("남부터미널역")));
+		distance = 10;
+
+		ExtractableResponse<Response> createOrangeResponse = LineAcceptanceMethod.createLine(
+			new LineRequest("3호선", "bg-orange-600", stationId4, stationId5, distance));
+		String lineOrangeId = LineAcceptanceMethod.getLineID(createOrangeResponse);
+		ExtractableResponse<Response> addResponseStationOnOrange = SectionAcceptanceMethod.addSection(lineOrangeId,
+			new SectionRequest(stationId4, stationId3, 3));
+
+		// when
+		// 환승역_모든_노선에_대해_삭제_요청
+		ExtractableResponse<Response> removeResponse = SectionAcceptanceMethod.removeStation(stationId3);
+
+		// then
+		// 지하철_역_삭제_됨
+		assertThat(removeResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+		// 지하철_삭제_조회
+		ExtractableResponse<Response> findGreenResponse = LineAcceptanceMethod.findLine(lineId);
+		ExtractableResponse<Response> findOrangeResponse = LineAcceptanceMethod.findLine(lineOrangeId);
+		assertThat(findGreenResponse.jsonPath().getObject(".", LineResponse.class).getStations()
+			.stream().map(it -> it.getName()).collect(Collectors.toList())).containsExactly("교대역", "역삼역");
+		assertThat(findOrangeResponse.jsonPath().getObject(".", LineResponse.class).getStations()
+			.stream().map(it -> it.getName()).collect(Collectors.toList())).containsExactly("고속터미널역", "남부터미널역");
+	}
 }
