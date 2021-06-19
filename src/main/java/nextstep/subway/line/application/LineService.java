@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.section.domain.Section;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,9 +39,9 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findLine(Long lineId) {
+    public Line findLine(Long lineId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선 ID입니다."));
-        return LineResponse.of(line);
+        return line;
     }
 
     public void updateLine(Long lineId, LineRequest lineRequest) {
@@ -60,4 +61,7 @@ public class LineService {
     }
 
 
+    public void saveLineSection(Long lineId, SectionRequest sectionRequest) {
+
+    }
 }

@@ -35,6 +35,10 @@ public class Section extends BaseEntity {
         return new Section(null, upStation, downStation, distance, null);
     }
 
+    public static Section of(Station upStation, Station downStation, int distance, Line line) {
+        return new Section(null, upStation, downStation, distance, line);
+    }
+
 
     public Section(Long id, Station upStation, Station downStation, int distance, Line line) {
         this.id = id;

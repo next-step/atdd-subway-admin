@@ -29,7 +29,7 @@ public class StationService {
 
     @Transactional(readOnly = true)
     public Station findStation(Long lineId) {
-        Station station = stationRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선 ID입니다."));
+        Station station = stationRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 지하철역 ID입니다."));
         return station;
     }
 

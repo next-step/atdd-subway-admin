@@ -1,5 +1,7 @@
 package nextstep.subway.section.service;
 
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.application.StationService;
@@ -22,6 +24,14 @@ public class SectionService {
         Station upStation = stationService.findStation(upStationId);
         Station downStation = stationService.findStation(downStationId);
         return sectionRepository.save(Section.of(upStation, downStation, distance));
+
+    }
+
+    public void saveSection(Line line, SectionRequest sectionRequest) {
+        Station upStation = stationService.findStation(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStation(sectionRequest.getDownStationId());
+        Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
+        line.addAdditionalSection(section);
 
     }
 }

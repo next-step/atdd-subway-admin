@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.IncorrectSectionException;
 import nextstep.subway.line.dto.Stations;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
@@ -33,9 +34,28 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         section.setLine(this);
-        if (!sections.contains(section)) {
-            sections.add(section);
+        sections.add(section);
+    }
+    public void addAdditionalSection(Section section){
+        section.setLine(this);
+        Stations upStations = sections.getUpStations();
+        Stations downStations = sections.getDownStations();
+        if (upStations.contains(section.getUpStation()) && downStations.contains(section.getDownStation())) {
+            throw new IncorrectSectionException("이미 역들이 등록된 구간입니다");
         }
+        if (upStations.contains(section.getUpStation())) {
+            sections.addInMiddle(section);
+            return;
+        }
+        if (upStations.contains(section.getDownStation())) {
+            sections.addOnTop(section);
+            return;
+        }
+        if (downStations.contains(section.getUpStation())) {
+            sections.addBelow(section);
+            return;
+        }
+        throw new IncorrectSectionException("노선에 없는 역의 구간은 추가할 수 없습니다.");
     }
 
     public Long getId() {

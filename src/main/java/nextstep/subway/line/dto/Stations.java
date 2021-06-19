@@ -10,7 +10,7 @@ public class Stations {
     public Stations() {
     }
 
-    public List<Station> getStations() {
+    public List<Station> values() {
         return stations;
     }
 
