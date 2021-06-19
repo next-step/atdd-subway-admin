@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.exceptions.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -29,13 +30,20 @@ public class LineService {
         return lineRepository.findAll().stream().map(line->LineResponse.of(line)).collect(Collectors.toList());
     }
 
-    public Optional<Line> findById(Long id) {
-        return lineRepository.findById(id);
+    public Line findById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(()->new NotFoundException("invalid " + id));
     }
 
     public void updateLine(Long id, Line newLine) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("invalid "+id));
+                .orElseThrow(()-> new NotFoundException("invalid "+id));
         line.update(newLine);
+    }
+
+    public void deleteLine(Long id) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(()-> new NotFoundException("invalid "+id));
+        lineRepository.delete(line);
     }
 }

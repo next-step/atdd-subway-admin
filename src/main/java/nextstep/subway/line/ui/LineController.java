@@ -1,5 +1,6 @@
 package nextstep.subway.line.ui;
 
+import nextstep.subway.common.exceptions.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
@@ -32,9 +33,8 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> line(@PathVariable Long id) {
-        Line line = lineService.findById(id)
-                .orElseThrow(()->new IllegalArgumentException("invalid " + id));
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
+        Line line = lineService.findById(id);
         return ResponseEntity.ok(LineResponse.of(line));
     }
 
@@ -44,4 +44,17 @@ public class LineController {
         lineService.updateLine(id,new Line(request));
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+        lineService.deleteLine(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler(value={NotFoundException.class})
+    public ResponseEntity errorHandler(Exception ex) {
+        //log ex
+        return ResponseEntity.notFound().build();
+    }
+
 }
