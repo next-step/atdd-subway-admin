@@ -57,6 +57,12 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ## 미션 단계
 
+### Step4
+- [ ] 노선의 구간을 제거하는 기능을 구현하기
+  - [ ] 구간 삭제기능 인수테스트 추가
+  - [ ] 구간을 삭제 할 경우 양 옆의 구간이 합쳐져 하나가 된다.
+  - [ ] 마지막 하나 남은 구간에선 역을 삭제할 수 없다.
+
 ### Step3
 - [x] 기능 구현 전 Happy Path 인수 테스트 작성
 - [x] 예외 케이스 처리 인수 테스트 작성
