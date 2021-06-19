@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionStatus;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,16 +18,12 @@ class LineTest {
         Station 판교역 = new Station("판교역");
         Station 이매역 = new Station("이매역");
 
-        Section 상행 = new Section(SectionStatus.UP, 판교역);
-        Section 하행 = new Section(SectionStatus.DOWN, 이매역);
+        Section 구간 = new Section(판교역, 이매역, 10);
 
         //when
-        Line addedSectionLine = line.addUpSectionAndDownSection(상행, 하행);
+        Line addedSectionLine = line.addSection(구간);
 
         //then
-        assertThat(addedSectionLine.getSections()).containsExactlyInAnyOrder(
-                상행,
-                하행
-        );
+        assertThat(addedSectionLine.getSections()).containsExactlyInAnyOrder(구간);
     }
 }
