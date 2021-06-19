@@ -6,6 +6,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -44,5 +45,18 @@ public class Sections {
         return sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sections sections1 = (Sections) o;
+        return Objects.equals(sections, sections1.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sections);
     }
 }
