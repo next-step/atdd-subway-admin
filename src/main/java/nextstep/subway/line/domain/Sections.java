@@ -150,25 +150,40 @@ public class Sections {
 	}
 
 	public void remove(Station targetStation) {
-		if (sections.size() <= MINIMUM_SECTION_COUNT) {
-			throw new IllegalArgumentException("Section must be over at leat two count in line");
-		}
+		validateRemovable();
 
 		Section sectionWithSameUpStation = getCommonUpStationSection(targetStation);
 		Section sectionWithSameDownStation = getCommonDownStationSection(targetStation);
 
-		if (sectionWithSameUpStation == null && sectionWithSameDownStation == null) {
-			throw new NoSuchElementException("Request station is not on the line");
-		}
-
-		if (sectionWithSameUpStation != null && sectionWithSameDownStation != null) {
-			sections.add(new Section(sectionWithSameUpStation.getLine(),
-				sectionWithSameDownStation.getUpStation(),
-				sectionWithSameUpStation.getDownStation(),
-				sectionWithSameUpStation.getDistance() + sectionWithSameDownStation.getDistance()));
+		validateRequestStationExists(sectionWithSameUpStation, sectionWithSameDownStation);
+		if (isUpAndDownStationExist(sectionWithSameUpStation, sectionWithSameDownStation)) {
+			connectTwoStation(sectionWithSameUpStation, sectionWithSameDownStation);
 		}
 
 		sections.remove(sectionWithSameUpStation);
 		sections.remove(sectionWithSameDownStation);
+	}
+
+	private void validateRemovable() {
+		if (sections.size() <= MINIMUM_SECTION_COUNT) {
+			throw new IllegalArgumentException("Section must be over at leat two count in line");
+		}
+	}
+
+	private void connectTwoStation(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
+		sections.add(new Section(sectionWithSameUpStation.getLine(),
+			sectionWithSameDownStation.getUpStation(),
+			sectionWithSameUpStation.getDownStation(),
+			sectionWithSameUpStation.getDistance() + sectionWithSameDownStation.getDistance()));
+	}
+
+	private boolean isUpAndDownStationExist(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
+		return sectionWithSameUpStation != null && sectionWithSameDownStation != null;
+	}
+
+	private void validateRequestStationExists(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
+		if (sectionWithSameUpStation == null && sectionWithSameDownStation == null) {
+			throw new NoSuchElementException("Request station is not on the line");
+		}
 	}
 }
