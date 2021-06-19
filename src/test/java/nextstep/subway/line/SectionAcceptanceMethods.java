@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.assertj.core.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -29,6 +30,14 @@ public class SectionAcceptanceMethods {
         return response;
     }
 
+    public static ExtractableResponse<Response> 지하철_구간_삭제_요청(StationResponse station) {
+        ExtractableResponse<Response> response = RestAssured
+            .given().log().all()
+            .when().delete("/lines/{lineId}/sections?stationId={stationId}", 신분당선.getId(), station.getId())
+            .then().log().all().extract();
+        return response;
+    }
+
     public static void 지하철_구간_생성됨(ExtractableResponse<Response> response, StationResponse... stationsInOrder) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -40,5 +49,13 @@ public class SectionAcceptanceMethods {
 
     public static void 지하철_구간_생성_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static void 지하철_구간_삭제됨(ExtractableResponse<Response> response) {
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static void 지하철_구간_삭제_실패(ExtractableResponse<Response> response) {
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
