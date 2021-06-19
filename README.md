@@ -39,7 +39,8 @@ npm run dev
 <br>
 
 ## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+[텍스트와 이미지로 살펴
+보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
 <br>
 
@@ -72,10 +73,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [X] 삭제 
 
 ### 인수 테스트 리펙터링
-- [ ] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
-    - [ ] 두 종점역은 구간의 형태로 관리되어야 함
-- [ ] 노선 조회 시 응답 결과에 역 목록 추가하기
-    - [ ] 노선 조회 시 역 목록을 함께 응답할 수 있도록 변경
-    - [ ] 노선에 등록된 구간을 순서대로 정렬하여 상행 종점부터 하행 종점까지 목록을 응답하기
-    - [ ] 필요시 노선과 구간(혹은 역)의 관계를 새로 맺기
+- [X] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
+    - [X] 두 종점역은 구간의 형태로 관리되어야 함
+- [X] 노선 조회 시 응답 결과에 역 목록 추가하기
+    - [X] 노선 조회 시 역 목록을 함께 응답할 수 있도록 변경
+    - [X] 노선에 등록된 구간을 순서대로 정렬하여 상행 종점부터 하행 종점까지 목록을 응답하기
+    - [X] 필요시 노선과 구간(혹은 역)의 관계를 새로 맺기
 
