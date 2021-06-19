@@ -8,10 +8,15 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.NoneExistLineException;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.exception.NoneExistStationException;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -56,6 +62,51 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		assertThat("2호선").isEqualTo(lineResponse.getName());
 		assertThat("yellow").isEqualTo(lineResponse.getColor());
+	}
+
+	@DisplayName("지하철 노선을 생성한다. 실패 - 없는 역정보")
+	@Test
+	void createLine_RED_NoneExistStationException() throws JsonProcessingException {
+		// given, when 지하철_노선_생성_요청 + 상행, 하행 정보 요청 파라미터에 함께 추가
+		// when
+		LineRequest lineRequest = new LineRequest("2호선", "yellow", 1L, 1L, 1);
+		String req = objectMapper.writeValueAsString(lineRequest);
+
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+				.body(req)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when()
+				.post("/lines")
+				.then().log().all()
+				.extract();
+
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+	}
+
+	@DisplayName("지하철 노선을 생성한다. 실패 - 잘못된 거리정보")
+	@ParameterizedTest
+	@ValueSource(ints = {0, -1})
+	void createLine_RED_DISTANCE_VALID_EXCEPTION(int wrongDistanceValue) throws JsonProcessingException {
+		// given, when 지하철_노선_생성_요청 + 상행, 하행 정보 요청 파라미터에 함께 추가
+		StationRequest stationRequest = new StationRequest();
+		stationRequest.setName("잠실역");
+		ExtractableResponse<Response> stationRes = 지하철역_생성_요청(stationRequest);
+
+		StationResponse stationResponse = objectMapper.readValue(stationRes.response().asString(), StationResponse.class);
+
+		// when
+		LineRequest lineRequest = new LineRequest("2호선", "yellow", stationResponse.getId(), stationResponse.getId(), wrongDistanceValue);
+		String req = objectMapper.writeValueAsString(lineRequest);
+
+		ExtractableResponse<Response> response = RestAssured.given().log().all()
+				.body(req)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when()
+				.post("/lines")
+				.then().log().all()
+				.extract();
+
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
