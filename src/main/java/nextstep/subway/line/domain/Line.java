@@ -54,11 +54,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.getSections().stream()
-            .map(Section::asStations)
-            .flatMap(Collection::stream)
-            .distinct()
-            .collect(Collectors.toList());
+        return sections.getStations();
     }
 
     public void update(LineRequest updateRequest) {
