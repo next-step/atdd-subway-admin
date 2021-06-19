@@ -31,6 +31,7 @@ public class LineServiceTest extends ServiceTest {
 
 	private LineRequest 이호선;
 	private LineRequest 삼호선_이호선과_같은_색상;
+	private LineRequest 칠호선_순서뒤바꿈;
 	private LineRequest 사호선;
 
 	private String 강남역_아이디;
@@ -43,6 +44,7 @@ public class LineServiceTest extends ServiceTest {
 	private String 강남역_선릉역_간격;
 	private String 고속터미널역_교대역_간격;
 	private String 이수역_사당역_간격;
+	private String 이수역_고속터미널_간격;
 
 	@BeforeEach
 	void 초기화() {
@@ -56,9 +58,11 @@ public class LineServiceTest extends ServiceTest {
 		강남역_선릉역_간격 = "100";
 		고속터미널역_교대역_간격 = "200";
 		이수역_사당역_간격 = "300";
+		이수역_고속터미널_간격 = "400";
 
 		이호선 = new LineRequest("2호선", "#FFFFFF", 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 		삼호선_이호선과_같은_색상 = new LineRequest("3호선", "#FFFFFF", 고속터미널역_아이디, 교대역_아이디, 고속터미널역_교대역_간격);
+		칠호선_순서뒤바꿈 = new LineRequest("7호선", "#FFF000", 이수역_아이디, 고속터미널역_아이디, 이수역_고속터미널_간격);
 		사호선 = new LineRequest("4호선", "#000000", 이수역_아이디, 사당역_아이디, 이수역_사당역_간격);
 	}
 
@@ -193,6 +197,7 @@ public class LineServiceTest extends ServiceTest {
 		//given
 		LineResponse 이호선_응답 = lineService.saveLine(이호선);
 		LineResponse 사호선_응답 = lineService.saveLine(사호선);
+		LineResponse 이호선_순서뒤바꿈_응답 = lineService.saveLine(칠호선_순서뒤바꿈);
 
 		//when
 		List<LineResponse> 조회된_목록 = lineService.findAllLines();
@@ -200,6 +205,7 @@ public class LineServiceTest extends ServiceTest {
 		//then
 		assertThat(조회된_목록).contains(이호선_응답);
 		assertThat(조회된_목록).contains(사호선_응답);
+		assertThat(조회된_목록).contains(이호선_순서뒤바꿈_응답);
 	}
 
 	@Test
@@ -212,6 +218,21 @@ public class LineServiceTest extends ServiceTest {
 
 		//then
 		assertThat(조회된_이호선).isEqualTo(이호선_응답);
+	}
+
+	@Test
+	void 조회_순서뒤바꿈() {
+		//given
+		LineResponse 칠호선_순서뒤바꿈_응답 = lineService.saveLine(칠호선_순서뒤바꿈);
+
+		//when
+		LineResponse 조회된_이호선_순서뒤바꿈 = lineService.findLineById(칠호선_순서뒤바꿈_응답.getId());
+
+		//then
+		assertThat(조회된_이호선_순서뒤바꿈).isEqualTo(칠호선_순서뒤바꿈_응답);
+		assertThat(조회된_이호선_순서뒤바꿈.getStations().stream().map(StationResponse::getId).collect(Collectors.toList()))
+			.containsSequence(
+				Arrays.asList(이수역_아이디, 고속터미널역_아이디).stream().map(Long::parseLong).collect(Collectors.toList()));
 	}
 
 	@Test

@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -34,6 +35,12 @@ public class LineService {
 		StationGroup stationGroupToAdd = addUpStationAndDownStation(request);
 		Line persistLine = lineRepository.save(request.toLine(stationGroupToAdd));
 		sectionService.saveSection(request, persistLine);
+		return changeSortedStations(persistLine);
+	}
+
+	private LineResponse changeSortedStations(Line persistLine) {
+		StationGroup sortedStationGroup = sectionService.findSortedStationsByLine(persistLine);
+		persistLine.changeSortedStations(sortedStationGroup);
 		return LineResponse.of(persistLine);
 	}
 
@@ -47,13 +54,15 @@ public class LineService {
 
 	@Transactional(readOnly = true)
 	public List<LineResponse> findAllLines() {
-		List<Line> lines = lineRepository.findAll();
-		return LineResponse.ofList(lines);
+		return lineRepository.findAll().stream()
+			.map(this::changeSortedStations)
+			.collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
 	public LineResponse findLineById(Long id) {
-		return LineResponse.of(findLineByIdFromRepository(id));
+		Line persistLine = findLineByIdFromRepository(id);
+		return changeSortedStations(persistLine);
 	}
 
 	private Line findLineByIdFromRepository(Long id) {

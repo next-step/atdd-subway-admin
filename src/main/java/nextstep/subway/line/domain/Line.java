@@ -65,6 +65,10 @@ public class Line extends BaseEntity {
 		return stations.stations();
 	}
 
+	public void changeSortedStations(StationGroup sortedStationGroup) {
+		this.stations = sortedStationGroup;
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
