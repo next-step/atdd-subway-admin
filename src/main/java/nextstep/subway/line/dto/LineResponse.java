@@ -6,6 +6,7 @@ import nextstep.subway.station.domain.Stations;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public class LineResponse {
     private Long id;
@@ -63,5 +64,18 @@ public class LineResponse {
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LineResponse that = (LineResponse) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
