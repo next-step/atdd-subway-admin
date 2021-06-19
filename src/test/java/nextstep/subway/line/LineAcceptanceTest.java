@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 
@@ -55,13 +56,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createLineAsTestCase(LineRequest request) {
-        return RestAssured
-            .given().log().all()
+        return restAssured()
             .body(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post(RESOURCES)
             .then()
             .log().all().extract();
+    }
+
+    private RequestSpecification restAssured() {
+        return RestAssured
+            .given().log().all();
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -90,8 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createLineAsTestCase(new LineRequest("2호선", "bg-green-200", 1L, 2L, 10));
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = RestAssured
-            .given().log().all()
+        ExtractableResponse<Response> response = restAssured()
             .when().get(RESOURCES)
             .then().log().all().extract();
 
@@ -112,8 +116,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             new LineRequest("3호선", "bg-orange-100", 1L, 2L, 10));
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = RestAssured
-            .given().log().all()
+        ExtractableResponse<Response> response = restAssured()
             .when().get(expected.header(PATH_FROM_HEADER))
             .then().log().all().extract();
         // then
@@ -131,8 +134,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_수정_요청
         LineRequest updateRequest = new LineRequest("3호선", "bg-orange-300");
-        ExtractableResponse<Response> response = RestAssured
-            .given().log().all()
+        ExtractableResponse<Response> response = restAssured()
             .body(updateRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().put(expected.header(PATH_FROM_HEADER))
@@ -152,8 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // DB에 없는 노선에 수정 요청
         LineRequest updateRequest = new LineRequest("3호선", "bg-orange-300", 5L, 6L, 10);
 
-        ExtractableResponse<Response> response = RestAssured
-            .given().log().all()
+        ExtractableResponse<Response> response = restAssured()
             .body(updateRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().put("/lines/1")
@@ -174,8 +175,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_제거_요청
         // when
-        ExtractableResponse<Response> response = RestAssured
-            .given().log().all()
+        ExtractableResponse<Response> response = restAssured()
             .when().delete(expected.header(PATH_FROM_HEADER))
             .then().log().all().extract();
         // then
@@ -190,9 +190,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //
         // when
         // DB에 없는 노선 삭제 요청
-        // when
-        ExtractableResponse<Response> response = RestAssured
-            .given().log().all()
+        ExtractableResponse<Response> response = restAssured()
             .when().delete("/lines/1")
             .then().log().all().extract();
         // then
