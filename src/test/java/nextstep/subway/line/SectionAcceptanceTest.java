@@ -32,9 +32,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         List<StationRequest> stationRequests = new ArrayList<>();
 
         stationRequests.add(new StationRequest("강남역"));
-        stationRequests.add(new StationRequest("역삼역"));
-        stationRequests.add(new StationRequest("신촌역"));
-        stationRequests.add(new StationRequest("이대역"));
+        stationRequests.add(new StationRequest("양재역"));
+        stationRequests.add(new StationRequest("양재시민의 숲"));
+        stationRequests.add(new StationRequest("청계산 입구"));
 
         for (StationRequest stationRequest : stationRequests) {
             ExtractableResponse<Response> response = post(stationRequest, "/stations");
@@ -43,15 +43,32 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    @DisplayName("노선 구간 등록 : 중간 (역과 역 사이)")
+    @DisplayName("노선 구간 등록 : 중간(상행역이 일치하는 경우)")
     @Test
     void addSectionInMiddle() {
         //given
-        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("역삼역"), 10);
+        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("청계산 입구"), 10);
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
         Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
 
-        SectionRequest sectionRequest = new SectionRequest(stationMap.get("강남역"),  stationMap.get("신촌역"), 4);
+        SectionRequest sectionRequest = new SectionRequest(stationMap.get("강남역"),  stationMap.get("양재역"), 4);
+
+        // when
+        response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
+
+        // then
+        지하철_노선에_지하철역_등록됨(response);
+    }
+
+    @DisplayName("노선 구간 등록 : 중간(하행역이 일치하는 경우)")
+    @Test
+    void addSectionInMiddle2() {
+        //given
+        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("청계산 입구"), 10);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
+        Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
+
+        SectionRequest sectionRequest = new SectionRequest(stationMap.get("양재역"),  stationMap.get("청계산 입구"), 4);
 
         // when
         response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
