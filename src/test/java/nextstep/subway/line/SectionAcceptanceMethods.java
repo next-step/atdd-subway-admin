@@ -52,7 +52,7 @@ public class SectionAcceptanceMethods {
     }
 
     public static void 지하철_구간_삭제됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     public static void 지하철_구간_삭제_실패(ExtractableResponse<Response> response) {
