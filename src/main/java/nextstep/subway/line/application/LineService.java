@@ -23,7 +23,7 @@ import nextstep.subway.station.domain.StationGroup;
 @Transactional
 public class LineService {
 	private static final int ADJUST_NEXT_INDEX = 1;
-	
+
 	private StationService stationService;
 	private SectionService sectionService;
 	private LineRepository lineRepository;
