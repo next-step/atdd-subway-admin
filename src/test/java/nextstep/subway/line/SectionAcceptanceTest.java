@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -69,6 +70,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
 
         SectionRequest sectionRequest = new SectionRequest(stationMap.get("양재역"),  stationMap.get("청계산 입구"), 4);
+
+        // when
+        response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
+
+        // then
+        지하철_노선에_지하철역_등록됨(response);
+    }
+
+    @DisplayName("노선 구간 등록 : 중간(하행역이 일치하는 경우)")
+    @Test
+    void addSectionInFirst() {
+        //given
+        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("양재역"), stationMap.get("청계산 입구"), 10);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
+        Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
+
+        SectionRequest sectionRequest = new SectionRequest(stationMap.get("강남역"),  stationMap.get("양재역"), 4);
 
         // when
         response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
