@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.lineStation.domain.LineStation;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
@@ -21,6 +22,9 @@ public class Line extends BaseEntity {
 
     @OneToMany(mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
+
+    @OneToMany(mappedBy = "line")
+    private List<LineStation> lineStations = new ArrayList<>();
 
     public Line() {
     }
