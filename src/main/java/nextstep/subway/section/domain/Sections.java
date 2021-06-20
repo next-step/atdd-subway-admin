@@ -34,12 +34,8 @@ public class Sections {
     }
 
     private boolean isStationInSections(Station station) {
-        Set<Station> stationSet = new HashSet<>();
-        for (Section section : sections) {
-            stationSet.add(section.getUpStation());
-            stationSet.add(section.getDownStation());
-        }
-        return stationSet.contains(station);
+        return sections.stream()
+                .anyMatch(section -> section.isStationInSection(station));
     }
 
     private void changeStationInMiddleWhenEqualToUpStation(Section newSection) {

@@ -79,6 +79,10 @@ public class Section extends BaseEntity implements Comparable<Section> {
         calculateDistance(newSection);
     }
 
+    public boolean isStationInSection(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
     @Override
     public int compareTo(Section o) {
         if (this.getDownStation().equals(o.getUpStation())) {
