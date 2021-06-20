@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nextstep.subway.common.BaseEntity;

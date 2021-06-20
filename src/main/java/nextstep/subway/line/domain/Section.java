@@ -65,4 +65,8 @@ public class Section {
 	public void toLine(Line line) {
 		this.line = line;
 	}
+
+	public Station getStation(Direction direction) {
+		return (direction == Direction.UP) ? upStation : downStation;
+	}
 }
