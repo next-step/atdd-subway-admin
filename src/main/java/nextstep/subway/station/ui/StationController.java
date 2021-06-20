@@ -3,6 +3,7 @@ package nextstep.subway.station.ui;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.dto.StationsResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class StationController {
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
+    public ResponseEntity<StationsResponse> showStations() {
         return ResponseEntity.ok().body(stationService.findAllStations());
     }
 

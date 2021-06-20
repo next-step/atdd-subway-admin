@@ -1,10 +1,14 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.exception.NotExistLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineResponses;
+import nextstep.subway.line.dto.LinesResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,36 +17,43 @@ import java.util.List;
 @Service
 @Transactional
 public class LineService {
-    private final LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
+    private final LineRepository lineRepository;
+    private final StationService stationService;
+
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse save(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+
+        Section section = new Section(upStation, downStation, request.getDistance());
+
+        return LineResponse.of(lineRepository.save(request.toLine(section)));
     }
 
-    public LineResponses findAll() {
+    public LinesResponse findAll() {
         List<Line> lines = lineRepository.findAll();
-        return LineResponses.of(lines);
+        return LinesResponse.of(lines);
     }
 
-    public LineResponse retrieveById(Long id) {
-        Line line = findById(id);
+    public LineResponse findById(Long id) {
+        Line line = findByIdOrThrow(id);
 
         return LineResponse.of(line);
     }
 
     public void modify(Long id, LineRequest request) {
-        Line line = findById(id);
+        Line line = findByIdOrThrow(id);
         line.update(request.toLine());
     }
 
-    private Line findById(Long id) {
+    public Line findByIdOrThrow(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다. : " + id));
+                .orElseThrow(() -> new NotExistLineException(id));
     }
 
     public void deleteById(Long id) {

@@ -5,19 +5,18 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineResponses;
-import org.assertj.core.api.Assertions;
+import nextstep.subway.line.dto.LinesResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.AcceptanceTest.ID_POSITION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineStepTest {
 
-    public static final int ID_POSITION = 2;
     public static final String BASE_LINE_URL = "/lines";
 
     static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
@@ -52,11 +51,11 @@ public class LineStepTest {
                 .then().log().all().extract();
     }
 
-    static ExtractableResponse<Response> 지하철_노선_제거_요청(long firstLine) {
+    static ExtractableResponse<Response> 지하철_노선_제거_요청(long lineId) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete(BASE_LINE_URL + "/" + firstLine)
+                .when().delete(BASE_LINE_URL + "/" + lineId)
                 .then().log().all().extract();
     }
 
@@ -74,7 +73,7 @@ public class LineStepTest {
     }
 
     static void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, Long...ids) {
-        LineResponses lines = response.body().as(LineResponses.class);
+        LinesResponse lines = response.body().as(LinesResponse.class);
         List<Long> resultIds = lines.getLines().stream()
                 .map(line -> line.getId())
                 .collect(Collectors.toList());

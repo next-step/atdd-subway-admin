@@ -5,22 +5,22 @@ import nextstep.subway.line.domain.Line;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LineResponses {
+public class LinesResponse {
     private List<LineResponse> lines;
 
-    public LineResponses() {
+    public LinesResponse() {
     }
 
-    public LineResponses(List<LineResponse> lines) {
+    public LinesResponse(List<LineResponse> lines) {
         this.lines = lines;
     }
 
-    public static LineResponses of(List<Line> lines) {
+    public static LinesResponse of(List<Line> lines) {
         List<LineResponse> lineResponses = lines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
 
-        return new LineResponses(lineResponses);
+        return new LinesResponse(lineResponses);
     }
 
     public List<LineResponse> getLines() {
