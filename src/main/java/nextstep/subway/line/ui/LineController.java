@@ -59,14 +59,13 @@ public class LineController {
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity saveLineSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        Line line = lineService.findLine(lineId);
-        sectionService.saveSection(line, sectionRequest);
+        Line line = lineService.saveLineSection(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(LineResponse.of(line));
     }
 
     @DeleteMapping("/{lineId}/sections")
-    public ResponseEntity removeLineSection(@PathVariable Long lineId, @RequestParam Long stationId) {
-        //해당 노선의 역을 찾아 제거하고, 끊어진 구간을 다시 연결한다.
+    public ResponseEntity deleteLineSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.deleteLineSectionByStationId(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 

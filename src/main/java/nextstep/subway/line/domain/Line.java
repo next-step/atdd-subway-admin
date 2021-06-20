@@ -5,6 +5,7 @@ import nextstep.subway.exception.IncorrectSectionException;
 import nextstep.subway.line.dto.Stations;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
@@ -58,6 +59,22 @@ public class Line extends BaseEntity {
         throw new IncorrectSectionException("노선에 없는 역의 구간은 추가할 수 없습니다.");
     }
 
+    public void deleteSectioByStation(Station station) {
+        sections.Deletable();
+        Stations upStations = sections.getUpStations();
+        Stations downStations = sections.getDownStations();
+        if (upStations.contains(station) && downStations.contains(station)) {
+            sections.deleteMiddleSectionBy(station);
+            return;
+        }
+        if (upStations.contains(station)) {
+            sections.deleteFirstSectionBy(station);
+        }
+
+
+    }
+
+
     public Long getId() {
         return id;
     }
@@ -73,4 +90,6 @@ public class Line extends BaseEntity {
     public Stations getStations() {
         return sections.getStations();
     }
+
+
 }

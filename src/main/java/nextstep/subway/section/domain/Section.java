@@ -48,6 +48,11 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
+    public void changeDownStation(Station downStation, int distance) {
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
     public Long getId() {
         return id;
     }
@@ -71,4 +76,6 @@ public class Section extends BaseEntity {
     public void setLine(Line line) {
         this.line = line;
     }
+
+
 }

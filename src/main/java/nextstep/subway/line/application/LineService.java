@@ -8,6 +8,9 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.service.SectionService;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +21,15 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
+    private StationService stationService;
+    private SectionService sectionService;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService, SectionService sectionService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
+        this.sectionService = sectionService;
     }
+
 
     public LineResponse saveLine(LineRequest lineRequest, Section section) {
         Line line = lineRequest.toLine();
@@ -60,4 +68,21 @@ public class LineService {
         }
     }
 
+    public Line saveLineSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선 ID입니다."));
+        Station upStation = stationService.findStation(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStation(sectionRequest.getDownStationId());
+        Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
+        line.addAdditionalSection(section);
+        sectionService.save(section);
+
+        return line;
+    }
+
+    public Line deleteLineSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선 ID입니다."));
+        Station station = stationService.findStation(stationId);
+        line.deleteSectioByStation(station);
+        return line;
+    }
 }
