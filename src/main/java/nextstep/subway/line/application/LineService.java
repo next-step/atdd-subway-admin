@@ -37,7 +37,7 @@ public class LineService {
 		Section section = request.getSection(upStation, downStation);
 
 		Line line = request.toLine();
-		section.toLine(line);
+		section.setLine(line);
 
 		Line persistLine = lineRepository.save(line);
 

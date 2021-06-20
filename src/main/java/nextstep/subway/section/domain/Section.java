@@ -54,7 +54,10 @@ public class Section extends BaseEntity {
 		this.distance = distance;
 	}
 
-	public void toLine(Line line) {
+	public void setLine(Line line) {
+		if (this.line != null) {
+			line.deleteSection(this);
+		}
 		this.line = line;
 		line.addSection(this);
 	}

@@ -62,4 +62,8 @@ public class Line extends BaseEntity {
 	public List<Station> stationsFromUpToDown() {
 		return sections.stationsFromUpToDown();
 	}
+
+	public void deleteSection(Section section) {
+		sections.delete(section);
+	}
 }

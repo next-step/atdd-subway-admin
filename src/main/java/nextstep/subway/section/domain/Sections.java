@@ -70,6 +70,9 @@ public class Sections {
 	}
 
 	public Station findFirst() {
+		if (sections.isEmpty()) {
+			throw new IllegalArgumentException("구간이 존재하지 않습니다.");
+		}
 		Station standardStation = sections.get(0).getUpStation();
 		return trackUpStation(standardStation);
 	}
@@ -89,6 +92,9 @@ public class Sections {
 	}
 
 	public Station findLast() {
+		if (sections.isEmpty()) {
+			throw new IllegalArgumentException("구간이 존재하지 않습니다.");
+		}
 		Station standardStation = sections.get(0).getDownStation();
 		return trackDownStation(standardStation);
 	}
@@ -114,5 +120,9 @@ public class Sections {
 	private boolean hasNextStation(Station upStation) {
 		return sections.stream()
 			.anyMatch(section -> section.isEqualToUpStation(upStation));
+	}
+
+	public void delete(Section section) {
+		sections.remove(section);
 	}
 }
