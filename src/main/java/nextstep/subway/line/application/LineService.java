@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.AlreadyExistLineException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,61 +16,64 @@ import java.util.Optional;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+	@Autowired
+	private LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
-        this.lineRepository = lineRepository;
-    }
+	@Autowired
+	private SectionService sectionService;
 
-    public LineResponse saveLine(LineRequest request) {
-        Optional<Line> findLine = lineRepository.findByName(request.getName());
-        if (findLine.isPresent()) {
-            throw new AlreadyExistLineException("이미 등록된 노선 정보입니다.");
-        }
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
-    }
+	public LineResponse saveLine(LineRequest request) {
+		Optional<Line> findLine = lineRepository.findByName(request.getName());
+		if (findLine.isPresent()) {
+			throw new AlreadyExistLineException("이미 등록된 노선 정보입니다.");
+		}
+		Line line = Line.create(request.getName(), request.getColor());
 
-    @Transactional(readOnly = true)
-    public List<LineResponse> findAll() {
-        List<Line> lines = lineRepository.findAll();
+		sectionService.create(line, request.getUpStationId(), request.getDownStationId(), request.getDistance());
 
-        List<LineResponse> lineResponses = new ArrayList<>();
-        for (Line line: lines) {
-            lineResponses.add(LineResponse.of(line));
-        }
+		Line newLine = lineRepository.save(line);
 
-        return lineResponses;
-    }
+		return LineResponse.of(newLine);
+	}
 
-    public LineResponse findByName(String name) {
-        Line line = checkExistLine(name);
+	@Transactional(readOnly = true)
+	public List<LineResponse> findAll() {
+		List<Line> lines = lineRepository.findAll();
 
-        return LineResponse.of(line);
-    }
+		List<LineResponse> lineResponses = new ArrayList<>();
+		for (Line line : lines) {
+			lineResponses.add(LineResponse.of(line));
+		}
 
-    public LineResponse updateByName(LineRequest req) {
-        Line line = checkExistLine(req.getName());
+		return lineResponses;
+	}
 
-        line.updateColor(req.getColor());
+	public LineResponse findByName(String name) {
+		Line line = checkExistLine(name);
 
-        return LineResponse.of(line);
-    }
+		return LineResponse.of(line);
+	}
 
-    public void deleteByName(String name) {
-        Optional<Line> line = lineRepository.findByName(name);
+	public LineResponse updateByName(LineRequest req) {
+		Line line = checkExistLine(req.getName());
 
-        line.ifPresent(value -> lineRepository.delete(value));
-    }
+		line.updateColor(req.getColor());
 
-    private Line checkExistLine(String name) {
-        Optional<Line> byName = lineRepository.findByName(name);
-        if (!byName.isPresent()) {
-            throw new IllegalArgumentException("해당 노선을 찾을 수 없습니다.");
-        }
+		return LineResponse.of(line);
+	}
 
-        return byName.get();
-    }
+	public void deleteByName(String name) {
+		Optional<Line> line = lineRepository.findByName(name);
 
+		line.ifPresent(value -> lineRepository.delete(value));
+	}
 
+	private Line checkExistLine(String name) {
+		Optional<Line> byName = lineRepository.findByName(name);
+		if (!byName.isPresent()) {
+			throw new IllegalArgumentException("해당 노선을 찾을 수 없습니다.");
+		}
+
+		return byName.get();
+	}
 }

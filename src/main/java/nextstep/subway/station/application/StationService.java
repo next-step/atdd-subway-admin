@@ -13,27 +13,27 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class StationService {
-    private StationRepository stationRepository;
+	private StationRepository stationRepository;
 
-    public StationService(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
+	public StationService(StationRepository stationRepository) {
+		this.stationRepository = stationRepository;
+	}
 
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationResponse.of(persistStation);
-    }
+	public StationResponse saveStation(StationRequest stationRequest) {
+		Station persistStation = stationRepository.save(new Station(stationRequest.getName()));
+		return StationResponse.of(persistStation);
+	}
 
-    @Transactional(readOnly = true)
-    public List<StationResponse> findAllStations() {
-        List<Station> stations = stationRepository.findAll();
+	@Transactional(readOnly = true)
+	public List<StationResponse> findAllStations() {
+		List<Station> stations = stationRepository.findAll();
 
-        return stations.stream()
-                .map(station -> StationResponse.of(station))
-                .collect(Collectors.toList());
-    }
+		return stations.stream()
+				.map(station -> StationResponse.of(station))
+				.collect(Collectors.toList());
+	}
 
-    public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
-    }
+	public void deleteStationById(Long id) {
+		stationRepository.deleteById(id);
+	}
 }

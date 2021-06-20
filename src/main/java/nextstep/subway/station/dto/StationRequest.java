@@ -9,7 +9,9 @@ public class StationRequest {
         return name;
     }
 
-    public Station toStation() {
-        return new Station(name);
+    public void setName(String name) {
+        this.name = name;
     }
+
+    public StationRequest() { }
 }
