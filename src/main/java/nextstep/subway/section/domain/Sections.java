@@ -45,6 +45,10 @@ public class Sections {
 
     public void removeSection(Station station) {
         findContainSection(station).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_SECTION));
+
+        if (sections.size() <= 1) {
+            throw new RuntimeException(SECTIONS_HAVE_ONLY_ONE);
+        }
     }
 
     private Section getFirstSection() {

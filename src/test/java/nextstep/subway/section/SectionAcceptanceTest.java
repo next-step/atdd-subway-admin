@@ -34,6 +34,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private static String 에러_메시지_역이_구간에_포함되지_않음 = ErrorMessage.NOT_FOUND_STATIONS_SECTION;
     private static String 에러_메시지_구간이_너무_김 = ErrorMessage.DISTANCE_TOO_LONG;
     private static String 에러_메시지_구간에_포함된_역이_아님 = ErrorMessage.NOT_FOUND_SECTION;
+    private static String 에러_미시지_구간이_하나의_구간만_존재 = ErrorMessage.SECTIONS_HAVE_ONLY_ONE;
 
     private static ExtractableResponse<Response> 신분당선_생성_응답;
 
@@ -158,11 +159,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSectionFailByNotFoundStation() {
         //given
+
         // when
         // 지하철_구간_삭제_요청
         ExtractableResponse<Response> 구간삭제_응답 = 구간_삭제_요청(번호_추출(신분당선_생성_응답), 판교역_번호);
+
         //then
         지하철_구간_삭제_요청_실패(구간삭제_응답, 에러_메시지_구간에_포함된_역이_아님);
+    }
+
+    @DisplayName("지하철 구간 삭제 실패 - 구간이 하나만 존재")
+    @Test
+    void deleteSectionFailedByOnlyOneSection() {
+        //given
+        ExtractableResponse<Response> 구간삭제_응답 = 구간_삭제_요청(번호_추출(신분당선_생성_응답), 양재역_번호);
+
+        //then
+        지하철_구간_삭제_요청_실패(구간삭제_응답, 에러_미시지_구간이_하나의_구간만_존재);
     }
 
     private ExtractableResponse<Response> 역_생성_요청(String 이름, String 색) {
