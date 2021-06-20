@@ -33,15 +33,20 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
-        validateSection(upStation, downStation, distance);
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        validateArguments(upStation, downStation, distance);
 
+        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    private void validateSection(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, upStation, downStation, distance);
+    }
+
+    private void validateArguments(Station upStation, Station downStation, int distance) {
         if (Objects.isNull(upStation) || Objects.isNull(downStation)) {
             throw new IllegalArgumentException("양 끝 Station이 반드시 존재해야 합니다.");
         }
@@ -72,11 +77,11 @@ public class Section extends BaseEntity {
         validateReducible(section);
 
         if (this.upStation == section.upStation) {
-            return new Section(
+            return new Section(this.line,
                 section.downStation, this.downStation, this.distance - section.distance);
         }
 
-        return new Section(
+        return new Section(this.line,
             this.upStation, section.upStation, this.distance - section.distance);
     }
 
