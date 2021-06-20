@@ -28,13 +28,28 @@ public class SectionService {
     }
 
     public LineResponse addSection(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_LINE));
+        Line line = getLine(id);
 
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_STATION));
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_STATION));
+        Station downStation = getStation(lineRequest.getDownStationId());
+        Station upStation = getStation(lineRequest.getUpStationId());
 
         Section section = line.updateAddSection(upStation, downStation, lineRequest.getDistance());
         sectionRepository.save(section);
         return LineResponse.of(line);
+    }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = getLine(lineId);
+        Station station = getStation(stationId);
+
+        line.removeSection(station);
+    }
+
+    private Station getStation(Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_STATION));
+    }
+
+    private Line getLine(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_LINE));
     }
 }

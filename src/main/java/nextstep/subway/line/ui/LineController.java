@@ -71,7 +71,7 @@ public class LineController {
     public ResponseEntity removeLineStation(
             @PathVariable Long lineId,
             @RequestParam Long stationId) {
-        lineService.removeSectionByStationId(lineId, stationId);
+        sectionService.removeSectionByStationId(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 

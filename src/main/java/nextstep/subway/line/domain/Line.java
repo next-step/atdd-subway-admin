@@ -49,6 +49,10 @@ public class Line extends BaseEntity {
         return sections;
     }
 
+    public void removeSection(Station station) {
+        sections.removeSection(station);
+    }
+
     public void updateNameColor(String name, String color) {
         this.name = name;
         this.color = color;

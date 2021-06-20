@@ -24,6 +24,7 @@ import nextstep.subway.AcceptanceTest;
 
 @DisplayName("지하철 구간 인수 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
+    public static final String STATION_ID = "stationId";
     private static String 강남역_번호;
     private static String 양재역_번호;
     private static String 판교역_번호;
@@ -32,6 +33,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private static String 에러_메시지_역을_찾을_수_없음 = ErrorMessage.NOT_FOUND_STATION;
     private static String 에러_메시지_역이_구간에_포함되지_않음 = ErrorMessage.NOT_FOUND_STATIONS_SECTION;
     private static String 에러_메시지_구간이_너무_김 = ErrorMessage.DISTANCE_TOO_LONG;
+    private static String 에러_메시지_구간에_포함된_역이_아님 = ErrorMessage.NOT_FOUND_SECTION;
 
     private static ExtractableResponse<Response> 신분당선_생성_응답;
 
@@ -152,6 +154,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_순서_이름으로_검사(구간추가_응답, 강남역_이름, 양재역_이름, 판교역_이름);
     }
 
+    @DisplayName("지하철 구간 삭제 실패 - 역이 없는 경우")
+    @Test
+    void deleteSectionFailByNotFoundStation() {
+        //given
+        // when
+        // 지하철_구간_삭제_요청
+        ExtractableResponse<Response> 구간삭제_응답 = 구간_삭제_요청(번호_추출(신분당선_생성_응답), 판교역_번호);
+        //then
+        지하철_구간_삭제_요청_실패(구간삭제_응답, 에러_메시지_구간에_포함된_역이_아님);
+    }
+
     private ExtractableResponse<Response> 역_생성_요청(String 이름, String 색) {
         Map<String, String> 요청_내용 = new HashMap<>();
         요청_내용.put(PARAM_NAME, 이름);
@@ -213,6 +226,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> 구간_삭제_요청(String 노선_번호, String 역_번호) {
+        return RestAssured.given().log().all()
+                .param(STATION_ID, Long.parseLong(역_번호))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + 노선_번호 + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
     private void 지하철_구간_생성됨(ExtractableResponse<Response> 구간_생성_응답) {
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(구간_생성_응답.header(LOCATION)).isNotBlank();
@@ -243,5 +266,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(역_목록.get(0)).isEqualTo(첫_번째_역_이름);
         assertThat(역_목록.get(1)).isEqualTo(두_번째_역_이름);
         assertThat(역_목록.get(2)).isEqualTo(세_번째_역_이름);
+    }
+
+    private void 지하철_구간_삭제_요청_실패(ExtractableResponse<Response> 구간_삭제_요청_실패_응답, String expectMessage) {
+        assertThat(HttpStatus.BAD_REQUEST.value()).isEqualTo(구간_삭제_요청_실패_응답.statusCode());
+        assertThat(expectMessage).isEqualTo(구간_삭제_요청_실패_응답.body().jsonPath().get("message"));
     }
 }

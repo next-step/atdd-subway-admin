@@ -43,6 +43,10 @@ public class Sections {
         return result;
     }
 
+    public void removeSection(Station station) {
+        findContainSection(station).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_SECTION));
+    }
+
     private Section getFirstSection() {
         return sections.get(0);
     }
