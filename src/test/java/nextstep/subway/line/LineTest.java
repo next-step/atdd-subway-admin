@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.exception.InvalidDistanceException;
 import nextstep.subway.station.domain.Station;
 
 public class LineTest {
@@ -102,6 +103,6 @@ public class LineTest {
 		//then
 		assertThatThrownBy(
 			() -> lineShinBunDang.addSection(section)
-		).isInstanceOf(IllegalArgumentException.class);
+		).isInstanceOf(InvalidDistanceException.class);
 	}
 }
