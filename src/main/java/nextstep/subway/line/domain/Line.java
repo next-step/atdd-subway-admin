@@ -35,9 +35,11 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         section.setLine(this);
+        section.setSectionIndex(0);
         sections.add(section);
     }
     public void addAdditionalSection(Section section){
+        sections.sort();
         section.setLine(this);
         Stations upStations = sections.getUpStations();
         Stations downStations = sections.getDownStations();
@@ -59,22 +61,22 @@ public class Line extends BaseEntity {
         throw new IncorrectSectionException("노선에 없는 역의 구간은 추가할 수 없습니다.");
     }
 
-    public void deleteSectioByStation(Station station) {
+    public Section deleteSectioByStation(Station station) {
         sections.Deletable();
         sections.sort();
         Stations upStations = sections.getUpStations();
         Stations downStations = sections.getDownStations();
         if (upStations.contains(station) && downStations.contains(station)) {
-            sections.deleteMiddleSectionBy(station);
-            return;
+            Section deletableSection = sections.deleteMiddleSectionBy(station);
+            return deletableSection;
         }
         if (upStations.contains(station)) {
-            sections.deleteFirstSectionBy(station);
-            return;
+            Section deletableSection = sections.deleteFirstSectionBy(station);
+            return deletableSection;
         }
         if (downStations.contains(station)) {
-            sections.deleteLastSectionBy(station);
-            return;
+            Section deletableSection = sections.deleteLastSectionBy(station);
+            return deletableSection;
         }
         throw new IncorrectSectionException("노선에 없는 역으로 삭제할 수 없습니다.");
     }

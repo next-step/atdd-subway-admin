@@ -23,6 +23,7 @@ public class Sections {
     }
 
     public void addInMiddle(Section section) {
+
         this.sections.stream()
                 .filter(oldSection -> section.getUpStation().equals(oldSection.getUpStation()))
                 .findFirst()
@@ -74,23 +75,26 @@ public class Sections {
         }
     }
 
-    public void deleteMiddleSectionBy(Station station) {
+    public Section deleteMiddleSectionBy(Station station) {
         Section upSection = getSectionByDown(station);
         Section downSection = getSectionByUp(station);
         upSection.changeStation(upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance()+downSection.getDistance());
         sections.remove(downSection);
         reindexing();
+        return downSection;
     }
 
-    public void deleteFirstSectionBy(Station station) {
+    public Section deleteFirstSectionBy(Station station) {
         Section upSection = getSectionByUp(station);
         sections.remove(upSection);
         reindexing();
+        return upSection;
     }
 
-    public void deleteLastSectionBy(Station station) {
+    public Section deleteLastSectionBy(Station station) {
         Section downSection = getSectionByDown(station);
         sections.remove(downSection);
+        return downSection;
     }
 
     private void reindexing() {
@@ -100,8 +104,8 @@ public class Sections {
     public Stations getStations() {
         sort();
         Stations stations = new Stations();
-        stations.add(sections.get(0).getUpStation());
         for (Section section : sections) {
+            stations.add(section.getUpStation());
             stations.add(section.getDownStation());
         }
         return stations;

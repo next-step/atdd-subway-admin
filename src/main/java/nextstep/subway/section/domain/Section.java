@@ -48,6 +48,7 @@ public class Section extends BaseEntity implements Comparable<Section>{
         this.downStation = downStation;
         this.distance = distance;
         this.line = line;
+        this.sectionIndex = Integer.MAX_VALUE;
     }
 
     public void changeDownStation(Station downStation, int distance) {

@@ -27,4 +27,8 @@ public class SectionService {
     public Section save(Section section) {
         return sectionRepository.save(section);
     }
+
+    public void delete(Section deletableSection) {
+        sectionRepository.delete(deletableSection);
+    }
 }

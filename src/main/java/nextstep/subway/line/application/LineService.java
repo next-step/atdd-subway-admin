@@ -81,7 +81,8 @@ public class LineService {
     public Line deleteLineSectionBy(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선 ID입니다."));
         Station station = stationService.findStation(stationId);
-        line.deleteSectioByStation(station);
+        Section deletableSection = line.deleteSectioByStation(station);
+        sectionService.delete(deletableSection);
         return line;
     }
 }
