@@ -75,11 +75,10 @@ public class LineService {
         Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
         line.addAdditionalSection(section);
         sectionService.save(section);
-
         return line;
     }
 
-    public Line deleteLineSectionByStationId(Long lineId, Long stationId) {
+    public Line deleteLineSectionBy(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선 ID입니다."));
         Station station = stationService.findStation(stationId);
         line.deleteSectioByStation(station);

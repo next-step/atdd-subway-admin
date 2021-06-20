@@ -29,12 +29,12 @@ public class Sections {
                 .ifPresent(
                         oldSection -> {
                             validateDistance(oldSection.getDistance(), section.getDistance());
-                            sections.add(section);
-                            sections.add(Section.of(section.getDownStation(), oldSection.getDownStation(), oldSection.getDistance() - section.getDistance()));
-                            sections.remove(oldSection);
+                            oldSection.changeStation(section.getDownStation(), oldSection.getDownStation(), oldSection.getDistance() - section.getDistance());
+                            sections.add(sections.indexOf(oldSection), section);
                             return;
                         }
                 );
+        reindexing();
     }
 
     public void addOnTop(Section section) {
@@ -46,6 +46,7 @@ public class Sections {
                             sections.add(0,section);
                         }
                 );
+        reindexing();
     }
 
     public void addBelow(Section section) {
@@ -57,6 +58,7 @@ public class Sections {
                             sections.add(section);
                         }
                 );
+        reindexing();
     }
 
     private void validateDistance(int oldDistance, int newDistance) {
@@ -75,13 +77,15 @@ public class Sections {
     public void deleteMiddleSectionBy(Station station) {
         Section upSection = getSectionByDown(station);
         Section downSection = getSectionByUp(station);
-        upSection.changeDownStation(downSection.getDownStation(), upSection.getDistance()+downSection.getDistance());
+        upSection.changeStation(upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance()+downSection.getDistance());
         sections.remove(downSection);
+        reindexing();
     }
 
     public void deleteFirstSectionBy(Station station) {
         Section upSection = getSectionByUp(station);
         sections.remove(upSection);
+        reindexing();
     }
 
     public void deleteLastSectionBy(Station station) {
@@ -89,7 +93,12 @@ public class Sections {
         sections.remove(downSection);
     }
 
+    private void reindexing() {
+        sections.stream().forEach(section -> section.setSectionIndex(sections.indexOf(section)));
+    }
+
     public Stations getStations() {
+        sort();
         Stations stations = new Stations();
         stations.add(sections.get(0).getUpStation());
         for (Section section : sections) {
@@ -126,4 +135,7 @@ public class Sections {
         ).findFirst().get();
     }
 
+    public void sort() {
+        Collections.sort(sections);
+    }
 }

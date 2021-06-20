@@ -15,8 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -48,7 +49,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 구간추가(params);
 
         // then
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
 
@@ -61,9 +62,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
 
-    @DisplayName("노선에 구간을 제거한다")
+    @DisplayName("노선의 중간 역을 제거한다")
     @Test
-    void removeSection() {
+    void deleteMiddleSection() {
         //given
         String newStationName = "교대역";
         StationResponse 교대역 = StationAcceptanceTest.지하철역_등록(newStationName);
@@ -75,8 +76,56 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 구간제거(교대역.getId());
 
         // then
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.searchLine(이호선.getId());
+        LineResponse searchedLine = lineResponse.jsonPath().getObject(".", LineResponse.class);
+        assertThat(searchedLine.getStations().get(0).getName()).isEqualTo("강남역");
+        assertThat(searchedLine.getStations().get(1).getName()).isEqualTo("사당역");
     }
+
+    @DisplayName("노선에 상행종점역을 제거한다")
+    @Test
+    void deleteFirstSectionByStation() {
+        //given
+        String newStationName = "교대역";
+        StationResponse 교대역 = StationAcceptanceTest.지하철역_등록(newStationName);
+        int distance = 1000;
+        Map<String, String> params = 구간_추가_파라미터생성(교대역.getId(), distance);
+        구간추가(params);
+
+        // when
+        ExtractableResponse<Response> response = 구간제거(강남역.getId());
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.searchLine(이호선.getId());
+        LineResponse searchedLine = lineResponse.jsonPath().getObject(".", LineResponse.class);
+        assertThat(searchedLine.getStations().get(0).getName()).isEqualTo("교대역");
+        assertThat(searchedLine.getStations().get(1).getName()).isEqualTo("사당역");
+    }
+
+    @DisplayName("노선에 하행 종점역을 제거한다")
+    @Test
+    void deleteLastSectionByStation() {
+        //given
+        String newStationName = "교대역";
+        StationResponse 교대역 = StationAcceptanceTest.지하철역_등록(newStationName);
+        int distance = 1000;
+        Map<String, String> params = 구간_추가_파라미터생성(교대역.getId(), distance);
+        구간추가(params);
+
+        // when
+        ExtractableResponse<Response> response = 구간제거(사당역.getId());
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> lineResponse = LineAcceptanceTest.searchLine(이호선.getId());
+        LineResponse searchedLine = lineResponse.jsonPath().getObject(".", LineResponse.class);
+        assertThat(searchedLine.getStations().get(0).getName()).isEqualTo("강남역");
+        assertThat(searchedLine.getStations().get(1).getName()).isEqualTo("교대역");
+    }
+
+
 
     private ExtractableResponse<Response> 구간추가(Map<String, String> params) {
         return RestAssured
@@ -97,6 +146,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
 
     }
+
 
 
 

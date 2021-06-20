@@ -61,6 +61,7 @@ public class Line extends BaseEntity {
 
     public void deleteSectioByStation(Station station) {
         sections.Deletable();
+        sections.sort();
         Stations upStations = sections.getUpStations();
         Stations downStations = sections.getDownStations();
         if (upStations.contains(station) && downStations.contains(station)) {
@@ -69,9 +70,8 @@ public class Line extends BaseEntity {
         }
         if (upStations.contains(station)) {
             sections.deleteFirstSectionBy(station);
+            return;
         }
-
-
     }
 
 

@@ -31,7 +31,6 @@ class LineServiceTest {
         //then
         assertThat(이호선.getStations().values()).containsExactly(강남역,사당역,교대역);
 
-
     }
 
 

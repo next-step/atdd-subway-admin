@@ -5,13 +5,13 @@ import nextstep.subway.station.domain.Station;
 import java.util.*;
 
 public class Stations {
-    private List<Station> stations = new ArrayList<>();
+    private Set<Station> stations = new LinkedHashSet<>();
 
     public Stations() {
     }
 
     public List<Station> values() {
-        return stations;
+        return new ArrayList<>(stations);
     }
 
     public void add(Station upStation) {
