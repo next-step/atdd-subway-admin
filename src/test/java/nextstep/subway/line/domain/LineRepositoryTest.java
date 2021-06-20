@@ -62,7 +62,7 @@ public class LineRepositoryTest {
 
 		//then
 		assertThat(영속화된_이호선_역_그룹_포함).isNotNull();
-		assertThat(영속화된_이호선_역_그룹_포함.stations()).containsSequence(역_그룹.stations());
+		assertThat(영속화된_이호선_역_그룹_포함.stationGroup().stations()).containsSequence(역_그룹.stations());
 	}
 
 	@Test

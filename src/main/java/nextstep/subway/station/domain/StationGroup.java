@@ -55,6 +55,24 @@ public class StationGroup {
 		stationGroup.stations.forEach(this::remove);
 	}
 
+	public void clear() {
+		stations.clear();
+	}
+
+	public boolean isEmpty() {
+		return stations.isEmpty();
+	}
+
+	public int indexOf(Station station) {
+		return stations.indexOf(station);
+	}
+
+	public void add(int index, Station station) {
+		if (!contains(station)) {
+			stations.add(index, station);
+		}
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {

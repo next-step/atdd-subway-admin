@@ -25,17 +25,11 @@ public class LineResponse extends BaseResponse {
 	}
 
 	public static LineResponse of(Line line) {
-		List<StationResponse> stations = line.stations().stream()
+		List<StationResponse> stations = line.stationGroup().stations().stream()
 			.map(StationResponse::of)
 			.collect(Collectors.toList());
 		return new LineResponse(line.id(), line.name(), line.color(), stations, line.createdDate(),
 			line.modifiedDate());
-	}
-
-	public static List<LineResponse> ofList(List<Line> lines) {
-		return lines.stream()
-			.map(LineResponse::of)
-			.collect(Collectors.toList());
 	}
 
 	public Long getId() {

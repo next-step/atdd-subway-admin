@@ -108,7 +108,7 @@ public class LineTest {
 
 		//then
 		assertThat(이호선).isNotNull();
-		assertThat(이호선.stations()).containsSequence(역_그룹.stations());
+		assertThat(이호선.stationGroup().stations()).containsSequence(역_그룹.stations());
 	}
 
 	@Test
