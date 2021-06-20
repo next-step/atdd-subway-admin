@@ -9,11 +9,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import nextstep.subway.exception.LimitDistanceException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section {
-
+	public static final int MIN_DISTANCE = 0;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -39,6 +40,10 @@ public class Section {
 	public Section(Station upStation, Station downStation, int distance) {
 		this.upStation = upStation;
 		this.downStation = downStation;
+
+		if (distance <= MIN_DISTANCE) {
+			throw new LimitDistanceException(MIN_DISTANCE);
+		}
 		this.distance = distance;
 	}
 
@@ -68,5 +73,9 @@ public class Section {
 
 	public Station getStation(Direction direction) {
 		return (direction == Direction.UP) ? upStation : downStation;
+	}
+
+	public boolean containStation(Station station) {
+		return upStation == station || downStation == station;
 	}
 }

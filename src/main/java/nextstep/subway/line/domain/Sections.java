@@ -10,6 +10,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.exception.CanNotAddSectionException;
+import nextstep.subway.exception.RegisteredSectionException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -25,6 +27,9 @@ public class Sections {
             sections.add(section);
             return;
         }
+
+        validate(section);
+
         if (isFirstSection(section)) {
             sections.add(FIRST_INDEX, section);
             return;
@@ -74,7 +79,6 @@ public class Sections {
             return new Section(newSection.getStation(Direction.DOWN), oldSection.getStation(Direction.DOWN), distance);
         }
         return new Section(oldSection.getStation(Direction.UP), newSection.getStation(Direction.UP), distance);
-
     }
 
     public List<Station> stations() {
@@ -83,5 +87,18 @@ public class Sections {
             stations.addAll(Arrays.asList(section.getUpStation(), section.getDownStation()));
         }
         return new ArrayList<>(stations);
+    }
+
+    public void validate(Section section) {
+        if (contains(section.getUpStation()) && contains(section.getDownStation())) {
+            throw new RegisteredSectionException();
+        }
+        if (!contains(section.getUpStation()) && !contains(section.getDownStation())) {
+            throw new CanNotAddSectionException();
+        }
+    }
+
+    public boolean contains(Station station) {
+        return sections.stream().anyMatch(s -> s.containStation(station));
     }
 }

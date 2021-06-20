@@ -1,4 +1,4 @@
-package nextstep.subway.common;
+package nextstep.subway.common.handler;
 
 import static org.springframework.http.HttpStatus.*;
 
