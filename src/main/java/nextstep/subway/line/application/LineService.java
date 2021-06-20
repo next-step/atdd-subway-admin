@@ -93,12 +93,17 @@ public class LineService {
 
 	public void removeStation(Long stationId) {
 		Set<Long> lineIds = getLineIds(stationId);
+		Station deleteStation = getStation(stationId);
+		List<Line> lineList = getLinesByIds(lineIds);
 
-		for (Long lineId : lineIds) {
-			Line line = getLine(lineId);
-			Station deleteStation = getStation(stationId);
+		for (Line line : lineList) {
 			line.remove(deleteStation);
 		}
+	}
+
+	private List<Line> getLinesByIds(Set<Long> lineIds) {
+		return lines.findByIdIn(lineIds)
+			.orElseThrow(() -> new NoSuchElementException("There is no line for the ids"));
 	}
 
 	private Set<Long> getLineIds(Long stationId) {
