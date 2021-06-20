@@ -18,11 +18,10 @@ public class LineResponse {
     }
 
     public LineResponse(Long id, String name, String color, Stations stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        System.out.println(stations.getStations());
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations.getStations();
+        this.stations = stations.values();
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }

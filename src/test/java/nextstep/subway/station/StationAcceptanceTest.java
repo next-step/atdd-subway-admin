@@ -113,7 +113,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    public static StationResponse saveStation(String name) {
+    public static StationResponse 지하철역_등록(String name) {
         Map<String, String> params = generateParams(name);
         ExtractableResponse<Response> response = StationAcceptanceTest.post(params);
         StationResponse savedStation = response.jsonPath().getObject(".", StationResponse.class);
