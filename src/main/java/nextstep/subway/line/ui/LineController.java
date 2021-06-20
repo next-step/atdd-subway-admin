@@ -64,6 +64,13 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(LineResponse.of(line));
     }
 
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity removeLineSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        //해당 노선의 역을 찾아 제거하고, 끊어진 구간을 다시 연결한다.
+        return ResponseEntity.ok().build();
+    }
+
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity handleIllegalArgsException(RuntimeException e) {
         return ResponseEntity.badRequest().build();

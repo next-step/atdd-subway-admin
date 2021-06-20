@@ -1,30 +1,16 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.*;
 
-//@ExtendWith(MockitoExtension.class)
 @DisplayName("노선 관련 기능")
 class LineServiceTest {
-
-//    @Mock
-//    private LineService lineService;
 
     @DisplayName("노선 종점 사이 중간역 추가")
     @Test

@@ -39,24 +39,65 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSection() {
         //given
-        StationResponse 교대역 = StationAcceptanceTest.지하철역_등록("교대역");
+        String newStationName = "교대역";
+        StationResponse 교대역 = StationAcceptanceTest.지하철역_등록(newStationName);
+        int distance = 1000;
+        Map<String, String> params = 구간_추가_파라미터생성(교대역.getId(), distance);
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId",강남역.getId().toString());
-        params.put("downStationId",교대역.getId().toString());
-        params.put("distance","10");
-
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/"+이호선.getId()+"/sections")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 구간추가(params);
 
         // then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
+
+
+    private Map<String, String> 구간_추가_파라미터생성(Long stationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId",강남역.getId().toString());
+        params.put("downStationId",stationId.toString());
+        params.put("distance", String.valueOf(distance));
+        return params;
+    }
+
+
+    @DisplayName("노선에 구간을 제거한다")
+    @Test
+    void removeSection() {
+        //given
+        String newStationName = "교대역";
+        StationResponse 교대역 = StationAcceptanceTest.지하철역_등록(newStationName);
+        int distance = 1000;
+        Map<String, String> params = 구간_추가_파라미터생성(교대역.getId(), distance);
+        구간추가(params);
+
+        // when
+        ExtractableResponse<Response> response = 구간제거(교대역.getId());
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 구간추가(Map<String, String> params) {
+        return RestAssured
+                .given().log().all()
+                .pathParam("lineId",이호선.getId())
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/{lineId}/sections")
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> 구간제거(Long stationId) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("lineId",이호선.getId())
+                .when().queryParam("stationId",stationId).delete("/lines/{lineId}/sections")
+                .then().log().all().extract();
+
+    }
+
 
 
 }
