@@ -40,7 +40,7 @@ public class Sections {
 
     private void updateSection(Section section) {
         values.stream()
-            .filter(s -> s.mergeable(section))
+            .filter(s -> s.matchesOnlyOneEndOf(section))
             .findAny()
             .ifPresent(oldSection -> {
                 values.remove(oldSection);

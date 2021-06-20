@@ -63,7 +63,7 @@ public class Section extends BaseEntity {
         return this.distance > section.distance;
     }
 
-    public boolean mergeable(Section section) {
+    public boolean matchesOnlyOneEndOf(Section section) {
         return upStation == section.upStation
                 ^ downStation == section.downStation;
     }
@@ -81,8 +81,8 @@ public class Section extends BaseEntity {
     }
 
     private void validateReducible(Section section) {
-        if (!this.mergeable(section)) {
-            throw new InvalidSectionException("구간을 축소하려면 병합 가능해야 합니다");
+        if (!this.matchesOnlyOneEndOf(section)) {
+            throw new InvalidSectionException("하나의 종단점만 일치해야 합니다.");
         }
 
         if (!this.isLongerThan(section)) {
