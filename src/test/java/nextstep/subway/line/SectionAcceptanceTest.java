@@ -4,7 +4,9 @@ import static nextstep.subway.utils.CommonRequest.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +20,12 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
+
+    private Map<String, Long> stationMap = new HashMap<>();
+
     @BeforeEach
     public void setUp() {
         super.setUp();
@@ -32,8 +38,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         for (StationRequest stationRequest : stationRequests) {
             ExtractableResponse<Response> response = post(stationRequest, "/stations");
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-            assertThat(response.header("Location")).isNotBlank();
+            StationResponse stationResponse = response.jsonPath().getObject(".", StationResponse.class);
+            stationMap.put(stationResponse.getName(), stationResponse.getId());
         }
     }
 
@@ -41,14 +47,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionInMiddle() {
         //given
-        long upStationId = 1L;
-        long downStationId = 2L;
-        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
+        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("역삼역"), 10);
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
         Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
 
-        long newDownStationId = 3L;
-        SectionRequest sectionRequest = new SectionRequest(upStationId, newDownStationId, 4);
+        SectionRequest sectionRequest = new SectionRequest(stationMap.get("강남역"),  stationMap.get("신촌역"), 4);
 
         // when
         response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
