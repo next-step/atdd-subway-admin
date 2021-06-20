@@ -26,8 +26,8 @@ public class Sections {
 	public void add(Section newSection) {
 		if (!isEmptySection()) {
 			validateSection(newSection);
-			overrideIfExistsUpStation(newSection);
-			overrideIfExistsDownStation(newSection);
+			checkExistsUpStationByNewSection(newSection);
+			checkExistsDownStationByNewSection(newSection);
 		}
 		this.sections.add(newSection);
 	}
@@ -91,36 +91,36 @@ public class Sections {
 	private boolean isExistsSection(Section otherSection) {
 		return this.sections.stream()
 			.anyMatch(
-				section -> section.isUpStationEqualsUpStation(otherSection) && section.isUpStationEqualsDownStation(
+				section -> section.isUpStationInSection(otherSection) && section.isUpStationEqualsDownStation(
 					otherSection));
 	}
 
 	private boolean isExistsUpStation(Section otherSection) {
 		return this.sections.stream()
 			.anyMatch(
-				section -> section.isUpStationEqualsUpStation(otherSection) || section.isUpStationEqualsDownStation(
+				section -> section.isUpStationInSection(otherSection) || section.isUpStationEqualsDownStation(
 					otherSection));
 	}
 
 	private boolean isExistDownStation(Section otherSection) {
 		return this.sections.stream()
 			.anyMatch(
-				section -> section.isDownStationEqualsDownStation(otherSection) || section.isDownStationEqualsUpStation(
+				section -> section.isDownStationInSection(otherSection) || section.isDownStationEqualsUpStation(
 					otherSection));
 	}
 
-	private void overrideIfExistsUpStation(final Section newSection) {
+	private void checkExistsUpStationByNewSection(final Section newSection) {
 		sections.stream()
-			.filter(section -> newSection.isUpStationEqualsUpStation(section))
+			.filter(section -> newSection.isUpStationInSection(section))
 			.findFirst()
-			.ifPresent(section -> section.overrideUpStation(newSection));
+			.ifPresent(section -> section.changeUpStation(newSection));
 	}
 
-	private void overrideIfExistsDownStation(final Section newSection) {
+	private void checkExistsDownStationByNewSection(final Section newSection) {
 		sections.stream()
-			.filter(section -> newSection.isDownStationEqualsDownStation(section))
+			.filter(section -> newSection.isDownStationInSection(section))
 			.findFirst()
-			.ifPresent(section -> section.overrideDownStation(newSection));
+			.ifPresent(section -> section.changeDownStation(newSection));
 	}
 
 }

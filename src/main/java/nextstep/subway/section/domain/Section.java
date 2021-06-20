@@ -64,11 +64,11 @@ public class Section {
 		return this.distance;
 	}
 
-	public boolean isUpStationEqualsUpStation(Section section) {
+	public boolean isUpStationInSection(Section section) {
 		return this.upStation.equals(section.upStation);
 	}
 
-	public boolean isDownStationEqualsDownStation(Section section) {
+	public boolean isDownStationInSection(Section section) {
 		return this.downStation.equals(section.downStation);
 	}
 
@@ -80,12 +80,12 @@ public class Section {
 		return this.downStation.equals(section.upStation);
 	}
 
-	protected void overrideUpStation(final Section section) {
+	protected void changeUpStation(final Section section) {
 		this.distance = this.distance.getDifferenceDistance(section.distance);
 		this.upStation = section.downStation;
 	}
 
-	protected void overrideDownStation(final Section section) {
+	protected void changeDownStation(final Section section) {
 		this.distance = this.distance.getDifferenceDistance(section.distance);
 		this.downStation = section.upStation;
 	}
