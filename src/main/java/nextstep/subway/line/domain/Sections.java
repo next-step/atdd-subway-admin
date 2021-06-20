@@ -5,7 +5,6 @@ import static java.util.stream.Collectors.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -13,6 +12,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.line.exception.CannotRemoveException;
 import nextstep.subway.line.exception.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.NoSuchStationException;
@@ -20,6 +20,7 @@ import nextstep.subway.station.exception.NoSuchStationException;
 @Embeddable
 public class Sections {
 
+    private static final int REDUCIBLE_COUNT = 2;
     private static final int SIZE_LOWER_LIMIT = 1;
 
     @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.ALL)
@@ -28,12 +29,20 @@ public class Sections {
     protected Sections() {
     }
 
+    private Sections(List<Section> values) {
+        this.values = values;
+    }
+
     public List<Station> getStationsInOrder() {
         return SectionSorter.getStationsInOrder(values);
     }
 
     public boolean contains(Section section) {
         return values.contains(section);
+    }
+
+    public boolean isReducible() {
+        return values.size() >= REDUCIBLE_COUNT;
     }
 
     public void addSection(Section section) {
@@ -49,7 +58,7 @@ public class Sections {
             .findAny()
             .ifPresent(oldSection -> {
                 values.remove(oldSection);
-                values.add(oldSection.reducedBy(section));
+                values.add(oldSection.shiftedBy(section));
             });
     }
 
@@ -71,24 +80,26 @@ public class Sections {
 
     public void removeStation(Station station) {
         validateRemovable(station);
-        // TODO 리팩터링 필요
-        Optional<Section> upSection = values.stream()
-            .filter(s -> s.upStation() == station)
-            .findAny();
 
-        Optional<Section> downSection = values.stream()
-            .filter(s -> s.downStation() == station)
-            .findAny();
+        Sections sections = new Sections(values.stream()
+            .filter(s -> s.contains(station))
+            .collect(toList()));
 
-        if (upSection.isPresent() && downSection.isPresent()) {
-            Section upSectionE = upSection.get();
-            Section downSectionE = downSection.get();
-            Section newSection = upSectionE.mergeWith(downSectionE);
-            values.add(newSection);
+        reduceSections(sections);
+    }
+
+    private void reduceSections(Sections sections) {
+        if (sections.isReducible()) {
+            values.add(sections.reduce());
         }
 
-        upSection.ifPresent(values::remove);
-        downSection.ifPresent(values::remove);
+        sections.values.forEach(values::remove);
+    }
+
+    private Section reduce() {
+        return values.stream()
+            .reduce(Section::mergeWith)
+            .orElseThrow(() -> new CannotRemoveException("구간 축약에 실패했습니다."));
     }
 
     private void validateRemovable(Station station) {

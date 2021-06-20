@@ -46,7 +46,11 @@ public class Line extends BaseEntity {
         section.setLine(this);
     }
 
-    public List<Station> getStationsInAscending() {
+    public void removeStation(Station station) {
+        sections.removeStation(station);
+    }
+
+    public List<Station> getStationsInOrder() {
         return sections.getStationsInOrder();
     }
 
@@ -60,9 +64,5 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public void removeStation(Station station) {
-        sections.removeStation(station);
     }
 }

@@ -64,6 +64,11 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public boolean contains(Station station) {
+        return upStation == station
+                || downStation == station;
+    }
+
     public boolean isLongerThan(Section section) {
         return this.distance > section.distance;
     }
@@ -96,7 +101,7 @@ public class Section extends BaseEntity {
                 ^ downStation == section.downStation;
     }
 
-    public Section reducedBy(Section section) {
+    public Section shiftedBy(Section section) {
         validateReducible(section);
 
         if (this.upStation == section.upStation) {
