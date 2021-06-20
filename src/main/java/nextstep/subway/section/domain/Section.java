@@ -95,7 +95,7 @@ public class Section {
 			this.line.getSections().remove(this);
 		}
 		this.line = line;
-		line.getSections().add(this);
+		line.addSection(this);
 	}
 
 	public List<Station> toStations() {
