@@ -1,10 +1,10 @@
 package nextstep.subway.line.application;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,9 +102,10 @@ public class LineService {
 	}
 
 	private Set<Long> getLineIds(Long stationId) {
-		Set<Long> lineIds = new HashSet<>();
-		lineIds.addAll(toLineIds(sections.findByUpStationId(stationId)));
-		lineIds.addAll(toLineIds(sections.findByDownStationId(stationId)));
+		Set<Long> lineIds = Stream
+			.concat(toLineIds(sections.findByUpStationId(stationId)).stream(),
+				toLineIds(sections.findByDownStationId(stationId)).stream())
+			.collect(Collectors.toSet());
 
 		return lineIds;
 	}
