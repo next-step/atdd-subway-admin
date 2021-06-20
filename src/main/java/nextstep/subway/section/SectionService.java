@@ -16,6 +16,9 @@ import java.util.List;
 @Service
 @Transactional
 public class SectionService {
+	private static final int UP_STATION_INDEX = 0;
+	private static final int DOWN_STATION_INDEX = 1;
+
 	private final LineRepository lineRepository;
 	private final StationService stationService;
 
@@ -32,19 +35,24 @@ public class SectionService {
 	}
 
 	public void addSectionToLine(Line line, List<Long> stationsIds, Integer distance) {
-		Station upStation = stationService.findById(stationsIds.get(0));
-		Station downStation = stationService.findById(stationsIds.get(1));
+		Station upStation = stationService.findById(stationsIds.get(UP_STATION_INDEX));
+		Station downStation = stationService.findById(stationsIds.get(DOWN_STATION_INDEX));
 		Section section = new Section(upStation, downStation, distance);
 		section.toLine(line);
-
 	}
 
 	private void validateSection(List<Station> stations, List<Long> stationsIdsToAdd) {
-		boolean result = stations.stream().map(Station::getId)
+		boolean alreadyExists = stations.stream().map(Station::getId)
 				.anyMatch(stationsIdsToAdd::contains);
 
-		if (!result) {
+		if (!alreadyExists) {
 			throw new InvalidSectionException();
 		}
+	}
+
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		Line line = lineRepository.findById(lineId)
+				.orElseThrow(() -> new LineNotFoundException(lineId));
+		line.deleteSectionByStationId(stationId);
 	}
 }

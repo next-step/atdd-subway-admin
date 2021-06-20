@@ -1,7 +1,7 @@
 package nextstep.subway;
 
+import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.line.exception.LineNotFoundException;
-import nextstep.subway.section.exception.InvalidSectionException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,8 +19,8 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.noContent().build();
 	}
 
-	@ExceptionHandler(InvalidSectionException.class)
-	public ResponseEntity<Void> handleException(InvalidSectionException exception) {
+	@ExceptionHandler(BadRequestException.class)
+	public ResponseEntity<Void> handleException(BadRequestException exception) {
 		return ResponseEntity.badRequest().build();
 	}
 }

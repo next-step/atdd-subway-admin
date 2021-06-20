@@ -4,6 +4,7 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.exception.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
 
 import javax.persistence.*;
 import java.util.Arrays;
@@ -76,5 +77,25 @@ public class Section extends BaseEntity {
 		if (this.distance <= distance) {
 			throw new InvalidSectionException();
 		}
+	}
+
+	public boolean doesIncludeStation(Long stationId) {
+		return Arrays.asList(upStation.getId(), downStation.getId())
+				.contains(stationId);
+	}
+
+	public Station getRemainedStation(Long stationIdToBeRemoved) {
+		return getStations().stream().filter(station -> !station.getId().equals(stationIdToBeRemoved))
+				.findFirst()
+				.orElseThrow(StationNotFoundException::new);
+	}
+
+	public void joinSection(Long removalStationId, Station joiningStation, Integer distance) {
+		this.distance += distance;
+		if (upStation.getId().equals(removalStationId)) {
+			upStation = joiningStation;
+			return;
+		}
+		downStation = joiningStation;
 	}
 }
