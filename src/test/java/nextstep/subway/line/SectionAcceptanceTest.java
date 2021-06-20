@@ -78,7 +78,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록됨(response);
     }
 
-    @DisplayName("노선 구간 등록 : 중간(하행역이 일치하는 경우)")
+    @DisplayName("노선 구간 등록 : 새로운 역을 상행 종점으로 등록할 경우")
     @Test
     void addSectionInFirst() {
         //given
@@ -87,6 +87,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
 
         SectionRequest sectionRequest = new SectionRequest(stationMap.get("강남역"),  stationMap.get("양재역"), 4);
+
+        // when
+        response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
+
+        // then
+        지하철_노선에_지하철역_등록됨(response);
+    }
+
+    @DisplayName("노선 구간 등록 : 새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void addSectionInLast() {
+        //given
+        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("양재시민의 숲"), 10);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
+        Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
+
+        SectionRequest sectionRequest = new SectionRequest(stationMap.get("양재시민의 숲"),  stationMap.get("청계산 입구"), 4);
 
         // when
         response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);

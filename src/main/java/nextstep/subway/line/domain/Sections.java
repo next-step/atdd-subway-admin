@@ -15,6 +15,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
     public static final int FIRST_INDEX = 0;
+    public static final int COMPLEMENT = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -28,9 +29,18 @@ public class Sections {
             sections.add(FIRST_INDEX, section);
             return;
         }
+        if (isLastSection(section)) {
+            sections.add(section);
+            return;
+        }
 
         Direction direction = isUpDirection(section) ? Direction.UP : Direction.DOWN;
         changeSection(section, direction);
+    }
+
+    private boolean isLastSection(Section section) {
+        int lastIndex = sections.size() - COMPLEMENT;
+        return sections.get(lastIndex).getDownStation() == section.getUpStation();
     }
 
     private boolean isFirstSection(Section section) {

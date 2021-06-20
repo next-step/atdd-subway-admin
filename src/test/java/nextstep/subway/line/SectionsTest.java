@@ -58,5 +58,12 @@ public class SectionsTest {
         sections.add(new Section(stationMap.get("강남역"), stationMap.get("양재역"), 4));
         assertThat(sections.stations()).containsExactly(stationMap.get("강남역"), stationMap.get("양재역"), stationMap.get("청계산 입구"));
     }
-
+    @DisplayName("노선 구간 등록 : 새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void addSectionInLast(){
+        Sections sections = new Sections();
+        sections.add(new Section(stationMap.get("강남역"), stationMap.get("양재시민의 숲"), 10));
+        sections.add(new Section(stationMap.get("양재시민의 숲"), stationMap.get("청계산 입구"), 4));
+        assertThat(sections.stations()).containsExactly(stationMap.get("강남역"), stationMap.get("양재시민의 숲"), stationMap.get("청계산 입구"));
+    }
 }
