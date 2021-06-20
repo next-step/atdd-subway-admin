@@ -5,30 +5,57 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Embeddable
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new LinkedList<>();
-    //TODO (3단계) 구간 추가시 순서대로 넣기
-    public void add(Section section) {
-        this.sections.add(section);
+    private List<Section> sections = new ArrayList<>();
+
+    public void add(Section newSection) {
+        if (sections.isEmpty()) {
+            sections.add(newSection);
+            return;
+        }
+        validateUpAndDownStation(newSection);
+        changeStationInMiddleWhenEqualToUpStation(newSection);
+        sections.add(newSection);
     }
 
-    private Station getFirstStation() {
-        return sections.get(0).getUpStation();
+    private void validateUpAndDownStation(Section newSection) {
+        Station upStation = newSection.getUpStation();
+        Station downStation = newSection.getDownStation();
+        if (isStationInSections(upStation) && isStationInSections(downStation)) {
+            throw new IllegalArgumentException("이미 존재하는 상행선 하행선 입니다.");
+        }
+        if (!isStationInSections(upStation) && !isStationInSections(downStation)) {
+            throw new IllegalArgumentException("기존 구간에 상행역 하행역이 존재하지 않아 등록할 수 없습니다.");
+        }
     }
 
-    //TODO (3단계) section으로 부터 상행역 하행역 순으로 리스트 저장하기
+    private boolean isStationInSections(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.isStationInSection(station));
+    }
+
+    private void changeStationInMiddleWhenEqualToUpStation(Section newSection) {
+        sections.stream()
+                .filter(section -> section.equalsUpStation(newSection))
+                .findFirst()
+                .ifPresent(section -> section.changeStationInMiddle(newSection));
+    }
+
     public List<Station> getSortedStations() {
+        Collections.sort(sections);
         List<Station> stationList = new ArrayList<>();
         stationList.add(getFirstStation());
         for (Section section : sections) {
             stationList.add(section.getDownStation());
         }
         return stationList;
+    }
+
+    private Station getFirstStation() {
+        return sections.get(0).getUpStation();
     }
 }

@@ -7,7 +7,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section extends BaseEntity implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -49,5 +49,48 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public boolean equalsUpStation(Section section) {
+        return this.upStation.equals(section.getUpStation());
+    }
+
+    public void validateSectionDistance(Section newSection) {
+        if (newSection.getDistance() >= this.distance) {
+            throw new IllegalArgumentException("기존 역 사이보다 크거나 같아 등록할 수 없습니다.");
+        }
+    }
+
+    public void calculateDistance(Section newSection) {
+        this.distance -= newSection.getDistance();
+    }
+
+    public void changeStationInMiddle(Section newSection) {
+        validateSectionDistance(newSection);
+        changeUpStation(newSection.getDownStation());
+        calculateDistance(newSection);
+    }
+
+    public boolean isStationInSection(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
+    @Override
+    public int compareTo(Section o) {
+        if (this.getDownStation().equals(o.getUpStation())) {
+            return -1;
+        }
+        if (this.equals(o)) {
+            return 0;
+        }
+        return 1;
     }
 }
