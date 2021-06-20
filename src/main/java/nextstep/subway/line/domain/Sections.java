@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,16 +32,16 @@ public class Sections {
 
 		validateCandidate(candidate);
 
-		Section commonUpStationSection = getCommonUpStationSection(candidate.getUpStation());
-		if (isCommonStationExist(commonUpStationSection)) {
-			addSectionWithCommonUpStation(candidate, commonUpStationSection);
+		Optional<Section> commonUpStationSection = getCommonUpStationSection(candidate.getUpStation());
+		if (commonUpStationSection.isPresent()) {
+			addSectionWithCommonUpStation(candidate, commonUpStationSection.get());
 
 			return;
 		}
 
-		Section commonDownStationSection = getCommonDownStationSection(candidate.getDownStation());
-		if (isCommonStationExist(commonDownStationSection)) {
-			addSectionWithCommonDownStation(candidate, commonDownStationSection);
+		Optional<Section> commonDownStationSection = getCommonDownStationSection(candidate.getDownStation());
+		if (commonDownStationSection.isPresent()) {
+			addSectionWithCommonDownStation(candidate, commonDownStationSection.get());
 
 			return;
 		}
@@ -52,20 +53,16 @@ public class Sections {
 		return sections.size() == SIZE_ZERO;
 	}
 
-	private boolean isCommonStationExist(Section commonUpStationSection) {
-		return commonUpStationSection != null;
-	}
-
 	private void addSectionWithCommonDownStation(Section candidate, Section commonDownStationSection) {
 		modifyOldSection(commonDownStationSection, candidate, commonDownStationSection.getUpStation(),
 			candidate.getUpStation());
 		addSection(candidate);
 	}
 
-	private Section getCommonDownStationSection(Station downStation) {
+	private Optional<Section> getCommonDownStationSection(Station downStation) {
 		return sections.stream()
 			.filter(section -> section.hasSameDownStation(downStation))
-			.findFirst().orElse(null);
+			.findFirst();
 	}
 
 	private void addSectionWithCommonUpStation(Section candidate, Section commonUpStationSection) {
@@ -78,10 +75,10 @@ public class Sections {
 		sections.add(candidate);
 	}
 
-	private Section getCommonUpStationSection(Station upStation) {
+	private Optional<Section> getCommonUpStationSection(Station upStation) {
 		return sections.stream()
 			.filter(section -> section.hasSameUpStation(upStation))
-			.findFirst().orElse(null);
+			.findFirst();
 	}
 
 	private void modifyOldSection(Section targetSection, Section candidate, Station upStation, Station downStation) {
@@ -152,16 +149,16 @@ public class Sections {
 	public void remove(Station targetStation) {
 		validateRemovable();
 
-		Section sectionWithSameUpStation = getCommonUpStationSection(targetStation);
-		Section sectionWithSameDownStation = getCommonDownStationSection(targetStation);
+		Optional<Section> sectionWithSameUpStation = getCommonUpStationSection(targetStation);
+		Optional<Section> sectionWithSameDownStation = getCommonDownStationSection(targetStation);
 
 		validateRequestStationExists(sectionWithSameUpStation, sectionWithSameDownStation);
 		if (isUpAndDownStationExist(sectionWithSameUpStation, sectionWithSameDownStation)) {
-			connectTwoStation(sectionWithSameUpStation, sectionWithSameDownStation);
+			connectTwoStation(sectionWithSameUpStation.get(), sectionWithSameDownStation.get());
 		}
 
-		sections.remove(sectionWithSameUpStation);
-		sections.remove(sectionWithSameDownStation);
+		sectionWithSameUpStation.ifPresent(section -> sections.remove(section));
+		sectionWithSameDownStation.ifPresent(section -> sections.remove(section));
 	}
 
 	private void validateRemovable() {
@@ -170,19 +167,22 @@ public class Sections {
 		}
 	}
 
-	private void connectTwoStation(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
+	private void connectTwoStation(Section sectionWithSameUpStation,
+		Section sectionWithSameDownStation) {
 		sections.add(new Section(sectionWithSameUpStation.getLine(),
 			sectionWithSameDownStation.getUpStation(),
 			sectionWithSameUpStation.getDownStation(),
 			sectionWithSameUpStation.getDistance() + sectionWithSameDownStation.getDistance()));
 	}
 
-	private boolean isUpAndDownStationExist(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
-		return sectionWithSameUpStation != null && sectionWithSameDownStation != null;
+	private boolean isUpAndDownStationExist(Optional<Section> sectionWithSameUpStation,
+		Optional<Section> sectionWithSameDownStation) {
+		return sectionWithSameUpStation.isPresent() && sectionWithSameDownStation.isPresent();
 	}
 
-	private void validateRequestStationExists(Section sectionWithSameUpStation, Section sectionWithSameDownStation) {
-		if (sectionWithSameUpStation == null && sectionWithSameDownStation == null) {
+	private void validateRequestStationExists(Optional<Section> sectionWithSameUpStation,
+		Optional<Section> sectionWithSameDownStation) {
+		if (!sectionWithSameUpStation.isPresent() && !sectionWithSameDownStation.isPresent()) {
 			throw new NoSuchElementException("Request station is not on the line");
 		}
 	}
