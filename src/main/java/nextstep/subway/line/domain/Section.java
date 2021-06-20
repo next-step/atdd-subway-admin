@@ -68,6 +68,29 @@ public class Section extends BaseEntity {
         return this.distance > section.distance;
     }
 
+    public boolean isMergeableWith(Section section) {
+        return upStation == section.downStation
+                ^ downStation == section.upStation;
+    }
+
+    public Section mergeWith(Section section) {
+        validateMergeable(section);
+
+        if (this.upStation == section.downStation) {
+            return new Section(this.line,
+                section.upStation, this.downStation, this.distance + section.distance);
+        }
+
+        return new Section(this.line,
+            this.upStation, section.downStation, this.distance + section.distance);
+    }
+
+    private void validateMergeable(Section section) {
+        if (!this.isMergeableWith(section)) {
+            throw new InvalidSectionException("병합 조건을 만족하지 않습니다.");
+        }
+    }
+
     public boolean matchesOnlyOneEndOf(Section section) {
         return upStation == section.upStation
                 ^ downStation == section.downStation;

@@ -61,4 +61,8 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
+
+    public void removeStation(Station station) {
+        sections.removeStation(station);
+    }
 }

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -51,11 +50,18 @@ public class SectionAcceptanceMethods {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    public static void 지하철_구간_삭제됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    public static void 지하철_구간_삭제됨(ExtractableResponse<Response> response, StationResponse... stationsInOrder) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> lineResponse
+            = LineAcceptanceMethods.지하철_노선_조회_요청(신분당선.getId());
+
+        List<StationResponse> actual = lineResponse.jsonPath().getList("stations", StationResponse.class);
+        List<StationResponse> expected = new ArrayList<>(Arrays.asList(stationsInOrder));
+        assertThat(actual).isEqualTo(expected);
     }
 
     public static void 지하철_구간_삭제_실패(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

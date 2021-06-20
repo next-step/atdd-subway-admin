@@ -115,7 +115,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             = 지하철_구간_삭제_요청(추가될역);
 
         // then
-        지하철_구간_삭제됨(response);
+        지하철_구간_삭제됨(response, 상행종점, 추추가될역, 하행종점);
     }
 
     @Test

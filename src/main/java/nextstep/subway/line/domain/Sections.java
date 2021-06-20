@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -14,6 +15,7 @@ import javax.persistence.OneToMany;
 
 import nextstep.subway.line.exception.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.NoSuchStationException;
 
 @Embeddable
 public class Sections {
@@ -63,6 +65,34 @@ public class Sections {
         Set<Station> stations = getStations();
         return stations.contains(section.upStation())
                 == stations.contains(section.downStation());
+    }
+
+    public void removeStation(Station station) {
+        validateRemovable(station);
+        // TODO 리팩터링 필요
+        Optional<Section> upSection = values.stream()
+            .filter(s -> s.upStation() == station)
+            .findAny();
+
+        Optional<Section> downSection = values.stream()
+            .filter(s -> s.downStation() == station)
+            .findAny();
+
+        if (upSection.isPresent() && downSection.isPresent()) {
+            Section upSectionE = upSection.get();
+            Section downSectionE = downSection.get();
+            Section newSection = upSectionE.mergeWith(downSectionE);
+            values.add(newSection);
+        }
+
+        upSection.ifPresent(values::remove);
+        downSection.ifPresent(values::remove);
+    }
+
+    private void validateRemovable(Station station) {
+        if (!getStations().contains(station)) {
+            throw new NoSuchStationException("노선에 해당 지하철 역이 존재하지 않습니다.");
+        }
     }
 
     private Set<Station> getStations() {
