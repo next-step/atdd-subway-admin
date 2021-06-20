@@ -63,7 +63,7 @@ public class LineService {
     }
 
     private Line getLine(Long id) {
-        return lineRepository.findById(id).orElseThrow(() -> new RuntimeException(NOT_FOUND_LINE));
+        return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_LINE));
     }
 
     private Station getStation(Long stationId) {
