@@ -20,6 +20,8 @@ import nextstep.subway.station.exception.NoSuchStationException;
 @Embeddable
 public class Sections {
 
+    private static final int SIZE_LOWER_LIMIT = 1;
+
     @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Section> values = new LinkedList<>();
 
@@ -92,6 +94,10 @@ public class Sections {
     private void validateRemovable(Station station) {
         if (!getStations().contains(station)) {
             throw new NoSuchStationException("노선에 해당 지하철 역이 존재하지 않습니다.");
+        }
+
+        if (values.size() == SIZE_LOWER_LIMIT) {
+            throw new CannotRemoveException("마지막 남은 구간은 삭제할 수 없습니다.");
         }
     }
 
