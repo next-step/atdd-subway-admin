@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.section.exception.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -39,10 +40,10 @@ public class Sections {
 		boolean isExistsUpStation = isExistsUpStation(newSection);
 		boolean isExistsDownStation = isExistDownStation(newSection);
 		if (isExistsSection(newSection)) {
-			throw new RuntimeException("이미 노선에 상행역과 하행역 구간이 모두 등록되어 있습니다.");
+			throw new InvalidSectionException("이미 노선에 상행역과 하행역 구간이 모두 등록되어 있습니다.");
 		}
 		if (!isExistsUpStation && !isExistsDownStation) {
-			throw new RuntimeException("상행역과 하행역에 아무것도 포함되지 않습니다.");
+			throw new InvalidSectionException("상행역과 하행역에 아무것도 포함되지 않습니다.");
 		}
 	}
 

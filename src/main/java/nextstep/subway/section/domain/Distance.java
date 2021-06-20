@@ -5,6 +5,8 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import nextstep.subway.section.exception.InvalidDistanceException;
+
 @Embeddable
 public class Distance {
 
@@ -28,7 +30,7 @@ public class Distance {
 
 	private void validate(int distance) {
 		if(MIN_DISTANCE >= distance)
-			throw new IllegalArgumentException("거리는 0보다 작을 수 없습니다.");
+			throw new InvalidDistanceException("거리는 0보다 작을 수 없습니다.");
 	}
 
 	public boolean isMoreThan(Distance otherDistance) {
@@ -38,7 +40,7 @@ public class Distance {
 	public Distance getDifferenceDistance(Distance distance) {
 		int differenceDistance = this.distance - distance.distance;
 		if(differenceDistance < 0) {
-			differenceDistance = differenceDistance * -1;
+			throw new InvalidDistanceException("새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
 		}
 		return new Distance(differenceDistance);
 	}

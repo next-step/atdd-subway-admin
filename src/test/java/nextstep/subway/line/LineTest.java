@@ -91,4 +91,17 @@ public class LineTest {
 		//then
 		assertThat(actualNames).isEqualTo(Lists.list(gangNam.getName(), saDang.getName(), panGyo.getName(), gwangGyo.getName()));
 	}
+
+	@Test
+	void 노선_중간에_구간_추가하여_목록_조회_거리가_크거나_같은_경우_에러() {
+		//given
+		Station saDang = new Station("사당역");
+		Section section = new Section(lineShinBunDang, gangNam, saDang, new Distance(10));
+
+		//when
+		//then
+		assertThatThrownBy(
+			() -> lineShinBunDang.addSection(section)
+		).isInstanceOf(IllegalArgumentException.class);
+	}
 }
