@@ -44,11 +44,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우")
     void createSection() {
         // when
-        ExtractableResponse<Response> response
+        ExtractableResponse<Response> response1
             = 지하철_구간_생성_요청(상행종점, 추가될역, 30);
+        ExtractableResponse<Response> response2
+            = 지하철_구간_생성_요청(추가될역, 추추가될역, 60);
 
         // then
-        지하철_구간_생성됨(response, 상행종점, 추가될역, 하행종점);
+        지하철_구간_생성됨(response2, 상행종점, 추가될역, 추추가될역, 하행종점);
     }
 
     @Test
