@@ -1,11 +1,12 @@
 package nextstep.subway.line.domain;
 
-import static nextstep.subway.line.domain.SectionSorter.*;
+import static java.util.stream.Collectors.*;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -59,8 +60,14 @@ public class Sections {
     }
 
     private boolean allOrNothingMatches(Section section) { // XOR Existence Check
-        Set<Station> stations = getStations(values);
+        Set<Station> stations = getStations();
         return stations.contains(section.upStation())
                 == stations.contains(section.downStation());
+    }
+
+    private Set<Station> getStations() {
+        return values.stream()
+            .flatMap(s -> Stream.of(s.upStation(), s.downStation()))
+            .collect(toSet());
     }
 }
