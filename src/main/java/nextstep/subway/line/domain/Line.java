@@ -72,6 +72,11 @@ public class Line extends BaseEntity {
             sections.deleteFirstSectionBy(station);
             return;
         }
+        if (downStations.contains(station)) {
+            sections.deleteLastSectionBy(station);
+            return;
+        }
+        throw new IncorrectSectionException("노선에 없는 역으로 삭제할 수 없습니다.");
     }
 
 

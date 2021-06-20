@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.exception.IncorrectSectionException;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
@@ -18,6 +19,7 @@ import org.springframework.http.MediaType;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -123,6 +125,36 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         LineResponse searchedLine = lineResponse.jsonPath().getObject(".", LineResponse.class);
         assertThat(searchedLine.getStations().get(0).getName()).isEqualTo("강남역");
         assertThat(searchedLine.getStations().get(1).getName()).isEqualTo("교대역");
+    }
+
+    @DisplayName("구간이 하나일때 에러 발생")
+    @Test
+    void deleteOnlyOneSectionByStationError() {
+
+        // when
+        ExtractableResponse<Response> response = 구간제거(사당역.getId());
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("노선에 없는 역으로 삭제 요청시 에러 발생")
+    @Test
+    void deleteSectionByNoUseStationError() {
+        //given
+        String newStationName = "교대역";
+        StationResponse 교대역 = StationAcceptanceTest.지하철역_등록(newStationName);
+        int distance = 1000;
+        Map<String, String> params = 구간_추가_파라미터생성(교대역.getId(), distance);
+        구간추가(params);
+        String noUseStationName = "종로역";
+        StationResponse 종로역 = StationAcceptanceTest.지하철역_등록(noUseStationName);
+
+        // when
+        ExtractableResponse<Response> response = 구간제거(종로역.getId());
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 
