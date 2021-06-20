@@ -1,13 +1,10 @@
 package nextstep.subway.station.dto;
 
+import java.time.LocalDateTime;
+
 import nextstep.subway.station.domain.Station;
 
-import java.time.LocalDateTime;
-import java.util.Comparator;
-
-public class StationResponse implements Comparable<StationResponse> {
-
-    private static final Comparator<StationResponse> COMPARATOR = Comparator.comparingLong((station) -> station.getId());
+public class StationResponse {
 
     private Long id;
     private String name;
@@ -44,8 +41,4 @@ public class StationResponse implements Comparable<StationResponse> {
         return modifiedDate;
     }
 
-    @Override
-    public int compareTo(StationResponse o) {
-        return COMPARATOR.compare(this, o);
-    }
 }

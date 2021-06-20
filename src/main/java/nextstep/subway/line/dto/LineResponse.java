@@ -37,7 +37,6 @@ public class LineResponse {
         this.color = color;
         this.stations = stations.stream()
             .map(StationResponse::of)
-            .sorted()
             .collect(Collectors.toList());
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
