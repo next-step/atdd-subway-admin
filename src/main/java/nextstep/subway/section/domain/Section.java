@@ -73,14 +73,17 @@ public class Section extends BaseEntity implements Comparable<Section> {
         }
     }
 
-    public void calculateDistance(Section newSection) {
+    public void calculateDistanceWhenAdd(Section newSection) {
         this.distance -= newSection.getDistance();
+    }
+    public void calculateDistanceWhenRemove(Section section) {
+        this.distance += section.getDistance();
     }
 
     public void changeStationInMiddle(Section newSection) {
         validateSectionDistance(newSection);
         changeUpStation(newSection.getDownStation());
-        calculateDistance(newSection);
+        calculateDistanceWhenAdd(newSection);
     }
 
     public boolean isStationInSection(Station station) {
@@ -101,4 +104,6 @@ public class Section extends BaseEntity implements Comparable<Section> {
         }
         return 1;
     }
+
+
 }
