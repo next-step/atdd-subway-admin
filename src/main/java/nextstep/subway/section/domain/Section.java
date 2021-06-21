@@ -41,7 +41,7 @@ public class Section extends BaseEntity {
 	protected Section() {
 	}
 
-	protected Section(Line line, Station upStation, Station downStation, double distance) {
+	protected Section(Line line, Station upStation, Station downStation, int distance) {
 		this(line, upStation, downStation, String.valueOf(distance));
 	}
 
@@ -55,7 +55,7 @@ public class Section extends BaseEntity {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = Distance.generate(Double.parseDouble(distance));
+		this.distance = Distance.generate(Integer.parseInt(distance));
 	}
 
 	public static Section generate(Line line, Station upStation, Station downStation, String distance) {
@@ -64,7 +64,7 @@ public class Section extends BaseEntity {
 
 	private void validateDistanceParseDouble(String distance) {
 		try {
-			Double.parseDouble(distance);
+			Integer.parseInt(distance);
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException("간격은 반드시 숫자로 입력되어야 합니다.");
 		}
@@ -116,7 +116,7 @@ public class Section extends BaseEntity {
 		return line;
 	}
 
-	public double distance() {
+	public int distance() {
 		return distance.distance();
 	}
 

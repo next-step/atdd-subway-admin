@@ -301,7 +301,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	}
 
 	private void 지하철역이_응답이_실패된다(ExtractableResponse<Response> 조회_응답) {
-		assertThat(조회_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(조회_응답.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	private ExtractableResponse<Response> 지하철역_수정_요청(String 지하철역_uri, StationRequest 수정_역정보) {

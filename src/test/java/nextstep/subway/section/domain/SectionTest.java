@@ -11,13 +11,16 @@ import nextstep.subway.station.domain.Station;
 @DisplayName("섹션 엔티티 테스트")
 public class SectionTest {
 
+	private static final int ZERO = 0;
+	private static final int ONE = 1;
+
 	@Test
 	void 생성() {
 		//given
 		Line 이호선 = new Line("2호선", "#FFFFFF");
 		Station 상행역 = new Station("상행역");
 		Station 하행역 = new Station("하행역");
-		double 거리 = 0.01D;
+		int 거리 = ONE;
 
 		//when
 		Section 섹션 = new Section(이호선, 상행역, 하행역, 거리);
@@ -31,7 +34,7 @@ public class SectionTest {
 		//given
 		Station 상행역 = new Station("상행역");
 		Station 하행역 = new Station("하행역");
-		double 거리 = 0.01D;
+		int 거리 = ONE;
 
 		//when
 
@@ -45,7 +48,7 @@ public class SectionTest {
 		//given
 		Line 이호선 = new Line("2호선", "#FFFFFF");
 		Station 하행역 = new Station("하행역");
-		double 거리 = 0.01D;
+		int 거리 = ONE;
 
 		//when
 
@@ -59,7 +62,7 @@ public class SectionTest {
 		//given
 		Line 이호선 = new Line("2호선", "#FFFFFF");
 		Station 상행역 = new Station("상행역");
-		double 거리 = 0.01D;
+		int 거리 = ONE;
 
 		//when
 
@@ -74,7 +77,7 @@ public class SectionTest {
 		Line 이호선 = new Line("2호선", "#FFFFFF");
 		Station 구로디지털단지 = new Station("구로디지털단지");
 		Station 홍대입구 = new Station("홍대입구");
-		double 거리_0이하 = 0.00D;
+		int 거리_0이하 = ZERO;
 
 		//when
 
@@ -88,7 +91,7 @@ public class SectionTest {
 		//given
 		Line 이호선 = new Line("2호선", "#FFFFFF");
 		Station 홍대입구 = new Station("홍대입구");
-		double 거리_0이하 = 0.00D;
+		int 거리_0이하 = ZERO;
 
 		//when
 

@@ -8,10 +8,13 @@ import org.junit.jupiter.api.Test;
 @DisplayName("간격 테스트")
 public class DistanceTest {
 
+	private static final int ZERO = 0;
+	private static final int ONE = 1;
+
 	@Test
 	void 생성() {
 		//given
-		double 거리 = 0.01D;
+		int 거리 = ONE;
 
 		//when
 		Distance 간격 = Distance.generate(거리);
@@ -23,7 +26,7 @@ public class DistanceTest {
 	@Test
 	void 생성_0이하_예외발생() {
 		//given
-		double 거리 = 0.00D;
+		int 거리 = ZERO;
 
 		//when
 
@@ -34,8 +37,8 @@ public class DistanceTest {
 	@Test
 	void 동일성() {
 		//given
-		Distance 간격 = Distance.generate(0.01D);
-		Distance 비교할_간격 = Distance.generate(0.01D);
+		Distance 간격 = Distance.generate(ONE);
+		Distance 비교할_간격 = Distance.generate(ONE);
 
 		//when
 		boolean 동일성여부 = 간격.equals(비교할_간격);

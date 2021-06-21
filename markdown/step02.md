@@ -262,17 +262,17 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 4-7-1.`LineServiceTest` 수정
     - [ ] 4-8.리뷰어님 코멘트 반영
         - [x] 4-8-1.강의 자료 이미지 제거
-        - [ ] 4-8-2.HTTP Status NotFound로 변경
-        - [ ] 4-8-3.`Sections`생성
-        - [ ] 4-8-4.`Line`엔티티의 필드로 `Sections` 추가
+        - [x] 4-8-2.HTTP Status NotFound로 변경
+        - [ ] 4-8-3.`SectionGroup`생성
+        - [ ] 4-8-4.`Line`엔티티의 필드로 `SectionGroup` 추가
         - [ ] 4-8-5.`Line`엔티티의 필드 중 `StationGroup` 제거
         - [ ] 4-8-6.`LineService`
             - [ ] 4-8-6-1.간결하게 하기
             - [ ] 4-8-6-2.
         - [ ] 4-8-7.구간을 순서대로 정렬하여 상행 종점부터 하행 종점까지 목록을 응답하기
-        - [ ] 4-8-8.연관 관계 매핑 변경하기: `Sections` 내 `Station` `@OneToOne` -> `@ManyToOne`
-        - [ ] 4-8-9.`Distance`: `double` -> `int`
-        - [ ] 4-8-10.`Distance.java`: 검증 메서드 중복 제거
+        - [ ] 4-8-8.연관 관계 매핑 변경하기: `SectionGroup` 내 `Station` `@OneToOne` -> `@ManyToOne`
+        - [x] 4-8-9.`Distance`: `double` -> `int`
+        - [x] 4-8-10.`Distance.java`: 검증 메서드 중복 제거
 - [x] 5.테스트
     - [x] 5-1.Gradle build Success 확인
     - [x] 5-2.checkstyle 문제없는지 확인 (Java Convention)

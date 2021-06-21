@@ -20,7 +20,7 @@ import nextstep.subway.station.domain.StationRepository;
 @DataJpaTest
 public class SectionRepositoryTest {
 
-	private static final double 거리_기본값 = 123.45D;
+	private static final int 거리_기본값 = 123;
 
 	@Autowired
 	private StationRepository stations;

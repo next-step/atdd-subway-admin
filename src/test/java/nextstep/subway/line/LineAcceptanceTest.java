@@ -235,7 +235,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineWithZeroDistance() {
 		// given
-		LineRequest 간격_0이하 = new LineRequest("2호선", "#FFFFFF", 강남역_아이디, 선릉역_아이디, "0.00");
+		LineRequest 간격_0이하 = new LineRequest("2호선", "#FFFFFF", 강남역_아이디, 선릉역_아이디, "0");
 
 		// when
 		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(간격_0이하);
@@ -511,7 +511,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private void 노선이_응답_실패된다(ExtractableResponse<Response> 조회_응답) {
-		assertThat(조회_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(조회_응답.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	private ExtractableResponse<Response> 노선_수정_요청(String 노선_uri, LineRequest 파라메터) {

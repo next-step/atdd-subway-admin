@@ -8,35 +8,31 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Distance {
 
-	private static final double ZERO = 0.0D;
+	private static final int ZERO = 0;
 	private static final String COLUMN_DESCRIPTION = "역 사이 간격";
 
 	@Column
-	private double distance;
+	private int distance;
 
 	protected Distance() {
 	}
 
-	private Distance(double distance) {
-		validateDistance(distance);
+	private Distance(int distance) {
+		validateOverZero(distance);
 		this.distance = distance;
 	}
 
-	public static Distance generate(double distance) {
+	public static Distance generate(int distance) {
 		return new Distance(distance);
 	}
 
-	private void validateDistance(double distance) {
-		validateOverZero(distance);
-	}
-
-	private void validateOverZero(double distance) {
+	private void validateOverZero(int distance) {
 		if (distance <= ZERO) {
 			throw new IllegalArgumentException(COLUMN_DESCRIPTION + "은 0을 초과하는 숫자여야 합니다.");
 		}
 	}
 
-	public double distance() {
+	public int distance() {
 		return distance;
 	}
 

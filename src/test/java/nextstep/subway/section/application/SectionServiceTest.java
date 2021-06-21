@@ -61,7 +61,7 @@ class SectionServiceTest extends ServiceTest {
 		assertThat(이호선_강남역_선릉역_섹션.upStation().id()).isEqualTo(Long.parseLong(강남역_아이디));
 		assertThat(이호선_강남역_선릉역_섹션.downStation().id()).isEqualTo(Long.parseLong(선릉역_아이디));
 		assertThat(이호선_강남역_선릉역_섹션.line()).isEqualTo(영속화된_이호선);
-		assertThat(이호선_강남역_선릉역_섹션.distance()).isEqualTo(Double.parseDouble(강남역_선릉역_간격));
+		assertThat(이호선_강남역_선릉역_섹션.distance()).isEqualTo(Integer.parseInt(강남역_선릉역_간격));
 	}
 
 	@Test
