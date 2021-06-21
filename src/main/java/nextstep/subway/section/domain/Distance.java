@@ -25,16 +25,21 @@ public class Distance {
 	}
 
 	private void validate(int distance) {
-		if (MIN_DISTANCE >= distance)
+		if (MIN_DISTANCE >= distance) {
 			throw new InvalidDistanceException("거리는 0보다 작을 수 없습니다.");
+		}
 	}
 
 	public Distance getDifferenceDistance(Distance distance) {
 		int differenceDistance = this.distance - distance.distance;
+		validateDifferenceDistance(differenceDistance);
+		return new Distance(differenceDistance);
+	}
+
+	private void validateDifferenceDistance(int differenceDistance) {
 		if (differenceDistance < 0) {
 			throw new InvalidDistanceException("새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다.");
 		}
-		return new Distance(differenceDistance);
 	}
 
 	@Override
