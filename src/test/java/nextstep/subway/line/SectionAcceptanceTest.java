@@ -48,14 +48,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionInMiddle() {
         //given
-        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("청계산 입구"), 10);
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
-        Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
-
+        Long createId = 지하철_노선_생성("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("청계산 입구"), 10);
         SectionRequest sectionRequest = new SectionRequest(stationMap.get("강남역"),  stationMap.get("양재역"), 4);
 
         // when
-        response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
         지하철_노선에_지하철역_등록됨(response);
@@ -65,14 +62,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionInMiddle2() {
         //given
-        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("청계산 입구"), 10);
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
-        Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
-
+        Long createId = 지하철_노선_생성("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("청계산 입구"), 10);
         SectionRequest sectionRequest = new SectionRequest(stationMap.get("양재역"),  stationMap.get("청계산 입구"), 4);
 
         // when
-        response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
         지하철_노선에_지하철역_등록됨(response);
@@ -82,14 +76,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionInFirst() {
         //given
-        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("양재역"), stationMap.get("청계산 입구"), 10);
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
-        Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
-
+        Long createId = 지하철_노선_생성("신분당선", "bg-red-600", stationMap.get("양재역"), stationMap.get("청계산 입구"), 10);
         SectionRequest sectionRequest = new SectionRequest(stationMap.get("강남역"),  stationMap.get("양재역"), 4);
 
         // when
-        response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
         지하철_노선에_지하철역_등록됨(response);
@@ -99,14 +90,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionInLast() {
         //given
-        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("양재시민의 숲"), 10);
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
-        Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
-
+        Long createId = 지하철_노선_생성("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("양재시민의 숲"), 10);
         SectionRequest sectionRequest = new SectionRequest(stationMap.get("양재시민의 숲"),  stationMap.get("청계산 입구"), 4);
 
         // when
-        response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
         지하철_노선에_지하철역_등록됨(response);
@@ -116,14 +104,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionThrowLimitDistanceException() {
         //given
-        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("청계산 입구"), 10);
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
-        Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
-
+        Long createId = 지하철_노선_생성("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("청계산 입구"), 10);
         SectionRequest sectionRequest = new SectionRequest(stationMap.get("강남역"),  stationMap.get("양재역"), 10);
 
         // when
-        response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
         지하철_노선에_거리로_인해_지하철역_등록_실패됨(response);
@@ -133,14 +118,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionThrowRegisteredSectionException() {
         //given
-        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("청계산 입구"), 10);
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
-        Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
-
+        Long createId = 지하철_노선_생성("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("청계산 입구"), 10);
         SectionRequest sectionRequest = new SectionRequest(stationMap.get("강남역"),  stationMap.get("청계산 입구"), 4);
 
         // when
-        response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
         지하철_노선에_이미_등록된_구간에_인해_지하철역_등록_실패됨(response);
@@ -150,14 +132,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionThrowCanNotAddSectionException() {
         //given
-        LineRequest lineRequest = createLineRequest("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("청계산 입구"), 10);
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
-        Long createId = response.jsonPath().getObject(".", LineResponse.class).getId();
-
+        Long createId = 지하철_노선_생성("신분당선", "bg-red-600", stationMap.get("강남역"), stationMap.get("청계산 입구"), 10);
         SectionRequest sectionRequest = new SectionRequest(stationMap.get("양재역"),  stationMap.get("양재시민의 숲"), 4);
 
         // when
-        response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
         지하철_노선에_등록_되지_않은_구간에_인해_지하철역_등록_실패됨(response);
@@ -166,25 +145,36 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private LineRequest createLineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         return new LineRequest(name, color, upStationId, downStationId, distance);
     }
+
+    private Long 지하철_노선_생성(String name, String color, Long upStationId, Long downStationId, int distance) {
+        LineRequest lineRequest = createLineRequest(name, color, upStationId, downStationId, distance);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
+        return response.jsonPath().getObject(".", LineResponse.class).getId();
+    }
+
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
         return post(request, "/lines");
     }
+
     private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long id, SectionRequest request) {
         return post(request, "/lines/" + id + "/sections");
     }
     private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
     private void 지하철_노선에_거리로_인해_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
         ErrorResponse errorResponse = response.jsonPath().getObject(".", ErrorResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(errorResponse.getMessage()).contains("거리가 기준 거리 이하가 될 수 없습니다.");
     }
+
     private void 지하철_노선에_이미_등록된_구간에_인해_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
         ErrorResponse errorResponse = response.jsonPath().getObject(".", ErrorResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(errorResponse.getMessage()).contains("이미 등록 된 구간입니다.");
     }
+
     private void 지하철_노선에_등록_되지_않은_구간에_인해_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
         ErrorResponse errorResponse = response.jsonPath().getObject(".", ErrorResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
