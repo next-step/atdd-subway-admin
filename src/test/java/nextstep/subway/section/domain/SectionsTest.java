@@ -72,6 +72,56 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    void 노선의_중간역을_삭제할_경우() {
+        //given 1=>2=>3 역 존재
+        Section section2 = Section.of(station1, station2, 4);
+        sections.add(section2);
+        //when (1=>2=>3) - 1
+        sections.removeSectionByStation(station2);
+        //then = 1=>2
+        추가된_역순서와_비교(Arrays.asList(station1, station3));
+    }
+
+    @Test
+    void 노선의_첫역을_삭제할_경우() {
+        //given 1=>2=>3 역 존재
+        Section section2 = Section.of(station1, station2, 4);
+        sections.add(section2);
+        //when (1=>2=>3) - 1
+        sections.removeSectionByStation(station1);
+        //then = 2=>3
+        추가된_역순서와_비교(Arrays.asList(station2, station3));
+    }
+
+    @Test
+    void 노선의_마지막역을_삭제할_경우() {
+        //given 1=>2=>3 역 존재
+        Section section2 = Section.of(station1, station2, 4);
+        sections.add(section2);
+        //when (1=>2=>3) - 3
+        sections.removeSectionByStation(station3);
+        //then = 1=>2
+        추가된_역순서와_비교(Arrays.asList(station1, station2));
+    }
+
+    @Test
+    void 노선에_존재하지않는_역은_삭제할_수_없음() {
+        //given 1=>2=>3 역 존재
+        Section section2 = Section.of(station1, station2, 4);
+        sections.add(section2);
+        //when && then (1=>2=>3) - 4 실패
+        assertThatThrownBy(() -> sections.removeSectionByStation(station4))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 노선에_상행역_하행역만_존자할경우_삭제할_수_없음() {
+        //when && then
+        assertThatThrownBy(() -> sections.removeSectionByStation(station2))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     private void 추가된_역순서와_비교(List<Station> stationList) {
         assertThat(sections.getSortedStations().stream().map(Station::getName).collect(Collectors.toList())).isEqualTo(stationList.stream().map(Station::getName).collect(Collectors.toList()));
     }
