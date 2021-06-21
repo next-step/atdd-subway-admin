@@ -28,14 +28,6 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "before_section_id")
-    private Section beforeSection;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "next_section_id")
-    private Section nextSection;
-
     protected Section() {
     }
 
@@ -68,13 +60,6 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    private void updateBeforeSection(Section beforeSection) {
-        this.beforeSection = beforeSection;
-    }
-
-    private void updateNextSection(Section nextSection) {
-        this.nextSection = nextSection;
-    }
     public void compareDistance(Distance distance) {
         this.distance.compareDistance(distance);
     }
@@ -83,18 +68,11 @@ public class Section extends BaseEntity {
         return this.distance.minusDistance(distance);
     }
 
-    public void upStationBeforeAdd(Section newSection) {
-        updateBeforeSection(newSection);
-        newSection.updateNextSection(this);
-    }
-
     public void upStationAfterAdd(Section newSection) {
         Distance distance = newSection.distance();
         compareDistance(distance);
         updateUpStation(newSection.downStation());
         updateDistance(minusDistance(distance));
-        updateBeforeSection(newSection);
-        newSection.updateNextSection(this);
     }
 
     public void downStationBeforeAdd(Section newSection) {
@@ -102,13 +80,6 @@ public class Section extends BaseEntity {
         compareDistance(distance);
         updateDownStation(newSection.upStation());
         updateDistance(minusDistance(distance));
-        newSection.updateBeforeSection(this);
-        updateNextSection(newSection);
-    }
-
-    public void downStationAfterAdd(Section newSection) {
-        newSection.updateBeforeSection(this);
-        updateNextSection(newSection);
     }
 
     public void upStationAfterDelete(Section deleteSection) {
@@ -124,23 +95,11 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    private Distance sumDistance(Distance distance) {
-        return new Distance(this.distance.distance() + distance.distance());
-    }
-
     public Station upStation() {
         return upStation;
     }
 
     public Station downStation() {
         return downStation;
-    }
-
-    public Section beforeSection() {
-        return beforeSection;
-    }
-
-    public Section nextSection() {
-        return nextSection;
     }
 }

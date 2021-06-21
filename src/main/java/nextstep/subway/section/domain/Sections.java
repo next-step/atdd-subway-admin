@@ -1,6 +1,5 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.exception.SectionCreateFailException;
 import nextstep.subway.exception.SectionDeleteFailException;
 import nextstep.subway.station.domain.Station;
@@ -15,14 +14,10 @@ import java.util.Optional;
 
 @Embeddable
 public class Sections {
-<<<<<<< Updated upstream
-    private static final String NOT_FOUND_START_SECTION = "시작 구간을 찾을 수 없습니다.";
-=======
     private static final String NOT_EXISTS_SECTION = "기존에 존재하지 않는 구간 입니다.";
     private static final String ALREADY_EXISTS_SECTION = "이미 존재하는 구간 입니다.";
     private static final String SECTION_LENGTH_TO_SHORT = "구간이 하나인 노선이라 삭제가 불가능 합니다.";
     private static final int MINIMUM_STATION_LENGTH = 2;
->>>>>>> Stashed changes
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "line")
     private final List<Section> sections = new ArrayList<>();
@@ -34,33 +29,49 @@ public class Sections {
     public List<Station> stations() {
         List<Station> stations = new ArrayList<>();
 
-        Section section = sections.stream()
-                .filter(startSection -> startSection.beforeSection() == null)
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException(NOT_FOUND_START_SECTION));
+        Section section = this.sections.get(0);
 
+        section = findFirstSection(section);
         stations.add(section.upStation());
         stations.add(section.downStation());
 
-        while (section.nextSection() != null) {
-            section = section.nextSection();
-            stations.add(section.downStation());
-        }
+        stations(stations, section.downStation());
 
         return Collections.unmodifiableList(stations);
     }
 
+    private void stations(List<Station> stations, Station downStation) {
+        sections.stream()
+                .filter(findSection -> findSection.upStation().equals(downStation))
+                .findFirst()
+                .ifPresent(section -> {
+                    Station nextStation = section.downStation();
+                    stations.add(nextStation);
+                    stations(stations, nextStation);
+                });
+    }
+
+    private Section findFirstSection(Section section) {
+        Section beforeSection = this.sections.stream()
+                .filter(findSection -> findSection.downStation().equals(section.upStation()))
+                .findFirst()
+                .orElse(section);
+
+        if (beforeSection.equals(section)) {
+            return section;
+        }
+
+        return findFirstSection(beforeSection);
+    }
+
     public void toSection(Section section) {
         validateStationNoneMatch(section);
-
-        upStationBeforeAddIfExists(section);
+        validateStationAllMatch(section);
         upStationAfterAddIfExists(section);
         downStationBeforeAddIfExists(section);
-        downStationAfterAddIfExists(section);
 
         this.sections.add(section);
     }
-
 
     public void deleteSection(Station deleteStation) {
         validateStationNoneMatch(deleteStation);
@@ -68,19 +79,23 @@ public class Sections {
         sectionDelete(deleteStation);
     }
 
-
     private void validateStationNoneMatch(Section section) {
         this.stations().stream()
                 .filter(station -> station.equals(section.upStation()) || station.equals(section.downStation()))
                 .findFirst()
-                .orElseThrow(() -> new SectionCreateFailException("기존에 존재하지 않는 구간 입니다."));
+                .orElseThrow(() -> new SectionCreateFailException(NOT_EXISTS_SECTION));
     }
 
-    private void upStationBeforeAddIfExists(Section newSection) {
-        sections.stream()
-                .filter(oriSection -> oriSection.upStation().equals(newSection.downStation()))
-                .findFirst()
-                .ifPresent(oriSection -> oriSection.upStationBeforeAdd(newSection));
+    private void validateStationAllMatch(Section section) {
+        boolean matchedUpStation = this.stations().stream()
+                .anyMatch(station -> station.equals(section.upStation()));
+
+        boolean matchedDownStation = this.stations().stream()
+                .anyMatch(station -> station.equals(section.downStation()));
+
+        if (matchedUpStation && matchedDownStation) {
+            throw new SectionCreateFailException(ALREADY_EXISTS_SECTION);
+        }
     }
 
     private void upStationAfterAddIfExists(Section newSection) {
@@ -97,13 +112,6 @@ public class Sections {
                 .ifPresent(oriSection -> oriSection.downStationBeforeAdd(newSection));
     }
 
-<<<<<<< Updated upstream
-    private void downStationAfterAddIfExists(Section newSection) {
-        sections.stream()
-                .filter(oriSection -> oriSection.downStation().equals(newSection.upStation()))
-                .findFirst()
-                .ifPresent(beforeSection -> beforeSection.downStationAfterAdd(newSection));
-=======
     private void validateStationNoneMatch(Station deleteStation) {
         this.stations().stream()
                 .filter(station -> station.equals(deleteStation))
@@ -151,6 +159,5 @@ public class Sections {
         if ((!sameUpStationSection.isPresent()) && (sameDownStationSection.isPresent())) {
             sections.remove(sameDownStationSection.get());
         }
->>>>>>> Stashed changes
     }
 }
