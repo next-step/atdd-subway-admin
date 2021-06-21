@@ -2,17 +2,21 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
+import io.restassured.mapper.TypeRef;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -60,13 +64,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String lineName = "line name";
         String lineColor = "line color";
         LineRequest params = new LineRequest(lineName, lineColor);
-        RestAssured.given()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .statusCode(HttpStatus.CREATED.value());
+        postLine(params);
 
         // when
         // 지하철_노선_생성_요청
@@ -83,19 +81,43 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
+    /**
+     * {@link nextstep.subway.line.ui.LineController#createLine(LineRequest)}
+     */
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
+        String lineName = "line name";
+        String lineColor = "line color";
+        postLine(new LineRequest(lineName, lineColor));
         // 지하철_노선_등록되어_있음
+        String lineName2 = "line name2";
+        String lineColor2 = "line color2";
+        postLine(new LineRequest(lineName2, lineColor2));
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = RestAssured.given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_목록_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
+        List<LineResponse> lines = response.body().as(new TypeRef<List<LineResponse>>() {});
+        assertThat(lines)
+            .hasSize(2)
+            .extracting(LineResponse::getName, LineResponse::getColor)
+            .containsExactlyInAnyOrder(
+                tuple(lineName, lineColor),
+                tuple(lineName2, lineColor2)
+            );
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -135,5 +157,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    LineResponse postLine(LineRequest params) {
+        return RestAssured.given()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then()
+            .statusCode(HttpStatus.CREATED.value())
+            .extract().body().as(LineResponse.class);
     }
 }
