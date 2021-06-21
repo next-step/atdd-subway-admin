@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
-public final class LineNameDuplicatedException extends Exception {
+import nextstep.subway.common.exception.ConflictException;
+
+public final class LineNameDuplicatedException extends ConflictException {
 
 	public LineNameDuplicatedException(String name) {
 		super("Line name duplicated. " + name);

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineNameDuplicatedException;
+import nextstep.subway.line.domain.LineNotFoundException;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -38,5 +39,11 @@ public class LineService {
         return lineRepository.findAll().stream()
             .map(LineResponse::of)
             .collect(toList());
+    }
+
+    public LineResponse findById(Long id) throws LineNotFoundException {
+        return LineResponse.of(lineRepository.findById(id)
+            .orElseThrow(LineNotFoundException::new)
+        );
     }
 }
