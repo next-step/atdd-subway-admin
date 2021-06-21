@@ -143,10 +143,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSectionUpStationAfter() {
         //given
-        String stationId = 지하철_구간_추가되어_있음(안산역, 오이도역, 50).body().jsonPath().getString("upStationId");
+        String 안산역 = 지하철_구간_추가되어_있음(this.안산역, 오이도역, 50).body().jsonPath().getString("upStationId");
 
         //when
-        ExtractableResponse<Response> response = 지하철_구간_삭제(사호선, stationId);
+        ExtractableResponse<Response> response = 지하철_구간_삭제(사호선, 안산역);
 
         //then
         지하철_구간_삭제됨(response);

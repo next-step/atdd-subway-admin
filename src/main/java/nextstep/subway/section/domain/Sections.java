@@ -150,7 +150,7 @@ public class Sections {
         if (sameUpStationSection.isPresent() && sameDownStationSection.isPresent()) {
             Section changeSection = sameUpStationSection.get();
             Section deleteSection = sameDownStationSection.get();
-            changeSection.upStationAfterDelete(deleteSection);
+            changeSection.betweenSectionDelete(deleteSection);
             sections.remove(deleteSection);
         }
     }

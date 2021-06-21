@@ -82,7 +82,7 @@ public class Section extends BaseEntity {
         updateDistance(minusDistance(distance));
     }
 
-    public void upStationAfterDelete(Section deleteSection) {
+    public void betweenSectionDelete(Section deleteSection) {
         distance = distance.plusDistance(deleteSection.distance());
         this.updateDownStation(deleteSection.downStation());
     }
