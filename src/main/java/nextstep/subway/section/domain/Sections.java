@@ -30,14 +30,18 @@ public class Sections {
 
         upStations.addAll(downStations);
 
+        return checkDuplicateAndDistinctStations(upStations);
+    }
+
+    private List<Station> checkDuplicateAndDistinctStations(List<Station> upStations) {
         if (haveDuplicateStation(upStations)) {
-            return removeDuplicateStation(upStations);
+            return removeDuplicateStations(upStations);
         }
 
         return upStations;
     }
 
-    private List<Station> removeDuplicateStation(List<Station> stations) {
+    private List<Station> removeDuplicateStations(List<Station> stations) {
         return stations.stream()
                 .distinct()
                 .collect(Collectors.toList());
