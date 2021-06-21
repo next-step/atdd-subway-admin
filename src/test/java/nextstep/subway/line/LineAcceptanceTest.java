@@ -17,6 +17,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.ui.LineController;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -82,7 +83,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * {@link nextstep.subway.line.ui.LineController#createLine(LineRequest)}
+     * {@link LineController#getLines()}
      */
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
@@ -120,6 +121,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
             );
     }
 
+    /**
+     * {@link LineController#getLineById(Long)}
+     */
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
@@ -181,20 +185,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .hasFieldOrPropertyWithValue("color", updateLineColor);
     }
 
+    /**
+     * {@link nextstep.subway.line.ui.LineController#deleteLineById(Long)}
+     */
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineResponse lineResponse = postLine(new LineRequest("line name", "line color"));
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = RestAssured.given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .pathParam("id", lineResponse.getId())
+            .when()
+            .delete("/lines/{id}")
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        RestAssured.given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .pathParam("id", lineResponse.getId())
+            .when()
+            .get("/lines/{id}")
+            .then()
+            .statusCode(HttpStatus.NOT_FOUND.value())
+        ;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
     LineResponse postLine(LineRequest params) {
         return RestAssured.given()
             .body(params)
