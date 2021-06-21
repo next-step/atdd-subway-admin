@@ -34,7 +34,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        // given
+        // given 신분당선에 강남역 - 광교역이 등록되어있다.
         강남역 = StationAcceptanceTest.requestCreateStation("강남역").as(StationResponse.class);
         광교역 = StationAcceptanceTest.requestCreateStation("광교역").as(StationResponse.class);
         판교역 = StationAcceptanceTest.requestCreateStation("판교역").as(StationResponse.class);
@@ -102,6 +102,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(판교역, 정자역, 7);
         // then 지하철_노선에_지하철역_등록됨
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 노선의_구간을_삭제한다() {
+        //given 강남역 - 판교역 - 광교역이 등록되어있다.
+        지하철_노선에_지하철역_등록_요청(강남역, 판교역, 4);
+        // when 지하철_노선에_지하철역_삭제_요청
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_삭제_요청(판교역);
+        // then 지하철_노선에_자하철역_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // then 역순서 확인 (강남역-판교역-광교역) - 판교역 = 강남역-광교역
+        등록된_역_순서_확인(Arrays.asList(강남역, 광교역));
+    }
+
+    private ExtractableResponse<Response> 지하철_노선에_지하철역_삭제_요청(StationResponse station) {
+        return RestAssured
+                .given().log().all()
+                .when().delete("/lines/{lineId}/sections?stationId={stationId}", 신분당선.getId(), station.getId())
+                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(StationResponse upStation, StationResponse downStation, int distance) {
