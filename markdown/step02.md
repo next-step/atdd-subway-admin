@@ -263,7 +263,7 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
     - [ ] 4-8.리뷰어님 코멘트 반영
         - [x] 4-8-1.강의 자료 이미지 제거
         - [x] 4-8-2.HTTP Status NotFound로 변경
-        - [ ] 4-8-3.`SectionGroup`생성
+        - [x] 4-8-3.`SectionGroup`생성
         - [ ] 4-8-4.`Line`엔티티의 필드로 `SectionGroup` 추가
         - [ ] 4-8-5.`Line`엔티티의 필드 중 `StationGroup` 제거
         - [ ] 4-8-6.`LineService`
