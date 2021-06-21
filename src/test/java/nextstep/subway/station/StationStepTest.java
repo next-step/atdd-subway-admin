@@ -17,6 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class StationStepTest {
 
+    public static final String STATION_BASE_URL = "/stations";
+
     static void 지하철_역_조회_성공됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -38,7 +40,7 @@ public class StationStepTest {
     static ExtractableResponse<Response> 지하철_역_삭제_요청(long createdId) {
         return RestAssured.given().log().all()
                 .when()
-                .delete("/stations/" + createdId)
+                .delete(STATION_BASE_URL + "/" + createdId)
                 .then().log().all()
                 .extract();
     }
@@ -46,7 +48,7 @@ public class StationStepTest {
     static ExtractableResponse<Response> 지하철_역_목록_조회_요청() {
         return RestAssured.given().log().all()
                 .when()
-                .get("/stations")
+                .get(STATION_BASE_URL)
                 .then().log().all()
                 .extract();
     }
@@ -66,7 +68,7 @@ public class StationStepTest {
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post(STATION_BASE_URL)
                 .then().log().all()
                 .extract();
     }
