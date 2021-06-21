@@ -1,9 +1,11 @@
 package nextstep.subway.line.ui;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,5 +33,10 @@ public class LineController {
         } catch (LineNameDuplicatedException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<LineResponse>> getLines() {
+        return ResponseEntity.ok(lineService.findAllLines());
     }
 }
