@@ -1,9 +1,11 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.core.Is.*;
 
 import java.util.List;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -150,7 +152,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(result)
             .hasFieldOrPropertyWithValue("id", lineResponse.getId())
             .hasFieldOrPropertyWithValue("name", lineName)
-            .hasFieldOrPropertyWithValue("color", lineColor);
+            .hasFieldOrPropertyWithValue("color", lineColor)
+            .extracting("stations").asList().hasSize(0)
+        ;
     }
 
     /**
