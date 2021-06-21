@@ -23,7 +23,6 @@ public class Sections {
     }
 
     public void addInMiddle(Section section) {
-
         this.sections.stream()
                 .filter(oldSection -> section.getUpStation().equals(oldSection.getUpStation()))
                 .findFirst()
@@ -35,7 +34,6 @@ public class Sections {
                             return;
                         }
                 );
-        reindexing();
     }
 
     public void addOnTop(Section section) {
@@ -47,7 +45,6 @@ public class Sections {
                             sections.add(0,section);
                         }
                 );
-        reindexing();
     }
 
     public void addBelow(Section section) {
@@ -59,7 +56,6 @@ public class Sections {
                             sections.add(section);
                         }
                 );
-        reindexing();
     }
 
     private void validateDistance(int oldDistance, int newDistance) {
@@ -69,7 +65,7 @@ public class Sections {
     }
 
 
-    public void Deletable() {
+    public void deletable() {
         if (sections.size() <= MINIMUM_SIZE) {
             throw new IncorrectSectionException("삭제할 수 있는 구간이 없습니다");
         }
@@ -80,14 +76,12 @@ public class Sections {
         Section downSection = getSectionByUp(station);
         upSection.changeStation(upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance()+downSection.getDistance());
         sections.remove(downSection);
-        reindexing();
         return downSection;
     }
 
     public Section deleteFirstSectionBy(Station station) {
         Section upSection = getSectionByUp(station);
         sections.remove(upSection);
-        reindexing();
         return upSection;
     }
 
@@ -97,7 +91,7 @@ public class Sections {
         return downSection;
     }
 
-    private void reindexing() {
+    public void reindexing() {
         sections.stream().forEach(section -> section.setSectionIndex(sections.indexOf(section)));
     }
 

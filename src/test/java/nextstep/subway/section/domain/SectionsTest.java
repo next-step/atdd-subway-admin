@@ -107,6 +107,26 @@ class SectionsTest {
         assertThat(sections.getStations().values()).containsExactly(강남역,사당역);
     }
 
+    @DisplayName("중간역 삭제")
+    @Test
+    void deleteAndSortingTest() {
+        //given
+        Sections sections = new Sections();
+        Station 강남역 = new Station("강남역");
+        Station 사당역 = new Station("사당역");
+        Station 교대역 = new Station("교대역");
+        Section 종점사이 = Section.of(강남역, 사당역, 4000);
+        Section 추가구간 = Section.of(강남역, 교대역, 1000);
+        sections.add(종점사이);
+        sections.addInMiddle(추가구간);
+
+        //when
+        sections.deleteMiddleSectionBy(교대역);
+
+        //then
+        assertThat(sections.getStations().values()).containsExactly(강남역,사당역);
+    }
+
     @DisplayName("상행종점 삭제")
     @Test
     void deleteFirstSectionsByStation() {

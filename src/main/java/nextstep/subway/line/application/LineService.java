@@ -14,6 +14,7 @@ import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,19 +71,21 @@ public class LineService {
 
     public Line saveLineSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선 ID입니다."));
-        Station upStation = stationService.findStation(sectionRequest.getUpStationId());
-        Station downStation = stationService.findStation(sectionRequest.getDownStationId());
+        List<Station> stations = stationService.findStationByIds(Arrays.asList(sectionRequest.getUpStationId(), sectionRequest.getDownStationId()));
+        Station upStation = stations.stream().filter(station -> station.getId() == sectionRequest.getUpStationId()).findFirst().orElseThrow(() -> new NoSuchDataException("존재하지 않는 역 ID 입니다"));
+        Station downStation = stations.stream().filter(station -> station.getId() == sectionRequest.getDownStationId()).findFirst().orElseThrow(() -> new NoSuchDataException("존재하지 않는 역 ID 입니다"));
         Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
         line.addAdditionalSection(section);
+        line.reIndexing();
         sectionService.save(section);
         return line;
     }
 
     public Line deleteLineSectionBy(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchDataException("존재하지 않는 노선 ID입니다."));
-        Station station = stationService.findStation(stationId);
-        Section deletableSection = line.deleteSectioByStation(station);
-        sectionService.delete(deletableSection);
+        Station station = line.findStationBy(stationId);
+        line.deleteSectioByStation(station);
+        line.reIndexing();
         return line;
     }
 }

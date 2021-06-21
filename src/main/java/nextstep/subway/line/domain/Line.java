@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.exception.IncorrectSectionException;
+import nextstep.subway.exception.NoSuchDataException;
 import nextstep.subway.line.dto.Stations;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
@@ -61,8 +62,12 @@ public class Line extends BaseEntity {
         throw new IncorrectSectionException("노선에 없는 역의 구간은 추가할 수 없습니다.");
     }
 
+    public void reIndexing() {
+        sections.reindexing();
+    }
+
     public Section deleteSectioByStation(Station station) {
-        sections.Deletable();
+        sections.deletable();
         sections.sort();
         Stations upStations = sections.getUpStations();
         Stations downStations = sections.getDownStations();
@@ -99,4 +104,10 @@ public class Line extends BaseEntity {
     }
 
 
+    public Station findStationBy(Long stationId) {
+        return getStations().values().stream()
+                .filter(station -> station.getId() == stationId)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchDataException("해당 노선에 존재하지 않는 역입니다"));
+    }
 }
