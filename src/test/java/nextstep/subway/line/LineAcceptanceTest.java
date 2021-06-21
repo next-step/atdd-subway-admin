@@ -133,8 +133,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = RestAssured.given()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .pathParam("id", lineResponse.getId())
             .when()
-            .get("/lines/" + lineResponse.getId())
+            .get("/lines/{id}")
             .then().log().all()
             .extract();
 
@@ -148,17 +149,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .hasFieldOrPropertyWithValue("color", lineColor);
     }
 
+    /**
+     * {@link nextstep.subway.line.ui.LineController#updateLineById(Long, LineRequest)}
+     */
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineResponse lineResponse = postLine(new LineRequest("line name", "line color"));
 
         // when
         // 지하철_노선_수정_요청
+        String updateLineName = "update line name", updateLineColor = "update line color";
+        ExtractableResponse<Response> response = RestAssured.given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .pathParam("id", lineResponse.getId())
+            .body(new LineRequest(updateLineName, updateLineColor))
+            .when()
+            .put("/lines/{id}")
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse result = response.body().as(LineResponse.class);
+        assertThat(result)
+            .hasFieldOrPropertyWithValue("id", lineResponse.getId())
+            .hasFieldOrPropertyWithValue("name", updateLineName)
+            .hasFieldOrPropertyWithValue("color", updateLineColor);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
