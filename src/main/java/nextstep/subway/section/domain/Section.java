@@ -59,7 +59,19 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.upStation = station;
     }
 
-    public boolean equalsUpStation(Section section) {
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public boolean equalToDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean equalToUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean equalUpStation(Section section) {
         return this.upStation.equals(section.getUpStation());
     }
 
@@ -81,6 +93,10 @@ public class Section extends BaseEntity implements Comparable<Section> {
 
     public boolean isStationInSection(Station station) {
         return upStation.equals(station) || downStation.equals(station);
+    }
+
+    public void removeLine() {
+        this.line = null;
     }
 
     @Override

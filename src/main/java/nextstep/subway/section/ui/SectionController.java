@@ -19,7 +19,15 @@ public class SectionController {
     @PostMapping("{lineId}/sections")
     public ResponseEntity createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
         sectionService.saveSection(lineId, sectionRequest);
-        return ResponseEntity.created(URI.create(lineId+"/sections")).build();
+        return ResponseEntity.created(URI.create(lineId + "/sections")).build();
+    }
+
+    @DeleteMapping("{lineId}/sections")
+    public ResponseEntity removeLineStation(
+            @PathVariable Long lineId,
+            @RequestParam Long stationId) {
+        sectionService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
