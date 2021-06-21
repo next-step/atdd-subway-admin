@@ -83,7 +83,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * {@link LineController#getLines()}
+     * {@link nextstep.subway.line.ui.LineController#createLine(LineRequest)}
      */
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
