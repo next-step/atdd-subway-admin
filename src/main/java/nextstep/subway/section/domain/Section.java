@@ -2,9 +2,6 @@ package nextstep.subway.section.domain;
 
 import static javax.persistence.FetchType.LAZY;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Embedded;
@@ -54,13 +51,20 @@ public class Section {
     }
 
     public void updateStation(Station upStation, Station downStation, Distance requestDistance) {
+        if (isUpStation(upStation) || isDownStation(downStation)) {
+            distance = distance.sub(requestDistance);
+        }
         if (isUpStation(upStation)) {
             this.upStation = downStation;
         }
         if (isDownStation(downStation)) {
             this.downStation = upStation;
         }
-        distance = distance.calculateDistance(requestDistance);
+    }
+
+    public void updateSectionByDownStation(Section section) {
+        downStation = section.getDownStation();
+        this.distance = this.distance.add(section.distance);
     }
 
     public boolean isContain(Station station) {
@@ -81,6 +85,10 @@ public class Section {
 
     public boolean isDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    public Line getLine() {
+        return line;
     }
 
     @Override
