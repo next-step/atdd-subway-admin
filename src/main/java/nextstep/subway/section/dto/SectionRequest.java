@@ -1,34 +1,20 @@
-package nextstep.subway.line.dto;
+package nextstep.subway.section.dto;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
-public class LineRequest {
-	private String name;
-	private String color;
+public class SectionRequest {
+
 	private Long upStationId;
 	private Long downStationId;
 	private int distance;
 
-	public LineRequest() {
-	}
-
-	public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
-		this.name = name;
-		this.color = color;
+	public SectionRequest(Long upStationId, Long downStationId, int distance) {
 		this.upStationId = upStationId;
 		this.downStationId = downStationId;
 		this.distance = distance;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getColor() {
-		return color;
 	}
 
 	public Long getUpStationId() {
@@ -40,10 +26,10 @@ public class LineRequest {
 	}
 
 	public int getDistance() {
-		return this.distance;
+		return distance;
 	}
 
-	public Line toLine(Station upStation, Station downStation) {
-		return new Line(name, color, upStation, downStation, distance);
+	public Section toSection(Line line, Station upStation, Station downStation) {
+		return new Section(line, upStation, downStation, new Distance(this.distance));
 	}
 }

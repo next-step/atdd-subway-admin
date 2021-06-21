@@ -15,6 +15,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -61,4 +62,11 @@ public class LineService {
 		return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 	}
 
+	public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+		Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(EntityNotFoundException::new);
+		Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(EntityNotFoundException::new);
+		Line line = findByIdLine(id);
+		line.addSection(sectionRequest.toSection(line, upStation, downStation));
+		return LineResponse.of(line);
+	}
 }

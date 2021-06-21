@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -38,6 +39,12 @@ public class Line extends BaseEntity {
 		this.color = color;
 	}
 
+	public Line(String name, String color, Station upStation, Station downStation, int distance) {
+		this.name = name;
+		this.color = color;
+		this.sections.add(new Section(this, upStation, downStation, new Distance(distance)));
+	}
+
 	public void update(Line line) {
 		this.name = line.getName();
 		this.color = line.getColor();
@@ -57,7 +64,6 @@ public class Line extends BaseEntity {
 
 	public void addSection(Section section) {
 		this.sections.add(section);
-		section.setLine(this);
 	}
 
 	public Sections getSections() {

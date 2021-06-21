@@ -1,6 +1,5 @@
 package nextstep.subway.section.domain;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,11 +27,11 @@ public class Section {
 	@JoinColumn(name = "line_id")
 	private Line line;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "up_station_id")
 	private Station upStation;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
@@ -65,12 +64,38 @@ public class Section {
 		return this.distance;
 	}
 
+	public boolean isUpStationInSection(Section section) {
+		return this.upStation.equals(section.upStation);
+	}
+
+	public boolean isDownStationInSection(Section section) {
+		return this.downStation.equals(section.downStation);
+	}
+
+	public boolean isUpStationEqualsDownStation(Section section) {
+		return this.upStation.equals(section.downStation);
+	}
+
+	public boolean isDownStationEqualsUpStation(Section section) {
+		return this.downStation.equals(section.upStation);
+	}
+
+	protected void changeUpStation(final Section section) {
+		this.distance = this.distance.getDifferenceDistance(section.distance);
+		this.upStation = section.downStation;
+	}
+
+	protected void changeDownStation(final Section section) {
+		this.distance = this.distance.getDifferenceDistance(section.distance);
+		this.downStation = section.upStation;
+	}
+
 	public void setLine(Line line) {
 		if (Objects.nonNull(this.line)) {
 			this.line.getSections().remove(this);
 		}
 		this.line = line;
-		line.getSections().add(this);
+		line.addSection(this);
 	}
 
 	public List<Station> toStations() {
