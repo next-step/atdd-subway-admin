@@ -33,7 +33,7 @@ public class SectionService {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
 
-        Section section = line.updateAddSection(upStation, downStation, lineRequest.getDistance());
+        Section section = line.createSection(upStation, downStation, lineRequest.getDistance());
         sectionRepository.save(section);
         return LineResponse.of(line);
     }

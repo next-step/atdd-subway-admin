@@ -40,7 +40,7 @@ public class Line extends BaseEntity {
         addSection(upStation, downStation, request.getDistance());
     }
 
-    public Section updateAddSection(Station upStation, Station downStation, Distance requestDistance) {
+    public Section createSection(Station upStation, Station downStation, Distance requestDistance) {
         sections.updateSection(upStation, downStation, requestDistance);
         return addSection(upStation, downStation, requestDistance);
     }
