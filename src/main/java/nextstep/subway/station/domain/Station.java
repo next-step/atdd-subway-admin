@@ -15,10 +15,15 @@ public class Station extends BaseEntity {
     @Embedded
     private Name name;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
+        this.name = new Name(name);
+    }
+
+    public Station(Long id, String name) {
+        this.id = id;
         this.name = new Name(name);
     }
 

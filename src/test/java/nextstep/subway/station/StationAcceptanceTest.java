@@ -22,11 +22,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private Map<String, String> 강남역 = new HashMap<String, String>() {{
+    public static final Map<String, String> 신도림역 = new HashMap<String, String>() {{
+        put("name", "신도림역");
+    }};
+
+    public static final Map<String, String> 서울역 = new HashMap<String, String>() {{
+        put("name", "서울역");
+    }};
+
+    public static final Map<String, String> 강남역 = new HashMap<String, String>() {{
         put("name", "강남역");
     }};
 
-    private Map<String, String> 역삼역 = new HashMap<String, String>() {{
+    public static final Map<String, String> 역삼역 = new HashMap<String, String>() {{
         put("name", "역삼역");
     }};
 
@@ -128,7 +136,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> 지하철_역_생성_요청(Map<String, String> station) {
+    private static ExtractableResponse<Response> 지하철_역_생성_요청(Map<String, String> station) {
         return RestAssured.given().log().all()
             .body(station)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -138,7 +146,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_역_등록되어_있음(Map<String, String> station) {
+    public static ExtractableResponse<Response> 지하철_역_등록되어_있음(Map<String, String> station) {
         return 지하철_역_생성_요청(station);
     }
 
