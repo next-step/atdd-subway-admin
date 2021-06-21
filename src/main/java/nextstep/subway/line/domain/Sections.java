@@ -16,6 +16,7 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+
     public static final int FIRST_INDEX = 0;
     public static final int COMPLEMENT = 1;
 
@@ -39,7 +40,7 @@ public class Sections {
             return;
         }
 
-        Direction direction = isUpDirection(section) ? Direction.UP : Direction.DOWN;
+        Direction direction = getDirection(section);
         changeSection(section, direction);
     }
 
@@ -52,8 +53,11 @@ public class Sections {
         return sections.get(FIRST_INDEX).getUpStation() == section.getDownStation();
     }
 
-    private boolean isUpDirection(Section section) {
-        return sections.stream().anyMatch(s -> s.getUpStation() == section.getUpStation());
+    private Direction getDirection(Section section) {
+        if (sections.stream().anyMatch(s -> s.getUpStation() == section.getUpStation())) {
+            return Direction.UP;
+        }
+        return Direction.DOWN;
     }
 
     private void changeSection(Section section, Direction direction) {
