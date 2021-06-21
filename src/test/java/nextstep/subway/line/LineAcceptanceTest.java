@@ -49,17 +49,38 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .startsWith("/lines/");
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    /**
+     * {@link nextstep.subway.line.ui.LineController#createLine(LineRequest)}
+     */
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성시 실패한다.")
     @Test
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
+        String lineName = "line name";
+        String lineColor = "line color";
+        LineRequest params = new LineRequest(lineName, lineColor);
+        RestAssured.given()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then()
+            .statusCode(HttpStatus.CREATED.value());
 
         // when
         // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = RestAssured.given()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then()
+            .extract();
 
         // then
         // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
