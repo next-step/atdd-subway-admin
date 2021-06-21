@@ -27,23 +27,24 @@ public class LineService {
     }
 
     public List<LineResponse> findAll() {
-        return lineRepository.findAll().stream().map(line->LineResponse.of(line)).collect(Collectors.toList());
+        return lineRepository.findAll().stream()
+                .map(LineResponse::of).collect(Collectors.toList());
     }
 
     public Line findById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(()->new NotFoundException("invalid " + id));
+                .orElseThrow(() -> new NotFoundException("invalid " + id));
     }
 
     public void updateLine(Long id, Line newLine) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("invalid "+id));
+                .orElseThrow(() -> new NotFoundException("invalid "+id));
         line.update(newLine);
     }
 
     public void deleteLine(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("invalid "+id));
+                .orElseThrow(() -> new NotFoundException("invalid "+id));
         lineRepository.delete(line);
     }
 }
