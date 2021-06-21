@@ -17,87 +17,47 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
-    public static final int FIRST_INDEX = 0;
-    public static final int COMPLEMENT = 1;
-
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
-        if (sections.isEmpty()) {
-            sections.add(section);
-            return;
-        }
-
         validate(section);
-
-        if (isFirstSection(section)) {
-            sections.add(FIRST_INDEX, section);
-            return;
-        }
-        if (isLastSection(section)) {
-            sections.add(section);
-            return;
-        }
-
-        Direction direction = getDirection(section);
-        changeSection(section, direction);
-    }
-
-    private boolean isLastSection(Section section) {
-        int lastIndex = sections.size() - COMPLEMENT;
-        return sections.get(lastIndex).getDownStation() == section.getUpStation();
-    }
-
-    private boolean isFirstSection(Section section) {
-        return sections.get(FIRST_INDEX).getUpStation() == section.getDownStation();
-    }
-
-    private Direction getDirection(Section section) {
-        if (sections.stream().anyMatch(s -> s.getUpStation() == section.getUpStation())) {
-            return Direction.UP;
-        }
-        return Direction.DOWN;
-    }
-
-    private void changeSection(Section section, Direction direction) {
         sections.stream()
-                .filter(s -> s.getStation(direction) == section.getStation(direction))
+                .filter(s -> s.equalsUpStation(section) || s.equalsDownStation(section))
                 .findFirst()
                 .ifPresent(s -> {
                     int distance = s.getDistance() - section.getDistance();
-                    Section moveSection = createByDirection(direction, section, s, distance);
+                    Section moveSection = new Section(section.getDownStation(), s.getDownStation(), distance);
+                    if (s.equalsDownStation(section)) {
+                        moveSection = new Section(s.getUpStation(), section.getUpStation(), distance);
+                    }
                     moveSection.toLine(section.getLine());
-
-                    int index = sections.indexOf(s);
                     sections.remove(s);
-
-                    List<Section> asList = direction == Direction.UP ?
-                        Arrays.asList(section, moveSection) : Arrays.asList(moveSection, section);
-                    this.sections.addAll(index,asList);
+                    sections.add(moveSection);
                 });
-    }
-
-    private Section createByDirection(Direction direction, Section newSection, Section oldSection, int distance) {
-        if (direction == Direction.UP) {
-            return new Section(newSection.getStation(Direction.DOWN), oldSection.getStation(Direction.DOWN), distance);
-        }
-        return new Section(oldSection.getStation(Direction.UP), newSection.getStation(Direction.UP), distance);
+        sections.add(section);
     }
 
     public List<Station> stations() {
         Set<Station> stations = new LinkedHashSet<>();
         for (Section section : sections) {
+            sections.stream().filter(s -> isConnectUpStation(s, section))
+                             .findFirst()
+                             .ifPresent(s -> stations.addAll(Arrays.asList(s.getUpStation(), s.getDownStation())));
             stations.addAll(Arrays.asList(section.getUpStation(), section.getDownStation()));
         }
         return new ArrayList<>(stations);
     }
 
+    private boolean isConnectUpStation(Section target, Section compare) {
+        return !target.equals(compare) && target.getDownStation() == compare.getUpStation();
+    }
+
     public void validate(Section section) {
-        if (contains(section.getUpStation()) && contains(section.getDownStation())) {
+        if (!sections.isEmpty() && contains(section.getUpStation()) && contains(section.getDownStation())) {
             throw new RegisteredSectionException();
         }
-        if (!contains(section.getUpStation()) && !contains(section.getDownStation())) {
+        if (!sections.isEmpty() &&!contains(section.getUpStation()) && !contains(section.getDownStation())) {
             throw new CanNotAddSectionException();
         }
     }

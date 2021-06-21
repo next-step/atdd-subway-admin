@@ -73,14 +73,15 @@ public class Section {
 		this.line = line;
 	}
 
-	public Station getStation(Direction direction) {
-		if (direction == Direction.UP) {
-			return upStation;
-		}
-		return downStation;
-	}
-
 	public boolean containStation(Station station) {
 		return upStation == station || downStation == station;
+	}
+
+	public boolean equalsUpStation(Section s) {
+		return upStation == s.getUpStation();
+	}
+
+	public boolean equalsDownStation(Section s) {
+		return downStation == s.getDownStation();
 	}
 }
