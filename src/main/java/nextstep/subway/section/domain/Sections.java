@@ -12,12 +12,14 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.station.domain.Station;
+import org.hibernate.annotations.BatchSize;
 
 @Embeddable
 public class Sections {
     public static final int SECTIONS_DELETE_FOR_MIN_COUNT = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 100)
     private final List<Section> sections = new ArrayList<>();
 
     public Sections() {
