@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import nextstep.subway.section.exception.InvalidDistanceException;
+import nextstep.subway.section.exception.InvalidSectionRemoveException;
 import nextstep.subway.section.exception.InvalidSectionException;
 
 @RestControllerAdvice
@@ -23,6 +24,11 @@ public class SubwayControllerAdvice {
 
 	@ExceptionHandler(InvalidSectionException.class)
 	public ResponseEntity handleInvalidSectionException(InvalidSectionException e) {
+		return ResponseEntity.badRequest().build();
+	}
+
+	@ExceptionHandler(InvalidSectionRemoveException.class)
+	public ResponseEntity handleInvalidSectionRemoveException(InvalidSectionRemoveException e) {
 		return ResponseEntity.badRequest().build();
 	}
 }
