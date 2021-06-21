@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,98 +17,100 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-	public static final int SIZE_ZERO = 0;
+	private static final int SIZE_ZERO = 0;
+	private static final int MINIMUM_SECTION_COUNT = 1;
+
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	List<Section> sections = new ArrayList<>();
 
 	public void add(Section candidate) {
 		if (isSectionsEmpty()) {
-			sections.add(candidate);
+			addSection(candidate);
 
 			return;
 		}
 
 		validateCandidate(candidate);
 
-		Section commonUpStationSection = getCommonUpStationSection(candidate);
-		if (isCommonStationExist(commonUpStationSection)) {
-			addSectionWithCommonUpStation(candidate, commonUpStationSection);
+		Optional<Section> commonUpStationSection = getCommonUpStationSection(candidate.getUpStation());
+		if (commonUpStationSection.isPresent()) {
+			addSectionWithCommonUpStation(candidate, commonUpStationSection.get());
 
 			return;
 		}
 
-		Section commonDownStationSection = getCommonDownStationSection(candidate);
-		if (isCommonStationExist(commonDownStationSection)) {
-			addSectionWithCommonDownStation(candidate, commonDownStationSection);
+		Optional<Section> commonDownStationSection = getCommonDownStationSection(candidate.getDownStation());
+		if (commonDownStationSection.isPresent()) {
+			addSectionWithCommonDownStation(candidate, commonDownStationSection.get());
 
 			return;
 		}
 
-		sections.add(candidate);
+		addSection(candidate);
 	}
 
 	private boolean isSectionsEmpty() {
 		return sections.size() == SIZE_ZERO;
 	}
 
-	private boolean isCommonStationExist(Section commonUpStationSection) {
-		return commonUpStationSection != null;
-	}
-
 	private void addSectionWithCommonDownStation(Section candidate, Section commonDownStationSection) {
-		rearrangeSections(commonDownStationSection, candidate, commonDownStationSection.getUpStation(),
+		modifyOldSection(commonDownStationSection, candidate, commonDownStationSection.getUpStation(),
 			candidate.getUpStation());
+		addSection(candidate);
 	}
 
-	private Section getCommonDownStationSection(Section candidate) {
+	private Optional<Section> getCommonDownStationSection(Station downStation) {
 		return sections.stream()
-			.filter(x -> x.hasSameDownStation(candidate))
-			.findFirst().orElse(null);
+			.filter(section -> section.hasSameDownStation(downStation))
+			.findFirst();
 	}
 
 	private void addSectionWithCommonUpStation(Section candidate, Section commonUpStationSection) {
-		rearrangeSections(commonUpStationSection, candidate, candidate.getDownStation(),
+		modifyOldSection(commonUpStationSection, candidate, candidate.getDownStation(),
 			commonUpStationSection.getDownStation());
+		addSection(candidate);
 	}
 
-	private Section getCommonUpStationSection(Section candidate) {
+	private void addSection(Section candidate) {
+		sections.add(candidate);
+	}
+
+	private Optional<Section> getCommonUpStationSection(Station upStation) {
 		return sections.stream()
-			.filter(x -> x.hasSameUpStation(candidate))
-			.findFirst().orElse(null);
+			.filter(section -> section.hasSameUpStation(upStation))
+			.findFirst();
 	}
 
-	private void rearrangeSections(Section targetSection, Section candidate, Station upStation, Station downStation) {
-		if (targetSection.getDistance() - candidate.getDistance() <= 0) {
+	private void modifyOldSection(Section targetSection, Section candidate, Station upStation, Station downStation) {
+		if (targetSection.getDistance() - candidate.getDistance() <= Section.MINIMUM_DISTANCE) {
 			throw new IllegalArgumentException("The distance between new section must be less than target section");
 		}
 
-		sections.add(
-			new Section(targetSection.getLine(), upStation, downStation,
-				targetSection.getDistance() - candidate.getDistance()));
-		sections.add(candidate);
+		addSection(new Section(targetSection.getLine(), upStation, downStation,
+			targetSection.getDistance() - candidate.getDistance()));
 		sections.remove(targetSection);
 	}
 
 	private void validateCandidate(Section candidate) {
 		Set<Station> stations = getDistinctStations();
-		validateAlreadyExistsTwoStations(candidate, stations);
-		validateExistsConnectedStationToOldLine(candidate, stations);
+		validateTwoStationsAlreadyExists(candidate, stations);
+		validateConnectedStationToOldLineExists(candidate, stations);
 	}
 
 	private Set<Station> getDistinctStations() {
 		return sections.stream()
-			.map(x -> Arrays.asList(x.getUpStation(), x.getDownStation()))
-			.flatMap(y -> y.stream())
+			.map(section -> Arrays.asList(section.getUpStation(), section.getDownStation()))
+			.flatMap(sections -> sections.stream())
 			.collect(Collectors.toSet());
 	}
 
-	private void validateExistsConnectedStationToOldLine(Section candidate, Set<Station> stations) {
+	private void validateConnectedStationToOldLineExists(Section candidate, Set<Station> stations) {
 		if (!stations.contains(candidate.getUpStation()) && !stations.contains(candidate.getDownStation())) {
 			throw new NoSuchElementException("There is no such section");
 		}
 	}
 
-	private void validateAlreadyExistsTwoStations(Section candidate, Set<Station> stations) {
+	private void validateTwoStationsAlreadyExists(Section candidate, Set<Station> stations) {
 		if (stations.contains(candidate.getUpStation()) && stations.contains(candidate.getDownStation())) {
 			throw new IllegalArgumentException("Each two stations are already in the line");
 		}
@@ -141,5 +144,46 @@ public class Sections {
 			.filter(x -> !order.containsValue(x))
 			.findFirst()
 			.orElseThrow(() -> new NoSuchElementException("There is no start point"));
+	}
+
+	public void remove(Station targetStation) {
+		validateRemovable();
+
+		Optional<Section> sectionWithSameUpStation = getCommonUpStationSection(targetStation);
+		Optional<Section> sectionWithSameDownStation = getCommonDownStationSection(targetStation);
+
+		validateRequestStationExists(sectionWithSameUpStation, sectionWithSameDownStation);
+		if (isUpAndDownStationExist(sectionWithSameUpStation, sectionWithSameDownStation)) {
+			connectTwoStation(sectionWithSameUpStation.get(), sectionWithSameDownStation.get());
+		}
+
+		sectionWithSameUpStation.ifPresent(section -> sections.remove(section));
+		sectionWithSameDownStation.ifPresent(section -> sections.remove(section));
+	}
+
+	private void validateRemovable() {
+		if (sections.size() <= MINIMUM_SECTION_COUNT) {
+			throw new IllegalArgumentException("Section must be over at least two count in line");
+		}
+	}
+
+	private void connectTwoStation(Section sectionWithSameUpStation,
+		Section sectionWithSameDownStation) {
+		sections.add(new Section(sectionWithSameUpStation.getLine(),
+			sectionWithSameDownStation.getUpStation(),
+			sectionWithSameUpStation.getDownStation(),
+			sectionWithSameUpStation.getDistance() + sectionWithSameDownStation.getDistance()));
+	}
+
+	private boolean isUpAndDownStationExist(Optional<Section> sectionWithSameUpStation,
+		Optional<Section> sectionWithSameDownStation) {
+		return sectionWithSameUpStation.isPresent() && sectionWithSameDownStation.isPresent();
+	}
+
+	private void validateRequestStationExists(Optional<Section> sectionWithSameUpStation,
+		Optional<Section> sectionWithSameDownStation) {
+		if (!sectionWithSameUpStation.isPresent() && !sectionWithSameDownStation.isPresent()) {
+			throw new NoSuchElementException("Request station is not on the line");
+		}
 	}
 }

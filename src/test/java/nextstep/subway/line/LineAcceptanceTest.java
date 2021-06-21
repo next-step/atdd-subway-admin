@@ -51,6 +51,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(response.header("Location")).isNotBlank();
 	}
 
+	@DisplayName("역 사이의 거리는 항상 양수다.")
+	@Test
+	void distanceBetweenStationsMustBePositiveNumber() {
+		// given
+		// 지하철_역_등록되어_있음
+		setUpStations();
+		// 지하철_노선_미등록_상태
+
+		// when
+		// 지하철_노선_생성_요청
+		ExtractableResponse<Response> response = LineAcceptanceMethod.createLine(
+			new LineRequest("신분당선", "bg-red-600", stationId1, stationId2, -1));
+
+		// then
+		// 에러_발생
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
 	@Test
 	void createLineWithDuplicateName() {

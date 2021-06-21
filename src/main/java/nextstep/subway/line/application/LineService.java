@@ -2,7 +2,9 @@ package nextstep.subway.line.application;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,5 +83,39 @@ public class LineService {
 
 	private Line getLine(Long id) {
 		return lines.findById(id).orElseThrow(() -> new NoSuchElementException("There is no line for the id"));
+	}
+
+	public void removeStation(Long lineId, Long stationId) {
+		Line line = getLine(lineId);
+		Station deleteStation = getStation(stationId);
+		line.remove(deleteStation);
+	}
+
+	public void removeStation(Long stationId) {
+		Set<Long> lineIds = getLineIds(stationId);
+		Station deleteStation = getStation(stationId);
+		List<Line> lineList = getLinesByIds(lineIds);
+
+		for (Line line : lineList) {
+			line.remove(deleteStation);
+		}
+	}
+
+	private List<Line> getLinesByIds(Set<Long> lineIds) {
+		return lines.findByIdIn(lineIds)
+			.orElseThrow(() -> new NoSuchElementException("There is no line for the ids"));
+	}
+
+	private Set<Long> getLineIds(Long stationId) {
+		Set<Long> lineIds = Stream
+			.concat(toLineIds(sections.findByUpStationId(stationId)).stream(),
+				toLineIds(sections.findByDownStationId(stationId)).stream())
+			.collect(Collectors.toSet());
+
+		return lineIds;
+	}
+
+	private Set<Long> toLineIds(List<Section> sections) {
+		return sections.stream().map(section -> section.getLine().getId()).collect(Collectors.toSet());
 	}
 }
