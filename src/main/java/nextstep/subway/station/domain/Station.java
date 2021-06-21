@@ -22,6 +22,11 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
+    public Station(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
@@ -33,13 +38,21 @@ public class Station extends BaseEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Station)) return false;
         Station station = (Station) o;
-        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
+        return Objects.equals(id, station.getId()) && Objects.equals(name, station.getName());
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
