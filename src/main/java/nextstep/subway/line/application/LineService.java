@@ -1,11 +1,13 @@
 package nextstep.subway.line.application;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineNameDuplicatedException;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -16,8 +18,15 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
+    public LineResponse saveLine(LineRequest request) throws LineNameDuplicatedException {
+        checkNameDuplication(request.getName());
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    private void checkNameDuplication(String name) throws LineNameDuplicatedException {
+        if (lineRepository.findByName(name).isPresent()) {
+            throw new LineNameDuplicatedException(name);
+        }
     }
 }
