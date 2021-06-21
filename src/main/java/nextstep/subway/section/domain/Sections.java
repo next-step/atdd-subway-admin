@@ -11,12 +11,14 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.exception.InvalidSectionRemoveException;
 import nextstep.subway.section.exception.InvalidSectionException;
+import nextstep.subway.section.exception.InvalidSectionRemoveException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+
+	private static final int MIN_SECTION_SIZE = 1;
 
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	List<Section> sections = new ArrayList<>();
@@ -126,32 +128,51 @@ public class Sections {
 	}
 
 	public void removeSection(Line line, Station deleteStation) {
-		if (sections.size() <= 1)
-			throw new InvalidSectionRemoveException("구간에 삭제할 구간이 하나밖에 없어 삭제할 수 없습니다.");
+		validateRemoveSectionSize();
+		Optional<Section> downSection = getUpStationEqualsSection(deleteStation);
+		Optional<Section> upSection = getDownStationEqualsSection(deleteStation);
+		validateNotExistStationInSection(deleteStation, downSection, upSection);
+		addCentralSection(line, downSection, upSection);
+		removeIfExistSection(downSection);
+		removeIfExistSection(upSection);
+	}
 
-		Optional<Section> upStationEqualsSection = sections.stream()
-			.filter(section -> section.getUpStation().equals(deleteStation))
-			.findFirst();
+	private void removeIfExistSection(Optional<Section> section) {
+		if (section.isPresent()) {
+			sections.remove(section.get());
+		}
+	}
 
-		Optional<Section> downStationEqualsSection = sections.stream()
-			.filter(section -> section.getDownStation().equals(deleteStation))
-			.findFirst();
-
-		if(!upStationEqualsSection.isPresent() && !downStationEqualsSection.isPresent())
-			throw new InvalidSectionRemoveException("구간에 삭제할 역이 존재하지 않습니다. : " + deleteStation.getName());
-
-		if(upStationEqualsSection.isPresent() && downStationEqualsSection.isPresent()) {
-			Station upStation = downStationEqualsSection.get().getUpStation();
-			Station downStation = upStationEqualsSection.get().getDownStation();
-			Distance distance = downStationEqualsSection.get().getDistance().getPlusDistance(upStationEqualsSection.get()
-				.getDistance());
+	private void addCentralSection(Line line, Optional<Section> downSection, Optional<Section> upSection) {
+		if (downSection.isPresent() && upSection.isPresent()) {
+			Station upStation = upSection.get().getUpStation();
+			Station downStation = downSection.get().getDownStation();
+			Distance distance = upSection.get().getDistance().getPlusDistance(downSection.get().getDistance());
 			sections.add(new Section(line, upStation, downStation, distance));
 		}
+	}
 
-		if(upStationEqualsSection.isPresent())
-			sections.remove(upStationEqualsSection.get());
+	private void validateNotExistStationInSection(Station deleteStation, Optional<Section> upStationEqualsSection,
+		Optional<Section> downStationEqualsSection) {
+		if (!upStationEqualsSection.isPresent() && !downStationEqualsSection.isPresent())
+			throw new InvalidSectionRemoveException("구간에 삭제할 역이 존재하지 않습니다. : " + deleteStation.getName());
+	}
 
-		if(downStationEqualsSection.isPresent())
-			sections.remove(downStationEqualsSection.get());
+	private void validateRemoveSectionSize() {
+		if (sections.size() <= MIN_SECTION_SIZE) {
+			throw new InvalidSectionRemoveException("구간에 삭제할 구간이 하나밖에 없어 삭제할 수 없습니다.");
+		}
+	}
+
+	private Optional<Section> getDownStationEqualsSection(Station deleteStation) {
+		return sections.stream()
+			.filter(section -> section.isEqualsDownStation(deleteStation))
+			.findFirst();
+	}
+
+	private Optional<Section> getUpStationEqualsSection(Station deleteStation) {
+		return sections.stream()
+			.filter(section -> section.isEqualsUpStation(deleteStation))
+			.findFirst();
 	}
 }

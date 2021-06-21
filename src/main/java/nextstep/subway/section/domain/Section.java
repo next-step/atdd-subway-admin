@@ -80,6 +80,14 @@ public class Section {
 		return this.downStation.equals(section.upStation);
 	}
 
+	public boolean isEqualsUpStation(Station station) {
+		return this.upStation.equals(station);
+	}
+
+	public boolean isEqualsDownStation(Station station) {
+		return this.downStation.equals(station);
+	}
+
 	protected void changeUpStation(final Section section) {
 		this.distance = this.distance.getDifferenceDistance(section.distance);
 		this.upStation = section.downStation;
