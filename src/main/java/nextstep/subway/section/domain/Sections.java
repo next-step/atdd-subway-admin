@@ -30,13 +30,21 @@ public class Sections {
 
         upStations.addAll(downStations);
 
-        if (upStations.size() != new HashSet<>(upStations).size()) {
-            return upStations.stream()
-                    .distinct()
-                    .collect(Collectors.toList());
+        if (haveDuplicateStation(upStations)) {
+            return removeDuplicateStation(upStations);
         }
 
         return upStations;
+    }
+
+    private List<Station> removeDuplicateStation(List<Station> stations) {
+        return stations.stream()
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private boolean haveDuplicateStation(List<Station> upStations) {
+        return upStations.size() != new HashSet<>(upStations).size();
     }
 
     private List<Station> extractUpStations() {
