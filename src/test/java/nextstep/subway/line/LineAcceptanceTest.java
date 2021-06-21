@@ -1,11 +1,9 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.hamcrest.core.Is.*;
 
 import java.util.List;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -211,7 +209,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         RestAssured.given()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .pathParam("id", lineResponse.getId())
