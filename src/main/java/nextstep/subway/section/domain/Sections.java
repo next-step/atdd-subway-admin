@@ -4,9 +4,7 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -31,6 +29,12 @@ public class Sections {
         List<Station> downStations = extractDownStations();
 
         upStations.addAll(downStations);
+
+        if (upStations.size() != new HashSet<>(upStations).size()) {
+            return upStations.stream()
+                    .distinct()
+                    .collect(Collectors.toList());
+        }
 
         return upStations;
     }
