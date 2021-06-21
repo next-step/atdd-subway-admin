@@ -30,8 +30,8 @@ public class SectionService {
     public LineResponse addSection(Long id, LineRequest lineRequest) {
         Line line = getLine(id);
 
-        Station downStation = getStation(lineRequest.getDownStationId());
         Station upStation = getStation(lineRequest.getUpStationId());
+        Station downStation = getStation(lineRequest.getDownStationId());
 
         Section section = line.updateAddSection(upStation, downStation, lineRequest.getDistance());
         sectionRepository.save(section);
