@@ -260,6 +260,19 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
     - [x] 4-6.Scenario: 지하철 노선을 등록할 경우 상행역과 하행역의 아이디가 같으면 지하철 노선을 생성할 수 없다.
     - [x] 4-7.Scenario: 지하철 노선 목록을 조회한다.
         - [x] 4-7-1.`LineServiceTest` 수정
+    - [ ] 4-8.리뷰어님 코멘트 반영
+        - [x] 4-8-1.강의 자료 이미지 제거
+        - [ ] 4-8-2.HTTP Status NotFound로 변경
+        - [ ] 4-8-3.`Sections`생성
+        - [ ] 4-8-4.`Line`엔티티의 필드로 `Sections` 추가
+        - [ ] 4-8-5.`Line`엔티티의 필드 중 `StationGroup` 제거
+        - [ ] 4-8-6.`LineService`
+            - [ ] 4-8-6-1.간결하게 하기
+            - [ ] 4-8-6-2.
+        - [ ] 4-8-7.구간을 순서대로 정렬하여 상행 종점부터 하행 종점까지 목록을 응답하기
+        - [ ] 4-8-8.연관 관계 매핑 변경하기: `Sections` 내 `Station` `@OneToOne` -> `@ManyToOne`
+        - [ ] 4-8-9.`Distance`: `double` -> `int`
+        - [ ] 4-8-10.`Distance.java`: 검증 메서드 중복 제거
 - [x] 5.테스트
     - [x] 5-1.Gradle build Success 확인
     - [x] 5-2.checkstyle 문제없는지 확인 (Java Convention)
@@ -290,12 +303,17 @@ ATDD 작성 [Markdown 보기](./atdd.md)
     - 도메인을 모른다는 전제로 접근하는데, 정말 어려웠습니다.
     - ATDD 리팩토링 순서 : acceptanceTest -> ServiceTest -> RepositoryTest -> DomainTest
     - 도메인의 테스트를 누락하는 경우가 생기게끔 프로덕션 코드를 수정하는 경우가 발생해서 TDD가 제대로 진행되지 않았습니다.
-    - TDD 후 하향식으로 수정하는 연습이 많이 필요할 것 같습니다. 
+    - TDD 후 하향식으로 수정하는 연습이 많이 필요할 것 같습니다.
+- 데이터 관리 지향 && 절차 지향에 익숙해져버린 프로그래밍
+    - 객체 지향 프로그래밍을 위해서는 DTO, Entity의 역할 구분을 확실히 해줘야합니다.
 
 #### 3.1.2. 배운점
 
 - 하향식, 상향식을 고집할 필요는 없다.
     - 경우에 따라 유동적으로 하향식, 상향식을 번갈아 해야한다.
+- 데이터를 어떻게 저장하느냐를 집중하는 것이 아니라 객체(도메인)에 가장 잘 어울릴 방식을 고민한다.
+    - DTO : Request, Response에 집중한 객체 방식이다. 도메인의 필드와 일치할 필요가 없다.
+    - Entity : 객체지향적으로 생각하여 작성한다. 데이터 지향적인 생각이 들어가지 않도록 해야한다.
 
 ### 3.2. 피드백 요청
 

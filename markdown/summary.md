@@ -7,8 +7,6 @@
 
 ### 1.1. TDD Cycle
 
-![TDD-Cycle image](../documents/summary/TDD-cycle.png)
-
 - TDD Cycle 진행 어려움
     - 내가 어디쯤 진행하고 있고, 잘하고 있는지 의문이 든다.
 - 나무만 보고 숲을 보지 못하는 경우가 발생한다.
@@ -17,26 +15,17 @@
 
 > TDD의 단점을 보완하기 위해 인수 테스트(acceptance test)를 먼저 구현한 후 이후 단위 테스트를 통해 기능을 완성해 가는 과정으로 애플리케이션을 개발
 
-![ATDD-introduction](../documents/summary/ATDD-introduction.png)
-
 - 다양한 관점을 가진 팀원(기획, 개발, 테스터 등)들과 협업을 위함
 - 위 그림 중 두번째 그림처럼 커뮤니케이션 없이 진행하다보면 결과물이 나온 시점에서 결과물이 다르게 나올 수 있다.
 - ATDD는 이러한 리스크를 사전에 방지하고, 기획 단계부터 인수 테스트(acceptance test)를 통해 공통의 이해를 도모하여 프로젝트를 진행한다.
 
 ### 1.3. ATDD Cycle
 
-> [Acceptance Test Driven Development](https://mysoftwarequality.wordpress.com/2013/11/12/when-something-works-share-it/)
-
-![ATDD-Cycle image](../documents/summary/ATDD-cycle.png)
-![ATDD-Cycle image-1](../documents/summary/ATDD-cycle-1.png)
+> ATDD -> TDD Cycle -> ATDD -> TDD Cycle -> ...
 
 ### 1.4. ATDD Process
 
-![ATDD-process image](../documents/summary/ATDD-process.png)
-
 #### 1.4.1. 요구사항(인수 조건)
-
-> [Acceptance Criteria: Purposes, Formats, and Best Practices](https://www.altexsoft.com/blog/business/acceptance-criteria-purposes-formats-and-best-practices/)
 
 - 인수테스트(acceptance test)가 충족해야할 조건
     - 기술 용어가 사용되지 않고 일반 사용자들이 이해할 수 있는 단어를 사용한다.
