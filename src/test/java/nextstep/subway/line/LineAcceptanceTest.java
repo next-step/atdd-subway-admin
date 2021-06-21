@@ -125,12 +125,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        String lineName = "line name";
+        String lineColor = "line color";
+        LineResponse lineResponse = postLine(new LineRequest(lineName, lineColor));
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = RestAssured.given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/lines/" + lineResponse.getId())
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        LineResponse result = response.body().as(LineResponse.class);
+        assertThat(result)
+            .hasFieldOrPropertyWithValue("id", lineResponse.getId())
+            .hasFieldOrPropertyWithValue("name", lineName)
+            .hasFieldOrPropertyWithValue("color", lineColor);
     }
 
     @DisplayName("지하철 노선을 수정한다.")

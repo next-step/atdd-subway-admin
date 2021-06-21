@@ -3,13 +3,12 @@ package nextstep.subway.line.ui;
 import java.net.URI;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.line.application.LineService;
@@ -34,13 +33,13 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<LineResponse> getLineById(@RequestParam Long id) throws LineNotFoundException {
-        return ResponseEntity.ok(lineService.findById(id));
-    }
-
     @GetMapping
     public ResponseEntity<List<LineResponse>> getLines() {
         return ResponseEntity.ok(lineService.findAllLines());
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<LineResponse> getLineById(@PathVariable Long id) throws LineNotFoundException {
+        return ResponseEntity.ok(lineService.findById(id));
     }
 }
