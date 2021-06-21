@@ -30,8 +30,8 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NotFoundException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFoundException::new);
+        Station upStation = station(request.getUpStationId());
+        Station downStation = station(request.getDownStationId());
 
         return LineResponse.of(lineRepository.save(request.toLine(upStation, downStation)));
     }
@@ -58,12 +58,29 @@ public class LineService {
     }
 
     public SectionResponse addSection(Long lineId, SectionRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NotFoundException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFoundException::new);
-        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
+        Station upStation = station(request.getUpStationId());
+        Station downStation = station(request.getDownStationId());
+        Line line = line(lineId);
         Section addSection = line.toSection(upStation, downStation, new Distance(request.getDistance()));
         lineRepository.save(line);
 
         return SectionResponse.of(addSection);
     }
+
+    public void deleteSection(long lineId, long stationId) {
+        Station deleteStation = station(stationId);
+        Line line = line(lineId);
+        line.deleteSection(deleteStation);
+        lineRepository.save(line);
+    }
+
+    private Station station(Long upStationId) {
+        return stationRepository.findById(upStationId).orElseThrow(NotFoundException::new);
+    }
+
+    private Line line(long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
+    }
+
+
 }

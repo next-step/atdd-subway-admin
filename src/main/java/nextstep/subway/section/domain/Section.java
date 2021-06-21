@@ -111,12 +111,21 @@ public class Section extends BaseEntity {
         updateNextSection(newSection);
     }
 
+    public void upStationAfterDelete(Section deleteSection) {
+        distance = distance.plusDistance(deleteSection.distance());
+        this.updateDownStation(deleteSection.downStation());
+    }
+
     public Long id() {
         return id;
     }
 
     public Distance distance() {
         return distance;
+    }
+
+    private Distance sumDistance(Distance distance) {
+        return new Distance(this.distance.distance() + distance.distance());
     }
 
     public Station upStation() {

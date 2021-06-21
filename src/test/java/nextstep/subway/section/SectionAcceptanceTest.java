@@ -12,8 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import static nextstep.subway.line.LineAcceptanceTest.getStationId;
-import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_등록되어_있음;
+import static nextstep.subway.line.LineAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
@@ -127,12 +126,60 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_추가_실패(response);
     }
 
+    @DisplayName("시작 구간을 삭제한다.")
+    @Test
+    void deleteSectionFirstSection() {
+        //given
+        지하철_구간_추가되어_있음(안산역, 오이도역, 50);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(사호선, Long.toString(서울역));
+
+        //then
+        지하철_구간_삭제됨(response);
+    }
+
+    @DisplayName("구간과 구간 사이의 구간을 삭제한다.")
+    @Test
+    void deleteSectionUpStationAfter() {
+        //given
+        String stationId = 지하철_구간_추가되어_있음(안산역, 오이도역, 50).body().jsonPath().getString("upStationId");
+
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(사호선, stationId);
+
+        //then
+        지하철_구간_삭제됨(response);
+    }
+
+    @DisplayName("마지막 구간을 삭제한다.")
+    @Test
+    void deleteSectionLastSection() {
+        //given
+        지하철_구간_추가되어_있음(안산역, 오이도역, 50);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(사호선, Long.toString(오이도역));
+
+        //then
+        지하철_구간_삭제됨(response);
+    }
+
     public static ExtractableResponse<Response> 지하철_구간_추가(String lineId, SectionRequest section) {
         return RestAssured.given().log().all()
                 .body(section)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_구간_삭제(String lineId, String stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
                 .then().log().all()
                 .extract();
     }
@@ -144,5 +191,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_구간_추가_실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_구간_추가되어_있음(long upStation, long downStation, int distance) {
+        SectionRequest sectionRequest = new SectionRequest(upStation, downStation, distance);
+        return 지하철_구간_추가(사호선, sectionRequest);
+    }
+
+    private void 지하철_구간_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
