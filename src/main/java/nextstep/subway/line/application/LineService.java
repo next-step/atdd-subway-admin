@@ -53,4 +53,10 @@ public class LineService {
         line.update(request.toLine());
         return LineResponse.of(lineRepository.save(line));
     }
+
+    public void deleteById(Long id) throws LineNotFoundException {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(LineNotFoundException::new);
+        lineRepository.delete(line);
+    }
 }
