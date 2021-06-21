@@ -20,14 +20,14 @@ import nextstep.subway.station.domain.Station;
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @JoinColumn(name = "line_id")
     @ManyToOne(fetch = LAZY)
     private Line line;
 
     @Column(name = "line_id", insertable = false, updatable = false)
-    private Long lindId;
+    private Long lineId;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "up_station_id")
@@ -91,20 +91,16 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public Line getLine() {
-        return line;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line, section.lindId) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lindId, upStation, downStation, distance);
+        return Objects.hash(id, lineId, upStation, downStation, distance);
     }
 }
