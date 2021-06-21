@@ -5,7 +5,10 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -40,7 +43,7 @@ public class Sections {
 
     private void changeStationInMiddleWhenEqualToUpStation(Section newSection) {
         sections.stream()
-                .filter(section -> section.equalsUpStation(newSection))
+                .filter(section -> section.equalUpStation(newSection))
                 .findFirst()
                 .ifPresent(section -> section.changeStationInMiddle(newSection));
     }
@@ -57,5 +60,56 @@ public class Sections {
 
     private Station getFirstStation() {
         return sections.get(0).getUpStation();
+    }
+
+    public void removeSectionByStation(Station station) {
+        Optional<Section> sectionWithPreviousStation = findSectionWithPreviousStation(station);
+        Optional<Section> sectionWithNextStation = findSectionWithNextStation(station);
+
+        validateStationInSections(sectionWithPreviousStation, sectionWithNextStation);
+        removeWhenFirstStation(sectionWithPreviousStation, sectionWithNextStation);
+        removeWhenLastStation(sectionWithPreviousStation, sectionWithNextStation);
+        removeWhenMiddleStation(sectionWithPreviousStation, sectionWithNextStation);
+    }
+
+    private void removeWhenFirstStation(Optional<Section> sectionWithPreviousStation, Optional<Section> sectionWithNextStation) {
+        if (!sectionWithPreviousStation.isPresent() && sectionWithNextStation.isPresent()) {
+            sections.remove(sectionWithNextStation.get());
+            sectionWithNextStation.get().removeLine();
+        }
+    }
+
+    private void removeWhenLastStation(Optional<Section> sectionWithPreviousStation, Optional<Section> sectionWithNextStation) {
+        if (sectionWithPreviousStation.isPresent() && !sectionWithNextStation.isPresent()) {
+            sections.remove(sectionWithPreviousStation.get());
+            sectionWithPreviousStation.get().removeLine();
+        }
+    }
+
+    private void removeWhenMiddleStation(Optional<Section> sectionWithPreviousStation, Optional<Section> sectionWithNextStation) {
+        if (sectionWithPreviousStation.isPresent() && sectionWithNextStation.isPresent()) {
+            sectionWithPreviousStation.get().changeDownStation(sectionWithNextStation.get().getDownStation());
+            sectionWithPreviousStation.get().calculateDistanceWhenRemove(sectionWithNextStation.get());
+            sections.remove(sectionWithNextStation.get());
+            sectionWithNextStation.get().removeLine();
+        }
+    }
+
+    private void validateStationInSections(Optional<Section> sectionWithPreviousStation, Optional<Section> sectionWithNextStation) {
+        if (!sectionWithPreviousStation.isPresent() && !sectionWithNextStation.isPresent()) {
+            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+        }
+    }
+
+    private Optional<Section> findSectionWithPreviousStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst();
+    }
+
+    private Optional<Section> findSectionWithNextStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst();
     }
 }
