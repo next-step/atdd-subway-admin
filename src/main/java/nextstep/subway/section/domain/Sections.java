@@ -137,7 +137,6 @@ public class Sections {
         deleteIfFirstSection(sameUpStationSection, sameDownStationSection);
         deleteIfBetweenSection(sameUpStationSection, sameDownStationSection);
         deleteIfLastSection(sameUpStationSection, sameDownStationSection);
-        System.out.println(sections);
     }
 
     private void deleteIfFirstSection(Optional<Section> sameUpStationSection, Optional<Section> sameDownStationSection) {
