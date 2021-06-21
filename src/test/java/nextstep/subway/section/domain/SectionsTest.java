@@ -79,6 +79,8 @@ class SectionsTest {
         sections.add(section2);
         //when (1=>2=>3) - 1
         sections.removeSectionByStation(station2);
+        //then 거리 계산확인
+        assertThat(section2.getDistance()).isEqualTo(7);
         //then = 1=>2
         추가된_역순서와_비교(Arrays.asList(station1, station3));
     }
