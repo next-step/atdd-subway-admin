@@ -138,9 +138,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	public void 지하철_노선에_구간_포함됨(ExtractableResponse<Response> response, List<String> expectedStations) {
 		List<Station> stations = response.body().jsonPath().getList("stations", Station.class);
 		List<String> actualStations = stations.stream().map(station -> station.getName()).collect(Collectors.toList());
-		for (int index = 0; index < actualStations.size(); index++) {
-			assertThat(actualStations.get(index)).isEqualTo(expectedStations.get(index));
-		}
+		assertThat(actualStations).containsAll(expectedStations);
 	}
 
 }
