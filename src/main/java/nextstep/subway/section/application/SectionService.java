@@ -2,11 +2,11 @@ package nextstep.subway.section.application;
 
 import static nextstep.subway.common.ErrorMessage.*;
 
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;

@@ -3,8 +3,6 @@ package nextstep.subway.line.ui;
 import java.net.URI;
 import java.util.List;
 
-import nextstep.subway.common.dto.ErrorResponse;
-import nextstep.subway.section.application.SectionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.common.dto.ErrorResponse;
+import nextstep.subway.section.application.SectionService;
 
 @RestController
 public class LineController {

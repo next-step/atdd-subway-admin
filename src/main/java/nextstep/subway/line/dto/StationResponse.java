@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import nextstep.subway.station.domain.Station;
 
 public class StationResponse {
-    Long id;
-    String name;
+    private Long id;
+    private String name;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
