@@ -105,4 +105,31 @@ public class LineTest {
 			() -> lineShinBunDang.addSection(section)
 		).isInstanceOf(InvalidDistanceException.class);
 	}
+
+	@Test
+	void 노선_중간에_구간_삭제하기() {
+		lineShinBunDang.removeStation(panGyo);
+		List<Station> actual = lineShinBunDang.getStations();
+		List<String> actualNames = actual.stream().map(Station::getName).collect(Collectors.toList());
+		assertThat(actualNames).isEqualTo(Lists.list(gangNam.getName(), gwangGyo.getName()));
+	}
+
+	@Test
+	void 노선_앞에_구간_삭제하기() {
+		lineShinBunDang.removeStation(gangNam);
+		List<Station> actual = lineShinBunDang.getStations();
+		List<String> actualNames = actual.stream().map(Station::getName).collect(Collectors.toList());
+		assertThat(actualNames).isEqualTo(Lists.list(panGyo.getName(), gwangGyo.getName()));
+	}
+
+	@Test
+	void 노선_뒤에_구간_삭제하기() {
+		lineShinBunDang.removeStation(gwangGyo);
+		List<Station> actual = lineShinBunDang.getStations();
+		List<String> actualNames = actual.stream().map(Station::getName).collect(Collectors.toList());
+		assertThat(actualNames).isEqualTo(Lists.list(gangNam.getName(), panGyo.getName()));
+	}
+
+
+
 }

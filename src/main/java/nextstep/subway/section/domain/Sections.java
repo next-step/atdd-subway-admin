@@ -10,13 +10,15 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.exception.InvalidSectionRemoveException;
 import nextstep.subway.section.exception.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
 
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
 	List<Section> sections = new ArrayList<>();
 
 	public Sections() {
@@ -123,4 +125,33 @@ public class Sections {
 			.ifPresent(section -> section.changeDownStation(newSection));
 	}
 
+	public void removeSection(Line line, Station deleteStation) {
+		if (sections.size() <= 1)
+			throw new InvalidSectionRemoveException("구간에 삭제할 구간이 하나밖에 없어 삭제할 수 없습니다.");
+
+		Optional<Section> upStationEqualsSection = sections.stream()
+			.filter(section -> section.getUpStation().equals(deleteStation))
+			.findFirst();
+
+		Optional<Section> downStationEqualsSection = sections.stream()
+			.filter(section -> section.getDownStation().equals(deleteStation))
+			.findFirst();
+
+		if(!upStationEqualsSection.isPresent() && !downStationEqualsSection.isPresent())
+			throw new InvalidSectionRemoveException("구간에 삭제할 역이 존재하지 않습니다. : " + deleteStation.getName());
+
+		if(upStationEqualsSection.isPresent() && downStationEqualsSection.isPresent()) {
+			Station upStation = downStationEqualsSection.get().getUpStation();
+			Station downStation = upStationEqualsSection.get().getDownStation();
+			Distance distance = downStationEqualsSection.get().getDistance().getPlusDistance(upStationEqualsSection.get()
+				.getDistance());
+			sections.add(new Section(line, upStation, downStation, distance));
+		}
+
+		if(upStationEqualsSection.isPresent())
+			sections.remove(upStationEqualsSection.get());
+
+		if(downStationEqualsSection.isPresent())
+			sections.remove(downStationEqualsSection.get());
+	}
 }

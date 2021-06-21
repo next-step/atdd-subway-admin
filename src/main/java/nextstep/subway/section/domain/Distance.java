@@ -30,6 +30,10 @@ public class Distance {
 		}
 	}
 
+	public Distance getPlusDistance(Distance distance) {
+		return new Distance(this.distance + distance.distance);
+	}
+
 	public Distance getDifferenceDistance(Distance distance) {
 		int differenceDistance = this.distance - distance.distance;
 		validateDifferenceDistance(differenceDistance);
