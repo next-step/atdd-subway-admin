@@ -21,8 +21,8 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "line_id")
+    @ManyToOne(fetch = LAZY)
     private Line line;
 
     @ManyToOne(fetch = LAZY)

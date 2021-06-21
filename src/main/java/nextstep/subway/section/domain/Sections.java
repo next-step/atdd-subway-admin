@@ -15,6 +15,7 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+    public static final int SECTIONS_DELETE_FOR_MIN_COUNT = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
@@ -37,17 +38,38 @@ public class Sections {
         result.add(getFirstSection().getUpStation());
         result.add(getFirstSection().getDownStation());
 
-        addUpStation(result, result.get(0));
-        addDownStation(result, result.get(result.size() - 1));
+        addUpStation(result);
+        addDownStation(result);
 
         return result;
     }
 
     public void removeSection(Station station) {
-        findContainSection(station).orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_SECTION));
+        boolean hasUpStation = hasUpStation(station);
+        boolean hasDownStation = hasDownStation(station);
 
-        if (sections.size() <= 1) {
-            throw new RuntimeException(SECTIONS_HAVE_ONLY_ONE);
+        if (!hasUpStation && !hasDownStation) {
+            throw new IllegalArgumentException(NOT_FOUND_SECTION);
+        }
+
+        if (sections.size() <= SECTIONS_DELETE_FOR_MIN_COUNT) {
+            throw new RuntimeException(SECTIONS_HAVE_NOT_MIN_COUNT);
+        }
+
+        if (hasUpStation && hasDownStation) {
+            Section sectionByDownStation = findSectionByDownStation(station);
+            Section sectionByUpStation = findSectionByUpStation(station);
+            sectionByDownStation.updateSectionByDownStation(sectionByUpStation);
+            sections.remove(sectionByUpStation);
+            return;
+        }
+        if (hasUpStation) {
+            Section sectionByUpStation = findSectionByUpStation(station);
+            sections.remove(sectionByUpStation);
+        }
+        if (hasDownStation) {
+            Section sectionByDownStation = findSectionByDownStation(station);
+            sections.remove(sectionByDownStation);
         }
     }
 
@@ -71,7 +93,8 @@ public class Sections {
                 ;
     }
 
-    private void addUpStation(List<Station> result, Station findStation) {
+    private void addUpStation(List<Station> result) {
+        Station findStation = result.get(0);
         while (hasDownStation(findStation)) {
             Section findSection = findSectionByDownStation(findStation);
             result.add(0, findSection.getUpStation());
@@ -79,10 +102,10 @@ public class Sections {
         }
     }
 
-    private void addDownStation(List<Station> result, Station findStation) {
+    private void addDownStation(List<Station> result) {
+        Station findStation = result.get(result.size() - 1);
         while (hasUpStation(findStation)) {
             Section findSection = findSectionByUpStation(findStation);
-
             result.add(findSection.getDownStation());
             findStation = findSection.getDownStation();
         }
