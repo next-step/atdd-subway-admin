@@ -34,12 +34,8 @@ public class LineService {
 		Station downStation = stationRepository.findById(request.getDownStationId())
 			.orElseThrow(() -> new DataIntegrityViolationException("없는 역입니다."));
 
-		Section section = request.getSection(upStation, downStation);
-
-		Line line = request.toLine();
-		section.setLine(line);
-
-		Line persistLine = lineRepository.save(line);
+		Line persistLine = lineRepository.save(
+			new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
 
 		return LineResponse.of(persistLine);
 	}

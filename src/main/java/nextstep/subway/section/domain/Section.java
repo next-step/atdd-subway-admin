@@ -41,6 +41,10 @@ public class Section extends BaseEntity {
 	}
 
 	public Section(Station upStation, Station downStation, Integer distance) {
+		this(upStation, downStation, distance, null);
+	}
+
+	public Section(Station upStation, Station downStation, Integer distance, Line line) {
 		if (upStation.equals(downStation)) {
 			throw new IllegalArgumentException("시작역과 종료역이 같을 수 없습니다.");
 		}
@@ -52,6 +56,7 @@ public class Section extends BaseEntity {
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
+		this.line = line;
 	}
 
 	public void setLine(Line line) {
