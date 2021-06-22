@@ -33,9 +33,15 @@ public class Section {
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
+    @Column(name = "up_station_id", insertable = false, updatable = false)
+    private Long upStationId;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
+
+    @Column(name = "down_station_id", insertable = false, updatable = false)
+    private Long downStationId;
 
     @Embedded
     private Distance distance;
@@ -101,6 +107,6 @@ public class Section {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lineId, upStation, downStation, distance);
+        return Objects.hash(id, lineId, upStationId, downStationId, distance);
     }
 }
