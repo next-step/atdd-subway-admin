@@ -21,8 +21,12 @@ public class Distance {
         this.value = value;
     }
 
-    public Distance sub(Distance requestDistance) {
-        return new Distance(value - requestDistance.value);
+    public Distance diff(Distance requestDistance) {
+        int newValue = Math.abs(value - requestDistance.value);
+        if (value < newValue) {
+            throw new RuntimeException(ErrorMessage.DISTANCE_TOO_LONG);
+        }
+        return new Distance(newValue);
     }
 
     public Distance add(Distance requestDistance) {
@@ -30,7 +34,7 @@ public class Distance {
     }
 
     private void checkValid(int value) {
-        if (value < DISTANCE_MIN_NUMBER) {
+        if (value <= DISTANCE_MIN_NUMBER) {
             throw new RuntimeException(ErrorMessage.DISTANCE_TOO_LONG);
         }
     }

@@ -56,7 +56,7 @@ public class Section {
 
     public void updateStation(Station upStation, Station downStation, Distance requestDistance) {
         if (isUpStation(upStation) || isDownStation(downStation)) {
-            distance = distance.sub(requestDistance);
+            distance = distance.diff(requestDistance);
         }
         if (isUpStation(upStation)) {
             this.upStation = downStation;

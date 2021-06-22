@@ -24,7 +24,7 @@ class DistanceTest {
         //given
         Distance distance = new Distance(7);
         //when
-        Distance add = distance.sub(new Distance(4));
+        Distance add = distance.diff(new Distance(4));
         //then
         assertThat(add.equals(new Distance(3))).isTrue();
     }
