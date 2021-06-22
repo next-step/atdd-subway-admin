@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -11,6 +13,9 @@ import javax.persistence.Id;
 import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.common.domain.Color;
 import nextstep.subway.common.domain.Name;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionGroup;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationGroup;
 
 @Entity
@@ -27,19 +32,21 @@ public class Line extends BaseEntity {
 	private Color color;
 
 	@Embedded
-	private StationGroup stationGroup;
+	private SectionGroup sectionGroup;
 
 	protected Line() {
 	}
 
 	public Line(String name, String color) {
-		this(name, color, new StationGroup());
-	}
-
-	public Line(String name, String color, StationGroup stationGroup) {
 		this.name = Name.generate(name);
 		this.color = Color.generate(color);
-		this.stationGroup = stationGroup;
+	}
+
+	public Line(String name, String color, Station upStation, Station downStation, String distance) {
+		this.name = Name.generate(name);
+		this.color = Color.generate(color);
+		Section section = Section.generate(this, upStation, downStation, distance);
+		this.sectionGroup = new SectionGroup(section);
 	}
 
 	public void update(Line line) {
@@ -59,12 +66,19 @@ public class Line extends BaseEntity {
 		return color.value();
 	}
 
-	public StationGroup stationGroup() {
-		return stationGroup;
+	public SectionGroup sectionGroup() {
+		return sectionGroup;
 	}
 
-	public void changeStationGroup(StationGroup stationGroup) {
-		this.stationGroup = stationGroup;
+	public StationGroup stationGroup() {
+		return sectionGroup.sections().stream()
+			.flatMap(section -> Arrays.stream(new Station[] {section.upStation(), section.downStation()}))
+			.distinct()
+			.collect(Collectors.collectingAndThen(Collectors.toList(), StationGroup::new));
+	}
+
+	public void addSection(Section section) {
+		sectionGroup.add(section);
 	}
 
 	@Override
@@ -76,14 +90,14 @@ public class Line extends BaseEntity {
 			return false;
 		}
 		Line line = (Line)object;
-		return Objects.equals(id, line.id)
-			&& Objects.equals(name, line.name)
-			&& Objects.equals(color, line.color)
-			&& Objects.equals(stationGroup, line.stationGroup);
+		return Objects.equals(id, line.id) &&
+			Objects.equals(name, line.name) &&
+			Objects.equals(color, line.color) &&
+			Objects.equals(sectionGroup, line.sectionGroup);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, name, color, stationGroup);
+		return Objects.hash(id, name, color, sectionGroup);
 	}
 }

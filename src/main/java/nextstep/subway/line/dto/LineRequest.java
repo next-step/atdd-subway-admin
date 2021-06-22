@@ -50,6 +50,6 @@ public class LineRequest {
 	}
 
 	public Line toLine(StationGroup stationGroupToAdd) {
-		return new Line(name, color, stationGroupToAdd);
+		return new Line(name, color);
 	}
 }

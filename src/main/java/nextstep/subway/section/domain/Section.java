@@ -24,7 +24,7 @@ public class Section extends BaseEntity {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "section_id", foreignKey = @ForeignKey(name = "fk_section_line"))
+	@JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_line"))
 	private Line line;
 
 	@OneToOne
@@ -45,7 +45,7 @@ public class Section extends BaseEntity {
 		this(line, upStation, downStation, String.valueOf(distance));
 	}
 
-	protected Section(Line line, Station upStation, Station downStation, String distance) {
+	public Section(Line line, Station upStation, Station downStation, String distance) {
 		validateDistanceIsNotNull(distance);
 		validateDistanceParseDouble(distance);
 		validateLineIsNotNull(line);

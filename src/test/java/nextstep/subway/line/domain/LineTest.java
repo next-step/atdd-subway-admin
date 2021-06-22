@@ -7,6 +7,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationGroup;
 
@@ -97,18 +98,38 @@ public class LineTest {
 	}
 
 	@Test
-	void 생성_역_그룹_포함() {
+	void 생성_구간_포함() {
 		//given
-		Station 구로디지털단지 = new Station("구로디지털단지");
-		Station 홍대입구 = new Station("홍대입구");
-		StationGroup 역_그룹 = new StationGroup(Arrays.asList(구로디지털단지, 홍대입구));
+		Station 상행역 = new Station("홍대입구");
+		Station 하행역 = new Station("구로디지털단지");
+		String 간격 = "100";
 
 		//when
-		Line 이호선 = new Line("2호선", "#FFFFFF", 역_그룹);
+		Line 이호선 = new Line("2호선", "#FFFFFF", 상행역, 하행역, 간격);
 
 		//then
 		assertThat(이호선).isNotNull();
-		assertThat(이호선.stationGroup().stations()).containsSequence(역_그룹.stations());
+		assertThat(이호선.sectionGroup()).isNotNull();
+		assertThat(이호선.stationGroup().stations()).containsSequence(Arrays.asList(상행역, 하행역));
+	}
+
+	@Test
+	void 생성_구간_2개_포함() {
+		//given
+		Station 상행역 = new Station("상행역");
+		Station 중간역 = new Station("중간역");
+		Station 하행역 = new Station("하행역");
+		String 간격 = "100";
+		Line 이호선 = new Line("2호선", "#FFFFFF", 상행역, 중간역, 간격);
+		Section 추가할_구간 = new Section(이호선, 중간역, 하행역, 간격);
+
+		//when
+		이호선.addSection(추가할_구간);
+
+		//then
+		assertThat(이호선).isNotNull();
+		assertThat(이호선.sectionGroup()).isNotNull();
+		assertThat(이호선.stationGroup().stations()).containsSequence(Arrays.asList(상행역, 중간역, 하행역));
 	}
 
 	@Test

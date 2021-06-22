@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationGroup;
 import nextstep.subway.station.domain.StationRepository;
 
 @DisplayName("노선 레포지토리 테스트")
@@ -21,24 +21,27 @@ import nextstep.subway.station.domain.StationRepository;
 public class LineRepositoryTest {
 
 	@Autowired
+	private SectionRepository sections;
+	@Autowired
 	private StationRepository stations;
 	@Autowired
 	private LineRepository lines;
 
 	private Line 이호선;
-	private Line 이호선_역_그룹_포함;
+	private Line 이호선_구간_포함;
 	private Line 사호선;
 
-	private StationGroup 역_그룹;
+	private Station 영속화된_상행역;
+	private Station 영속화된_하행역;
 
 	@BeforeEach
 	void 초기화() {
-		Station 영속화된_홍대입구역 = stations.save(new Station("홍대입구역"));
-		Station 영속화된_구로디지털단지역 = stations.save(new Station("구로디지털단지역"));
-		역_그룹 = new StationGroup(Arrays.asList(영속화된_구로디지털단지역, 영속화된_홍대입구역));
+		영속화된_상행역 = stations.save(new Station("상행역"));
+		영속화된_하행역 = stations.save(new Station("하행역"));
+		String 간격 = "123";
 
 		이호선 = new Line("2호선", "#FFFFFF");
-		이호선_역_그룹_포함 = new Line("2호선", "#FFFFFF", 역_그룹);
+		이호선_구간_포함 = new Line("2호선", "#FFFFFF", 영속화된_상행역, 영속화된_하행역, 간격);
 		사호선 = new Line("4호선", "#000000");
 	}
 
@@ -54,15 +57,17 @@ public class LineRepositoryTest {
 	}
 
 	@Test
-	void 역_그룹_포함_저장_영속화() {
+	void 역_구간_포함_저장_영속화() {
 		//given
 
 		//when
-		Line 영속화된_이호선_역_그룹_포함 = lines.save(이호선_역_그룹_포함);
+		Line 영속화된_이호선_구간_포함 = lines.save(이호선_구간_포함);
 
 		//then
-		assertThat(영속화된_이호선_역_그룹_포함).isNotNull();
-		assertThat(영속화된_이호선_역_그룹_포함.stationGroup().stations()).containsSequence(역_그룹.stations());
+		assertThat(영속화된_이호선_구간_포함).isNotNull();
+		assertThat(영속화된_이호선_구간_포함.sectionGroup()).isNotNull();
+		assertThat(영속화된_이호선_구간_포함.stationGroup().stations())
+			.containsSequence(Arrays.asList(영속화된_상행역, 영속화된_하행역));
 	}
 
 	@Test
@@ -120,15 +125,15 @@ public class LineRepositoryTest {
 	}
 
 	@Test
-	void 역_그룹_포함_삭제() {
+	void 역_구간_포함_삭제() {
 		//given
-		Line 영속화된_이호선_역_그룹_포함 = lines.save(이호선_역_그룹_포함);
+		Line 영속화된_이호선_구간_포함 = lines.save(이호선_구간_포함);
 
 		//when
-		lines.delete(영속화된_이호선_역_그룹_포함);
-		Optional<Line> 삭제후_조회한_이호선_역_그룹_포함 = lines.findById(영속화된_이호선_역_그룹_포함.id());
+		lines.delete(영속화된_이호선_구간_포함);
+		Optional<Line> 삭제후_조회한_이호선_구간_포함 = lines.findById(영속화된_이호선_구간_포함.id());
 
 		//then
-		assertThat(삭제후_조회한_이호선_역_그룹_포함.isPresent()).isFalse();
+		assertThat(삭제후_조회한_이호선_구간_포함.isPresent()).isFalse();
 	}
 }
