@@ -2,6 +2,7 @@ package nextstep.subway.line.dto;
 
 import lombok.Builder;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Section;
 
 
 @Builder
@@ -12,18 +13,6 @@ public class LineRequest {
     private Long downstationId;
     private Long distance;
 
-//    private LineRequest() {
-//    }
-//
-//    private LineRequest(String name, String color) {
-//        this.name = name;
-//        this.color = color;
-//    }
-
-//    public static LineRequest of(String name, String color) {
-//        return new LineRequest(name,color);
-//    }
-
     public String getName() {
         return name;
     }
@@ -32,7 +21,22 @@ public class LineRequest {
         return color;
     }
 
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownstationId() {
+        return downstationId;
+    }
+
+    public Long getDistance() {
+        return distance;
+    }
+
     public Line toLine() {
-        return new Line(name, color);
+        return new Line(this);
+    }
+    public Line toLine(Section section) {
+        return new Line(this,section);
     }
 }

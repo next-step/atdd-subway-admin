@@ -1,6 +1,11 @@
 package nextstep.subway.line.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Section;
+import nextstep.subway.station.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
 
@@ -8,6 +13,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class LineResponse {
     private Long id;
     private String name;
@@ -17,29 +25,15 @@ public class LineResponse {
 
     private List<Station> stations;
 
-    public LineResponse() {
-    }
-
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, Stations stations) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-        this.stations = stations.getStations();
-    }
-
-    public LineResponse(Line line) {
-        this.id = line.getId();
-        this.name = line.getName();
-        this.color = line.getColor();
-        this.createdDate = line.getCreatedDate();
-        this.modifiedDate = line.getModifiedDate();
-        this.stations = line.getStations().getStations();
-    }
-
     public static LineResponse of(Line line) {
-        return new LineResponse(line);
+        return LineResponse.builder()
+                .id(line.getId())
+                .name(line.getName())
+                .color(line.getColor())
+                .createdDate(line.getCreatedDate())
+                .modifiedDate(line.getModifiedDate())
+                .stations(line.extractStations())
+                .build();
     }
 
     public Long getId() {
@@ -65,6 +59,7 @@ public class LineResponse {
     public List<Station> getStations() {
         return stations;
     }
+
 
     @Override
     public boolean equals(Object o) {
