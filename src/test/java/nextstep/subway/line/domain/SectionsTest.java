@@ -49,9 +49,9 @@ class SectionsTest {
     @Test
     @DisplayName("구간들을 축약 가능한지 검증한다")
     void isReducible() {
-        assertThat(강남_양재.isReducible()).isFalse();
+        assertThat(강남_양재.isReducible()).isTrue();
         assertThat(강남_양재_광교중앙.isReducible()).isTrue();
-        assertThat(강남_양재_광교중앙_광교.isReducible()).isTrue();
+        assertThat(강남_양재_광교중앙_광교.isReducible()).isFalse();
     }
 
     @Test

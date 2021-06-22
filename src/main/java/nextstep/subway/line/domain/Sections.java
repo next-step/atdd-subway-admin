@@ -42,7 +42,7 @@ public class Sections {
     }
 
     public boolean isReducible() {
-        return values.size() >= REDUCIBLE_COUNT;
+        return values.size() <= REDUCIBLE_COUNT;
     }
 
     public void addSection(Section section) {
@@ -85,21 +85,21 @@ public class Sections {
             .filter(s -> s.contains(station))
             .collect(toList()));
 
-        reduceSections(sections);
-    }
-
-    private void reduceSections(Sections sections) {
-        if (sections.isReducible()) {
-            values.add(sections.reduce());
-        }
-
-        sections.values.forEach(values::remove);
+        values.add(sections.reduce());
+        values.removeAll(sections.values);
     }
 
     private Section reduce() {
+        validateReducible();
         return values.stream()
             .reduce(Section::mergeWith)
             .orElseThrow(() -> new CannotRemoveException("구간 축약에 실패했습니다."));
+    }
+
+    private void validateReducible() {
+        if (!isReducible()) {
+            throw new CannotRemoveException("3개 이상의 구간을 축약할 수 없습니다.");
+        }
     }
 
     private void validateRemovable(Station station) {
