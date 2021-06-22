@@ -25,6 +25,7 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "upStation_id")
     private Station upStation = new Station();
 
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "downStation_id")
     private Station downStation = new Station();
@@ -51,5 +52,17 @@ public class Section extends BaseEntity {
         stations.add(upStation);
         stations.add(downStation);
         return stations;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }

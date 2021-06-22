@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,11 @@ public class LineService {
         section.toLine(persistLine);
         return LineResponse.of(persistLine);
     }
+
+/*    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        //line.getSections().stream().map()
+    }*/
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
