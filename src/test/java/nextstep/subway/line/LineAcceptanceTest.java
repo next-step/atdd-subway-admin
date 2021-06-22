@@ -1,12 +1,16 @@
 package nextstep.subway.line;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.LineResponse;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -55,14 +59,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("미사역", "보라");
         // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("강일역", "보라");
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().get("/lines")
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_목록_응답됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
         // 지하철_노선_목록_포함됨
+        List<String> lineNames = response.jsonPath().getList(".", LineResponse.class)
+            .stream().map(it -> it.getName())
+            .collect(Collectors.toList());
+        Assertions.assertThat(lineNames).contains("미사역","강일역");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
