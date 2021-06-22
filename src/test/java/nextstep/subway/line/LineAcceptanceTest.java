@@ -120,7 +120,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		        .given().log().all()
 				.body(params)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
-		        .when().put("/lines")
+		        .when().put("/lines/{id}", 1L)
 		        .then().log().all().extract();
 		
 		// then
