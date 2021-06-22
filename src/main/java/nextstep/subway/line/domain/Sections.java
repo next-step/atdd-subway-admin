@@ -29,7 +29,7 @@ public class Sections {
     protected Sections() {
     }
 
-    private Sections(List<Section> values) {
+    Sections(List<Section> values) {
         this.values = values;
     }
 
