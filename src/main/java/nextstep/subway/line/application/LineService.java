@@ -27,9 +27,8 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-
         Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownstationId());
+        Station downStation = stationService.findById(request.getDownStationId());
 
         Section section = Section.builder()
                 .upStation(upStation)

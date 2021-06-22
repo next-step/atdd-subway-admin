@@ -38,7 +38,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String color = "빨강";
         Long upStationId = 1L;
         Long downStationId = 2L;
-        Long distance = 10L;
+        String distance = "10";
 
         ExtractableResponse<Response> response = createLine(createLineRequest(name, color, upStationId, downStationId, distance));
 
@@ -62,7 +62,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String color = "빨강";
         Long upStationId = 1L;
         Long downStationId = 2L;
-        Long distance = 10L;
+        String distance = "10";
         ExtractableResponse<Response> response = createLine(createLineRequest(name, color, upStationId, downStationId, distance));
 
 
@@ -94,7 +94,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String color = "빨강";
         Long upStationId = 1L;
         Long downStationId = 2L;
-        Long distance = 10L;
+        String distance = "10";
         LineResponse line1 = createLine(createLineRequest(name, color, upStationId, downStationId, distance)).body().jsonPath().getObject("$",LineResponse.class);
         LineResponse line2 = createLine(createLineRequest("2호선", "파랑", upStationId, downStationId, distance)).body().jsonPath().getObject("$",LineResponse.class);
         LineResponse line3 = createLine(createLineRequest("3호선", "초록", upStationId, downStationId, distance)).body().jsonPath().getObject("$",LineResponse.class);
@@ -126,7 +126,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String color = "빨강";
         Long upStationId = 1L;
         Long downStationId = 2L;
-        Long distance = 10L;
+        String distance = "10";
         LineResponse line1 = createLine(createLineRequest(name, color, upStationId, downStationId, distance)).body().jsonPath().getObject("$", LineResponse.class);
 
         // when
@@ -151,7 +151,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String color = "빨강";
         Long upStationId = 1L;
         Long downStationId = 2L;
-        Long distance = 10L;
+        String distance = "10";
         LineResponse line1 = createLine(createLineRequest(name, color, upStationId, downStationId, distance)).body().jsonPath().getObject("$",LineResponse.class);
 
         // when
@@ -185,7 +185,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String color = "빨강";
         Long upStationId = 1L;
         Long downStationId = 2L;
-        Long distance = 10L;
+        String distance = "10";
         LineResponse line1 = createLine(createLineRequest(name, color, upStationId, downStationId, distance)).body().jsonPath().getObject("$",LineResponse.class);
 
         // when
@@ -226,12 +226,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response.body().jsonPath().getObject("$",Station.class);
     }
 
-    private LineRequest createLineRequest(String name, String color, Long upStationId, Long downStationId, Long distance) {
+    private LineRequest createLineRequest(String name, String color, Long upStationId, Long downStationId, String distance) {
         return LineRequest.builder()
                 .name(name)
                 .color(color)
                 .upStationId(upStationId)
-                .downstationId(downStationId)
+                .downStationId(downStationId)
                 .distance(distance)
                 .build();
     }

@@ -23,7 +23,7 @@ public class Section {
     @JoinColumn(name="down_station_id")
     private Station downStation;
 
-    private Long distance;
+    private String distance;
 
     public Station getUpStation() {
         return upStation;
