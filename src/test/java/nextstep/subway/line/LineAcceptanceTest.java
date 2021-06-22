@@ -133,12 +133,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLine() {
 		// given
 		// 지하철_노선_등록되어_있음
+		지하철_노선_등록되어_있음("미사역", "보라");
 
 		// when
 		// 지하철_노선_제거_요청
+		ExtractableResponse<Response> response = RestAssured
+			.given().log().all()
+			.when().delete("/lines/{id}", 1L)
+			.then().log().all().extract();
 
 		// then
 		// 지하철_노선_삭제됨
+		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	private void 지하철_노선_등록되어_있음(String name, String color) {
