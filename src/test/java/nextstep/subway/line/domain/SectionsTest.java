@@ -24,12 +24,15 @@ class SectionsTest {
 
     @BeforeEach
     void setUp() {
-        강남_양재
-            = new Sections(Stream.of(강남_양재_100).collect(toList()));
-        강남_양재_광교중앙
-            = new Sections(Stream.of(강남_양재_100, 양재_광교중앙_30).collect(toList()));
-        강남_양재_광교중앙_광교
-            = new Sections(Stream.of(강남_양재_100, 양재_광교중앙_30, 광교중앙_광교_30).collect(toList()));
+        강남_양재 = new Sections();
+        강남_양재.addSection(강남_양재_100);
+        강남_양재_광교중앙 = new Sections();
+        강남_양재_광교중앙.addSection(강남_양재_100);
+        강남_양재_광교중앙.addSection(양재_광교중앙_30);
+        강남_양재_광교중앙_광교 = new Sections();
+        강남_양재_광교중앙_광교.addSection(강남_양재_100);
+        강남_양재_광교중앙_광교.addSection(양재_광교중앙_30);
+        강남_양재_광교중앙_광교.addSection(광교중앙_광교_30);
     }
 
     @Test

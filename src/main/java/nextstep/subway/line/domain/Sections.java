@@ -29,10 +29,6 @@ public class Sections {
     protected Sections() {
     }
 
-    Sections(List<Section> values) {
-        this.values = values;
-    }
-
     public List<Station> getStationsInOrder() {
         return SectionSorter.getStationsInOrder(values);
     }
@@ -81,9 +77,10 @@ public class Sections {
     public void removeStation(Station station) {
         validateRemovable(station);
 
-        Sections sections = new Sections(values.stream()
+        Sections sections = new Sections();
+        values.stream()
             .filter(s -> s.contains(station))
-            .collect(toList()));
+            .forEach(sections::addSection);
 
         values.add(sections.reduce());
         values.removeAll(sections.values);
