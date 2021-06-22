@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
@@ -30,6 +31,11 @@ public class LineService {
 		List<Line> lines = lineRepository.findAll();
 
 		return lines.stream().map(LineResponse::of).collect(Collectors.toList());
+	}
+
+	public LineResponse findById(Long id) {
+		Optional<Line> line = lineRepository.findById(id);
+		return LineResponse.of(line.get());
 	}
 
 	private void checkDuplicated(LineRequest request) {

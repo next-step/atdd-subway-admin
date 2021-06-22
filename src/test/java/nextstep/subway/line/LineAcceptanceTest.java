@@ -91,20 +91,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// when
 		// 지하철_노선_조회_요청
-		Map<String, String> params = new HashMap<>();
-		params.put("name", "미사역");
-
 		ExtractableResponse<Response> response = RestAssured
 		        .given().log().all()
-				.body(params)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
-		        .when().get("/lines")
+		        .when().get("/lines/{id}",1L)
 		        .then().log().all().extract();
 
 		// then
 		// 지하철_노선_응답됨
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		LineResponse lineResponse = response.jsonPath().get();
+		LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
 		Assertions.assertThat(lineResponse.getName()).isEqualTo("미사역");
 	}
 
