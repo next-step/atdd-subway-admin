@@ -1,10 +1,8 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 public class Station extends BaseEntity {

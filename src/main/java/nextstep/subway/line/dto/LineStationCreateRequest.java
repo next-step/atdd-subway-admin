@@ -1,11 +1,11 @@
-package nextstep.subway.section.dto;
+package nextstep.subway.line.dto;
 
-public class SectionRequest {
+public class LineStationCreateRequest {
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public SectionRequest(long upStationId, long downStationId, int distance){
+    public LineStationCreateRequest(long upStationId, long downStationId, int distance){
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;

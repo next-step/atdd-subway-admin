@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.line.dto.LineStationCreateRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,8 +49,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSectionBetween() {
         //when
-        SectionRequest sectionRequest = new SectionRequest(서울대입구역.getId(), 강남역.getId(), 5);
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(sectionRequest);
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(서울대입구역.getId(), 강남역.getId(), 5);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(lineStationCreateRequest);
 
         //then
         지하철_노선에_지하철역_등록됨(response);
@@ -60,8 +60,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSectionFront() {
         //when
-        SectionRequest sectionRequest = new SectionRequest(신촌역.getId(), 당산역.getId(), 5);
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(sectionRequest);
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(신촌역.getId(), 당산역.getId(), 5);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(lineStationCreateRequest);
 
         //then
         지하철_노선에_지하철역_등록됨(response);
@@ -71,8 +71,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSectionEnd() {
         //when
-        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 5);
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(sectionRequest);
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(강남역.getId(), 역삼역.getId(), 5);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(lineStationCreateRequest);
 
         //then
         지하철_노선에_지하철역_등록됨(response);
@@ -82,8 +82,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSectionBetween__DistanceLongerException() {
         //when
-        SectionRequest sectionRequest = new SectionRequest(서울대입구역.getId(), 강남역.getId(), 15);
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(sectionRequest);
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(서울대입구역.getId(), 강남역.getId(), 15);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(lineStationCreateRequest);
 
         //then
         지하철_노선에_지하철역_등록안됨(response);
@@ -93,8 +93,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSectionBoth__Conflict() {
         //when
-        SectionRequest sectionRequest = new SectionRequest(당산역.getId(), 강남역.getId(), 5);
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(sectionRequest);
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(당산역.getId(), 강남역.getId(), 5);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(lineStationCreateRequest);
 
         //then
         지하철_노선에_지하철역_등록안됨(response);
@@ -104,18 +104,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void addSection__None() {
         //when
-        SectionRequest sectionRequest = new SectionRequest(서울대입구역.getId(), 역삼역.getId(), 5);
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(sectionRequest);
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(서울대입구역.getId(), 역삼역.getId(), 5);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(lineStationCreateRequest);
 
         //then
         지하철_노선에_지하철역_등록안됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(SectionRequest sectionRequest) {
+    private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(LineStationCreateRequest lineStationCreateRequest) {
         Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", sectionRequest.getUpStationId());
-        params.put("downStationId", sectionRequest.getDownStationId());
-        params.put("distance", sectionRequest.getDistance());
+        params.put("upStationId", lineStationCreateRequest.getUpStationId());
+        params.put("downStationId", lineStationCreateRequest.getDownStationId());
+        params.put("distance", lineStationCreateRequest.getDistance());
         return RestAssured
                 .given().log().all()
                 .body(params)
