@@ -38,6 +38,7 @@ public class Line extends BaseEntity {
 	}
 
 	public Line(String name, String color) {
+		this.sectionGroup = new SectionGroup();
 		this.name = Name.generate(name);
 		this.color = Color.generate(color);
 	}
@@ -86,14 +87,14 @@ public class Line extends BaseEntity {
 		if (this == object) {
 			return true;
 		}
-		if (object == null || getClass() != object.getClass()) {
+		if (!(object instanceof Line)) {
 			return false;
 		}
 		Line line = (Line)object;
-		return Objects.equals(id, line.id) &&
-			Objects.equals(name, line.name) &&
-			Objects.equals(color, line.color) &&
-			Objects.equals(sectionGroup, line.sectionGroup);
+		return Objects.equals(id, line.id)
+			&& Objects.equals(name, line.name)
+			&& Objects.equals(color, line.color)
+			&& Objects.equals(sectionGroup, line.sectionGroup);
 	}
 
 	@Override

@@ -10,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.common.domain.Distance;
@@ -27,11 +26,11 @@ public class Section extends BaseEntity {
 	@JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_line"))
 	private Line line;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station"))
 	private Station upStation;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station"))
 	private Station downStation;
 
@@ -129,8 +128,10 @@ public class Section extends BaseEntity {
 			return false;
 		}
 		Section section = (Section)object;
-		return Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects
-			.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation)
+		return Objects.equals(id, section.id)
+			&& Objects.equals(line, section.line)
+			&& Objects.equals(upStation, section.upStation)
+			&& Objects.equals(downStation, section.downStation)
 			&& Objects.equals(distance, section.distance);
 	}
 

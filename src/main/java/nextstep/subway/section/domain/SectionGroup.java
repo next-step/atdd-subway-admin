@@ -3,15 +3,15 @@ package nextstep.subway.section.domain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-
-import com.google.common.collect.Lists;
 
 import nextstep.subway.station.domain.Station;
 
@@ -21,7 +21,7 @@ public class SectionGroup {
 	private static final int OUT_OF_INDEX = -1;
 	private static final int ADJUST_NEXT_INDEX = 1;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "section_id", foreignKey = @ForeignKey(name = "fk_line_section"))
 	private List<Section> sections = new ArrayList<>();
 
@@ -38,7 +38,7 @@ public class SectionGroup {
 			return;
 		}
 		addSectionWhenFoundDownStation(section);
-		addSectionWhenFindExistUpStation(section);
+		addSectionWhenFoundUpStation(section);
 		adjustSectionsNoDuplicated();
 	}
 
@@ -46,14 +46,14 @@ public class SectionGroup {
 		sections.stream().distinct();
 	}
 
-	private void addSectionWhenFindExistUpStation(Section targetSection) {
-		int sectionIndex = findSectionIndexExistedUpStation(targetSection.downStation());
+	private void addSectionWhenFoundUpStation(Section targetSection) {
+		int sectionIndex = findSectionIndexWithinUpStations(targetSection.downStation());
 		if (OUT_OF_INDEX < sectionIndex && !sections.contains(targetSection)) {
 			sections.add(sectionIndex, targetSection);
 		}
 	}
 
-	private int findSectionIndexExistedUpStation(Station targetDownStation) {
+	private int findSectionIndexWithinUpStations(Station targetDownStation) {
 		return sections.stream()
 			.filter(sectionInGroup -> targetDownStation.equals(sectionInGroup.upStation()))
 			.mapToInt(sections::indexOf)
@@ -62,13 +62,13 @@ public class SectionGroup {
 	}
 
 	private void addSectionWhenFoundDownStation(Section targetSection) {
-		int sectionIndex = findSectionIndexExistedDownStation(targetSection.upStation());
+		int sectionIndex = findSectionIndexWithinDownStations(targetSection.upStation());
 		if (OUT_OF_INDEX < sectionIndex && !sections.contains(targetSection)) {
 			sections.add(sectionIndex + ADJUST_NEXT_INDEX, targetSection);
 		}
 	}
 
-	private int findSectionIndexExistedDownStation(Station targetUpStation) {
+	private int findSectionIndexWithinDownStations(Station targetUpStation) {
 		return sections.stream()
 			.filter(sectionInGroup -> targetUpStation.equals(sectionInGroup.downStation()))
 			.mapToInt(sections::indexOf)
@@ -78,5 +78,23 @@ public class SectionGroup {
 
 	public List<Section> sections() {
 		return sections;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+		if (!(object instanceof SectionGroup)) {
+			return false;
+		}
+		SectionGroup that = (SectionGroup)object;
+		return sections.containsAll(this.sections)
+			&& that.sections.containsAll(sections);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(sections);
 	}
 }

@@ -19,6 +19,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -455,12 +456,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private void 노선에_역정보들_포함_및_순서가_일치한다(LineRequest 노선정보, ExtractableResponse<Response> 생성_응답) {
-		List<String> 입력된_역_아이디들 = Arrays.asList(노선정보.getUpStationId(), 노선정보.getDownStationId());
-		List<String> 응답된_역_아이디들 = 생성_응답.jsonPath().getList("stations", StationResponse.class)
+		List<Long> 입력된_역_아이디들 = Arrays.asList(노선정보.getUpStationId(), 노선정보.getDownStationId())
 			.stream()
-			.map(
-				역정보 -> 역정보.getId().toString()
-			).collect(Collectors.toList());
+			.collect(Collectors.toList());
+		List<Long> 응답된_역_아이디들 = 생성_응답.jsonPath().getList("stations", StationResponse.class)
+			.stream()
+			.map(StationResponse::getId)
+			.collect(Collectors.toList());
 		assertThat(응답된_역_아이디들).containsSequence(입력된_역_아이디들);
 	}
 

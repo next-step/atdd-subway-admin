@@ -1,6 +1,9 @@
 package nextstep.subway.line.dto;
 
+import java.util.Objects;
+
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationGroup;
 
 public class LineRequest {
@@ -33,12 +36,18 @@ public class LineRequest {
 		return color;
 	}
 
-	public String getUpStationId() {
-		return upStationId;
+	public Long getUpStationId() {
+		if (Objects.isNull(upStationId)) {
+			return null;
+		}
+		return Long.parseLong(upStationId);
 	}
 
-	public String getDownStationId() {
-		return downStationId;
+	public Long getDownStationId() {
+		if (Objects.isNull(downStationId)) {
+			return null;
+		}
+		return Long.parseLong(downStationId);
 	}
 
 	public String getDistance() {
@@ -51,5 +60,9 @@ public class LineRequest {
 
 	public Line toLine(StationGroup stationGroupToAdd) {
 		return new Line(name, color);
+	}
+
+	public Line toLine(Station upStation, Station downStation) {
+		return new Line(name, color, upStation, downStation, distance);
 	}
 }

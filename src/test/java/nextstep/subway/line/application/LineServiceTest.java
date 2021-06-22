@@ -84,11 +84,10 @@ public class LineServiceTest extends ServiceTest {
 	}
 
 	private void 노선에_역_정보가_포함되어_있음(LineRequest 저장요청, LineResponse 저장응답) {
-		List<String> 입력된_역_아이디들 = Arrays.asList(저장요청.getUpStationId(), 저장요청.getDownStationId());
-		List<String> 응답된_역_아이디들 = 저장응답.getStations().stream()
-			.map(
-				역정보 -> 역정보.getId().toString()
-			).collect(Collectors.toList());
+		List<Long> 입력된_역_아이디들 = Arrays.asList(저장요청.getUpStationId(), 저장요청.getDownStationId());
+		List<Long> 응답된_역_아이디들 = 저장응답.getStations().stream()
+			.map(StationResponse::getId)
+			.collect(Collectors.toList());
 		assertThat(응답된_역_아이디들).containsSequence(입력된_역_아이디들);
 	}
 
@@ -119,7 +118,7 @@ public class LineServiceTest extends ServiceTest {
 	@Test
 	void 저장_노선이름_null값_예외발생() {
 		//given
-		LineRequest 비어있는_노선이름_요청 = new LineRequest(null, "#FFFFFF");
+		LineRequest 비어있는_노선이름_요청 = new LineRequest(null, "#FFFFFF", 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 
 		//when
 
@@ -131,7 +130,7 @@ public class LineServiceTest extends ServiceTest {
 	@Test
 	void 저장_색상_null값_예외발생() {
 		//given
-		LineRequest 비어있는_색상_요청 = new LineRequest("1호선", null);
+		LineRequest 비어있는_색상_요청 = new LineRequest("1호선", null, 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 
 		//when
 
@@ -143,7 +142,7 @@ public class LineServiceTest extends ServiceTest {
 	@Test
 	void 저장_노선이름_빈문자열_예외발생() {
 		//given
-		LineRequest 공백_노선이름_요청 = new LineRequest("", "#FFFFFF");
+		LineRequest 공백_노선이름_요청 = new LineRequest("", "#FFFFFF", 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 
 		//when
 
@@ -155,7 +154,7 @@ public class LineServiceTest extends ServiceTest {
 	@Test
 	void 저장_색상_빈문자열_예외발생() {
 		//given
-		LineRequest 공백_색상_요청 = new LineRequest("1호선", "");
+		LineRequest 공백_색상_요청 = new LineRequest("1호선", "", 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 
 		//when
 
@@ -169,7 +168,7 @@ public class LineServiceTest extends ServiceTest {
 		//given
 		String 이백오십육바이트_이름 = "역이름 또는 노선이름 255바이트 넘기려고 지은 이름입니다. 이름이 아닌 것 같지만 이름 맞습니다. "
 			+ "Character Set이 UTF-8로 맞춰서 256 바이트 길이가 딱 맞는 이름입니다. 확인하지 않으셔도 됩니다.";
-		LineRequest 너무_긴_노선이름_요청 = new LineRequest(이백오십육바이트_이름, "#FFFFFF");
+		LineRequest 너무_긴_노선이름_요청 = new LineRequest(이백오십육바이트_이름, "#FFFFFF", 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 
 		//when
 
@@ -183,7 +182,7 @@ public class LineServiceTest extends ServiceTest {
 		//given
 		String 이백오십육바이트_색상 = "색상 255바이트 넘기려고 지은 색상입니다. 색상이 아닌 것 같지만 색상 맞습니다. "
 			+ "Character Set이 UTF-8로 맞춰서 256 바이트 길이가 딱 맞는 색상입니다. 색상들의 길이는 확인하지 않으셔도 됩니다.";
-		LineRequest 너무_긴_색상_요청 = new LineRequest("1호선", 이백오십육바이트_색상);
+		LineRequest 너무_긴_색상_요청 = new LineRequest("1호선", 이백오십육바이트_색상, 강남역_아이디, 선릉역_아이디, 강남역_선릉역_간격);
 
 		//when
 

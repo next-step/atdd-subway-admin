@@ -98,7 +98,7 @@ public class LineTest {
 	}
 
 	@Test
-	void 생성_구간_포함() {
+	void 생성_구간_포함_및_구간_추가_없음() {
 		//given
 		Station 상행역 = new Station("홍대입구");
 		Station 하행역 = new Station("구로디지털단지");
@@ -114,22 +114,48 @@ public class LineTest {
 	}
 
 	@Test
-	void 생성_구간_2개_포함() {
+	void 생성_구간_1개_추가() {
 		//given
 		Station 상행역 = new Station("상행역");
 		Station 중간역 = new Station("중간역");
 		Station 하행역 = new Station("하행역");
 		String 간격 = "100";
 		Line 이호선 = new Line("2호선", "#FFFFFF", 상행역, 중간역, 간격);
-		Section 추가할_구간 = new Section(이호선, 중간역, 하행역, 간격);
+		Section 상행_구간 = 이호선.sectionGroup().sections().get(0);
+		Section 하행_구간 = new Section(이호선, 중간역, 하행역, 간격);
 
 		//when
-		이호선.addSection(추가할_구간);
+		이호선.addSection(하행_구간);
 
 		//then
 		assertThat(이호선).isNotNull();
 		assertThat(이호선.sectionGroup()).isNotNull();
 		assertThat(이호선.stationGroup().stations()).containsSequence(Arrays.asList(상행역, 중간역, 하행역));
+		assertThat(이호선.sectionGroup().sections()).containsSequence(Arrays.asList(상행_구간, 하행_구간));
+	}
+
+	@Test
+	void 생성_구간_2개_추가() {
+		//given
+		Station 상행역 = new Station("상행역");
+		Station 중상역 = new Station("중상역");
+		Station 중하역 = new Station("중하역");
+		Station 하행역 = new Station("하행역");
+		String 간격 = "100";
+		Line 이호선 = new Line("2호선", "#FFFFFF", 중상역, 중하역, 간격);
+		Section 중간_구간 = 이호선.sectionGroup().sections().get(0);
+		Section 추가할_기점_구간 = new Section(이호선, 상행역, 중상역, 간격);
+		Section 추가할_종점_구간 = new Section(이호선, 중하역, 하행역, 간격);
+
+		//when
+		이호선.addSection(추가할_기점_구간);
+		이호선.addSection(추가할_종점_구간);
+
+		//then
+		assertThat(이호선).isNotNull();
+		assertThat(이호선.sectionGroup()).isNotNull();
+		assertThat(이호선.stationGroup().stations()).containsSequence(Arrays.asList(상행역, 중상역, 중하역, 하행역));
+		assertThat(이호선.sectionGroup().sections()).containsSequence(Arrays.asList(추가할_기점_구간, 중간_구간, 추가할_종점_구간));
 	}
 
 	@Test

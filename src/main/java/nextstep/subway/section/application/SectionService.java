@@ -25,8 +25,8 @@ public class SectionService {
 	}
 
 	public Section saveSection(LineRequest request, Line persistLine) {
-		Station upStation = stationService.findStationByIdFromRepository(Long.parseLong(request.getUpStationId()));
-		Station downStation = stationService.findStationByIdFromRepository(Long.parseLong(request.getDownStationId()));
+		Station upStation = stationService.findStationByIdFromRepository(request.getUpStationId());
+		Station downStation = stationService.findStationByIdFromRepository(request.getDownStationId());
 		Section section = Section.generate(persistLine, upStation, downStation, request.getDistance());
 		return sectionRepository.save(section);
 	}
