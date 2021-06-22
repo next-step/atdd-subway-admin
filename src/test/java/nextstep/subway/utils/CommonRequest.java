@@ -1,5 +1,7 @@
 package nextstep.subway.utils;
 
+import java.util.Map;
+
 import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
@@ -37,6 +39,15 @@ public class CommonRequest {
 
     public static ExtractableResponse<Response> delete(String path) {
         return RestAssured.given().log().all()
+            .when()
+            .delete(path)
+            .then().log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> delete(String path, Map<String,String> params) {
+        return RestAssured.given().log().all()
+            .params(params)
             .when()
             .delete(path)
             .then().log().all()
