@@ -64,6 +64,10 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public int distance() {
+        return distance;
+    }
+
     public boolean contains(Station station) {
         return upStation == station
                 || downStation == station;
