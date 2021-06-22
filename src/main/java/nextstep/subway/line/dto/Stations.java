@@ -3,15 +3,16 @@ package nextstep.subway.line.dto;
 import nextstep.subway.station.domain.Station;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Stations {
-    private List<Station> stations = new ArrayList<>();
+    private Set<Station> stations = new LinkedHashSet<>();
 
     public Stations() {
     }
 
     public List<Station> values() {
-        return stations;
+        return new ArrayList<>(stations);
     }
 
     public void add(Station upStation) {
@@ -20,5 +21,11 @@ public class Stations {
 
     public boolean contains(Station station){
         return stations.contains(station);
+    }
+
+
+    public boolean containsId(Long stationId) {
+        List<Long> ids =  stations.stream().map(Station::getId).collect(Collectors.toList());
+        return ids.contains(stationId);
     }
 }

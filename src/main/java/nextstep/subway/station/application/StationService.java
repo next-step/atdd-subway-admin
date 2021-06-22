@@ -45,4 +45,8 @@ public class StationService {
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
+
+    public List<Station> findStationByIds(List<Long> stations) {
+        return stationRepository.findAllById(stations);
+    }
 }

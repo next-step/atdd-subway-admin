@@ -59,10 +59,16 @@ public class LineController {
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity saveLineSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        Line line = lineService.findLine(lineId);
-        sectionService.saveSection(line, sectionRequest);
+        Line line = lineService.saveLineSection(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(LineResponse.of(line));
     }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity deleteLineSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.deleteLineSectionBy(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
+
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity handleIllegalArgsException(RuntimeException e) {

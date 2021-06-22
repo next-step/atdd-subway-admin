@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 @Table(name = "section")
 @Entity
-public class Section extends BaseEntity {
+public class Section extends BaseEntity implements Comparable<Section>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +28,8 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_line"))
     private Line line;
 
+    private int sectionIndex;
+
     protected Section() {
     }
 
@@ -46,6 +48,17 @@ public class Section extends BaseEntity {
         this.downStation = downStation;
         this.distance = distance;
         this.line = line;
+        this.sectionIndex = Integer.MAX_VALUE;
+    }
+
+    public void changeDownStation(Station downStation, int distance) {
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+    public void changeStation(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
     public Long getId() {
@@ -70,5 +83,19 @@ public class Section extends BaseEntity {
 
     public void setLine(Line line) {
         this.line = line;
+    }
+
+    public int getSectionIndex() {
+        return sectionIndex;
+    }
+
+    public void setSectionIndex(int index) {
+        this.sectionIndex = index;
+    }
+
+
+    @Override
+    public int compareTo(Section section) {
+        return this.sectionIndex - section.getSectionIndex();
     }
 }

@@ -11,6 +11,7 @@ import java.util.*;
 
 @Embeddable
 public class Sections {
+    private static final int MINIMUM_SIZE = 1;
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new LinkedList<>();
 
@@ -28,9 +29,8 @@ public class Sections {
                 .ifPresent(
                         oldSection -> {
                             validateDistance(oldSection.getDistance(), section.getDistance());
-                            sections.add(section);
-                            sections.add(Section.of(section.getDownStation(), oldSection.getDownStation(), oldSection.getDistance() - section.getDistance()));
-                            sections.remove(oldSection);
+                            oldSection.changeStation(section.getDownStation(), oldSection.getDownStation(), oldSection.getDistance() - section.getDistance());
+                            sections.add(sections.indexOf(oldSection), section);
                             return;
                         }
                 );
@@ -64,11 +64,42 @@ public class Sections {
         }
     }
 
-    //해당단계에서는 하나의 섹션에서 상행 종점, 하행 종점만 있으므로 유일한 섹션의 상행과 하행 순으로 출력한다.
+
+    public void deletable() {
+        if (sections.size() <= MINIMUM_SIZE) {
+            throw new IncorrectSectionException("삭제할 수 있는 구간이 없습니다");
+        }
+    }
+
+    public Section deleteMiddleSectionBy(Station station) {
+        Section upSection = getSectionByDown(station);
+        Section downSection = getSectionByUp(station);
+        upSection.changeStation(upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance()+downSection.getDistance());
+        sections.remove(downSection);
+        return downSection;
+    }
+
+    public Section deleteFirstSectionBy(Station station) {
+        Section upSection = getSectionByUp(station);
+        sections.remove(upSection);
+        return upSection;
+    }
+
+    public Section deleteLastSectionBy(Station station) {
+        Section downSection = getSectionByDown(station);
+        sections.remove(downSection);
+        return downSection;
+    }
+
+    public void reindexing() {
+        sections.stream().forEach(section -> section.setSectionIndex(sections.indexOf(section)));
+    }
+
     public Stations getStations() {
+        sort();
         Stations stations = new Stations();
-        stations.add(sections.get(0).getUpStation());
         for (Section section : sections) {
+            stations.add(section.getUpStation());
             stations.add(section.getDownStation());
         }
         return stations;
@@ -90,4 +121,19 @@ public class Sections {
         return stations;
     }
 
+    private Section getSectionByDown(Station station) {
+        return sections.stream().filter(
+                section -> section.getDownStation().equals(station)
+        ).findFirst().get();
+    }
+
+    private Section getSectionByUp(Station station) {
+        return sections.stream().filter(
+                section -> section.getUpStation().equals(station)
+        ).findFirst().get();
+    }
+
+    public void sort() {
+        Collections.sort(sections);
+    }
 }
