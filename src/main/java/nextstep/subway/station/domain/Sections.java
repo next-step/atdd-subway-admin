@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.util.Assert;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;

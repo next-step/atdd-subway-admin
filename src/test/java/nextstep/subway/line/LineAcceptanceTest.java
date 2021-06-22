@@ -7,6 +7,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
+    Station 광교역;
+    Station 강남역;
+    @BeforeEach
+    public void setup() {
+        광교역 = createStation("광교역");
+        강남역 = createStation("강남역");
+    }
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -32,14 +39,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long upStationId = 1L;
         Long downStationId = 2L;
         Long distance = 10L;
-        createStation("광교역");
-        createStation("강남역");
-        Station 광교역 = Station.builder()
-                .id(1L)
-                .build();
-        Station 강남역 = Station.builder()
-                .id(2L)
-                .build();
 
         ExtractableResponse<Response> response = createLine(createLineRequest(name, color, upStationId, downStationId, distance));
 
@@ -51,25 +50,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getString("createdDate")).isNotNull();
         assertThat(response.body().jsonPath().getString("modifiedDate")).isNotNull();
         assertThat(response.body().jsonPath().getList("stations", Station.class)).contains(광교역, 강남역);
-    }
-
-    private void createStation(String name) {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then().log().all()
-                .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -132,6 +112,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<LineResponse> array = response.body().jsonPath().getList(".", LineResponse.class);
         assertThat(array).hasSize(3);
         assertThat(array).contains(line1,line2,line3);
+        assertThat(array.get(0).getStations()).contains(강남역,광교역);
+        assertThat(array.get(1).getStations()).contains(강남역,광교역);
+        assertThat(array.get(2).getStations()).contains(강남역,광교역);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -221,6 +204,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 
+    }
+
+    private Station createStation(String name) {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/stations")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
+        return response.body().jsonPath().getObject("$",Station.class);
     }
 
     private LineRequest createLineRequest(String name, String color, Long upStationId, Long downStationId, Long distance) {
