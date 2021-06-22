@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.ExtractableResponseUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,10 +38,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
 
-        ExtractableResponse<Response> firstResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1)));
+        ExtractableResponse<Response> firstResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
 
         // when
-        ExtractableResponse<Response> secondResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1)));
+        ExtractableResponse<Response> secondResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
 
         // then
         assertThat(secondResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -59,14 +60,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         // When
-        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(new LineRequest("3호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1)));
+        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(new LineRequest("3호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
         LineResponse createdLine = createLineResponse.as(LineResponse.class);
+        List<Long> stationIdsInLine = createdLine.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
 
         // then
         assertThat(createLineResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(createLineResponse.header("Location")).isNotBlank();
-        assertThat(lineResponse.getSection().getUpStationId()).isEqualTo(createdStationIds.get(0));
-        assertThat(lineResponse.getSection().getDownStationId()).isEqualTo(createdStationIds.get(1));
+        assertThat(stationIdsInLine).containsAll(createdStationIds);
     }
 
     @DisplayName("지하철_노선_목록_조회_성공")
@@ -81,8 +84,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
 
-        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1)));
-        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", createdStationIds.get(0), createdStationIds.get(1)));
+        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
+        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
 
         // when
         ExtractableResponse response = 지하철_노선_목록_조회_요청();
@@ -122,9 +125,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
 
-        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1)));
-        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", createdStationIds.get(0), createdStationIds.get(1)));
-        ExtractableResponse createResponse3 = 지하철_노선_생성_요청(new LineRequest("3호선", "00FF00", createdStationIds.get(0), createdStationIds.get(1)));
+        ExtractableResponse createResponse1 = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
+        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
+        ExtractableResponse createResponse3 = 지하철_노선_생성_요청(new LineRequest("3호선", "00FF00", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
         List<Long> expectedResult = extractIdInResponses(createResponse2, createResponse3);
 
         // when
@@ -163,7 +166,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
 
-        ExtractableResponse createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1)));
+        ExtractableResponse createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
 
         LineResponse expectedResult = createResponse.jsonPath().getObject(".", LineResponse.class);
         Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
@@ -171,6 +174,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse response = 지하철_노선_PK_조건_조회_요청(savedId);
         LineResponse actualResult = response.jsonPath().getObject(".", LineResponse.class);
+        List<Long> stationIdsInLine = actualResult.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -179,8 +185,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actualResult.getName()).isEqualTo(expectedResult.getName()),
                 () -> assertThat(actualResult.getColor()).isEqualTo(expectedResult.getColor())
         );
-        assertThat(actualResult.getSection().getUpStationId()).isEqualTo(createdStationIds.get(0));
-        assertThat(actualResult.getSection().getDownStationId()).isEqualTo(createdStationIds.get(1));
+        assertThat(stationIdsInLine).containsAll(createdStationIds);
     }
 
     @DisplayName("지하철_노선_PK_조건_조회_성공_데이터없음")
@@ -207,7 +212,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
 
-        ExtractableResponse createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1)));
+        ExtractableResponse createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
         Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
 
         // when
@@ -234,9 +239,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_수정_예외_수정_중복된_이름() {
         // given
-        지하철_노선_생성_요청(new LineRequest("1호선", "FF0000"));
+        final int DEFAULT_DISTANCE = 30;
+        ExtractableResponse<Response> createUpStationResponse = 지하철_역_생성_요청(new StationRequest("강남역"));
+        ExtractableResponse<Response> createDownStationResponse = 지하철_역_생성_요청(new StationRequest("역삼역"));
+        List<Long> createdStationIds = Arrays.asList(createUpStationResponse, createDownStationResponse).stream()
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
 
-        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00"));
+        지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
+
+        ExtractableResponse createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
         Long savedId2 = ExtractableResponseUtil.extractIdInResponse(createResponse2);
 
         // when
@@ -251,7 +263,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_제거_성공() {
         // given
-        ExtractableResponse createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000"));
+        final int DEFAULT_DISTANCE = 30;
+        ExtractableResponse<Response> createUpStationResponse = 지하철_역_생성_요청(new StationRequest("강남역"));
+        ExtractableResponse<Response> createDownStationResponse = 지하철_역_생성_요청(new StationRequest("역삼역"));
+        List<Long> createdStationIds = Arrays.asList(createUpStationResponse, createDownStationResponse).stream()
+                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+                .collect(Collectors.toList());
+
+        ExtractableResponse createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", createdStationIds.get(0), createdStationIds.get(1), DEFAULT_DISTANCE));
         Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
 
         // when
