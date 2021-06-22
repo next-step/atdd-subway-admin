@@ -90,11 +90,11 @@ public class Section {
     }
 
     public boolean isUpStation(Station station) {
-        return upStation.equals(station);
+        return upStation == station;
     }
 
     public boolean isDownStation(Station station) {
-        return downStation.equals(station);
+        return downStation == station;
     }
 
     @Override
