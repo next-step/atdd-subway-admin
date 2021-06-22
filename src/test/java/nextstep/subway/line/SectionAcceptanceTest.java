@@ -17,8 +17,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.dto.ErrorResponse;
+import nextstep.subway.exception.CanNotAddSectionException;
 import nextstep.subway.exception.CanNotDeleteStateException;
+import nextstep.subway.exception.LimitDistanceException;
 import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.exception.RegisteredSectionException;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -57,7 +61,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
-        지하철_노선에_지하철역_등록됨(response);
+        요청_처리_성공(response);
     }
 
     @DisplayName("노선 구간 등록 : 중간(하행역이 일치하는 경우)")
@@ -71,7 +75,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
-        지하철_노선에_지하철역_등록됨(response);
+        요청_처리_성공(response);
     }
 
     @DisplayName("노선 구간 등록 : 새로운 역을 상행 종점으로 등록할 경우")
@@ -85,7 +89,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
-        지하철_노선에_지하철역_등록됨(response);
+        요청_처리_성공(response);
     }
 
     @DisplayName("노선 구간 등록 : 새로운 역을 하행 종점으로 등록할 경우")
@@ -99,7 +103,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
-        지하철_노선에_지하철역_등록됨(response);
+        요청_처리_성공(response);
     }
 
     @DisplayName("노선 구간 등록 에러 : 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
@@ -113,7 +117,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
-        지하철_노선에_거리로_인해_지하철역_등록_실패됨(response);
+        요청_처리_실패(response, new LimitDistanceException(Section.MIN_DISTANCE));
     }
 
     @DisplayName("노선 구간 등록 에러 : 이미 등록된 구간을 등록할 경우")
@@ -127,7 +131,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
-        지하철_노선에_이미_등록된_구간에_인해_지하철역_등록_실패됨(response);
+        요청_처리_실패(response, new RegisteredSectionException());
     }
 
     @DisplayName("노선 구간 등록 에러 : 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
@@ -141,7 +145,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(createId, sectionRequest);
 
         // then
-        지하철_노선에_등록_되지_않은_구간에_인해_지하철역_등록_실패됨(response);
+        요청_처리_실패(response, new CanNotAddSectionException());
     }
 
     @DisplayName("구간 제거 요청 처리")
@@ -155,7 +159,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_제거_요청(createId, stationMap.get("양재역"));
 
         // then
-        지하철_구간_삭제됨(response);
+        요청_처리_성공(response);
     }
 
     @DisplayName("구간 제거 요청 에러 : 구간에 없는 역 삭제 시")
@@ -169,7 +173,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_제거_요청(createId, stationMap.get("양재시민의 숲"));
 
         // then
-        지하철_구간_삭제_에러(response, new NotFoundException());
+        요청_처리_실패(response, new NotFoundException());
     }
 
     @DisplayName("구간 제거 요청 에러 : 구간이 하나라서 삭제가 불가능 한 경우")
@@ -182,7 +186,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_제거_요청(createId, stationMap.get("강남역"));
 
         // then
-        지하철_구간_삭제_에러(response, new CanNotDeleteStateException());
+        요청_처리_실패(response, new CanNotDeleteStateException());
     }
 
     private ExtractableResponse<Response> 지하철_구간_제거_요청(Long createId, Long stationId) {
@@ -217,33 +221,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return post(request, "/lines/" + id + "/sections");
     }
 
-    private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private void 지하철_노선에_거리로_인해_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
-        ErrorResponse errorResponse = response.jsonPath().getObject(".", ErrorResponse.class);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(errorResponse.getMessage()).contains("거리가 기준 거리 이하가 될 수 없습니다.");
-    }
-
-    private void 지하철_노선에_이미_등록된_구간에_인해_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
-        ErrorResponse errorResponse = response.jsonPath().getObject(".", ErrorResponse.class);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(errorResponse.getMessage()).contains("이미 등록 된 구간입니다.");
-    }
-
-    private void 지하철_노선에_등록_되지_않은_구간에_인해_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
-        ErrorResponse errorResponse = response.jsonPath().getObject(".", ErrorResponse.class);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(errorResponse.getMessage()).contains("추가 될 수 없는 구간입니다.");
-    }
-
-    private void 지하철_구간_삭제됨(ExtractableResponse<Response> response) {
+    private void 요청_처리_성공(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
     
-    private void 지하철_구간_삭제_에러(ExtractableResponse<Response> response, Exception e) {
+    private void 요청_처리_실패(ExtractableResponse<Response> response, Exception e) {
         ErrorResponse errorResponse = response.jsonPath().getObject(".", ErrorResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(errorResponse.getMessage()).contains(e.getMessage());
