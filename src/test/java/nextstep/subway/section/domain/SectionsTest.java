@@ -56,19 +56,22 @@ class SectionsTest {
 
     @Test
     void 역_사이에_새로운_역을_등록할_경우_기존_역_사이_길이보다_크거나_같으면_등록을_할_수_없음() {
-        assertThatThrownBy(() -> sections.add(Section.of(station1, station2, 7)))
+        Section section = Section.of(station1, station2, 7);
+        assertThatThrownBy(() -> sections.add(section))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
-        assertThatThrownBy(() -> sections.add(Section.of(station1, station3, 7)))
+        Section section = Section.of(station1, station3, 7);
+        assertThatThrownBy(() -> sections.add(section))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void 상행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가할_수_없음() {
-        assertThatThrownBy(() -> sections.add(Section.of(station2, station4, 7)))
+        Section section = Section.of(station2, station4, 7);
+        assertThatThrownBy(() -> sections.add(section))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -120,7 +123,7 @@ class SectionsTest {
     @Test
     void 노선에_상행역_하행역만_존자할경우_삭제할_수_없음() {
         //when && then
-        assertThatThrownBy(() -> sections.removeSectionByStation(station2))
+        assertThatThrownBy(() -> sections.removeSectionByStation(station3))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

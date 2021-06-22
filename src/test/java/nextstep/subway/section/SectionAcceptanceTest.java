@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SectionAcceptanceTest extends AcceptanceTest {
+class SectionAcceptanceTest extends AcceptanceTest {
     private LineResponse 신분당선;
     private StationResponse 강남역;
     private StationResponse 광교역;
@@ -114,6 +114,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // then 역순서 확인 (강남역-판교역-광교역) - 판교역 = 강남역-광교역
         등록된_역_순서_확인(Arrays.asList(강남역, 광교역));
+    }
+
+    @Test
+    void 노선의_존재하지않는_역을_삭제할경우_실패() {
+        //given 강남역 - 판교역 - 광교역이 등록되어있다.
+        지하철_노선에_지하철역_등록_요청(강남역, 판교역, 4);
+        // when 지하철_노선에_지하철역_삭제_요청
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_삭제_요청(정자역);
+        // then 지하철_노선에_자하철역_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 노선의_마지막구간을_삭제할경우_실패() {
+        //given 강남역 - 광교역이 등록되어있다.
+        // when 지하철_노선에_지하철역_삭제_요청
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_삭제_요청(강남역);
+        // then 지하철_노선에_자하철역_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선에_지하철역_삭제_요청(StationResponse station) {
