@@ -60,8 +60,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 기존에_존재하는_지하철_노선_생성_요청
         Map<String, String> newParams = new HashMap<>();
-        params.put("name", "미사역");
-        params.put("color", "보라");
+        newParams.put("name", "미사역");
+        newParams.put("color", "보라");
 
         // when
         ExtractableResponse<Response> newResponse = RestAssured
