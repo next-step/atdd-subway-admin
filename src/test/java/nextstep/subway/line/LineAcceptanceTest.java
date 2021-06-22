@@ -126,8 +126,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then
 		// 지하철_노선_수정됨
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
-		Assertions.assertThat(lineResponse.getColor()).isEqualTo("파랑");
 	}
 
 	@DisplayName("지하철 노선을 제거한다.")

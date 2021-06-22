@@ -38,6 +38,15 @@ public class LineService {
 		return LineResponse.of(line.get());
 	}
 
+	public void updateLine(Long id, LineRequest request){
+		Optional<Line> line = lineRepository.findById(id);
+		if (!line.isPresent()) {
+			throw new IllegalArgumentException("노선이 존재하지 않습니다.");
+		}
+
+		line.get().update(request.toLine());
+	}
+
 	private void checkDuplicated(LineRequest request) {
 		if (lineRepository.findByName(request.getName()).isPresent()) {
 			throw new IllegalArgumentException("노선이 이미 존재합니다.");
