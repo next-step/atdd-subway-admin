@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.persistence.Embeddable;
-
 public class StationGroup {
 
 	private List<Station> stations = new ArrayList<>();
@@ -46,18 +44,6 @@ public class StationGroup {
 
 	public void removeStationGroup(StationGroup stationGroup) {
 		stationGroup.stations.forEach(this::remove);
-	}
-
-	public void clear() {
-		stations.clear();
-	}
-
-	public boolean isEmpty() {
-		return stations.isEmpty();
-	}
-
-	public int indexOf(Station station) {
-		return stations.indexOf(station);
 	}
 
 	public void add(int index, Station station) {

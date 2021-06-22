@@ -58,10 +58,6 @@ public class LineRequest {
 		return new Line(name, color);
 	}
 
-	public Line toLine(StationGroup stationGroupToAdd) {
-		return new Line(name, color);
-	}
-
 	public Line toLine(Station upStation, Station downStation) {
 		return new Line(name, color, upStation, downStation, distance);
 	}
