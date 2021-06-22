@@ -31,8 +31,7 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         List<StationResponse> stationResponses = new ArrayList<>();
-        for (Station station: line.getStations()
-             ) {
+        for (Station station: line.getStations()) {
             stationResponses.add(StationResponse.of(station));
         }
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses, line.getCreatedDate(), line.getModifiedDate());

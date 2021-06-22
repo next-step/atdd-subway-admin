@@ -10,12 +10,16 @@ import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -27,7 +31,7 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addSection(Section section){
+    public void addSection(Section section) {
         this.sections.add(section);
     }
 
@@ -36,10 +40,9 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public List<Station> getStations(){
+    public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
-        for (Section section : sections
-             ) {
+        for (Section section : sections) {
             stations.addAll(section.getStations());
         }
         return stations;
