@@ -47,6 +47,15 @@ public class LineService {
 		line.get().update(request.toLine());
 	}
 
+	public void deleteLine(Long id){
+		Optional<Line> line = lineRepository.findById(id);
+		if (!line.isPresent()) {
+			throw new IllegalArgumentException("노선이 존재하지 않습니다.");
+		}
+
+		lineRepository.deleteById(id);
+	}
+
 	private void checkDuplicated(LineRequest request) {
 		if (lineRepository.findByName(request.getName()).isPresent()) {
 			throw new IllegalArgumentException("노선이 이미 존재합니다.");
