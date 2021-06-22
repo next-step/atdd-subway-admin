@@ -12,6 +12,8 @@ import java.util.Optional;
 
 @Embeddable
 public class Sections {
+    private static final int MINIMUM_SECTION_COUNT = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
@@ -66,39 +68,36 @@ public class Sections {
         Optional<Section> sectionWithPreviousStation = findSectionWithPreviousStation(station);
         Optional<Section> sectionWithNextStation = findSectionWithNextStation(station);
 
-        validateStationInSections(sectionWithPreviousStation, sectionWithNextStation);
-        removeWhenFirstStation(sectionWithPreviousStation, sectionWithNextStation);
-        removeWhenLastStation(sectionWithPreviousStation, sectionWithNextStation);
-        removeWhenMiddleStation(sectionWithPreviousStation, sectionWithNextStation);
-    }
-
-    private void removeWhenFirstStation(Optional<Section> sectionWithPreviousStation, Optional<Section> sectionWithNextStation) {
-        if (!sectionWithPreviousStation.isPresent() && sectionWithNextStation.isPresent()) {
-            sections.remove(sectionWithNextStation.get());
-            sectionWithNextStation.get().removeLine();
-        }
-    }
-
-    private void removeWhenLastStation(Optional<Section> sectionWithPreviousStation, Optional<Section> sectionWithNextStation) {
-        if (sectionWithPreviousStation.isPresent() && !sectionWithNextStation.isPresent()) {
-            sections.remove(sectionWithPreviousStation.get());
-            sectionWithPreviousStation.get().removeLine();
-        }
-    }
-
-    private void removeWhenMiddleStation(Optional<Section> sectionWithPreviousStation, Optional<Section> sectionWithNextStation) {
-        if (sectionWithPreviousStation.isPresent() && sectionWithNextStation.isPresent()) {
-            sectionWithPreviousStation.get().changeDownStation(sectionWithNextStation.get().getDownStation());
-            sectionWithPreviousStation.get().calculateDistanceWhenRemove(sectionWithNextStation.get());
-            sections.remove(sectionWithNextStation.get());
-            sectionWithNextStation.get().removeLine();
-        }
-    }
-
-    private void validateStationInSections(Optional<Section> sectionWithPreviousStation, Optional<Section> sectionWithNextStation) {
+        validateSectionCount();
         if (!sectionWithPreviousStation.isPresent() && !sectionWithNextStation.isPresent()) {
             throw new IllegalArgumentException("존재하지 않는 역입니다.");
         }
+        if (!sectionWithPreviousStation.isPresent()) {
+            removeSection(sectionWithNextStation.get());
+            return;
+        }
+        if (!sectionWithNextStation.isPresent()) {
+            removeSection(sectionWithPreviousStation.get());
+            return;
+        }
+            removeWhenMiddleStation(sectionWithPreviousStation.get(), sectionWithNextStation.get());
+    }
+
+    private void validateSectionCount() {
+        if (sections.size() <= MINIMUM_SECTION_COUNT) {
+            throw new IllegalArgumentException("마지막 구간은 삭제할 수 없습니다.");
+        }
+    }
+
+    private void removeSection(Section section) {
+        sections.remove(section);
+        section.removeLine();
+    }
+
+    private void removeWhenMiddleStation(Section sectionWithPreviousStation, Section sectionWithNextStation) {
+            sectionWithPreviousStation.changeDownStation(sectionWithNextStation.getDownStation());
+            sectionWithPreviousStation.calculateDistanceWhenRemove(sectionWithNextStation);
+            removeSection(sectionWithNextStation);
     }
 
     private Optional<Section> findSectionWithPreviousStation(Station station) {
