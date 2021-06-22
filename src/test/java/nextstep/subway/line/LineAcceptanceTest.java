@@ -160,7 +160,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회(String createdLocationUri) {
+    public static ExtractableResponse<Response> 지하철_노선_조회(String createdLocationUri) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()

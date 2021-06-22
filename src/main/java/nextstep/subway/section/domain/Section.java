@@ -60,31 +60,33 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public void compareDistance(Distance distance) {
-        this.distance.compareDistance(distance);
-    }
-
-    public Distance minusDistance(Distance distance) {
-        return this.distance.minusDistance(distance);
-    }
-
-    public void upStationAfterAdd(Section newSection) {
+    public void updateUpStation(Section newSection) {
         Distance distance = newSection.distance();
-        compareDistance(distance);
         updateUpStation(newSection.downStation());
-        updateDistance(minusDistance(distance));
+        updateDistance(this.distance.minusDistance(distance));
     }
 
-    public void downStationBeforeAdd(Section newSection) {
+    public void updateDownStation(Section newSection) {
         Distance distance = newSection.distance();
-        compareDistance(distance);
         updateDownStation(newSection.upStation());
-        updateDistance(minusDistance(distance));
+        updateDistance(this.distance.minusDistance(distance));
     }
 
-    public void betweenSectionDelete(Section deleteSection) {
+    public void deleteBetweenSection(Section deleteSection) {
         distance = distance.plusDistance(deleteSection.distance());
         this.updateDownStation(deleteSection.downStation());
+    }
+
+    public void clearLine() {
+        this.line = null;
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return this.upStation.equals(section.upStation);
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return this.downStation.equals(section.downStation);
     }
 
     public Long id() {

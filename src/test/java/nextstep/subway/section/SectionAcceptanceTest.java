@@ -6,11 +6,16 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.line.LineAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +51,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         지하철_구간_추가됨(response);
+        지하철_노선에_구간_순서_정렬됨(Arrays.asList(서울역, 사당역, 안산역), 사호선);
     }
 
     @DisplayName("새로운 상행 역 종점으로 시작되는 지하철 구간을 추가한다.")
@@ -59,6 +65,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         지하철_구간_추가됨(response);
+        지하철_노선에_구간_순서_정렬됨(Arrays.asList(의정부역, 서울역, 안산역), 사호선);
     }
 
     @DisplayName("하행 역 이전 위치에 지하철 구간을 추가한다. - 하행 역 기준")
@@ -72,6 +79,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         지하철_구간_추가됨(response);
+        지하철_노선에_구간_순서_정렬됨(Arrays.asList(서울역, 사당역, 안산역), 사호선);
     }
 
     @DisplayName("하행 역 다음 위치에 새로운 지하철 종점 구간을 추가한다.")
@@ -85,6 +93,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         지하철_구간_추가됨(response);
+        지하철_노선에_구간_순서_정렬됨(Arrays.asList(서울역, 안산역, 오이도역), 사호선);
     }
 
     @DisplayName("지하철 구간을 추가 실패 - 이미 등록 된 구간 추가.")
@@ -137,6 +146,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         지하철_구간_삭제됨(response);
+        지하철_노선에_구간_순서_정렬됨(Arrays.asList(안산역, 오이도역), 사호선);
     }
 
     @DisplayName("구간과 구간 사이의 구간을 삭제한다.")
@@ -150,6 +160,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         지하철_구간_삭제됨(response);
+        지하철_노선에_구간_순서_정렬됨(Arrays.asList(서울역, 오이도역), 사호선);
     }
 
     @DisplayName("마지막 구간을 삭제한다.")
@@ -163,7 +174,42 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         지하철_구간_삭제됨(response);
+        지하철_노선에_구간_순서_정렬됨(Arrays.asList(서울역, 안산역), 사호선);
     }
+
+    @DisplayName("구간을 삭제 실패 - 기존에 없는 구간 삭제 할 경우")
+    @Test
+    void deleteNotExistsSection() {
+        //given
+        지하철_구간_추가되어_있음(안산역, 오이도역, 50);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(사호선, Long.toString(사당역));
+
+        //then
+        지하철_구간_삭제_실패(response);
+    }
+
+    @DisplayName("구간을 삭제 실패 - 기존에 구간이 하나일 때 상행역을 삭제 할 경우")
+    @Test
+    void deleteSectionUpStationFailByOneSection() {
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(사호선, Long.toString(서울역));
+
+        //then
+        지하철_구간_삭제_실패(response);
+    }
+
+    @DisplayName("구간을 삭제 실패 - 기존에 구간이 하나일 때 하행역을 삭제 할 경우")
+    @Test
+    void deleteSectionDownStationFailByOneSection() {
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(사호선, Long.toString(안산역));
+
+        //then
+        지하철_구간_삭제_실패(response);
+    }
+
 
     public static ExtractableResponse<Response> 지하철_구간_추가(String lineId, SectionRequest section) {
         return RestAssured.given().log().all()
@@ -200,5 +246,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_구간_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void 지하철_노선에_구간_순서_정렬됨(List<Long> stationIds, String lineId) {
+        ExtractableResponse<Response> response = 지하철_노선_조회("/lines/" + lineId);
+        List<Long> resultStationIds = response.jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(resultStationIds).containsExactlyElementsOf(stationIds);
+    }
+
+    private void 지하철_구간_삭제_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

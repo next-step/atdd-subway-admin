@@ -67,8 +67,8 @@ public class Sections {
     public void toSection(Section section) {
         validateStationNoneMatch(section);
         validateStationAllMatch(section);
-        upStationAfterAddIfExists(section);
-        downStationBeforeAddIfExists(section);
+        updateUpStationIfExists(section);
+        updateDownStationIfExists(section);
 
         this.sections.add(section);
     }
@@ -76,7 +76,7 @@ public class Sections {
     public void deleteSection(Station deleteStation) {
         validateStationNoneMatch(deleteStation);
         validateStationsLength();
-        sectionDelete(deleteStation);
+        updateSectionByRemove(deleteStation);
     }
 
     private void validateStationNoneMatch(Section section) {
@@ -87,29 +87,29 @@ public class Sections {
     }
 
     private void validateStationAllMatch(Section section) {
-        boolean matchedUpStation = this.stations().stream()
+        boolean isMatchUpStation = this.stations().stream()
                 .anyMatch(station -> station.equals(section.upStation()));
 
-        boolean matchedDownStation = this.stations().stream()
+        boolean isMatchDownStation = this.stations().stream()
                 .anyMatch(station -> station.equals(section.downStation()));
 
-        if (matchedUpStation && matchedDownStation) {
+        if (isMatchUpStation && isMatchDownStation) {
             throw new SectionCreateFailException(ALREADY_EXISTS_SECTION);
         }
     }
 
-    private void upStationAfterAddIfExists(Section newSection) {
+    private void updateUpStationIfExists(Section newSection) {
         sections.stream()
-                .filter(oriSection -> oriSection.upStation().equals(newSection.upStation()))
+                .filter(oriSection -> oriSection.isSameUpStation(newSection))
                 .findFirst()
-                .ifPresent(oriSection -> oriSection.upStationAfterAdd(newSection));
+                .ifPresent(oriSection -> oriSection.updateUpStation(newSection));
     }
 
-    private void downStationBeforeAddIfExists(Section newSection) {
+    private void updateDownStationIfExists(Section newSection) {
         sections.stream()
-                .filter(oriSection -> oriSection.downStation().equals(newSection.downStation()))
+                .filter(oriSection -> oriSection.isSameDownStation(newSection))
                 .findFirst()
-                .ifPresent(oriSection -> oriSection.downStationBeforeAdd(newSection));
+                .ifPresent(oriSection -> oriSection.updateDownStation(newSection));
     }
 
     private void validateStationNoneMatch(Station deleteStation) {
@@ -125,38 +125,41 @@ public class Sections {
         }
     }
 
-    private void sectionDelete(Station deleteStation) {
-        Optional<Section> sameUpStationSection = this.sections.stream()
-                .filter(section -> section.upStation().equals(deleteStation))
-                .findFirst();
+    private void updateSectionByRemove(Station deleteStation) {
+        Section sameUpStationSection = sameUpStationSection(deleteStation);
+        Section sameDownStationSection = sameDownStationSection(deleteStation);
 
-        Optional<Section> sameDownStationSection = this.sections.stream()
-                .filter(section -> section.downStation().equals(deleteStation))
-                .findFirst();
+        if (sameUpStationSection != null && sameDownStationSection != null) {
+            sameDownStationSection.deleteBetweenSection(sameUpStationSection);
+            sections.remove(sameUpStationSection);
+            return;
+        }
 
-        deleteIfFirstSection(sameUpStationSection, sameDownStationSection);
-        deleteIfBetweenSection(sameUpStationSection, sameDownStationSection);
-        deleteIfLastSection(sameUpStationSection, sameDownStationSection);
-    }
+        if (sameDownStationSection != null) {
+            removeSection(sameDownStationSection);
+        }
 
-    private void deleteIfFirstSection(Optional<Section> sameUpStationSection, Optional<Section> sameDownStationSection) {
-        if ((sameUpStationSection.isPresent()) && (!sameDownStationSection.isPresent())) {
-            sections.remove(sameUpStationSection.get());
+        if (sameUpStationSection != null) {
+            removeSection(sameUpStationSection);
         }
     }
 
-    private void deleteIfBetweenSection(Optional<Section> sameUpStationSection, Optional<Section> sameDownStationSection) {
-        if (sameUpStationSection.isPresent() && sameDownStationSection.isPresent()) {
-            Section changeSection = sameUpStationSection.get();
-            Section deleteSection = sameDownStationSection.get();
-            changeSection.betweenSectionDelete(deleteSection);
-            sections.remove(deleteSection);
-        }
+    private Section sameUpStationSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.upStation().equals(station))
+                .findFirst()
+                .orElse(null);
     }
 
-    private void deleteIfLastSection(Optional<Section> sameUpStationSection, Optional<Section> sameDownStationSection) {
-        if ((!sameUpStationSection.isPresent()) && (sameDownStationSection.isPresent())) {
-            sections.remove(sameDownStationSection.get());
-        }
+    private Section sameDownStationSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.downStation().equals(station))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void removeSection(Section section) {
+        sections.remove(section);
+        section.clearLine();
     }
 }
