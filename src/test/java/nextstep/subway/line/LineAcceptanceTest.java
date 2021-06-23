@@ -19,11 +19,16 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.ui.LineController;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    String upStationName = "강남역";
+
+    String downStationName = "역삼역";
 
     Long upStationId;
 
@@ -34,8 +39,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        upStationId = postStation(new StationRequest("강남역")).getId();
-        downStationId = postStation(new StationRequest("역삼역")).getId();
+        upStationId = postStation(new StationRequest(upStationName)).getId();
+        downStationId = postStation(new StationRequest(downStationName)).getId();
     }
 
     /**
@@ -62,9 +67,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.body().as(Line.class))
+        LineResponse line = response.body().as(LineResponse.class);
+        assertThat(line)
             .hasFieldOrPropertyWithValue("name", lineName)
             .hasFieldOrPropertyWithValue("color", lineColor);
+        assertThat(line.getStations())
+            .hasSize(2)
+            .extracting(StationResponse::getId, StationResponse::getName)
+            .containsExactlyInAnyOrder(
+                tuple(upStationId, upStationName),
+                tuple(downStationId, downStationName)
+            );
         assertThat(response.header("Location"))
             .isNotBlank()
             .startsWith("/lines/");
