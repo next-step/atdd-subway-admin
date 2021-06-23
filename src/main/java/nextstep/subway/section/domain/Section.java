@@ -28,14 +28,6 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "before_section_id")
-    private Section beforeSection;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "next_section_id")
-    private Section nextSection;
-
     protected Section() {
     }
 
@@ -68,47 +60,33 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    private void updateBeforeSection(Section beforeSection) {
-        this.beforeSection = beforeSection;
-    }
-
-    private void updateNextSection(Section nextSection) {
-        this.nextSection = nextSection;
-    }
-    public void compareDistance(Distance distance) {
-        this.distance.compareDistance(distance);
-    }
-
-    public Distance minusDistance(Distance distance) {
-        return this.distance.minusDistance(distance);
-    }
-
-    public void upStationBeforeAdd(Section newSection) {
-        updateBeforeSection(newSection);
-        newSection.updateNextSection(this);
-    }
-
-    public void upStationAfterAdd(Section newSection) {
+    public void updateUpStation(Section newSection) {
         Distance distance = newSection.distance();
-        compareDistance(distance);
         updateUpStation(newSection.downStation());
-        updateDistance(minusDistance(distance));
-        updateBeforeSection(newSection);
-        newSection.updateNextSection(this);
+        updateDistance(this.distance.minusDistance(distance));
     }
 
-    public void downStationBeforeAdd(Section newSection) {
+    public void updateDownStation(Section newSection) {
         Distance distance = newSection.distance();
-        compareDistance(distance);
         updateDownStation(newSection.upStation());
-        updateDistance(minusDistance(distance));
-        newSection.updateBeforeSection(this);
-        updateNextSection(newSection);
+        updateDistance(this.distance.minusDistance(distance));
     }
 
-    public void downStationAfterAdd(Section newSection) {
-        newSection.updateBeforeSection(this);
-        updateNextSection(newSection);
+    public void deleteBetweenSection(Section deleteSection) {
+        distance = distance.plusDistance(deleteSection.distance());
+        this.updateDownStation(deleteSection.downStation());
+    }
+
+    public void clearLine() {
+        this.line = null;
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return this.upStation.equals(section.upStation);
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return this.downStation.equals(section.downStation);
     }
 
     public Long id() {
@@ -125,13 +103,5 @@ public class Section extends BaseEntity {
 
     public Station downStation() {
         return downStation;
-    }
-
-    public Section beforeSection() {
-        return beforeSection;
-    }
-
-    public Section nextSection() {
-        return nextSection;
     }
 }

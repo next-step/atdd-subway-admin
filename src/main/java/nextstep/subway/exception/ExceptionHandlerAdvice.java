@@ -21,4 +21,9 @@ public class ExceptionHandlerAdvice {
     public ResponseEntity handleSectionCreateFailException(SectionCreateFailException e) {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(SectionDeleteFailException.class)
+    public ResponseEntity handleSectionDeleteFailException(SectionDeleteFailException e) {
+        return ResponseEntity.badRequest().build();
+    }
 }

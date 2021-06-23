@@ -27,14 +27,19 @@ public class Distance {
         }
     }
 
-    public void compareDistance(Distance compareDistance) {
+    public Distance minusDistance(Distance minusDistance) {
+        compareDistance(minusDistance);
+        return new Distance(this.distance - minusDistance.distance);
+    }
+
+    public Distance plusDistance(Distance plusDistance) {
+        return new Distance(this.distance + plusDistance.distance);
+    }
+
+    private void compareDistance(Distance compareDistance) {
         if (this.distance <= compareDistance.distance) {
             throw new SectionCreateFailException(DISTANCE_TO_LONG_MESSAGE);
         }
-    }
-
-    public Distance minusDistance(Distance minusDistance) {
-        return new Distance(this.distance - minusDistance.distance);
     }
 
     public int distance() {
