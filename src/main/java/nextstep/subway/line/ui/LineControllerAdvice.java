@@ -21,7 +21,7 @@ public class LineControllerAdvice {
         e.printStackTrace();
         String exceptionMessage = e.getMessage();
         LineExceptionResponse response = null;
-        if (exceptionMessage.contains("Unique index or primary key violation")) {
+        if (exceptionMessage != null && exceptionMessage.contains("Unique index or primary key violation")) {
             response = new LineExceptionResponse("요청하신 이름이 이미 존재하여 처리할 수 없습니다.");
         }
         return response;
