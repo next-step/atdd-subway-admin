@@ -15,14 +15,14 @@ import static java.util.stream.Collectors.toList;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    private List<Section> values = new ArrayList<>();
 
     public void add(Section section) {
-        this.sections.add(section);
+        this.values.add(section);
     }
 
     public List<Station> toStations() {
-        return sections.stream()
+        return values.stream()
                 .map(Section::toStation)
                 .flatMap(Collection::stream)
                 .distinct()
