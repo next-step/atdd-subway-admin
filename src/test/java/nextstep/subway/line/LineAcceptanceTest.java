@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
     private final int 기본_역간_거리 = 30;
     private StationResponse 강남역;
@@ -98,7 +98,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LinesResponse expectedResult = new LinesResponse(response.jsonPath().getList("lineResponses", LineResponse.class));
 
         // then
-        assertThat(expectedResult.size()).isEqualTo(0);
+        assertThat(expectedResult.size()).isZero();
         assertThat(expectedResult.isEmpty()).isTrue();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -131,7 +131,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LinesResponse expectedResult = new LinesResponse(response.jsonPath().getList("lineResponses", LineResponse.class));
 
         // then
-        assertThat(expectedResult.size()).isEqualTo(0);
+        assertThat(expectedResult.size()).isZero();
         assertThat(expectedResult.isEmpty()).isTrue();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
