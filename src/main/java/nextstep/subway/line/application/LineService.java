@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import javax.persistence.EntityNotFoundException;
+
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -30,27 +31,25 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll()
-            .stream()
-            .map(LineResponse::of)
-            .collect(Collectors.toList());
+                .stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLineBy(Long id) {
-        Line line = lineRepository
-            .findById(id)
-            .orElseThrow(EntityNotFoundException::new);
-
-        return LineResponse.of(line);
+        return lineRepository
+                .findById(id)
+                .map(LineResponse::of)
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     public LineResponse updateLineBy(Long id, LineRequest lineRequest) {
-        Line line = lineRepository
-            .findById(id)
-            .orElseThrow(EntityNotFoundException::new)
-            .getUpdatedLineBy(lineRequest);
-
-        return LineResponse.of(line);
+        return lineRepository
+                .findById(id)
+                .map(it -> it.getUpdatedLineBy(lineRequest))
+                .map(LineResponse::of)
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     public void deleteStationBy(Long id) {
