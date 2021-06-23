@@ -181,7 +181,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선_수정_성공() {
         // given
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
-        Long savedId = ExtractableResponse<Response>Util.extractIdInResponse(createResponse);
+        Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
 
         // when
         LineRequest updateRequest = new LineRequest("1호선", "0000FF");
