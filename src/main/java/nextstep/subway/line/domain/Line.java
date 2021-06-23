@@ -1,8 +1,8 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.lineStation.domain.LineStation;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -21,11 +21,13 @@ public class Line extends BaseEntity {
 
     private String color;
 
+/*
     @OneToMany(mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
+*/
 
-   /* @OneToMany(mappedBy = "line")
-    private List<LineStation> lineStations = new ArrayList<>();*/
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -38,7 +40,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.sections.add(section);
+        this.sections.initSections(section);
     }
 
     public void update(Line line) {
@@ -46,7 +48,7 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public void addSection(Section section) {
+/*    public void addSectionOld(Section section) {
         this.sections.stream()
                 .filter(oldSection -> section.getUpStation() == oldSection.getUpStation() && oldSection.getDistance() > section.getDistance())
                 .findFirst()
@@ -55,7 +57,7 @@ public class Line extends BaseEntity {
                     sections.add(new Section(section.getDownStation(), oldSection.getDownStation(), oldSection.getDistance()-section.getDistance()));
                     sections.remove(oldSection);
                 });
-    }
+    }*/
 
     public Long getId() {
         return id;
@@ -69,7 +71,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 

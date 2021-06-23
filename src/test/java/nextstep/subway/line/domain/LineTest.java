@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import static nextstep.subway.common.Constants.SECOND_LINE_COLOR;
 import static nextstep.subway.common.Constants.SECOND_LINE_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class LineTest {
 
@@ -21,7 +20,7 @@ class LineTest {
 
         //when
         Line line = new Line(SECOND_LINE_NAME,SECOND_LINE_COLOR, new Section(강남역, 잠실역, 10));
-        line.addSection(new Section(강남역, 역삼역, 5));
+        line.getSections().addSection(new Section(강남역, 역삼역, 5));
 
         //then
         assertThat(line.getStations()).containsExactly(강남역, 역삼역, 잠실역);
@@ -37,12 +36,17 @@ class LineTest {
         Line line = new Line(SECOND_LINE_NAME,SECOND_LINE_COLOR, new Section(강남역, 잠실역, 10));
 
         //when
-        line.addSection(new Section(강남역, 역삼역, 5));
+        line.getSections().addSection(new Section(강남역, 역삼역, 5));
+//        line.addSectionOld(new Section(강남역, 역삼역, 5));
 
         //then
         assertThat(line.getStations()).containsExactly(강남역, 역삼역, 잠실역);
-        assertThat(line.getSections().stream()
+        /*assertThat(line.getSections().stream()
                 .filter(section -> section.getUpStation().getName().equals("강남역"))
-                .findFirst().get().getDistance()).isEqualTo(5);
+                .findFirst().get().getDistance()).isEqualTo(5);*/
+        line.getSections().forEach(section -> {
+            if (section.getUpStation().getName().equals("강남역"))
+                assertThat(section.getDistance()).isEqualTo(5);
+        });
     }
 }

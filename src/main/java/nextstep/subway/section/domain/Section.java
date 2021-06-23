@@ -5,7 +5,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.lang.reflect.Array;
 import java.util.*;
 
 @Entity
@@ -44,7 +43,7 @@ public class Section extends BaseEntity {
 
     public void toLine(Line line) {
         this.line = line;
-        line.addSection(this);
+        line.getSections().addSection(this);
     }
 
     public List<Station> getStations() {

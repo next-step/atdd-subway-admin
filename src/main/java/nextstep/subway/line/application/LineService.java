@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -73,11 +74,11 @@ public class LineService {
     }
 
     public void deleteLineById(Long id) {
-        List<Section> sections = lineRepository.findById(id)
+        Sections sections = lineRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("삭제할 Sections가 없습니다.")).getSections();
-        for (Section section : sections) {
+        sections.forEach(section -> {
             sectionRepository.delete(section);
-        }
+        });
         lineRepository.deleteById(id);
     }
 }
