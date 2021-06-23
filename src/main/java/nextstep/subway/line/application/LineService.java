@@ -51,7 +51,7 @@ public class LineService {
         Line line = lineRepository.findById(id)
             .orElseThrow(LineNotFoundException::new);
         line.update(request.toLine());
-        return LineResponse.of(lineRepository.save(line));
+        return LineResponse.of(line);
     }
 
     public void deleteById(Long id) throws LineNotFoundException {
