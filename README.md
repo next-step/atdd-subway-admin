@@ -35,7 +35,7 @@
 - [ ] 상행역부터 하행역까지 순서대로 읽어오는 방법 고민후 적용
 - [x] LineService 내 Repository 관련 참조 변수에 final 키워드 붙이기
 - [ ] LineService 내 Exception Throw 부분 중복 제거
-- [ ] StationResponse의 팩토리메소드명 변경
+- [x] StationResponse의 팩토리 메소드명 변경
 ---
 
 # Step1 - 지하철 노선 관리
