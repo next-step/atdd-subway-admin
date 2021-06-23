@@ -120,6 +120,59 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_구간_등록_실패(response);
 	}
 
+	@DisplayName("지하철 노선에 지하철역 중간의 역을 제거한다.")
+	@Test
+	void 지하철_노선에_지하철역_중간의_역을_제거한다() {
+		//when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(lineNumber2Id, gangNamStationId);
+		//then
+		지하철_노선에_지하철역_제거_성공(response);
+		ExtractableResponse<Response> lineResponse = LineAcceptanceTest.단일_지하철_노선을_조회한다(lineNumber2Id);
+		지하철_노선에_구간_포함됨(lineResponse, Arrays.asList("성수역", "사당역"));
+	}
+
+	@DisplayName("지하철 노선에 지하철역 가장 앞의 역을 제거한다.")
+	@Test
+	void 지하철_노선에_지하철역_가장_앞의_역을_제거한다() {
+		//when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(lineNumber2Id, sungSuStationId);
+		//then
+		지하철_노선에_지하철역_제거_성공(response);
+		ExtractableResponse<Response> lineResponse = LineAcceptanceTest.단일_지하철_노선을_조회한다(lineNumber2Id);
+		지하철_노선에_구간_포함됨(lineResponse, Arrays.asList("강남역", "사당역"));
+	}
+
+	@DisplayName("지하철 노선에 지하철역 가장 뒤의 역을 제거한다.")
+	@Test
+	void 지하철_노선에_지하철역_가장_뒤의_역을_제거한다() {
+		//when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(lineNumber2Id, saDangStationId);
+		//then
+		지하철_노선에_지하철역_제거_성공(response);
+		ExtractableResponse<Response> lineResponse = LineAcceptanceTest.단일_지하철_노선을_조회한다(lineNumber2Id);
+		지하철_노선에_구간_포함됨(lineResponse, Arrays.asList("성수역", "강남역"));
+	}
+
+	@DisplayName("지하철 노선에 지하철역 존재하지않는 역을 제거한다. - 제거 실패")
+	@Test
+	void 지하철_노선에_지하철역_존재하지않는_역을_제거한다_제거_실패() {
+		//when
+		Long seoulUnivStationId = StationAcceptanceTest.지하철역_생성되어_있음(new StationRequest("서울대입구역"));
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(lineNumber2Id, seoulUnivStationId);
+		//then
+		지하철_노선에_지하철역_제거_실패(response);
+	}
+
+	@DisplayName("등록된 구간이 1개일 때 제거할 수 없음")
+	@Test
+	void 등록된_구간이_1개일_때_제거할_수_없음() {
+		//when
+		ExtractableResponse<Response> sungSuDeleteResponse = 지하철_노선에_지하철역_제거_요청(lineNumber2Id, sungSuStationId);
+		ExtractableResponse<Response> saDangDeleteResponse = 지하철_노선에_지하철역_제거_요청(lineNumber2Id, saDangStationId);
+		//then
+		지하철_노선에_지하철역_제거_성공(sungSuDeleteResponse);
+		지하철_노선에_지하철역_제거_실패(saDangDeleteResponse);
+	}
 
 	private void 지하철_노선에_구간_등록_실패(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -135,12 +188,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.extract();
 	}
 
+	private void 지하철_노선에_지하철역_제거_성공(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	private void 지하철_노선에_지하철역_제거_실패(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	ExtractableResponse<Response> 지하철_노선에_지하철역_제거_요청(Long lineId, Long stationId) {
+		return RestAssured.given().log().all()
+			.when()
+			.delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+			.then().log().all()
+			.extract();
+	}
+
 	public void 지하철_노선에_구간_포함됨(ExtractableResponse<Response> response, List<String> expectedStations) {
 		List<Station> stations = response.body().jsonPath().getList("stations", Station.class);
 		List<String> actualStations = stations.stream().map(station -> station.getName()).collect(Collectors.toList());
-		for (int index = 0; index < actualStations.size(); index++) {
-			assertThat(actualStations.get(index)).isEqualTo(expectedStations.get(index));
-		}
+		assertThat(expectedStations).containsAll(actualStations);
 	}
 
 }

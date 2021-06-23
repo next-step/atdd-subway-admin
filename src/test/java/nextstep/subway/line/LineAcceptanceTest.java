@@ -149,7 +149,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return response;
 	}
 
-	ExtractableResponse<Response> 단일_지하철_노선을_조회한다(Long id) {
+	public static ExtractableResponse<Response> 단일_지하철_노선을_조회한다(Long id) {
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.when()
 			.get("/lines/" + id)
