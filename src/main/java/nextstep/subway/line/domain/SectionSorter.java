@@ -6,19 +6,11 @@ import static java.util.stream.Collectors.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Stream;
 
 import nextstep.subway.line.exception.TerminusNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 public class SectionSorter {
-
-    public static Set<Station> getStations(List<Section> sections) {
-        return sections.stream()
-            .flatMap(s -> Stream.of(s.upStation(), s.downStation()))
-            .collect(toSet());
-    }
 
     public static List<Station> getStationsInOrder(List<Section> sections) {
         Map<Station, Station> relations = getRelations(sections);

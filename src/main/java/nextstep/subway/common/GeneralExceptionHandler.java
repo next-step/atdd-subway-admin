@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import nextstep.subway.line.exception.CannotRemoveException;
 import nextstep.subway.line.exception.DuplicateLineException;
 import nextstep.subway.line.exception.InvalidSectionException;
 import nextstep.subway.line.exception.NoSuchLineException;
@@ -37,6 +38,12 @@ public class GeneralExceptionHandler {
     @ExceptionHandler(InvalidSectionException.class)
     public ResponseEntity<Void> invalidSectionException(Exception e) {
         log.debug("등록 요청 된 구간에 오류가 있습니다.", e);
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(CannotRemoveException.class)
+    public ResponseEntity<Void> cannotRemoveException(Exception e) {
+        log.debug("구간을 삭제하는데 실패했습니다.", e);
         return ResponseEntity.badRequest().build();
     }
 }

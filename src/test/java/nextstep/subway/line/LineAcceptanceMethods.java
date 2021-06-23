@@ -40,10 +40,15 @@ public class LineAcceptanceMethods {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
+        long lineId = createResponse.jsonPath().getLong("id");
+        return 지하철_노선_조회_요청(lineId);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
         ExtractableResponse<Response> response = RestAssured
             .given().log().all()
             .accept(MediaType.APPLICATION_JSON_VALUE)
-            .when().get("/lines/{id}", createResponse.jsonPath().getLong("id"))
+            .when().get("/lines/{id}", lineId)
             .then().log().all().extract();
         return response;
     }

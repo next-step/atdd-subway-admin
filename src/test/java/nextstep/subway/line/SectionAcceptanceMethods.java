@@ -29,6 +29,14 @@ public class SectionAcceptanceMethods {
         return response;
     }
 
+    public static ExtractableResponse<Response> 지하철_구간_삭제_요청(StationResponse station) {
+        ExtractableResponse<Response> response = RestAssured
+            .given().log().all()
+            .when().delete("/lines/{lineId}/sections?stationId={stationId}", 신분당선.getId(), station.getId())
+            .then().log().all().extract();
+        return response;
+    }
+
     public static void 지하철_구간_생성됨(ExtractableResponse<Response> response, StationResponse... stationsInOrder) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
@@ -39,6 +47,21 @@ public class SectionAcceptanceMethods {
     }
 
     public static void 지하철_구간_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static void 지하철_구간_삭제됨(ExtractableResponse<Response> response, StationResponse... stationsInOrder) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> lineResponse
+            = LineAcceptanceMethods.지하철_노선_조회_요청(신분당선.getId());
+
+        List<StationResponse> actual = lineResponse.jsonPath().getList("stations", StationResponse.class);
+        List<StationResponse> expected = new ArrayList<>(Arrays.asList(stationsInOrder));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    public static void 지하철_구간_삭제_실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

@@ -34,14 +34,24 @@ public class Section extends BaseEntity {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
-        validateSection(upStation, downStation, distance);
+        this(null, null, upStation, downStation, distance);
+    }
 
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this(null, line, upStation, downStation, distance);
+    }
+
+    Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        validateArguments(upStation, downStation, distance);
+
+        this.id = id;
+        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    private void validateSection(Station upStation, Station downStation, int distance) {
+    private void validateArguments(Station upStation, Station downStation, int distance) {
         if (Objects.isNull(upStation) || Objects.isNull(downStation)) {
             throw new IllegalArgumentException("양 끝 Station이 반드시 존재해야 합니다.");
         }
@@ -59,30 +69,62 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public int distance() {
+        return distance;
+    }
+
+    public boolean contains(Station station) {
+        return upStation == station
+                || downStation == station;
+    }
+
     public boolean isLongerThan(Section section) {
         return this.distance > section.distance;
     }
 
-    public boolean mergeable(Section section) {
+    public boolean isMergeableWith(Section section) {
+        return upStation == section.downStation
+                ^ downStation == section.upStation;
+    }
+
+    public Section mergeWith(Section section) {
+        validateMergeable(section);
+
+        if (this.upStation == section.downStation) {
+            return new Section(this.line,
+                section.upStation, this.downStation, this.distance + section.distance);
+        }
+
+        return new Section(this.line,
+            this.upStation, section.downStation, this.distance + section.distance);
+    }
+
+    private void validateMergeable(Section section) {
+        if (!this.isMergeableWith(section)) {
+            throw new InvalidSectionException("병합 조건을 만족하지 않습니다.");
+        }
+    }
+
+    public boolean matchesOnlyOneEndOf(Section section) {
         return upStation == section.upStation
                 ^ downStation == section.downStation;
     }
 
-    public Section reducedBy(Section section) {
-        validateReducible(section);
+    public Section shiftedBy(Section section) {
+        validateShift(section);
 
         if (this.upStation == section.upStation) {
-            return new Section(
+            return new Section(this.line,
                 section.downStation, this.downStation, this.distance - section.distance);
         }
 
-        return new Section(
+        return new Section(this.line,
             this.upStation, section.upStation, this.distance - section.distance);
     }
 
-    private void validateReducible(Section section) {
-        if (!this.mergeable(section)) {
-            throw new InvalidSectionException("구간을 축소하려면 병합 가능해야 합니다");
+    private void validateShift(Section section) {
+        if (!this.matchesOnlyOneEndOf(section)) {
+            throw new InvalidSectionException("하나의 종단점만 일치해야 합니다.");
         }
 
         if (!this.isLongerThan(section)) {

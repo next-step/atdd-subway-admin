@@ -90,4 +90,10 @@ public class LineService {
         return lineRepository.findById(id)
             .orElseThrow(() -> new NoSuchLineException("존재하지 않는 노선 ID 입니다."));
     }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = getLineById(lineId);
+        Station station = getStationById(stationId);
+        line.removeStation(station);
+    }
 }

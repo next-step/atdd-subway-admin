@@ -1,23 +1,29 @@
 package nextstep.subway.line.domain;
 
-import static nextstep.subway.line.domain.SectionSorter.*;
+import static java.util.stream.Collectors.*;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.line.exception.CannotRemoveException;
 import nextstep.subway.line.exception.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.NoSuchStationException;
 
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    private static final int REDUCIBLE_COUNT = 2;
+    private static final int SIZE_LOWER_LIMIT = 1;
+
+    @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Section> values = new LinkedList<>();
 
     protected Sections() {
@@ -31,6 +37,10 @@ public class Sections {
         return values.contains(section);
     }
 
+    public boolean isReducible() {
+        return values.size() <= REDUCIBLE_COUNT;
+    }
+
     public void addSection(Section section) {
         validateSection(section);
 
@@ -40,11 +50,11 @@ public class Sections {
 
     private void updateSection(Section section) {
         values.stream()
-            .filter(s -> s.mergeable(section))
+            .filter(s -> s.matchesOnlyOneEndOf(section))
             .findAny()
             .ifPresent(oldSection -> {
                 values.remove(oldSection);
-                values.add(oldSection.reducedBy(section));
+                values.add(oldSection.shiftedBy(section));
             });
     }
 
@@ -59,8 +69,49 @@ public class Sections {
     }
 
     private boolean allOrNothingMatches(Section section) { // XOR Existence Check
-        Set<Station> stations = getStations(values);
+        Set<Station> stations = getStations();
         return stations.contains(section.upStation())
                 == stations.contains(section.downStation());
+    }
+
+    public void removeStation(Station station) {
+        validateRemovable(station);
+
+        Sections sections = new Sections();
+        values.stream()
+            .filter(s -> s.contains(station))
+            .forEach(sections::addSection);
+
+        values.add(sections.reduce());
+        values.removeAll(sections.values);
+    }
+
+    private Section reduce() {
+        validateReducible();
+        return values.stream()
+            .reduce(Section::mergeWith)
+            .orElseThrow(() -> new CannotRemoveException("구간 축약에 실패했습니다."));
+    }
+
+    private void validateReducible() {
+        if (!isReducible()) {
+            throw new CannotRemoveException("3개 이상의 구간을 축약할 수 없습니다.");
+        }
+    }
+
+    private void validateRemovable(Station station) {
+        if (!getStations().contains(station)) {
+            throw new NoSuchStationException("노선에 해당 지하철 역이 존재하지 않습니다.");
+        }
+
+        if (values.size() == SIZE_LOWER_LIMIT) {
+            throw new CannotRemoveException("마지막 남은 구간은 삭제할 수 없습니다.");
+        }
+    }
+
+    private Set<Station> getStations() {
+        return values.stream()
+            .flatMap(s -> Stream.of(s.upStation(), s.downStation()))
+            .collect(toSet());
     }
 }
