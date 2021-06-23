@@ -15,11 +15,9 @@ import io.restassured.mapper.TypeRef;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.ui.LineController;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -41,6 +39,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         super.setUp();
         upStationId = postStation(new StationRequest(upStationName)).getId();
         downStationId = postStation(new StationRequest(downStationName)).getId();
+        distance = 10;
     }
 
     /**
@@ -180,7 +179,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .hasFieldOrPropertyWithValue("id", lineResponse.getId())
             .hasFieldOrPropertyWithValue("name", lineName)
             .hasFieldOrPropertyWithValue("color", lineColor)
-            .extracting("stations").asList().hasSize(0)
+            .extracting("stations").asList().hasSize(2)
         ;
     }
 
