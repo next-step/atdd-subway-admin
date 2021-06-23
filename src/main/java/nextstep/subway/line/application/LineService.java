@@ -3,7 +3,6 @@ package nextstep.subway.line.application;
 import static java.util.stream.Collectors.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,10 +35,11 @@ public class LineService {
             StationNotFoundException,
             StationExistsAlreadyException {
         checkNameDuplication(request.getName());
+        int distance = request.getDistance();
         Station upStation = stationService.getById(request.getUpStationId());
         Station downStation = stationService.getById(request.getDownStationId());
         Line line = request.toLine();
-        line.addStations(upStation, downStation);
+        line.addStations(upStation, downStation, distance);
         return LineResponse.of(lineRepository.save(line));
     }
 

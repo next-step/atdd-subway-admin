@@ -3,14 +3,18 @@ package nextstep.subway.line.domain;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationExistsAlreadyException;
 
@@ -26,11 +30,13 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany
+    @ManyToMany(cascade = CascadeType.REMOVE)
     private final List<Station> stations = new LinkedList<>();
 
-    public Line() {
-    }
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private final List<Section> sections = new LinkedList<>();
+
+    protected Line() {}
 
     public Line(String name, String color) {
         this.name = name;
@@ -58,11 +64,14 @@ public class Line extends BaseEntity {
         return stations;
     }
 
-    public void addStations(Station upStation, Station downStation) throws StationExistsAlreadyException {
+    public Section addStations(Station upStation, Station downStation, int distance) throws StationExistsAlreadyException {
         checkStationConflict(upStation);
         checkStationConflict(downStation);
         this.stations.add(upStation);
         this.stations.add(downStation);
+        Section section = new Section(this, upStation, downStation, distance);
+        this.sections.add(section);
+        return section;
     }
 
     private void checkStationConflict(Station station) throws StationExistsAlreadyException {
