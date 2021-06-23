@@ -24,10 +24,6 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    @AssociationOverride(name = "stations", joinColumns = {@JoinColumn(name = "line_id")})
-    private Stations stations = new Stations();
-
-    @Embedded
     @AssociationOverride(name ="sections", joinColumns = {@JoinColumn(name="line_id")})
     private Sections sections = new Sections();
 
@@ -65,8 +61,6 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
-
-    public Stations getStations() { return stations; }
 
     public Sections getSections() {
         return sections;
