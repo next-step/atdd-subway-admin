@@ -87,7 +87,12 @@ public class LineController {
 
 	@DeleteMapping(value = "/{lineId}/sections")
 	public ResponseEntity deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
-		lineService.deleteSection(lineId, stationId);
+		try {
+			lineService.deleteSection(lineId, stationId);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
+
 		return ResponseEntity.ok().build();
 	}
 
