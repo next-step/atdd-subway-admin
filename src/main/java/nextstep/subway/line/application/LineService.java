@@ -12,7 +12,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -67,9 +66,7 @@ public class LineService {
 		Station downStation = stationRepository.findById(request.getDownStationId())
 			.orElseThrow(() -> new DataIntegrityViolationException("없는 역입니다."));
 
-		Section section = request.toSection(upStation, downStation, request.getDistance());
-
-		line.addSection(section);
+		line.addSection(upStation, downStation, request.getDistance());
 
 		return LineResponse.of(line);
 	}

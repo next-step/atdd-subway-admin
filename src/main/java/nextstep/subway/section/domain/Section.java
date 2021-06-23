@@ -64,7 +64,7 @@ public class Section extends BaseEntity {
 			line.deleteSection(this);
 		}
 		this.line = line;
-		line.addSection(this);
+		line.addSection(upStation, downStation, distance);
 	}
 
 	public Long getId() {
@@ -112,12 +112,13 @@ public class Section extends BaseEntity {
 		if (addedSection.isEqualToUpStation(upStation)) {
 			sections.add(addedSection);
 			sections.add(new Section(addedSection.getDownStation(), this.downStation,
-				this.distance - addedSection.getDistance()));
+				this.distance - addedSection.getDistance(), addedSection.getLine()));
 		}
 
 		if (addedSection.isEqualToDownStation(downStation)) {
 			sections.add(
-				new Section(this.upStation, addedSection.getUpStation(), this.distance - addedSection.getDistance()));
+				new Section(this.upStation, addedSection.getUpStation(), this.distance - addedSection.getDistance(),
+					addedSection.getLine()));
 			sections.add(addedSection);
 		}
 

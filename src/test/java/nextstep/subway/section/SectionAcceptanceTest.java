@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("구간 사이에 새로운 구간을 추가한다.(시작역이 같은 경우)")
 	@Test
 	void addSection1() {
-		ExtractableResponse<Response> response = 경부고속선_노선에_구간_등록_요청(서울역.getId(), 광명역.getId(), 5);
+		ExtractableResponse<Response> response = 노선에_구간_등록_요청(경부고속선.getId(), 서울역.getId(), 광명역.getId(), 5);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -60,7 +61,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("구간 사이에 새로운 구간을 추가한다.(종료역이 같은 경우)")
 	@Test
 	void addSection2() {
-		ExtractableResponse<Response> response = 경부고속선_노선에_구간_등록_요청(광명역.getId(), 대전역.getId(), 5);
+		ExtractableResponse<Response> response = 노선에_구간_등록_요청(경부고속선.getId(), 광명역.getId(), 대전역.getId(), 5);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -73,7 +74,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("새로운 구간을 상행에 추가한다.")
 	@Test
 	void addSection3() {
-		ExtractableResponse<Response> response = 경부고속선_노선에_구간_등록_요청(행신역.getId(), 서울역.getId(), 5);
+		ExtractableResponse<Response> response = 노선에_구간_등록_요청(경부고속선.getId(), 행신역.getId(), 서울역.getId(), 5);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -86,7 +87,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("새로운 구간을 하행에 추가한다.")
 	@Test
 	void addSection4() {
-		ExtractableResponse<Response> response = 경부고속선_노선에_구간_등록_요청(대전역.getId(), 동대구역.getId(), 5);
+		ExtractableResponse<Response> response = 노선에_구간_등록_요청(경부고속선.getId(), 대전역.getId(), 동대구역.getId(), 5);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -99,7 +100,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("같은 구간을 추가한다. (A-B)가 등록된 경우 (A-B)를 추가한다.")
 	@Test
 	void addSection5() {
-		ExtractableResponse<Response> response = 경부고속선_노선에_구간_등록_요청(서울역.getId(), 대전역.getId(), 5);
+		ExtractableResponse<Response> response = 노선에_구간_등록_요청(경부고속선.getId(), 서울역.getId(), 대전역.getId(), 5);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
@@ -108,7 +109,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("시작, 종료역이 하나도 같지 않은 구간을 추가한다.")
 	@Test
 	void addSection6() {
-		ExtractableResponse<Response> response = 경부고속선_노선에_구간_등록_요청(광명역.getId(), 동대구역.getId(), 5);
+		ExtractableResponse<Response> response = 노선에_구간_등록_요청(경부고속선.getId(), 광명역.getId(), 동대구역.getId(), 5);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
@@ -117,7 +118,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("기존구간보다 긴 구간을 추가한다.")
 	@Test
 	void addSection7() {
-		ExtractableResponse<Response> response = 경부고속선_노선에_구간_등록_요청(서울역.getId(), 동대구역.getId(), 15);
+		ExtractableResponse<Response> response = 노선에_구간_등록_요청(경부고속선.getId(), 서울역.getId(), 동대구역.getId(), 15);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
@@ -126,13 +127,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("같은 구간을 추가한다. (A-B)가 등록된 경우 (B-A)를 추가한다.")
 	@Test
 	void addSection8() {
-		ExtractableResponse<Response> response = 경부고속선_노선에_구간_등록_요청(대전역.getId(), 서울역.getId(), 5);
+		ExtractableResponse<Response> response = 노선에_구간_등록_요청(경부고속선.getId(), 대전역.getId(), 서울역.getId(), 5);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
 	}
 
-	private ExtractableResponse<Response> 경부고속선_노선에_구간_등록_요청(Long upStationId, Long downStationId, int distance) {
+	public static ExtractableResponse<Response> 노선에_구간_등록_요청(Long lineId, Long upStationId, Long downStationId,
+		int distance) {
 		Map<String, String> params = new HashMap<>();
 		params.put("upStationId", upStationId.toString());
 		params.put("downStationId", downStationId.toString());
@@ -142,8 +144,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when()
-			.post("/lines/{lineId}/sections", 경부고속선.getId())
+			.post("/lines/{lineId}/sections", lineId)
 			.then().log().all()
 			.extract();
+	}
+
+	public static LineResponse 노선에_구간_등록되어_있음(Long lineId, Long upStationId, Long downStationId, int distance) {
+		ExtractableResponse<Response> response = 노선에_구간_등록_요청(lineId, upStationId, downStationId, distance);
+
+		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+		return response.jsonPath().getObject(".", LineResponse.class);
 	}
 }
