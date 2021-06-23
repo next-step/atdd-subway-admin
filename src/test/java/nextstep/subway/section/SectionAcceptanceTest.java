@@ -163,9 +163,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철역_제거_실패(response);
 	}
 
-	@DisplayName("지하철 노선에 지하철역 마지막 구간의 역을 제거한다. - 제거 실패")
+	@DisplayName("등록된 구간이 1개일 때 제거할 수 없음")
 	@Test
-	void 지하철_노선에_지하철역_마지막_구간의_역을_제거한다_제거_실패() {
+	void 등록된_구간이_1개일_때_제거할_수_없음() {
 		//when
 		ExtractableResponse<Response> sungSuDeleteResponse = 지하철_노선에_지하철역_제거_요청(lineNumber2Id, sungSuStationId);
 		ExtractableResponse<Response> saDangDeleteResponse = 지하철_노선에_지하철역_제거_요청(lineNumber2Id, saDangStationId);
