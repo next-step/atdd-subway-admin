@@ -2,8 +2,9 @@ package nextstep.subway.station.application;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +15,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import nextstep.subway.ServiceTest;
+import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationGroup;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -128,7 +132,7 @@ public class StationServiceTest extends ServiceTest {
 
 		//then
 		assertThatThrownBy(() -> stationService.findStationById(존재하지않는_아이디))
-			.isInstanceOf(NoSuchElementException.class);
+			.isInstanceOf(NotFoundException.class);
 	}
 
 	@Test
@@ -220,7 +224,7 @@ public class StationServiceTest extends ServiceTest {
 
 		//then
 		assertThatThrownBy(() -> stationService.findStationById(홍대입구역_응답.getId()))
-			.isInstanceOf(NoSuchElementException.class);
+			.isInstanceOf(NotFoundException.class);
 	}
 
 	@Test
@@ -245,5 +249,21 @@ public class StationServiceTest extends ServiceTest {
 		//then
 		assertThatThrownBy(() -> stationService.deleteStationById(null값_아이디))
 			.isInstanceOf(InvalidDataAccessApiUsageException.class);
+	}
+
+	@Test
+	void 상행역_하행역_등록() {
+		//given
+		StationResponse 홍대입구역_응답 = stationService.saveStation(홍대입구역_요청);
+		StationResponse 구로디지털단지역_응답 = stationService.saveStation(구로디지털단지역_요청);
+		List<Long> 역_아이디들 = Arrays.asList(홍대입구역_응답.getId(), 구로디지털단지역_응답.getId());
+
+		//when
+		StationGroup 등록된_역들 = stationService.addUpStationAndDownStation(역_아이디들);
+
+		//then
+		assertThat(등록된_역들.stations().stream()
+			.map(Station::id)
+			.collect(Collectors.toList())).containsSequence(역_아이디들);
 	}
 }

@@ -5,19 +5,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.persistence.Embeddable;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-
-@Embeddable
 public class StationGroup {
 
-	@OneToMany
-	@JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_station_line"))
 	private List<Station> stations = new ArrayList<>();
 
-	public StationGroup() {
+	protected StationGroup() {
 	}
 
 	public StationGroup(List<Station> stations) {
@@ -52,6 +44,12 @@ public class StationGroup {
 
 	public void removeStationGroup(StationGroup stationGroup) {
 		stationGroup.stations.forEach(this::remove);
+	}
+
+	public void add(int index, Station station) {
+		if (!contains(station)) {
+			stations.add(index, station);
+		}
 	}
 
 	@Override

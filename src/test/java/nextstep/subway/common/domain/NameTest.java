@@ -1,4 +1,4 @@
-package nextstep.subway.common.vo;
+package nextstep.subway.common.domain;
 
 import static org.assertj.core.api.Assertions.*;
 

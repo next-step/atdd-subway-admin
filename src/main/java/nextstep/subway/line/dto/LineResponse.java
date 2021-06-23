@@ -3,30 +3,32 @@ package nextstep.subway.line.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import nextstep.subway.common.dto.BaseResponse;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
-public class LineResponse {
+public class LineResponse extends BaseResponse {
 	private Long id;
 	private String name;
 	private String color;
-	private List<Station> stations;
-	private LocalDateTime createdDate;
-	private LocalDateTime modifiedDate;
+	private List<StationResponse> stations;
 
 	protected LineResponse(Long id, String name, String color,
-		List<Station> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+		List<StationResponse> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+		super(createdDate, modifiedDate);
 		this.id = id;
 		this.name = name;
 		this.color = color;
 		this.stations = stations;
-		this.createdDate = createdDate;
-		this.modifiedDate = modifiedDate;
 	}
 
 	public static LineResponse of(Line line) {
-		return new LineResponse(line.id(), line.name(), line.color(), line.stations(), line.createdDate(),
+		List<StationResponse> stations = line.stationGroup().stations().stream()
+			.map(StationResponse::of)
+			.collect(Collectors.toList());
+		return new LineResponse(line.id(), line.name(), line.color(), stations, line.createdDate(),
 			line.modifiedDate());
 	}
 
@@ -42,16 +44,8 @@ public class LineResponse {
 		return color;
 	}
 
-	public List<Station> getStations() {
+	public List<StationResponse> getStations() {
 		return stations;
-	}
-
-	public LocalDateTime getCreatedDate() {
-		return createdDate;
-	}
-
-	public LocalDateTime getModifiedDate() {
-		return modifiedDate;
 	}
 
 	@Override
@@ -64,12 +58,11 @@ public class LineResponse {
 		}
 		LineResponse that = (LineResponse)object;
 		return Objects.equals(id, that.id) && Objects.equals(name, that.name)
-			&& Objects.equals(color, that.color) && Objects.equals(createdDate, that.createdDate)
-			&& Objects.equals(modifiedDate, that.modifiedDate);
+			&& Objects.equals(color, that.color) && Objects.equals(stations, that.stations);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, name, color, createdDate, modifiedDate);
+		return Objects.hash(id, name, color, stations);
 	}
 }

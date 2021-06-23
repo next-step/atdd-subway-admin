@@ -1,4 +1,4 @@
-package nextstep.subway.common.vo;
+package nextstep.subway.common.domain;
 
 import java.util.Objects;
 
@@ -20,11 +20,11 @@ public class Name {
 	}
 
 	private Name(String name) {
+		validateName(name);
 		this.name = name;
 	}
 
 	public static Name generate(String name) {
-		validateName(name);
 		return new Name(name);
 	}
 

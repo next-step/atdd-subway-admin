@@ -1,4 +1,4 @@
-package nextstep.subway.common.vo;
+package nextstep.subway.common.domain;
 
 import java.util.Objects;
 
@@ -20,11 +20,11 @@ public class Color {
 	}
 
 	private Color(String color) {
+		validateColor(color);
 		this.color = color;
 	}
 
 	public static Color generate(String color) {
-		validateColor(color);
 		return new Color(color);
 	}
 

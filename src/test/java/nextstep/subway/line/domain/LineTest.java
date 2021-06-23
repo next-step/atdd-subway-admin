@@ -2,8 +2,14 @@ package nextstep.subway.line.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationGroup;
 
 @DisplayName("노선 엔티티 테스트")
 public class LineTest {
@@ -13,10 +19,10 @@ public class LineTest {
 		//given
 
 		//when
-		Line 초록색_라인 = new Line("2호선", "#FFFFFF");
+		Line 이호선 = new Line("2호선", "#FFFFFF");
 
 		//then
-		assertThat(초록색_라인).isNotNull();
+		assertThat(이호선).isNotNull();
 	}
 
 	@Test
@@ -92,13 +98,74 @@ public class LineTest {
 	}
 
 	@Test
-	void 동일성() {
+	void 생성_구간_포함_및_구간_추가_없음() {
 		//given
-		Line 초록색_라인 = new Line("2호선", "#FFFFFF");
-		Line 초록색_라인_복제 = new Line("2호선", "#FFFFFF");
+		Station 상행역 = new Station("홍대입구");
+		Station 하행역 = new Station("구로디지털단지");
+		String 간격 = "100";
 
 		//when
-		boolean 동일성_결과 = 초록색_라인.equals(초록색_라인_복제);
+		Line 이호선 = new Line("2호선", "#FFFFFF", 상행역, 하행역, 간격);
+
+		//then
+		assertThat(이호선).isNotNull();
+		assertThat(이호선.sectionGroup()).isNotNull();
+		assertThat(이호선.stationGroup().stations()).containsSequence(Arrays.asList(상행역, 하행역));
+	}
+
+	@Test
+	void 생성_구간_1개_추가() {
+		//given
+		Station 상행역 = new Station("상행역");
+		Station 중간역 = new Station("중간역");
+		Station 하행역 = new Station("하행역");
+		String 간격 = "100";
+		Line 이호선 = new Line("2호선", "#FFFFFF", 상행역, 중간역, 간격);
+		Section 상행_구간 = 이호선.sectionGroup().sections().get(0);
+		Section 하행_구간 = new Section(이호선, 중간역, 하행역, 간격);
+
+		//when
+		이호선.addSection(하행_구간);
+
+		//then
+		assertThat(이호선).isNotNull();
+		assertThat(이호선.sectionGroup()).isNotNull();
+		assertThat(이호선.stationGroup().stations()).containsSequence(Arrays.asList(상행역, 중간역, 하행역));
+		assertThat(이호선.sectionGroup().sections()).containsSequence(Arrays.asList(상행_구간, 하행_구간));
+	}
+
+	@Test
+	void 생성_구간_2개_추가() {
+		//given
+		Station 상행역 = new Station("상행역");
+		Station 중상역 = new Station("중상역");
+		Station 중하역 = new Station("중하역");
+		Station 하행역 = new Station("하행역");
+		String 간격 = "100";
+		Line 이호선 = new Line("2호선", "#FFFFFF", 중상역, 중하역, 간격);
+		Section 중간_구간 = 이호선.sectionGroup().sections().get(0);
+		Section 추가할_기점_구간 = new Section(이호선, 상행역, 중상역, 간격);
+		Section 추가할_종점_구간 = new Section(이호선, 중하역, 하행역, 간격);
+
+		//when
+		이호선.addSection(추가할_기점_구간);
+		이호선.addSection(추가할_종점_구간);
+
+		//then
+		assertThat(이호선).isNotNull();
+		assertThat(이호선.sectionGroup()).isNotNull();
+		assertThat(이호선.stationGroup().stations()).containsSequence(Arrays.asList(상행역, 중상역, 중하역, 하행역));
+		assertThat(이호선.sectionGroup().sections()).containsSequence(Arrays.asList(추가할_기점_구간, 중간_구간, 추가할_종점_구간));
+	}
+
+	@Test
+	void 동일성() {
+		//given
+		Line 이호선 = new Line("2호선", "#FFFFFF");
+		Line 이호선_복제 = new Line("2호선", "#FFFFFF");
+
+		//when
+		boolean 동일성_결과 = 이호선.equals(이호선_복제);
 
 		//then
 		assertThat(동일성_결과).isTrue();
@@ -107,13 +174,13 @@ public class LineTest {
 	@Test
 	void 수정() {
 		//given
-		Line 초록색_라인 = new Line("2호선", "#FFFFFF");
-		Line 파란색_라인 = new Line("4호선", "#666666");
+		Line 이호선 = new Line("2호선", "#FFFFFF");
+		Line 사호선 = new Line("4호선", "#666666");
 
 		//when
-		초록색_라인.update(파란색_라인);
+		이호선.update(사호선);
 
 		//then
-		assertThat(초록색_라인).isEqualTo(파란색_라인);
+		assertThat(이호선).isEqualTo(사호선);
 	}
 }
