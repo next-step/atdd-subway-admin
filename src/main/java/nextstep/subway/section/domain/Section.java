@@ -89,12 +89,12 @@ public class Section {
 	}
 
 	protected void changeUpStation(final Section section) {
-		this.distance = this.distance.getDifferenceDistance(section.distance);
+		this.distance = this.distance.minusDistance(section.distance);
 		this.upStation = section.downStation;
 	}
 
 	protected void changeDownStation(final Section section) {
-		this.distance = this.distance.getDifferenceDistance(section.distance);
+		this.distance = this.distance.minusDistance(section.distance);
 		this.downStation = section.upStation;
 	}
 

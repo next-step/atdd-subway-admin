@@ -30,11 +30,11 @@ public class Distance {
 		}
 	}
 
-	public Distance getPlusDistance(Distance distance) {
+	public Distance plusDistance(Distance distance) {
 		return new Distance(this.distance + distance.distance);
 	}
 
-	public Distance getDifferenceDistance(Distance distance) {
+	public Distance minusDistance(Distance distance) {
 		int differenceDistance = this.distance - distance.distance;
 		validateDifferenceDistance(differenceDistance);
 		return new Distance(differenceDistance);
