@@ -1,12 +1,18 @@
 package nextstep.subway.line.domain;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
-
-import javax.persistence.*;
+import nextstep.subway.station.domain.StationExistsAlreadyException;
 
 @Entity
 public class Line extends BaseEntity {
@@ -21,7 +27,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @OneToMany
-    private final List<Station> stations = new ArrayList<>();
+    private final List<Station> stations = new LinkedList<>();
 
     public Line() {
     }
@@ -50,5 +56,18 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    public void addStations(Station upStation, Station downStation) throws StationExistsAlreadyException {
+        checkStationConflict(upStation);
+        checkStationConflict(downStation);
+        this.stations.add(upStation);
+        this.stations.add(downStation);
+    }
+
+    private void checkStationConflict(Station station) throws StationExistsAlreadyException {
+        if (this.stations.contains(station)) {
+            throw new StationExistsAlreadyException(station);
+        }
     }
 }
