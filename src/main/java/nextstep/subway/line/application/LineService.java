@@ -11,8 +11,12 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineNameDuplicatedException;
 import nextstep.subway.line.domain.LineNotFoundException;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.LineStationDuplicatedException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRequest;
+import nextstep.subway.section.domain.SectionResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationNotFoundException;
@@ -31,7 +35,7 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) throws
             LineNameDuplicatedException,
-            StationNotFoundException {
+            StationNotFoundException, LineStationDuplicatedException {
         checkNameDuplication(request.getName());
         int distance = request.getDistance();
         Station upStation = stationService.getById(request.getUpStationId());
@@ -39,12 +43,6 @@ public class LineService {
         Line line = request.toLine();
         line.addStations(upStation, downStation, distance);
         return LineResponse.of(lineRepository.save(line));
-    }
-
-    private void checkNameDuplication(String name) throws LineNameDuplicatedException {
-        if (lineRepository.findByName(name).isPresent()) {
-            throw new LineNameDuplicatedException(name);
-        }
     }
 
     public List<LineResponse> findAllLines() {
@@ -70,5 +68,24 @@ public class LineService {
         Line line = lineRepository.findById(id)
             .orElseThrow(LineNotFoundException::new);
         lineRepository.delete(line);
+    }
+
+    public SectionResponse addSection(Long id, SectionRequest sectionRequest) throws
+            LineNotFoundException,
+            StationNotFoundException {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(LineNotFoundException::new);
+        Section section = sectionRequest.toSection(
+            line,
+            stationService.getById(sectionRequest.getUpStationId()),
+            stationService.getById(sectionRequest.getDownStationId())
+        );
+        return SectionResponse.of(section);
+    }
+
+    private void checkNameDuplication(String name) throws LineNameDuplicatedException {
+        if (lineRepository.findByName(name).isPresent()) {
+            throw new LineNameDuplicatedException(name);
+        }
     }
 }

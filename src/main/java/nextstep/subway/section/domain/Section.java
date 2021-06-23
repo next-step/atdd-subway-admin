@@ -42,10 +42,6 @@ public class Section extends BaseEntity {
 		this.distance = distance;
 	}
 
-	public Line getLine() {
-		return line;
-	}
-
 	public boolean contains(Station station) {
 		return station == upStation || downStation == station;
 	}
@@ -54,5 +50,17 @@ public class Section extends BaseEntity {
 		return Lists.newArrayList(
 			upStation, downStation
 		);
+	}
+
+	public Line getLine() {
+		return line;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public int getDistance() {
+		return distance;
 	}
 }
