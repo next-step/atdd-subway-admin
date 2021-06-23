@@ -24,6 +24,8 @@ import nextstep.subway.AcceptanceTest;
 
 @DisplayName("지하철 구간 인수 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
+    public static final String STATION_ID = "stationId";
+    public static final String 광교역_이름 = "광교역";
     private static String 강남역_번호;
     private static String 양재역_번호;
     private static String 판교역_번호;
@@ -32,6 +34,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private static String 에러_메시지_역을_찾을_수_없음 = ErrorMessage.NOT_FOUND_STATION;
     private static String 에러_메시지_역이_구간에_포함되지_않음 = ErrorMessage.NOT_FOUND_STATIONS_SECTION;
     private static String 에러_메시지_구간이_너무_김 = ErrorMessage.DISTANCE_TOO_LONG;
+    private static String 에러_메시지_구간에_포함된_역이_아님 = ErrorMessage.NOT_FOUND_SECTION;
+    private static String 에러_미시지_구간이_하나의_구간만_존재 = ErrorMessage.SECTIONS_HAVE_NOT_MIN_COUNT;
 
     private static ExtractableResponse<Response> 신분당선_생성_응답;
 
@@ -97,7 +101,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_구간_생성_요청
-        ExtractableResponse<Response> 구간_추가_요청_실패_응답 = 구간_추가_요청(번호_추출(신분당선_생성_응답), 판교역_번호, 강남역_번호, 구간_추가_요청_잘못된_큰_값);
+        ExtractableResponse<Response> 구간_추가_요청_실패_응답 = 구간_추가_요청(번호_추출(신분당선_생성_응답), 강남역_번호, 판교역_번호, 구간_추가_요청_잘못된_큰_값);
 
         //then
         //지하철_구간_생성_실패
@@ -150,6 +154,102 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간_생성됨(구간추가_응답);
         지하철_구간_순서_번호로_검사(구간추가_응답, 강남역_번호, 양재역_번호, 판교역_번호);
         지하철_구간_순서_이름으로_검사(구간추가_응답, 강남역_이름, 양재역_이름, 판교역_이름);
+    }
+
+    @DisplayName("지하철 구간 삭제 실패 - 역이 없는 경우")
+    @Test
+    void deleteSectionFailByNotFoundStation() {
+        //given
+
+        // when
+        // 지하철_구간_삭제_요청
+        ExtractableResponse<Response> 구간삭제_응답 = 구간_삭제_요청(번호_추출(신분당선_생성_응답), 판교역_번호);
+
+        //then
+        지하철_구간_삭제_요청_실패(구간삭제_응답, 에러_메시지_구간에_포함된_역이_아님);
+    }
+
+    @DisplayName("지하철 구간 삭제 실패 - 구간이 하나만 존재")
+    @Test
+    void deleteSectionFailedByOnlyOneSection() {
+        //given
+
+        // when
+        // 지하철_구간_삭제_요청
+        ExtractableResponse<Response> 구간삭제_응답 = 구간_삭제_요청(번호_추출(신분당선_생성_응답), 양재역_번호);
+
+        //then
+        지하철_구간_삭제_요청_실패(구간삭제_응답, 에러_미시지_구간이_하나의_구간만_존재);
+    }
+
+    @DisplayName("지하철 구간 삭제 - 상단 종점")
+    @Test
+    void deleteSectionFirstStation() {
+        //given
+        구간_추가_요청(번호_추출(신분당선_생성_응답), 강남역_번호, 판교역_번호, 구간_추가_요청_길이_값);
+
+        // when
+        // 지하철_구간_삭제_요청
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(번호_추출(신분당선_생성_응답), 강남역_번호);
+
+        //then
+        지하철_구간_삭제됨(구간_삭제_응답);
+        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(ID_추출(신분당선_생성_응답));
+        지하철_구간_순서_번호로_검사(노선_조회_응답, 판교역_번호, 양재역_번호);
+        지하철_구간_순서_이름으로_검사(노선_조회_응답, 판교역_이름, 양재역_이름);
+    }
+
+    @DisplayName("지하철 구간 삭제 - 가운데역")
+    @Test
+    void deleteSectionMiddleStation() {
+        //given
+        구간_추가_요청(번호_추출(신분당선_생성_응답), 강남역_번호, 판교역_번호, 구간_추가_요청_길이_값);
+
+        // when
+        // 지하철_구간_삭제_요청
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(번호_추출(신분당선_생성_응답), 판교역_번호);
+
+        //then
+        지하철_구간_삭제됨(구간_삭제_응답);
+        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(ID_추출(신분당선_생성_응답));
+        지하철_구간_순서_번호로_검사(노선_조회_응답, 강남역_번호, 양재역_번호);
+        지하철_구간_순서_이름으로_검사(노선_조회_응답, 강남역_이름, 양재역_이름);
+    }
+
+    @DisplayName("지하철 구간 삭제 - 하단 종점")
+    @Test
+    void deleteSectionLastStation() {
+        //given
+        구간_추가_요청(번호_추출(신분당선_생성_응답), 강남역_번호, 판교역_번호, 구간_추가_요청_길이_값);
+
+        // when
+        // 지하철_구간_삭제_요청
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(번호_추출(신분당선_생성_응답), 양재역_번호);
+
+        //then
+        지하철_구간_삭제됨(구간_삭제_응답);
+        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(ID_추출(신분당선_생성_응답));
+        지하철_구간_순서_번호로_검사(노선_조회_응답, 강남역_번호, 판교역_번호);
+        지하철_구간_순서_이름으로_검사(노선_조회_응답, 강남역_이름, 판교역_이름);
+    }
+
+    @DisplayName("지하철 구간 삭제 - 4개의 역에서 가운데 제거")
+    @Test
+    void deleteSection() {
+        //given
+        String 광교역_번호 = 번호_추출(역_생성_요청(광교역_이름, 빨간색));
+        구간_추가_요청(번호_추출(신분당선_생성_응답), 강남역_번호, 판교역_번호, 구간_추가_요청_길이_값);
+        구간_추가_요청(번호_추출(신분당선_생성_응답), 양재역_번호, 광교역_번호, 구간_추가_요청_길이_값);
+
+        // when
+        // 지하철_구간_삭제_요청
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(번호_추출(신분당선_생성_응답), 판교역_번호);
+
+        //then
+        지하철_구간_삭제됨(구간_삭제_응답);
+        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(ID_추출(신분당선_생성_응답));
+        지하철_구간_순서_번호로_검사(노선_조회_응답, 강남역_번호, 양재역_번호, 광교역_번호);
+        지하철_구간_순서_이름으로_검사(노선_조회_응답, 강남역_이름, 양재역_이름, 광교역_이름);
     }
 
     private ExtractableResponse<Response> 역_생성_요청(String 이름, String 색) {
@@ -213,6 +313,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> 구간_삭제_요청(String 노선_번호, String 역_번호) {
+        return RestAssured.given().log().all()
+                .param(STATION_ID, Long.parseLong(역_번호))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/lines/" + 노선_번호 + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
     private void 지하철_구간_생성됨(ExtractableResponse<Response> 구간_생성_응답) {
         assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(구간_생성_응답.header(LOCATION)).isNotBlank();
@@ -223,25 +333,46 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(expectMessage).isEqualTo(구간_추가_요청_실패_응답.body().jsonPath().get("message"));
     }
 
-    private void 지하철_구간_순서_번호로_검사(ExtractableResponse<Response> 구간_생성_응답, String 첫_번째_역_번호, String 두_번째_역_번호, String 세_번째_역_번호) {
+    private void 지하철_구간_순서_번호로_검사(ExtractableResponse<Response> 구간_생성_응답, String ...역_번호) {
         List<Long> 역_id = 구간_생성_응답.jsonPath().getList(STATION_LIST, LineResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
 
-        assertThat(역_id.size()).isEqualTo(3);
-        assertThat(역_id.get(0)).isEqualTo(Long.parseLong(첫_번째_역_번호));
-        assertThat(역_id.get(1)).isEqualTo(Long.parseLong(두_번째_역_번호));
-        assertThat(역_id.get(2)).isEqualTo(Long.parseLong(세_번째_역_번호));
+        assertThat(역_id.size()).isEqualTo(역_번호.length);
+        for (int 순서 = 0; 순서 < 역_번호.length; 순서++) {
+            assertThat(역_id.get(순서)).isEqualTo(Long.parseLong(역_번호[순서]));
+        }
     }
 
-    private void 지하철_구간_순서_이름으로_검사(ExtractableResponse<Response> 구간_생성_응답, String 첫_번째_역_이름, String 두_번째_역_이름, String 세_번째_역_이름) {
+    private void 지하철_구간_순서_이름으로_검사(ExtractableResponse<Response> 구간_생성_응답, String ...역_이름) {
         List<String> 역_목록 = 구간_생성_응답.jsonPath().getList(STATION_LIST, LineResponse.class).stream()
                 .map(it -> it.getName())
                 .collect(Collectors.toList());
 
-        assertThat(역_목록.size()).isEqualTo(3);
-        assertThat(역_목록.get(0)).isEqualTo(첫_번째_역_이름);
-        assertThat(역_목록.get(1)).isEqualTo(두_번째_역_이름);
-        assertThat(역_목록.get(2)).isEqualTo(세_번째_역_이름);
+        assertThat(역_목록.size()).isEqualTo(역_이름.length);
+        for (int 순서 = 0; 순서 < 역_이름.length; 순서++) {
+            assertThat(역_목록.get(순서)).isEqualTo(역_이름[순서]);
+        }
+    }
+
+    private void 지하철_구간_삭제_요청_실패(ExtractableResponse<Response> 구간_삭제_요청_실패_응답, String expectMessage) {
+        assertThat(HttpStatus.BAD_REQUEST.value()).isEqualTo(구간_삭제_요청_실패_응답.statusCode());
+        assertThat(expectMessage).isEqualTo(구간_삭제_요청_실패_응답.body().jsonPath().get("message"));
+    }
+
+    private ExtractableResponse<Response> 노선_조회_요청(String 노선_번호) {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines/" + 노선_번호)
+                .then().log().all()
+                .extract();
+    }
+
+    private String ID_추출(ExtractableResponse<Response> 응답) {
+        return 응답.body().jsonPath().get("id").toString();
+    }
+
+    private void 지하철_구간_삭제됨(ExtractableResponse<Response> 구간_삭제_응답) {
+        assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

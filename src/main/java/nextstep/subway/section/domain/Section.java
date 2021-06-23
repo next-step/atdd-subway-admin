@@ -2,11 +2,9 @@ package nextstep.subway.section.domain;
 
 import static javax.persistence.FetchType.LAZY;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,19 +20,28 @@ import nextstep.subway.station.domain.Station;
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "line_id")
+    @ManyToOne(fetch = LAZY)
     private Line line;
+
+    @Column(name = "line_id", insertable = false, updatable = false)
+    private Long lineId;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
+    @Column(name = "up_station_id", insertable = false, updatable = false)
+    private Long upStationId;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
+
+    @Column(name = "down_station_id", insertable = false, updatable = false)
+    private Long downStationId;
 
     @Embedded
     private Distance distance;
@@ -54,13 +61,20 @@ public class Section {
     }
 
     public void updateStation(Station upStation, Station downStation, Distance requestDistance) {
+        if (isUpStation(upStation) || isDownStation(downStation)) {
+            distance = distance.diff(requestDistance);
+        }
         if (isUpStation(upStation)) {
             this.upStation = downStation;
         }
         if (isDownStation(downStation)) {
             this.downStation = upStation;
         }
-        distance = distance.calculateDistance(requestDistance);
+    }
+
+    public void updateSectionByDownStation(Section section) {
+        downStation = section.getDownStation();
+        this.distance = this.distance.add(section.distance);
     }
 
     public boolean isContain(Station station) {
@@ -76,11 +90,11 @@ public class Section {
     }
 
     public boolean isUpStation(Station station) {
-        return upStation.equals(station);
+        return upStation == station;
     }
 
     public boolean isDownStation(Station station) {
-        return downStation.equals(station);
+        return downStation == station;
     }
 
     @Override
@@ -93,6 +107,6 @@ public class Section {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, line, upStation, downStation, distance);
+        return Objects.hash(id, lineId, upStationId, downStationId, distance);
     }
 }

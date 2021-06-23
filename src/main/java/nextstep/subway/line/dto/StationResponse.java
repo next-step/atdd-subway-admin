@@ -1,18 +1,12 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
+import java.time.LocalDateTime;
+
 import nextstep.subway.station.domain.Station;
 
-import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
-
-import static nextstep.subway.common.ErrorMessage.NOT_FOUND_STATION;
-
 public class StationResponse {
-    Long id;
-    String name;
+    private Long id;
+    private String name;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
