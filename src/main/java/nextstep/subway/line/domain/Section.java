@@ -111,7 +111,7 @@ public class Section extends BaseEntity {
     }
 
     public Section shiftedBy(Section section) {
-        validateReducible(section);
+        validateShift(section);
 
         if (this.upStation == section.upStation) {
             return new Section(this.line,
@@ -122,7 +122,7 @@ public class Section extends BaseEntity {
             this.upStation, section.upStation, this.distance - section.distance);
     }
 
-    private void validateReducible(Section section) {
+    private void validateShift(Section section) {
         if (!this.matchesOnlyOneEndOf(section)) {
             throw new InvalidSectionException("하나의 종단점만 일치해야 합니다.");
         }
