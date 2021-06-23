@@ -3,7 +3,9 @@ package nextstep.subway.station.dto;
 import nextstep.subway.station.domain.Station;
 
 public class StationRequest {
-    private final String name;
+    private String name;
+
+    protected StationRequest() {}
 
     public StationRequest(String name) {
         this.name = name;
