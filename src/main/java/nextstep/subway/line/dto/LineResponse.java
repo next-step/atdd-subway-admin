@@ -23,7 +23,7 @@ public class LineResponse {
         this.id = line.getId();
         this.name = line.getName();
         this.color = line.getColor();
-        this.stations = line.getStations().stream()
+        this.stations = line.stations().stream()
             .map(StationResponse::of)
             .collect(Collectors.toList());
         this.createdDate = line.getCreatedDate();

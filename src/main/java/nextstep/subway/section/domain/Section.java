@@ -1,11 +1,15 @@
 package nextstep.subway.section.domain;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+
+import com.google.common.collect.Lists;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
@@ -40,5 +44,15 @@ public class Section extends BaseEntity {
 
 	public Line getLine() {
 		return line;
+	}
+
+	public boolean contains(Station station) {
+		return station == upStation || downStation == station;
+	}
+
+	public List<Station> stations() {
+		return Lists.newArrayList(
+			upStation, downStation
+		);
 	}
 }

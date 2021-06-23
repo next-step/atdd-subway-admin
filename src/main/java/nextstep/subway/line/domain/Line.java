@@ -9,14 +9,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationExistsAlreadyException;
 
 @Entity
 public class Line extends BaseEntity {
@@ -29,9 +26,6 @@ public class Line extends BaseEntity {
     private String name;
 
     private String color;
-
-    @ManyToMany(cascade = CascadeType.REMOVE)
-    private final List<Station> stations = new LinkedList<>();
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private final List<Section> sections = new LinkedList<>();
@@ -60,23 +54,25 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
-        return stations;
-    }
-
-    public Section addStations(Station upStation, Station downStation, int distance) throws StationExistsAlreadyException {
-        checkStationConflict(upStation);
-        checkStationConflict(downStation);
-        this.stations.add(upStation);
-        this.stations.add(downStation);
+    public Section addStations(Station upStation, Station downStation, int distance) {
         Section section = new Section(this, upStation, downStation, distance);
         this.sections.add(section);
         return section;
     }
 
-    private void checkStationConflict(Station station) throws StationExistsAlreadyException {
-        if (this.stations.contains(station)) {
-            throw new StationExistsAlreadyException(station);
+    public List<Station> stations() {
+        return sections.stream()
+            .map(Section::stations)
+            .reduce(new LinkedList<>(), Line::serializeStations);
+    }
+
+    private static List<Station> serializeStations(List<Station> a, List<Station> b) {
+        if (a.size() == 0) {
+            // 항상 첫번째 argument를 반환하기 위함.
+            a.addAll(b);
+            return a;
         }
+        a.add(b.get(1));
+        return a;
     }
 }

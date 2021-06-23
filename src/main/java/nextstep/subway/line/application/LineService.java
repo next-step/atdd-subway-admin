@@ -15,7 +15,6 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationExistsAlreadyException;
 import nextstep.subway.station.domain.StationNotFoundException;
 
 @Service
@@ -32,8 +31,7 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) throws
             LineNameDuplicatedException,
-            StationNotFoundException,
-            StationExistsAlreadyException {
+            StationNotFoundException {
         checkNameDuplication(request.getName());
         int distance = request.getDistance();
         Station upStation = stationService.getById(request.getUpStationId());
