@@ -33,25 +33,22 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, null, upStation, downStation, distance);
+    }
+
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this(null, line, upStation, downStation, distance);
+    }
+
     Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        validateArguments(upStation, downStation, distance);
+
         this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        validateArguments(upStation, downStation, distance);
-
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
-    public Section(Station upStation, Station downStation, int distance) {
-        this(null, upStation, downStation, distance);
     }
 
     private void validateArguments(Station upStation, Station downStation, int distance) {

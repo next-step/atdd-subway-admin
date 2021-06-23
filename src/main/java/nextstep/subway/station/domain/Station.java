@@ -21,12 +21,12 @@ public class Station extends BaseEntity {
     public Station() {
     }
 
-    Station(Long id, String name) {
-        this.id = id;
-        this.name = name;
+    public Station(String name) {
+        this(null, name);
     }
 
-    public Station(String name) {
+    Station(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 
