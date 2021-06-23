@@ -5,10 +5,15 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
+    private static final int MINIMUM_SECTION_COUNT = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
@@ -40,7 +45,7 @@ public class Sections {
 
     private void changeStationInMiddleWhenEqualToUpStation(Section newSection) {
         sections.stream()
-                .filter(section -> section.equalsUpStation(newSection))
+                .filter(section -> section.equalUpStation(newSection))
                 .findFirst()
                 .ifPresent(section -> section.changeStationInMiddle(newSection));
     }
@@ -57,5 +62,53 @@ public class Sections {
 
     private Station getFirstStation() {
         return sections.get(0).getUpStation();
+    }
+
+    public void removeSectionByStation(Station station) {
+        Optional<Section> sectionWithPreviousStation = findSectionWithPreviousStation(station);
+        Optional<Section> sectionWithNextStation = findSectionWithNextStation(station);
+
+        validateSectionCount();
+        if (!sectionWithPreviousStation.isPresent() && !sectionWithNextStation.isPresent()) {
+            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+        }
+        if (!sectionWithPreviousStation.isPresent()) {
+            removeSection(sectionWithNextStation.get());
+            return;
+        }
+        if (!sectionWithNextStation.isPresent()) {
+            removeSection(sectionWithPreviousStation.get());
+            return;
+        }
+            removeWhenMiddleStation(sectionWithPreviousStation.get(), sectionWithNextStation.get());
+    }
+
+    private void validateSectionCount() {
+        if (sections.size() <= MINIMUM_SECTION_COUNT) {
+            throw new IllegalArgumentException("마지막 구간은 삭제할 수 없습니다.");
+        }
+    }
+
+    private void removeSection(Section section) {
+        sections.remove(section);
+        section.removeLine();
+    }
+
+    private void removeWhenMiddleStation(Section sectionWithPreviousStation, Section sectionWithNextStation) {
+            sectionWithPreviousStation.changeDownStation(sectionWithNextStation.getDownStation());
+            sectionWithPreviousStation.calculateDistanceWhenRemove(sectionWithNextStation);
+            removeSection(sectionWithNextStation);
+    }
+
+    private Optional<Section> findSectionWithPreviousStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst();
+    }
+
+    private Optional<Section> findSectionWithNextStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst();
     }
 }

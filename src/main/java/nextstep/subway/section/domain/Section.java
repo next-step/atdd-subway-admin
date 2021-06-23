@@ -59,7 +59,11 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.upStation = station;
     }
 
-    public boolean equalsUpStation(Section section) {
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public boolean equalUpStation(Section section) {
         return this.upStation.equals(section.getUpStation());
     }
 
@@ -69,18 +73,25 @@ public class Section extends BaseEntity implements Comparable<Section> {
         }
     }
 
-    public void calculateDistance(Section newSection) {
+    public void calculateDistanceWhenAdd(Section newSection) {
         this.distance -= newSection.getDistance();
+    }
+    public void calculateDistanceWhenRemove(Section section) {
+        this.distance += section.getDistance();
     }
 
     public void changeStationInMiddle(Section newSection) {
         validateSectionDistance(newSection);
         changeUpStation(newSection.getDownStation());
-        calculateDistance(newSection);
+        calculateDistanceWhenAdd(newSection);
     }
 
     public boolean isStationInSection(Station station) {
         return upStation.equals(station) || downStation.equals(station);
+    }
+
+    public void removeLine() {
+        this.line = null;
     }
 
     @Override
@@ -93,4 +104,6 @@ public class Section extends BaseEntity implements Comparable<Section> {
         }
         return 1;
     }
+
+
 }

@@ -16,10 +16,12 @@ import java.util.NoSuchElementException;
 public class SectionService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
+
     public SectionService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
     }
+
     public void saveSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(NoSuchElementException::new);
@@ -29,5 +31,15 @@ public class SectionService {
                 .orElseThrow(NoSuchElementException::new);
 
         line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
+    }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(NoSuchElementException::new);
+
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(NoSuchElementException::new);
+
+        line.removeSectionByStationId(station);
     }
 }
