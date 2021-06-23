@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -129,32 +130,32 @@ public class Sections {
 
 	public void removeSection(Line line, Station deleteStation) {
 		validateRemoveSectionSize();
-		Optional<Section> downSection = getUpStationEqualsSection(deleteStation);
-		Optional<Section> upSection = getDownStationEqualsSection(deleteStation);
+		Section downSection = findUpStationEqualsSection(deleteStation);
+		Section upSection = findDownStationEqualsSection(deleteStation);
 		validateNotExistStationInSection(deleteStation, downSection, upSection);
-		addCentralSection(line, downSection, upSection);
+		updateSectionByRemove(line, downSection, upSection);
 		removeIfExistSection(downSection);
 		removeIfExistSection(upSection);
 	}
 
-	private void removeIfExistSection(Optional<Section> section) {
-		if (section.isPresent()) {
-			sections.remove(section.get());
+	private void removeIfExistSection(Section section) {
+		if (Objects.nonNull(section)) {
+			sections.remove(section);
 		}
 	}
 
-	private void addCentralSection(Line line, Optional<Section> downSection, Optional<Section> upSection) {
-		if (downSection.isPresent() && upSection.isPresent()) {
-			Station upStation = upSection.get().getUpStation();
-			Station downStation = downSection.get().getDownStation();
-			Distance distance = upSection.get().getDistance().getPlusDistance(downSection.get().getDistance());
+	private void updateSectionByRemove(Line line, Section downSection, Section upSection) {
+		if (Objects.nonNull(downSection) && Objects.nonNull(upSection)) {
+			Station upStation = upSection.getUpStation();
+			Station downStation = downSection.getDownStation();
+			Distance distance = upSection.getDistance().plusDistance(downSection.getDistance());
 			sections.add(new Section(line, upStation, downStation, distance));
 		}
 	}
 
-	private void validateNotExistStationInSection(Station deleteStation, Optional<Section> upStationEqualsSection,
-		Optional<Section> downStationEqualsSection) {
-		if (!upStationEqualsSection.isPresent() && !downStationEqualsSection.isPresent())
+	private void validateNotExistStationInSection(Station deleteStation, Section upStationEqualsSection,
+		Section downStationEqualsSection) {
+		if (!Objects.nonNull(upStationEqualsSection) && !Objects.nonNull(downStationEqualsSection))
 			throw new InvalidSectionRemoveException("구간에 삭제할 역이 존재하지 않습니다. : " + deleteStation.getName());
 	}
 
@@ -164,15 +165,17 @@ public class Sections {
 		}
 	}
 
-	private Optional<Section> getDownStationEqualsSection(Station deleteStation) {
+	private Section findDownStationEqualsSection(Station deleteStation) {
 		return sections.stream()
 			.filter(section -> section.isEqualsDownStation(deleteStation))
-			.findFirst();
+			.findFirst()
+			.orElse(null);
 	}
 
-	private Optional<Section> getUpStationEqualsSection(Station deleteStation) {
+	private Section findUpStationEqualsSection(Station deleteStation) {
 		return sections.stream()
 			.filter(section -> section.isEqualsUpStation(deleteStation))
-			.findFirst();
+			.findFirst()
+			.orElse(null);
 	}
 }
