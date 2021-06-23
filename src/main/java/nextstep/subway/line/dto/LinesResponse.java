@@ -16,7 +16,7 @@ public class LinesResponse {
 
     public static LinesResponse of(List<Line> lines) {
         List<LineResponse> lineResponses = lines.stream()
-                .map((line) -> (LineResponse.of(line)))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
 
         return new LinesResponse(lineResponses);
