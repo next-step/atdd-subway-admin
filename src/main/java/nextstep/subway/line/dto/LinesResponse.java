@@ -14,9 +14,9 @@ public class LinesResponse {
         this.lineResponses = lineResponses;
     }
 
-    public static LinesResponse of(List<Line> lines) {
+    public static LinesResponse from(List<Line> lines) {
         List<LineResponse> lineResponses = lines.stream()
-                .map(LineResponse::of)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
 
         return new LinesResponse(lineResponses);

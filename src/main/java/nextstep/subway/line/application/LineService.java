@@ -30,16 +30,16 @@ public class LineService {
         Station downStation = stationRepository.findById(request.getDownStationId())
                 .orElseThrow(() -> new LineNotFoundException(request.getDownStationId()));
         Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
+        return LineResponse.from(persistLine);
     }
 
     public LineResponse getLineById(Long id) {
         Optional<Line> line = lineRepository.findById(id);
-        return LineResponse.of(line.orElseThrow(() -> new LineNotFoundException(id)));
+        return LineResponse.from(line.orElseThrow(() -> new LineNotFoundException(id)));
     }
 
     public LinesResponse getLines(LineRequest lineRequest) {
-        return LinesResponse.of(lineRepository.findByNameContainingAndColorContaining(lineRequest.getName(), lineRequest.getColor()));
+        return LinesResponse.from(lineRepository.findByNameContainingAndColorContaining(lineRequest.getName(), lineRequest.getColor()));
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
@@ -47,7 +47,7 @@ public class LineService {
         Line updatingLine = line.orElseThrow(() -> new LineNotFoundException(id));
         updatingLine.update(lineRequest.getName(), lineRequest.getColor());
 
-        return LineResponse.of(lineRepository.save(updatingLine));
+        return LineResponse.from(lineRepository.save(updatingLine));
     }
 
     public void deleteLine(Long id) {
