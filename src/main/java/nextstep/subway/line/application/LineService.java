@@ -70,4 +70,11 @@ public class LineService {
 
 		return LineResponse.of(line);
 	}
+
+	public void deleteSection(Long lineId, Long stationId) {
+		Line line = lineRepository.findById(lineId).orElseThrow(() -> new DataIntegrityViolationException("없는 노선입니다."));
+		Station station = stationRepository.findById(stationId)
+			.orElseThrow(() -> new DataIntegrityViolationException("없는 역입니다."));
+		line.deleteSectionBy(station);
+	}
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.line.application.LineService;
@@ -82,6 +83,12 @@ public class LineController {
 		}
 
 		return ResponseEntity.ok().body(lineResponse);
+	}
+
+	@DeleteMapping(value = "/{lineId}/sections")
+	public ResponseEntity deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+		lineService.deleteSection(lineId, stationId);
+		return ResponseEntity.ok().build();
 	}
 
 	@ExceptionHandler({NoSuchElementException.class, EmptyResultDataAccessException.class})

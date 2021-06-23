@@ -250,7 +250,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Assertions.assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
 	}
 
-	@DisplayName("노선의 구간을 삭제한다.")
+	@DisplayName("노선의 구간목록 중 끝 역을 삭제한다.")
 	@Test
 	void deleteSection() {
 		//given
@@ -263,14 +263,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		SectionAcceptanceTest.노선에_구간_등록되어_있음(경의선ID, 운정역ID, 야당역ID, 5);
 
 		// when
-		Map<String, String> params = new HashMap<>();
-		params.put("stationId", 야당역ID.toString());
-
 		ExtractableResponse<Response> response = RestAssured
 			.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when().delete("/lines/{id}/sections", 경의선ID)
+			.when().delete("/lines/{id}/sections?stationId={stationId}", 경의선ID, 탄현역ID)
+			.then().log().all().extract();
+
+		// then
+		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	@DisplayName("노선의 구간목록 중 중간 역을 삭제한다.")
+	@Test
+	void deleteSection2() {
+		//given
+		Long 운정역ID = StationAcceptanceTest.지하철역_등록되어_있음("운정역").getId();
+		Long 야당역ID = StationAcceptanceTest.지하철역_등록되어_있음("야당역").getId();
+		Long 탄현역ID = StationAcceptanceTest.지하철역_등록되어_있음("탄현역").getId();
+
+		Long 경의선ID = 지하철_노선_등록되어_있음("경의선", "brown", 운정역ID, 탄현역ID, 13).getId();
+
+		SectionAcceptanceTest.노선에_구간_등록되어_있음(경의선ID, 운정역ID, 야당역ID, 5);
+
+		// when
+		ExtractableResponse<Response> response = RestAssured
+			.given().log().all()
+			.when().delete("/lines/{id}/sections?stationId={stationId}", 경의선ID, 야당역ID)
 			.then().log().all().extract();
 
 		// then

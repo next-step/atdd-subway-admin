@@ -125,4 +125,33 @@ public class Sections {
 	public void delete(Section section) {
 		sections.remove(section);
 	}
+
+	public void deleteSectionBy(Station station) {
+		if (sections.size() == 1) {
+			throw new IllegalArgumentException("구간이 부족하여 삭제할 수 없습니다.");
+		}
+
+		if (station.equals(findFirst()) || station.equals(findLast())) {
+			sections.stream()
+				.filter(section -> section.isEqualToUpStation(station) || section.isEqualToDownStation(station))
+				.findFirst()
+				.ifPresent(section -> sections.remove(section));
+			return;
+		}
+
+		Section upSection = sections.stream()
+			.filter(section -> section.isEqualToDownStation(station))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역"));
+		Section downSection = sections.stream()
+			.filter(section -> section.isEqualToUpStation(station))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역"));
+
+		Section newSection = new Section(upSection.getUpStation(), downSection.getDownStation(),
+			upSection.getDistance() + downSection.getDistance());
+		sections.remove(upSection);
+		sections.remove(downSection);
+		sections.add(newSection);
+	}
 }
