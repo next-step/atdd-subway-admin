@@ -6,7 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.exception.CanNotAddSectionException;
+import nextstep.subway.exception.CanNotDeleteStateException;
 import nextstep.subway.exception.LimitDistanceException;
+import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.exception.RegisteredSectionException;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
@@ -86,5 +88,59 @@ public class SectionsTest {
         assertThatThrownBy(() -> sections.add(new Section(강남역, 양재역, 10)))
             .isInstanceOf(LimitDistanceException.class)
             .hasMessage("거리가 기준 거리 이하가 될 수 없습니다. (기준 거리 : " + Section.MIN_DISTANCE + ")");
+    }
+
+    @DisplayName("노선 구간 삭제 : 중간")
+    @Test
+    void deleteSectionInMiddle() {
+        Sections sections = createSections();
+        sections.delete(양재역);
+        assertThat(sections.stations()).containsExactly(강남역, 양재시민의숲, 청계산입구);
+
+        sections.delete(양재시민의숲);
+        assertThat(sections.stations()).containsExactly(강남역, 청계산입구);
+    }
+
+    @DisplayName("노선 구간 삭제 : 상행 종점")
+    @Test
+    void deleteSectionInFirst() {
+        Sections sections = createSections();
+        sections.delete(강남역);
+        assertThat(sections.stations()).containsExactly(양재역, 양재시민의숲, 청계산입구);
+    }
+
+    @DisplayName("노선 구간 삭제 : 하행 종점")
+    @Test
+    void deleteSectionInLast() {
+        Sections sections = createSections();
+        sections.delete(청계산입구);
+        assertThat(sections.stations()).containsExactly(강남역, 양재역, 양재시민의숲);
+    }
+
+    @DisplayName("노선 구간 에러 : 구간에 존재하지 않는 역일 경우")
+    @Test
+    void deleteSectionThrow1() {
+        Sections sections = createSections();
+        Station 정자역 = new Station("정자역");
+
+        assertThatThrownBy(() -> sections.delete(정자역))
+            .isInstanceOf(NotFoundException.class);
+    }
+    @DisplayName("노선 구간 에러 : 구간이 하나라서 삭제가 불가능 한 경우")
+    @Test
+    void deleteSectionThrow2() {
+        Sections sections = new Sections();
+        sections.add(new Section(강남역, 청계산입구, 10));
+
+        assertThatThrownBy(() -> sections.delete(청계산입구))
+            .isInstanceOf(CanNotDeleteStateException.class);
+    }
+
+    private Sections createSections() {
+        Sections sections = new Sections();
+        sections.add(new Section(강남역, 청계산입구, 10));
+        sections.add(new Section(강남역, 양재역, 4));
+        sections.add(new Section(양재역, 양재시민의숲, 4));
+        return sections;
     }
 }
