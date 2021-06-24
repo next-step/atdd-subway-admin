@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import nextstep.subway.ServiceTest;
@@ -404,7 +405,7 @@ public class LineServiceTest extends ServiceTest {
 
 		//then
 		assertThatThrownBy(() -> lineService.deleteLineById(존재하지않는_아이디))
-			.isInstanceOf(NotFoundException.class);
+			.isInstanceOf(EmptyResultDataAccessException.class);
 	}
 
 	@Test

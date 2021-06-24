@@ -226,8 +226,8 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 0-4-7.remote에서 가져온 나의 branch로 rebase : `git rebase upstream/gregolee`
         - [x] 0-4-7.gregolee -> step3로 체크아웃 : `git checkout -b step3`
     - [ ] 0-5.리뷰어님의 리뷰를 반영한 코드로 수정
-        - [ ] 0-5-1.`SectionGroup.java` : `FetchType.EAGER` -> `FetchType.LAZY`
-        - [ ] 0-5-2.`SectionGroup.java` : `findSectionIndexWithinUpStations()` 객체에 메시지를 보내 비교해보기
+        - [x] 0-5-1.`SectionGroup.java` : `FetchType.EAGER` -> `FetchType.LAZY`
+        - [x] 0-5-2.`SectionGroup.java` : `findSectionIndexWithinUpStations()` 객체에 메시지를 보내 비교해보기
         - [ ] 0-5-2.`SectionService.java` : 불필요하다면 해당 서비스를 제거한다.
 - [x] 1.자바 코드 컨벤션을 위한 세팅
     - [x] 1-1.[gradle-editorconfig](https://naver.github.io/hackday-conventions-java/#editorconfig) 적용

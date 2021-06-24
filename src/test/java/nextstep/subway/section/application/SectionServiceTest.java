@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import nextstep.subway.ServiceTest;
 import nextstep.subway.exception.NotFoundException;
@@ -73,7 +74,7 @@ class SectionServiceTest extends ServiceTest {
 		Section 조회된_이호선_강남역_선릉역_섹션 = sectionService.findSectionById(이호선_강남역_선릉역_섹션.id());
 
 		//then
-		assertThat(조회된_이호선_강남역_선릉역_섹션).isEqualTo(이호선_강남역_선릉역_섹션);
+		assertThat(조회된_이호선_강남역_선릉역_섹션.id()).isEqualTo(이호선_강남역_선릉역_섹션.id());
 	}
 
 	@Test

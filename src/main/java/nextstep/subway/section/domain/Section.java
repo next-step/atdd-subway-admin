@@ -18,6 +18,8 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section extends BaseEntity {
+	private static final int OUT_OF_INDEX = -1;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -138,5 +140,21 @@ public class Section extends BaseEntity {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, line, upStation, downStation, distance);
+	}
+
+	public int findSectionIndexWithinUpStations(SectionGroup sectionGroup) {
+		return sectionGroup.sections().stream()
+			.filter(section -> section.upStation.equals(downStation))
+			.mapToInt(section -> sectionGroup.sections().indexOf(section))
+			.findFirst()
+			.orElse(OUT_OF_INDEX);
+	}
+
+	public int findSectionIndexWithinDownStations(SectionGroup sectionGroup) {
+		return sectionGroup.sections().stream()
+			.filter(section -> section.downStation.equals(upStation))
+			.mapToInt(section -> sectionGroup.sections().indexOf(section))
+			.findFirst()
+			.orElse(OUT_OF_INDEX);
 	}
 }

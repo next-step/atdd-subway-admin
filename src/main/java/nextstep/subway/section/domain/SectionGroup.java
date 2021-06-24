@@ -8,12 +8,9 @@ import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-
-import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class SectionGroup {
@@ -21,7 +18,7 @@ public class SectionGroup {
 	private static final int OUT_OF_INDEX = -1;
 	private static final int ADJUST_NEXT_INDEX = 1;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "section_id", foreignKey = @ForeignKey(name = "fk_line_section"))
 	private List<Section> sections = new ArrayList<>();
 
@@ -47,33 +44,17 @@ public class SectionGroup {
 	}
 
 	private void addSectionWhenFoundUpStation(Section targetSection) {
-		int sectionIndex = findSectionIndexWithinUpStations(targetSection.downStation());
+		int sectionIndex = targetSection.findSectionIndexWithinUpStations(this);
 		if (OUT_OF_INDEX < sectionIndex && !sections.contains(targetSection)) {
 			sections.add(sectionIndex, targetSection);
 		}
 	}
 
-	private int findSectionIndexWithinUpStations(Station targetDownStation) {
-		return sections.stream()
-			.filter(sectionInGroup -> targetDownStation.equals(sectionInGroup.upStation()))
-			.mapToInt(sections::indexOf)
-			.findFirst()
-			.orElse(OUT_OF_INDEX);
-	}
-
 	private void addSectionWhenFoundDownStation(Section targetSection) {
-		int sectionIndex = findSectionIndexWithinDownStations(targetSection.upStation());
+		int sectionIndex = targetSection.findSectionIndexWithinDownStations(this);
 		if (OUT_OF_INDEX < sectionIndex && !sections.contains(targetSection)) {
 			sections.add(sectionIndex + ADJUST_NEXT_INDEX, targetSection);
 		}
-	}
-
-	private int findSectionIndexWithinDownStations(Station targetUpStation) {
-		return sections.stream()
-			.filter(sectionInGroup -> targetUpStation.equals(sectionInGroup.downStation()))
-			.mapToInt(sections::indexOf)
-			.findFirst()
-			.orElse(OUT_OF_INDEX);
 	}
 
 	public List<Section> sections() {

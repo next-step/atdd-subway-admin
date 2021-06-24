@@ -61,7 +61,7 @@ public class LineService {
 	}
 
 	public void deleteLineById(Long id) {
-		sectionService.deleteAllByLine(findLineByIdFromRepository(id));
+		// sectionService.deleteAllByLine(findLineByIdFromRepository(id));
 		lineRepository.deleteById(id);
 	}
 
