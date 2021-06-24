@@ -3,32 +3,43 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
+
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    @BeforeEach
+    void setStations() {
+        //지하철_역_생성_요청
+        지하철_역_생성_요청(makeParam("강남역"));
+        지하철_역_생성_요청(makeParam("광교역"));
+        지하철_역_생성_요청(makeParam("왕십리역"));
+        지하철_역_생성_요청(makeParam("수원역"));
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선"));
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선", 1L,2L, 10L));
 
         // then
         // 지하철_노선_생성됨
@@ -36,12 +47,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성할 경우, 에러가 발생한")
     @Test
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> params = makeParam("bg-red-600", "신분당선");
+        LineRequest params = makeParam("bg-red-600", "신분당선", 1L,2L, 10L);
         지하철_노선_생성_요청(params);
 
         // when
@@ -57,11 +68,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
+
         // 지하철_노선_등록되어_있음
-        Map<String, String> params1 = makeParam("bg-red-600", "신분당선");
+        LineRequest params1 = makeParam("bg-red-600", "신분당선", 1L,2L, 10L);
         ExtractableResponse<Response> createResponse1 = 지하철_노선_생성_요청(params1);
         // 지하철_노선_등록되어_있음
-        Map<String, String> params2 = makeParam("bg-red-100", "2호선");
+        LineRequest params2 = makeParam("bg-red-600", "분당선", 3L,4L, 10L);
         ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청(params2);
 
         // when
@@ -71,7 +83,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
-        List<String> expectedLineNames = Arrays.asList(params1.get("name"), params2.get("name"));
+        List<String> expectedLineNames = Arrays.asList(params1.getName(), params2.getName());
         List<String> resultLineNames = response.jsonPath().getList(".", LineResponse.class).stream()
             .map(LineResponse::getName)
             .collect(Collectors.toList());
@@ -91,7 +103,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선"));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선", 1L,2L, 10L));
         // when
         // 지하철_노선_조회_요청
         Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
@@ -99,6 +111,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<Long> resultStationIds = response.jsonPath().getList("stations", StationResponse.class).stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(resultStationIds).containsExactly(1L,2L);
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
+    @Test
+    void getLineNoData() {
+        // given
+
+        // when
+        // 지하철_노선_조회_요청
+        Long id = 1L;
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(id);
+        // then
+        // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -106,12 +136,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선"));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선", 1L,2L, 10L));
 
         // when
         // 지하철_노선_수정_요청
         Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(id, makeParam("bg-red-600", "구분당선"));
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(id, makeParam("bg-red-600", "신분당선"));
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -122,7 +152,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선"));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선", 1L,2L, 10L));
 
         // when
         // 지하철_노선_제거_요청
@@ -134,13 +164,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private Map<String, String> makeParam(String color, String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("color", color);
-        params.put("name", name);
-        return params;
+    private LineRequest makeParam(String color, String name, Long upStationId, Long downStationId, Long distance) {
+        return new LineRequest(name, color, upStationId, downStationId, distance);
     }
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+
+    private LineRequest makeParam(String color, String name) {
+        return new LineRequest(name, color);
+    }
+
+    private StationRequest makeParam(String name) {
+        return new StationRequest(name);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest params) {
         return RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -169,7 +205,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Map<String, String> params) {
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineRequest params) {
         return RestAssured.given().log().all()
             .body(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -184,6 +220,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .delete("/lines/{id}", id)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest params) {
+        return RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/stations")
             .then().log().all()
             .extract();
     }

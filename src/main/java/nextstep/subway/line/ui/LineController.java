@@ -3,11 +3,8 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationRequest;
-import nextstep.subway.station.dto.StationResponse;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,24 +29,24 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping
-    public ResponseEntity showLines() {
+    public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getLine(@PathVariable("id") Long id) {
+    public ResponseEntity<LineResponse> getLine(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(lineService.getLine(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.updateLine(id, lineRequest);
+        lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -57,10 +54,5 @@ public class LineController {
     public ResponseEntity deleteLine(@PathVariable("id") Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
     }
 }
