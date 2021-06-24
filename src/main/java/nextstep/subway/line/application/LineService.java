@@ -13,6 +13,8 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.application.SectionService;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -61,12 +63,19 @@ public class LineService {
 	}
 
 	public void deleteLineById(Long id) {
-		// sectionService.deleteAllByLine(findLineByIdFromRepository(id));
 		lineRepository.deleteById(id);
 	}
 
 	public void updateLine(Long id, LineRequest lineRequest) {
 		Line sourceLine = findLineByIdFromRepository(id);
 		sourceLine.update(lineRequest.toLine());
+	}
+
+	public void addSection(Long lineId, SectionRequest sectionRequest) {
+		Line line = findLineByIdFromRepository(lineId);
+		Station upStation = stationService.findStationByIdFromRepository(sectionRequest.getUpStationId());
+		Station downStation = stationService.findStationByIdFromRepository(sectionRequest.getDownStationId());
+		line.sectionGroup().newAdd(sectionRequest.toSection(line, upStation, downStation));
+		lineRepository.save(line);
 	}
 }

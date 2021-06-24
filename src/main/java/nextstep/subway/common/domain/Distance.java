@@ -52,4 +52,10 @@ public class Distance {
 	public int hashCode() {
 		return Objects.hash(distance);
 	}
+
+	public void adjust(Distance distance) {
+		int adjustDistance = this.distance - distance.distance;
+		validateOverZero(adjustDistance);
+		this.distance = adjustDistance;
+	}
 }

@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationGroup;
 
 public class LineRequest {
 	private String name;

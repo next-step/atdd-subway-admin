@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 public class SectionGroup {
 
 	private static final int OUT_OF_INDEX = -1;
+	private static final int FIRST_INDEX = 0;
 	private static final int ADJUST_NEXT_INDEX = 1;
 
 	@OneToMany(cascade = CascadeType.ALL)
@@ -77,5 +78,36 @@ public class SectionGroup {
 	@Override
 	public int hashCode() {
 		return Objects.hash(sections);
+	}
+
+	public void newAdd(Section targetSection) {
+		if (sections.isEmpty()) {
+			sections.add(targetSection);
+			return;
+		}
+		int sourceSectionIndex = updateSectionRelatedWithTargetSection(targetSection);
+		addTargetSection(sourceSectionIndex, targetSection);
+	}
+
+	private int updateSectionRelatedWithTargetSection(Section targetSection) {
+		int sourceSectionIndex = targetSection.findSectionIndexWhenTargetSectionIsInner(this);
+		if (OUT_OF_INDEX < sourceSectionIndex) {
+			Section sourceSection = sections.get(sourceSectionIndex);
+			sourceSection.adjustUpStationOrDownStation(targetSection);
+			sourceSection.adjustDistance(targetSection);
+		}
+		return sourceSectionIndex;
+	}
+
+	private void addTargetSection(int sourceSectionIndex, Section targetSection) {
+		if (targetSection.isLastSection(this)) {
+			sections.add(sourceSectionIndex + ADJUST_NEXT_INDEX, targetSection);
+			return;
+		}
+		if (targetSection.isFirstSection(this)) {
+			sections.add(FIRST_INDEX, targetSection);
+			return;
+		}
+		sections.add(sourceSectionIndex, targetSection);
 	}
 }

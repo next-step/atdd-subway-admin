@@ -19,7 +19,6 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -260,11 +259,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		노선이_포함되어_있다(목록_조회_응답, Arrays.asList(이호선_응답, 사호선_응답));
 	}
 
-	private String 노선_등록되어_있음(LineRequest 노선정보) {
-		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(노선정보);
-		return 생성_응답.header("Location");
-	}
-
 	@DisplayName("지하철 노선을 조회한다.")
 	@Test
 	void getLine() {
@@ -433,7 +427,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		노선이_삭제된다(노선_삭제_응답);
 	}
 
-	private ExtractableResponse<Response> 노선_생성_요청(LineRequest params) {
+	private static ExtractableResponse<Response> 노선_생성_요청(LineRequest params) {
 		return RestAssured.given().log().all()
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -441,6 +435,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.post("/lines")
 			.then().log().all()
 			.extract();
+	}
+
+	public static String 노선_등록되어_있음(LineRequest 노선정보) {
+		ExtractableResponse<Response> 생성_응답 = 노선_생성_요청(노선정보);
+		return 생성_응답.header("Location");
 	}
 
 	private void 노선이_생성된다(ExtractableResponse<Response> 생성_응답) {
@@ -503,7 +502,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return response;
 	}
 
-	private ExtractableResponse<Response> 노선_조회_요청(String 노선_uri) {
+	public static ExtractableResponse<Response> 노선_조회_요청(String 노선_uri) {
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.when()
 			.get(노선_uri)
