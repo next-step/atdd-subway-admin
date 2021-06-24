@@ -1,4 +1,4 @@
-package nextstep.subway.station.domain;
+package nextstep.subway.station.exception;
 
 import javax.persistence.EntityNotFoundException;
 
