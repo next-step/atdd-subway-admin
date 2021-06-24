@@ -264,4 +264,21 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(addingSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         // 정렬된 노선 반환 확인 테스트
     }
+
+    @DisplayName("지하철_노선_여러_구간_추가시_역_정렬_확인")
+    @Test
+    void 지하철_노선_여러_구간_추가시_역_정렬_확인() {
+        // given
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 영등포구청역.getId(), 강남역.getId(), 기본_역간_거리));
+        Long savedLineId = ExtractableResponseUtil.extractIdInResponse(createResponse);
+
+        // when
+        지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 역삼역.getId(), 신도림역.getId(), 기본_역간_거리));
+        지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 신도림역.getId(), 서울대입구역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> addingSectionResponse = 지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 서울대입구역.getId(), 사당역.getId(), 기본_역간_거리));
+
+        // then
+        // 영등포구청역-강남역-역삼역-신도림역-서울대입구역-사당역 순서로 정렬 되어 있는지 확인
+    }
 }
