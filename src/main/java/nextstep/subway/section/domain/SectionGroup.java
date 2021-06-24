@@ -87,10 +87,6 @@ public class SectionGroup {
 		sections.add(sourceSectionIndex, targetSection);
 	}
 
-	private int lastSectionIndex() {
-		return sections.size();
-	}
-
 	public void sort() {
 		this.sections = new SectionGroup(sections.toArray(new Section[sections.size()])).sections;
 	}

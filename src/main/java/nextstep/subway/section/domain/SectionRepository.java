@@ -8,6 +8,4 @@ import nextstep.subway.line.domain.Line;
 
 public interface SectionRepository extends JpaRepository<Section, Long> {
 	List<Section> findAllByLine(Line line);
-
-	void deleteByLine(Line line);
 }

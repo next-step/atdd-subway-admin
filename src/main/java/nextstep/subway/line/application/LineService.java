@@ -34,10 +34,6 @@ public class LineService {
 		return LineResponse.of(persistLine);
 	}
 
-	private LineResponse changeSortedStations(Line persistLine) {
-		return LineResponse.of(persistLine);
-	}
-
 	@Transactional(readOnly = true)
 	public List<LineResponse> findAllLines() {
 		return lineRepository.findAll().stream()
@@ -48,7 +44,7 @@ public class LineService {
 	@Transactional(readOnly = true)
 	public LineResponse findLineById(Long id) {
 		Line persistLine = findLineByIdFromRepository(id);
-		return changeSortedStations(persistLine);
+		return LineResponse.of(persistLine);
 	}
 
 	private Line findLineByIdFromRepository(Long id) {
