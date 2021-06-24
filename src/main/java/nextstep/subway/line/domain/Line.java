@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -19,8 +20,10 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    @Column(name = "name", unique = true)
     private String name;
+
+    @Column(name="color")
     private String color;
 
     @Embedded
@@ -34,9 +37,9 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public Long getId() {
@@ -55,18 +58,13 @@ public class Line extends BaseEntity {
         return this.sections.getStations();
     }
 
-
     public Sections getSections() {
         return sections;
     }
 
     public void addSections(Station upwardStation, Station downStation, int distance) {
-        this.addSections(new Section(this, upwardStation, downStation, distance));
-    }
-
-    public void addSections(Section section) {
+        Section section = new Section(this, upwardStation, downStation, distance);
         this.sections.addSection(section);
-        section.setLine(this);
     }
 
     @Override
