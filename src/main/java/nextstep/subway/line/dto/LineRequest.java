@@ -69,6 +69,8 @@ public class LineRequest {
     public String toString() {
         return "LineRequest{" +
             "name='" + name + '\'' +
+            "upStationId='" + upStationId + '\'' +
+            "downStationId='" + downStationId + '\'' +
             ", color='" + color + '\'' +
             '}';
     }
