@@ -27,22 +27,16 @@ public class Section extends BaseEntity {
     @ManyToOne
     private Station downStation;
 
-    @Column(nullable = false)
+    @Column(name = "distance", nullable = false)
     private int distance;
 
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
-        this.setUpStation(upStation);
-        this.setDownStation(downStation);
-        this.distance = distance;
-    }
-
     public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.setLine(line);
-        this.setUpStation(upStation);
-        this.setDownStation(downStation);
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
@@ -54,24 +48,12 @@ public class Section extends BaseEntity {
         return line;
     }
 
-    public void setLine(Line line) {
-        this.line = line;
-    }
-
     public Station getUpStation() {
         return upStation;
     }
 
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
     public Station getDownStation() {
         return downStation;
-    }
-
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
     }
 
     public int getDistance() {
@@ -101,6 +83,9 @@ public class Section extends BaseEntity {
         return "Section{" +
             "id=" + id +
             ", line=" + line +
+            ", upStation=" + upStation +
+            ", downStation=" + downStation +
+            ", distance=" + distance +
             '}';
     }
 }
