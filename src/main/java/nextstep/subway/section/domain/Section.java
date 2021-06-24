@@ -43,4 +43,12 @@ public class Section extends BaseEntity {
     public List<Station> toStation() {
         return new LinkedList<>(Arrays.asList(this.upStation, this.downStation));
     }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
 }

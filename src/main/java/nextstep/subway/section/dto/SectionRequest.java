@@ -16,6 +16,10 @@ public class SectionRequest {
     @NotBlank
     private int distance;
 
+    public SectionRequest() {
+
+    }
+
     public SectionRequest(Long lineId, Long upStationId, Long downStationId, int distance) {
         this.lineId = lineId;
         this.upStationId = upStationId;

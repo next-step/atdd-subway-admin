@@ -5,10 +5,15 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
+import nextstep.subway.section.domain.Distance;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.springframework.boot.origin.Origin.from;
 
 @Service
 @Transactional
@@ -46,5 +51,13 @@ public class LineService {
     public void deleteLine(Long id) {
         Line deletingLine = lineRepository.findByIdWithUnWrapped(id);
         lineRepository.delete(deletingLine);
+    }
+
+    public LineResponse addSection(SectionRequest sectionRequest) {
+        Line foundLine = lineRepository.findByIdWithUnWrapped(sectionRequest.getLineId());
+        Station upStation = stationRepository.findByIdWithUnWrapped(sectionRequest.getDownStationId());
+        Station downStation = stationRepository.findByIdWithUnWrapped(sectionRequest.getUpStationId());
+        foundLine.addSection(new Section(foundLine, upStation, downStation, new Distance(sectionRequest.getDistance())));
+        return LineResponse.from(lineRepository.save(foundLine));
     }
 }
