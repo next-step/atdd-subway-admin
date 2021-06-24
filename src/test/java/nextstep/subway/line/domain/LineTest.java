@@ -37,7 +37,6 @@ class LineTest {
 
         //when
         line.getSections().addSection(new Section(강남역, 역삼역, 5));
-//        line.addSectionOld(new Section(강남역, 역삼역, 5));
 
         //then
         assertThat(line.getStations()).containsExactly(강남역, 역삼역, 잠실역);

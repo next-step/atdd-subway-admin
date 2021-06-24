@@ -42,10 +42,14 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-/*    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(RuntimeException::new);
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(RuntimeException::new);
+        Section section = sectionRepository.save(new Section(upStation, downStation, sectionRequest.getDistance()));
         Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        //line.getSections().stream().map()
-    }*/
+        section.addLine(line);
+        return LineResponse.of(line);
+    }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {

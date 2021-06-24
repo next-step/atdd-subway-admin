@@ -48,17 +48,6 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-/*    public void addSectionOld(Section section) {
-        this.sections.stream()
-                .filter(oldSection -> section.getUpStation() == oldSection.getUpStation() && oldSection.getDistance() > section.getDistance())
-                .findFirst()
-                .ifPresent(oldSection -> {
-                    sections.add(section);
-                    sections.add(new Section(section.getDownStation(), oldSection.getDownStation(), oldSection.getDistance()-section.getDistance()));
-                    sections.remove(oldSection);
-                });
-    }*/
-
     public Long getId() {
         return id;
     }
