@@ -253,12 +253,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철_노선_구간_추가")
     @Test
     void 지하철_노선_구간_추가() {
-//        private StationResponse 강남역;
-//        private StationResponse 역삼역;
-//        private StationResponse 서울대입구역;
-//        private StationResponse 신도림역;
-//        private StationResponse 사당역;
-//        private StationResponse 영등포구청역;
         // given
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
         Long savedLineId = ExtractableResponseUtil.extractIdInResponse(createResponse);
