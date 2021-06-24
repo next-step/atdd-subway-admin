@@ -22,21 +22,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 노선_생성() {
         // when
-        String upStationName = "강남역";
-        String downStationName = "역삼역";
         ExtractableResponse<Response> response
             = LineAcceptanceTool.지하철_노선_생성_요청("신분당선", "bg-red-600"
-            , upStationName, downStationName, 10);
+            , "강남역", "역삼역", 10);
 
         // then
         // 지하철_노선_생성됨
         LineResponse lineResponse = response.as(LineResponse.class);
 
+        노선생성시_상태헤더숫자생성이름_확인(response, lineResponse);
+    }
+
+    void 노선생성시_상태헤더숫자생성이름_확인(ExtractableResponse<Response> response, LineResponse lineResponse) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header(HttpHeaders.LOCATION)).isNotBlank();
         assertThat(lineResponse.getStations().size()).isEqualTo(2);
         assertThat(lineResponse.getStations().stream().map(Station::getName))
-            .contains(upStationName, downStationName);
+            .contains("강남역", "역삼역");
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -112,16 +114,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse1
             = LineAcceptanceTool.지하철_노선_생성_요청("신분당선", "bg-red-600"
             , "강남역", "역삼역", 10);
-        String updateLineName = "구분당선";
 
         // when
         // 지하철_노선_수정_요청
-        LineRequest modifiedLineRequest = new LineRequest(updateLineName, "bg-red-600"
-            , LineAcceptanceTool.getUpStationId(),
-            LineAcceptanceTool.getDownStationId()
-            , 10);
         ExtractableResponse<Response> response
-            = LineAcceptanceTool.지하철_노선_수정_요청(modifiedLineRequest
+            = LineAcceptanceTool.지하철_노선_수정_요청("구분당선"
+            , "bg-red-600"
             , createResponse1.header(HttpHeaders.LOCATION));
         LineResponse findUpdateLineResponse
             = LineAcceptanceTool.지하철_노선_조회_요청(createResponse1.header(HttpHeaders.LOCATION))
@@ -130,7 +128,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(findUpdateLineResponse.getName()).isEqualTo(updateLineName);
+        assertThat(findUpdateLineResponse.getName()).isEqualTo("구분당선");
     }
 
     @DisplayName("ID가 없는 노선을 수정 요청 하는 경우 오류 발생")
@@ -144,12 +142,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        LineRequest modifiedLineRequest = new LineRequest("구분당선", "bg-red-600"
-            , LineAcceptanceTool.getUpStationId(),
-            LineAcceptanceTool.getDownStationId()
-            , 10);
         ExtractableResponse<Response> response
-            = LineAcceptanceTool.지하철_노선_수정_요청(modifiedLineRequest
+            = LineAcceptanceTool.지하철_노선_수정_요청("구분당선"
+            , "bg-red-600"
             , createResponse1.header(HttpHeaders.LOCATION) + "00");
 
         // then

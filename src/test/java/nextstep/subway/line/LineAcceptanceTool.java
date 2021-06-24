@@ -76,11 +76,14 @@ public class LineAcceptanceTool extends AcceptanceTest {
             .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_수정_요청(LineRequest lineRequest,
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(String name, String color,
         String requestPath) {
+
+        LineRequest modifiedLineRequest = new LineRequest(name, color, upStationId, downStationId, 10);
+
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(lineRequest)
+            .body(modifiedLineRequest)
             .when()
             .put(requestPath)
             .then().log().all()

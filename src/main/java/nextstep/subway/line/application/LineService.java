@@ -30,9 +30,9 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public void updateLine(Long id, LineRequest request) {
+    public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findLineById(id);
-        line.update(this.lineRequestToLine(request));
+        line.update(lineRequest.getName(), lineRequest.getColor());
         this.lineRepository.save(line);
     }
 
