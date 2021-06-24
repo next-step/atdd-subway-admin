@@ -71,7 +71,7 @@ public class LineControllerTestSnippet {
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(format("/lines/%d/section",sectionRequest.getLineId()))
+                .post(format("/lines/%d/sections", sectionRequest.getLineId()))
                 .then().log().all()
                 .extract();
     }
