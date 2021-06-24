@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -8,6 +9,10 @@ import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static nextstep.subway.line.LineStepTest.*;
 import static nextstep.subway.station.StationAcceptanceTest.TEST_GANGNAM_STATION;
@@ -112,5 +117,32 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_삭제됨(response);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록한다.")
+    @Test
+    void addSectionBetweenStations() {
+        // given
+        long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
+
+        long dmcStationId = 지하철_역_등록되어_있음(new StationRequest("DMC역"));
+        long sangamStationId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
+        int distance = 10;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("downStationId", dmcStationId);
+        params.put("upStationId", sangamStationId);
+        params.put("distance", distance);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(BASE_LINE_URL + "/" + firstLineId + "sections")
+                .then().log().all().extract();
+
+        //then
+        지하철_노선_목록_응답됨(response);
     }
 }
