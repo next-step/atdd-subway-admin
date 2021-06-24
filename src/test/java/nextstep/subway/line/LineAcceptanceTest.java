@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.ExtractableResponseUtil;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -269,16 +271,24 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_여러_구간_추가시_역_정렬_확인() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 영등포구청역.getId(), 강남역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 역삼역.getId(), 신도림역.getId(), 기본_역간_거리));
         Long savedLineId = ExtractableResponseUtil.extractIdInResponse(createResponse);
+        List<Long> expectedResult = Arrays.asList(영등포구청역, 강남역, 역삼역, 신도림역, 서울대입구역, 사당역).stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
 
         // when
         지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
-        지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 역삼역.getId(), 신도림역.getId(), 기본_역간_거리));
+        지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 영등포구청역.getId(), 강남역.getId(), 기본_역간_거리));
         지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 신도림역.getId(), 서울대입구역.getId(), 기본_역간_거리));
         ExtractableResponse<Response> addingSectionResponse = 지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 서울대입구역.getId(), 사당역.getId(), 기본_역간_거리));
+        List<Long> actualResult = addingSectionResponse.jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
 
+        System.out.println("expectedResult" + expectedResult);
+        System.out.println("actualResult" + actualResult);
         // then
-        // 영등포구청역-강남역-역삼역-신도림역-서울대입구역-사당역 순서로 정렬 되어 있는지 확인
+        assertThat(actualResult).isEqualTo(expectedResult);
     }
 }
