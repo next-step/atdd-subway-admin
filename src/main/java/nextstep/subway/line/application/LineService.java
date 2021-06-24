@@ -64,7 +64,7 @@ public class LineService {
         lineRepository.delete(line);
     }
 
-    private Line findLineByLineId(Long id) {
+    protected Line findLineByLineId(Long id) {
         return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 

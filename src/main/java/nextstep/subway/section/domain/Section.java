@@ -43,6 +43,8 @@ public class Section extends BaseEntity {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        validStations(upStation, downStation);
+
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -51,6 +53,12 @@ public class Section extends BaseEntity {
 
     public List<Station> stations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    private void validStations(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException("상행역과 하행역이 같습니다.");
+        }
     }
 
 }
