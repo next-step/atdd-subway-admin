@@ -1,6 +1,5 @@
 package nextstep.subway.section.domain;
 
-import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Embedded;
@@ -118,47 +117,6 @@ public class Section extends BaseEntity {
 		return line;
 	}
 
-	public int distance() {
-		return distance.distance();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
-		if (!(object instanceof Section)) {
-			return false;
-		}
-		Section section = (Section)object;
-		return Objects.equals(id, section.id)
-			&& Objects.equals(line, section.line)
-			&& Objects.equals(upStation, section.upStation)
-			&& Objects.equals(downStation, section.downStation)
-			&& Objects.equals(distance, section.distance);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, line, upStation, downStation, distance);
-	}
-
-	public int findSectionIndexWithinUpStations(SectionGroup sectionGroup) {
-		return sectionGroup.sections().stream()
-			.filter(section -> section.upStation.equals(downStation))
-			.mapToInt(section -> sectionGroup.sections().indexOf(section))
-			.findFirst()
-			.orElse(OUT_OF_INDEX);
-	}
-
-	public int findSectionIndexWithinDownStations(SectionGroup sectionGroup) {
-		return sectionGroup.sections().stream()
-			.filter(section -> section.downStation.equals(upStation))
-			.mapToInt(section -> sectionGroup.sections().indexOf(section))
-			.findFirst()
-			.orElse(OUT_OF_INDEX);
-	}
-
 	public int findSectionIndexWhenTargetSectionIsInner(SectionGroup sectionGroup) {
 		return sectionGroup.sections().stream()
 			.filter(section -> section.downStation.equals(downStation) || section.upStation.equals(upStation))
@@ -191,5 +149,26 @@ public class Section extends BaseEntity {
 	public boolean isFirstSection(SectionGroup sectionGroup) {
 		return sectionGroup.sections().stream()
 			.anyMatch(section -> section.upStation.equals(downStation));
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+		if (!(object instanceof Section)) {
+			return false;
+		}
+		Section section = (Section)object;
+		return Objects.equals(id, section.id)
+			&& Objects.equals(line, section.line)
+			&& Objects.equals(upStation, section.upStation)
+			&& Objects.equals(downStation, section.downStation)
+			&& Objects.equals(distance, section.distance);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, line, upStation, downStation, distance);
 	}
 }

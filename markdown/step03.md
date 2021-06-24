@@ -225,10 +225,10 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 0-4-6.원본(next-step) git repository에서 merge된 나의 branch(gregolee)를 fetch : `git fetch upstream gregolee`
         - [x] 0-4-7.remote에서 가져온 나의 branch로 rebase : `git rebase upstream/gregolee`
         - [x] 0-4-7.gregolee -> step3로 체크아웃 : `git checkout -b step3`
-    - [ ] 0-5.리뷰어님의 리뷰를 반영한 코드로 수정
+    - [x] 0-5.리뷰어님의 리뷰를 반영한 코드로 수정
         - [x] 0-5-1.`SectionGroup.java` : `FetchType.EAGER` -> `FetchType.LAZY`
         - [x] 0-5-2.`SectionGroup.java` : `findSectionIndexWithinUpStations()` 객체에 메시지를 보내 비교해보기
-        - [ ] 0-5-2.`SectionService.java` : 불필요하다면 해당 서비스를 제거한다.
+        - [x] 0-5-2.`SectionService.java` : 불필요하다면 해당 서비스를 제거한다.
 - [x] 1.자바 코드 컨벤션을 위한 세팅
     - [x] 1-1.[gradle-editorconfig](https://naver.github.io/hackday-conventions-java/#editorconfig) 적용
     - [x] 1-2.[gradle-checkstyle](https://naver.github.io/hackday-conventions-java/#checkstyle) 적용
@@ -239,16 +239,16 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
 - [x] 3.분석 및 설계
     - [x] 3-1.step03.md 초안 작성
     - [x] 3-2.ATDD 작성
-- [ ] 4.구현
+- [x] 4.구현
     - [x] 4-1.HappyPath
         - [x] 4-1-1.Scenario: 지하철 노선 내 역 사이에 상행역 기준으로 새로운 역을 등록한다.
         - [x] 4-1-2.Scenario: 지하철 노선 내 역 사이에 하행역 기준으로 새로운 역을 등록한다.
         - [x] 4-1-3.Scenario: 지하철 노선 내 새로운 역을 상행 종점으로 등록한다.
         - [x] 4-1-4.Scenario: 지하철 노선 내 새로운 역을 하행 종점으로 등록한다.
-    - [ ] 4-2.Exception
-        - [ ] 4-2-1.Scenario: 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.
-        - [ ] 4-2-2.Scenario: 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.
-        - [ ] 4-2-3.Scenario: 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.
+    - [x] 4-2.Exception
+        - [x] 4-2-1.Scenario: 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.
+        - [x] 4-2-2.Scenario: 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.
+        - [x] 4-2-3.Scenario: 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.
 - [ ] 5.테스트
     - [ ] 5-1.Gradle build Success 확인
     - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)

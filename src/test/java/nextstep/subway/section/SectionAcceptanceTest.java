@@ -113,7 +113,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// given
 		String 하행종점역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("하행종점역"));
 		int 고속터미널역_하행종점역_간격 = 40;
-		SectionRequest 구간정보 = new SectionRequest(Long.parseLong(고속터미널역_아이디), Long.parseLong(하행종점역_아이디), 고속터미널역_하행종점역_간격);
+		SectionRequest 구간정보 = new SectionRequest(Long.parseLong(고속터미널역_아이디), Long.parseLong(하행종점역_아이디),
+			고속터미널역_하행종점역_간격);
 
 		// when
 		ExtractableResponse<Response> 구간_생성_응답 = 구간_생성_요청(칠호선_아이디, 구간정보);
@@ -121,6 +122,55 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// then
 		구간이_생성된다(구간_생성_응답);
 		노선에_역정보들_포함_및_순서가_일치한다(칠호선_url, Arrays.asList(이수역_아이디, 고속터미널역_아이디, 하행종점역_아이디));
+	}
+
+	@DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
+	@Test
+	void addSectionOverDistance() {
+		// given
+		String 중간역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("중간역"));
+		int 이수역_중간역_간격 = 100;
+		SectionRequest 구간정보 = new SectionRequest(Long.parseLong(이수역_아이디), Long.parseLong(중간역_아이디), 이수역_중간역_간격);
+
+		// when
+		ExtractableResponse<Response> 구간_생성_응답 = 구간_생성_요청(칠호선_아이디, 구간정보);
+
+		// then
+		구간이_생성_실패한다(구간_생성_응답);
+		노선에_역정보들_포함_및_순서가_일치한다(칠호선_url, Arrays.asList(이수역_아이디, 고속터미널역_아이디));
+	}
+
+	@DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
+	@Test
+	void addSectionAlreadyRegistedUpStationAndDownStation() {
+		// given
+		SectionRequest 구간정보 = new SectionRequest(Long.parseLong(고속터미널역_아이디), Long.parseLong(이수역_아이디),
+			Integer.parseInt(이수역_고속터미널역_간격));
+
+		// when
+		ExtractableResponse<Response> 구간_생성_응답 = 구간_생성_요청(칠호선_아이디, 구간정보);
+
+		// then
+		구간이_생성_실패한다(구간_생성_응답);
+		노선에_역정보들_포함_및_순서가_일치한다(칠호선_url, Arrays.asList(이수역_아이디, 고속터미널역_아이디));
+	}
+
+	@DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
+	@Test
+	void addSectionDoNotRegistedUpStationAndDownStation() {
+		// given
+		String 상행종점역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("상행종점역"));
+		String 하행종점역_아이디 = StationAcceptanceTest.지하철_역_등록되어_있음_아이디_응답(new StationRequest("하행종점역"));
+		int 상행종점역_하행종점역_간격 = 40;
+		SectionRequest 구간정보 = new SectionRequest(Long.parseLong(상행종점역_아이디), Long.parseLong(하행종점역_아이디),
+			상행종점역_하행종점역_간격);
+
+		// when
+		ExtractableResponse<Response> 구간_생성_응답 = 구간_생성_요청(칠호선_아이디, 구간정보);
+
+		// then
+		구간이_생성_실패한다(구간_생성_응답);
+		노선에_역정보들_포함_및_순서가_일치한다(칠호선_url, Arrays.asList(이수역_아이디, 고속터미널역_아이디));
 	}
 
 	private void 구간이_생성된다(ExtractableResponse<Response> 구간_생성_응답) {
@@ -137,5 +187,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.map(Long::parseLong)
 			.collect(Collectors.toList());
 		assertThat(응답된_역_아이디들).containsAll(예상_역_아이디들);
+	}
+
+	private void 구간이_생성_실패한다(ExtractableResponse<Response> 구간_생성_응답) {
+		assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 }

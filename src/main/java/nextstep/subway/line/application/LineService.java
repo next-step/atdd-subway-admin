@@ -12,8 +12,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.application.SectionService;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
@@ -21,15 +19,11 @@ import nextstep.subway.station.domain.Station;
 @Service
 @Transactional
 public class LineService {
-	private static final int ADJUST_NEXT_INDEX = 1;
-
 	private StationService stationService;
-	private SectionService sectionService;
 	private LineRepository lineRepository;
 
-	public LineService(StationService stationService, SectionService sectionService, LineRepository lineRepository) {
+	public LineService(StationService stationService, LineRepository lineRepository) {
 		this.stationService = stationService;
-		this.sectionService = sectionService;
 		this.lineRepository = lineRepository;
 	}
 
@@ -75,7 +69,7 @@ public class LineService {
 		Line line = findLineByIdFromRepository(lineId);
 		Station upStation = stationService.findStationByIdFromRepository(sectionRequest.getUpStationId());
 		Station downStation = stationService.findStationByIdFromRepository(sectionRequest.getDownStationId());
-		line.sectionGroup().newAdd(sectionRequest.toSection(line, upStation, downStation));
+		line.sectionGroup().add(sectionRequest.toSection(line, upStation, downStation));
 		lineRepository.save(line);
 	}
 }

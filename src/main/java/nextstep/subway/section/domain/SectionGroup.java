@@ -12,12 +12,15 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.exception.CannotAddNewSectionException;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationGroup;
+
 @Embeddable
 public class SectionGroup {
 
 	private static final int OUT_OF_INDEX = -1;
 	private static final int FIRST_INDEX = 0;
-	private static final int ADJUST_NEXT_INDEX = 1;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "section_id", foreignKey = @ForeignKey(name = "fk_line_section"))
@@ -27,39 +30,69 @@ public class SectionGroup {
 	}
 
 	public SectionGroup(Section... sections) {
-		this.sections = Arrays.stream(sections).collect(Collectors.toList());
-	}
-
-	public void add(Section section) {
-		if (sections.isEmpty()) {
-			sections.add(section);
-			return;
-		}
-		addSectionWhenFoundDownStation(section);
-		addSectionWhenFoundUpStation(section);
-		adjustSectionsNoDuplicated();
-	}
-
-	private void adjustSectionsNoDuplicated() {
-		sections.stream().distinct();
-	}
-
-	private void addSectionWhenFoundUpStation(Section targetSection) {
-		int sectionIndex = targetSection.findSectionIndexWithinUpStations(this);
-		if (OUT_OF_INDEX < sectionIndex && !sections.contains(targetSection)) {
-			sections.add(sectionIndex, targetSection);
-		}
-	}
-
-	private void addSectionWhenFoundDownStation(Section targetSection) {
-		int sectionIndex = targetSection.findSectionIndexWithinDownStations(this);
-		if (OUT_OF_INDEX < sectionIndex && !sections.contains(targetSection)) {
-			sections.add(sectionIndex + ADJUST_NEXT_INDEX, targetSection);
-		}
+		Arrays.stream(sections).forEach(this::add);
 	}
 
 	public List<Section> sections() {
 		return sections;
+	}
+
+	public StationGroup stationGroup() {
+		return sections.stream()
+			.flatMap(section -> Arrays.stream(new Station[] {section.upStation(), section.downStation()}))
+			.distinct()
+			.collect(Collectors.collectingAndThen(Collectors.toList(), StationGroup::new));
+	}
+
+	public void add(Section targetSection) {
+		if (sections.isEmpty()) {
+			sections.add(targetSection);
+			return;
+		}
+		checkAddSection(targetSection);
+		int sourceSectionIndex = updateSectionRelatedWithTargetSection(targetSection);
+		addTargetSection(sourceSectionIndex, targetSection);
+	}
+
+	private void checkAddSection(Section targetSection) {
+		boolean isExistUpStation = stationGroup().contains(targetSection.upStation());
+		boolean isExistDownStation = stationGroup().contains(targetSection.downStation());
+		if (isExistUpStation && isExistDownStation) {
+			throw new CannotAddNewSectionException("해당 노선에 상행역과 하행역이 등록되어있는 상태입니다.");
+		}
+		if (!isExistUpStation && !isExistDownStation) {
+			throw new CannotAddNewSectionException("상행역과 하행역 중 하나도 해당 노선에 등록되어있지 않습니다.");
+		}
+	}
+
+	private int updateSectionRelatedWithTargetSection(Section targetSection) {
+		int sourceSectionIndex = targetSection.findSectionIndexWhenTargetSectionIsInner(this);
+		if (OUT_OF_INDEX < sourceSectionIndex) {
+			Section sourceSection = sections.get(sourceSectionIndex);
+			sourceSection.adjustUpStationOrDownStation(targetSection);
+			sourceSection.adjustDistance(targetSection);
+		}
+		return sourceSectionIndex;
+	}
+
+	private void addTargetSection(int sourceSectionIndex, Section targetSection) {
+		if (targetSection.isLastSection(this)) {
+			sections.add(targetSection);
+			return;
+		}
+		if (targetSection.isFirstSection(this)) {
+			sections.add(FIRST_INDEX, targetSection);
+			return;
+		}
+		sections.add(sourceSectionIndex, targetSection);
+	}
+
+	private int lastSectionIndex() {
+		return sections.size();
+	}
+
+	public void sort() {
+		this.sections = new SectionGroup(sections.toArray(new Section[sections.size()])).sections;
 	}
 
 	@Override
@@ -78,36 +111,5 @@ public class SectionGroup {
 	@Override
 	public int hashCode() {
 		return Objects.hash(sections);
-	}
-
-	public void newAdd(Section targetSection) {
-		if (sections.isEmpty()) {
-			sections.add(targetSection);
-			return;
-		}
-		int sourceSectionIndex = updateSectionRelatedWithTargetSection(targetSection);
-		addTargetSection(sourceSectionIndex, targetSection);
-	}
-
-	private int updateSectionRelatedWithTargetSection(Section targetSection) {
-		int sourceSectionIndex = targetSection.findSectionIndexWhenTargetSectionIsInner(this);
-		if (OUT_OF_INDEX < sourceSectionIndex) {
-			Section sourceSection = sections.get(sourceSectionIndex);
-			sourceSection.adjustUpStationOrDownStation(targetSection);
-			sourceSection.adjustDistance(targetSection);
-		}
-		return sourceSectionIndex;
-	}
-
-	private void addTargetSection(int sourceSectionIndex, Section targetSection) {
-		if (targetSection.isLastSection(this)) {
-			sections.add(sourceSectionIndex + ADJUST_NEXT_INDEX, targetSection);
-			return;
-		}
-		if (targetSection.isFirstSection(this)) {
-			sections.add(FIRST_INDEX, targetSection);
-			return;
-		}
-		sections.add(sourceSectionIndex, targetSection);
 	}
 }

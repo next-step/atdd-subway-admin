@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import nextstep.subway.exception.CannotAddNewSectionException;
 import nextstep.subway.exception.NotFoundException;
 
 @RestControllerAdvice
@@ -17,6 +18,11 @@ public class ControllerAdvice {
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
+		return ResponseEntity.badRequest().build();
+	}
+
+	@ExceptionHandler(CannotAddNewSectionException.class)
+	public ResponseEntity handleCannotAddNewSectionException(CannotAddNewSectionException e) {
 		return ResponseEntity.badRequest().build();
 	}
 
