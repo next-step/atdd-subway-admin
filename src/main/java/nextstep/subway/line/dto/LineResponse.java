@@ -81,6 +81,7 @@ public class LineResponse {
     public String toString() {
         return "LineResponse{" +
             "id=" + id +
+            "stations=" + stations.toString() +
             ", name='" + name + '\'' +
             ", color='" + color + '\'' +
             '}';
