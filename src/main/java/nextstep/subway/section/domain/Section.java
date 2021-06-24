@@ -4,14 +4,12 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.List;
 
 @Entity
 public class Section {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,10 +38,6 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
-    public List<Station> getUpDownStation() {
-        return Arrays.asList(upStation, downStation);
-    }
-
     public Line getLine() {
         return line;
     }
@@ -58,5 +52,14 @@ public class Section {
 
     public int getDistance() {
         return distance.getDistance();
+    }
+
+
+    public int getDistanceIfInRange(Section section) {
+        return this.distance.subtract(section.getDistance());
+    }
+
+    public void changeDownStation(Station upStation) {
+        this.downStation = upStation;
     }
 }

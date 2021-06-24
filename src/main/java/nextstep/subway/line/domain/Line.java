@@ -35,13 +35,18 @@ public class Line extends BaseEntity {
         addSection(upStation, downStation, distance);
     }
 
-    public void addSection(Station upStation, Station downStation, int distance) {
-        sections.add(new Section(this, upStation, downStation, distance));
+    public List<Section> getSections() {
+        return sections.getSectionsInOrder();
     }
 
-
     public List<Station> getStations() {
-        return this.sections.getStations();
+        return sections.getStationsInOrder();
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        Section upStationSection = new Section(this, null, upStation, 0);
+        Section downStationSection = new Section(this, upStation, downStation, distance);
+        sections.addAll(upStationSection, downStationSection);
     }
 
     public Long getId() {
@@ -59,5 +64,9 @@ public class Line extends BaseEntity {
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void addNewSection(Section newSection) {
+        sections.addSection(newSection);
     }
 }

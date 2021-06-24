@@ -3,7 +3,9 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +41,11 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping(value = "/{lineId}/sections")
+    public ResponseEntity addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        return ResponseEntity.ok().body(lineService.addNewSection(lineId, sectionRequest));
+    }
+
     @PutMapping(value = "/{id}", consumes = MediaType.ALL_VALUE)
     public ResponseEntity updateLine(@RequestBody LineRequest lineRequest, @PathVariable Long id) {
         return ResponseEntity.ok().build();
@@ -55,4 +62,13 @@ public class LineController {
         return ResponseEntity.badRequest().build();
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity handleRuntimeException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 }
