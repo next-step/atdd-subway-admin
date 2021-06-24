@@ -26,6 +26,12 @@ public class LineRequest {
         this.distance = distance;
     }
 
+    public LineRequest(long upStationId, long downStationId, long distance) {
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
+
     public Line toLine() {
         return new Line(name, color);
     }

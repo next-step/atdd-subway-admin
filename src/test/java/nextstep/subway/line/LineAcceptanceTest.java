@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,15 +130,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long sangamStationId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
         int distance = 10;
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("downStationId", dmcStationId);
-        params.put("upStationId", sangamStationId);
-        params.put("distance", distance);
-
+        LineRequest request = new LineRequest(dmcStationId, sangamStationId, distance);
         // when
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(BASE_LINE_URL + "/" + firstLineId + "sections")
                 .then().log().all().extract();
