@@ -34,24 +34,18 @@ public class LineService {
 	}
 
 	public LineResponse findById(Long id) {
-		Optional<Line> line = lineRepository.findById(id);
-		return LineResponse.of(line.get());
+		Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
+		return LineResponse.of(line);
 	}
 
-	public void updateLine(Long id, LineRequest request){
-		Optional<Line> line = lineRepository.findById(id);
-		if (!line.isPresent()) {
-			throw new IllegalArgumentException("노선이 존재하지 않습니다.");
-		}
+	public void updateLine(Long id, LineRequest request) {
+		Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
 
-		line.get().update(request.toLine());
+		line.update(request.toLine());
 	}
 
-	public void deleteLine(Long id){
-		Optional<Line> line = lineRepository.findById(id);
-		if (!line.isPresent()) {
-			throw new IllegalArgumentException("노선이 존재하지 않습니다.");
-		}
+	public void deleteLine(Long id) {
+		lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
 
 		lineRepository.deleteById(id);
 	}
