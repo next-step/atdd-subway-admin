@@ -22,7 +22,7 @@ public class Sections {
     public List<Station> toStations() {
         LinkedList<Section> storage = new LinkedList<>();
         Section section = values.get(0);
-        storage.addAll(section);
+        storage.add(section);
         addAllUpSections(storage, section);
         addAllDownSections(storage, section);
         return storage.stream()
