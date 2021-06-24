@@ -5,9 +5,9 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
-
-import static java.util.stream.Collectors.toList;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 @Embeddable
 public class Sections {
@@ -20,43 +20,38 @@ public class Sections {
     }
 
     public List<Station> toStations() {
-        LinkedList<Section> storage = new LinkedList<>();
+        LinkedList<Station> storage = new LinkedList<>();
         Section section = values.get(0);
-        storage.add(section);
-        addAllUpSections(storage, section);
-        addAllDownSections(storage, section);
-        return storage.stream()
-                .map(Section::toStation)
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(toList());
+        addAllUpSections(storage, section.getUpStation());
+        addAllDownSections(storage, section.getDownStation());
+        return storage;
     }
 
-    private void addAllUpSections(LinkedList<Section> storage, Section section) {
-        storage.addFirst(section);
-        Optional<Section> foundSection = findSectionByUpStation(section.getUpStation());
-        if(foundSection.isPresent()) {
-            addAllUpSections(storage, foundSection.get());
+    private void addAllUpSections(LinkedList<Station> storage, Station upStation) {
+        storage.addFirst(upStation);
+        Section foundSection = findSectionByUpStation(upStation);
+        if (foundSection.getUpStation() != null) {
+            addAllUpSections(storage, foundSection.getUpStation());
         }
     }
 
-    private void addAllDownSections(LinkedList<Section> storage, Section section) {
-        Optional<Section> foundSection = findSectionByDownStation(section.getDownStation());
-        if(foundSection.isPresent()) {
-            storage.addLast(foundSection.get());
-            addAllDownSections(storage, foundSection.get());
+    private void addAllDownSections(LinkedList<Station> storage, Station downStation) {
+        storage.addLast(downStation);
+        Section foundSection = findSectionByDownStation(downStation);
+        if (foundSection.getDownStation() != null) {
+            addAllDownSections(storage, foundSection.getDownStation());
         }
     }
 
-    private Optional<Section> findSectionByUpStation(Station upStation) {
+    private Section findSectionByUpStation(Station upStation) {
         return values.stream()
-                .filter(section -> section.getDownStation().getId() == upStation.getId())
-                .findFirst();
+                .filter(section -> section.getDownStation().getId().equals(upStation.getId()))
+                .findFirst().orElse(new Section());
     }
 
-    private Optional<Section> findSectionByDownStation(Station downStation) {
+    private Section findSectionByDownStation(Station downStation) {
         return values.stream()
-                .filter(section -> section.getUpStation().getId() == downStation.getId())
-                .findFirst();
+                .filter(section -> section.getUpStation().getId().equals(downStation.getId()))
+                .findFirst().orElse(new Section());
     }
 }
