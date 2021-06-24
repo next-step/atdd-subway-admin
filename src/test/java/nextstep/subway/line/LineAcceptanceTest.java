@@ -6,6 +6,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.ExtractableResponseUtil;
@@ -28,10 +29,13 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class LineAcceptanceTest extends AcceptanceTest {
 
     private final int 기본_역간_거리 = 30;
+
     private StationResponse 강남역;
     private StationResponse 역삼역;
     private StationResponse 서울대입구역;
     private StationResponse 신도림역;
+    private StationResponse 사당역;
+    private StationResponse 영등포구청역;
 
     @BeforeEach
     void 지하철_역_생성() {
@@ -39,6 +43,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         역삼역 = 지하철_역_생성_요청(new StationRequest("역삼역")).as(StationResponse.class);
         서울대입구역 = 지하철_역_생성_요청(new StationRequest("서울대입구역")).as(StationResponse.class);
         신도림역 = 지하철_역_생성_요청(new StationRequest("신도림역")).as(StationResponse.class);
+        사당역 = 지하철_역_생성_요청(new StationRequest("사당역")).as(StationResponse.class);
+        영등포구청역 = 지하철_역_생성_요청(new StationRequest("영등포구청역")).as(StationResponse.class);
     }
 
     @DisplayName("지하철_중복_노선_생성_예외_중복된_이름")
@@ -242,5 +248,26 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @DisplayName("지하철_노선_구간_추가")
+    @Test
+    void 지하철_노선_구간_추가() {
+//        private StationResponse 강남역;
+//        private StationResponse 역삼역;
+//        private StationResponse 서울대입구역;
+//        private StationResponse 신도림역;
+//        private StationResponse 사당역;
+//        private StationResponse 영등포구청역;
+        // given
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        Long savedLineId = ExtractableResponseUtil.extractIdInResponse(createResponse);
+
+        // when
+        ExtractableResponse<Response> addingSectionResponse = 지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 서울대입구역.getId(), 역삼역.getId(), 기본_역간_거리));
+
+        // then
+        assertThat(addingSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        // 정렬된 노선 반환 확인 테스트
     }
 }
