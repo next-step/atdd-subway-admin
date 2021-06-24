@@ -51,4 +51,15 @@ public class Section extends BaseEntity {
     public Station getDownStation() {
         return downStation;
     }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
+    }
 }

@@ -55,8 +55,8 @@ public class LineService {
 
     public LineResponse addSection(SectionRequest sectionRequest) {
         Line foundLine = lineRepository.findByIdWithUnWrapped(sectionRequest.getLineId());
-        Station upStation = stationRepository.findByIdWithUnWrapped(sectionRequest.getDownStationId());
-        Station downStation = stationRepository.findByIdWithUnWrapped(sectionRequest.getUpStationId());
+        Station upStation = stationRepository.findByIdWithUnWrapped(sectionRequest.getUpStationId());
+        Station downStation = stationRepository.findByIdWithUnWrapped(sectionRequest.getDownStationId());
         foundLine.addSection(new Section(foundLine, upStation, downStation, new Distance(sectionRequest.getDistance())));
         return LineResponse.from(lineRepository.save(foundLine));
     }
