@@ -249,13 +249,13 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 4-2-1.Scenario: 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.
         - [x] 4-2-2.Scenario: 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.
         - [x] 4-2-3.Scenario: 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.
-- [ ] 5.테스트
-    - [ ] 5-1.Gradle build Success 확인
-    - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)
-    - [ ] 5-3.요구사항 조건들 충족했는지 확인
-        - [ ] 5-3-1.핵심 단위 로직 테스트 
-    - [ ] 5-4.인수 테스트 확인
-    - [ ] 5-5.UI 테스트 확인
+- [x] 5.테스트
+    - [x] 5-1.Gradle build Success 확인
+    - [x] 5-2.checkstyle 문제없는지 확인 (Java Convention)
+    - [x] 5-3.요구사항 조건들 충족했는지 확인
+        - [x] 5-3-1.핵심 단위 로직 테스트 
+    - [x] 5-4.인수 테스트 확인
+    - [x] 5-5.UI 테스트 확인
 - [ ] 6.인수인계
     - [ ] 6-1.소감 및 피드백 정리
         - [ ] 6-1-1.느낀점 & 배운점 작성
