@@ -1,6 +1,5 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -14,7 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.station.ui.StationControllerTestSnippet.지하철_역_생성_요청;
+import static java.lang.Long.valueOf;
+import static nextstep.subway.station.ui.StationControllerTestSnippet.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -52,11 +52,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse2 = 지하철_역_생성_요청(new StationRequest("역삼역"));
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철_역_목록_조회_요청();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -76,12 +72,8 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = 지하철_역_생성_요청(new StationRequest("강남역"));
 
         // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        Long id = valueOf(createResponse.header("Location").split("/")[2]);
+        ExtractableResponse<Response> response = 지하철_역_삭제_요청(id);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

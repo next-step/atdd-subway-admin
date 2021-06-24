@@ -17,4 +17,20 @@ public class StationControllerTestSnippet {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_역_목록_조회_요청() {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_역_삭제_요청(Long id) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete("/stations/" + id)
+                .then().log().all()
+                .extract();
+    }
 }
