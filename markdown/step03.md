@@ -236,18 +236,19 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
     - [x] 1-4.[Github](https://naver.github.io/hackday-conventions-java/#_github) 적용
 - [x] 2.학습
     - [x] 2-1.이번 단계에는 없습니다.
-- [ ] 3.분석 및 설계
+- [x] 3.분석 및 설계
     - [x] 3-1.step03.md 초안 작성
-    - [ ] 3-2.ATDD 작성
+    - [x] 3-2.ATDD 작성
 - [ ] 4.구현
     - [ ] 4-1.HappyPath
-        - [ ] 4-1-1.Scenario. 역 사이에 새로운 역을 등록할 경우
-        - [ ] 4-1-2.Scenario. 새로운 역을 상행 종점으로 등록할 경우
-        - [ ] 4-1-3.Scenario. 새로운 역을 하행 종점으로 등록할 경우
+        - [ ] 4-1-1.Scenario: 지하철 노선 내 역 사이에 상행역 기준으로 새로운 역을 등록한다.
+        - [ ] 4-1-2.Scenario: 지하철 노선 내 역 사이에 하행역 기준으로 새로운 역을 등록한다.
+        - [ ] 4-1-3.Scenario: 지하철 노선 내 새로운 역을 상행 종점으로 등록한다.
+        - [ ] 4-1-4.Scenario: 지하철 노선 내 새로운 역을 하행 종점으로 등록한다.
     - [ ] 4-2.Exception
-        - [ ] 4-2-1.Scenario. 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
-        - [ ] 4-2-2.Scenario. 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
-        - [ ] 4-2-3.Scenario. 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+        - [ ] 4-2-1.Scenario: 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.
+        - [ ] 4-2-2.Scenario: 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.
+        - [ ] 4-2-3.Scenario: 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.
 - [ ] 5.테스트
     - [ ] 5-1.Gradle build Success 확인
     - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)
