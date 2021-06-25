@@ -12,7 +12,7 @@ public interface LineRepository extends JpaRepository<Line, Long> {
 
     List<Line> findByNameContainingAndColorContaining(String name, String color);
 
-    default Line findByIdWithUnWrapped(Long id) {
+    default Line getById(Long id) {
         Optional<Line> optionalStation = findById(id);
         return optionalStation.orElseThrow(()-> new EntityNotFoundException(NOT_FOUND_MESSAGE.apply(id, "노선")));
     }

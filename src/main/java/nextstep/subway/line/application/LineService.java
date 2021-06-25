@@ -13,8 +13,6 @@ import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.function.BiFunction;
-
 import static java.lang.String.format;
 
 @Service
@@ -29,14 +27,14 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findByIdWithUnWrapped(request.getUpStationId());
-        Station downStation = stationRepository.findByIdWithUnWrapped(request.getDownStationId());
+        Station upStation = stationRepository.getById(request.getUpStationId());
+        Station downStation = stationRepository.getById(request.getDownStationId());
         Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.from(persistLine);
     }
 
     public LineResponse getLineById(Long id) {
-        return LineResponse.from(lineRepository.findByIdWithUnWrapped(id));
+        return LineResponse.from(lineRepository.getById(id));
     }
 
     public LinesResponse getLines(LineRequest lineRequest) {
@@ -44,21 +42,21 @@ public class LineService {
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line updatingLine = lineRepository.findByIdWithUnWrapped(id);
+        Line updatingLine = lineRepository.getById(id);
         updatingLine.update(lineRequest.getName(), lineRequest.getColor());
 
         return LineResponse.from(lineRepository.save(updatingLine));
     }
 
     public void deleteLine(Long id) {
-        Line deletingLine = lineRepository.findByIdWithUnWrapped(id);
+        Line deletingLine = lineRepository.getById(id);
         lineRepository.delete(deletingLine);
     }
 
     public LineResponse addSection(SectionRequest sectionRequest) {
-        Line foundLine = lineRepository.findByIdWithUnWrapped(sectionRequest.getLineId());
-        Station upStation = stationRepository.findByIdWithUnWrapped(sectionRequest.getUpStationId());
-        Station downStation = stationRepository.findByIdWithUnWrapped(sectionRequest.getDownStationId());
+        Line foundLine = lineRepository.getById(sectionRequest.getLineId());
+        Station upStation = stationRepository.getById(sectionRequest.getUpStationId());
+        Station downStation = stationRepository.getById(sectionRequest.getDownStationId());
         foundLine.addSection(new Section(foundLine, upStation, downStation, new Distance(sectionRequest.getDistance())));
         return LineResponse.from(lineRepository.save(foundLine));
     }

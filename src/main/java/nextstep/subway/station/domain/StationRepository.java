@@ -12,7 +12,7 @@ public interface StationRepository extends JpaRepository<Station, Long> {
     @Override
     List<Station> findAll();
 
-    default Station findByIdWithUnWrapped(Long id) {
+    default Station getById(Long id) {
         Optional<Station> optionalStation = findById(id);
         return optionalStation.orElseThrow(()-> new EntityNotFoundException(NOT_FOUND_MESSAGE.apply(id, "역")));
     }
