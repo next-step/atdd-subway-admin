@@ -5,7 +5,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Distance {
 
-    int value;
+    private int value;
 
     protected Distance() {
 
