@@ -44,6 +44,7 @@
 - [ ] 구간을 톻한 역 목록 조회 구조 개선
 - [x] @ResponseBody @ControllerAdvice -> @RestControllerAdvice
 - [ ] 미사용 메소드 삭제
+- [ ] findByIdWithUnWrapped 메소드의 이름을 getById로 변경
 
 ## 추가 개선 목록
 - [x] 지하철 역 인수 테스트 내 주요 메소드의 별도 클래스 분리
