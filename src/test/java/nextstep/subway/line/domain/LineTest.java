@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import static nextstep.subway.common.Constants.SECOND_LINE_COLOR;
 import static nextstep.subway.common.Constants.SECOND_LINE_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
 
@@ -26,7 +27,7 @@ class LineTest {
         assertThat(line.getStations()).containsExactly(강남역, 역삼역, 잠실역);
     }
 
-    @DisplayName("Line_역 사이에 새로운 역을 등록할 경우")
+    @DisplayName("LineTest_Line_역 사이에 새로운 역을 등록할 경우")
     @Test
     void Line_addSection_성공케이스_역사이에_새로운역_등록() {
         //given
@@ -40,9 +41,118 @@ class LineTest {
 
         //then
         assertThat(line.getStations()).containsExactly(강남역, 역삼역, 잠실역);
-        /*assertThat(line.getSections().stream()
-                .filter(section -> section.getUpStation().getName().equals("강남역"))
-                .findFirst().get().getDistance()).isEqualTo(5);*/
+
+        line.getSections().forEach(section -> {
+            if (section.getUpStation().getName().equals("강남역"))
+                assertThat(section.getDistance()).isEqualTo(5);
+        });
+    }
+
+    @DisplayName("LineTest_새로운역을_상행종점으로_등록할 경우")
+    @Test
+    void Line_addSection_성공케이스_새로운역을_상행종점으로_등록() {
+        //given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 잠실역 = new Station("잠실역");
+
+        Line line = new Line(SECOND_LINE_NAME,SECOND_LINE_COLOR, new Section(역삼역, 잠실역, 5));
+
+        //when
+        line.getSections().addSection(new Section(강남역, 역삼역, 5));
+
+        //then
+        assertThat(line.getStations()).containsExactly(강남역, 역삼역, 잠실역);
+
+        line.getSections().forEach(section -> {
+            if (section.getUpStation().getName().equals("강남역"))
+                assertThat(section.getDistance()).isEqualTo(5);
+        });
+    }
+
+    @DisplayName("LineTest_새로운역을_하행종점으로_등록할 경우")
+    @Test
+    void Line_addSection_성공케이스_새로운역을_하행종점으로_등록() {
+        //given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 잠실역 = new Station("잠실역");
+
+        Line line = new Line(SECOND_LINE_NAME,SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+
+        //when
+        line.getSections().addSection(new Section(역삼역, 잠실역, 5));
+
+        //then
+        assertThat(line.getStations()).containsExactly(강남역, 역삼역, 잠실역);
+
+        line.getSections().forEach(section -> {
+            if (section.getUpStation().getName().equals("강남역"))
+                assertThat(section.getDistance()).isEqualTo(5);
+        });
+    }
+
+    @DisplayName("LineTest_예외케이스_역사이에_등록시_새로운역구간이_더큰경우")
+    @Test
+    void Line_addSection_예외케이스_새로운역구간이_기존구간사이보다큼() {
+        //given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 잠실역 = new Station("잠실역");
+
+        Line line = new Line(SECOND_LINE_NAME,SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+
+        //when-then
+        assertThatThrownBy(() ->line.getSections().addSection(new Section(강남역, 잠실역, 10)))
+                .isInstanceOf(RuntimeException.class);
+        assertThat(line.getStations()).containsExactly(강남역, 역삼역);
+        line.getSections().forEach(section -> {
+            if (section.getUpStation().getName().equals("강남역"))
+                assertThat(section.getDistance()).isEqualTo(5);
+        });
+
+    }
+
+    @DisplayName("LineTest_예외케이스_상행역_하행역_모두_이미노선에_등록된경우")
+    @Test
+    void Line_addSection_예외케이스_상행역하행역모두_이미노선에등록됨() {
+        //given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 잠실역 = new Station("잠실역");
+
+        Line line = new Line(SECOND_LINE_NAME,SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+
+        //when-then
+        assertThatThrownBy(() ->line.getSections().addSection(new Section(강남역, 역삼역, 5)))
+                .isInstanceOf(RuntimeException.class);
+        //then
+        assertThat(line.getStations()).containsExactly(강남역, 역삼역);
+
+        line.getSections().forEach(section -> {
+            if (section.getUpStation().getName().equals("강남역"))
+                assertThat(section.getDistance()).isEqualTo(5);
+        });
+    }
+
+    @DisplayName("LineTest_예외케이스_상행역_하행역_모두_기존구간에_포함되어있지않은_경우")
+    @Test
+    void Line_addSection_예외케이스_상행역하행역모두_기존구간에_없는경우() {
+        //given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 잠실역 = new Station("잠실역");
+        Station 잠실나루역 = new Station("잠실나루역");
+
+        Line line = new Line(SECOND_LINE_NAME,SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+
+        //when-then
+        assertThatThrownBy(() ->line.getSections().addSection(new Section(잠실역, 잠실나루역, 5)))
+                .isInstanceOf(RuntimeException.class);
+
+        //then
+        assertThat(line.getStations()).containsExactly(강남역, 역삼역);
+
         line.getSections().forEach(section -> {
             if (section.getUpStation().getName().equals("강남역"))
                 assertThat(section.getDistance()).isEqualTo(5);

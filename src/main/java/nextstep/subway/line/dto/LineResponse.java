@@ -34,9 +34,6 @@ public class LineResponse {
 
     private List<StationResponse> getStationResponse(Sections sections) {
         return sections.getStationResponse();
-/*        return sections.stream()
-                .flatMap(list -> list.getStations().stream().map(StationResponse::of)).
-                collect(Collectors.toList());*/
     }
 
     public static LineResponse of(Line line) {
