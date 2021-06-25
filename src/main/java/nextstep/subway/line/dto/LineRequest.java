@@ -2,7 +2,7 @@ package nextstep.subway.line.dto;
 
 import lombok.Builder;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Section;
+import nextstep.subway.line.domain.Section;
 
 
 @Builder

@@ -1,8 +1,9 @@
-package nextstep.subway.station.domain;
+package nextstep.subway.line.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import nextstep.subway.station.domain.Station;
 import org.apache.commons.lang3.ObjectUtils;
 
 import javax.persistence.*;

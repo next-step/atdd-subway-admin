@@ -2,10 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.station.domain.Section;
-import nextstep.subway.station.domain.Sections;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.Stations;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;

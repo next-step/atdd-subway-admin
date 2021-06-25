@@ -6,7 +6,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.domain.Section;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -61,5 +61,9 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("invalid "+id));
         lineRepository.delete(line);
+    }
+
+    public void createSection(Long lineId) {
+        
     }
 }
