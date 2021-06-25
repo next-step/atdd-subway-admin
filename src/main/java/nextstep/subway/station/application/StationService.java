@@ -38,7 +38,7 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(() -> new NotFoundException("invalid station Id: "+id));
+    public Station getOne(Long id) {
+        return stationRepository.getOne(id);
     }
 }

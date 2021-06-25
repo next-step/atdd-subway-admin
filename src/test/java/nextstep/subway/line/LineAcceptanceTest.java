@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    Station 광교역;
-    Station 강남역;
+    private Station 광교역;
+    private Station 강남역;
     @BeforeEach
     public void setup() {
         광교역 = createStation("광교역");
@@ -81,6 +81,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("유효하지않은 stationid로 노선 생성")
+    @Test
+    void createLineInvalidStationId() {
+        // when
+        // 지하철_노선_생성_요청
+
+        String name = "1호선";
+        String color = "빨강";
+        Long upStationId = 1L;
+        Long downStationId = 3L;
+        String distance = "10";
+
+        ExtractableResponse<Response> response = createLine(createLineRequest(name, color, upStationId, downStationId, distance));
+
+        // then
+        // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 

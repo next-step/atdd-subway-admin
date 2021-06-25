@@ -62,10 +62,6 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Sections getSections() {
-        return sections;
-    }
-
     public List<Station> extractStations() {
         Assert.notNull(sections.getSections(), "section should not be null");
         return  sections.getSections()
