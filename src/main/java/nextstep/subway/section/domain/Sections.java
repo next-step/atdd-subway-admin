@@ -6,7 +6,10 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -24,6 +27,12 @@ public class Sections {
 
     public void add(Section section) {
         this.sections.add(section);
+    }
+
+    public void validateAndAddSections(SectionRequest request, Station newUpStation, Station newDownStation) {
+        for (Section section : sections) {
+            section.validateSectionAndAddSection(request, newUpStation, newDownStation, sections);
+        }
     }
 
     public List<Station> extractStations() {

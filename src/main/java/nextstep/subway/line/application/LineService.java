@@ -69,13 +69,8 @@ public class LineService {
         Station newUpStation = stationService.findById(request.getUpStationId());
         Station newDownStation = stationService.findById(request.getDownStationId());
 
-        List<Section> sections = line.getSections();
+        line.validateAndAddSections(request, newUpStation, newDownStation);
 
-        for (Section section : sections) {
-            section.validateSectionAndAddSection(request, newUpStation, newDownStation, sections);
-        }
-
-        //상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
         throw new NotContainSectionException();
     }
 }
