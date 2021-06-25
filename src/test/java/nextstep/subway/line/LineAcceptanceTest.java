@@ -286,8 +286,6 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
-        System.out.println("expectedResult" + expectedResult);
-        System.out.println("actualResult" + actualResult);
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
     }
