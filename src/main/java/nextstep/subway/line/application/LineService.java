@@ -45,8 +45,9 @@ public class LineService {
                 .map(LineResponse::of).collect(Collectors.toList());
     }
 
-    public Line findById(Long id) {
+    public LineResponse findById(Long id) {
         return lineRepository.findById(id)
+                .map(LineResponse::of)
                 .orElseThrow(() -> new NotFoundException("invalid " + id));
     }
 
