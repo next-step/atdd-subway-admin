@@ -1,15 +1,12 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.exception.DuplicateSectionException;
-import nextstep.subway.exception.InvalidateDistanceException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionsTest {
 

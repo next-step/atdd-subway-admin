@@ -81,7 +81,6 @@ public class Section extends BaseEntity {
         }
     }
 
-    // 요청한 하행과 기존 상행이 일치하는 경우에는 요청한 상행 + 요청한 하행과 기존 상행 + 기존 하행으로 총 2개 section이 생긴다.
     // 기존 하행과 요청된 상행이 일치하는 경우 기존 상행과 기존 하행 + 요청된 상행 + 요청된 하행으로 추가한다.
     private void addSectionWhenSameAnotherPosition(long newDistance, Station newUpStation, Station newDownStation, List<Section> sections) {
         if (upStation.equals(newDownStation) || downStation.equals(newUpStation)) {
