@@ -38,8 +38,8 @@ public class Line extends BaseEntity {
         addSection(section);
     }
 
-    public void validateAndAddSections(SectionRequest request, Station newUpStation, Station newDownStation) {
-        sections.validateAndAddSections(request, newUpStation, newDownStation);
+    public void validateAndAddSections(long newDistance, Station newUpStation, Station newDownStation) {
+        sections.validateAndAddSections(newDistance, newUpStation, newDownStation);
     }
 
     public void update(Line line) {

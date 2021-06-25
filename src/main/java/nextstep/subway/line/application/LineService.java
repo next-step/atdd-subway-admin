@@ -37,7 +37,6 @@ public class LineService {
         return LineResponse.of(lineRepository.save(request.toLine(section)));
     }
 
-    // 기존에 있는 Section에 새로운 Section을 추가한다.
     public LinesResponse findAll() {
         List<Line> lines = lineRepository.findAll();
         return LinesResponse.of(lines);
@@ -69,7 +68,7 @@ public class LineService {
         Station newUpStation = stationService.findById(request.getUpStationId());
         Station newDownStation = stationService.findById(request.getDownStationId());
 
-        line.validateAndAddSections(request, newUpStation, newDownStation);
+        line.validateAndAddSections(request.getDistance(), newUpStation, newDownStation);
 
         throw new NotContainSectionException();
     }

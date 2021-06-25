@@ -29,9 +29,9 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public void validateAndAddSections(SectionRequest request, Station newUpStation, Station newDownStation) {
+    public void validateAndAddSections(long newDistance, Station newUpStation, Station newDownStation) {
         for (Section section : sections) {
-            section.validateSectionAndAddSection(request, newUpStation, newDownStation, sections);
+            section.validateSectionAndAddSection(newDistance, newUpStation, newDownStation, sections);
         }
     }
 
