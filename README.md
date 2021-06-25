@@ -38,8 +38,8 @@
 - [x] StationResponse의 팩토리 메소드명 변경
 
 ## 2차 피드백 반영 목록
-- [ ] EntityNotFoundException 원복
-  - [ ] 예외 메시지 상수 처리
+- [x] EntityNotFoundException 원복
+  - [x] 예외 메시지 상수 처리
 - [x] Distance 클래스 내 value 접근 지정자 변경
 - [ ] 구간을 톻한 역 목록 조회 구조 개선
 - [x] @ResponseBody @ControllerAdvice -> @RestControllerAdvice
