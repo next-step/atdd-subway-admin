@@ -14,7 +14,7 @@ public class Name {
 
     public Name(String name) {
         if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("이름 값이 비었습니다.");
         }
 
         this.name = name;

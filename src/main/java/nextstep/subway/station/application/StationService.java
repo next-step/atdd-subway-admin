@@ -28,6 +28,11 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
+    public Station findStationById(Long id) {
+        return stationRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
@@ -37,7 +42,7 @@ public class StationService {
     }
 
     public void deleteStationById(Long id) {
-        Station station = stationRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Station station = findStationById(id);
         stationRepository.delete(station);
     }
 }

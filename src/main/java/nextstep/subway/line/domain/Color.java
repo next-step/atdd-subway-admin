@@ -14,7 +14,7 @@ public class Color {
 
     public Color(String color) {
         if (color == null || color.isEmpty()) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("색 값이 비었습니다.");
         }
 
         this.color = color;

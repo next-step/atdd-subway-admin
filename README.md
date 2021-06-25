@@ -100,3 +100,15 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ##### DELETE /lines/1
 
 - DELETE /lines/1
+
+### 2단계: 인수 테스트 리팩터링
+
+API 변경 대응하기
+
+- 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
+  - 두 종점역은 구간의 형태로 관리되어야 함
+  - color, name, upStationId, downStationId, distance
+- 노선 조회 시 응답 결과에 역 목록 추가하기
+  - 상행역 부터 하행역 순으로 정렬되어야 함
+  - id, name, color, stations([station, station]), date
+- 노선: 구간 목록 추가

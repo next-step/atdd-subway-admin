@@ -1,7 +1,14 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.Name;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 
@@ -18,7 +25,10 @@ public class Line extends BaseEntity {
     @Embedded
     private Color color;
 
-    public Line() {
+    @Embedded
+    private Sections sections = new Sections();
+
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -26,9 +36,15 @@ public class Line extends BaseEntity {
         this.color = new Color(color);
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this(null, name, color, upStation, downStation, distance);
+    }
+
+    public Line(Long id, String name, String color, Station upStation, Station downStation, int distance) {
+        this.id = id;
+        this.name = new Name(name);
+        this.color = new Color(color);
+        this.sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public Long getId() {
@@ -42,4 +58,21 @@ public class Line extends BaseEntity {
     public Color getColor() {
         return color;
     }
+
+    public Sections getSections() {
+        return sections;
+    }
+
+    public List<StationResponse> getStations() {
+        return sections
+            .stations().stream()
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
+    }
+
+    public void update(Line line) {
+        this.name = line.getName();
+        this.color = line.getColor();
+    }
+
 }

@@ -13,7 +13,10 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -22,21 +25,22 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private Map<String, String> 지하철_1호선 = new HashMap<String, String>() {{
-        put("name", "1호선");
-        put("color", "남색");
-    }};
+    private Map<String, String> 지하철_1호선;
+    private Map<String, String> 지하철_2호선;
 
-    private Map<String, String> 지하철_2호선 = new HashMap<String, String>() {{
-        put("name", "2호선");
-        put("color", "녹색");
-    }};
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
 
-    @DisplayName("지하철 노선을 생성한다.")
+        지하철_1호선 = 지하철_노선_종점포함_정보("1호선", "남색", StationAcceptanceTest.신도림역, StationAcceptanceTest.서울역, 10);
+        지하철_2호선 = 지하철_노선_종점포함_정보("2호선", "녹색", StationAcceptanceTest.강남역, StationAcceptanceTest.역삼역, 10);
+    }
+
+    @DisplayName("지하철 노선을 종점과 함께 생성한다.")
     @Test
-    void createLine() {
+    void createLine_withEndpoint() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(지하철_1호선);
+        ExtractableResponse<Response> response = 지하철_노선_종점포함_생성_요청(지하철_1호선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -47,10 +51,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2_WithDuplicateName_ExceptionThrown() {
         // given
-        지하철_노선_등록되어_있음(지하철_1호선);
+        지하철_노선_종점포함_생성_요청(지하철_1호선);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(지하철_1호선);
+        ExtractableResponse<Response> response = 지하철_노선_종점포함_생성_요청(지하철_1호선);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -92,8 +96,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음(지하철_1호선);
-        ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음(지하철_2호선);
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_종점포함_등록되어_있음(지하철_1호선);
+        ExtractableResponse<Response> createResponse2 = 지하철_노선_종점포함_등록되어_있음(지하철_2호선);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -116,15 +120,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        지하철_노선_등록되어_있음(지하철_1호선);
+        ExtractableResponse<Response> createResponse = 지하철_노선_종점포함_등록되어_있음(지하철_1호선);
+        int lineId = createResponse.jsonPath().getObject(".", LineResponse.class).getId().intValue();
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(1);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
 
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getObject(".", LineResponse.class).getName()).isEqualTo("1호선");
+        assertThat(response.jsonPath().getObject(".", LineResponse.class).getStations().size()).isEqualTo(2);
     }
 
     @DisplayName("없는 지하철 노선을 조회한다.")
@@ -141,10 +147,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        지하철_노선_등록되어_있음(지하철_1호선);
+        ExtractableResponse<Response> createResponse = 지하철_노선_종점포함_등록되어_있음(지하철_1호선);
+        int lineId = createResponse.jsonPath().getObject(".", LineResponse.class).getId().intValue();
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(1, 지하철_2호선);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineId, 지하철_2호선);
 
         // then
         // 지하철_노선_수정됨
@@ -170,7 +177,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(지하철_1호선);
+        ExtractableResponse<Response> createResponse = 지하철_노선_종점포함_등록되어_있음(지하철_1호선);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(createResponse.header("Location"));
@@ -190,6 +197,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    private Map<String, String> 지하철_노선_종점포함_정보(
+        String name, String color, Map<String, String> upStation, Map<String, String> downStation, int distance
+    ) {
+        ExtractableResponse<Response> upStationCreateResponse = StationAcceptanceTest.지하철_역_등록되어_있음(upStation);
+        ExtractableResponse<Response> downStationCreateResponse = StationAcceptanceTest.지하철_역_등록되어_있음(downStation);
+
+        Long upStationId = upStationCreateResponse.jsonPath().getObject(".", StationResponse.class).getId();
+        Long downStationId = downStationCreateResponse.jsonPath().getObject(".", StationResponse.class).getId();
+
+        return new HashMap<String, String>() {{
+            put("name", name);
+            put("color", color);
+            put("upStationId", String.valueOf(upStationId));
+            put("downStationId", String.valueOf(downStationId));
+            put("distance", String.valueOf(distance));
+        }};
+    }
+
     private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> line) {
         return RestAssured
             .given().log().all()
@@ -200,8 +225,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> line) {
+    private ExtractableResponse<Response> 지하철_노선_종점포함_생성_요청(Map<String, String> line) {
         return 지하철_노선_생성_요청(line);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_종점포함_등록되어_있음(Map<String, String> line) {
+        return 지하철_노선_종점포함_생성_요청(line);
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
