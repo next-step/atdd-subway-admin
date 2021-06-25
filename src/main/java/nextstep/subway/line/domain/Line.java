@@ -40,6 +40,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
+        section.toLine(this);
         this.sections.initSections(section);
     }
 

@@ -4,6 +4,7 @@ import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 @Entity
 public class Station extends BaseEntity {
@@ -31,4 +32,5 @@ public class Station extends BaseEntity {
     public String getName() {
         return name;
     }
+
 }

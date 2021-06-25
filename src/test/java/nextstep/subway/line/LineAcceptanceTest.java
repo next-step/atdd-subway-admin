@@ -49,7 +49,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return lineSaved;
     }
 
-
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
