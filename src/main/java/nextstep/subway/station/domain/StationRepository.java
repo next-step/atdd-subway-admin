@@ -1,10 +1,12 @@
 package nextstep.subway.station.domain;
 
-import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+
+import static nextstep.subway.common.message.DomainExceptionMessage.NOT_FOUND_MESSAGE;
 
 public interface StationRepository extends JpaRepository<Station, Long> {
     @Override
@@ -12,6 +14,6 @@ public interface StationRepository extends JpaRepository<Station, Long> {
 
     default Station findByIdWithUnWrapped(Long id) {
         Optional<Station> optionalStation = findById(id);
-        return optionalStation.orElseThrow(()-> new StationNotFoundException(id));
+        return optionalStation.orElseThrow(()-> new EntityNotFoundException(NOT_FOUND_MESSAGE.apply(id, "역")));
     }
 }

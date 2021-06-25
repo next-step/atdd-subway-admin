@@ -1,8 +1,6 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.dto.LineExceptionResponse;
-import nextstep.subway.line.exception.LineNotFoundException;
-import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -31,7 +29,7 @@ public class LineControllerAdvice {
         return response;
     }
 
-    @ExceptionHandler({LineNotFoundException.class, StationNotFoundException.class})
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(NOT_FOUND)
     public void entityNotFoundException(EntityNotFoundException e) {
         e.printStackTrace();
