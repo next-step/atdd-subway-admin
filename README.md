@@ -42,7 +42,7 @@
   - [ ] 예외 메시지 상수 처리
 - [x] Distance 클래스 내 value 접근 지정자 변경
 - [ ] 구간을 톻한 역 목록 조회 구조 개선
-- [ ] @ResponseBody @ControllerAdvice -> @RestControllerAdvice
+- [x] @ResponseBody @ControllerAdvice -> @RestControllerAdvice
 - [ ] 미사용 메소드 삭제
 
 ## 추가 개선 목록
