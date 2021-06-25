@@ -53,8 +53,7 @@ public class LineController {
 
     @PostMapping("/{id}/sections")
     public ResponseEntity addSections(@PathVariable Long id, @RequestBody SectionRequest request) {
-
-        //TODO: 기존 라인에 구역을 추가
+        lineService.addSections(id, request);
         return ResponseEntity.ok().build();
     }
 }
