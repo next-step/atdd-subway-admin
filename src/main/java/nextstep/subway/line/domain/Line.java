@@ -40,9 +40,12 @@ public class Line extends BaseEntity {
         this.color = request.getColor();
     }
 
-    public Line(LineRequest request, Section section) {
+    public Line(LineRequest request, Section... sections) {
         this(request);
-        this.sections.addSection(section);
+        for( Section section: sections) {
+            this.sections.addSection(section);
+        }
+
     }
 
     public void update(Line line) {
@@ -63,12 +66,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> extractStations() {
-        Assert.notNull(sections.getSections(), "section should not be null");
-        return  sections.getSections()
-                .stream()
-                .flatMap(section-> Stream.of(section.getUpStation(),section.getDownStation()))
-                .distinct()
-                .collect(Collectors.toList());
+        return sections.getStations();
     }
 
 

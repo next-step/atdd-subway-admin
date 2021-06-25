@@ -15,21 +15,20 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="up_station_id")
-    private Station upStation;
+    @ManyToOne(optional = false)
+    @JoinColumn(name="station_id")
+    private Station station;
 
-    @ManyToOne
-    @JoinColumn(name="down_station_id")
-    private Station downStation;
+    private Integer distance;
 
-    private String distance;
-
-    public Station getUpStation() {
-        return upStation;
+    public Station getStation() {
+        return station;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public static Section of(Station station, String distance) {
+        return Section.builder()
+                .station(station)
+                .distance(Integer.parseInt(distance))
+                .build();
     }
 }

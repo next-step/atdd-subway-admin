@@ -100,7 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -131,9 +131,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<LineResponse> array = response.body().jsonPath().getList(".", LineResponse.class);
         assertThat(array).hasSize(3);
         assertThat(array).contains(line1,line2,line3);
-        assertThat(array.get(0).getStations()).contains(강남역,광교역);
-        assertThat(array.get(1).getStations()).contains(강남역,광교역);
-        assertThat(array.get(2).getStations()).contains(강남역,광교역);
+        assertThat(array.get(0).getStations()).containsExactly(광교역,강남역);
+        assertThat(array.get(1).getStations()).containsExactly(광교역,강남역);
+        assertThat(array.get(2).getStations()).containsExactly(광교역,강남역);
     }
 
     @DisplayName("지하철 노선을 조회한다.")

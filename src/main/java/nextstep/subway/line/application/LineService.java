@@ -8,8 +8,10 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Section;
 import nextstep.subway.station.domain.Station;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,16 +29,14 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationService.getOne(request.getUpStationId());
-        Station downStation = stationService.getOne(request.getDownStationId());
+        Station upStation = stationService.findById(request.getUpStationId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,"invalid station id: "+ request.getUpStationId()));
+        Station downStation = stationService.findById(request.getDownStationId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,"invalid station id: "+ request.getDownStationId()));
+        Section downSection = Section.of(downStation,"0");
+        Section upSection = Section.of(upStation, request.getDistance());
 
-        Section section = Section.builder()
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(request.getDistance())
-                .build();
-
-        Line persistLine = lineRepository.save(request.toLine(section));
+        Line persistLine = lineRepository.save(request.toLine(upSection,downSection));
         return LineResponse.of(persistLine);
     }
 

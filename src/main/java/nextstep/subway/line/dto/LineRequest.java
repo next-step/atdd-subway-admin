@@ -36,7 +36,7 @@ public class LineRequest {
     public Line toLine() {
         return new Line(this);
     }
-    public Line toLine(Section section) {
-        return new Line(this,section);
+    public Line toLine(Section... sections) {
+        return new Line(this,sections);
     }
 }

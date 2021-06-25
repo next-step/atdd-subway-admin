@@ -5,12 +5,11 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -19,16 +18,20 @@ import static com.google.common.base.Preconditions.checkArgument;
 @AllArgsConstructor
 @Embeddable
 public class Sections {
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn
-    private List<Section> sections = new ArrayList<>();
+    @OrderColumn
+    private List<Section> sections = new LinkedList<>();
 
     public void addSection(Section section) {
+        addSection(sections.size(),section);
+    }
+    public void addSection(int idx,Section section) {
         checkArgument(ObjectUtils.isNotEmpty(section), "section should not be null");
-        sections.add(section);
+        sections.add(idx,section);
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public List<Station> getStations() {
+        return sections.stream().map(section->section.getStation()).collect(Collectors.toList());
     }
 }
