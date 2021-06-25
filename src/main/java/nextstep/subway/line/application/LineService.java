@@ -1,5 +1,8 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.exception.DuplicateSectionException;
+import nextstep.subway.exception.InvalidateDistanceException;
+import nextstep.subway.exception.NotContainSectionException;
 import nextstep.subway.exception.NotExistLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -62,43 +65,59 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public LineResponse addSections(long lineId, SectionRequest request) {
-        // line 을 조회한다.
-        // 조회한 line에 구간을 가져와 상 또는 하 중 있는 곳에 연결한다.
-        // 상이나 하 중 일치하는 곳이 하나 존재한ㄷ.ㅏ
-        // 만약 둘 다 없는 경우 예외처리 한다.
-        // 만약 둘 다 존재하는 경우 예외처리 한다.
+    public void addSections(long lineId, SectionRequest request) {
         Line line = findByIdOrThrow(lineId);
 
-
-//        Station upStation = stationService.findById(request.getUpStationId());
-//        Station downStation = stationService.findById(request.getDownStationId());
-
-        // line에 존재하는 Section을 가져온다.
+        Station newUpStation = stationService.findById(request.getUpStationId());
+        Station newDownStation = stationService.findById(request.getDownStationId());
 
         List<Section> sections = line.getSections();
 
-        for (int i = 0; i < sections.size(); i++) {
-            // 요청된 것 중에 statinos 가 일치하지 않는 것이 있는지 확인한다
-            Section section = sections.get(i);
+        for (Section section : sections) {
             long downStationId = request.getDownStationId();
             long upStationId = request.getUpStationId();
 
-            if (section.getDownStation().getId() == downStationId && section.getUpStation().getId() == upStationId) {
-                throw new IllegalArgumentException();
-            }
-            // sections가
+            validateDuplicateSection(newUpStation, newDownStation, section);
 
-            if (section.getDownStation().getId() == downStationId) {
-                // 상행을 요청한 것으로 변경한다.
-                // 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
-                if ()
-            }
+            validateSectionDistance(request, downStationId, upStationId, section);
 
-            if (section.getUpStation().getId() == upStationId) {
+            addSectionWhenSameUpStation(request, newUpStation, newDownStation, sections, section);
 
+            addSectionWhenSameAnotherPosition(request, newUpStation, newDownStation, sections, section);
+        }
+
+        //상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+        throw new NotContainSectionException();
+    }
+
+    // 요청한 하행과 기존 상행이 일치하는 경우에는 요청한 상행 + 요청한 하행과 기존 상행 + 기존 하행으로 총 2개 section이 생긴다.
+    // 기존 하행과 요청된 상행이 일치하는 경우 기존 상행과 기존 하행 + 요청된 상행 + 요청된 하행으로 추가한다.
+    private void addSectionWhenSameAnotherPosition(SectionRequest request, Station newUpStation, Station newDownStation, List<Section> sections, Section section) {
+        if (section.getUpStation().equals(newDownStation) || section.getDownStation().equals(newUpStation)) {
+            sections.add(new Section(newUpStation, newDownStation, request.getDistance()));
+        }
+    }
+
+    // 일차하는 역이 둘 다 상행인 경우 해당 상행과 요청한 하행 + 상행(요청한 하행역)과 기존 하행으로 이뤄진 2개의 section으로 구성된다.
+    private void addSectionWhenSameUpStation(SectionRequest request, Station newUpStation, Station newDownStation, List<Section> sections, Section section) {
+        if (section.getUpStation().equals(newUpStation)) {
+            sections.remove(section);
+            sections.add(new Section(newUpStation, newDownStation, request.getDistance()));
+            sections.add(new Section(newDownStation, section.getDownStation(), section.getDistance() - request.getDistance()));
+        }
+    }
+
+    private void validateSectionDistance(SectionRequest request, long downStationId, long upStationId, Section section) {
+        if (section.getDownStation().getId() == downStationId || section.getUpStation().getId() == upStationId) {
+            if (section.getDistance() <= request.getDistance()) {
+                throw new InvalidateDistanceException();
             }
         }
     }
 
+    private void validateDuplicateSection(Station newUpStation, Station newDownStation, Section section) {
+        if (section.getDownStation().equals(newDownStation) && section.getUpStation().equals(newUpStation)) {
+            throw new DuplicateSectionException();
+        }
+    }
 }
