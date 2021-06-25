@@ -31,11 +31,19 @@
   - [x] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
   - [x] 노선 조회 시 응답 결과에 역 목록 추가하기
 
-## 피드백 반영 필요 목록
+## 1차 피드백 반영 필요 목록
 - [x] 상행역부터 하행역까지 순서대로 읽어오는 방법 고민후 적용
 - [x] LineService 내 Repository 관련 참조 변수에 final 키워드 붙이기
 - [x] LineService 내 Exception Throw 부분 중복 제거
 - [x] StationResponse의 팩토리 메소드명 변경
+
+## 2차 피드백 반영 목록
+- [ ] EntityNotFoundException 원복
+  - [ ] 예외 메시지 상수 처리
+- [ ] Distance 클래스 내 value 접근 지정자 변경
+- [ ] 역 목록 구조 개선
+- [ ] @ResponseBody @ControllerAdvice -> @RestControllerAdvice
+- [ ] 미사용 메소드 삭제
 
 ## 추가 개선 목록
 - [x] 지하철 역 인수 테스트 내 주요 메소드의 별도 클래스 분리
