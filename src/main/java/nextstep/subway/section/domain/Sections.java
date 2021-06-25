@@ -1,7 +1,9 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
@@ -10,7 +12,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {
@@ -61,6 +63,10 @@ public class Sections {
         return sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 
     @Override
