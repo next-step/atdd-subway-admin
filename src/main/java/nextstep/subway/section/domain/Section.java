@@ -41,6 +41,10 @@ public class Section extends BaseEntity {
 	}
 
 	public Section(Station upStation, Station downStation, Integer distance) {
+		this(upStation, downStation, distance, null);
+	}
+
+	public Section(Station upStation, Station downStation, Integer distance, Line line) {
 		if (upStation.equals(downStation)) {
 			throw new IllegalArgumentException("시작역과 종료역이 같을 수 없습니다.");
 		}
@@ -52,6 +56,7 @@ public class Section extends BaseEntity {
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
+		this.line = line;
 	}
 
 	public void setLine(Line line) {
@@ -59,7 +64,7 @@ public class Section extends BaseEntity {
 			line.deleteSection(this);
 		}
 		this.line = line;
-		line.addSection(this);
+		line.addSection(upStation, downStation, distance);
 	}
 
 	public Long getId() {
@@ -107,12 +112,13 @@ public class Section extends BaseEntity {
 		if (addedSection.isEqualToUpStation(upStation)) {
 			sections.add(addedSection);
 			sections.add(new Section(addedSection.getDownStation(), this.downStation,
-				this.distance - addedSection.getDistance()));
+				this.distance - addedSection.getDistance(), addedSection.getLine()));
 		}
 
 		if (addedSection.isEqualToDownStation(downStation)) {
 			sections.add(
-				new Section(this.upStation, addedSection.getUpStation(), this.distance - addedSection.getDistance()));
+				new Section(this.upStation, addedSection.getUpStation(), this.distance - addedSection.getDistance(),
+					addedSection.getLine()));
 			sections.add(addedSection);
 		}
 

@@ -12,7 +12,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -34,12 +33,8 @@ public class LineService {
 		Station downStation = stationRepository.findById(request.getDownStationId())
 			.orElseThrow(() -> new DataIntegrityViolationException("없는 역입니다."));
 
-		Section section = request.getSection(upStation, downStation);
-
-		Line line = request.toLine();
-		section.setLine(line);
-
-		Line persistLine = lineRepository.save(line);
+		Line persistLine = lineRepository.save(
+			new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
 
 		return LineResponse.of(persistLine);
 	}
@@ -71,10 +66,15 @@ public class LineService {
 		Station downStation = stationRepository.findById(request.getDownStationId())
 			.orElseThrow(() -> new DataIntegrityViolationException("없는 역입니다."));
 
-		Section section = request.toSection(upStation, downStation, request.getDistance());
-
-		line.addSection(section);
+		line.addSection(upStation, downStation, request.getDistance());
 
 		return LineResponse.of(line);
+	}
+
+	public void deleteSection(Long lineId, Long stationId) {
+		Line line = lineRepository.findById(lineId).orElseThrow(() -> new DataIntegrityViolationException("없는 노선입니다."));
+		Station station = stationRepository.findById(stationId)
+			.orElseThrow(() -> new DataIntegrityViolationException("없는 역입니다."));
+		line.deleteSectionBy(station);
 	}
 }
