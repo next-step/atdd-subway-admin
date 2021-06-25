@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationGroup;
 
 @DisplayName("노선 엔티티 테스트")
 public class LineTest {

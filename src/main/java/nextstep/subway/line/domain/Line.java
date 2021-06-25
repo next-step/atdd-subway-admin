@@ -1,8 +1,6 @@
 package nextstep.subway.line.domain;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -72,10 +70,7 @@ public class Line extends BaseEntity {
 	}
 
 	public StationGroup stationGroup() {
-		return sectionGroup.sections().stream()
-			.flatMap(section -> Arrays.stream(new Station[] {section.upStation(), section.downStation()}))
-			.distinct()
-			.collect(Collectors.collectingAndThen(Collectors.toList(), StationGroup::new));
+		return sectionGroup.stationGroup();
 	}
 
 	public void addSection(Section section) {

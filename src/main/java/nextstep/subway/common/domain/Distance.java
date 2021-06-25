@@ -32,8 +32,10 @@ public class Distance {
 		}
 	}
 
-	public int distance() {
-		return distance;
+	public void adjust(Distance distance) {
+		int adjustDistance = this.distance - distance.distance;
+		validateOverZero(adjustDistance);
+		this.distance = adjustDistance;
 	}
 
 	@Override

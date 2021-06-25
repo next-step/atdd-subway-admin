@@ -12,22 +12,18 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.application.SectionService;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
 @Service
 @Transactional
 public class LineService {
-	private static final int ADJUST_NEXT_INDEX = 1;
-
 	private StationService stationService;
-	private SectionService sectionService;
 	private LineRepository lineRepository;
 
-	public LineService(StationService stationService, SectionService sectionService, LineRepository lineRepository) {
+	public LineService(StationService stationService, LineRepository lineRepository) {
 		this.stationService = stationService;
-		this.sectionService = sectionService;
 		this.lineRepository = lineRepository;
 	}
 
@@ -35,10 +31,6 @@ public class LineService {
 		Station upStation = stationService.findStationByIdFromRepository(request.getUpStationId());
 		Station downStation = stationService.findStationByIdFromRepository(request.getDownStationId());
 		Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
-		return LineResponse.of(persistLine);
-	}
-
-	private LineResponse changeSortedStations(Line persistLine) {
 		return LineResponse.of(persistLine);
 	}
 
@@ -52,7 +44,7 @@ public class LineService {
 	@Transactional(readOnly = true)
 	public LineResponse findLineById(Long id) {
 		Line persistLine = findLineByIdFromRepository(id);
-		return changeSortedStations(persistLine);
+		return LineResponse.of(persistLine);
 	}
 
 	private Line findLineByIdFromRepository(Long id) {
@@ -61,12 +53,19 @@ public class LineService {
 	}
 
 	public void deleteLineById(Long id) {
-		sectionService.deleteAllByLine(findLineByIdFromRepository(id));
 		lineRepository.deleteById(id);
 	}
 
 	public void updateLine(Long id, LineRequest lineRequest) {
 		Line sourceLine = findLineByIdFromRepository(id);
 		sourceLine.update(lineRequest.toLine());
+	}
+
+	public void addSection(Long lineId, SectionRequest sectionRequest) {
+		Line line = findLineByIdFromRepository(lineId);
+		Station upStation = stationService.findStationByIdFromRepository(sectionRequest.getUpStationId());
+		Station downStation = stationService.findStationByIdFromRepository(sectionRequest.getDownStationId());
+		line.sectionGroup().add(sectionRequest.toSection(line, upStation, downStation));
+		lineRepository.save(line);
 	}
 }

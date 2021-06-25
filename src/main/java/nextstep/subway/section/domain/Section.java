@@ -18,6 +18,8 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section extends BaseEntity {
+	private static final int OUT_OF_INDEX = -1;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -40,7 +42,7 @@ public class Section extends BaseEntity {
 	protected Section() {
 	}
 
-	protected Section(Line line, Station upStation, Station downStation, int distance) {
+	public Section(Line line, Station upStation, Station downStation, int distance) {
 		this(line, upStation, downStation, String.valueOf(distance));
 	}
 
@@ -115,8 +117,38 @@ public class Section extends BaseEntity {
 		return line;
 	}
 
-	public int distance() {
-		return distance.distance();
+	public int findSectionIndexWhenTargetSectionIsInner(SectionGroup sectionGroup) {
+		return sectionGroup.sections().stream()
+			.filter(section -> section.downStation.equals(downStation) || section.upStation.equals(upStation))
+			.mapToInt(section -> sectionGroup.sections().indexOf(section))
+			.findFirst()
+			.orElse(OUT_OF_INDEX);
+	}
+
+	public void adjustUpStationOrDownStation(Section targetSection) {
+		if (upStation.equals(targetSection.upStation)) {
+			Station tempDownStation = this.downStation;
+			this.downStation = targetSection.downStation;
+			targetSection.upStation = targetSection.downStation;
+			targetSection.downStation = tempDownStation;
+		}
+		if (downStation.equals(targetSection.downStation)) {
+			this.downStation = targetSection.upStation;
+		}
+	}
+
+	public void adjustDistance(Section targetSection) {
+		distance.adjust(targetSection.distance);
+	}
+
+	public boolean isLastSection(SectionGroup sectionGroup) {
+		return sectionGroup.sections().stream()
+			.anyMatch(section -> section.downStation.equals(upStation));
+	}
+
+	public boolean isFirstSection(SectionGroup sectionGroup) {
+		return sectionGroup.sections().stream()
+			.anyMatch(section -> section.upStation.equals(downStation));
 	}
 
 	@Override

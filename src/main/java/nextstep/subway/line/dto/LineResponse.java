@@ -25,6 +25,7 @@ public class LineResponse extends BaseResponse {
 	}
 
 	public static LineResponse of(Line line) {
+		line.sectionGroup().sort();
 		List<StationResponse> stations = line.stationGroup().stations().stream()
 			.map(StationResponse::of)
 			.collect(Collectors.toList());
