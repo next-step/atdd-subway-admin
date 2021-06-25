@@ -58,3 +58,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ### step1
 1. 생성 / 목록조회 / 조회 / 수정 / 삭제에 대한 인수테스트 작성
 2. 기능 구현
+
+### step2
+1. API 변경 대응하기
+- [x] 노선 생성 시 종점역(상행, 하행)정보를 요청 파라미터에 함께 추가하기
+    - 두 종점역은 구간의 형태로 관리되어야 함
+- [x] 노선 조회 시 응답 결과에 역 목록 추가하기
+    - 상행역 부터 하행역 순으로 정렬되어야 함
