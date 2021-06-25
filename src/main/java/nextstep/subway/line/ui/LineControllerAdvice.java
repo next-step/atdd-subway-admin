@@ -4,10 +4,9 @@ import nextstep.subway.line.dto.LineExceptionResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,8 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-@ResponseBody
-@ControllerAdvice(basePackages = "nextstep.subway.line.ui")
+
+@RestControllerAdvice(basePackages = "nextstep.subway.line.ui")
 public class LineControllerAdvice {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
