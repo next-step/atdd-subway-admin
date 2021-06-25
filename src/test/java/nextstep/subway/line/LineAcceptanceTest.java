@@ -23,13 +23,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public LineRequest testFirstLine;
     public LineRequest testSecondLine;
 
+    private long testKangnamId;
+    private long testYucksamId;
+
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        long testKangnamId = 지하철_역_등록되어_있음(TEST_GANGNAM_STATION);
-        long testYucksamId = 지하철_역_등록되어_있음(TEST_YUCKSAM_STATION);
+        testKangnamId = 지하철_역_등록되어_있음(TEST_GANGNAM_STATION);
+        testYucksamId = 지하철_역_등록되어_있음(TEST_YUCKSAM_STATION);
 
         long testKachisanId = 지하철_역_등록되어_있음(new StationRequest("까치산역"));
         long testJamsilId = 지하철_역_등록되어_있음(new StationRequest("잠실역"));
@@ -145,12 +148,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionWithDuplicateUpAndDownStation() {
         // given
         long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
+        SectionRequest request = new SectionRequest(testKangnamId, testYucksamId, 10L);
 
-        long dmcStationId = 지하철_역_등록되어_있음(new StationRequest("DMC역"));
-        long sangamStationId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
-        int distance = 10;
-
-        SectionRequest request = new SectionRequest(dmcStationId, sangamStationId, distance);
         // when
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
@@ -160,7 +159,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
 
         //then
-        지하철_노선_목록_응답됨(response);
+        구간_추가_실패됨(response);
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
@@ -183,7 +182,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
 
         //then
-        지하철_노선_목록_응답됨(response);
+        구간_추가_실패됨(response);
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.")
@@ -206,7 +205,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
 
         //then
-        지하철_노선_목록_응답됨(response);
+        구간_추가_실패됨(response);
     }
-
 }
