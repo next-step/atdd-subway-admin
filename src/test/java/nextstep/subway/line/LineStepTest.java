@@ -99,6 +99,10 @@ public class LineStepTest {
         assertThat(resultIds).containsAll(List.of(ids));
     }
 
+    static void 노선_구간추가_성공_응답됨(ExtractableResponse<Response> response) {
+        성공_상태_응답(response);
+    }
+
     static void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
         성공_상태_응답(response);
     }

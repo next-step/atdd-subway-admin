@@ -130,7 +130,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_구간_추가_요청(firstLineId, request);
 
         //then
-        지하철_노선_목록_응답됨(response);
+        노선_구간추가_성공_응답됨(response);
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
