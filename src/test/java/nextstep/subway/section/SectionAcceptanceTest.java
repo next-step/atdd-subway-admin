@@ -33,11 +33,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         3: 사당 - [교대 - 역삼]
         4: 사당 - [역삼 - 교대]
     */
-    private static final int 초기화_거리 = 60;
-    private static final int 구간_거리 = 30;
+    private static final int 초기화_거리 = 6;
+    private static final int 구간_거리 = 3;
     private StationResponse 사당역;
     private StationResponse 교대역;
     private StationResponse 선릉역;
+    private StationResponse 신촌역;
     private LineResponse 지하철_2호선;
     private int 지하철_2호선_ID;
 
@@ -48,6 +49,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         사당역 = 지하철_역_등록되어_있음("사당역");
         교대역 = 지하철_역_등록되어_있음("교대역");
         선릉역 = 지하철_역_등록되어_있음("선릉역");
+        신촌역 = 지하철_역_등록되어_있음("신촌역");
 
         지하철_2호선 = 지하철_노선_종점포함_등록되어_있음("2호선", "녹색", 사당역.getId(), 선릉역.getId(), 초기화_거리);
         지하철_2호선_ID = 지하철_2호선.getId().intValue();
@@ -136,6 +138,45 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .map(LineResponse::getId)
             .collect(Collectors.toList());
         assertThat(resultLineIds).containsExactly(expectedLineIds);
+    }
+
+    @DisplayName("역 사이 추가: 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void tooLongDistance_ExceptionThrown() {
+        // given
+        Map<String, String> section = 지하철_구간_생성_정보(선릉역.getId(), 교대역.getId(), 초기화_거리);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(지하철_2호선_ID, section);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void alreadyAddedStations_ExceptionThrown() {
+        // given
+        Map<String, String> section = 지하철_구간_생성_정보(사당역.getId(), 선릉역.getId(), 구간_거리);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(지하철_2호선_ID, section);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void notFoundStation_ExceptionThrown() {
+        // given
+        Map<String, String> section = 지하철_구간_생성_정보(신촌역.getId(), 교대역.getId(), 구간_거리);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가_요청(지하철_2호선_ID, section);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 지하철_구간_추가_요청(int lineId, Map<String, String> section) {
