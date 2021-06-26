@@ -62,4 +62,19 @@ public class Section {
     public void changeDownStation(Station upStation) {
         this.downStation = upStation;
     }
+
+    public boolean hasDownStationId(Long stationId) {
+        return downStation.getId().equals(stationId);
+    }
+
+    public void updateUpStationWhenRemove(Station upStation, int distance) {
+        this.upStation = upStation;
+
+        if(upStation == null) {
+            this.distance.toZero();
+            return;
+        }
+
+        this.distance.plus(distance);
+    }
 }
