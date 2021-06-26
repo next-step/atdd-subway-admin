@@ -1,7 +1,7 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -31,20 +31,20 @@ public class Sections {
 
     public void validateAndAddSections(long newDistance, Station newUpStation, Station newDownStation) {
         for (Section section : sections) {
-            section.validateSectionAndAddSection(newDistance, newUpStation, newDownStation, sections);
+            section.validateSectionAndAddSection(newDistance, newUpStation, newDownStation, new ArrayList<>(sections));
         }
     }
 
-    public List<Station> extractStations() {
-        List<Station> upStations = extractUpStations();
-        List<Station> downStations = extractDownStations();
+    public List<StationResponse> extractStations() {
+        List<StationResponse> upStations = extractUpStations();
+        List<StationResponse> downStations = extractDownStations();
 
         upStations.addAll(downStations);
 
         return checkDuplicateAndDistinctStations(upStations);
     }
 
-    private List<Station> checkDuplicateAndDistinctStations(List<Station> upStations) {
+    private List<StationResponse> checkDuplicateAndDistinctStations(List<StationResponse> upStations) {
         if (haveDuplicateStation(upStations)) {
             return removeDuplicateStations(upStations);
         }
@@ -52,25 +52,25 @@ public class Sections {
         return upStations;
     }
 
-    private List<Station> removeDuplicateStations(List<Station> stations) {
+    private List<StationResponse> removeDuplicateStations(List<StationResponse> stations) {
         return stations.stream()
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-    private boolean haveDuplicateStation(List<Station> upStations) {
+    private boolean haveDuplicateStation(List<StationResponse> upStations) {
         return upStations.size() != new HashSet<>(upStations).size();
     }
 
-    private List<Station> extractUpStations() {
+    private List<StationResponse> extractUpStations() {
         return sections.stream()
-                .map(Section::getUpStation)
+                .map(section -> StationResponse.of(section.getUpStation()))
                 .collect(Collectors.toList());
     }
 
-    private List<Station> extractDownStations() {
+    private List<StationResponse> extractDownStations() {
         return sections.stream()
-                .map(Section::getDownStation)
+                .map(section -> StationResponse.of(section.getDownStation()))
                 .collect(Collectors.toList());
     }
 

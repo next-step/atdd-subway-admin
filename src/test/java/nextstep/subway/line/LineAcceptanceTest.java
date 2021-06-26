@@ -123,7 +123,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionBetweenStations() {
         // given
         long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
-        SectionRequest request = 지하철_구간에_역들이_등록되어_있음("DMC역", "상암역", 10L);
+        long sangamId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
+        SectionRequest request = new SectionRequest(testKangnamId, sangamId, 5L);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선에_구간_추가_요청(firstLineId, request);
@@ -151,8 +152,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionBiggerDistanceThanExistSection() {
         // given
         long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
-
         SectionRequest request = 지하철_구간에_역들이_등록되어_있음("DMC역", "상암역", 40L);
+
         // when
         ExtractableResponse<Response> response = 지하철_노선에_구간_추가_요청(firstLineId, request);
 
@@ -165,7 +166,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionNotContains() {
         // given
         long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
-
         SectionRequest request = 지하철_구간에_역들이_등록되어_있음("응암역", "이태원역", 10L);
 
         // when

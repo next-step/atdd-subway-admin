@@ -1,6 +1,5 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.exception.NotContainSectionException;
 import nextstep.subway.exception.NotExistLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -69,7 +68,5 @@ public class LineService {
         Station newDownStation = stationService.findById(request.getDownStationId());
 
         line.validateAndAddSections(request.getDistance(), newUpStation, newDownStation);
-
-        throw new NotContainSectionException();
     }
 }

@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -27,10 +28,10 @@ class SectionsTest {
 
         //then
         assertThat(sections.extractStations()).containsExactly(
-                판교역,
-                모란역,
-                이매역,
-                야탑역
+                StationResponse.of(판교역),
+                StationResponse.of(모란역),
+                StationResponse.of(이매역),
+                StationResponse.of(야탑역)
         );
     }
 
@@ -50,9 +51,9 @@ class SectionsTest {
 
         //then
         assertThat(sections.extractStations()).containsExactly(
-                판교역,
-                모란역,
-                야탑역
+                StationResponse.of(판교역),
+                StationResponse.of(모란역),
+                StationResponse.of(야탑역)
         );
     }
 }

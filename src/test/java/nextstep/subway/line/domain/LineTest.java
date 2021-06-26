@@ -1,12 +1,9 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,6 +24,8 @@ class LineTest {
         Line addedSectionLine = line.addSection(구간);
 
         //then
-        assertThat(addedSectionLine.getSections()).isEqualTo(new Sections(List.of(구간)));
+        assertThat(addedSectionLine.getSections()).containsExactly(
+                구간
+        );
     }
 }
