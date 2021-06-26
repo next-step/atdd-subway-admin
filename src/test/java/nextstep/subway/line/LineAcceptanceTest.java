@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -10,7 +9,6 @@ import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 
 import static nextstep.subway.line.LineStepTest.*;
 import static nextstep.subway.station.StationAcceptanceTest.TEST_GANGNAM_STATION;
@@ -125,19 +123,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void addSectionBetweenStations() {
         // given
         long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
+        SectionRequest request = 지하철_구간에_역들이_등록되어_있음("DMC역", "상암역", 10L);
 
-        long dmcStationId = 지하철_역_등록되어_있음(new StationRequest("DMC역"));
-        long sangamStationId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
-        int distance = 10;
-
-        SectionRequest request = new SectionRequest(dmcStationId, sangamStationId, distance);
         // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(BASE_LINE_URL + "/" + firstLineId + "/sections")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 지하철_노선에_구간_추가_요청(firstLineId, request);
 
         //then
         지하철_노선_목록_응답됨(response);
@@ -151,12 +140,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         SectionRequest request = new SectionRequest(testKangnamId, testYucksamId, 10L);
 
         // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(BASE_LINE_URL + "/" + firstLineId + "/sections")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 지하철_노선에_구간_추가_요청(firstLineId, request);
 
         //then
         구간_추가_실패됨(response);
@@ -168,18 +152,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
 
-        long dmcStationId = 지하철_역_등록되어_있음(new StationRequest("DMC역"));
-        long sangamStationId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
-        int distance = 40;
-
-        SectionRequest request = new SectionRequest(dmcStationId, sangamStationId, distance);
+        SectionRequest request = 지하철_구간에_역들이_등록되어_있음("DMC역", "상암역", 40L);
         // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(BASE_LINE_URL + "/" + firstLineId + "/sections")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 지하철_노선에_구간_추가_요청(firstLineId, request);
 
         //then
         구간_추가_실패됨(response);
@@ -191,18 +166,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
 
-        long yungamStationId = 지하철_역_등록되어_있음(new StationRequest("응암역"));
-        long etaewonStationId = 지하철_역_등록되어_있음(new StationRequest("이태원역"));
-        int distance = 10;
+        SectionRequest request = 지하철_구간에_역들이_등록되어_있음("응암역", "이태원역", 10L);
 
-        SectionRequest request = new SectionRequest(yungamStationId, etaewonStationId, distance);
         // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(BASE_LINE_URL + "/" + firstLineId + "/sections")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 지하철_노선에_구간_추가_요청(firstLineId, request);
 
         //then
         구간_추가_실패됨(response);
