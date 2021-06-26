@@ -3,8 +3,8 @@ package nextstep.subway.section.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.exception.DuplicateSectionException;
 import nextstep.subway.exception.InvalidateDistanceException;
+import nextstep.subway.exception.NotContainSectionException;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -47,8 +47,17 @@ public class Section extends BaseEntity {
     }
 
     private void validateSection(long requestDistance, Station newUpStation, Station newDownStation) {
+        validateAnyContainSection(newUpStation, newDownStation);
         validateDuplicateSection(newUpStation, newDownStation);
         validateSectionDistance(requestDistance, newDownStation, newUpStation);
+    }
+
+    private void validateAnyContainSection(Station newUpStation, Station newDownStation) {
+        List<Station> stations = List.of(upStation, downStation);
+
+        if (!stations.contains(newUpStation) && !stations.contains(newDownStation)) {
+            throw new NotContainSectionException();
+        }
     }
 
     private void validateDuplicateSection(Station newUpStation, Station newDownStation) {

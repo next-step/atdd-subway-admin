@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.exception.DuplicateSectionException;
 import nextstep.subway.exception.InvalidateDistanceException;
+import nextstep.subway.exception.NotContainSectionException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,6 +73,21 @@ class SectionTest {
         //when
         assertThrows(InvalidateDistanceException.class,
                 () -> 첫번째구간.validateSectionAndAddSection(15, new Station(1L, "판교역"), new Station(3L, "이매역"), sections)
+        );
+    }
+
+    @Test
+    @DisplayName("요청한 구간의 역들이 기존 구간의 역들에 포함되지 않는 경우 예외처리한다.")
+    void validateAnyContainSection_test() {
+        //given
+        ArrayList<Section> sections = new ArrayList<>();
+        Station 판교역 = new Station(1L, "판교역");
+        Station 야탑역 = new Station(2L, "야탑역");
+        Section 첫번째구간 = new Section(판교역, 야탑역, 10);
+
+        //when
+        assertThrows(NotContainSectionException.class,
+                () -> 첫번째구간.validateSectionAndAddSection(15, new Station(3L, "이매역"), new Station(4L, "수내역"), sections)
         );
     }
 }
