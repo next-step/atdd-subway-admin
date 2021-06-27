@@ -5,9 +5,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 @Entity
 public class Section extends BaseEntity {
@@ -33,15 +30,12 @@ public class Section extends BaseEntity {
     protected Section() {
 
     }
+
     public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public List<Station> toStation() {
-        return new LinkedList<>(Arrays.asList(this.upStation, this.downStation));
     }
 
     public Station getUpStation() {
