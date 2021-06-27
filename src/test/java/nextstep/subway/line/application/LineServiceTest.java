@@ -12,7 +12,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("노선 서비스 테스트")
 class LineServiceTest extends AcceptanceTest {
@@ -33,7 +35,7 @@ class LineServiceTest extends AcceptanceTest {
     private static LineResponse 죠르디_선;
 
     private static final int 기본_구간_거리 = 100;
-    private static final int 구간_사이_추가된_구간간_거리 = 30;
+    private static final int 구간_사이_추가된_역간_거리 = 50;
 
     @BeforeEach
     void setBasicDomainData() {
@@ -69,7 +71,7 @@ class LineServiceTest extends AcceptanceTest {
     @Test
     void addSection_성공_구간_중간_등록1() {
         // given
-        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 강남역.getId(), 서울대입구역.getId(), 구간_사이_추가된_구간간_거리);
+        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 강남역.getId(), 서울대입구역.getId(), 구간_사이_추가된_역간_거리);
 
         // when, then
         assertDoesNotThrow(() -> lineService.addSection(givenRequest));
@@ -78,9 +80,61 @@ class LineServiceTest extends AcceptanceTest {
     @Test
     void addSection_성공_구간_중간_등록2() {
         // given
-        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 역삼역.getId(), 구간_사이_추가된_구간간_거리);
+        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 역삼역.getId(), 구간_사이_추가된_역간_거리);
 
         // when, then
         assertDoesNotThrow(() -> lineService.addSection(givenRequest));
+    }
+
+    @Test
+    void addSection_예외_부족한_역간_거리1() {
+        // given
+        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 강남역.getId(), 서울대입구역.getId(), 기본_구간_거리);
+
+        // when, then
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> lineService.addSection(givenRequest));
+    }
+
+    @Test
+    void addSection_예외_부족한_역간_거리2() {
+        // given
+        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 역삼역.getId(), 기본_구간_거리);
+
+        // when, then
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> lineService.addSection(givenRequest));
+    }
+
+    @Test
+    void addSection_예외_연결되지_않는_구간() {
+        // given
+        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 신도림역.getId(), 기본_구간_거리);
+
+        // when, then
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> lineService.addSection(givenRequest));
+    }
+
+    @Test
+    void addSection_예외_이미_등록된_구간1() {
+        // given
+        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 강남역.getId(), 역삼역.getId(), 기본_구간_거리);
+
+        // when, then
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> lineService.addSection(givenRequest));
+    }
+
+    @Test
+    void addSection_예외_이미_등록된_구간2() {
+        // given
+        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 강남역.getId(), 기본_구간_거리);
+        SectionRequest duplicatedRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 역삼역.getId(), 구간_사이_추가된_역간_거리);
+        lineService.addSection(givenRequest);
+
+        // when, then
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> lineService.addSection(duplicatedRequest));
     }
 }
