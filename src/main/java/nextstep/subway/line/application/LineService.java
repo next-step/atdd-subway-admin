@@ -38,25 +38,25 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll()
-                .stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
+            .stream()
+            .map(LineResponse::of)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLineBy(Long id) {
         return lineRepository
-                .findById(id)
-                .map(LineResponse::of)
-                .orElseThrow(EntityNotFoundException::new);
+            .findById(id)
+            .map(LineResponse::of)
+            .orElseThrow(EntityNotFoundException::new);
     }
 
     public LineResponse updateLineBy(Long id, LineRequest lineRequest) {
         return lineRepository
-                .findById(id)
-                .map(it -> it.getUpdatedLineBy(lineRequest))
-                .map(LineResponse::of)
-                .orElseThrow(EntityNotFoundException::new);
+            .findById(id)
+            .map(it -> it.getUpdatedLineBy(lineRequest))
+            .map(LineResponse::of)
+            .orElseThrow(EntityNotFoundException::new);
     }
 
     public void deleteStationBy(Long id) {
