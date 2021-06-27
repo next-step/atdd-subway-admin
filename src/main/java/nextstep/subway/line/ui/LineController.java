@@ -1,8 +1,9 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +21,8 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLine(lineRequest);
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
+        LineResponse line = lineService.saveLine(lineCreateRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
@@ -36,8 +37,8 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable long id, @RequestBody LineRequest lineRequest){
-        return ResponseEntity.ok(lineService.updateLine(id, lineRequest));
+    public ResponseEntity<LineResponse> updateLine(@PathVariable long id, @RequestBody LineUpdateRequest lineUpdateRequest){
+        return ResponseEntity.ok(lineService.updateLine(id, lineUpdateRequest));
     }
 
     @DeleteMapping("/{id}")
