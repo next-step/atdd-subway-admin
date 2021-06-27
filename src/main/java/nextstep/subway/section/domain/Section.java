@@ -77,21 +77,13 @@ public class Section extends BaseEntity {
     }
 
     private void addSectionByPosition(long newDistance, Station newUpStation, Station newDownStation, List<Section> sections) {
-        addSectionWhenSameUpStation(newDistance, newUpStation, newDownStation, sections);
-        addSectionWhenSameAnotherPosition(newDistance, newUpStation, newDownStation, sections);
-    }
-
-    // 일차하는 역이 둘 다 상행인 경우 해당 상행과 요청한 하행 + 상행(요청한 하행역)과 기존 하행으로 이뤄진 2개의 section으로 구성된다.
-    private void addSectionWhenSameUpStation(long newDistance, Station newUpStation, Station newDownStation, List<Section> sections) {
         if (upStation.equals(newUpStation)) {
             sections.remove(this);
             sections.add(new Section(newUpStation, newDownStation, newDistance));
             sections.add(new Section(newDownStation, downStation, distance - newDistance));
+            return;
         }
-    }
 
-    // 기존 하행과 요청된 상행이 일치하는 경우 기존 상행과 기존 하행 + 요청된 상행 + 요청된 하행으로 추가한다.
-    private void addSectionWhenSameAnotherPosition(long newDistance, Station newUpStation, Station newDownStation, List<Section> sections) {
         if (upStation.equals(newDownStation) || downStation.equals(newUpStation)) {
             sections.add(new Section(newUpStation, newDownStation, newDistance));
         }
