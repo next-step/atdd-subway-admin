@@ -4,6 +4,10 @@ import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.section.domain.Section;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -14,6 +18,9 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
+
+    @OneToMany(mappedBy = "line")
+    private List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
@@ -45,5 +52,13 @@ public class Line extends BaseEntity {
         this.color = lineRequest.getColor();
 
         return this;
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    public void add(Section section){
+        this.sections.add(section);
     }
 }
