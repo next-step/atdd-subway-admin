@@ -16,21 +16,24 @@ public class LineStation {
     @Column(nullable = false)
     private Long stationId;
 
-    private int distance;
+    private Integer distance;
 
     protected LineStation(){}
 
-    public LineStation(Long upStationId, Long stationId, int distance){
+    public LineStation(Long upStationId, Long stationId, Integer distance){
         this.upStationId = upStationId;
         this.stationId = stationId;
         this.distance = distance;
     }
 
-    public static LineStation ofFirst(long stationId){
-        return new LineStation(null, stationId, 0);
+    public static LineStation ofFirst(Long stationId){
+        return new LineStation(null, stationId, null);
     }
 
-    public static LineStation of(long upStationId, long stationId, int distance){
+    public static LineStation of(Long upStationId, Long stationId, Integer distance){
+        if(distance != null && distance < 0 ){
+            throw new IllegalArgumentException("구간거리는 0보다 작을 수 없습니다.");
+        }
         return new LineStation(upStationId, stationId, distance);
     }
 
@@ -46,7 +49,7 @@ public class LineStation {
         return stationId;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
@@ -54,7 +57,15 @@ public class LineStation {
        return this.upStationId == upStationId;
     }
 
+    public boolean isSameStation(long stationId){
+        return this.stationId == stationId;
+    }
+
     public void changeUpStation(long id){
         this.upStationId = id;
+    }
+
+    public boolean isFirst(){
+        return this.upStationId == null;
     }
 }

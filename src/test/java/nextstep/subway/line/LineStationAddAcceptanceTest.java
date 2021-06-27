@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -22,7 +22,7 @@ import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_등록되
 import static nextstep.subway.station.StationAcceptanceTest.지하철역_등록;
 
 @DisplayName("지하철 구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+public class LineStationAddAcceptanceTest extends AcceptanceTest {
     private StationResponse 강남역;
     private StationResponse 당산역;
     private StationResponse 서울대입구역;

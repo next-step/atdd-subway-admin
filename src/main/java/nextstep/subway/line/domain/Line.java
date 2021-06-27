@@ -4,6 +4,7 @@ import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -57,5 +58,9 @@ public class Line extends BaseEntity {
 
     public void addLineStation(LineStation lineStation){
         this.lineStations.add(lineStation);
+    }
+
+    public Optional<LineStation> getSameLineStation(long id){
+        return this.lineStations.getSameLineStation(id);
     }
 }
