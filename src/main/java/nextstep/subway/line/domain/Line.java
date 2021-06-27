@@ -2,10 +2,17 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.domain.Section;
+import nextstep.subway.station.domain.Sections;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
@@ -17,8 +24,8 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    @AssociationOverride(name = "stations", joinColumns = {@JoinColumn(name = "line_id")})
-    private Stations stations = new Stations();
+    @AssociationOverride(name ="sections", joinColumns = {@JoinColumn(name="line_id")})
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -31,6 +38,14 @@ public class Line extends BaseEntity {
     public Line(LineRequest request) {
         this.name = request.getName();
         this.color = request.getColor();
+    }
+
+    public Line(LineRequest request, Section... sections) {
+        this(request);
+        for( Section section: sections) {
+            this.sections.addSection(section);
+        }
+
     }
 
     public void update(Line line) {
@@ -50,7 +65,11 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Stations getStations() { return stations; }
+    public List<Station> extractStations() {
+        return sections.getStations();
+    }
+
+
 
     @Override
     public boolean equals(Object o) {
