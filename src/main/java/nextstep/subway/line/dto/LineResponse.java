@@ -1,26 +1,27 @@
 package nextstep.subway.line.dto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.SortedStations;
+import nextstep.subway.station.dto.StationResponse;
+
+import static java.util.stream.Collectors.toList;
 
 public class LineResponse {
-
     private Long id;
     private String name;
     private String color;
-    private List<Station> stations = new ArrayList<>();
+    private List<StationResponse> stations;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color
-        , List<Station> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public LineResponse(Long id, String name, String color,
+        List<StationResponse> stations,
+        LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -30,8 +31,18 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor()
-            , line.getStations(), line.getCreatedDate(), line.getModifiedDate());
+
+        SortedStations stations = line.getSortedStations();
+
+        List<StationResponse> stationResponses =
+            stations.getStations()
+                .stream()
+                .map(StationResponse::new)
+                .collect(toList());
+
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
+            stationResponses,
+            line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
@@ -46,7 +57,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<Station> getStations() {
+    public List<StationResponse> getStations() {
         return stations;
     }
 
@@ -56,34 +67,5 @@ public class LineResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        LineResponse that = (LineResponse) o;
-        return Objects.equals(id, that.id) &&
-            Objects.equals(name, that.name) &&
-            Objects.equals(color, that.color);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, color);
-    }
-
-    @Override
-    public String toString() {
-        return "LineResponse{" +
-            "id=" + id +
-            "stations=" + stations.toString() +
-            ", name='" + name + '\'' +
-            ", color='" + color + '\'' +
-            '}';
     }
 }

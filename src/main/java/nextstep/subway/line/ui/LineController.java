@@ -2,7 +2,8 @@ package nextstep.subway.line.ui;
 
 import java.net.URI;
 import java.util.List;
-import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.application.LineCommandService;
+import nextstep.subway.line.application.LineQueryService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.ResponseEntity;
@@ -19,40 +20,48 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/lines")
 public class LineController {
 
-    private final LineService lineService;
+    private final LineCommandService lineCommandService;
+    private final LineQueryService lineQueryService;
 
-    public LineController(final LineService lineService) {
-        this.lineService = lineService;
+    public LineController(LineCommandService lineCommandService,
+        LineQueryService lineQueryService) {
+        this.lineCommandService = lineCommandService;
+        this.lineQueryService = lineQueryService;
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLine(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest request) {
+
+        Long lineId = lineCommandService.save(request.toLine(),
+            request.getUpStationId(),
+            request.getDownStationId(),
+            request.getDistance());
+
+        return ResponseEntity.created(URI.create("/lines/" + lineId))
+            .body(LineResponse.of(lineQueryService.findById(lineId)));
     }
 
     @GetMapping
-    public ResponseEntity<List<LineResponse>> findAllLines() {
-        return ResponseEntity.ok().body(this.lineService.findAllLines());
+    public ResponseEntity<List<LineResponse>> getLines() {
+        List<LineResponse> lines = lineQueryService.findLines();
+        return ResponseEntity.ok(lines);
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
-        return this.lineService.findLine(id)
-            .map(lineResponse -> ResponseEntity.ok().body(lineResponse))
-            .orElseGet(() -> ResponseEntity.badRequest().build());
+    @GetMapping(value = "/{lineId}")
+    public ResponseEntity<LineResponse> getLine(@PathVariable Long lineId) {
+        return ResponseEntity.ok(LineResponse.of(lineQueryService.findById(lineId)));
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id,
+    @PutMapping(value = "/{lineId}")
+    public ResponseEntity<Void> updateLine(@PathVariable Long lineId,
         @RequestBody LineRequest lineRequest) {
-        this.lineService.updateLine(id, lineRequest);
+        lineCommandService.update(lineId, lineRequest.toLine());
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
-        lineService.deleteLine(id);
+    @DeleteMapping("/{lineId}")
+    public ResponseEntity<Void> deleteLine(@PathVariable Long lineId) {
+        lineCommandService.deleteById(lineId);
         return ResponseEntity.noContent().build();
     }
 }
