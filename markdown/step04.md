@@ -153,14 +153,16 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
     - [x] 1-2.[gradle-checkstyle](https://naver.github.io/hackday-conventions-java/#checkstyle) 적용
     - [x] 1-3.[IntelliJ](https://naver.github.io/hackday-conventions-java/#_intellij) 적용
     - [x] 1-4.[Github](https://naver.github.io/hackday-conventions-java/#_github) 적용
-- [ ] 2.학습
-    - [ ] 2-1.존재 시 추가 작성
+- [x] 2.학습
+    - [x] 2-1.존재 시 추가 작성
 - [x] 3.분석 및 설계
     - [x] 3-1.step04.md 초안 작성
-    - [ ] 3-2.ATDD 작성
+    - [x] 3-2.ATDD 작성
 - [ ] 4.구현
-    - [ ] 4-1.
-        - [ ] 4-1-1.
+    - [ ] 4-1.Scenario: 노선의 중간 구간을 제거한다.
+    - [ ] 4-2.Scenario: 노선의 상행종점 구간을 제거한다.
+    - [ ] 4-3.Scenario: 노선의 하행종점 구간을 제거한다.
+    - [ ] 4-4.Scenario: 구간이 하나인 노선에서 마지막 구간을 제거할 수 없다.
 - [ ] 5.테스트
     - [ ] 5-1.Gradle build Success 확인
     - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)
