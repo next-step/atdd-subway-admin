@@ -23,7 +23,13 @@ public class Line extends BaseEntity {
     public Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(String name, String color, LineStations lineStations) {
+        this.name = name;
+        this.color = color;
+        this.lineStations = lineStations;
+    }
+
+    public Line(String name, String color){
         this.name = name;
         this.color = color;
     }
@@ -40,24 +46,16 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public LineStations getLineStations() {
-        return lineStations;
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        this.lineStations.addLineStation(lineStation);
-    }
-
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
     }
 
-    public List<LineStation> getLineStationList(){
-        return this.lineStations.getLineStations();
-    }
-
     public List<Long> getStationIds(){
         return this.lineStations.getStationIds();
+    }
+
+    public void addLineStation(LineStation lineStation){
+        this.lineStations.add(lineStation);
     }
 }

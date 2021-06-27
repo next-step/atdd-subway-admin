@@ -26,12 +26,12 @@ public class LineStation {
         this.distance = distance;
     }
 
-    public static LineStation ofFirst(long stationId, int distance){
-        return new LineStation(null, stationId, distance);
+    public static LineStation ofFirst(long stationId){
+        return new LineStation(null, stationId, 0);
     }
 
     public static LineStation of(long upStationId, long stationId, int distance){
-        return new LineStation(null, stationId, distance);
+        return new LineStation(upStationId, stationId, distance);
     }
 
     public Long getId() {
@@ -48,5 +48,13 @@ public class LineStation {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean hasSameUpStation(long upStationId){
+       return this.upStationId == upStationId;
+    }
+
+    public void changeUpStation(long id){
+        this.upStationId = id;
     }
 }

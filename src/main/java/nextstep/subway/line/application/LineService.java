@@ -1,8 +1,9 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.*;
-import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
@@ -16,24 +17,16 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
-    private LineStationRepository lineStationRepository;
     private StationService stationService;
 
     public LineService(LineRepository lineRepository,
-                       LineStationRepository lineStationRepository,
                        StationService stationService) {
         this.lineRepository = lineRepository;
-        this.lineStationRepository = lineStationRepository;
         this.stationService = stationService;
     }
 
-    public LineResponse saveLine(LineRequest request) {
+    public LineResponse saveLine(LineCreateRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        LineStation upStation =  LineStation.ofFirst(request.getUpStationId(), request.getDistance());
-        LineStation downStation = LineStation.of(request.getUpStationId(), request.getDownStationId(), request.getDistance());
-        persistLine.addLineStation(upStation);
-        persistLine.addLineStation(downStation);
-        lineStationRepository.saveAll(persistLine.getLineStationList());
         return toLineResponse(persistLine);
     }
 
@@ -48,7 +41,7 @@ public class LineService {
        return toLineResponse(line);
     }
 
-    public LineResponse updateLine(long id, LineRequest request) {
+    public LineResponse updateLine(long id, LineUpdateRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 노선을 찾을 수 없습니다."));
         line.update(request.toLine());
