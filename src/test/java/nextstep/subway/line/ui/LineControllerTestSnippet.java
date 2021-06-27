@@ -4,7 +4,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.http.MediaType;
+
+import static java.lang.String.format;
 
 public class LineControllerTestSnippet {
 
@@ -59,6 +62,16 @@ public class LineControllerTestSnippet {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .delete("/lines/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse 지하철_노선_구간_추가_요청(SectionRequest sectionRequest) {
+        return RestAssured.given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(format("/lines/%d/sections", sectionRequest.getLineId()))
                 .then().log().all()
                 .extract();
     }

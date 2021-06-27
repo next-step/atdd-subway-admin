@@ -5,48 +5,59 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
+import nextstep.subway.section.domain.Distance;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityNotFoundException;
-import java.util.Optional;
 
 import static java.lang.String.format;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        Station upStation = stationRepository.getById(request.getUpStationId());
+        Station downStation = stationRepository.getById(request.getDownStationId());
+        Line persistLine = lineRepository.save(request.toLine(upStation, downStation));
+        return LineResponse.from(persistLine);
     }
 
     public LineResponse getLineById(Long id) {
-        Optional<Line> line = lineRepository.findById(id);
-        return LineResponse.of(line.orElseThrow(() -> new EntityNotFoundException(format("id가 %d인 노선이 존재 하지 않습니다.", id))));
+        return LineResponse.from(lineRepository.getById(id));
     }
 
     public LinesResponse getLines(LineRequest lineRequest) {
-        return LinesResponse.of(lineRepository.findByNameContainingAndColorContaining(lineRequest.getName(), lineRequest.getColor()));
+        return LinesResponse.from(lineRepository.findByNameContainingAndColorContaining(lineRequest.getName(), lineRequest.getColor()));
     }
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Optional<Line> line = lineRepository.findById(id);
-        Line updatingLine = line.orElseThrow(() -> new EntityNotFoundException((format("id가 %d인 노선이 존재 하지 않습니다.", id))));
-        updatingLine.update(lineRequest.toLine());
+        Line updatingLine = lineRepository.getById(id);
+        updatingLine.update(lineRequest.getName(), lineRequest.getColor());
 
-        return LineResponse.of(lineRepository.save(updatingLine));
+        return LineResponse.from(lineRepository.save(updatingLine));
     }
 
     public void deleteLine(Long id) {
-        Optional<Line> line = lineRepository.findById(id);
-        Line deletingLine = line.orElseThrow(() -> new EntityNotFoundException((format("id가 %d인 노선이 존재 하지 않습니다.", id))));
+        Line deletingLine = lineRepository.getById(id);
         lineRepository.delete(deletingLine);
+    }
+
+    public LineResponse addSection(SectionRequest sectionRequest) {
+        Line foundLine = lineRepository.getById(sectionRequest.getLineId());
+        Station upStation = stationRepository.getById(sectionRequest.getUpStationId());
+        Station downStation = stationRepository.getById(sectionRequest.getDownStationId());
+        foundLine.addSection(new Section(foundLine, upStation, downStation, new Distance(sectionRequest.getDistance())));
+        return LineResponse.from(lineRepository.save(foundLine));
     }
 }
