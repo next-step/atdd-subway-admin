@@ -5,9 +5,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Embeddable
 public class Sections {
@@ -20,38 +18,44 @@ public class Sections {
     }
 
     public List<Station> toStations() {
-        LinkedList<Station> storage = new LinkedList<>();
+        List<Station> result = new ArrayList<>();
         Section section = values.get(0);
-        addAllUpSections(storage, section.getUpStation());
-        addAllDownSections(storage, section.getDownStation());
-        return storage;
+        result.addAll(getUpStations(section.getUpStation()));
+        result.addAll(getDownStations(section.getDownStation()));
+        return result;
     }
 
-    private void addAllUpSections(LinkedList<Station> storage, Station upStation) {
-        storage.addFirst(upStation);
-        Section foundSection = findSectionByUpStation(upStation);
-        if (foundSection.getUpStation() != null) {
-            addAllUpSections(storage, foundSection.getUpStation());
+    private List<Station> getUpStations(Station upStation) {
+        LinkedList<Station> result = new LinkedList<>();
+        Station foundUpStation = upStation;
+        while (foundUpStation != null) {
+            result.addFirst(foundUpStation);
+            foundUpStation = findUpStation(foundUpStation).orElse(null);
         }
+        return result;
     }
 
-    private void addAllDownSections(LinkedList<Station> storage, Station downStation) {
-        storage.addLast(downStation);
-        Section foundSection = findSectionByDownStation(downStation);
-        if (foundSection.getDownStation() != null) {
-            addAllDownSections(storage, foundSection.getDownStation());
+    private List<Station> getDownStations(Station downStation) {
+        List<Station> result = new ArrayList<>();
+        Station foundDownStation = downStation;
+        while (foundDownStation != null) {
+            result.add(foundDownStation);
+            foundDownStation = findDownStation(foundDownStation).orElse(null);
         }
+        return result;
     }
 
-    private Section findSectionByUpStation(Station upStation) {
+    private Optional<Station> findUpStation(Station upStation) {
         return values.stream()
                 .filter(section -> section.getDownStation().getId().equals(upStation.getId()))
-                .findFirst().orElse(new Section());
+                .map(section -> section.getUpStation())
+                .findFirst();
     }
 
-    private Section findSectionByDownStation(Station downStation) {
+    private Optional<Station> findDownStation(Station downStation) {
         return values.stream()
                 .filter(section -> section.getUpStation().getId().equals(downStation.getId()))
-                .findFirst().orElse(new Section());
+                .map(section -> section.getDownStation())
+                .findFirst();
     }
 }
