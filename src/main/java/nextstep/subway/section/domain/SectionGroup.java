@@ -13,11 +13,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.exception.CannotAddNewSectionException;
+import nextstep.subway.exception.CannotRemoveSectionException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class SectionGroup {
 
+	private static final int MINIMUM_SECTION_COUNT = 1;
 	private static final int OUT_OF_INDEX = -1;
 	private static final int FIRST_INDEX = 0;
 	private static final int NEXT_INDEX = 1;
@@ -103,6 +105,50 @@ public class SectionGroup {
 
 	public void sort() {
 		this.sections = new SectionGroup(sections.toArray(new Section[sections.size()])).sections;
+	}
+
+	public void removeSectionByStation(Station removeTargetStation) {
+		validateRemoveSection();
+		removeTargetSectionWhenEdgeStation(removeTargetStation);
+		removeTargetSectionsWhenInnerStation(removeTargetStation);
+	}
+
+	private void removeTargetSectionsWhenInnerStation(Station targetStation) {
+		if (targetStation.isInnerStation(this.stations())) {
+			Section modifiedSection = extractModifiedSection(targetStation);
+			removeSectionsRelatedWithTargetStation(targetStation);
+			add(modifiedSection);
+		}
+	}
+
+	private void removeSectionsRelatedWithTargetStation(Station targetStation) {
+		sections = sections.stream()
+			.filter(targetStation::isNotIncludedStation)
+			.collect(Collectors.toList());
+	}
+
+	private Section extractModifiedSection(Station targetStation) {
+		return sections.stream()
+			.filter(targetStation::isIncludedStation)
+			.reduce(Section::extractFromRemoveTargetSections)
+			.get();
+	}
+
+	private void removeTargetSectionWhenEdgeStation(Station removeTargetStation) {
+		if (removeTargetStation.isFirstStation(this.stations())) {
+			sections.remove(FIRST_INDEX);
+			return;
+		}
+		if (removeTargetStation.isLastStation(this.stations())) {
+			sections.remove(sections.size() + OUT_OF_INDEX);
+			return;
+		}
+	}
+
+	private void validateRemoveSection() {
+		if (sections.size() == MINIMUM_SECTION_COUNT) {
+			throw new CannotRemoveSectionException("구간이 하나만 남은 상태에서는 마지막 구간을 제거할 수 없습니다.");
+		}
 	}
 
 	@Override

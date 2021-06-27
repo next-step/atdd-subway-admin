@@ -145,6 +145,68 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		노선에_역정보들_포함_및_순서가_일치한다(칠호선_url, Arrays.asList(이수역, 고속터미널역));
 	}
 
+	@DisplayName("노선의 중간 구간을 제거한다.")
+	@Test
+	void removeInnerSection() {
+		// given
+		Long 내방역 = StationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("내방역"));
+		SectionRequest 구간정보 = new SectionRequest(내방역, 고속터미널역, 50);
+		구간_등록되어_있음(칠호선_아이디, 구간정보);
+
+		// when
+		ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(칠호선_아이디, 내방역);
+
+		// then
+		구간이_삭제된다(구간_삭제_응답);
+		노선에_역정보들_포함_및_순서가_일치한다(칠호선_url, Arrays.asList(이수역, 고속터미널역));
+	}
+
+	@DisplayName("노선의 상행종점 구간을 제거한다.")
+	@Test
+	void removeFirstSection() {
+		// given
+		Long 내방역 = StationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("내방역"));
+		SectionRequest 구간정보 = new SectionRequest(내방역, 고속터미널역, 50);
+		구간_등록되어_있음(칠호선_아이디, 구간정보);
+
+		// when
+		ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(칠호선_아이디, 이수역);
+
+		// then
+		구간이_삭제된다(구간_삭제_응답);
+		노선에_역정보들_포함_및_순서가_일치한다(칠호선_url, Arrays.asList(내방역, 고속터미널역));
+	}
+
+	@DisplayName("노선의 하행종점 구간을 제거한다.")
+	@Test
+	void removeLastSection() {
+		// given
+		Long 내방역 = StationAcceptanceTest.지하철_역_등록되어_있음(new StationRequest("내방역"));
+		SectionRequest 구간정보 = new SectionRequest(내방역, 고속터미널역, 50);
+		구간_등록되어_있음(칠호선_아이디, 구간정보);
+
+		// when
+		ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(칠호선_아이디, 고속터미널역);
+
+		// then
+		구간이_삭제된다(구간_삭제_응답);
+		노선에_역정보들_포함_및_순서가_일치한다(칠호선_url, Arrays.asList(이수역, 내방역));
+	}
+
+	@DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없다. ")
+	@Test
+	void removeSectionThrownCannotRemoveSectionException() {
+		// given
+
+		// when
+		ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(칠호선_아이디, 고속터미널역);
+
+		// then
+		구간_삭제_실패된다(구간_삭제_응답);
+		노선에_역정보들_포함_및_순서가_일치한다(칠호선_url, Arrays.asList(이수역, 고속터미널역));
+	}
+
+
 	public static String 노선_아이디_추출(String 노선_url) {
 		return 노선_url.split("/")[2];
 	}
@@ -157,6 +219,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.post("/lines/" + 노선_아이디 + "/sections")
 			.then().log().all()
 			.extract();
+	}
+
+	private void 구간_등록되어_있음(String 노선_아이디, SectionRequest 구간정보) {
+		구간_생성_요청(노선_아이디, 구간정보);
 	}
 
 	private void 구간이_생성된다(ExtractableResponse<Response> 구간_생성_응답) {
@@ -176,5 +242,23 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 	private void 구간이_생성_실패한다(ExtractableResponse<Response> 구간_생성_응답) {
 		assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	private ExtractableResponse<Response> 구간_삭제_요청(String 노선_아이디, Long 역_아이디) {
+		return RestAssured.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.param("stationId", 역_아이디)
+			.when()
+			.delete("/lines/" + 노선_아이디 + "/sections")
+			.then().log().all()
+			.extract();
+	}
+
+	private void 구간이_삭제된다(ExtractableResponse<Response> 구간_삭제_응답) {
+		assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
+	private void 구간_삭제_실패된다(ExtractableResponse<Response> 구간_삭제_응답) {
+		assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 }

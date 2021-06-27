@@ -1,5 +1,6 @@
 package nextstep.subway.station.domain;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Embedded;
@@ -10,9 +11,13 @@ import javax.persistence.Id;
 
 import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.common.domain.Name;
+import nextstep.subway.section.domain.Section;
 
 @Entity
 public class Station extends BaseEntity {
+
+	private static final int FIRST_STATION_INDEX = 0;
+	private static final int ADJUST_LAST_STATION_INDEX = -1;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +43,32 @@ public class Station extends BaseEntity {
 
 	public String name() {
 		return name.value();
+	}
+
+	public boolean isFirstStation(List<Station> stations) {
+		Station firstStationInGroup = stations.get(FIRST_STATION_INDEX);
+		return this.equals(firstStationInGroup);
+	}
+
+	public boolean isLastStation(List<Station> stations) {
+		Station lastStationInGroup = stations.get(stations.size() + ADJUST_LAST_STATION_INDEX);
+		return this.equals(lastStationInGroup);
+	}
+
+	public boolean isInnerStation(List<Station> stations) {
+		int index = stations.indexOf(this);
+		return FIRST_STATION_INDEX < index && index < stations.size() + ADJUST_LAST_STATION_INDEX;
+	}
+
+	public boolean isNotIncludedStation(Section section) {
+		return !isIncludedStation(section);
+	}
+
+	public boolean isIncludedStation(Section section) {
+		if (Objects.isNull(section)) {
+			return false;
+		}
+		return this.equals(section.upStation()) || this.equals(section.downStation());
 	}
 
 	@Override

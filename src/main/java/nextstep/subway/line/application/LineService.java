@@ -36,9 +36,15 @@ public class LineService {
 
 	@Transactional(readOnly = true)
 	public List<LineResponse> findAllLines() {
-		return lineRepository.findAll().stream()
+		return findAllLinesFromRepository().stream()
 			.map(LineResponse::of)
 			.collect(Collectors.toList());
+	}
+
+	private List<Line> findAllLinesFromRepository() {
+		List<Line> lines = lineRepository.findAll();
+		lines.forEach(line -> line.sectionGroup().sort());
+		return lines;
 	}
 
 	@Transactional(readOnly = true)
@@ -48,7 +54,12 @@ public class LineService {
 	}
 
 	private Line findLineByIdFromRepository(Long id) {
-		return Optional.ofNullable(lineRepository.findById(id)).get()
+		return Optional.ofNullable(lineRepository.findById(id))
+			.get()
+			.map(line -> {
+				line.sectionGroup().sort();
+				return line;
+			})
 			.orElseThrow(new NotFoundException("지하철 노선을 찾을 수 없습니다. id :" + id));
 	}
 
@@ -66,6 +77,13 @@ public class LineService {
 		Station upStation = stationService.findStationByIdFromRepository(sectionRequest.getUpStationId());
 		Station downStation = stationService.findStationByIdFromRepository(sectionRequest.getDownStationId());
 		line.addSection(sectionRequest.toSection(line, upStation, downStation));
+		lineRepository.save(line);
+	}
+
+	public void removeSectionByStationId(Long lineId, Long stationId) {
+		Line line = findLineByIdFromRepository(lineId);
+		Station removeTargetStation = stationService.findStationByIdFromRepository(stationId);
+		line.sectionGroup().removeSectionByStation(removeTargetStation);
 		lineRepository.save(line);
 	}
 }

@@ -63,6 +63,11 @@ public class Section extends BaseEntity {
 		return new Section(line, upStation, downStation, distance);
 	}
 
+	public static Section extractFromRemoveTargetSections(Section upSection, Section downSection) {
+		int changedDistance = upSection.distance.value() + downSection.distance.value();
+		return new Section(upSection.line, upSection.upStation, downSection.downStation, changedDistance);
+	}
+
 	private void validateDistanceParseDouble(String distance) {
 		try {
 			Integer.parseInt(distance);
@@ -151,6 +156,7 @@ public class Section extends BaseEntity {
 		int changedDistance = this.distance.value() - distance.value();
 		this.distance = Distance.generate(changedDistance);
 	}
+
 	public void plusDistance(Distance distance) {
 		int changedDistance = this.distance.value() + distance.value();
 		this.distance = Distance.generate(changedDistance);
