@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,13 +21,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public LineRequest testFirstLine;
     public LineRequest testSecondLine;
 
+    private long testKangnamId;
+    private long testYucksamId;
+
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        long testKangnamId = 지하철_역_등록되어_있음(TEST_GANGNAM_STATION);
-        long testYucksamId = 지하철_역_등록되어_있음(TEST_YUCKSAM_STATION);
+        testKangnamId = 지하철_역_등록되어_있음(TEST_GANGNAM_STATION);
+        testYucksamId = 지하철_역_등록되어_있음(TEST_YUCKSAM_STATION);
 
         long testKachisanId = 지하철_역_등록되어_있음(new StationRequest("까치산역"));
         long testJamsilId = 지하철_역_등록되어_있음(new StationRequest("잠실역"));
@@ -112,5 +116,62 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_삭제됨(response);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록한다.")
+    @Test
+    void addSectionBetweenStations() {
+        // given
+        long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
+        long sangamId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
+        SectionRequest request = new SectionRequest(testKangnamId, sangamId, 5L);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_추가_요청(firstLineId, request);
+
+        //then
+        노선_구간추가_성공_응답됨(response);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
+    @Test
+    void addSectionWithDuplicateUpAndDownStation() {
+        // given
+        long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
+        SectionRequest request = new SectionRequest(testKangnamId, testYucksamId, 10L);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_추가_요청(firstLineId, request);
+
+        //then
+        구간_추가_실패됨(response);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
+    @Test
+    void addSectionBiggerDistanceThanExistSection() {
+        // given
+        long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
+        SectionRequest request = 지하철_구간에_역들이_등록되어_있음("DMC역", "상암역", 40L);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_추가_요청(firstLineId, request);
+
+        //then
+        구간_추가_실패됨(response);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.")
+    @Test
+    void addSectionNotContains() {
+        // given
+        long firstLineId = 지하철_노선_등록되어_있음(testFirstLine);
+        SectionRequest request = 지하철_구간에_역들이_등록되어_있음("응암역", "이태원역", 10L);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_추가_요청(firstLineId, request);
+
+        //then
+        구간_추가_실패됨(response);
     }
 }

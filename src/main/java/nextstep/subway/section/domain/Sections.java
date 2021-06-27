@@ -1,10 +1,13 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -12,7 +15,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {
@@ -26,13 +29,37 @@ public class Sections {
         this.sections.add(section);
     }
 
+    public void validateAndAddSections(long newDistance, Station newUpStation, Station newDownStation) {
+        for (Section section : sections) {
+            section.validateSectionAndAddSection(newDistance, newUpStation, newDownStation, new ArrayList<>(sections));
+        }
+    }
+
     public List<Station> extractStations() {
         List<Station> upStations = extractUpStations();
         List<Station> downStations = extractDownStations();
 
         upStations.addAll(downStations);
 
+        return checkDuplicateAndDistinctStations(upStations);
+    }
+
+    private List<Station> checkDuplicateAndDistinctStations(List<Station> upStations) {
+        if (haveDuplicateStation(upStations)) {
+            return removeDuplicateStations(upStations);
+        }
+
         return upStations;
+    }
+
+    private List<Station> removeDuplicateStations(List<Station> stations) {
+        return stations.stream()
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private boolean haveDuplicateStation(List<Station> upStations) {
+        return upStations.size() != new HashSet<>(upStations).size();
     }
 
     private List<Station> extractUpStations() {
@@ -45,6 +72,10 @@ public class Sections {
         return sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 
     @Override

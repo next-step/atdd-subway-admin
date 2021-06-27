@@ -6,6 +6,8 @@ import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.station.dto.StationRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.AcceptanceTest.ID_POSITION;
+import static nextstep.subway.station.StationStepTest.지하철_역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineStepTest {
@@ -59,9 +62,24 @@ public class LineStepTest {
                 .then().log().all().extract();
     }
 
+    static ExtractableResponse<Response> 지하철_노선에_구간_추가_요청(long lineId, SectionRequest request) {
+        return RestAssured
+                .given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(BASE_LINE_URL + "/" + lineId + "/sections")
+                .then().log().all().extract();
+    }
+
     static long 지하철_노선_등록되어_있음(LineRequest line) {
         ExtractableResponse<Response> createdFirstLine = 지하철_노선_생성_요청(line);
         return extractIdByLocationHeader(createdFirstLine);
+    }
+
+    static SectionRequest 지하철_구간에_역들이_등록되어_있음(String upStationName, String downStationName, long distance) {
+        long upStationId = 지하철_역_등록되어_있음(new StationRequest(upStationName));
+        long downStationId = 지하철_역_등록되어_있음(new StationRequest(downStationName));
+        return new SectionRequest(upStationId, downStationId, distance);
     }
 
     static long extractIdByLocationHeader(ExtractableResponse<Response> response) {
@@ -79,6 +97,10 @@ public class LineStepTest {
                 .collect(Collectors.toList());
 
         assertThat(resultIds).containsAll(List.of(ids));
+    }
+
+    static void 노선_구간추가_성공_응답됨(ExtractableResponse<Response> response) {
+        성공_상태_응답(response);
     }
 
     static void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
@@ -103,5 +125,9 @@ public class LineStepTest {
 
     static void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    static void 구간_추가_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
