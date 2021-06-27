@@ -1,5 +1,7 @@
 package nextstep.subway.section.ui;
 
+import java.util.List;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +22,13 @@ public class SectionController {
         this.sectionService = sectionService;
     }
 
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<SectionResponse>> showSections() {
+        return ResponseEntity.ok().body(sectionService.findAllSections());
+    }
+
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SectionResponse> showLine(@PathVariable Long id) {
+    public ResponseEntity<SectionResponse> showSection(@PathVariable Long id) {
         return ResponseEntity.ok().body(sectionService.findSectionById(id));
     }
 }

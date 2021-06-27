@@ -1,5 +1,8 @@
 package nextstep.subway.section.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.stereotype.Service;
@@ -17,6 +20,15 @@ public class SectionService {
 
     public SectionService(SectionRepository sectionRepository) {
         this.sectionRepository = sectionRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SectionResponse> findAllSections() {
+        List<Section> sections = sectionRepository.findAll();
+
+        return sections.stream()
+            .map(SectionResponse::of)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
