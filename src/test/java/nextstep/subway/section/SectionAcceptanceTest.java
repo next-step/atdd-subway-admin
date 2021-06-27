@@ -148,7 +148,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void tooLongDistance_ExceptionThrown() {
         // given
-        Map<String, String> section = 지하철_구간_생성_정보(선릉역.getId(), 교대역.getId(), 초기화_거리);
+        Map<String, String> section = 지하철_구간_생성_정보(사당역.getId(), 교대역.getId(), 초기화_거리);
 
         // when
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(지하철_2호선_ID, section);

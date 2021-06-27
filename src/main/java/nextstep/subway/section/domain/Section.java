@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -51,8 +52,52 @@ public class Section extends BaseEntity {
         this.distance = new Distance(distance);
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Long getUpStationId() {
+        return upStation.getId();
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Long getDownStationId() {
+        return downStation.getId();
+    }
+
+    public int getDistance() {
+        return distance.getDistance();
+    }
+
     public List<Station> stations() {
-        return Arrays.asList(upStation, downStation);
+        return Collections.unmodifiableList(Arrays.asList(upStation, downStation));
+    }
+
+    public boolean contains(Station station) {
+        return stations().contains(station);
+    }
+
+    public boolean equalUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean equalDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public void updateUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void updateDownStation(Station station) {
+        this.downStation = station;
     }
 
     private void validStations(Station upStation, Station downStation) {
