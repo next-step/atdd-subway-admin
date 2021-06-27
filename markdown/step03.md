@@ -34,32 +34,15 @@
 
 1. 역 사이에 새로운 역을 등록할 경우
     - 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정
-    
-![acceptance-01](../documents/step3/acceptance-01.png)
-
 2. 새로운 역을 상행 종점으로 등록할 경우
-
-![acceptance-02](../documents/step3/acceptance-02.png)
-
 3. 새로운 역을 하행 종점으로 등록할 경우
-
-![acceptance-03](../documents/step3/acceptance-03.png)
-
 
 ###### 1.1.1.2.2. 구간 등록 시 예외 케이스를 고려하기
 
 1. 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
-
-![acceptance-exception-01](../documents/step3/acceptance-exception-01.png)
-
 2. 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
     - 아래의 이미지 에서 A-B, B-C 구간이 등록된 상황에서 B-C 구간을 등록할 수 없음(A-C 구간도 등록할 수 없음)
-
-![acceptance-exception-02](../documents/step3/acceptance-exception-02.png)
-
 3. 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
-
-![acceptance-exception-03](../documents/step3/acceptance-exception-03.png)
 
 #### 1.1.2. 힌트
 
