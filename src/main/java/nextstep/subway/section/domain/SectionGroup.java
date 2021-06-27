@@ -31,8 +31,8 @@ public class SectionGroup {
 	public SectionGroup() {
 	}
 
-	public SectionGroup(Section... sections) {
-		Arrays.stream(sections).forEach(this::add);
+	public SectionGroup(Section section) {
+		sections.add(section);
 	}
 
 	public List<Section> sections() {
@@ -103,10 +103,6 @@ public class SectionGroup {
 		}
 	}
 
-	public void sort() {
-		this.sections = new SectionGroup(sections.toArray(new Section[sections.size()])).sections;
-	}
-
 	public void removeSectionByStation(Station removeTargetStation) {
 		validateRemoveSection();
 		removeTargetSectionWhenEdgeStation(removeTargetStation);
@@ -115,9 +111,8 @@ public class SectionGroup {
 
 	private void removeTargetSectionsWhenInnerStation(Station targetStation) {
 		if (targetStation.isInnerStation(this.stations())) {
-			Section modifiedSection = extractModifiedSection(targetStation);
+			modifiedSection(targetStation);
 			removeSectionsRelatedWithTargetStation(targetStation);
-			add(modifiedSection);
 		}
 	}
 
@@ -127,7 +122,16 @@ public class SectionGroup {
 			.collect(Collectors.toList());
 	}
 
-	private Section extractModifiedSection(Station targetStation) {
+	private void modifiedSection(Station targetStation) {
+		Section modifiedSection = extractSectionToModify(targetStation);
+		sections.stream()
+			.filter(targetStation::isIncludedStation)
+			.findAny()
+			.get()
+			.update(modifiedSection);
+	}
+
+	private Section extractSectionToModify(Station targetStation) {
 		return sections.stream()
 			.filter(targetStation::isIncludedStation)
 			.reduce(Section::extractFromRemoveTargetSections)
@@ -149,6 +153,37 @@ public class SectionGroup {
 		if (sections.size() == MINIMUM_SECTION_COUNT) {
 			throw new CannotRemoveSectionException("구간이 하나만 남은 상태에서는 마지막 구간을 제거할 수 없습니다.");
 		}
+	}
+
+	public void sort() {
+		List<Section> sortedSections = new ArrayList<>();
+		Section firstSection = findFirstSection();
+		Section temporaryLastSection = firstSection;
+		while (!Objects.isNull(temporaryLastSection)) {
+			sortedSections.add(temporaryLastSection);
+			temporaryLastSection = findSectionByUpStation(temporaryLastSection.downStation());
+		}
+		sections.clear();
+		sections.addAll(sortedSections);
+	}
+
+	private Section findFirstSection() {
+		List<Station> upStations = sections.stream()
+			.map(Section::upStation)
+			.collect(Collectors.toList());
+		List<Station> downStations = sections.stream()
+			.map(Section::downStation)
+			.collect(Collectors.toList());
+		upStations.removeAll(downStations);
+		Station firstStation = upStations.get(FIRST_INDEX);
+		return findSectionByUpStation(firstStation);
+	}
+
+	private Section findSectionByUpStation(Station firstStation) {
+		return sections.stream()
+			.filter(section -> section.upStation().equals(firstStation))
+			.findFirst()
+			.orElse(null);
 	}
 
 	@Override

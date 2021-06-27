@@ -176,6 +176,13 @@ public class Section extends BaseEntity {
 		return !equals(section);
 	}
 
+	public void update(Section modifiedSection) {
+		this.line = modifiedSection.line;
+		this.upStation = modifiedSection.upStation;
+		this.downStation = modifiedSection.downStation;
+		this.distance = modifiedSection.distance;
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {

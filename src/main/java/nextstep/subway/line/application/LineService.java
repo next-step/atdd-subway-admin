@@ -37,25 +37,24 @@ public class LineService {
 	@Transactional(readOnly = true)
 	public List<LineResponse> findAllLines() {
 		return findAllLinesFromRepository().stream()
-			.map(LineResponse::of)
+			.map(line -> {
+				line.sectionGroup().sort();
+				return LineResponse.of(line);
+			})
 			.collect(Collectors.toList());
 	}
 
 	private List<Line> findAllLinesFromRepository() {
-		List<Line> lines = lineRepository.findAll();
-		lines.forEach(line -> line.sectionGroup().sort());
-		return lines;
+		return lineRepository.findAll();
 	}
 
 	@Transactional(readOnly = true)
 	public LineResponse findLineById(Long id) {
-		Line persistLine = findLineByIdFromRepository(id);
-		return LineResponse.of(persistLine);
+		return LineResponse.of(findLineByIdFromRepository(id));
 	}
 
 	private Line findLineByIdFromRepository(Long id) {
-		return Optional.ofNullable(lineRepository.findById(id))
-			.get()
+		return Optional.ofNullable(lineRepository.findById(id)).get()
 			.map(line -> {
 				line.sectionGroup().sort();
 				return line;
