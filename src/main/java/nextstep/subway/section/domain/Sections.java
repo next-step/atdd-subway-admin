@@ -35,16 +35,16 @@ public class Sections {
         }
     }
 
-    public List<StationResponse> extractStations() {
-        List<StationResponse> upStations = extractUpStations();
-        List<StationResponse> downStations = extractDownStations();
+    public List<Station> extractStations() {
+        List<Station> upStations = extractUpStations();
+        List<Station> downStations = extractDownStations();
 
         upStations.addAll(downStations);
 
         return checkDuplicateAndDistinctStations(upStations);
     }
 
-    private List<StationResponse> checkDuplicateAndDistinctStations(List<StationResponse> upStations) {
+    private List<Station> checkDuplicateAndDistinctStations(List<Station> upStations) {
         if (haveDuplicateStation(upStations)) {
             return removeDuplicateStations(upStations);
         }
@@ -52,25 +52,25 @@ public class Sections {
         return upStations;
     }
 
-    private List<StationResponse> removeDuplicateStations(List<StationResponse> stations) {
+    private List<Station> removeDuplicateStations(List<Station> stations) {
         return stations.stream()
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-    private boolean haveDuplicateStation(List<StationResponse> upStations) {
+    private boolean haveDuplicateStation(List<Station> upStations) {
         return upStations.size() != new HashSet<>(upStations).size();
     }
 
-    private List<StationResponse> extractUpStations() {
+    private List<Station> extractUpStations() {
         return sections.stream()
-                .map(section -> StationResponse.of(section.getUpStation()))
+                .map(Section::getUpStation)
                 .collect(Collectors.toList());
     }
 
-    private List<StationResponse> extractDownStations() {
+    private List<Station> extractDownStations() {
         return sections.stream()
-                .map(section -> StationResponse.of(section.getDownStation()))
+                .map(Section::getDownStation)
                 .collect(Collectors.toList());
     }
 

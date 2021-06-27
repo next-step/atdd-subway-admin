@@ -5,6 +5,7 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.dto.StationsResponse;
 
 import javax.persistence.*;
 import java.util.List;
@@ -54,7 +55,11 @@ public class Line extends BaseEntity {
         return this;
     }
 
-    public List<StationResponse> extractStations() {
+    public StationsResponse extractStationsResponse() {
+        return StationsResponse.of(extractStations());
+    }
+
+    public List<Station> extractStations() {
         return sections.extractStations();
     }
 

@@ -33,7 +33,9 @@ public class LineService {
 
         Section section = new Section(upStation, downStation, request.getDistance());
 
-        return LineResponse.of(lineRepository.save(request.toLine(section)));
+        Line savedLine = lineRepository.save(request.toLine(section));
+
+        return LineResponse.of(savedLine);
     }
 
     public LinesResponse findAll() {
