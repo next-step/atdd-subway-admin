@@ -100,6 +100,10 @@ public class Section extends BaseEntity {
         this.downStation = station;
     }
 
+    public void updateDistance(Distance distance) {
+        this.distance = distance;
+    }
+
     private void validStations(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException("상행역과 하행역이 같습니다.");

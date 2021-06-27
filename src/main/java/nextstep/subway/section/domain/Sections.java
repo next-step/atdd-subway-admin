@@ -79,6 +79,9 @@ public class Sections {
         if (oldSection.equalDownStation(section.getDownStation())) {
             oldSection.updateDownStation(section.getUpStation());
         }
+
+        int distance = oldSection.getDistance() - section.getDistance();
+        oldSection.updateDistance(new Distance(distance));
     }
 
     private boolean contains(Station station) {
