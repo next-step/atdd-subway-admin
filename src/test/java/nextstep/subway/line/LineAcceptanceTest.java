@@ -10,7 +10,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
 
 import org.assertj.core.api.Assertions;
@@ -25,7 +24,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine() {
 		// 지하철_노선_생성_요청
-		지하철_노선_등록되어_있음("미사역", "보라");
+		지하철_노선_등록("미사역", "보라", 1L, 2L, 10);
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -33,7 +32,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void createLine2() {
 		// given
 		// 지하철_노선_등록되어_있음
-		지하철_노선_등록되어_있음("미사역", "보라");
+		지하철_노선_등록("미사역", "보라", 1L, 2L, 10);
 
 		// when
 		// 기존에_존재하는_지하철_노선_생성_요청
@@ -59,9 +58,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLines() {
 		// given
 		// 지하철_노선_등록되어_있음
-		지하철_노선_등록되어_있음("미사역", "보라");
+		지하철_노선_등록("미사역", "보라", 1L, 2L, 10);
 		// 지하철_노선_등록되어_있음
-		지하철_노선_등록되어_있음("강일역", "보라");
+		지하철_노선_등록("강일역", "보라", 1L, 2L, 10);
 
 		// when
 		// 지하철_노선_목록_조회_요청
@@ -87,7 +86,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLine() {
 		// given
 		// 지하철_노선_등록되어_있음
-		지하철_노선_등록되어_있음("미사역", "보라");
+		지하철_노선_등록("미사역", "보라", 1L, 2L, 10);
 
 		// when
 		// 지하철_노선_조회_요청
@@ -109,7 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void updateLine() {
 		// given
 		// 지하철_노선_등록되어_있음
-		지하철_노선_등록되어_있음("미사역", "보라");
+		지하철_노선_등록("미사역", "보라", 1L, 2L, 10);
 
 		// when
 		// 지하철_노선_수정_요청
@@ -133,7 +132,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLine() {
 		// given
 		// 지하철_노선_등록되어_있음
-		지하철_노선_등록되어_있음("미사역", "보라");
+		지하철_노선_등록("미사역", "보라", 1L ,2L, 10);
 
 		// when
 		// 지하철_노선_제거_요청
@@ -147,10 +146,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
-	private void 지하철_노선_등록되어_있음(String name, String color) {
+	private void 지하철_노선_등록(String name, String color, Long upStationId, Long downStationId, int distance) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
 		params.put("color", color);
+		params.put("upStationId", String.valueOf(upStationId));
+		params.put("downStationId", String.valueOf(downStationId));
+		params.put("distance", String.valueOf(distance));
 
 		// when
 		ExtractableResponse<Response> response = RestAssured
