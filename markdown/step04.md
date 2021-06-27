@@ -170,14 +170,14 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 5-3-1.핵심 단위 로직 테스트 
     - [x] 5-4.인수 테스트 확인
     - [x] 5-5.UI 테스트 확인
-- [ ] 6.인수인계
-    - [ ] 6-1.소감 및 피드백 정리
-        - [ ] 6-1-1.느낀점 & 배운점 작성
-        - [ ] 6-1-2.피드백 요청 정리
-    - [ ] 6-2.코드리뷰 요청 및 피드백
-        - [ ] 6-1-1.step4를 gregolee/atdd-subway-admin로 push : `git push origin step4`
-        - [ ] 6-1-2.pull request(PR) 작성
-    - [ ] 6-3.Slack을 통해 merge가 되는지 확인한 후에 미션 종료
+- [x] 6.인수인계
+    - [x] 6-1.소감 및 피드백 정리
+        - [x] 6-1-1.느낀점 & 배운점 작성
+        - [x] 6-1-2.피드백 요청 정리
+    - [x] 6-2.코드리뷰 요청 및 피드백
+        - [x] 6-1-1.step4를 gregolee/atdd-subway-admin로 push : `git push origin step4`
+        - [x] 6-1-2.pull request(PR) 작성
+    - [x] 6-3.Slack을 통해 merge가 되는지 확인한 후에 미션 종료
 
 ### 2.3. ATDD 작성
 
@@ -189,12 +189,14 @@ ATDD 작성 [Markdown 보기](./atdd.md)
 
 #### 3.1.1. 느낀점
 
--   
+- sort 기능을 제거했지만 UI를 활용하는 동안 에러가 발생했다.
+  - 원인 : `LineRepository` - `findById()`, `findAll()`을 활용하면 `SectionGroup`이 정렬되어 조회되지 않음
+  - 조치 : sort 기능을 정상화하여 적용 (리뷰어님의 말씀을 따르고 싶었지만, 기능의 정상 수행을 위해 코드는 제거하지 않았습니다.)
 
 #### 3.1.2. 배운점
 
-- 
+- JPA...알 것 같으면서도 너무 어렵습니다...ㅠ
 
 ### 3.2. 피드백 요청
 
-- 
+- 어쩔 수 없이 `sort()`기능을 살려두었습니다만, sort()를 사용하지 않아도 충분히 가능한 방법이 무엇인지 알려주시면 좋겠습니다!
