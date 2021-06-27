@@ -26,16 +26,14 @@ public class Distance {
 		return new Distance(distance);
 	}
 
+	public int value() {
+		return distance;
+	}
+
 	private void validateOverZero(int distance) {
 		if (distance <= ZERO) {
 			throw new IllegalArgumentException(COLUMN_DESCRIPTION + "은 0을 초과하는 숫자여야 합니다.");
 		}
-	}
-
-	public void adjust(Distance distance) {
-		int adjustDistance = this.distance - distance.distance;
-		validateOverZero(adjustDistance);
-		this.distance = adjustDistance;
 	}
 
 	@Override

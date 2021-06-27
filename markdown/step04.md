@@ -130,24 +130,24 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
         - [x] 0-4-6.원본(next-step) git repository에서 merge된 나의 branch(gregolee)를 fetch : `git fetch upstream gregolee`
         - [x] 0-4-7.remote에서 가져온 나의 branch로 rebase : `git rebase upstream/gregolee`
         - [x] 0-4-7.gregolee -> step4로 체크아웃 : `git checkout -b step4`
-    - [ ] 0-5.리뷰어님의 리뷰를 반영한 코드로 수정
+    - [x] 0-5.리뷰어님의 리뷰를 반영한 코드로 수정
         - [x] 0-5-1.NextStep에서 제공하는 이미지 제거
-        - [ ] 0-5-2.테스트 코드 아래 쪽으로 배치 : `SectionAcceptanceTest.java` 36~48 line
-        - [ ] 0-5-3.`StationAcceptanceTest` : Long 타입 반환 메서드 만들기
-            - [ ] 0-5-3-1.Long 타입 반환 메서드 만들기
-            - [ ] 0-5-3-2.네이밍 변경 : 보다 직관적으로 읽히도록 변경
-            - [ ] 0-5-3-3.테스트 내용 변경 : 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.
-        - [ ] 0-5-4.`SectionGroup.java`
-            - [ ] 0-5-4-1.`checkAddSection()` -> `validateSection()`
-            - [ ] 0-5-4-2.추가(add) 로직 좀 더 단순하게 작성
-            - [ ] 0-5-4-3.sort() : 정렬이 되어 있어서 필요한가?
-            - [ ] 0-5-4-4.`upStation`이 같은 경우, `downStation`이 같은 경우 분기할 것
-        - [ ] 0-5-5.`StationGroup.java` : 필요성이 없으면 제거
-        - [ ] 0-5-6.`Section.java`
-            - [ ] 0-5-6-1.`findSectionIndexWhenTargetSectionIsInner()` : 존재여부 관리
-        - [ ] 0-5-7.`Distance.java`
-            - [ ] 0-5-7-1.`adjust~` : 명칭 변경 `minus~`
-            - [ ] 0-5-7-2.불변객체로 변경하기
+        - [x] 0-5-2.테스트 코드 아래 쪽으로 배치 : `SectionAcceptanceTest.java` 36~48 line
+        - [x] 0-5-3.`SectionAcceptanceTest`
+            - [x] 0-5-3-1.Long 타입 반환 메서드 만들기
+            - [x] 0-5-3-2.네이밍 변경 : 보다 직관적으로 읽히도록 변경
+            - [x] 0-5-3-3.테스트 내용 변경 : 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.
+        - [x] 0-5-4.`SectionGroup.java`
+            - [x] 0-5-4-1.`checkAddSection()` -> `validateSection()`
+            - [x] 0-5-4-2.추가(add) 로직 좀 더 단순하게 작성
+            - [x] 0-5-4-3.sort() : 정렬이 되어 있어서 필요한가? ===> 필요합니다. UI 테스트 간 section이 정렬되지 않아 전달받는 경우가 생겼습니다.
+            - [x] 0-5-4-4.`upStation`이 같은 경우, `downStation`이 같은 경우 분기할 것
+        - [x] 0-5-5.`StationGroup.java` : 필요성이 없으면 제거
+        - [x] 0-5-6.`Section.java`
+            - [x] 0-5-6-1.`findSectionIndexWhenTargetSectionIsInner()` : 존재여부 관리
+        - [x] 0-5-7.`Distance.java`
+            - [x] 0-5-7-1.`adjust~` : 명칭 변경 `minus~`
+            - [x] 0-5-7-2.불변객체로 변경하기
 - [x] 1.자바 코드 컨벤션을 위한 세팅
     - [x] 1-1.[gradle-editorconfig](https://naver.github.io/hackday-conventions-java/#editorconfig) 적용
     - [x] 1-2.[gradle-checkstyle](https://naver.github.io/hackday-conventions-java/#checkstyle) 적용

@@ -65,7 +65,7 @@ public class LineService {
 		Line line = findLineByIdFromRepository(lineId);
 		Station upStation = stationService.findStationByIdFromRepository(sectionRequest.getUpStationId());
 		Station downStation = stationService.findStationByIdFromRepository(sectionRequest.getDownStationId());
-		line.sectionGroup().add(sectionRequest.toSection(line, upStation, downStation));
+		line.addSection(sectionRequest.toSection(line, upStation, downStation));
 		lineRepository.save(line);
 	}
 }

@@ -117,28 +117,43 @@ public class Section extends BaseEntity {
 		return line;
 	}
 
-	public int findSectionIndexWhenTargetSectionIsInner(SectionGroup sectionGroup) {
+	public Distance distance() {
+		return distance;
+	}
+
+	public int findSectionIndexWhenSameUpStation(SectionGroup sectionGroup) {
 		return sectionGroup.sections().stream()
-			.filter(section -> section.downStation.equals(downStation) || section.upStation.equals(upStation))
+			.filter(section -> section.upStation.equals(upStation))
+			.filter(this::notEquals)
 			.mapToInt(section -> sectionGroup.sections().indexOf(section))
 			.findFirst()
 			.orElse(OUT_OF_INDEX);
 	}
 
-	public void adjustUpStationOrDownStation(Section targetSection) {
-		if (upStation.equals(targetSection.upStation)) {
-			Station tempDownStation = this.downStation;
-			this.downStation = targetSection.downStation;
-			targetSection.upStation = targetSection.downStation;
-			targetSection.downStation = tempDownStation;
-		}
-		if (downStation.equals(targetSection.downStation)) {
-			this.downStation = targetSection.upStation;
-		}
+	public int findSectionIndexWhenSameDownStation(SectionGroup sectionGroup) {
+		return sectionGroup.sections().stream()
+			.filter(section -> section.downStation.equals(downStation))
+			.filter(this::notEquals)
+			.mapToInt(section -> sectionGroup.sections().indexOf(section))
+			.findFirst()
+			.orElse(OUT_OF_INDEX);
 	}
 
-	public void adjustDistance(Section targetSection) {
-		distance.adjust(targetSection.distance);
+	public void updateWhenSameDownStation(Section targetSection) {
+		this.downStation = targetSection.upStation;
+	}
+
+	public void updateWhenSameUpStation(Section targetSection) {
+		this.upStation = targetSection.downStation;
+	}
+
+	public void minusDistance(Distance distance) {
+		int changedDistance = this.distance.value() - distance.value();
+		this.distance = Distance.generate(changedDistance);
+	}
+	public void plusDistance(Distance distance) {
+		int changedDistance = this.distance.value() + distance.value();
+		this.distance = Distance.generate(changedDistance);
 	}
 
 	public boolean isLastSection(SectionGroup sectionGroup) {
@@ -149,6 +164,10 @@ public class Section extends BaseEntity {
 	public boolean isFirstSection(SectionGroup sectionGroup) {
 		return sectionGroup.sections().stream()
 			.anyMatch(section -> section.upStation.equals(downStation));
+	}
+
+	private boolean notEquals(Section section) {
+		return !equals(section);
 	}
 
 	@Override
