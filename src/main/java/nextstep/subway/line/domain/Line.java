@@ -1,40 +1,63 @@
 package nextstep.subway.line.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
 @Entity
 public class Line extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
-    private String name;
-    private String color;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@Column(unique = true)
+	private String name;
+	private String color;
 
-    public Line() {
-    }
+	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+	private List<Section> sections = new ArrayList<>();
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
+	public Line() {
+	}
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
+	public Line(String name, String color) {
+		this.name = name;
+		this.color = color;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Line(String name, String color, Station upStation, Station downStation, int distance) {
+		this.name = name;
+		this.color = color;
+		addSection(upStation, downStation, distance);
+	}
 
-    public String getName() {
-        return name;
-    }
+	private void addSection(Station upStation, Station downStation, int distance) {
+		Section section = new Section(this, upStation, downStation, distance);
+		sections.add(section);
+	}
 
-    public String getColor() {
-        return color;
-    }
+	public void update(Line line) {
+		this.name = line.getName();
+		this.color = line.getColor();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public List<Section> getSections(){
+		return this.sections;
+	}
 }
