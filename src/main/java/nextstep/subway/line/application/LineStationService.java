@@ -10,9 +10,9 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class SectionToLineAddService {
+public class LineStationService {
 
-    public SectionToLineAddService(LineRepository lineRepository) {
+    public LineStationService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
     }
 
@@ -22,6 +22,11 @@ public class SectionToLineAddService {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("없는 노선입니다."));
         LineStation lineStation = buildLineStation(line, request);
         line.addLineStation(lineStation);
+    }
+
+    public void deleteSectionFromLine(Long lineId, Long lineStationId){
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("없는 노선입니다."));
+        line.delete(lineStationId);
     }
 
     private LineStation buildLineStation(Line line, LineStationCreateRequest request) {

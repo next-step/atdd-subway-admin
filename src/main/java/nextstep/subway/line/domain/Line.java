@@ -64,6 +64,10 @@ public class Line extends BaseEntity {
         return this.lineStations.getSameLineStation(id);
     }
 
+    public void delete(long lineStationId){
+        this.lineStations.delete(lineStationId);
+    }
+
     public List<LineStation> getLineStationOrdered(){
         return this.lineStations.getStationsOrdered();
     }
