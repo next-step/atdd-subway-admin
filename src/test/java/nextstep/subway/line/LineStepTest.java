@@ -22,9 +22,8 @@ public class LineStepTest {
 
     public static final String BASE_LINE_URL = "/lines";
 
-    static long 지하철_구간_등록되어_있음(long lineId, SectionRequest request) {
-        ExtractableResponse<Response> createdFirstLine = 지하철_노선에_구간_추가_요청(lineId, request);
-        return extractIdByLocationHeader(createdFirstLine);
+    static void 지하철_구간_등록되어_있음(long lineId, SectionRequest request) {
+        지하철_노선에_구간_추가_요청(lineId, request);
     }
 
     static long 지하철_노선_등록되어_있음(LineRequest line) {

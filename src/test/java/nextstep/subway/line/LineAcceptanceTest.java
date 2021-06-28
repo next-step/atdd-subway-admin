@@ -196,8 +196,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("stationId", sangamId)
-                .when().delete("/line/" + lineId + "/sections")
+                .queryParam("stationId", sangamId)
+                .when().delete(BASE_LINE_URL + "/" + lineId + "/sections")
                 .then().log().all().extract();
 
         // then
