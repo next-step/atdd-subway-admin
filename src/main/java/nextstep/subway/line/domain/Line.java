@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,9 +26,6 @@ public class Line extends BaseEntity {
     private String name;
 
     private String color;
-
-    @Embedded
-    private final LineStations stations = new LineStations();
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private final List<Section> sections = new LinkedList<>();
@@ -58,11 +54,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Section addStations(Station upStation, Station downStation, int distance) throws
-            LineStationDuplicatedException {
+    public Section addStations(Station upStation, Station downStation, int distance) {
         Section section = new Section(this, upStation, downStation, distance);
-        this.stations.add(this, upStation);
-        this.stations.add(this, downStation);
         this.sections.add(section);
         return section;
     }

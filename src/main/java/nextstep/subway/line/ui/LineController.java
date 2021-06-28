@@ -16,17 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.LineNameDuplicatedException;
 import nextstep.subway.line.domain.LineNotFoundException;
-import nextstep.subway.line.domain.LineStationDuplicatedException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.SectionRequest;
-import nextstep.subway.section.domain.SectionResponse;
+import nextstep.subway.station.domain.StationExistsAlreadyException;
 import nextstep.subway.station.domain.StationNotFoundException;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-
     private final LineService lineService;
 
     public LineController(final LineService lineService) {
@@ -35,9 +32,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) throws
-            LineNameDuplicatedException,
-            StationNotFoundException,
-            LineStationDuplicatedException {
+            LineNameDuplicatedException, StationNotFoundException, StationExistsAlreadyException {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
@@ -61,15 +56,5 @@ public class LineController {
     public ResponseEntity<LineResponse> deleteLineById(@PathVariable Long id) throws LineNotFoundException {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{id}/sections")
-    public ResponseEntity<SectionResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) throws
-            LineNotFoundException, StationNotFoundException {
-        SectionResponse section = lineService.addSection(id, sectionRequest);
-        String uri = String.format("/lines/%d/sections/%d", id, section.getId());
-        return ResponseEntity
-            .created(URI.create(uri))
-            .body(section);
     }
 }
