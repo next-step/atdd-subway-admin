@@ -26,7 +26,7 @@ public class Sections {
     }
 
     public List<Station> stations() {
-        return sections.stream()
+        return orderedSections().stream()
             .flatMap(section -> section.stations().stream())
             .distinct()
             .collect(Collectors.toList());
@@ -34,9 +34,8 @@ public class Sections {
 
     public void add(Section section) {
         validStations(section);
-        validDistance(section);
         splitSectionBy(section);
-        sections.add(insertIndex(section), section);
+        sections.add(section);
     }
 
     private void validStations(Section section) {
@@ -52,25 +51,13 @@ public class Sections {
         }
     }
 
-    private void validDistance(Section section) {
-        if (section.equalDownStation(headStation()) || section.equalUpStation(tailStation())) {
-            return;
-        }
-
-        int distance = section.getDistance();
-        int limitDistance = sections.get(sectionIndex(section)).getDistance();
-
-        if (limitDistance <= distance) {
-            throw new IllegalArgumentException("구간 거리가 너무 깁니다.");
-        }
-    }
-
     private void splitSectionBy(Section section) {
         if (section.equalDownStation(headStation()) || section.equalUpStation(tailStation())) {
             return;
         }
 
-        Section oldSection = sections.get(sectionIndex(section));
+        Section oldSection = findOldSection(section);
+        updateDistance(oldSection, section);
 
         if (oldSection.equalUpStation(section.getUpStation())) {
             oldSection.updateUpStation(section.getDownStation());
@@ -79,8 +66,15 @@ public class Sections {
         if (oldSection.equalDownStation(section.getDownStation())) {
             oldSection.updateDownStation(section.getUpStation());
         }
+    }
 
+    private void updateDistance(Section oldSection, Section section) {
         int distance = oldSection.getDistance() - section.getDistance();
+
+        if (distance <= 0) {
+            throw new IllegalArgumentException("구간 거리가 너무 깁니다.");
+        }
+
         oldSection.updateDistance(new Distance(distance));
     }
 
@@ -88,7 +82,34 @@ public class Sections {
         return stations().contains(station);
     }
 
-    private int sectionIndex(Section section) {
+    private Station headStation() {
+        return stations().get(0);
+    }
+
+    private Station tailStation() {
+        return stations().get(stations().size() - 1);
+    }
+
+    private Section findHead() {
+        Section section = sections.get(0);
+        while (hasUpSection(section)) {
+            section = findUpSection(section);
+        }
+        return section;
+    }
+
+    private List<Section> orderedSections() {
+        List<Section> orderedSections = new ArrayList<>();
+        Section section = findHead();
+        orderedSections.add(section);
+        while (hasDownSection(section)) {
+            section = findDownSection(section);
+            orderedSections.add(section);
+        }
+        return orderedSections;
+    }
+
+    private Section findOldSection(Section section) {
         int index = IntStream.range(0, stations().size())
             .filter(i -> section.contains(stations().get(i)))
             .findFirst()
@@ -98,30 +119,31 @@ public class Sections {
             index -= 1;
         }
 
-        return index;
+        return orderedSections().get(index);
     }
 
-    private int insertIndex(Section section) {
-        if (section.equalDownStation(headStation())) {
-            return 0;
-        }
-        if (section.equalUpStation(tailStation())) {
-            return sections.size();
-        }
-
-        int index = sectionIndex(section);
-        if (sections.get(index).equalDownStation(section.getDownStation())) {
-            return index + 1;
-        }
-        return index;
+    private boolean hasUpSection(Section section) {
+        return sections.stream()
+            .anyMatch(element -> element.equalDownStation(section.getUpStation()));
     }
 
-    private Station headStation() {
-        return stations().get(0);
+    private boolean hasDownSection(Section section) {
+        return sections.stream()
+            .anyMatch(element -> element.equalUpStation(section.getDownStation()));
     }
 
-    private Station tailStation() {
-        return stations().get(stations().size() - 1);
+    private Section findUpSection(Section section) {
+        return sections.stream()
+            .filter(element -> element.equalDownStation(section.getUpStation()))
+            .findFirst()
+            .orElseThrow(EntityNotFoundException::new);
+    }
+
+    private Section findDownSection(Section section) {
+        return sections.stream()
+            .filter(element -> element.equalUpStation(section.getDownStation()))
+            .findFirst()
+            .orElseThrow(EntityNotFoundException::new);
     }
 
 }

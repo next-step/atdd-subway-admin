@@ -23,6 +23,14 @@ public class SectionResponse {
         return id;
     }
 
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
     public static SectionResponse of(Section section) {
         return new SectionResponse(
             section.getId(),
