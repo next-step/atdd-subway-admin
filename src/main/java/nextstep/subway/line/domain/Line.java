@@ -47,9 +47,9 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public List<Long> getStationIds(){
@@ -62,5 +62,9 @@ public class Line extends BaseEntity {
 
     public Optional<LineStation> getSameLineStation(long id){
         return this.lineStations.getSameLineStation(id);
+    }
+
+    public List<LineStation> getLineStationOrdered(){
+        return this.lineStations.getStationsOrdered();
     }
 }

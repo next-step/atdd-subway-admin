@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationResponse;
@@ -44,7 +45,7 @@ public class LineService {
     public LineResponse updateLine(long id, LineUpdateRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 노선을 찾을 수 없습니다."));
-        line.update(request.toLine());
+        line.update(request.getName(), request.getColor());
         return toLineResponse(line);
     }
 
@@ -56,7 +57,8 @@ public class LineService {
 
     private LineResponse toLineResponse(Line line){
         List<StationResponse> stationResponses = stationService.findByIds(line.getStationIds());
-        return LineResponse.of(line,stationResponses);
+        List<LineStationResponse> lineStationResponses = line.getLineStationOrdered().stream().map(lineStation -> new LineStationResponse(lineStation.getUpStationId(), lineStation.getStationId(), lineStation.getDistance())).collect(Collectors.toList());
+        return LineResponse.of(line, stationResponses, lineStationResponses);
     }
 
 }

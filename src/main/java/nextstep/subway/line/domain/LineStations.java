@@ -30,7 +30,7 @@ public class LineStations {
         return stations;
     }
 
-    private Optional<LineStation> findNext(long upStationId) {
+    private Optional<LineStation> findNext(Long upStationId) {
         return this.lineStations.stream().filter(lineStation -> lineStation.hasSameUpStation(upStationId)).findAny();
     }
 

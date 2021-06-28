@@ -53,7 +53,7 @@ public class LineStation {
         return distance;
     }
 
-    public boolean hasSameUpStation(long upStationId){
+    public boolean hasSameUpStation(Long upStationId){
        return this.upStationId == upStationId;
     }
 
