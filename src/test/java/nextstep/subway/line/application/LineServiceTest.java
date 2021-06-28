@@ -57,7 +57,7 @@ class LineServiceTest extends AcceptanceTest {
         SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 강남역.getId(), 기본_구간_거리);
 
         // when, then
-        assertDoesNotThrow(() -> lineService.addSection(givenRequest));
+        구간_등록_성공_검증(givenRequest);
     }
 
     @Test
@@ -66,7 +66,7 @@ class LineServiceTest extends AcceptanceTest {
         SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 역삼역.getId(), 서울대입구역.getId(), 기본_구간_거리);
 
         // when, then
-        assertDoesNotThrow(() -> lineService.addSection(givenRequest));
+        구간_등록_성공_검증(givenRequest);
     }
 
     @Test
@@ -75,7 +75,7 @@ class LineServiceTest extends AcceptanceTest {
         SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 강남역.getId(), 서울대입구역.getId(), 구간_사이_추가된_역간_거리);
 
         // when, then
-        assertDoesNotThrow(() -> lineService.addSection(givenRequest));
+        구간_등록_성공_검증(givenRequest);
     }
 
     @Test
@@ -84,7 +84,7 @@ class LineServiceTest extends AcceptanceTest {
         SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 역삼역.getId(), 구간_사이_추가된_역간_거리);
 
         // when, then
-        assertDoesNotThrow(() -> lineService.addSection(givenRequest));
+        구간_등록_성공_검증(givenRequest);
     }
 
     @Test
@@ -93,8 +93,7 @@ class LineServiceTest extends AcceptanceTest {
         SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 강남역.getId(), 서울대입구역.getId(), 기본_구간_거리);
 
         // when, then
-        assertThatExceptionOfType(BelowZeroDistanceException.class)
-                .isThrownBy(() -> lineService.addSection(givenRequest));
+        구간_거리_0이하_불가_검증(givenRequest);
     }
 
     @Test
@@ -103,8 +102,7 @@ class LineServiceTest extends AcceptanceTest {
         SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 역삼역.getId(), 기본_구간_거리);
 
         // when, then
-        assertThatExceptionOfType(BelowZeroDistanceException.class)
-                .isThrownBy(() -> lineService.addSection(givenRequest));
+        구간_거리_0이하_불가_검증(givenRequest);
     }
 
     @Test
@@ -113,8 +111,7 @@ class LineServiceTest extends AcceptanceTest {
         SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 신도림역.getId(), 기본_구간_거리);
 
         // when, then
-        assertThatExceptionOfType(UnaddableSectionException.class)
-                .isThrownBy(() -> lineService.addSection(givenRequest));
+        구간_추가_불가_예외_검증(givenRequest);
     }
 
     @Test
@@ -123,8 +120,7 @@ class LineServiceTest extends AcceptanceTest {
         SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 강남역.getId(), 역삼역.getId(), 기본_구간_거리);
 
         // when, then
-        assertThatExceptionOfType(UnaddableSectionException.class)
-                .isThrownBy(() -> lineService.addSection(givenRequest));
+        구간_추가_불가_예외_검증(givenRequest);
     }
 
     @Test
@@ -135,6 +131,19 @@ class LineServiceTest extends AcceptanceTest {
         lineService.addSection(givenRequest);
 
         // when, then
+        구간_추가_불가_예외_검증(duplicatedRequest);
+    }
+
+    private void 구간_등록_성공_검증(SectionRequest givenRequest) {
+        assertDoesNotThrow(() -> lineService.addSection(givenRequest));
+    }
+
+    private void 구간_거리_0이하_불가_검증(SectionRequest givenRequest) {
+        assertThatExceptionOfType(BelowZeroDistanceException.class)
+                .isThrownBy(() -> lineService.addSection(givenRequest));
+    }
+
+    private void 구간_추가_불가_예외_검증(SectionRequest duplicatedRequest) {
         assertThatExceptionOfType(UnaddableSectionException.class)
                 .isThrownBy(() -> lineService.addSection(duplicatedRequest));
     }
