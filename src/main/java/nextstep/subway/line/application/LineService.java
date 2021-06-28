@@ -71,4 +71,11 @@ public class LineService {
 
         line.validateAndAddSections(request.getDistance(), newUpStation, newDownStation);
     }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        // 만약 전체 Section의 개수가 1개인 경우는 삭제 불가능하다.
+        // 해당 Station을 가지고 있는 Section을 추출한다.
+        // 해당 section이 종점인 경우(lastIndexOf인 경우) 이전 Section의 하행이 해당 Section의 상행으로 변경한다.
+        // 만약 중간 역인 경우에는 해당 이전 section의 상행과 이후 section의 하행으로 길이를 늘린 section을 만든다.
+    }
 }
