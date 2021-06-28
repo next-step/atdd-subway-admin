@@ -53,8 +53,8 @@ public class LineService {
         lineRepository.delete(deletingLine);
     }
 
-    public LineResponse addSection(SectionRequest sectionRequest) {
-        Line foundLine = lineRepository.getById(sectionRequest.getLineId());
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line foundLine = lineRepository.getById(lineId);
         Station upStation = stationRepository.getById(sectionRequest.getUpStationId());
         Station downStation = stationRepository.getById(sectionRequest.getDownStationId());
         foundLine.addSection(new Section(foundLine, upStation, downStation, new Distance(sectionRequest.getDistance())));

@@ -70,12 +70,12 @@ public class LineControllerTestSnippet {
                 .extract();
     }
 
-    public static ExtractableResponse 지하철_노선_구간_추가_요청(SectionRequest sectionRequest) {
+    public static ExtractableResponse 지하철_노선_구간_추가_요청(Long lineId, SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(format("/lines/%d/sections", sectionRequest.getLineId()))
+                .post(format("/lines/%d/sections", lineId))
                 .then().log().all()
                 .extract();
     }

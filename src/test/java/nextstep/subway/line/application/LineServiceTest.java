@@ -54,97 +54,97 @@ class LineServiceTest extends AcceptanceTest {
     @Test
     void addSection_성공_최상행_등록() {
         // given
-        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 강남역.getId(), 기본_구간_거리);
+        SectionRequest givenRequest = new SectionRequest(서울대입구역.getId(), 강남역.getId(), 기본_구간_거리);
 
         // when, then
-        구간_등록_성공_검증(givenRequest);
+        구간_등록_성공_검증(죠르디_선.getId(), givenRequest);
     }
 
     @Test
     void addSection_성공_최하행_등록() {
         // given
-        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 역삼역.getId(), 서울대입구역.getId(), 기본_구간_거리);
+        SectionRequest givenRequest = new SectionRequest(역삼역.getId(), 서울대입구역.getId(), 기본_구간_거리);
 
         // when, then
-        구간_등록_성공_검증(givenRequest);
+        구간_등록_성공_검증(죠르디_선.getId(), givenRequest);
     }
 
     @Test
     void addSection_성공_구간_중간_등록1() {
         // given
-        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 강남역.getId(), 서울대입구역.getId(), 구간_사이_추가된_역간_거리);
+        SectionRequest givenRequest = new SectionRequest(강남역.getId(), 서울대입구역.getId(), 구간_사이_추가된_역간_거리);
 
         // when, then
-        구간_등록_성공_검증(givenRequest);
+        구간_등록_성공_검증(죠르디_선.getId(), givenRequest);
     }
 
     @Test
     void addSection_성공_구간_중간_등록2() {
         // given
-        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 역삼역.getId(), 구간_사이_추가된_역간_거리);
+        SectionRequest givenRequest = new SectionRequest(서울대입구역.getId(), 역삼역.getId(), 구간_사이_추가된_역간_거리);
 
         // when, then
-        구간_등록_성공_검증(givenRequest);
+        구간_등록_성공_검증(죠르디_선.getId(), givenRequest);
     }
 
     @Test
     void addSection_예외_부족한_역간_거리1() {
         // given
-        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 강남역.getId(), 서울대입구역.getId(), 기본_구간_거리);
+        SectionRequest givenRequest = new SectionRequest(강남역.getId(), 서울대입구역.getId(), 기본_구간_거리);
 
         // when, then
-        구간_거리_0이하_불가_검증(givenRequest);
+        구간_거리_0이하_불가_검증(죠르디_선.getId(), givenRequest);
     }
 
     @Test
     void addSection_예외_부족한_역간_거리2() {
         // given
-        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 역삼역.getId(), 기본_구간_거리);
+        SectionRequest givenRequest = new SectionRequest(서울대입구역.getId(), 역삼역.getId(), 기본_구간_거리);
 
         // when, then
-        구간_거리_0이하_불가_검증(givenRequest);
+        구간_거리_0이하_불가_검증(죠르디_선.getId(), givenRequest);
     }
 
     @Test
     void addSection_예외_연결되지_않는_구간() {
         // given
-        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 신도림역.getId(), 기본_구간_거리);
+        SectionRequest givenRequest = new SectionRequest(서울대입구역.getId(), 신도림역.getId(), 기본_구간_거리);
 
         // when, then
-        구간_추가_불가_예외_검증(givenRequest);
+        구간_추가_불가_예외_검증(죠르디_선.getId(), givenRequest);
     }
 
     @Test
     void addSection_예외_이미_등록된_구간1() {
         // given
-        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 강남역.getId(), 역삼역.getId(), 기본_구간_거리);
+        SectionRequest givenRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 기본_구간_거리);
 
         // when, then
-        구간_추가_불가_예외_검증(givenRequest);
+        구간_추가_불가_예외_검증(죠르디_선.getId(), givenRequest);
     }
 
     @Test
     void addSection_예외_이미_등록된_구간2() {
         // given
-        SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 강남역.getId(), 기본_구간_거리);
-        SectionRequest duplicatedRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 역삼역.getId(), 구간_사이_추가된_역간_거리);
-        lineService.addSection(givenRequest);
+        SectionRequest givenRequest = new SectionRequest(서울대입구역.getId(), 강남역.getId(), 기본_구간_거리);
+        SectionRequest duplicatedRequest = new SectionRequest(서울대입구역.getId(), 역삼역.getId(), 구간_사이_추가된_역간_거리);
+        lineService.addSection(죠르디_선.getId(), givenRequest);
 
         // when, then
-        구간_추가_불가_예외_검증(duplicatedRequest);
+        구간_추가_불가_예외_검증(죠르디_선.getId(), duplicatedRequest);
     }
 
-    private void 구간_등록_성공_검증(SectionRequest givenRequest) {
-        assertDoesNotThrow(() -> lineService.addSection(givenRequest));
+    private void 구간_등록_성공_검증(Long lineId, SectionRequest givenRequest) {
+        assertDoesNotThrow(() -> lineService.addSection(lineId, givenRequest));
     }
 
-    private void 구간_거리_0이하_불가_검증(SectionRequest givenRequest) {
+    private void 구간_거리_0이하_불가_검증(Long lineId, SectionRequest givenRequest) {
         assertThatExceptionOfType(BelowZeroDistanceException.class)
-                .isThrownBy(() -> lineService.addSection(givenRequest));
+                .isThrownBy(() -> lineService.addSection(lineId, givenRequest));
     }
 
-    private void 구간_추가_불가_예외_검증(SectionRequest duplicatedRequest) {
+    private void 구간_추가_불가_예외_검증(Long lineId, SectionRequest duplicatedRequest) {
         assertThatExceptionOfType(UnaddableSectionException.class)
-                .isThrownBy(() -> lineService.addSection(duplicatedRequest));
+                .isThrownBy(() -> lineService.addSection(lineId, duplicatedRequest));
     }
 }

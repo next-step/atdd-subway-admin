@@ -5,9 +5,6 @@ import javax.validation.constraints.NotBlank;
 public class SectionRequest {
 
     @NotBlank
-    private Long lineId;
-
-    @NotBlank
     private Long upStationId;
 
     @NotBlank
@@ -20,15 +17,10 @@ public class SectionRequest {
 
     }
 
-    public SectionRequest(Long lineId, Long upStationId, Long downStationId, int distance) {
-        this.lineId = lineId;
+    public SectionRequest(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public Long getLineId() {
-        return lineId;
     }
 
     public Long getUpStationId() {
