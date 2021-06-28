@@ -55,20 +55,12 @@ public class Section extends BaseEntity {
         distance.minus(section.distance);
     }
 
-    public boolean isSameUpStationWithUpStation(Section section) {
-        return this.upStation.equals(section.upStation);
-    }
-
-    public boolean isSameUpStationWithDownStation(Station station) {
+    public boolean isSameStationWithUpStation(Station station) {
         return this.upStation.equals(station);
     }
 
-    public boolean isSameDownStationWithUpStation(Station station) {
+    public boolean isSameStationWithDownStation(Station station) {
         return this.downStation.equals(station);
-    }
-
-    public boolean isSameDownStationWithDownStation(Section section) {
-        return this.downStation.equals(section.downStation);
     }
 
     @Override
