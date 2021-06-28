@@ -1,6 +1,8 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.dto.LineExceptionResponse;
+import nextstep.subway.section.exception.BelowZeroDistanceException;
+import nextstep.subway.section.exception.UnaddableSectionException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,6 +34,18 @@ public class LineControllerAdvice {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(NOT_FOUND)
     public void entityNotFoundException(EntityNotFoundException e) {
+        e.printStackTrace();
+    }
+
+    @ExceptionHandler(UnaddableSectionException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public void unaddableSectionException(UnaddableSectionException e) {
+        e.printStackTrace();
+    }
+
+    @ExceptionHandler(BelowZeroDistanceException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public void belowZeroDistanceException(BelowZeroDistanceException e) {
         e.printStackTrace();
     }
 }
