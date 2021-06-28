@@ -1,9 +1,6 @@
 package nextstep.subway.advice;
 
-import nextstep.subway.exception.DuplicateSectionException;
-import nextstep.subway.exception.InvalidateDistanceException;
-import nextstep.subway.exception.NotContainSectionException;
-import nextstep.subway.exception.NotExistLineException;
+import nextstep.subway.exception.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -34,6 +31,10 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(NotContainSectionException.class)
     public ResponseEntity handleNotContainSectionException(NotContainSectionException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+    @ExceptionHandler(CannotRemoveSingleSectionException.class)
+    public ResponseEntity handleCannotRemoveSingleSectionException(CannotRemoveSingleSectionException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
