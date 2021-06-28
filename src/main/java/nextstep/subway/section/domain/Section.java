@@ -93,6 +93,10 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
+    public long addDistance(Section section) {
+        return this.distance + section.getDistance();
+    }
+
     public Long getId() {
         return id;
     }

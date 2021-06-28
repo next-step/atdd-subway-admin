@@ -39,6 +39,10 @@ public class Line extends BaseEntity {
         addSection(section);
     }
 
+    public void validateAndRemoveSection(Station removeStation) {
+        sections.validateAndRemoveSectionByPosition(removeStation);
+    }
+
     public void validateAndAddSections(long newDistance, Station newUpStation, Station newDownStation) {
         sections.validateAndAddSections(newDistance, newUpStation, newDownStation);
     }

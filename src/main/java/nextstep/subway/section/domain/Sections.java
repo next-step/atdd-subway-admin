@@ -1,7 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.exception.CannotRemoveSingleSectionException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -14,6 +14,11 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+
+    public static final int MINIMUM_SECTION_SIZE_FOR_REMOVE = 1;
+
+    public static final int START_INDEX = 0;
+    public static final int LAST_INDEX = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
@@ -32,6 +37,48 @@ public class Sections {
     public void validateAndAddSections(long newDistance, Station newUpStation, Station newDownStation) {
         for (Section section : sections) {
             section.validateSectionAndAddSection(newDistance, newUpStation, newDownStation, new ArrayList<>(sections));
+        }
+    }
+
+    public void validateAndRemoveSectionByPosition(Station removeStation) {
+        validateSingleSection();
+        removeSectionByPosition(removeStation);
+    }
+
+    public void removeSectionByPosition(Station removeStation) {
+        for (int index = START_INDEX; index < sections.size(); index++) {
+            Section section = sections.get(index);
+
+            if (!section.getUpStation().equals(removeStation) && !section.getDownStation().equals(removeStation)) {
+                continue;
+            }
+
+            if (isStartOrEndSection(index)) {
+                sections.remove(section);
+                return;
+            }
+
+            // 중간역인 경우
+            Section beforeSection = sections.get(index - LAST_INDEX);
+            sections.remove(section);
+            sections.remove(beforeSection);
+            sections.add(index - LAST_INDEX, createMiddleSection(section, beforeSection));
+
+            return;
+        }
+    }
+
+    private Section createMiddleSection(Section section, Section beforeSection) {
+        return new Section(beforeSection.getUpStation(), section.getDownStation(), section.addDistance(beforeSection));
+    }
+
+    private boolean isStartOrEndSection(int index) {
+        return index == sections.size() - LAST_INDEX || index == START_INDEX;
+    }
+
+    public void validateSingleSection() {
+        if (sections.size() <= MINIMUM_SECTION_SIZE_FOR_REMOVE) {
+            throw new CannotRemoveSingleSectionException();
         }
     }
 
