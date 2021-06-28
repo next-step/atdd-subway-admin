@@ -184,7 +184,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 된다.")
     @Test
-    void deleteSection() {
+    void removeSection() {
         // given
         long lineId = 지하철_노선_등록되어_있음(testFirstLine);
         long sangamId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
@@ -202,5 +202,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("구간 제거 시 구간이 한 개인 경우 제거될 수 없다.")
+    @Test
+    void removeSingleSection() {
+        // given
+        long lineId = 지하철_노선_등록되어_있음(testFirstLine);
+        long sangamId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
+
+        // when
+        Map<String, String> params = new HashMap<>();
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .queryParam("stationId", sangamId)
+                .when().delete(BASE_LINE_URL + "/" + lineId + "/sections")
+                .then().log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
