@@ -39,7 +39,7 @@ public class LineCommandService {
 
     public void update(Long lineId, Line updateLine) {
         Line line = lineQueryService.findById(lineId);
-        line.update(updateLine);
+        line.update(updateLine.getName(), updateLine.getColor());
 
         lineRepository.save(line);
     }

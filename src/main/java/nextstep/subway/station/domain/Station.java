@@ -14,7 +14,8 @@ public class Station extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+
+    @Column(name = "name", unique = true)
     private String name;
 
     public Station() {
