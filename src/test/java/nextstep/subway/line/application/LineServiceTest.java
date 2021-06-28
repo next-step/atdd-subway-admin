@@ -21,6 +21,10 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -29,6 +33,9 @@ public class LineServiceTest {
 
     @Mock
     private LineRepository lineRepository;
+
+    @Mock
+    private SectionRepository sectionRepository;
 
     @Mock
     private StationService stationService;
@@ -44,13 +51,17 @@ public class LineServiceTest {
 
     private static final Long 신도림역_ID = 1L;
     private static final Long 서울역_ID = 2L;
+    private static final Long 강남역_ID = 3L;
+    private static final Long 역삼역_ID = 4L;
+    private static final Long 사당역_ID = 5L;
 
     private static final int 거리 = 10;
 
     private static final Station 신도림역 = new Station(신도림역_ID, "신도림역");
     private static final Station 서울역 = new Station(서울역_ID, "서울역");
-    private static final Station 강남역 = new Station(신도림역_ID, "강남역");
-    private static final Station 역삼역 = new Station(서울역_ID, "역삼역");
+    private static final Station 강남역 = new Station(강남역_ID, "강남역");
+    private static final Station 역삼역 = new Station(역삼역_ID, "역삼역");
+    private static final Station 사당역 = new Station(사당역_ID, "사당역");
 
     private static final Line 지하철_1호선 = new Line(지하철_1호선_ID, "1호선", "남색", 신도림역, 서울역, 거리);
     private static final Line 지하철_2호선 = new Line(지하철_2호선_ID, "2호선", "녹색", 강남역, 역삼역, 거리);
@@ -202,6 +213,120 @@ public class LineServiceTest {
         assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(() ->
             lineService.deleteLineById(등록되지_않은_노선_ID)
         );
+    }
+
+    @DisplayName("상행역의 앞에 추가")
+    @Test
+    void addSection_beforeUpStation() {
+        Long 지하철_ID = 10L;
+        Line 지하철 = new Line(지하철_ID, "1호선", "남색", 신도림역, 서울역, 거리);
+        SectionRequest 구간_생성_정보 = new SectionRequest(사당역_ID, 신도림역_ID, 3);
+        Section 구간 = new Section(지하철, 사당역, 신도림역, 3);
+        when(lineRepository.findById(지하철_ID)).thenReturn(Optional.of(지하철));
+        when(stationService.findStationById(신도림역_ID)).thenReturn(신도림역);
+        when(stationService.findStationById(사당역_ID)).thenReturn(사당역);
+        when(sectionRepository.save(any(Section.class))).thenReturn(구간);
+
+        SectionResponse 구간_생성 = lineService.addSection(지하철_ID, 구간_생성_정보);
+
+        assertThat(구간_생성.getUpStationId()).isEqualTo(사당역_ID);
+        assertThat(구간_생성.getDownStationId()).isEqualTo(신도림역_ID);
+    }
+
+    @DisplayName("상행역의 뒤에 추가")
+    @Test
+    void addSection_afterUpStation() {
+        Long 지하철_ID = 10L;
+        Line 지하철 = new Line(지하철_ID, "1호선", "남색", 신도림역, 서울역, 거리);
+        SectionRequest 구간_생성_정보 = new SectionRequest(신도림역_ID, 사당역_ID, 3);
+        Section 구간 = new Section(지하철, 신도림역, 사당역, 3);
+        when(lineRepository.findById(지하철_ID)).thenReturn(Optional.of(지하철));
+        when(stationService.findStationById(신도림역_ID)).thenReturn(신도림역);
+        when(stationService.findStationById(사당역_ID)).thenReturn(사당역);
+        when(sectionRepository.save(any(Section.class))).thenReturn(구간);
+
+        SectionResponse 구간_생성 = lineService.addSection(지하철_ID, 구간_생성_정보);
+
+        assertThat(구간_생성.getUpStationId()).isEqualTo(신도림역_ID);
+        assertThat(구간_생성.getDownStationId()).isEqualTo(사당역_ID);
+    }
+
+    @DisplayName("하행역의 앞에 추가")
+    @Test
+    void addSection_beforeDownStation() {
+        Long 지하철_ID = 10L;
+        Line 지하철 = new Line(지하철_ID, "1호선", "남색", 신도림역, 서울역, 거리);
+        SectionRequest 구간_생성_정보 = new SectionRequest(사당역_ID, 서울역_ID, 3);
+        Section 구간 = new Section(지하철, 사당역, 서울역, 3);
+        when(lineRepository.findById(지하철_ID)).thenReturn(Optional.of(지하철));
+        when(stationService.findStationById(서울역_ID)).thenReturn(서울역);
+        when(stationService.findStationById(사당역_ID)).thenReturn(사당역);
+        when(sectionRepository.save(any(Section.class))).thenReturn(구간);
+
+        SectionResponse 구간_생성 = lineService.addSection(지하철_ID, 구간_생성_정보);
+
+        assertThat(구간_생성.getUpStationId()).isEqualTo(사당역_ID);
+        assertThat(구간_생성.getDownStationId()).isEqualTo(서울역_ID);
+    }
+
+    @DisplayName("하행역의 뒤에 추가")
+    @Test
+    void addSection_afterDownStation() {
+        Long 지하철_ID = 10L;
+        Line 지하철 = new Line(지하철_ID, "1호선", "남색", 신도림역, 서울역, 거리);
+        SectionRequest 구간_생성_정보 = new SectionRequest(서울역_ID, 사당역_ID, 3);
+        Section 구간 = new Section(지하철, 서울역, 사당역, 3);
+        when(lineRepository.findById(지하철_ID)).thenReturn(Optional.of(지하철));
+        when(stationService.findStationById(서울역_ID)).thenReturn(서울역);
+        when(stationService.findStationById(사당역_ID)).thenReturn(사당역);
+        when(sectionRepository.save(any(Section.class))).thenReturn(구간);
+
+        SectionResponse 구간_생성 = lineService.addSection(지하철_ID, 구간_생성_정보);
+
+        assertThat(구간_생성.getUpStationId()).isEqualTo(서울역_ID);
+        assertThat(구간_생성.getDownStationId()).isEqualTo(사당역_ID);
+    }
+
+    @DisplayName("역 사이 추가: 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void addSection_TooLongDistance_ExceptionThrown() {
+        Long 지하철_ID = 10L;
+        Line 지하철 = new Line(지하철_ID, "1호선", "남색", 신도림역, 서울역, 거리);
+        SectionRequest 구간_생성_정보 = new SectionRequest(사당역_ID, 서울역_ID, 거리);
+        when(lineRepository.findById(지하철_ID)).thenReturn(Optional.of(지하철));
+        when(stationService.findStationById(서울역_ID)).thenReturn(서울역);
+        when(stationService.findStationById(사당역_ID)).thenReturn(사당역);
+
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() ->
+            lineService.addSection(지하철_ID, 구간_생성_정보));
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addSection_AlreadyAddedStations_ExceptionThrown() {
+        Long 지하철_ID = 10L;
+        Line 지하철 = new Line(지하철_ID, "1호선", "남색", 신도림역, 서울역, 거리);
+        SectionRequest 구간_생성_정보 = new SectionRequest(신도림역_ID, 서울역_ID, 거리);
+        when(lineRepository.findById(지하철_ID)).thenReturn(Optional.of(지하철));
+        when(stationService.findStationById(서울역_ID)).thenReturn(서울역);
+        when(stationService.findStationById(신도림역_ID)).thenReturn(신도림역);
+
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() ->
+            lineService.addSection(지하철_ID, 구간_생성_정보));
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void addSection_NotFoundStation_ExceptionThrown() {
+        Long 지하철_ID = 10L;
+        Line 지하철 = new Line(지하철_ID, "1호선", "남색", 신도림역, 서울역, 거리);
+        SectionRequest 구간_생성_정보 = new SectionRequest(역삼역_ID, 사당역_ID, 거리);
+        when(lineRepository.findById(지하철_ID)).thenReturn(Optional.of(지하철));
+        when(stationService.findStationById(역삼역_ID)).thenReturn(역삼역);
+        when(stationService.findStationById(사당역_ID)).thenReturn(사당역);
+
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() ->
+            lineService.addSection(지하철_ID, 구간_생성_정보));
     }
 
 }

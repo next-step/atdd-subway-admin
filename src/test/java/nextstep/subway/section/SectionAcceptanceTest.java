@@ -26,16 +26,8 @@ import nextstep.subway.station.dto.StationResponse;
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-    /*
-        2호선: [사당 - 역삼]
-
-        1: [교대 - 사당] - 역삼
-        2: [사당 - 교대] - 역삼
-        3: 사당 - [교대 - 역삼]
-        4: 사당 - [역삼 - 교대]
-    */
     private static final int 초기화_거리 = 6;
-    private static final int 구간_거리 = 3;
+    private static final int 구간_거리 = 2;
     private StationResponse 사당역;
     private StationResponse 교대역;
     private StationResponse 선릉역;
@@ -53,24 +45,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         사당역 = 지하철_역_등록되어_있음("사당역");
         교대역 = 지하철_역_등록되어_있음("교대역");
         선릉역 = 지하철_역_등록되어_있음("선릉역");
+        신사역 = 지하철_역_등록되어_있음("신사역");
 
         지하철_2호선 = 지하철_노선_종점포함_등록되어_있음("2호선", "녹색", 사당역.getId(), 선릉역.getId(), 초기화_거리);
         지하철_2호선_ID = 지하철_2호선.getId().intValue();
     }
 
-    @DisplayName("상행역의 앞에 추가: [교대 - 사당] - 선릉")
+    @DisplayName("상행역의 앞에 추가: [신사 - 교대 - 사당] - 선릉")
     @Test
     void beforeUpStation() {
         // given
         Long[] expectedStationIds = {교대역.getId(), 사당역.getId(), 선릉역.getId()};
+        Long[] expectedStationIds2 = {신사역.getId(), 교대역.getId(), 사당역.getId(), 선릉역.getId()};
         Map<String, String> section = 지하철_구간_생성_정보(교대역.getId(), 사당역.getId(), 구간_거리);
+        Map<String, String> section2 = 지하철_구간_생성_정보(신사역.getId(), 교대역.getId(), 구간_거리);
 
         // when
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(지하철_2호선_ID, section);
+        ExtractableResponse<Response> response2 = 지하철_구간_추가_요청(지하철_2호선_ID, section2);
 
         // then
         // 지하철_구간_추가_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // 지하철_역_목록_포함됨
         List<Long> resultStationIds = response.jsonPath().getObject(".", LineResponse.class)
@@ -78,21 +75,31 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .map(StationResponse::getId)
             .collect(Collectors.toList());
         assertThat(resultStationIds).containsExactly(expectedStationIds);
+
+        List<Long> resultStationIds2 = response2.jsonPath().getObject(".", LineResponse.class)
+            .getStations().stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(resultStationIds2).containsExactly(expectedStationIds2);
     }
 
-    @DisplayName("상행역의 뒤에 추가: [사당 - 교대] - 선릉")
+    @DisplayName("상행역의 뒤에 추가: [사당 - 교대 - 신사] - 선릉")
     @Test
     void afterUpStation() {
         // given
         Long[] expectedStationIds = {사당역.getId(), 교대역.getId(), 선릉역.getId()};
+        Long[] expectedStationIds2 = {사당역.getId(), 교대역.getId(), 신사역.getId(), 선릉역.getId()};
         Map<String, String> section = 지하철_구간_생성_정보(사당역.getId(), 교대역.getId(), 구간_거리);
+        Map<String, String> section2 = 지하철_구간_생성_정보(교대역.getId(), 신사역.getId(), 구간_거리);
 
         // when
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(지하철_2호선_ID, section);
+        ExtractableResponse<Response> response2 = 지하철_구간_추가_요청(지하철_2호선_ID, section2);
 
         // then
         // 지하철_구간_추가_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // 지하철_역_목록_포함됨
         List<Long> resultStationIds = response.jsonPath().getObject(".", LineResponse.class)
@@ -100,21 +107,31 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .map(StationResponse::getId)
             .collect(Collectors.toList());
         assertThat(resultStationIds).containsExactly(expectedStationIds);
+
+        List<Long> resultStationIds2 = response2.jsonPath().getObject(".", LineResponse.class)
+            .getStations().stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(resultStationIds2).containsExactly(expectedStationIds2);
     }
 
-    @DisplayName("하행역의 앞에 추가: 사당 - [교대 - 선릉]")
+    @DisplayName("하행역의 앞에 추가: 사당 - [신사 - 교대 - 선릉]")
     @Test
     void beforeDownStation() {
         // given
         Long[] expectedStationIds = {사당역.getId(), 교대역.getId(), 선릉역.getId()};
+        Long[] expectedStationIds2 = {사당역.getId(), 신사역.getId(), 교대역.getId(), 선릉역.getId()};
         Map<String, String> section = 지하철_구간_생성_정보(교대역.getId(), 선릉역.getId(), 구간_거리);
+        Map<String, String> section2 = 지하철_구간_생성_정보(신사역.getId(), 교대역.getId(), 구간_거리);
 
         // when
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(지하철_2호선_ID, section);
+        ExtractableResponse<Response> response2 = 지하철_구간_추가_요청(지하철_2호선_ID, section2);
 
         // then
         // 지하철_구간_추가_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // 지하철_역_목록_포함됨
         List<Long> resultStationIds = response.jsonPath().getObject(".", LineResponse.class)
@@ -123,21 +140,31 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .collect(Collectors.toList());
         assertThat(resultStationIds).containsExactly(expectedStationIds);
 
+        List<Long> resultStationIds2 = response2.jsonPath().getObject(".", LineResponse.class)
+            .getStations().stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(resultStationIds2).containsExactly(expectedStationIds2);
+
     }
 
-    @DisplayName("하행역의 뒤에 추가: 사당 - [선릉 - 교대]")
+    @DisplayName("하행역의 뒤에 추가: 사당 - [선릉 - 교대 - 신사]")
     @Test
     void afterDownStation() {
         // given
         Long[] expectedStationIds = {사당역.getId(), 선릉역.getId(), 교대역.getId()};
+        Long[] expectedStationIds2 = {사당역.getId(), 선릉역.getId(), 교대역.getId(), 신사역.getId()};
         Map<String, String> section = 지하철_구간_생성_정보(선릉역.getId(), 교대역.getId(), 구간_거리);
+        Map<String, String> section2 = 지하철_구간_생성_정보(교대역.getId(), 신사역.getId(), 구간_거리);
 
         // when
         ExtractableResponse<Response> response = 지하철_구간_추가_요청(지하철_2호선_ID, section);
+        ExtractableResponse<Response> response2 = 지하철_구간_추가_요청(지하철_2호선_ID, section2);
 
         // then
         // 지하철_구간_추가_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // 지하철_역_목록_포함됨
         List<Long> resultStationIds = response.jsonPath().getObject(".", LineResponse.class)
@@ -145,6 +172,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .map(StationResponse::getId)
             .collect(Collectors.toList());
         assertThat(resultStationIds).containsExactly(expectedStationIds);
+
+        List<Long> resultStationIds2 = response2.jsonPath().getObject(".", LineResponse.class)
+            .getStations().stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(resultStationIds2).containsExactly(expectedStationIds2);
     }
 
     @DisplayName("역 사이 추가: 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
@@ -177,7 +210,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void notFoundStation_ExceptionThrown() {
         // given
-        신사역 = 지하철_역_등록되어_있음("신사역");
         Map<String, String> section = 지하철_구간_생성_정보(신사역.getId(), 교대역.getId(), 구간_거리);
 
         // when
@@ -191,7 +223,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void shareStation() {
         // given
-        신사역 = 지하철_역_등록되어_있음("신사역");
         양재역 = 지하철_역_등록되어_있음("양재역");
         지하철_3호선 = 지하철_노선_종점포함_등록되어_있음("3호선", "녹색", 신사역.getId(), 양재역.getId(), 초기화_거리);
         지하철_3호선_ID = 지하철_3호선.getId().intValue();

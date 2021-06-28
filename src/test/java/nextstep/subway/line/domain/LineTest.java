@@ -2,8 +2,6 @@ package nextstep.subway.line.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
