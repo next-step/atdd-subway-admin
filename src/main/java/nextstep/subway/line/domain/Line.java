@@ -60,4 +60,13 @@ public class Line extends BaseEntity {
 	public List<Section> getSections(){
 		return this.sections;
 	}
+
+	public List<Station> getStations(){
+		List<Station> stations = new ArrayList<>();
+		for(Section section : this.sections){
+			stations.add(section.getUpStation());
+			stations.add(section.getDownStation());
+		}
+		return stations;
+	}
 }
