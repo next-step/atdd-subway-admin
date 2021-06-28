@@ -9,8 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
-import com.google.common.collect.Lists;
-
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
@@ -50,9 +48,22 @@ public class Section extends BaseEntity {
 		return station == upStation || downStation == station;
 	}
 
-	public List<Station> stations() {
-		return Lists.newArrayList(
+	public Station[] stations() {
+		return new Station[]{
 			upStation, downStation
-		);
+		};
+	}
+
+	/**
+	 * 직렬화하기 위해 사용하는 메서드이다.
+	 * stations에 중복으로 Station이 포함되지 않도록 구현.
+	 *
+	 * @param stations 직렬화 하기 위한 List 인스턴스.
+	 */
+	public void appendStations(List<Station> stations) {
+		if (stations.size() == 0) {
+			stations.add(upStation);
+		}
+		stations.add(downStation);
 	}
 }
