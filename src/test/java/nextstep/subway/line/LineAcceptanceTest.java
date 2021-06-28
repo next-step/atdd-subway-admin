@@ -282,9 +282,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 역삼역.getId(), 영등포구청역.getId(), 구간_중간_추가_역간_거리));
         지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 신도림역.getId(), 서울대입구역.getId(), 기본_역간_거리));
         ExtractableResponse<Response> addingSectionResponse = 지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 사당역.getId(), 서울대입구역.getId(), 구간_중간_추가_역간_거리));
-        List<Long> actualResult = addingSectionResponse.jsonPath().getList("stations", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
+        List<Long> actualResult = 지하철_노선에_속한_여러_역의_ID추출(addingSectionResponse);
 
         // then
         assertThat(actualResult).isEqualTo(expectedResult);

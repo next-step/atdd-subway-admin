@@ -5,7 +5,11 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.MediaType;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -74,5 +78,11 @@ public class LineControllerTestSnippet {
                 .post(format("/lines/%d/sections", sectionRequest.getLineId()))
                 .then().log().all()
                 .extract();
+    }
+
+    public static List<Long> 지하철_노선에_속한_여러_역의_ID추출(ExtractableResponse<Response> addingSectionResponse) {
+        return addingSectionResponse.jsonPath().getList("stations", StationResponse.class).stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
     }
 }
