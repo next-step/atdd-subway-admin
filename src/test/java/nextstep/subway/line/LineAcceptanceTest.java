@@ -278,6 +278,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 역삼역.getId(), 신도림역.getId(), 기본_역간_거리));
         Long savedLineId = 응답에서_ID_추출(createResponse);
+
         // when
         지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(강남역.getId(), 역삼역.getId(), 기본_역간_거리));
         지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(역삼역.getId(), 영등포구청역.getId(), 구간_중간_추가_역간_거리));
