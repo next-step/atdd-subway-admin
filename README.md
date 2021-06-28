@@ -126,8 +126,6 @@ API 변경 대응하기
   - 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
   - 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
 
-`Line`과 `Station`은 다대다 연결: `LineStation` 사용
-
 #### POST /lines/1/sections
 
 - POST /lines/1/sections
