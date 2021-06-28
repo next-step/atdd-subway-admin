@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.section.exception.UnaddableSectionException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -22,8 +23,8 @@ public class Sections {
         addSectionByCase(section);
     }
 
-    public List<Station> toStations() {
-        List<Station> result = new ArrayList<>();
+    public Stations toStations() {
+        Stations result = new Stations();
         if (!isEmpty()) {
             Section section = values.get(0);
             result.addAll(getUpStations(section.getUpStation()));
@@ -50,7 +51,7 @@ public class Sections {
     }
 
     private long getConnectedStationCount(Section section) {
-        List<Station> stations = toStations();
+        Stations stations = toStations();
 
         return stations.stream()
                 .filter(station -> station.equals(section.getUpStation())
@@ -76,7 +77,7 @@ public class Sections {
     }
 
     private boolean isStartOrEndStationInLine(Section section) {
-        List<Station> stations = toStations();
+        Stations stations = toStations();
         Station startStation = stations.get(0);
         Station endStation = stations.get(stations.size() - 1);
 
@@ -128,24 +129,24 @@ public class Sections {
         }
     }
 
-    private List<Station> getUpStations(Station upStation) {
+    private Stations getUpStations(Station upStation) {
         LinkedList<Station> result = new LinkedList<>();
         Station foundUpStation = upStation;
         while (foundUpStation != null) {
             result.addFirst(foundUpStation);
             foundUpStation = findUpStation(foundUpStation).orElse(null);
         }
-        return result;
+        return new Stations(result);
     }
 
-    private List<Station> getDownStations(Station downStation) {
+    private Stations getDownStations(Station downStation) {
         List<Station> result = new ArrayList<>();
         Station foundDownStation = downStation;
         while (foundDownStation != null) {
             result.add(foundDownStation);
             foundDownStation = findDownStation(foundDownStation).orElse(null);
         }
-        return result;
+        return new Stations(result);
     }
 
     private Optional<Station> findUpStation(Station upStation) {

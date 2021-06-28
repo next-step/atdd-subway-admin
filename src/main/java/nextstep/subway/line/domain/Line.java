@@ -5,6 +5,7 @@ import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 
 import javax.persistence.*;
 import java.util.List;
@@ -52,7 +53,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
+    public Stations getStations() {
         return sections.toStations();
     }
 }
