@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.google.common.primitives.Longs.asList;
 import static nextstep.subway.common.AcceptanceTestSnippet.HTTP_응답_코드_확인;
 import static nextstep.subway.line.ui.LineControllerTestSnippet.*;
 import static nextstep.subway.station.ui.StationControllerTestSnippet.지하철_역_생성_요청;
@@ -169,7 +170,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actualResult.getColor()).isEqualTo(expectedResult.getColor())
         );
 
-        assertThat(stationIdsInLine).containsAll(Arrays.asList(강남역.getId(), 역삼역.getId()));
+        assertThat(stationIdsInLine).containsAll(asList(강남역.getId(), 역삼역.getId()));
     }
 
     @DisplayName("지하철_노선_PK_조건_조회_성공_데이터없음")
@@ -261,7 +262,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long savedLineId = 응답에서_ID_추출(createResponse);
 
         // when
-        ExtractableResponse<Response> addingSectionResponse = 지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 서울대입구역.getId(), 역삼역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> addingSectionResponse = 지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 서울대입구역.getId(), 역삼역.getId(), 구간_중간_추가_역간_거리));
 
         // then
         HTTP_응답_코드_확인(addingSectionResponse, CREATED);
