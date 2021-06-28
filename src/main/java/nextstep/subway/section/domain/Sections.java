@@ -18,7 +18,7 @@ public class Sections {
     private final List<Section> values = new ArrayList<>();
 
     public void add(Section section) {
-        validateExistingSection(section);
+        validateConnectableSection(section);
         addSectionByCase(section);
     }
 
@@ -36,31 +36,42 @@ public class Sections {
         return values.isEmpty();
     }
 
-    private void validateExistingSection(Section section) {
+    private void validateConnectableSection(Section section) {
         final int ILLEGAL_OVERLAPPED_STATION_COUNT = 2;
+        final int ILLEGAL_UN_CONNECTABLE_STATION_COUNT = 0;
+
+        long result = getConnectedStationCount(section);
+
+        if (result == ILLEGAL_OVERLAPPED_STATION_COUNT) {
+            throw new UnaddableSectionException("기존에 등록된 구간과 중복됩니다.");
+        } else if (!isEmpty() && result == ILLEGAL_UN_CONNECTABLE_STATION_COUNT) {
+            throw new UnaddableSectionException("요청하신 구간은 연결이 불가합니다.");
+        }
+    }
+
+    private long getConnectedStationCount(Section section) {
         List<Station> stations = toStations();
 
-        boolean result = stations.stream()
+        return stations.stream()
                 .filter(station -> station.equals(section.getUpStation())
                         || station.equals(section.getDownStation()))
-                .count() == ILLEGAL_OVERLAPPED_STATION_COUNT;
-
-        if (result) {
-            throw new UnaddableSectionException("기존에 등록된 구간과 중복됩니다.");
-        }
+                .count();
     }
 
     private void addSectionByCase(Section section) {
         if (isEmpty() || isStartOrEndStationInLine(section)) {
             this.values.add(section);
+            return;
         }
 
         if (isOverlappedUpStationBetweenSection(section)) {
             connectUpStationBetweenSection(section);
+            return;
         }
 
         if (isOverlappedDownStationBetweenSection(section)) {
             connectDownStationBetweenSection(section);
+            return;
         }
     }
 
