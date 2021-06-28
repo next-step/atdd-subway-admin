@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.exception.CannotEraseSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -87,7 +88,7 @@ public class Sections {
         }
 
         int newDistance = oldSection.getDistanceIfInRange(section);
-        sections.add(new Section(section.getLine(), section.getDownStation(), oldSection.getDownStation(), newDistance));
+        sections.add(new Section(section.getLine(), oldSection.getUpStation(), section.getUpStation(), newDistance));
         sections.remove(oldSection);
     }
 
@@ -143,5 +144,31 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void deleteSection(Long stationId) {
+        checkIfEraseSections();
+
+        Section deleteSection = findSectionByDownStation(stationId);
+
+        this.sections.stream()
+                .filter(it -> it.getUpStation() == deleteSection.getDownStation())
+                .findFirst()
+                .ifPresent(section -> section.updateUpStationWhenRemove(deleteSection.getUpStation(), deleteSection.getDistance()));
+
+        this.sections.remove(deleteSection);
+    }
+
+    private void checkIfEraseSections() {
+        if(this.sections.size() <= 2) {
+            throw new CannotEraseSectionException();
+        }
+    }
+
+    private Section findSectionByDownStation(Long stationId) {
+        return this.sections.stream()
+                .filter(section -> section.hasDownStationId(stationId))
+                .findFirst()
+                .orElseThrow(CannotEraseSectionException::new);
     }
 }

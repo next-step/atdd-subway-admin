@@ -5,14 +5,13 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600",1L,2L,10);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10);
 
         // then
         지하철_노선_생성됨(response);
@@ -39,10 +38,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
 
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600",1L,2L,10);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600",1L,2L,10);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10);
 
         // then
         지하철_노선_생성_실패됨(response);
@@ -58,8 +57,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_등록되어_있음("신분당선", "bg-red-600",1L,2L,10);
-        지하철_노선_등록되어_있음("2호선", "bg-green-600",3L,4L,10);
+        지하철_노선_등록되어_있음("신분당선", "bg-red-600", 1L, 2L, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -75,7 +73,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
 
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600",1L,2L,10);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
@@ -91,7 +89,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
 
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600",1L,2L,10);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정_요청("구분당선", "bg-blue-600", createResponse);
@@ -124,7 +122,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
 
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600",1L,2L,10);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600", 1L, 2L, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청("구분당선", "bg-blue-600", createResponse);
@@ -152,7 +150,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     public static void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response) {
         List<LineResponse> list = response.jsonPath().getList(".", LineResponse.class);
-        assertThat(list.size()).isEqualTo(2);
+        assertThat(list.size()).isEqualTo(1);
     }
 
     public static void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
@@ -181,7 +179,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private int distance;
      */
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
+
+        StationAcceptanceTest.지하철역_생성_요청("강남역");
+        StationAcceptanceTest.지하철역_생성_요청("역삼역");
+
+
         Map<String, String> params = new HashMap<>();
+
         params.put("name", name);
         params.put("color", color);
         params.put("upStationId", String.valueOf(upStationId));
@@ -216,6 +220,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     public static String 지하철_노선_등록되어_있음(String name, String color, Long upStationId, Long downStationId, int distance) {
+
+        StationAcceptanceTest.지하철역_생성_요청("강남역");
+        StationAcceptanceTest.지하철역_생성_요청("역삼역");
+
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);

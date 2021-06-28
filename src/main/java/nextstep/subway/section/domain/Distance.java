@@ -30,4 +30,12 @@ public class Distance {
 
         return this.distance - distance;
     }
+
+    public void plus(int distance) {
+        this.distance += distance;
+    }
+
+    public void toZero() {
+        this.distance = 0;
+    }
 }
