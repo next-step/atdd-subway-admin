@@ -9,22 +9,23 @@ import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
-import nextstep.subway.utils.ExtractableResponseUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static nextstep.subway.common.AcceptanceTestSnippet.HTTP_응답_코드_확인;
 import static nextstep.subway.line.ui.LineControllerTestSnippet.*;
 import static nextstep.subway.station.ui.StationControllerTestSnippet.지하철_역_생성_요청;
-import static nextstep.subway.utils.ExtractableResponseUtil.extractIdInResponses;
+import static nextstep.subway.utils.ExtractableResponseUtil.응답에서_ID_추출;
+import static nextstep.subway.utils.ExtractableResponseUtil.여러_응답에서_ID_추출;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.springframework.http.HttpStatus.*;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -53,13 +54,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_중복_노선_생성_예외_중복된_이름() {
         // given
-        ExtractableResponse<Response> firstResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
 
         // when
         ExtractableResponse<Response> secondResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
 
         // then
-        assertThat(secondResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        HTTP_응답_코드_확인(secondResponse, BAD_REQUEST);
     }
 
     @DisplayName("지하철_노선_구간정보와_함께_생성_성공")
@@ -73,7 +74,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         // then
-        assertThat(createLineResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        HTTP_응답_코드_확인(createLineResponse, CREATED);
         assertThat(createLineResponse.header("Location")).isNotBlank();
         assertThat(stationIdsInLine).containsAll(Arrays.asList(강남역.getId(), 역삼역.getId()));
     }
@@ -89,12 +90,12 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        List<Long> expectedLineIds = extractIdInResponses(createResponse1, createResponse2);
+        List<Long> expectedLineIds = 여러_응답에서_ID_추출(createResponse1, createResponse2);
         List<Long> resultLineIds = response.jsonPath().getList("lineResponses", LineResponse.class).stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        HTTP_응답_코드_확인(response, OK);
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
@@ -108,17 +109,17 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(expectedResult.size()).isZero();
         assertThat(expectedResult.isEmpty()).isTrue();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        HTTP_응답_코드_확인(response, OK);
     }
 
     @DisplayName("지하철_노선_검색_성공")
     @Test
     void 지하철_노선_검색_성공() {
         // given
-        ExtractableResponse<Response> createResponse1 = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
         ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", 신도림역.getId(), 서울대입구역.getId(), 기본_역간_거리));
         ExtractableResponse<Response> createResponse3 = 지하철_노선_생성_요청(new LineRequest("3호선", "00FF00", 강남역.getId(), 서울대입구역.getId(), 기본_역간_거리));
-        List<Long> expectedResult = extractIdInResponses(createResponse2, createResponse3);
+        List<Long> expectedResult = 여러_응답에서_ID_추출(createResponse2, createResponse3);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_검색_요청(new LineRequest("", "00FF00"));
@@ -127,7 +128,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        HTTP_응답_코드_확인(response, OK);
         assertThat(actualResult).containsAll(expectedResult);
     }
 
@@ -141,7 +142,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(expectedResult.size()).isZero();
         assertThat(expectedResult.isEmpty()).isTrue();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        HTTP_응답_코드_확인(response, OK);
     }
 
     @DisplayName("지하철_노선_PK_조건_조회_성공")
@@ -151,7 +152,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
 
         LineResponse expectedResult = createResponse.jsonPath().getObject(".", LineResponse.class);
-        Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
+        Long savedId = 응답에서_ID_추출(createResponse);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_PK_조건_조회_요청(savedId);
@@ -161,7 +162,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        HTTP_응답_코드_확인(response, OK);
         assertAll(
                 () -> assertThat(actualResult.getId()).isEqualTo(expectedResult.getId()),
                 () -> assertThat(actualResult.getName()).isEqualTo(expectedResult.getName()),
@@ -181,7 +182,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_PK_조건_조회_요청(targetId);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        HTTP_응답_코드_확인(response, NOT_FOUND);
     }
 
     @DisplayName("지하철_노선_수정_성공")
@@ -189,14 +190,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선_수정_성공() {
         // given
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
-        Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
+        Long savedId = 응답에서_ID_추출(createResponse);
 
         // when
         LineRequest updateRequest = new LineRequest("1호선", "0000FF");
         ExtractableResponse<Response> updateResponse = 지하철_노선_수정_요청(savedId, updateRequest);
 
         // then
-        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        HTTP_응답_코드_확인(updateResponse, OK);
         assertThat(updateResponse.jsonPath().<String>get("name")).isEqualTo(updateRequest.getName());
         assertThat(updateResponse.jsonPath().<String>get("color")).isEqualTo(updateRequest.getColor());
     }
@@ -208,7 +209,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> updateResponse = 지하철_노선_수정_요청(Long.MAX_VALUE, new LineRequest("1호선", "0000FF"));
 
         // then
-        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        HTTP_응답_코드_확인(updateResponse, NOT_FOUND);
     }
 
     @DisplayName("지하철_노선_수정_예외_중복된_이름")
@@ -218,14 +219,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
 
         ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
-        Long savedId2 = ExtractableResponseUtil.extractIdInResponse(createResponse2);
+        Long savedId2 = 응답에서_ID_추출(createResponse2);
 
         // when
         LineRequest updateRequest = new LineRequest("1호선", "0000FF");
         ExtractableResponse<Response> updateResponse = 지하철_노선_수정_요청(savedId2, updateRequest);
 
         // then
-        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        HTTP_응답_코드_확인(updateResponse, BAD_REQUEST);
     }
 
     @DisplayName("지하철_노선_제거_성공")
@@ -233,13 +234,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선_제거_성공() {
         // given
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
-        Long savedId = ExtractableResponseUtil.extractIdInResponse(createResponse);
+        Long savedId = 응답에서_ID_추출(createResponse);
 
         // when
         ExtractableResponse<Response> deleteResponse = 지하철_노선_삭제_요청(savedId);
 
         // then
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        HTTP_응답_코드_확인(deleteResponse, NO_CONTENT);
     }
 
     @DisplayName("지하철_노선_제거_예외_존재하지_않는_PK")
@@ -249,7 +250,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> deleteResponse = 지하철_노선_삭제_요청(Long.MAX_VALUE);
 
         // then
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        HTTP_응답_코드_확인(deleteResponse, NOT_FOUND);
     }
 
     @DisplayName("지하철_노선_구간_추가")
@@ -257,13 +258,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     void 지하철_노선_구간_추가() {
         // given
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
-        Long savedLineId = ExtractableResponseUtil.extractIdInResponse(createResponse);
+        Long savedLineId = 응답에서_ID_추출(createResponse);
 
         // when
         ExtractableResponse<Response> addingSectionResponse = 지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 서울대입구역.getId(), 역삼역.getId(), 기본_역간_거리));
 
         // then
-        assertThat(addingSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        HTTP_응답_코드_확인(addingSectionResponse, CREATED);
     }
 
     @DisplayName("지하철_노선_여러_구간_추가시_역_정렬_확인")
@@ -275,7 +276,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 역삼역.getId(), 신도림역.getId(), 기본_역간_거리));
-        Long savedLineId = ExtractableResponseUtil.extractIdInResponse(createResponse);
+        Long savedLineId = 응답에서_ID_추출(createResponse);
         // when
         지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
         지하철_노선_구간_추가_요청(new SectionRequest(savedLineId, 역삼역.getId(), 영등포구청역.getId(), 구간_중간_추가_역간_거리));
@@ -287,5 +288,6 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
+        HTTP_응답_코드_확인(addingSectionResponse, CREATED);
     }
 }
