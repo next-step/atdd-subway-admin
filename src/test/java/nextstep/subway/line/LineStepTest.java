@@ -22,6 +22,22 @@ public class LineStepTest {
 
     public static final String BASE_LINE_URL = "/lines";
 
+    static long 지하철_구간_등록되어_있음(long lineId, SectionRequest request) {
+        ExtractableResponse<Response> createdFirstLine = 지하철_노선에_구간_추가_요청(lineId, request);
+        return extractIdByLocationHeader(createdFirstLine);
+    }
+
+    static long 지하철_노선_등록되어_있음(LineRequest line) {
+        ExtractableResponse<Response> createdFirstLine = 지하철_노선_생성_요청(line);
+        return extractIdByLocationHeader(createdFirstLine);
+    }
+
+    static SectionRequest 지하철_구간에_역들이_등록되어_있음(String upStationName, String downStationName, long distance) {
+        long upStationId = 지하철_역_등록되어_있음(new StationRequest(upStationName));
+        long downStationId = 지하철_역_등록되어_있음(new StationRequest(downStationName));
+        return new SectionRequest(upStationId, downStationId, distance);
+    }
+
     static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
         return RestAssured
                 .given().log().all()
@@ -69,17 +85,6 @@ public class LineStepTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(BASE_LINE_URL + "/" + lineId + "/sections")
                 .then().log().all().extract();
-    }
-
-    static long 지하철_노선_등록되어_있음(LineRequest line) {
-        ExtractableResponse<Response> createdFirstLine = 지하철_노선_생성_요청(line);
-        return extractIdByLocationHeader(createdFirstLine);
-    }
-
-    static SectionRequest 지하철_구간에_역들이_등록되어_있음(String upStationName, String downStationName, long distance) {
-        long upStationId = 지하철_역_등록되어_있음(new StationRequest(upStationName));
-        long downStationId = 지하철_역_등록되어_있음(new StationRequest(downStationName));
-        return new SectionRequest(upStationId, downStationId, distance);
     }
 
     static long extractIdByLocationHeader(ExtractableResponse<Response> response) {

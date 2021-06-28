@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -9,11 +10,17 @@ import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static nextstep.subway.line.LineStepTest.*;
 import static nextstep.subway.station.StationAcceptanceTest.TEST_GANGNAM_STATION;
 import static nextstep.subway.station.StationAcceptanceTest.TEST_YUCKSAM_STATION;
 import static nextstep.subway.station.StationStepTest.지하철_역_등록되어_있음;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -173,5 +180,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         구간_추가_실패됨(response);
+    }
+
+    @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 된다.")
+    @Test
+    void deleteSection() {
+        // given
+        long lineId = 지하철_노선_등록되어_있음(testFirstLine);
+        long sangamId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
+        지하철_구간_등록되어_있음(lineId, new SectionRequest(testKangnamId, sangamId, 5L));
+
+        // when
+        Map<String, String> params = new HashMap<>();
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("stationId", sangamId)
+                .when().delete("/line/" + lineId + "/sections")
+                .then().log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
