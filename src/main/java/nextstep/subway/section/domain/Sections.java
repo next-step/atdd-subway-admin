@@ -79,7 +79,7 @@ public class Sections {
     private boolean isStartOrEndStationInLine(Section section) {
         Stations stations = toStations();
         Station startStation = stations.get(0);
-        Station endStation = stations.get(stations.size() - 1);
+        Station endStation = stations.get(stations.lastIndex());
 
         return section.isSameStationWithDownStation(startStation)
                 || section.isSameStationWithUpStation(endStation);
