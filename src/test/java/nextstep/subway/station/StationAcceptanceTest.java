@@ -7,15 +7,16 @@ import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.lang.Long.valueOf;
+import static nextstep.subway.common.AcceptanceTestSnippet.HTTP_응답_코드_확인;
 import static nextstep.subway.station.ui.StationControllerTestSnippet.*;
+import static nextstep.subway.utils.ExtractableResponseUtil.여러_응답에서_ID_추출;
+import static nextstep.subway.utils.ExtractableResponseUtil.응답에서_ID_추출;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.*;
 
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends AcceptanceTest {
@@ -26,7 +27,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_역_생성_요청(new StationRequest("강남역"));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        HTTP_응답_코드_확인(response, CREATED);
         assertThat(response.header("Location")).isNotBlank();
     }
 
@@ -40,7 +41,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_역_생성_요청(new StationRequest("강남역"));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        HTTP_응답_코드_확인(response, BAD_REQUEST);
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -55,10 +56,8 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_역_목록_조회_요청();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
+        HTTP_응답_코드_확인(response, OK);
+        List<Long> expectedLineIds = 여러_응답에서_ID_추출(createResponse1, createResponse2);
         List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
@@ -72,10 +71,10 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = 지하철_역_생성_요청(new StationRequest("강남역"));
 
         // when
-        Long id = valueOf(createResponse.header("Location").split("/")[2]);
+        Long id = 응답에서_ID_추출(createResponse);
         ExtractableResponse<Response> response = 지하철_역_삭제_요청(id);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        HTTP_응답_코드_확인(response, NO_CONTENT);
     }
 }
