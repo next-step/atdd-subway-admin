@@ -4,6 +4,8 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.exception.BelowZeroDistanceException;
+import nextstep.subway.section.exception.UnaddableSectionException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
@@ -14,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("노선 서비스 테스트")
 class LineServiceTest extends AcceptanceTest {
@@ -92,7 +93,7 @@ class LineServiceTest extends AcceptanceTest {
         SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 강남역.getId(), 서울대입구역.getId(), 기본_구간_거리);
 
         // when, then
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(BelowZeroDistanceException.class)
                 .isThrownBy(() -> lineService.addSection(givenRequest));
     }
 
@@ -102,7 +103,7 @@ class LineServiceTest extends AcceptanceTest {
         SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 역삼역.getId(), 기본_구간_거리);
 
         // when, then
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(BelowZeroDistanceException.class)
                 .isThrownBy(() -> lineService.addSection(givenRequest));
     }
 
@@ -112,7 +113,7 @@ class LineServiceTest extends AcceptanceTest {
         SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 서울대입구역.getId(), 신도림역.getId(), 기본_구간_거리);
 
         // when, then
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(UnaddableSectionException.class)
                 .isThrownBy(() -> lineService.addSection(givenRequest));
     }
 
@@ -122,7 +123,7 @@ class LineServiceTest extends AcceptanceTest {
         SectionRequest givenRequest = new SectionRequest(죠르디_선.getId(), 강남역.getId(), 역삼역.getId(), 기본_구간_거리);
 
         // when, then
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(UnaddableSectionException.class)
                 .isThrownBy(() -> lineService.addSection(givenRequest));
     }
 
@@ -134,7 +135,7 @@ class LineServiceTest extends AcceptanceTest {
         lineService.addSection(givenRequest);
 
         // when, then
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(UnaddableSectionException.class)
                 .isThrownBy(() -> lineService.addSection(duplicatedRequest));
     }
 }

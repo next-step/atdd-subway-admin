@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.exception.BelowZeroDistanceException;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -20,7 +22,7 @@ public class Distance {
 
     private void validateIllegalConstructor(int value) {
         if(value <= 0) {
-            throw new IllegalArgumentException("거리는 0이하가 될 수 없습니다.");
+            throw new BelowZeroDistanceException();
         }
     }
 
@@ -31,7 +33,7 @@ public class Distance {
 
     private void validateEnoughDistance(Distance distance) {
         if(this.value - distance.value <= 0) {
-            throw new IllegalArgumentException("거리는 0이하가 될 수 없습니다.");
+            throw new BelowZeroDistanceException();
         }
     }
 }
