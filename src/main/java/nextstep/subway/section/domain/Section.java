@@ -46,6 +46,31 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public void replaceUpStation(Section section) {
+        this.upStation = section.getDownStation();
+        distance.minus(section.distance);
+    }
+    public void replaceDownStation(Section section) {
+        this.downStation = section.getUpStation();
+        distance.minus(section.distance);
+    }
+
+    public boolean isSameUpStationWithUpStation(Section section) {
+        return this.upStation.equals(section.upStation);
+    }
+
+    public boolean isSameUpStationWithDownStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isSameDownStationWithUpStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean isSameDownStationWithDownStation(Section section) {
+        return this.downStation.equals(section.downStation);
+    }
+
     @Override
     public String toString() {
         return "Section{" +
