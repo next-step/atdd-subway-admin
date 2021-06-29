@@ -73,16 +73,7 @@ public class Sections {
             this.values.add(section);
             return;
         }
-
-        if (isOverlappedUpStationBetweenSection(section)) {
-            connectUpStationBetweenSection(section);
-            return;
-        }
-
-        if (isOverlappedDownStationBetweenSection(section)) {
-            connectDownStationBetweenSection(section);
-            return;
-        }
+        connectSectionAtExistingSection(section);
     }
 
     private boolean isStartOrEndStationInLine(Section section) {
@@ -94,48 +85,15 @@ public class Sections {
                 || section.isSameStationWithUpStation(endStation);
     }
 
-    private boolean isOverlappedUpStationBetweenSection(Section section) {
-        final int ILLEGAL_OVERLAPPED_UP_STATION_COUNT = 1;
-        Station upStation = section.getUpStation();
-
-        return values.stream()
-                .filter(value -> value.isSameStationWithUpStation(upStation))
-                .count() >= ILLEGAL_OVERLAPPED_UP_STATION_COUNT;
-    }
-
-    private boolean isOverlappedDownStationBetweenSection(Section section) {
-        final int ILLEGAL_OVERLAPPED_DOWN_STATION_COUNT = 1;
-        Station downStation = section.getDownStation();
-
-        return values.stream()
-                .filter(value -> value.isSameStationWithDownStation(downStation))
-                .count() >= ILLEGAL_OVERLAPPED_DOWN_STATION_COUNT;
-    }
-
-    private void connectUpStationBetweenSection(Section section) {
-        Station upStation = section.getUpStation();
-
+    private void connectSectionAtExistingSection(Section section) {
         Optional<Section> foundSection = values.stream()
-                .filter(value -> value.isSameStationWithUpStation(upStation)).findFirst();
+                .filter(value -> value.isSameStationWithUpStation(section.getUpStation())
+                                    || value.isSameStationWithDownStation(section.getDownStation()))
+                .findFirst();
 
-        if (foundSection.isPresent()) {
-            Section connectedSection = foundSection.get();
-            connectedSection.replaceUpStation(section);
-            values.add(section);
-        }
-    }
-
-    private void connectDownStationBetweenSection(Section section) {
-        Station downStation = section.getDownStation();
-
-        Optional<Section> foundSection = values.stream()
-                .filter(value -> value.isSameStationWithDownStation(downStation)).findFirst();
-
-        if (foundSection.isPresent()) {
-            Section connectedSection = foundSection.get();
-            connectedSection.replaceDownStation(section);
-            values.add(section);
-        }
+        Section connectedSection = foundSection.get();
+        connectedSection.connectSectionBetween(section);
+        values.add(section);
     }
 
     private Stations getUpStations(Station upStation) {

@@ -50,13 +50,22 @@ public class Section extends BaseEntity {
         return this.upStation.equals(station) || this.downStation.equals(station);
     }
 
-    public void replaceUpStation(Section section) {
-        this.upStation = section.getDownStation();
+    public void connectSectionBetween(Section section) {
+        replaceUpStationIfSameUpStation(section);
+        replaceDownStationIfSameDownStation(section);
         distance.minus(section.distance);
     }
-    public void replaceDownStation(Section section) {
-        this.downStation = section.getUpStation();
-        distance.minus(section.distance);
+
+    public void replaceUpStationIfSameUpStation(Section section) {
+        if(this.upStation.equals(section.getUpStation())) {
+            this.upStation = section.getDownStation();
+        }
+    }
+
+    public void replaceDownStationIfSameDownStation(Section section) {
+        if(this.downStation.equals(section.getDownStation())) {
+            this.downStation = section.getUpStation();
+        }
     }
 
     public boolean isSameStationWithUpStation(Station station) {
