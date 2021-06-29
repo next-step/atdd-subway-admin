@@ -31,6 +31,14 @@ public class Section extends BaseEntity {
 
     }
 
+    public Section(Long id, Line line, Station upStation, Station downStation, Distance distance) {
+        this.id = id;
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
     public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
@@ -39,11 +47,15 @@ public class Section extends BaseEntity {
     }
 
     public Station getUpStation() {
-        return upStation;
+        return this.upStation;
     }
 
     public Station getDownStation() {
-        return downStation;
+        return this.downStation;
+    }
+
+    public Distance getDistance() {
+        return this.distance;
     }
 
     public boolean isIncludeStation(Station station) {
@@ -56,13 +68,13 @@ public class Section extends BaseEntity {
         distance.minus(section.distance);
     }
 
-    public void replaceUpStationIfSameUpStation(Section section) {
+    private void replaceUpStationIfSameUpStation(Section section) {
         if(this.upStation.equals(section.getUpStation())) {
             this.upStation = section.getDownStation();
         }
     }
 
-    public void replaceDownStationIfSameDownStation(Section section) {
+    private void replaceDownStationIfSameDownStation(Section section) {
         if(this.downStation.equals(section.getDownStation())) {
             this.downStation = section.getUpStation();
         }
