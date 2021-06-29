@@ -45,12 +45,27 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-
     public Section(Station upStation, Station downStation, long distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
+
+    public Section(Station upStation, Station downStation, Line line, long distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.line = line;
+        this.distance = distance;
+    }
+
+    public Section(long id, Station upStation, Station downStation, Line line, long distance) {
+        this.id = id;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.line = line;
+        this.distance = distance;
+    }
+
 
     public void removeSectionByStation(List<Section> sections, Station targetStation, int index) {
         if (!haveStation(targetStation)) {
@@ -131,14 +146,20 @@ public class Section extends BaseEntity {
     private void addSectionByPosition(long newDistance, Station newUpStation, Station newDownStation, List<Section> sections) {
         if (upStation.equals(newUpStation)) {
             sections.remove(this);
-            sections.add(new Section(newUpStation, newDownStation, newDistance));
-            sections.add(new Section(newDownStation, downStation, distance - newDistance));
+            sections.add(new Section(newUpStation, newDownStation, line, newDistance));
+            sections.add(new Section(newDownStation, downStation, line, distance - newDistance));
+            modifySections(sections);
             return;
         }
 
         if (upStation.equals(newDownStation) || downStation.equals(newUpStation)) {
-            sections.add(new Section(newUpStation, newDownStation, newDistance));
+            sections.add(new Section(newUpStation, newDownStation, line, newDistance));
+            modifySections(sections);
         }
+    }
+
+    private void modifySections(List<Section> sections) {
+        line.modifySections(new Sections(sections));
     }
 
     public void addLine(Line line) {
