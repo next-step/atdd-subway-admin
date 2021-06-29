@@ -6,7 +6,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -24,9 +26,9 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
@@ -227,10 +229,13 @@ public class LineServiceTest {
         when(stationService.findStationById(사당역_ID)).thenReturn(사당역);
         when(sectionRepository.save(any(Section.class))).thenReturn(구간);
 
-        SectionResponse 구간_생성 = lineService.addSection(지하철_ID, 구간_생성_정보);
+        LineResponse lineResponse = lineService.addSection(지하철_ID, 구간_생성_정보);
 
-        assertThat(구간_생성.getUpStationId()).isEqualTo(사당역_ID);
-        assertThat(구간_생성.getDownStationId()).isEqualTo(신도림역_ID);
+        List<Long> stationIds = lineResponse.getStations()
+            .stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(stationIds).containsExactly(사당역_ID, 신도림역_ID, 서울역_ID);
     }
 
     @DisplayName("상행역의 뒤에 추가")
@@ -245,10 +250,13 @@ public class LineServiceTest {
         when(stationService.findStationById(사당역_ID)).thenReturn(사당역);
         when(sectionRepository.save(any(Section.class))).thenReturn(구간);
 
-        SectionResponse 구간_생성 = lineService.addSection(지하철_ID, 구간_생성_정보);
+        LineResponse lineResponse = lineService.addSection(지하철_ID, 구간_생성_정보);
 
-        assertThat(구간_생성.getUpStationId()).isEqualTo(신도림역_ID);
-        assertThat(구간_생성.getDownStationId()).isEqualTo(사당역_ID);
+        List<Long> stationIds = lineResponse.getStations()
+            .stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(stationIds).containsExactly(신도림역_ID, 사당역_ID, 서울역_ID);
     }
 
     @DisplayName("하행역의 앞에 추가")
@@ -263,10 +271,13 @@ public class LineServiceTest {
         when(stationService.findStationById(사당역_ID)).thenReturn(사당역);
         when(sectionRepository.save(any(Section.class))).thenReturn(구간);
 
-        SectionResponse 구간_생성 = lineService.addSection(지하철_ID, 구간_생성_정보);
+        LineResponse lineResponse = lineService.addSection(지하철_ID, 구간_생성_정보);
 
-        assertThat(구간_생성.getUpStationId()).isEqualTo(사당역_ID);
-        assertThat(구간_생성.getDownStationId()).isEqualTo(서울역_ID);
+        List<Long> stationIds = lineResponse.getStations()
+            .stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(stationIds).containsExactly(신도림역_ID, 사당역_ID, 서울역_ID);
     }
 
     @DisplayName("하행역의 뒤에 추가")
@@ -281,10 +292,13 @@ public class LineServiceTest {
         when(stationService.findStationById(사당역_ID)).thenReturn(사당역);
         when(sectionRepository.save(any(Section.class))).thenReturn(구간);
 
-        SectionResponse 구간_생성 = lineService.addSection(지하철_ID, 구간_생성_정보);
+        LineResponse lineResponse = lineService.addSection(지하철_ID, 구간_생성_정보);
 
-        assertThat(구간_생성.getUpStationId()).isEqualTo(서울역_ID);
-        assertThat(구간_생성.getDownStationId()).isEqualTo(사당역_ID);
+        List<Long> stationIds = lineResponse.getStations()
+            .stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(stationIds).containsExactly(신도림역_ID, 서울역_ID, 사당역_ID);
     }
 
     @DisplayName("역 사이 추가: 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")

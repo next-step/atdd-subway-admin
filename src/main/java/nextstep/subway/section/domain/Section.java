@@ -56,26 +56,6 @@ public class Section extends BaseEntity {
         return id;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Long getUpStationId() {
-        return upStation.getId();
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Long getDownStationId() {
-        return downStation.getId();
-    }
-
-    public int getDistance() {
-        return distance.getDistance();
-    }
-
     public List<Station> stations() {
         return Collections.unmodifiableList(Arrays.asList(upStation, downStation));
     }

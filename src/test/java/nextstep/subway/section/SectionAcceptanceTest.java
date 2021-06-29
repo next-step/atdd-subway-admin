@@ -19,7 +19,6 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -32,11 +31,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private StationResponse 교대역;
     private StationResponse 선릉역;
     private StationResponse 신사역;
-    private StationResponse 양재역;
     private LineResponse 지하철_2호선;
-    private LineResponse 지하철_3호선;
     private int 지하철_2호선_ID;
-    private int 지하철_3호선_ID;
 
     @BeforeEach
     public void setUp() {
@@ -66,8 +62,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_구간_추가_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // 지하철_역_목록_포함됨
         List<Long> resultStationIds = response.jsonPath().getObject(".", LineResponse.class)
@@ -98,8 +94,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_구간_추가_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // 지하철_역_목록_포함됨
         List<Long> resultStationIds = response.jsonPath().getObject(".", LineResponse.class)
@@ -130,8 +126,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_구간_추가_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // 지하철_역_목록_포함됨
         List<Long> resultStationIds = response.jsonPath().getObject(".", LineResponse.class)
@@ -163,8 +159,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_구간_추가_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // 지하철_역_목록_포함됨
         List<Long> resultStationIds = response.jsonPath().getObject(".", LineResponse.class)
@@ -219,49 +215,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("환승역 추가")
-    @Test
-    void shareStation() {
-        // given
-        양재역 = 지하철_역_등록되어_있음("양재역");
-        지하철_3호선 = 지하철_노선_종점포함_등록되어_있음("3호선", "녹색", 신사역.getId(), 양재역.getId(), 초기화_거리);
-        지하철_3호선_ID = 지하철_3호선.getId().intValue();
-
-        Long[] line2ExpectedStationIds = {사당역.getId(), 교대역.getId(), 선릉역.getId()};
-        Long[] line3ExpectedStationIds = {신사역.getId(), 교대역.getId(), 양재역.getId()};
-        Map<String, String> line2Section = 지하철_구간_생성_정보(사당역.getId(), 교대역.getId(), 구간_거리);
-        Map<String, String> line3Section = 지하철_구간_생성_정보(신사역.getId(), 교대역.getId(), 구간_거리);
-
-        // when
-        ExtractableResponse<Response> line2Response = 지하철_구간_추가_요청(지하철_2호선_ID, line2Section);
-        ExtractableResponse<Response> line3Response = 지하철_구간_추가_요청(지하철_3호선_ID, line3Section);
-        ExtractableResponse<Response> sectionsResponse = 지하철_구간_목록_조회_요청();
-
-        // then
-        // 지하철_구간_추가_응답됨
-        assertThat(line2Response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(line3Response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // 지하철_역_목록_포함됨
-        List<Long> line2ResultStationIds = line2Response.jsonPath().getObject(".", LineResponse.class)
-            .getStations().stream()
-            .map(StationResponse::getId)
-            .collect(Collectors.toList());
-        assertThat(line2ResultStationIds).containsExactly(line2ExpectedStationIds);
-        List<Long> line3ResultStationIds = line3Response.jsonPath().getObject(".", LineResponse.class)
-            .getStations().stream()
-            .map(StationResponse::getId)
-            .collect(Collectors.toList());
-        assertThat(line3ResultStationIds).containsExactly(line3ExpectedStationIds);
-
-        // 지하철_구간_목록_응답됨
-        assertThat(sectionsResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        // 지하철_구간_목록_포함됨
-        int sectionsSize = sectionsResponse.jsonPath().getList(".", SectionResponse.class).size();
-        assertThat(sectionsSize).isEqualTo(4);
-    }
-
     private ExtractableResponse<Response> 지하철_구간_추가_요청(int lineId, Map<String, String> section) {
         return RestAssured
             .given().log().all()
@@ -300,16 +253,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             put("downStationId", String.valueOf(downStationId));
             put("distance", String.valueOf(distance));
         }};
-    }
-
-    private ExtractableResponse<Response> 지하철_구간_목록_조회_요청() {
-        return RestAssured
-            .given().log().all()
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/sections")
-            .then().log().all()
-            .extract();
     }
 
 }

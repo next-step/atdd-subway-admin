@@ -20,10 +20,6 @@ public class Distance {
         this.distance = distance;
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
     public void subtract(Distance other) {
         int result = this.distance - other.distance;
 
