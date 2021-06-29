@@ -46,8 +46,8 @@
     - [x] 기존 테스트 코드 리팩토링
 
 ## 피드백 반영 목록
-- [ ] validateConnectableSection의 if - else if 메소드 추출
-- [ ] getConnectedStationCount 메소드의 filter 내 메소드의 메소드 추출
+- [x] 구간 추가의 유효성 검사 내부 로직 내 else 키워드를 쓰는 결과 확인 메소드 추출
+- [ ] 연결가능 역 수 확인 기능의 filter 내 메소드의 메소드 추출
 - [ ] isOverlappedUpStationBetweenSection, connectUpStationBetweenSection 등 메소드 본문이 겹치는 메소드의 중복 제거
 - [ ] Stations 내 stream 반환 로직 제거
 - [ ] 구간 추가에서 사용되는 여러 메소드에 단위 테스트 구현
