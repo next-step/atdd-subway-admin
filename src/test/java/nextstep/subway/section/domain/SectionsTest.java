@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.exception.CannotRemoveSingleSectionException;
+import nextstep.subway.exception.DuplicateSectionException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SectionsTest {
 
@@ -53,6 +56,22 @@ class SectionsTest {
                 판교역,
                 모란역,
                 야탑역
+        );
+    }
+
+    @Test
+    @DisplayName("단일 구간인 경우 제거 시 예외처리가 발생한다.")
+    void validateSingleSection_test() {
+        //given
+        Station 판교역 = new Station("판교역");
+        Station 야탑역 = new Station("이매역");
+        Section 첫번째구간 = new Section(판교역, 야탑역, 10);
+
+        Sections sections = new Sections(List.of(첫번째구간));
+
+        //when
+        assertThrows(CannotRemoveSingleSectionException.class,
+                () -> sections.validateAndRemoveSectionByPosition(판교역)
         );
     }
 }

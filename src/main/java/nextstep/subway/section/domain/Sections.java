@@ -40,12 +40,12 @@ public class Sections {
         }
     }
 
-    public void validateAndRemoveSectionByPosition(Station removeStation) {
+    public void validateAndRemoveSectionByPosition(Station targetStation) {
         validateSingleSection();
-        removeSectionByPosition(removeStation);
+        removeSectionByPosition(targetStation);
     }
 
-    public void validateSingleSection() {
+    private void validateSingleSection() {
         if (sections.size() <= MINIMUM_SECTION_SIZE_FOR_REMOVE) {
             throw new CannotRemoveSingleSectionException();
         }
