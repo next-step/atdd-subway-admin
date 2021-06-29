@@ -154,7 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(long id) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(long id) {
         // 지하철_노선_조회_요청
         return RestAssured
                 .given().log().all()
