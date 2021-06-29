@@ -66,7 +66,6 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-
     public void removeSectionByStation(List<Section> sections, Station targetStation, int index) {
         if (!haveStation(targetStation)) {
             return;
