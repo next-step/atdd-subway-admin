@@ -44,7 +44,14 @@
     - [X] 예외2. 연결 되지 않은 구간 등록
     - [X] 예외3. 이미 등록된 구간 등록
     - [x] 기존 테스트 코드 리팩토링
-    
+
+## 피드백 반영 목록
+- [ ] validateConnectableSection의 if - else if 메소드 추출
+- [ ] getConnectedStationCount 메소드의 filter 내 메소드의 메소드 추출
+- [ ] isOverlappedUpStationBetweenSection, connectUpStationBetweenSection 등 메소드 본문이 겹치는 메소드의 중복 제거
+- [ ] Stations 내 stream 반환 로직 제거
+- [ ] 구간 추가에서 사용되는 여러 메소드에 단위 테스트 구현
+
 # Step2 - 인수 테스트 리팩터링
 ## 요구사항
 - [x] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
