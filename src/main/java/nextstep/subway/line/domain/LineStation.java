@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Table
 @Entity
@@ -16,22 +17,22 @@ public class LineStation {
     @Column(nullable = false)
     private Long stationId;
 
-    private Integer distance;
+    private int distance;
 
     protected LineStation(){}
 
-    public LineStation(Long upStationId, Long stationId, Integer distance){
+    public LineStation(Long upStationId, Long stationId, int distance){
         this.upStationId = upStationId;
         this.stationId = stationId;
         this.distance = distance;
     }
 
     public static LineStation ofFirst(Long stationId){
-        return new LineStation(null, stationId, null);
+        return new LineStation(null, stationId, 0);
     }
 
-    public static LineStation of(Long upStationId, Long stationId, Integer distance){
-        if(distance != null && distance < 0 ){
+    public static LineStation of(Long upStationId, Long stationId, int distance){
+        if(distance < 0){
             throw new IllegalArgumentException("구간거리는 0보다 작을 수 없습니다.");
         }
         return new LineStation(upStationId, stationId, distance);
@@ -49,20 +50,25 @@ public class LineStation {
         return stationId;
     }
 
-    public Integer getDistance() {
+    public int getDistance() {
         return distance;
     }
 
-    public boolean hasSameUpStation(long upStationId){
-       return this.upStationId == upStationId;
+    public boolean hasSameUpStation(Long upStationId){
+       return Objects.equals(this.upStationId, upStationId);
     }
 
     public boolean isSameStation(long stationId){
         return this.stationId == stationId;
     }
 
-    public void changeUpStation(long id){
+    public void changeUpStation(Long id, int changedDistance){
         this.upStationId = id;
+        if(id == null){
+            this.distance = 0;
+        }else {
+            this.distance = this.distance + changedDistance;
+        }
     }
 
     public boolean isFirst(){

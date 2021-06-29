@@ -110,7 +110,7 @@ public class LineStationAddAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록안됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(long lineId, LineStationCreateRequest lineStationCreateRequest) {
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(long lineId, LineStationCreateRequest lineStationCreateRequest) {
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", lineStationCreateRequest.getUpStationId());
         params.put("downStationId", lineStationCreateRequest.getDownStationId());

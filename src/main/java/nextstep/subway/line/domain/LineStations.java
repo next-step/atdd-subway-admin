@@ -1,7 +1,5 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.domain.LineStation;
-
 import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,7 +28,7 @@ public class LineStations {
         return stations;
     }
 
-    private Optional<LineStation> findNext(long upStationId) {
+    private Optional<LineStation> findNext(Long upStationId) {
         return this.lineStations.stream().filter(lineStation -> lineStation.hasSameUpStation(upStationId)).findAny();
     }
 
@@ -44,23 +42,38 @@ public class LineStations {
 
     public void add(LineStation lineStation) {
         this.lineStations.stream()
-                .filter(station -> station.getUpStationId() == lineStation.getUpStationId())
+                .filter(station -> Objects.equals(station.getUpStationId(), lineStation.getUpStationId()))
                 .findFirst()
                 .ifPresent(station -> {
                     validate(station, lineStation);
-                    station.changeUpStation(lineStation.getStationId());
+                    station.changeUpStation(lineStation.getStationId(), -lineStation.getDistance());
                 });
         this.lineStations.add(lineStation);
     }
 
-    public Optional<LineStation> getSameLineStation(long id){
+    public Optional<LineStation> getSameLineStation(long id) {
         return this.lineStations.stream()
                 .filter(station -> station.isSameStation(id))
                 .findFirst();
     }
 
+    public void delete(Long lineStationId) {
+        if (this.lineStations.size() < 3) {
+            throw new IllegalStateException("노선의 마지막 남은 구간은 삭제할 수 없습니다.");
+        }
+        LineStation deletingStation = this.lineStations.stream()
+                .filter(lineStation -> lineStation.isSameStation(lineStationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("없는 구간 정보 입니다."));
+        this.lineStations.stream()
+                .filter(lineStation -> Objects.equals(lineStation.getUpStationId(),(lineStationId)))
+                .findFirst()
+                .ifPresent(lineStation -> lineStation.changeUpStation(deletingStation.getUpStationId(), deletingStation.getDistance()));
+        this.lineStations.remove(deletingStation);
+    }
+
     private void validate(LineStation existedStation, LineStation addedStation) {
-        if (existedStation.getDistance() != null && existedStation.getDistance() <= addedStation.getDistance()) {
+        if (existedStation.getDistance() != 0 && existedStation.getDistance() <= addedStation.getDistance()) {
             throw new IllegalArgumentException("구간 거리가 기존역 사이보다 크거나 같습니다.");
         }
         if (existedStation.isSameStation(addedStation.getStationId())) {
