@@ -45,17 +45,17 @@ public class Sections {
         removeSectionByPosition(removeStation);
     }
 
+    public void validateSingleSection() {
+        if (sections.size() <= MINIMUM_SECTION_SIZE_FOR_REMOVE) {
+            throw new CannotRemoveSingleSectionException();
+        }
+    }
+
     public void removeSectionByPosition(Station targetStation) {
         for (int index = START_INDEX; index < sections.size(); index++) {
             Section section = sections.get(index);
 
-            section.removeSectionByPosition(sections, targetStation, index);
-        }
-    }
-
-    public void validateSingleSection() {
-        if (sections.size() <= MINIMUM_SECTION_SIZE_FOR_REMOVE) {
-            throw new CannotRemoveSingleSectionException();
+            section.removeStationByPosition(sections, targetStation, index);
         }
     }
 

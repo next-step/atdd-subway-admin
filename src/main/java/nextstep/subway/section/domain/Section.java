@@ -9,6 +9,7 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 import static nextstep.subway.section.domain.Sections.LAST_INDEX;
 import static nextstep.subway.section.domain.Sections.START_INDEX;
@@ -37,18 +38,26 @@ public class Section extends BaseEntity {
     public Section() {
     }
 
+    public Section(long id, Station upStation, Station downStation, long distance) {
+        this.id = id;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+
     public Section(Station upStation, Station downStation, long distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public void removeSectionByPosition(List<Section> sections, Station targetStation, int index) {
+    public void removeStationByPosition(List<Section> sections, Station targetStation, int index) {
         if (!haveStation(targetStation)) {
             return;
         }
 
-        if (isStartOrEndSection(index, sections)) {
+        if (isEdgeSection(index, sections)) {
             sections.remove(this);
             return;
         }
@@ -59,12 +68,16 @@ public class Section extends BaseEntity {
         sections.add(index - LAST_INDEX, createMiddleSection(beforeSection));
     }
 
-    private boolean isStartOrEndSection(int index, List<Section> sections) {
+    private boolean isEdgeSection(int index, List<Section> sections) {
         return index == sections.size() - LAST_INDEX || index == START_INDEX;
     }
 
     private Section createMiddleSection(Section beforeSection) {
-        return new Section(beforeSection.getUpStation(), downStation, addDistance(beforeSection));
+        return new Section(id, beforeSection.getUpStation(), downStation, addDistance(beforeSection));
+    }
+
+    public long addDistance(Section section) {
+        return this.distance + section.getDistance();
     }
 
     private boolean haveStation(Station targetStation) {
@@ -132,10 +145,6 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    public long addDistance(Section section) {
-        return this.distance + section.getDistance();
-    }
-
     public Long getId() {
         return id;
     }
@@ -154,5 +163,22 @@ public class Section extends BaseEntity {
 
     public long getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance &&
+                Objects.equals(id, section.id) &&
+                Objects.equals(upStation, section.upStation) &&
+                Objects.equals(downStation, section.downStation) &&
+                Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, upStation, downStation, line, distance);
     }
 }
