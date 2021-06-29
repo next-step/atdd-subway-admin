@@ -38,14 +38,24 @@ public class Sections {
     }
 
     private void validateConnectableSection(Section section) {
-        final int ILLEGAL_OVERLAPPED_STATION_COUNT = 2;
-        final int ILLEGAL_UN_CONNECTABLE_STATION_COUNT = 0;
-
         long result = getConnectedStationCount(section);
+
+        validateExistingSection(result);
+        validateUnConnectableSection(result);
+    }
+
+    private void validateExistingSection(long result) {
+        final long ILLEGAL_OVERLAPPED_STATION_COUNT = 2L;
 
         if (result == ILLEGAL_OVERLAPPED_STATION_COUNT) {
             throw new UnaddableSectionException("기존에 등록된 구간과 중복됩니다.");
-        } else if (!isEmpty() && result == ILLEGAL_UN_CONNECTABLE_STATION_COUNT) {
+        }
+    }
+
+    private void validateUnConnectableSection(long result) {
+        final long ILLEGAL_UN_CONNECTABLE_STATION_COUNT = 0L;
+
+        if (!isEmpty() && result == ILLEGAL_UN_CONNECTABLE_STATION_COUNT) {
             throw new UnaddableSectionException("요청하신 구간은 연결이 불가합니다.");
         }
     }
