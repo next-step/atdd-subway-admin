@@ -86,6 +86,16 @@ public class LineStepTest {
                 .then().log().all().extract();
     }
 
+    static ExtractableResponse<Response> 구간_삭제_요청(long lineId, long stationId) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .queryParam("stationId", stationId)
+                .when().delete(BASE_LINE_URL + "/" + lineId + "/sections")
+                .then().log().all().extract();
+    }
+
+
     static long extractIdByLocationHeader(ExtractableResponse<Response> response) {
         return Long.parseLong(response.header("Location").split("/")[ID_POSITION]);
     }
@@ -127,11 +137,23 @@ public class LineStepTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    static void 구간_삭제됨(ExtractableResponse<Response> response) {
+        삭제_성공_응답(response);
+    }
+
     static void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        삭제_성공_응답(response);
+    }
+
+    static void 삭제_성공_응답(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     static void 구간_추가_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    static void 구간_삭제_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

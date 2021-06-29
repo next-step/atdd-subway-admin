@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -10,17 +9,11 @@ import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static nextstep.subway.line.LineStepTest.*;
 import static nextstep.subway.station.StationAcceptanceTest.TEST_GANGNAM_STATION;
 import static nextstep.subway.station.StationAcceptanceTest.TEST_YUCKSAM_STATION;
 import static nextstep.subway.station.StationStepTest.지하철_역_등록되어_있음;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -38,11 +31,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         testKangnamId = 지하철_역_등록되어_있음(TEST_GANGNAM_STATION);
         testYucksamId = 지하철_역_등록되어_있음(TEST_YUCKSAM_STATION);
+        testFirstLine = new LineRequest("1호선", "red", testKangnamId, testYucksamId, 10L);
 
         long testKachisanId = 지하철_역_등록되어_있음(new StationRequest("까치산역"));
         long testJamsilId = 지하철_역_등록되어_있음(new StationRequest("잠실역"));
-        
-        testFirstLine = new LineRequest("1호선", "red", testKangnamId, testYucksamId, 10L);
         testSecondLine = new LineRequest("2호선", "blue", testKachisanId, testJamsilId, 20L);
     }
 
@@ -188,20 +180,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         long lineId = 지하철_노선_등록되어_있음(testFirstLine);
         long sangamId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
-        지하철_구간_등록되어_있음(lineId, new SectionRequest(testKangnamId, sangamId, 5L));
+        long dmcId = 지하철_역_등록되어_있음(new StationRequest("DMC역"));
+
+        지하철_구간_등록되어_있음(lineId, new SectionRequest(testYucksamId, sangamId, 5L));
+        지하철_구간_등록되어_있음(lineId, new SectionRequest(sangamId, dmcId, 10L));
 
         // when
-        Map<String, String> params = new HashMap<>();
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .queryParam("stationId", sangamId)
-                .when().delete(BASE_LINE_URL + "/" + lineId + "/sections")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 구간_삭제_요청(lineId, sangamId);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        구간_삭제됨(response);
     }
 
     @DisplayName("구간 제거 시 구간이 한 개인 경우 제거될 수 없다.")
@@ -212,16 +200,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         long sangamId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
 
         // when
-        Map<String, String> params = new HashMap<>();
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .queryParam("stationId", sangamId)
-                .when().delete(BASE_LINE_URL + "/" + lineId + "/sections")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 구간_삭제_요청(lineId, sangamId);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        구간_삭제_실패됨(response);
     }
 }
