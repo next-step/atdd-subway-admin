@@ -5,6 +5,7 @@ import java.util.List;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -18,8 +19,8 @@ public class Line extends BaseEntity {
 	private String name;
 	private String color;
 
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-	private List<Section> sections = new ArrayList<>();
+	@Embedded
+	private Sections sections = new Sections();
 
 	public Line() {
 	}
@@ -57,16 +58,7 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public List<Section> getSections(){
-		return this.sections;
-	}
-
 	public List<Station> getStations(){
-		List<Station> stations = new ArrayList<>();
-		for(Section section : this.sections){
-			stations.add(section.getUpStation());
-			stations.add(section.getDownStation());
-		}
-		return stations;
+		return this.sections.getStations();
 	}
 }
