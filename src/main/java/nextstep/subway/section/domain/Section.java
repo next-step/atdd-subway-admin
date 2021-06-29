@@ -10,6 +10,9 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.List;
 
+import static nextstep.subway.section.domain.Sections.LAST_INDEX;
+import static nextstep.subway.section.domain.Sections.START_INDEX;
+
 @Entity
 public class Section extends BaseEntity {
 
@@ -40,7 +43,43 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public void validateSectionAndAddSection(long distance, Station newUpStation, Station newDownStation, List<Section> sections) {
+    public void removeSectionByPosition(List<Section> sections, Station targetStation, int index) {
+        if (!haveStation(targetStation)) {
+            return;
+        }
+
+        if (isStartOrEndSection(index, sections)) {
+            sections.remove(this);
+            return;
+        }
+
+        Section beforeSection = sections.get(index - LAST_INDEX);
+        sections.remove(this);
+        sections.remove(beforeSection);
+        sections.add(index - LAST_INDEX, createMiddleSection(beforeSection));
+    }
+
+    private boolean isStartOrEndSection(int index, List<Section> sections) {
+        return index == sections.size() - LAST_INDEX || index == START_INDEX;
+    }
+
+    private Section createMiddleSection(Section beforeSection) {
+        return new Section(beforeSection.getUpStation(), downStation, addDistance(beforeSection));
+    }
+
+    private boolean haveStation(Station targetStation) {
+        return isUpStation(targetStation) || isDownStation(targetStation);
+    }
+
+    private boolean isUpStation(Station targetStation) {
+        return upStation.equals(targetStation);
+    }
+
+    private boolean isDownStation(Station targetStation) {
+        return downStation.equals(targetStation);
+    }
+
+    void validateSectionAndAddSection(long distance, Station newUpStation, Station newDownStation, List<Section> sections) {
         validateSection(distance, newUpStation, newDownStation);
 
         addSectionByPosition(distance, newUpStation, newDownStation, sections);

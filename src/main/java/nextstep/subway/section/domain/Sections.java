@@ -45,35 +45,12 @@ public class Sections {
         removeSectionByPosition(removeStation);
     }
 
-    public void removeSectionByPosition(Station removeStation) {
+    public void removeSectionByPosition(Station targetStation) {
         for (int index = START_INDEX; index < sections.size(); index++) {
             Section section = sections.get(index);
 
-            if (!section.getUpStation().equals(removeStation) && !section.getDownStation().equals(removeStation)) {
-                continue;
-            }
-
-            if (isStartOrEndSection(index)) {
-                sections.remove(section);
-                return;
-            }
-
-            // 중간역인 경우
-            Section beforeSection = sections.get(index - LAST_INDEX);
-            sections.remove(section);
-            sections.remove(beforeSection);
-            sections.add(index - LAST_INDEX, createMiddleSection(section, beforeSection));
-
-            return;
+            section.removeSectionByPosition(sections, targetStation, index);
         }
-    }
-
-    private Section createMiddleSection(Section section, Section beforeSection) {
-        return new Section(beforeSection.getUpStation(), section.getDownStation(), section.addDistance(beforeSection));
-    }
-
-    private boolean isStartOrEndSection(int index) {
-        return index == sections.size() - LAST_INDEX || index == START_INDEX;
     }
 
     public void validateSingleSection() {
