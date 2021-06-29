@@ -64,8 +64,7 @@ public class Sections {
         Stations stations = toStations();
 
         return stations.stream()
-                .filter(station -> station.equals(section.getUpStation())
-                        || station.equals(section.getDownStation()))
+                .filter(section::isIncludeStation)
                 .count();
     }
 

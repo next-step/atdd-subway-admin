@@ -46,6 +46,10 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public boolean isIncludeStation(Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
+    }
+
     public void replaceUpStation(Section section) {
         this.upStation = section.getDownStation();
         distance.minus(section.distance);
