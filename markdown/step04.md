@@ -163,21 +163,30 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
     - [x] 4-2.Scenario: 노선의 상행종점 구간을 제거한다.
     - [x] 4-3.Scenario: 노선의 하행종점 구간을 제거한다.
     - [x] 4-4.Scenario: 구간이 하나인 노선에서 마지막 구간을 제거할 수 없다.
-- [x] 5.테스트
-    - [x] 5-1.Gradle build Success 확인
-    - [x] 5-2.checkstyle 문제없는지 확인 (Java Convention)
-    - [x] 5-3.요구사항 조건들 충족했는지 확인
-        - [x] 5-3-1.핵심 단위 로직 테스트 
-    - [x] 5-4.인수 테스트 확인
-    - [x] 5-5.UI 테스트 확인
-- [x] 6.인수인계
-    - [x] 6-1.소감 및 피드백 정리
-        - [x] 6-1-1.느낀점 & 배운점 작성
-        - [x] 6-1-2.피드백 요청 정리
-    - [x] 6-2.코드리뷰 요청 및 피드백
-        - [x] 6-1-1.step4를 gregolee/atdd-subway-admin로 push : `git push origin step4`
-        - [x] 6-1-2.pull request(PR) 작성
-    - [x] 6-3.Slack을 통해 merge가 되는지 확인한 후에 미션 종료
+    - [ ] 4-5.리뷰어님의 리뷰를 반영한 코드로 수정
+        - [ ] 4-5-1.`SectionGroup`
+            - [ ] 4-5-1-1.`isFirstStation()` -> `isSameStation(firstStation)`
+            - [ ] 4-5-1-2.`isLastStation()` -> `isSameStation(lastStation)`
+            - [ ] 4-5-1-3.`removeTargetSectionsWhenInnerStation()` : 메소드 단일화 `modifySections()`
+        - [ ] 4-5-2.`Section`
+            - [ ] 4-5-2-1.`findSectionIndexWhenSameDownStation()` : `Section` -> `SectionGroup` 이동
+            - [ ] 4-5-2-2.`findSectionIndexWhenSameDownStation()` : `Station` 비교시 `isSameStation()` 활용
+            - [ ] 4-5-2-3.`minusDistance()`, `plusDistance()`: `Distance`로 이동
+- [ ] 5.테스트
+    - [ ] 5-1.Gradle build Success 확인
+    - [ ] 5-2.checkstyle 문제없는지 확인 (Java Convention)
+    - [ ] 5-3.요구사항 조건들 충족했는지 확인
+        - [ ] 5-3-1.핵심 단위 로직 테스트 
+    - [ ] 5-4.인수 테스트 확인
+    - [ ] 5-5.UI 테스트 확인
+- [ ] 6.인수인계
+    - [ ] 6-1.소감 및 피드백 정리
+        - [ ] 6-1-1.느낀점 & 배운점 작성
+        - [ ] 6-1-2.피드백 요청 정리
+    - [ ] 6-2.코드리뷰 요청 및 피드백
+        - [ ] 6-1-1.step4를 gregolee/atdd-subway-admin로 push : `git push origin step4`
+        - [ ] 6-1-2.pull request(PR) 작성
+    - [ ] 6-3.Slack을 통해 merge가 되는지 확인한 후에 미션 종료
 
 ### 2.3. ATDD 작성
 
