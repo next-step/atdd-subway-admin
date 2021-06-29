@@ -55,7 +55,7 @@ public class Sections {
         for (int index = START_INDEX; index < sections.size(); index++) {
             Section section = sections.get(index);
 
-            section.removeStationByPosition(sections, targetStation, index);
+            section.removeSectionByStation(sections, targetStation, index);
         }
     }
 

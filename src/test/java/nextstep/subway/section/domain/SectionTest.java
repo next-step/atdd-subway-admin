@@ -107,7 +107,7 @@ class SectionTest {
         sections.add(new Section(이매역, 서현역, 5));
 
         //when
-        첫번째구간.removeStationByPosition(sections, 판교역, 0);
+        첫번째구간.removeSectionByStation(sections, 판교역, 0);
 
         //then
         assertThat(sections.get(0)).isEqualTo(두번째구간);
@@ -129,7 +129,7 @@ class SectionTest {
         sections.add(세번째구간);
 
         //when
-        첫번째구간.removeStationByPosition(sections, 서현역, 2);
+        첫번째구간.removeSectionByStation(sections, 서현역, 2);
 
         //then
         assertThat(sections.get(1)).isEqualTo(두번째구간);
@@ -151,7 +151,7 @@ class SectionTest {
         sections.add(세번째구간);
 
         //when
-        두번째구간.removeStationByPosition(sections, 야탑역, 1);
+        두번째구간.removeSectionByStation(sections, 야탑역, 1);
 
         //then
         Section createdMiddleSection = new Section(2L, 판교역, 야탑역, 25);
