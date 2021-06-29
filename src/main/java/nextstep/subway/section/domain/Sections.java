@@ -42,7 +42,7 @@ public class Sections {
 
     public void validateAndRemoveSectionByStation(Station targetStation) {
         validateSingleSection();
-        removeSectionByPosition(targetStation);
+        removeSectionByStation(targetStation);
     }
 
     private void validateSingleSection() {
@@ -51,7 +51,7 @@ public class Sections {
         }
     }
 
-    public void removeSectionByPosition(Station targetStation) {
+    public void removeSectionByStation(Station targetStation) {
         int sizeOfSections = sections.size();
         for (int index = START_INDEX; index < sizeOfSections; index++) {
             Section section = sections.get(index);
