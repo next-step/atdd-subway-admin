@@ -48,7 +48,7 @@
 ## 피드백 반영 목록
 - [x] 구간 추가의 유효성 검사 내부 로직 내 else 키워드를 쓰는 결과 확인 메소드 추출
 - [x] 구간 내 역 연결 확인 filter 내 메소드를 도메인 내부로 메소드 추출
-- [ ] isOverlappedUpStationBetweenSection, connectUpStationBetweenSection 등 메소드 본문이 겹치는 메소드의 중복 제거
+- [x] isOverlappedUpStationBetweenSection, connectUpStationBetweenSection 등 기존에 존재하는 세션 중간에 연결하는 메소드의 중복을 제거
 - [ ] Stations 내 stream 반환 로직 제거
 - [ ] 구간 추가에서 사용되는 여러 메소드에 단위 테스트 구현
 
