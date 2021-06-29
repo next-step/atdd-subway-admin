@@ -40,7 +40,7 @@ public class Sections {
         }
     }
 
-    public void validateAndRemoveSectionByPosition(Station targetStation) {
+    public void validateAndRemoveSectionByStation(Station targetStation) {
         validateSingleSection();
         removeSectionByPosition(targetStation);
     }

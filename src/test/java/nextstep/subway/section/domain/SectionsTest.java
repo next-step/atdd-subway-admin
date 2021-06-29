@@ -1,7 +1,6 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.exception.CannotRemoveSingleSectionException;
-import nextstep.subway.exception.DuplicateSectionException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,7 +70,7 @@ class SectionsTest {
 
         //when
         assertThrows(CannotRemoveSingleSectionException.class,
-                () -> sections.validateAndRemoveSectionByPosition(판교역)
+                () -> sections.validateAndRemoveSectionByStation(판교역)
         );
     }
 }

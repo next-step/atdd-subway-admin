@@ -75,6 +75,6 @@ public class LineService {
     public void removeSectionByStationId(Long lineId, Long stationId) {
         Line line = findByIdOrThrow(lineId);
 
-        line.validateAndRemoveSection(stationService.findById(stationId));
+        line.validateAndRemoveSectionByStation(stationService.findById(stationId));
     }
 }
