@@ -32,7 +32,7 @@ public class LineStation {
     }
 
     public static LineStation of(Long upStationId, Long stationId, int distance){
-        if(distance != 0 && distance < 0 ){
+        if(distance < 0){
             throw new IllegalArgumentException("구간거리는 0보다 작을 수 없습니다.");
         }
         return new LineStation(upStationId, stationId, distance);
@@ -55,7 +55,7 @@ public class LineStation {
     }
 
     public boolean hasSameUpStation(Long upStationId){
-       return this.upStationId == upStationId;
+       return Objects.equals(this.upStationId, upStationId);
     }
 
     public boolean isSameStation(long stationId){
@@ -64,23 +64,14 @@ public class LineStation {
 
     public void changeUpStation(Long id, int changedDistance){
         this.upStationId = id;
-        this.distance = this.distance + changedDistance;
+        if(id == null){
+            this.distance = 0;
+        }else {
+            this.distance = this.distance + changedDistance;
+        }
     }
 
     public boolean isFirst(){
         return this.upStationId == null;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LineStation that = (LineStation) o;
-        return Objects.equals(stationId, that.stationId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(stationId);
     }
 }

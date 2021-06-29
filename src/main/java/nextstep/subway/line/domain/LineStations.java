@@ -42,7 +42,7 @@ public class LineStations {
 
     public void add(LineStation lineStation) {
         this.lineStations.stream()
-                .filter(station -> station.getUpStationId() == lineStation.getUpStationId())
+                .filter(station -> Objects.equals(station.getUpStationId(), lineStation.getUpStationId()))
                 .findFirst()
                 .ifPresent(station -> {
                     validate(station, lineStation);
@@ -66,7 +66,7 @@ public class LineStations {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("없는 구간 정보 입니다."));
         this.lineStations.stream()
-                .filter(lineStation -> lineStation.getUpStationId() == lineStationId)
+                .filter(lineStation -> Objects.equals(lineStation.getUpStationId(),(lineStationId)))
                 .findFirst()
                 .ifPresent(lineStation -> lineStation.changeUpStation(deletingStation.getUpStationId(), deletingStation.getDistance()));
         this.lineStations.remove(deletingStation);
