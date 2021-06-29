@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import nextstep.subway.exception.DuplicateSectionException;
 import nextstep.subway.exception.InvalidateDistanceException;
 import nextstep.subway.exception.NotContainSectionException;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,13 +18,15 @@ class SectionTest {
 
     private Station 판교역;
     private Station 이매역;
-    private Section 첫번째구간;
+    private Line 첫번째_라인;
+    private Section 첫번째_구간;
 
     @BeforeEach
     void setUp() {
         판교역 = new Station(1L, "판교역");
         이매역 = new Station(2L, "이매역");
-        첫번째구간 = new Section(1L, 판교역, 이매역, 10);
+        첫번째_라인 = new Line("1호선", "red");
+        첫번째_구간 = new Section(1L, 판교역, 이매역, 첫번째_라인, 10);
     }
 
     @Test
@@ -33,7 +36,7 @@ class SectionTest {
         ArrayList<Section> sections = new ArrayList<>();
 
         //when
-        첫번째구간.validateSectionAndAddSection(5, new Station(1L, "판교역"), new Station(3L, "야탑역"), sections);
+        첫번째_구간.validateSectionAndAddSection(5, new Station(1L, "판교역"), new Station(3L, "야탑역"), sections);
 
         //then
         assertThat(sections).hasSize(2);
@@ -46,7 +49,7 @@ class SectionTest {
         ArrayList<Section> sections = new ArrayList<>();
 
         //when
-        첫번째구간.validateSectionAndAddSection(5, new Station(3L, "야탑역"), new Station(1L, "판교역"), sections);
+        첫번째_구간.validateSectionAndAddSection(5, new Station(3L, "야탑역"), new Station(1L, "판교역"), sections);
 
         //then
         assertThat(sections).hasSize(1);
@@ -60,7 +63,7 @@ class SectionTest {
 
         //when
         assertThrows(DuplicateSectionException.class,
-                () -> 첫번째구간.validateSectionAndAddSection(5, new Station(1L, "판교역"), new Station(2L, "이매역"), sections)
+                () -> 첫번째_구간.validateSectionAndAddSection(5, new Station(1L, "판교역"), new Station(2L, "이매역"), sections)
         );
     }
 
@@ -70,11 +73,11 @@ class SectionTest {
         //given
         ArrayList<Section> sections = new ArrayList<>();
         Station 야탑역 = new Station(2L, "야탑역");
-        첫번째구간 = new Section(판교역, 야탑역, 10);
+        첫번째_구간 = new Section(판교역, 야탑역, 10);
 
         //when
         assertThrows(InvalidateDistanceException.class,
-                () -> 첫번째구간.validateSectionAndAddSection(15, new Station(1L, "판교역"), new Station(3L, "이매역"), sections)
+                () -> 첫번째_구간.validateSectionAndAddSection(15, new Station(1L, "판교역"), new Station(3L, "이매역"), sections)
         );
     }
 
@@ -84,11 +87,11 @@ class SectionTest {
         //given
         ArrayList<Section> sections = new ArrayList<>();
         Station 야탑역 = new Station(2L, "야탑역");
-        첫번째구간 = new Section(판교역, 야탑역, 10);
+        첫번째_구간 = new Section(판교역, 야탑역, 10);
 
         //when
         assertThrows(NotContainSectionException.class,
-                () -> 첫번째구간.validateSectionAndAddSection(15, new Station(3L, "이매역"), new Station(4L, "수내역"), sections)
+                () -> 첫번째_구간.validateSectionAndAddSection(15, new Station(3L, "이매역"), new Station(4L, "수내역"), sections)
         );
     }
 
@@ -102,12 +105,12 @@ class SectionTest {
         Section 두번째구간 = new Section(야탑역, 이매역, 15);
 
         ArrayList<Section> sections = new ArrayList<>();
-        sections.add(첫번째구간);
+        sections.add(첫번째_구간);
         sections.add(두번째구간);
         sections.add(new Section(이매역, 서현역, 5));
 
         //when
-        첫번째구간.removeSectionByStation(sections, 판교역, 0);
+        첫번째_구간.removeSectionByStation(sections, 판교역, 0);
 
         //then
         assertThat(sections.get(0)).isEqualTo(두번째구간);
@@ -124,12 +127,12 @@ class SectionTest {
         Section 세번째구간 = new Section(야탑역, 서현역, 5);
 
         ArrayList<Section> sections = new ArrayList<>();
-        sections.add(첫번째구간);
+        sections.add(첫번째_구간);
         sections.add(두번째구간);
         sections.add(세번째구간);
 
         //when
-        첫번째구간.removeSectionByStation(sections, 서현역, 2);
+        첫번째_구간.removeSectionByStation(sections, 서현역, 2);
 
         //then
         assertThat(sections.get(1)).isEqualTo(두번째구간);
@@ -146,7 +149,7 @@ class SectionTest {
         Section 세번째구간 = new Section(3L, 야탑역, 서현역, 5);
 
         ArrayList<Section> sections = new ArrayList<>();
-        sections.add(첫번째구간);
+        sections.add(첫번째_구간);
         sections.add(두번째구간);
         sections.add(세번째구간);
 

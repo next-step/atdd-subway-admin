@@ -18,14 +18,14 @@ class SectionsTest {
         //given
         Station 판교역 = new Station("판교역");
         Station 이매역 = new Station("이매역");
-        Section 첫번째구간 = new Section(판교역, 이매역, 10);
+        Section 첫번째_구간 = new Section(판교역, 이매역, 10);
 
         Station 모란역 = new Station("모란역");
         Station 야탑역 = new Station("야탑역");
-        Section 두번째구간 = new Section(모란역, 야탑역, 20);
+        Section 두번째_구간 = new Section(모란역, 야탑역, 20);
 
         //when
-        Sections sections = new Sections(List.of(첫번째구간, 두번째구간));
+        Sections sections = new Sections(List.of(첫번째_구간, 두번째_구간));
 
         //then
         assertThat(sections.extractStations()).containsExactly(
@@ -42,13 +42,13 @@ class SectionsTest {
         //given
         Station 판교역 = new Station("판교역");
         Station 야탑역 = new Station("이매역");
-        Section 첫번째구간 = new Section(판교역, 야탑역, 10);
+        Section 첫번째_구간 = new Section(판교역, 야탑역, 10);
 
         Station 모란역 = new Station("모란역");
-        Section 두번째구간 = new Section(모란역, 야탑역, 20);
+        Section 두번째_구간 = new Section(모란역, 야탑역, 20);
 
         //when
-        Sections sections = new Sections(List.of(첫번째구간, 두번째구간));
+        Sections sections = new Sections(List.of(첫번째_구간, 두번째_구간));
 
         //then
         assertThat(sections.extractStations()).containsExactly(
@@ -64,9 +64,9 @@ class SectionsTest {
         //given
         Station 판교역 = new Station("판교역");
         Station 야탑역 = new Station("이매역");
-        Section 첫번째구간 = new Section(판교역, 야탑역, 10);
+        Section 첫번째_구간 = new Section(판교역, 야탑역, 10);
 
-        Sections sections = new Sections(List.of(첫번째구간));
+        Sections sections = new Sections(List.of(첫번째_구간));
 
         //when
         assertThrows(CannotRemoveSingleSectionException.class,
