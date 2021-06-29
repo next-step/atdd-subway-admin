@@ -84,6 +84,26 @@ public class Section extends BaseEntity {
         return stations().contains(station);
     }
 
+    public boolean isUpStationExist(List<Station> stations) {
+        return stations.contains(upStation);
+    }
+
+    public boolean isDownStationExist(List<Station> stations) {
+        return stations.contains(downStation);
+    }
+
+    public void splitBy(Section other) {
+        distance.subtract(other.distance);
+
+        if (equalUpStation(other.upStation)) {
+            upStation = other.downStation;
+        }
+
+        if (equalDownStation(other.downStation)) {
+            downStation = other.upStation;
+        }
+    }
+
     public boolean equalUpStation(Station station) {
         return upStation.equals(station);
     }
@@ -92,16 +112,12 @@ public class Section extends BaseEntity {
         return downStation.equals(station);
     }
 
-    public void updateUpStation(Station station) {
-        this.upStation = station;
+    public boolean isDownSectionOf(Section other) {
+        return upStation.equals(other.downStation);
     }
 
-    public void updateDownStation(Station station) {
-        this.downStation = station;
-    }
-
-    public void updateDistance(Distance distance) {
-        this.distance = distance;
+    public boolean isUpSectionOf(Section other) {
+        return downStation.equals(other.upStation);
     }
 
     private void validStations(Station upStation, Station downStation) {

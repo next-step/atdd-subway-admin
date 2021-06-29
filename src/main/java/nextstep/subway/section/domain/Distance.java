@@ -24,4 +24,14 @@ public class Distance {
         return distance;
     }
 
+    public void subtract(Distance other) {
+        int result = this.distance - other.distance;
+
+        if (result <= 0) {
+            throw new IllegalArgumentException("새로운 구간 거리가 너무 깁니다.");
+        }
+
+        this.distance = result;
+    }
+
 }

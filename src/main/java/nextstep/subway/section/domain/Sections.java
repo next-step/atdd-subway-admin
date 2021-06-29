@@ -39,8 +39,8 @@ public class Sections {
     }
 
     private void validStations(Section section) {
-        boolean isUpStationExist = contains(section.getUpStation());
-        boolean isDownStationExist = contains(section.getDownStation());
+        boolean isUpStationExist = section.isUpStationExist(stations());
+        boolean isDownStationExist = section.isDownStationExist(stations());
 
         if (isUpStationExist && isDownStationExist) {
             throw new IllegalArgumentException("이미 추가한 구간입니다.");
@@ -56,30 +56,7 @@ public class Sections {
             return;
         }
 
-        Section oldSection = findOldSection(section);
-        updateDistance(oldSection, section);
-
-        if (oldSection.equalUpStation(section.getUpStation())) {
-            oldSection.updateUpStation(section.getDownStation());
-        }
-
-        if (oldSection.equalDownStation(section.getDownStation())) {
-            oldSection.updateDownStation(section.getUpStation());
-        }
-    }
-
-    private void updateDistance(Section oldSection, Section section) {
-        int distance = oldSection.getDistance() - section.getDistance();
-
-        if (distance <= 0) {
-            throw new IllegalArgumentException("구간 거리가 너무 깁니다.");
-        }
-
-        oldSection.updateDistance(new Distance(distance));
-    }
-
-    private boolean contains(Station station) {
-        return stations().contains(station);
+        findOldSectionBy(section).splitBy(section);
     }
 
     private Station headStation() {
@@ -109,13 +86,13 @@ public class Sections {
         return orderedSections;
     }
 
-    private Section findOldSection(Section section) {
+    private Section findOldSectionBy(Section section) {
         int index = IntStream.range(0, stations().size())
             .filter(i -> section.contains(stations().get(i)))
             .findFirst()
             .orElseThrow(EntityNotFoundException::new);
 
-        if (contains(section.getDownStation())) {
+        if (section.isDownStationExist(stations())) {
             index -= 1;
         }
 
@@ -123,25 +100,23 @@ public class Sections {
     }
 
     private boolean hasUpSection(Section section) {
-        return sections.stream()
-            .anyMatch(element -> element.equalDownStation(section.getUpStation()));
+        return sections.stream().anyMatch(section::isDownSectionOf);
     }
 
     private boolean hasDownSection(Section section) {
-        return sections.stream()
-            .anyMatch(element -> element.equalUpStation(section.getDownStation()));
+        return sections.stream().anyMatch(section::isUpSectionOf);
     }
 
     private Section findUpSection(Section section) {
         return sections.stream()
-            .filter(element -> element.equalDownStation(section.getUpStation()))
+            .filter(section::isDownSectionOf)
             .findFirst()
             .orElseThrow(EntityNotFoundException::new);
     }
 
     private Section findDownSection(Section section) {
         return sections.stream()
-            .filter(element -> element.equalUpStation(section.getDownStation()))
+            .filter(section::isUpSectionOf)
             .findFirst()
             .orElseThrow(EntityNotFoundException::new);
     }

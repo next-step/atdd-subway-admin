@@ -15,4 +15,15 @@ public class DistanceTest {
         );
     }
 
+    @DisplayName("두 거리의 차가 1보다 작아 수정할 수 없다.")
+    @Test
+    void subtract_TooSmall_ExceptionThrown() {
+        Distance three = new Distance(3);
+        Distance other = new Distance(3);
+
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() ->
+            three.subtract(other)
+        );
+    }
+
 }
