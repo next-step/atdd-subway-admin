@@ -36,6 +36,14 @@ public class Distance {
 		}
 	}
 
+	public int minus(Distance distance) {
+		return this.distance - distance.value();
+	}
+
+	public int plus(Distance distance) {
+		return this.distance + distance.value();
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {

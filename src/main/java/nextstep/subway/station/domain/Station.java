@@ -45,23 +45,9 @@ public class Station extends BaseEntity {
 		return name.value();
 	}
 
-	public boolean isFirstStation(List<Station> stations) {
-		Station firstStationInGroup = stations.get(FIRST_STATION_INDEX);
-		return this.equals(firstStationInGroup);
-	}
-
-	public boolean isLastStation(List<Station> stations) {
-		Station lastStationInGroup = stations.get(stations.size() + ADJUST_LAST_STATION_INDEX);
-		return this.equals(lastStationInGroup);
-	}
-
 	public boolean isInnerStation(List<Station> stations) {
 		int index = stations.indexOf(this);
 		return FIRST_STATION_INDEX < index && index < stations.size() + ADJUST_LAST_STATION_INDEX;
-	}
-
-	public boolean isNotIncludedStation(Section section) {
-		return !isIncludedStation(section);
 	}
 
 	public boolean isIncludedStation(Section section) {
@@ -69,6 +55,10 @@ public class Station extends BaseEntity {
 			return false;
 		}
 		return this.equals(section.upStation()) || this.equals(section.downStation());
+	}
+
+	public boolean isSameStation(Station station) {
+		return this.equals(station);
 	}
 
 	@Override

@@ -18,8 +18,6 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section extends BaseEntity {
-	private static final int OUT_OF_INDEX = -1;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -126,24 +124,6 @@ public class Section extends BaseEntity {
 		return distance;
 	}
 
-	public int findSectionIndexWhenSameUpStation(SectionGroup sectionGroup) {
-		return sectionGroup.sections().stream()
-			.filter(section -> section.upStation.equals(upStation))
-			.filter(this::notEquals)
-			.mapToInt(section -> sectionGroup.sections().indexOf(section))
-			.findFirst()
-			.orElse(OUT_OF_INDEX);
-	}
-
-	public int findSectionIndexWhenSameDownStation(SectionGroup sectionGroup) {
-		return sectionGroup.sections().stream()
-			.filter(section -> section.downStation.equals(downStation))
-			.filter(this::notEquals)
-			.mapToInt(section -> sectionGroup.sections().indexOf(section))
-			.findFirst()
-			.orElse(OUT_OF_INDEX);
-	}
-
 	public void updateWhenSameDownStation(Section targetSection) {
 		this.downStation = targetSection.upStation;
 	}
@@ -153,13 +133,11 @@ public class Section extends BaseEntity {
 	}
 
 	public void minusDistance(Distance distance) {
-		int changedDistance = this.distance.value() - distance.value();
-		this.distance = Distance.generate(changedDistance);
+		this.distance = Distance.generate(this.distance.minus(distance));
 	}
 
 	public void plusDistance(Distance distance) {
-		int changedDistance = this.distance.value() + distance.value();
-		this.distance = Distance.generate(changedDistance);
+		this.distance = Distance.generate(this.distance.plus(distance));
 	}
 
 	public boolean isLastSection(SectionGroup sectionGroup) {
@@ -172,7 +150,7 @@ public class Section extends BaseEntity {
 			.anyMatch(section -> section.upStation.equals(downStation));
 	}
 
-	private boolean notEquals(Section section) {
+	public boolean notEquals(Section section) {
 		return !equals(section);
 	}
 

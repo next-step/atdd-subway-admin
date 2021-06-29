@@ -73,7 +73,7 @@ public class SectionGroup {
 	}
 
 	private void addTargetSectionWhenSameDownStation(Section targetSection) {
-		int sourceSectionIndex = targetSection.findSectionIndexWhenSameDownStation(this);
+		int sourceSectionIndex = findSectionIndexWhenSameDownStation(targetSection);
 		if (OUT_OF_INDEX < sourceSectionIndex) {
 			Section sourceSection = sections.get(sourceSectionIndex);
 			sourceSection.updateWhenSameDownStation(targetSection);
@@ -83,13 +83,31 @@ public class SectionGroup {
 	}
 
 	private void addTargetSectionWhenSameUpStation(Section targetSection) {
-		int sourceSectionIndex = targetSection.findSectionIndexWhenSameUpStation(this);
+		int sourceSectionIndex = findSectionIndexWhenSameUpStation(targetSection);
 		if (OUT_OF_INDEX < sourceSectionIndex) {
 			Section sourceSection = sections.get(sourceSectionIndex);
 			sourceSection.updateWhenSameUpStation(targetSection);
 			sourceSection.minusDistance(targetSection.distance());
 			sections.add(sourceSectionIndex, targetSection);
 		}
+	}
+
+	public int findSectionIndexWhenSameUpStation(Section targetSection) {
+		return sections.stream()
+			.filter(section -> section.upStation().isSameStation(targetSection.upStation()))
+			.filter(targetSection::notEquals)
+			.mapToInt(section -> sections.indexOf(section))
+			.findFirst()
+			.orElse(OUT_OF_INDEX);
+	}
+
+	public int findSectionIndexWhenSameDownStation(Section targetSection) {
+		return sections.stream()
+			.filter(section -> section.downStation().isSameStation(targetSection.downStation()))
+			.filter(targetSection::notEquals)
+			.mapToInt(section -> sections.indexOf(section))
+			.findFirst()
+			.orElse(OUT_OF_INDEX);
 	}
 
 	private void addTargetSectionWhenEdgeStation(Section targetSection) {
@@ -111,24 +129,26 @@ public class SectionGroup {
 
 	private void removeTargetSectionsWhenInnerStation(Station targetStation) {
 		if (targetStation.isInnerStation(this.stations())) {
-			modifiedSection(targetStation);
-			removeSectionsRelatedWithTargetStation(targetStation);
+			modifySections(targetStation);
 		}
 	}
 
-	private void removeSectionsRelatedWithTargetStation(Station targetStation) {
-		sections = sections.stream()
-			.filter(targetStation::isNotIncludedStation)
-			.collect(Collectors.toList());
+	private void removeSection(Station targetStation) {
+		Section removeTargetSection = sections.stream()
+			.filter(targetStation::isIncludedStation)
+			.findAny()
+			.get();
+		sections.remove(removeTargetSection);
 	}
 
-	private void modifiedSection(Station targetStation) {
+	private void modifySections(Station targetStation) {
 		Section modifiedSection = extractSectionToModify(targetStation);
 		sections.stream()
 			.filter(targetStation::isIncludedStation)
 			.findAny()
 			.get()
 			.update(modifiedSection);
+		removeSection(targetStation);
 	}
 
 	private Section extractSectionToModify(Station targetStation) {
@@ -139,11 +159,13 @@ public class SectionGroup {
 	}
 
 	private void removeTargetSectionWhenEdgeStation(Station removeTargetStation) {
-		if (removeTargetStation.isFirstStation(this.stations())) {
+		Station firstStation = stations().get(FIRST_INDEX);
+		if (removeTargetStation.isSameStation(firstStation)) {
 			sections.remove(FIRST_INDEX);
 			return;
 		}
-		if (removeTargetStation.isLastStation(this.stations())) {
+		Station lastStation = stations().get(stations().size() + OUT_OF_INDEX);
+		if (removeTargetStation.isSameStation(lastStation)) {
 			sections.remove(sections.size() + OUT_OF_INDEX);
 			return;
 		}
