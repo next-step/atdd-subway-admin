@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -30,7 +31,8 @@ public class Section {
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
-	private Integer distance;
+	@Embedded
+	private Distance distance;
 
 	protected Section() {
 	}
@@ -39,7 +41,7 @@ public class Section {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = distance;
+		this.distance = new Distance(distance);
 	}
 
 	public Line getLine() {
@@ -55,6 +57,6 @@ public class Section {
 	}
 
 	public Integer getDistance() {
-		return distance;
+		return distance.getDistance();
 	}
 }
