@@ -17,6 +17,14 @@ public class SectionTest {
     private static final Station 서울역 = new Station(2L, "서울역");
     private static final Line 지하철_1호선 = new Line("1호선", "남색", 신도림역, 서울역, 거리);
 
+    @DisplayName("역을 포함한다")
+    @Test
+    void contains() {
+        Section section = new Section(지하철_1호선, 신도림역, 서울역, 거리);
+        assertThat(section.contains(신도림역));
+        assertThat(section.contains(서울역));
+    }
+
     @DisplayName("상행역과 하행역이 같아 노선을 생성을 실패한다")
     @Test
     void create_SameStations_ExceptionThrown() {

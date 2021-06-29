@@ -197,7 +197,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private Map<String, String> 지하철_노선_종점포함_정보(
+    public static Map<String, String> 지하철_노선_종점포함_정보(
         String name, String color, Map<String, String> upStation, Map<String, String> downStation, int distance
     ) {
         ExtractableResponse<Response> upStationCreateResponse = StationAcceptanceTest.지하철_역_등록되어_있음(upStation);
@@ -215,7 +215,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }};
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> line) {
+    private static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> line) {
         return RestAssured
             .given().log().all()
             .body(line)
@@ -225,11 +225,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_종점포함_생성_요청(Map<String, String> line) {
+    private static ExtractableResponse<Response> 지하철_노선_종점포함_생성_요청(Map<String, String> line) {
         return 지하철_노선_생성_요청(line);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_종점포함_등록되어_있음(Map<String, String> line) {
+    public static ExtractableResponse<Response> 지하철_노선_종점포함_등록되어_있음(Map<String, String> line) {
         return 지하철_노선_종점포함_생성_요청(line);
     }
 
