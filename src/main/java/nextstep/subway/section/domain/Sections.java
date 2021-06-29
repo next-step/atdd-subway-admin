@@ -63,7 +63,7 @@ public class Sections {
     private long getConnectedStationCount(Section section) {
         Stations stations = toStations();
 
-        return stations.stream()
+        return stations.get().stream()
                 .filter(section::isIncludeStation)
                 .count();
     }

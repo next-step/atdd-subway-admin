@@ -28,7 +28,7 @@ public class StationResponse {
     }
 
     public static List<StationResponse> fromList(Stations stations) {
-        return stations.stream()
+        return stations.get().stream()
                 .map((StationResponse::from))
                 .collect(Collectors.toList());
     }
