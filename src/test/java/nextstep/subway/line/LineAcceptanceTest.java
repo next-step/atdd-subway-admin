@@ -73,7 +73,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(line.getStations())
             .hasSize(2)
             .extracting(StationResponse::getId, StationResponse::getName)
-            .containsExactlyInAnyOrder(
+            .containsExactly(
                 tuple(upStationId, upStationName),
                 tuple(downStationId, downStationName)
             );
@@ -143,7 +143,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lines)
             .hasSize(2)
             .extracting(LineResponse::getName, LineResponse::getColor)
-            .containsExactlyInAnyOrder(
+            .containsExactly(
                 tuple(lineName, lineColor),
                 tuple(lineName2, lineColor2)
             );
