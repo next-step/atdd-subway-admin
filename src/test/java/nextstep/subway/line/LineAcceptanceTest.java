@@ -244,7 +244,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         //노선에 구간 추가됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("예외케이스_상행역_하행역_모두_이미노선에_등록된경우")
@@ -262,7 +262,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         //노선에 구간 추가됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("예외케이스_상행역_하행역_모두_기존구간에_포함되어있지않은_경우")
@@ -282,6 +282,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         //노선에 구간 추가됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

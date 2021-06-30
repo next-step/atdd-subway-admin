@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.exception.CanNotAddNewSectionException;
 import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
@@ -22,30 +23,19 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        CheckException(section);
+        checkException(section);
         addSectionMiddleBasedOnUpStation(section);
         addSectionUpBasedOnUpStation(section);
         addSectionDownBasedOnDownStation(section);
     }
 
-    private void CheckException(Section section) {
-        this.sections.stream()
-                .filter(oldSection -> section.getUpStation().equals(oldSection.getUpStation())
-                        && !section.getDownStation().getName().equals(oldSection.getUpStation().getName())
-                        && oldSection.getDistance() < section.getDistance())
-                .findFirst()
-                .ifPresent(oldSection -> {
-                    throw new RuntimeException("추가할 구간의 거리가 기존 구간보다 더 클 수 없습니다.");
-                });
+    private void checkException(Section section) {
+        checkDistanceBetweenSections(section);
+        checkAlreadyExistSection(section);
+        checkFindSameStation(section);
+    }
 
-        this.sections.stream()
-                .filter(oldSection -> section.getUpStation().equals(oldSection.getUpStation())
-                && section.getDownStation().equals(oldSection.getDownStation()))
-                .findFirst()
-                .ifPresent(oldSection -> {
-                    throw new RuntimeException("이미 존재하는 역 구간입니다.");
-                });
-
+    private void checkFindSameStation(Section section) {
         this.sections.stream()
                 .filter(oldSection -> !section.getUpStation().equals(oldSection.getUpStation())
                         && !section.getUpStation().equals(oldSection.getDownStation())
@@ -53,7 +43,28 @@ public class Sections {
                         && !section.getDownStation().equals(oldSection.getDownStation()))
                 .findFirst()
                 .ifPresent(oldSection -> {
-                    throw new RuntimeException("기존 구간에 일치하는 역이 없습니다.");
+                    throw new CanNotAddNewSectionException("기존 구간에 일치하는 역이 없습니다.");
+                });
+    }
+
+    private void checkAlreadyExistSection(Section section) {
+        this.sections.stream()
+                .filter(oldSection -> section.getUpStation().equals(oldSection.getUpStation())
+                && section.getDownStation().equals(oldSection.getDownStation()))
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    throw new CanNotAddNewSectionException("이미 존재하는 역 구간입니다.");
+                });
+    }
+
+    private void checkDistanceBetweenSections(Section section) {
+        this.sections.stream()
+                .filter(oldSection -> section.getUpStation().equals(oldSection.getUpStation())
+                        && !section.getDownStation().getName().equals(oldSection.getUpStation().getName())
+                        && oldSection.getDistance() < section.getDistance())
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    throw new CanNotAddNewSectionException("추가할 구간의 거리가 기존 구간보다 더 클 수 없습니다.");
                 });
     }
 
