@@ -22,6 +22,21 @@ public class LineStepTest {
 
     public static final String BASE_LINE_URL = "/lines";
 
+    static void 지하철_구간_등록되어_있음(long lineId, SectionRequest request) {
+        지하철_노선에_구간_추가_요청(lineId, request);
+    }
+
+    static long 지하철_노선_등록되어_있음(LineRequest line) {
+        ExtractableResponse<Response> createdFirstLine = 지하철_노선_생성_요청(line);
+        return extractIdByLocationHeader(createdFirstLine);
+    }
+
+    static SectionRequest 지하철_구간에_역들이_등록되어_있음(String upStationName, String downStationName, long distance) {
+        long upStationId = 지하철_역_등록되어_있음(new StationRequest(upStationName));
+        long downStationId = 지하철_역_등록되어_있음(new StationRequest(downStationName));
+        return new SectionRequest(upStationId, downStationId, distance);
+    }
+
     static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
         return RestAssured
                 .given().log().all()
@@ -71,16 +86,15 @@ public class LineStepTest {
                 .then().log().all().extract();
     }
 
-    static long 지하철_노선_등록되어_있음(LineRequest line) {
-        ExtractableResponse<Response> createdFirstLine = 지하철_노선_생성_요청(line);
-        return extractIdByLocationHeader(createdFirstLine);
+    static ExtractableResponse<Response> 구간_삭제_요청(long lineId, long stationId) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .queryParam("stationId", stationId)
+                .when().delete(BASE_LINE_URL + "/" + lineId + "/sections")
+                .then().log().all().extract();
     }
 
-    static SectionRequest 지하철_구간에_역들이_등록되어_있음(String upStationName, String downStationName, long distance) {
-        long upStationId = 지하철_역_등록되어_있음(new StationRequest(upStationName));
-        long downStationId = 지하철_역_등록되어_있음(new StationRequest(downStationName));
-        return new SectionRequest(upStationId, downStationId, distance);
-    }
 
     static long extractIdByLocationHeader(ExtractableResponse<Response> response) {
         return Long.parseLong(response.header("Location").split("/")[ID_POSITION]);
@@ -123,11 +137,23 @@ public class LineStepTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    static void 구간_삭제됨(ExtractableResponse<Response> response) {
+        삭제_성공_응답(response);
+    }
+
     static void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        삭제_성공_응답(response);
+    }
+
+    static void 삭제_성공_응답(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     static void 구간_추가_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    static void 구간_삭제_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

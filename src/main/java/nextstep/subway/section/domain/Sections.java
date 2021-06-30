@@ -1,7 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.exception.CannotRemoveSingleSectionException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -14,6 +14,11 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+
+    public static final int MINIMUM_SECTION_SIZE_FOR_REMOVE = 1;
+
+    public static final int START_INDEX = 0;
+    public static final int LAST_INDEX = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
@@ -33,6 +38,45 @@ public class Sections {
         for (Section section : sections) {
             section.validateSectionAndAddSection(newDistance, newUpStation, newDownStation, new ArrayList<>(sections));
         }
+    }
+
+    public void validateAndRemoveSectionByStation(Station targetStation) {
+        validateSingleSection();
+        removeSectionByStation(targetStation);
+    }
+
+    private void validateSingleSection() {
+        if (sections.size() <= MINIMUM_SECTION_SIZE_FOR_REMOVE) {
+            throw new CannotRemoveSingleSectionException();
+        }
+    }
+
+    private void removeSectionByStation(Station targetStation) {
+        Section targetSection = findRemovingSectionByStation(targetStation);
+
+        int index = sections.indexOf(targetSection);
+
+        if (isEdgeSection(index)) {
+            sections.remove(targetSection);
+            return;
+        }
+
+        Section beforeSection = sections.get(index - LAST_INDEX);
+
+        sections.remove(targetSection);
+        sections.remove(beforeSection);
+        sections.add(index - LAST_INDEX, targetSection.createMiddleSection(beforeSection));
+    }
+
+    private Section findRemovingSectionByStation(Station targetStation) {
+        return sections.stream()
+                    .filter(section -> section.haveStation(targetStation))
+                    .findFirst()
+                    .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isEdgeSection(int index) {
+        return index == sections.size() - LAST_INDEX || index == START_INDEX;
     }
 
     public List<Station> extractStations() {

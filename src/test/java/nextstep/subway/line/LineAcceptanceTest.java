@@ -31,11 +31,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         testKangnamId = 지하철_역_등록되어_있음(TEST_GANGNAM_STATION);
         testYucksamId = 지하철_역_등록되어_있음(TEST_YUCKSAM_STATION);
+        testFirstLine = new LineRequest("1호선", "red", testKangnamId, testYucksamId, 10L);
 
         long testKachisanId = 지하철_역_등록되어_있음(new StationRequest("까치산역"));
         long testJamsilId = 지하철_역_등록되어_있음(new StationRequest("잠실역"));
-        
-        testFirstLine = new LineRequest("1호선", "red", testKangnamId, testYucksamId, 10L);
         testSecondLine = new LineRequest("2호선", "blue", testKachisanId, testJamsilId, 20L);
     }
 
@@ -173,5 +172,37 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         구간_추가_실패됨(response);
+    }
+
+    @DisplayName("종점이 제거될 경우 다음으로 오던 역이 종점이 된다.")
+    @Test
+    void removeSection() {
+        // given
+        long lineId = 지하철_노선_등록되어_있음(testFirstLine);
+        long sangamId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
+        long dmcId = 지하철_역_등록되어_있음(new StationRequest("DMC역"));
+
+        지하철_구간_등록되어_있음(lineId, new SectionRequest(testYucksamId, sangamId, 5L));
+        지하철_구간_등록되어_있음(lineId, new SectionRequest(sangamId, dmcId, 10L));
+
+        // when
+        ExtractableResponse<Response> response = 구간_삭제_요청(lineId, sangamId);
+
+        // then
+        구간_삭제됨(response);
+    }
+
+    @DisplayName("구간 제거 시 구간이 한 개인 경우 제거될 수 없다.")
+    @Test
+    void removeSingleSection() {
+        // given
+        long lineId = 지하철_노선_등록되어_있음(testFirstLine);
+        long sangamId = 지하철_역_등록되어_있음(new StationRequest("상암역"));
+
+        // when
+        ExtractableResponse<Response> response = 구간_삭제_요청(lineId, sangamId);
+
+        // then
+        구간_삭제_실패됨(response);
     }
 }

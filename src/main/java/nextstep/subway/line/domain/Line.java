@@ -4,7 +4,6 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.dto.StationsResponse;
 
 import javax.persistence.*;
@@ -39,13 +38,21 @@ public class Line extends BaseEntity {
         addSection(section);
     }
 
-    public void validateAndAddSections(long newDistance, Station newUpStation, Station newDownStation) {
+    public void removeSectionByStation(Station removeStation) {
+        sections.validateAndRemoveSectionByStation(removeStation);
+    }
+
+    public void addSections(long newDistance, Station newUpStation, Station newDownStation) {
         sections.validateAndAddSections(newDistance, newUpStation, newDownStation);
     }
 
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void modifySections(Sections sections) {
+        this.sections = sections;
     }
 
     public Line addSection(Section section) {

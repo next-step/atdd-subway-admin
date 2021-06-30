@@ -9,6 +9,7 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -40,7 +41,42 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public void validateSectionAndAddSection(long distance, Station newUpStation, Station newDownStation, List<Section> sections) {
+    public Section(long id, Station upStation, Station downStation, long distance) {
+        this(upStation, downStation, distance);
+        this.id = id;
+    }
+
+    public Section(Station upStation, Station downStation, Line line, long distance) {
+        this(upStation, downStation, distance);
+        this.line = line;
+    }
+
+    public Section(long id, Station upStation, Station downStation, Line line, long distance) {
+        this(id, upStation, downStation, distance);
+        this.line = line;
+    }
+
+    Section createMiddleSection(Section beforeSection) {
+        return new Section(id, beforeSection.getUpStation(), downStation, addDistance(beforeSection));
+    }
+
+    public long addDistance(Section section) {
+        return this.distance + section.getDistance();
+    }
+
+    boolean haveStation(Station targetStation) {
+        return isUpStation(targetStation) || isDownStation(targetStation);
+    }
+
+    private boolean isUpStation(Station targetStation) {
+        return upStation.equals(targetStation);
+    }
+
+    private boolean isDownStation(Station targetStation) {
+        return downStation.equals(targetStation);
+    }
+
+    void validateSectionAndAddSection(long distance, Station newUpStation, Station newDownStation, List<Section> sections) {
         validateSection(distance, newUpStation, newDownStation);
 
         addSectionByPosition(distance, newUpStation, newDownStation, sections);
@@ -79,14 +115,20 @@ public class Section extends BaseEntity {
     private void addSectionByPosition(long newDistance, Station newUpStation, Station newDownStation, List<Section> sections) {
         if (upStation.equals(newUpStation)) {
             sections.remove(this);
-            sections.add(new Section(newUpStation, newDownStation, newDistance));
-            sections.add(new Section(newDownStation, downStation, distance - newDistance));
+            sections.add(new Section(newUpStation, newDownStation, line, newDistance));
+            sections.add(new Section(newDownStation, downStation, line, distance - newDistance));
+            modifySections(sections);
             return;
         }
 
         if (upStation.equals(newDownStation) || downStation.equals(newUpStation)) {
-            sections.add(new Section(newUpStation, newDownStation, newDistance));
+            sections.add(new Section(newUpStation, newDownStation, line, newDistance));
+            modifySections(sections);
         }
+    }
+
+    private void modifySections(List<Section> sections) {
+        line.modifySections(new Sections(sections));
     }
 
     public void addLine(Line line) {
@@ -111,5 +153,22 @@ public class Section extends BaseEntity {
 
     public long getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance &&
+                Objects.equals(id, section.id) &&
+                Objects.equals(upStation, section.upStation) &&
+                Objects.equals(downStation, section.downStation) &&
+                Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, upStation, downStation, line, distance);
     }
 }
