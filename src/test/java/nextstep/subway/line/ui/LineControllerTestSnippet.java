@@ -80,9 +80,19 @@ public class LineControllerTestSnippet {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_구간_삭제_요청(Long lineId, Long deletedStationId) {
+        return RestAssured.given().log().all()
+                .queryParam("stationId", deletedStationId)
+                .when()
+                .delete(format("/lines/%d/sections", lineId))
+                .then().log().all()
+                .extract();
+    }
+
     public static List<Long> 지하철_노선에_속한_여러_역의_ID추출(ExtractableResponse<Response> addingSectionResponse) {
         return addingSectionResponse.jsonPath().getList("stations", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
     }
+
 }

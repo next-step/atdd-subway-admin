@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import static com.google.common.primitives.Longs.asList;
 import static nextstep.subway.common.AcceptanceTestSnippet.HTTP_응답_코드_확인;
 import static nextstep.subway.line.ui.LineControllerTestSnippet.*;
+import static nextstep.subway.line.ui.LineControllerTestSnippet.지하철_노선_구간_삭제_요청;
 import static nextstep.subway.station.ui.StationControllerTestSnippet.지하철_역_생성_요청;
 import static nextstep.subway.utils.ExtractableResponseUtil.응답에서_ID_추출;
 import static nextstep.subway.utils.ExtractableResponseUtil.여러_응답에서_ID_추출;
@@ -289,5 +290,25 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
         HTTP_응답_코드_확인(addingSectionResponse, CREATED);
+    }
+
+    @DisplayName("지하철_노선의_역_삭제")
+    @Test
+    void 지하철_노선의_역_삭제() {
+        // given
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        Long savedLineId = 응답에서_ID_추출(createResponse);
+        List<Long> expectedResult = Stream.of(강남역, 역삼역)
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        // when
+        지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(서울대입구역.getId(), 역삼역.getId(), 구간_중간_추가_역간_거리));
+        ExtractableResponse<Response> deleteStationInLineResponse = 지하철_노선_구간_삭제_요청(savedLineId, 서울대입구역.getId());
+        List<Long> actualResult = 지하철_노선에_속한_여러_역의_ID추출(deleteStationInLineResponse);
+
+        // then
+        assertThat(actualResult).isEqualTo(expectedResult);
+        HTTP_응답_코드_확인(deleteStationInLineResponse, OK);
     }
 }

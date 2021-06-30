@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.exception.BelowZeroDistanceException;
 import nextstep.subway.section.exception.UnaddableSectionException;
+import nextstep.subway.section.exception.UndeletableStationInSectionException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
@@ -133,6 +134,45 @@ class LineServiceTest extends AcceptanceTest {
         // when, then
         구간_추가_불가_예외_검증(죠르디_선.getId(), duplicatedRequest);
     }
+    @Test
+    void deleteStation_성공_케이스1() {
+        deleteStation_성공_본문(강남역.getId());
+    }
+
+    @Test
+    void deleteStation_성공_케이스2() {
+        deleteStation_성공_본문(서울대입구역.getId());
+    }
+
+    @Test
+    void deleteStation_성공_케이스3() {
+        deleteStation_성공_본문(역삼역.getId());
+    }
+
+    @Test
+    void deleteStation_예외_구간_한개() {
+        // when, then
+        노선_내_역_삭제_예외_검증(죠르디_선.getId(), 강남역.getId());
+    }
+
+    @Test
+    void deleteStation_예외_존재하지_않는_역() {
+        // given
+        SectionRequest givenRequest1 = new SectionRequest(서울대입구역.getId(), 강남역.getId(), 기본_구간_거리);
+        lineService.addSection(죠르디_선.getId(), givenRequest1);
+
+        // when, then
+        노선_내_역_삭제_예외_검증(죠르디_선.getId(), 영등포구청역.getId());
+    }
+
+    void deleteStation_성공_본문(Long deleteId) {
+        // given
+        SectionRequest givenRequest1 = new SectionRequest(서울대입구역.getId(), 강남역.getId(), 기본_구간_거리);
+        lineService.addSection(죠르디_선.getId(), givenRequest1);
+
+        // when, then
+        노선_내_역_삭제_성공_검증(죠르디_선.getId(), deleteId);
+    }
 
     private void 구간_등록_성공_검증(Long lineId, SectionRequest givenRequest) {
         assertDoesNotThrow(() -> lineService.addSection(lineId, givenRequest));
@@ -146,5 +186,14 @@ class LineServiceTest extends AcceptanceTest {
     private void 구간_추가_불가_예외_검증(Long lineId, SectionRequest duplicatedRequest) {
         assertThatExceptionOfType(UnaddableSectionException.class)
                 .isThrownBy(() -> lineService.addSection(lineId, duplicatedRequest));
+    }
+
+    private void 노선_내_역_삭제_성공_검증(Long lineId, Long stationId) {
+        assertDoesNotThrow(() -> lineService.deleteStationInSection(lineId, stationId));
+    }
+
+    private void 노선_내_역_삭제_예외_검증(Long lineId, Long stationId) {
+        assertThatExceptionOfType(UndeletableStationInSectionException.class)
+                .isThrownBy(() -> lineService.deleteStationInSection(lineId, stationId));
     }
 }
