@@ -174,25 +174,25 @@ class LineServiceTest extends AcceptanceTest {
         노선_내_역_삭제_성공_검증(죠르디_선.getId(), deleteId);
     }
 
-    private void 구간_등록_성공_검증(Long lineId, SectionRequest givenRequest) {
+    void 구간_등록_성공_검증(Long lineId, SectionRequest givenRequest) {
         assertDoesNotThrow(() -> lineService.addSection(lineId, givenRequest));
     }
 
-    private void 구간_거리_0이하_불가_검증(Long lineId, SectionRequest givenRequest) {
+    void 구간_거리_0이하_불가_검증(Long lineId, SectionRequest givenRequest) {
         assertThatExceptionOfType(BelowZeroDistanceException.class)
                 .isThrownBy(() -> lineService.addSection(lineId, givenRequest));
     }
 
-    private void 구간_추가_불가_예외_검증(Long lineId, SectionRequest duplicatedRequest) {
+    void 구간_추가_불가_예외_검증(Long lineId, SectionRequest duplicatedRequest) {
         assertThatExceptionOfType(UnaddableSectionException.class)
                 .isThrownBy(() -> lineService.addSection(lineId, duplicatedRequest));
     }
 
-    private void 노선_내_역_삭제_성공_검증(Long lineId, Long stationId) {
+    void 노선_내_역_삭제_성공_검증(Long lineId, Long stationId) {
         assertDoesNotThrow(() -> lineService.deleteStationInSection(lineId, stationId));
     }
 
-    private void 노선_내_역_삭제_예외_검증(Long lineId, Long stationId) {
+    void 노선_내_역_삭제_예외_검증(Long lineId, Long stationId) {
         assertThatExceptionOfType(UndeletableStationInSectionException.class)
                 .isThrownBy(() -> lineService.deleteStationInSection(lineId, stationId));
     }
