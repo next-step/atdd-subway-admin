@@ -11,9 +11,6 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
-import static nextstep.subway.section.domain.Sections.LAST_INDEX;
-import static nextstep.subway.section.domain.Sections.START_INDEX;
-
 @Entity
 public class Section extends BaseEntity {
 
