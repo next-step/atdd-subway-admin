@@ -21,10 +21,9 @@ public class Distance {
         this.value = value;
     }
 
-    private void validateIllegalConstructor(int value) {
-        if(value <= 0) {
-            throw new BelowZeroDistanceException();
-        }
+    public void add(Distance distance) {
+        validateIllegalDistance(distance);
+        this.value += distance.value;
     }
 
     public void minus(Distance distance) {
@@ -32,8 +31,20 @@ public class Distance {
         this.value -= distance.value;
     }
 
+    private void validateIllegalDistance(Distance distance) {
+        if(distance.value <= 0) {
+            throw new BelowZeroDistanceException();
+        }
+    }
+
+    private void validateIllegalConstructor(int value) {
+        if (value <= 0) {
+            throw new BelowZeroDistanceException();
+        }
+    }
+
     private void validateEnoughDistance(Distance distance) {
-        if(this.value - distance.value <= 0) {
+        if (this.value - distance.value <= 0) {
             throw new BelowZeroDistanceException();
         }
     }
