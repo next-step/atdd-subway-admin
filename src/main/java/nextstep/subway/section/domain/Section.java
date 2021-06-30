@@ -38,32 +38,25 @@ public class Section extends BaseEntity {
     public Section() {
     }
 
-    public Section(long id, Station upStation, Station downStation, long distance) {
-        this.id = id;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
     public Section(Station upStation, Station downStation, long distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
+    public Section(long id, Station upStation, Station downStation, long distance) {
+        this(upStation, downStation, distance);
+        this.id = id;
+    }
+
     public Section(Station upStation, Station downStation, Line line, long distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this(upStation, downStation, distance);
         this.line = line;
-        this.distance = distance;
     }
 
     public Section(long id, Station upStation, Station downStation, Line line, long distance) {
-        this.id = id;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this(id, upStation, downStation, distance);
         this.line = line;
-        this.distance = distance;
     }
 
     public void removeSectionByStation(List<Section> sections, Station targetStation, int index) {
