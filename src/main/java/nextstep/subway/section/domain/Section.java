@@ -59,27 +59,7 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    public void removeSectionByStation(List<Section> sections, Station targetStation, int index) {
-        if (!haveStation(targetStation)) {
-            return;
-        }
-
-        if (isEdgeSection(index, sections)) {
-            sections.remove(this);
-            return;
-        }
-
-        Section beforeSection = sections.get(index - LAST_INDEX);
-        sections.remove(this);
-        sections.remove(beforeSection);
-        sections.add(index - LAST_INDEX, createMiddleSection(beforeSection));
-    }
-
-    private boolean isEdgeSection(int index, List<Section> sections) {
-        return index == sections.size() - LAST_INDEX || index == START_INDEX;
-    }
-
-    private Section createMiddleSection(Section beforeSection) {
+    Section createMiddleSection(Section beforeSection) {
         return new Section(id, beforeSection.getUpStation(), downStation, addDistance(beforeSection));
     }
 
@@ -87,7 +67,7 @@ public class Section extends BaseEntity {
         return this.distance + section.getDistance();
     }
 
-    private boolean haveStation(Station targetStation) {
+    boolean haveStation(Station targetStation) {
         return isUpStation(targetStation) || isDownStation(targetStation);
     }
 

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
@@ -52,12 +53,31 @@ public class Sections {
     }
 
     public void removeSectionByStation(Station targetStation) {
-        int sizeOfSections = sections.size();
-        for (int index = START_INDEX; index < sizeOfSections; index++) {
-            Section section = sections.get(index);
+        IntStream.range(START_INDEX, sections.size())
+                .forEach(index -> removeSectionByStation(targetStation, index));
+    }
 
-            section.removeSectionByStation(sections, targetStation, index);
+    public void removeSectionByStation(Station targetStation, int index) {
+        Section section = sections.get(index);
+
+        if (!section.haveStation(targetStation)) {
+            return;
         }
+
+        if (isEdgeSection(index, sections)) {
+            sections.remove(section);
+            return;
+        }
+
+        Section beforeSection = sections.get(index - LAST_INDEX);
+
+        sections.remove(section);
+        sections.remove(beforeSection);
+        sections.add(index - LAST_INDEX, section.createMiddleSection(beforeSection));
+    }
+
+    private boolean isEdgeSection(int index, List<Section> sections) {
+        return index == sections.size() - LAST_INDEX || index == START_INDEX;
     }
 
     public List<Station> extractStations() {
