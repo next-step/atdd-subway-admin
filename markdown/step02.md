@@ -134,10 +134,6 @@ public class Line {
 - 항상 테스트를 먼저 수정한 다음 프로덕션을 수정하자!
 - 더 좋은 방법은 기존 테스트는 두고 새로운 테스트를 먼저 만들고 시작하자!
 
-###### 1.1.2.2. 프론트엔드
-
-![frontend-section-management-image](../documents/step2/frontend-section-management-image.png)
-
 ### 1.2. 기능 요구사항 정리
 
 |구분 | 상세 |구현방법     |

@@ -66,7 +66,7 @@ public class LineRepositoryTest {
 		//then
 		assertThat(영속화된_이호선_구간_포함).isNotNull();
 		assertThat(영속화된_이호선_구간_포함.sectionGroup()).isNotNull();
-		assertThat(영속화된_이호선_구간_포함.stationGroup().stations())
+		assertThat(영속화된_이호선_구간_포함.stations())
 			.containsSequence(Arrays.asList(영속화된_상행역, 영속화된_하행역));
 	}
 

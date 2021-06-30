@@ -25,21 +25,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	private StationRequest 강남역;
 	private StationRequest 역삼역;
 
-	public static ExtractableResponse<Response> 지하철역_생성_요청(StationRequest params) {
-		return RestAssured.given().log().all()
-			.body(params)
-			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when()
-			.post("/stations")
-			.then().log().all()
-			.extract();
-	}
-
-	public static String 지하철_역_등록되어_있음_아이디_응답(StationRequest 역정보) {
-		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(역정보);
-		return 생성_응답.jsonPath().get("id").toString();
-	}
-
 	@BeforeEach
 	void 초기화() {
 		강남역 = new StationRequest("강남역");
@@ -237,6 +222,26 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
 		// then
 		지하철역이_삭제된다(지하철역_삭제_응답);
+	}
+
+	public static ExtractableResponse<Response> 지하철역_생성_요청(StationRequest params) {
+		return RestAssured.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when()
+			.post("/stations")
+			.then().log().all()
+			.extract();
+	}
+
+	public static String 지하철_역_등록되어_있음_아이디_응답(StationRequest 역정보) {
+		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(역정보);
+		return 생성_응답.jsonPath().get("id").toString();
+	}
+
+	public static Long 지하철_역_등록되어_있음(StationRequest 역정보) {
+		ExtractableResponse<Response> 생성_응답 = 지하철역_생성_요청(역정보);
+		return 생성_응답.jsonPath().getLong("id");
 	}
 
 	private void 지하철역이_생성_응답된다(ExtractableResponse<Response> 생성_응답) {

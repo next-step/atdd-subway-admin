@@ -109,7 +109,7 @@ public class LineTest {
 		//then
 		assertThat(이호선).isNotNull();
 		assertThat(이호선.sectionGroup()).isNotNull();
-		assertThat(이호선.stationGroup().stations()).containsSequence(Arrays.asList(상행역, 하행역));
+		assertThat(이호선.stations()).containsSequence(Arrays.asList(상행역, 하행역));
 	}
 
 	@Test
@@ -129,7 +129,7 @@ public class LineTest {
 		//then
 		assertThat(이호선).isNotNull();
 		assertThat(이호선.sectionGroup()).isNotNull();
-		assertThat(이호선.stationGroup().stations()).containsSequence(Arrays.asList(상행역, 중간역, 하행역));
+		assertThat(이호선.stations()).containsSequence(Arrays.asList(상행역, 중간역, 하행역));
 		assertThat(이호선.sectionGroup().sections()).containsSequence(Arrays.asList(상행_구간, 하행_구간));
 	}
 
@@ -153,7 +153,7 @@ public class LineTest {
 		//then
 		assertThat(이호선).isNotNull();
 		assertThat(이호선.sectionGroup()).isNotNull();
-		assertThat(이호선.stationGroup().stations()).containsSequence(Arrays.asList(상행역, 중상역, 중하역, 하행역));
+		assertThat(이호선.stations()).containsSequence(Arrays.asList(상행역, 중상역, 중하역, 하행역));
 		assertThat(이호선.sectionGroup().sections()).containsSequence(Arrays.asList(추가할_기점_구간, 중간_구간, 추가할_종점_구간));
 	}
 

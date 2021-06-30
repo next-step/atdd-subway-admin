@@ -13,14 +13,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.exception.CannotAddNewSectionException;
+import nextstep.subway.exception.CannotRemoveSectionException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationGroup;
 
 @Embeddable
 public class SectionGroup {
 
+	private static final int MINIMUM_SECTION_COUNT = 1;
 	private static final int OUT_OF_INDEX = -1;
 	private static final int FIRST_INDEX = 0;
+	private static final int NEXT_INDEX = 1;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "section_id", foreignKey = @ForeignKey(name = "fk_line_section"))
@@ -29,19 +31,19 @@ public class SectionGroup {
 	public SectionGroup() {
 	}
 
-	public SectionGroup(Section... sections) {
-		Arrays.stream(sections).forEach(this::add);
+	public SectionGroup(Section section) {
+		sections.add(section);
 	}
 
 	public List<Section> sections() {
 		return sections;
 	}
 
-	public StationGroup stationGroup() {
+	public List<Station> stations() {
 		return sections.stream()
 			.flatMap(section -> Arrays.stream(new Station[] {section.upStation(), section.downStation()}))
 			.distinct()
-			.collect(Collectors.collectingAndThen(Collectors.toList(), StationGroup::new));
+			.collect(Collectors.toList());
 	}
 
 	public void add(Section targetSection) {
@@ -49,14 +51,19 @@ public class SectionGroup {
 			sections.add(targetSection);
 			return;
 		}
-		checkAddSection(targetSection);
-		int sourceSectionIndex = updateSectionRelatedWithTargetSection(targetSection);
-		addTargetSection(sourceSectionIndex, targetSection);
+		validateSection(targetSection);
+		addTargetSection(targetSection);
 	}
 
-	private void checkAddSection(Section targetSection) {
-		boolean isExistUpStation = stationGroup().contains(targetSection.upStation());
-		boolean isExistDownStation = stationGroup().contains(targetSection.downStation());
+	private void addTargetSection(Section targetSection) {
+		addTargetSectionWhenSameDownStation(targetSection);
+		addTargetSectionWhenSameUpStation(targetSection);
+		addTargetSectionWhenEdgeStation(targetSection);
+	}
+
+	private void validateSection(Section targetSection) {
+		boolean isExistUpStation = stations().contains(targetSection.upStation());
+		boolean isExistDownStation = stations().contains(targetSection.downStation());
 		if (isExistUpStation && isExistDownStation) {
 			throw new CannotAddNewSectionException("해당 노선에 상행역과 하행역이 등록되어있는 상태입니다.");
 		}
@@ -65,17 +72,45 @@ public class SectionGroup {
 		}
 	}
 
-	private int updateSectionRelatedWithTargetSection(Section targetSection) {
-		int sourceSectionIndex = targetSection.findSectionIndexWhenTargetSectionIsInner(this);
+	private void addTargetSectionWhenSameDownStation(Section targetSection) {
+		int sourceSectionIndex = findSectionIndexWhenSameDownStation(targetSection);
 		if (OUT_OF_INDEX < sourceSectionIndex) {
 			Section sourceSection = sections.get(sourceSectionIndex);
-			sourceSection.adjustUpStationOrDownStation(targetSection);
-			sourceSection.adjustDistance(targetSection);
+			sourceSection.updateWhenSameDownStation(targetSection);
+			sourceSection.minusDistance(targetSection.distance());
+			sections.add(sourceSectionIndex + NEXT_INDEX, targetSection);
 		}
-		return sourceSectionIndex;
 	}
 
-	private void addTargetSection(int sourceSectionIndex, Section targetSection) {
+	private void addTargetSectionWhenSameUpStation(Section targetSection) {
+		int sourceSectionIndex = findSectionIndexWhenSameUpStation(targetSection);
+		if (OUT_OF_INDEX < sourceSectionIndex) {
+			Section sourceSection = sections.get(sourceSectionIndex);
+			sourceSection.updateWhenSameUpStation(targetSection);
+			sourceSection.minusDistance(targetSection.distance());
+			sections.add(sourceSectionIndex, targetSection);
+		}
+	}
+
+	public int findSectionIndexWhenSameUpStation(Section targetSection) {
+		return sections.stream()
+			.filter(section -> section.upStation().isSameStation(targetSection.upStation()))
+			.filter(targetSection::notEquals)
+			.mapToInt(section -> sections.indexOf(section))
+			.findFirst()
+			.orElse(OUT_OF_INDEX);
+	}
+
+	public int findSectionIndexWhenSameDownStation(Section targetSection) {
+		return sections.stream()
+			.filter(section -> section.downStation().isSameStation(targetSection.downStation()))
+			.filter(targetSection::notEquals)
+			.mapToInt(section -> sections.indexOf(section))
+			.findFirst()
+			.orElse(OUT_OF_INDEX);
+	}
+
+	private void addTargetSectionWhenEdgeStation(Section targetSection) {
 		if (targetSection.isLastSection(this)) {
 			sections.add(targetSection);
 			return;
@@ -84,11 +119,93 @@ public class SectionGroup {
 			sections.add(FIRST_INDEX, targetSection);
 			return;
 		}
-		sections.add(sourceSectionIndex, targetSection);
+	}
+
+	public void removeSectionByStation(Station removeTargetStation) {
+		validateRemoveSection();
+		removeTargetSectionWhenEdgeStation(removeTargetStation);
+		removeTargetSectionsWhenInnerStation(removeTargetStation);
+	}
+
+	private void removeTargetSectionsWhenInnerStation(Station targetStation) {
+		if (targetStation.isInnerStation(this.stations())) {
+			modifySections(targetStation);
+		}
+	}
+
+	private void removeSection(Station targetStation) {
+		Section removeTargetSection = sections.stream()
+			.filter(targetStation::isIncludedStation)
+			.findAny()
+			.get();
+		sections.remove(removeTargetSection);
+	}
+
+	private void modifySections(Station targetStation) {
+		Section modifiedSection = extractSectionToModify(targetStation);
+		sections.stream()
+			.filter(targetStation::isIncludedStation)
+			.findAny()
+			.get()
+			.update(modifiedSection);
+		removeSection(targetStation);
+	}
+
+	private Section extractSectionToModify(Station targetStation) {
+		return sections.stream()
+			.filter(targetStation::isIncludedStation)
+			.reduce(Section::extractFromRemoveTargetSections)
+			.get();
+	}
+
+	private void removeTargetSectionWhenEdgeStation(Station removeTargetStation) {
+		Station firstStation = stations().get(FIRST_INDEX);
+		if (removeTargetStation.isSameStation(firstStation)) {
+			sections.remove(FIRST_INDEX);
+			return;
+		}
+		Station lastStation = stations().get(stations().size() + OUT_OF_INDEX);
+		if (removeTargetStation.isSameStation(lastStation)) {
+			sections.remove(sections.size() + OUT_OF_INDEX);
+			return;
+		}
+	}
+
+	private void validateRemoveSection() {
+		if (sections.size() == MINIMUM_SECTION_COUNT) {
+			throw new CannotRemoveSectionException("구간이 하나만 남은 상태에서는 마지막 구간을 제거할 수 없습니다.");
+		}
 	}
 
 	public void sort() {
-		this.sections = new SectionGroup(sections.toArray(new Section[sections.size()])).sections;
+		List<Section> sortedSections = new ArrayList<>();
+		Section firstSection = findFirstSection();
+		Section temporaryLastSection = firstSection;
+		while (!Objects.isNull(temporaryLastSection)) {
+			sortedSections.add(temporaryLastSection);
+			temporaryLastSection = findSectionByUpStation(temporaryLastSection.downStation());
+		}
+		sections.clear();
+		sections.addAll(sortedSections);
+	}
+
+	private Section findFirstSection() {
+		List<Station> upStations = sections.stream()
+			.map(Section::upStation)
+			.collect(Collectors.toList());
+		List<Station> downStations = sections.stream()
+			.map(Section::downStation)
+			.collect(Collectors.toList());
+		upStations.removeAll(downStations);
+		Station firstStation = upStations.get(FIRST_INDEX);
+		return findSectionByUpStation(firstStation);
+	}
+
+	private Section findSectionByUpStation(Station firstStation) {
+		return sections.stream()
+			.filter(section -> section.upStation().equals(firstStation))
+			.findFirst()
+			.orElse(null);
 	}
 
 	@Override

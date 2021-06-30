@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Embedded;
@@ -14,7 +15,6 @@ import nextstep.subway.common.domain.Name;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionGroup;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationGroup;
 
 @Entity
 public class Line extends BaseEntity {
@@ -69,8 +69,8 @@ public class Line extends BaseEntity {
 		return sectionGroup;
 	}
 
-	public StationGroup stationGroup() {
-		return sectionGroup.stationGroup();
+	public List<Station> stations() {
+		return sectionGroup.stations();
 	}
 
 	public void addSection(Section section) {

@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationGroup;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
@@ -55,11 +54,5 @@ public class StationService {
 	public void updateStation(Long id, StationRequest stationRequest) {
 		Station sourceStation = findStationByIdFromRepository(id);
 		sourceStation.update(stationRequest.toStation());
-	}
-
-	public StationGroup addUpStationAndDownStation(List<Long> stationIdsToAdd) {
-		return stationIdsToAdd.stream()
-			.map(this::findStationByIdFromRepository)
-			.collect(Collectors.collectingAndThen(Collectors.toList(), StationGroup::new));
 	}
 }

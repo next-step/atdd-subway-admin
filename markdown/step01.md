@@ -8,8 +8,6 @@
 
 ##### 1.1.1.0. 도메인 설명
 
-![mission-description](../documents/common/mission-description.png)
-
 - 지하철 역(station)
     - 지하철 역 속성:
         - 이름(name)
