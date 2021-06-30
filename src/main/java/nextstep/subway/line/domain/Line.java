@@ -3,11 +3,9 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.section.domain.Section;
 
-import java.util.ArrayList;
-import java.util.List;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.domain.Stations;
 
 @Entity
 public class Line extends BaseEntity {
@@ -15,12 +13,15 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
+    @Column
     private String color;
 
-    @OneToMany(mappedBy = "line")
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -33,6 +34,11 @@ public class Line extends BaseEntity {
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void add(Section section) {
+        section.add(this);
+        sections.add(section);
     }
 
     public Long getId() {
@@ -54,11 +60,7 @@ public class Line extends BaseEntity {
         return this;
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    public void add(Section section){
-        this.sections.add(section);
+    public Stations getAllStations(){
+        return sections.getAllStations();
     }
 }
