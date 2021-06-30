@@ -7,8 +7,8 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
-import nextstep.subway.section.application.SectionService;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.station.application.StationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,19 +20,33 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final SectionService sectionService;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, SectionService sectionService) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line line = lineRepository.save(request.toLine());
-        Section section = sectionService.saveSectionWith(line, request);
+        Section section = getSectionFrom(request);
+        Line line = getLineFrom(request, section);
+
+        return LineResponse.of(lineRepository.save(line));
+    }
+
+    private Section getSectionFrom(LineRequest request) {
+        return new Section(
+            stationService.getStation(request.getUpStationId()),
+            stationService.getStation(request.getDownStationId()),
+            request.getDistance()
+        );
+    }
+
+    private Line getLineFrom(LineRequest request, Section section) {
+        Line line = request.toLine();
         line.add(section);
 
-        return LineResponse.of(line);
+        return line;
     }
 
     @Transactional(readOnly = true)
