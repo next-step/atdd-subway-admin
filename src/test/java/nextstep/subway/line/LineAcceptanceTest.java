@@ -31,8 +31,8 @@ import static org.springframework.http.HttpStatus.*;
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    private final int 기본_역간_거리 = 30;
-    private final int 구간_중간_추가_역간_거리 = 15;
+    private final int 기본_구간_거리_30 = 30;
+    private final int 절반_구간_거리_15 = 15;
 
     private StationResponse 강남역;
     private StationResponse 역삼역;
@@ -55,10 +55,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_중복_노선_생성_예외_중복된_이름() {
         // given
-        지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
 
         // when
-        ExtractableResponse<Response> secondResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> secondResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
 
         // then
         HTTP_응답_코드_확인(secondResponse, BAD_REQUEST);
@@ -68,7 +68,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_생성_성공() {
         // When
-        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
         LineResponse createdLine = createLineResponse.as(LineResponse.class);
         List<Long> stationIdsInLine = createdLine.getStations().stream()
                 .map(StationResponse::getId)
@@ -84,8 +84,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_목록_조회_성공() {
         // given
-        ExtractableResponse<Response> createResponse1 = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
-        ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", 신도림역.getId(), 서울대입구역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
+        ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", 신도림역.getId(), 서울대입구역.getId(), 기본_구간_거리_30));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -117,9 +117,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_검색_성공() {
         // given
-        지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
-        ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", 신도림역.getId(), 서울대입구역.getId(), 기본_역간_거리));
-        ExtractableResponse<Response> createResponse3 = 지하철_노선_생성_요청(new LineRequest("3호선", "00FF00", 강남역.getId(), 서울대입구역.getId(), 기본_역간_거리));
+        지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
+        ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", 신도림역.getId(), 서울대입구역.getId(), 기본_구간_거리_30));
+        ExtractableResponse<Response> createResponse3 = 지하철_노선_생성_요청(new LineRequest("3호선", "00FF00", 강남역.getId(), 서울대입구역.getId(), 기본_구간_거리_30));
         List<Long> expectedResult = 여러_응답에서_ID_추출(createResponse2, createResponse3);
 
         // when
@@ -150,7 +150,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_PK_조건_조회_성공() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
 
         LineResponse expectedResult = createResponse.jsonPath().getObject(".", LineResponse.class);
         Long savedId = 응답에서_ID_추출(createResponse);
@@ -190,7 +190,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_수정_성공() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
         Long savedId = 응답에서_ID_추출(createResponse);
 
         // when
@@ -217,9 +217,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_수정_예외_수정_중복된_이름() {
         // given
-        지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
 
-        ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> createResponse2 = 지하철_노선_생성_요청(new LineRequest("2호선", "00FF00", 강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
         Long savedId2 = 응답에서_ID_추출(createResponse2);
 
         // when
@@ -234,7 +234,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_제거_성공() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
         Long savedId = 응답에서_ID_추출(createResponse);
 
         // when
@@ -258,11 +258,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_구간_추가() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
         Long savedLineId = 응답에서_ID_추출(createResponse);
 
         // when
-        ExtractableResponse<Response> addingSectionResponse = 지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(서울대입구역.getId(), 역삼역.getId(), 구간_중간_추가_역간_거리));
+        ExtractableResponse<Response> addingSectionResponse = 지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(서울대입구역.getId(), 역삼역.getId(), 절반_구간_거리_15));
 
         // then
         HTTP_응답_코드_확인(addingSectionResponse, CREATED);
@@ -276,14 +276,14 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 역삼역.getId(), 신도림역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 역삼역.getId(), 신도림역.getId(), 기본_구간_거리_30));
         Long savedLineId = 응답에서_ID_추출(createResponse);
 
         // when
-        지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(강남역.getId(), 역삼역.getId(), 기본_역간_거리));
-        지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(역삼역.getId(), 영등포구청역.getId(), 구간_중간_추가_역간_거리));
-        지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(신도림역.getId(), 서울대입구역.getId(), 기본_역간_거리));
-        ExtractableResponse<Response> addingSectionResponse = 지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(사당역.getId(), 서울대입구역.getId(), 구간_중간_추가_역간_거리));
+        지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
+        지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(역삼역.getId(), 영등포구청역.getId(), 절반_구간_거리_15));
+        지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(신도림역.getId(), 서울대입구역.getId(), 기본_구간_거리_30));
+        ExtractableResponse<Response> addingSectionResponse = 지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(사당역.getId(), 서울대입구역.getId(), 절반_구간_거리_15));
         List<Long> actualResult = 지하철_노선에_속한_여러_역의_ID추출(addingSectionResponse);
 
         // then
@@ -295,14 +295,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선의_역_삭제() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_역간_거리));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(new LineRequest("1호선", "FF0000", 강남역.getId(), 역삼역.getId(), 기본_구간_거리_30));
         Long savedLineId = 응답에서_ID_추출(createResponse);
         List<Long> expectedResult = Stream.of(강남역, 역삼역)
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
         // when
-        지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(서울대입구역.getId(), 역삼역.getId(), 구간_중간_추가_역간_거리));
+        지하철_노선_구간_추가_요청(savedLineId, new SectionRequest(서울대입구역.getId(), 역삼역.getId(), 절반_구간_거리_15));
         ExtractableResponse<Response> deleteStationInLineResponse = 지하철_노선_구간_삭제_요청(savedLineId, 서울대입구역.getId());
         List<Long> actualResult = 지하철_노선에_속한_여러_역의_ID추출(deleteStationInLineResponse);
 

@@ -26,8 +26,8 @@ class SectionTest {
     private Section 구간_영등포구청역_영등포시장역;
     private Section 구간_오목교역_영등포구청역;
 
-    private Distance 기본_거리 = new Distance(30);
-    private Distance 기본의_절반_거리 = new Distance(15);
+    private Distance 기본_구간_거리_30 = new Distance(30);
+    private Distance 절반_구간_거리_15 = new Distance(15);
 
     @BeforeEach
     void 구간_생성() {
@@ -37,13 +37,13 @@ class SectionTest {
         신길역 = new Station(4L, "신길역");
         오목교역 = new Station(5L, "오목교역");
 
-        오호선 = new Line(1L, "5호선", "보라색", 영등포구청역, 신길역, 기본_거리);
+        오호선 = new Line(1L, "5호선", "보라색", 영등포구청역, 신길역, 기본_구간_거리_30);
 
-        구간_영등포구청역_신길역 = new Section(1L, 오호선, 영등포구청역, 신길역, 기본_거리);
-        구간_영등포구청역_영등포시장역 = new Section(2L, 오호선, 영등포구청역, 영등포시장역, 기본의_절반_거리);
+        구간_영등포구청역_신길역 = new Section(1L, 오호선, 영등포구청역, 신길역, 기본_구간_거리_30);
+        구간_영등포구청역_영등포시장역 = new Section(2L, 오호선, 영등포구청역, 영등포시장역, 절반_구간_거리_15);
 
-        구간_오목교역_영등포구청역 = new Section(3L, 오호선, 오목교역, 영등포구청역, 기본_거리);
-        구간_양평역_영등포구청역 = new Section(4L, 오호선, 양평역, 영등포구청역, 기본_거리);
+        구간_오목교역_영등포구청역 = new Section(3L, 오호선, 오목교역, 영등포구청역, 기본_구간_거리_30);
+        구간_양평역_영등포구청역 = new Section(4L, 오호선, 양평역, 영등포구청역, 기본_구간_거리_30);
     }
 
     @Test
@@ -76,7 +76,7 @@ class SectionTest {
         // Then 시장 - 신길
         assertThat(구간_영등포구청역_신길역.getUpStation()).isEqualTo(영등포시장역);
         assertThat(구간_영등포구청역_신길역.getDownStation()).isEqualTo(신길역);
-        assertThat(구간_영등포구청역_신길역.getDistance()).isEqualTo(기본의_절반_거리);
+        assertThat(구간_영등포구청역_신길역.getDistance()).isEqualTo(절반_구간_거리_15);
     }
 
     @Test

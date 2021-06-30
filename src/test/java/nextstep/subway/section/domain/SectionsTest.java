@@ -22,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DisplayName("Section 도메인 테스트")
 class SectionsTest {
-    private static Distance 기본의_두배_거리 = new Distance(60);
-    private static Distance 기본_거리 = new Distance(30);
-    private static Distance 기본의_절반_거리 = new Distance(15);
-    private static Distance 최소_거리 = new Distance(1);
+    private static Distance 두배_구간_거리_60 = new Distance(60);
+    private static Distance 기본_거리_30 = new Distance(30);
+    private static Distance 절반_구간_거리_15 = new Distance(15);
+    private static Distance 최소_거리_1 = new Distance(1);
 
     private static Station 양평역 = new Station(1L, "양평역");
     private static Station 영등포구청역 = new Station(2L, "영등포구청역");
@@ -33,19 +33,19 @@ class SectionsTest {
     private static Station 신길역 = new Station(4L, "신길역");
     private static Station 오목교역 = new Station(5L, "오목교역");
 
-    private static Line 오호선 = new Line(1L, "5호선", "보라색", 영등포구청역, 신길역, 기본_거리);
-    private static Section 구간_영등포구청역_신길역 = new Section(1L, 오호선, 영등포구청역, 신길역, 기본_거리);
-    private static Section 구간_영등포구청역_영등포시장역 = new Section(2L, 오호선, 영등포구청역, 영등포시장역, 기본의_절반_거리);
-    private static Section 구간_양평역_신길역 = new Section(3L, 오호선, 양평역, 신길역, 기본의_두배_거리);
+    private static Line 오호선 = new Line(1L, "5호선", "보라색", 영등포구청역, 신길역, 기본_거리_30);
+    private static Section 구간_영등포구청역_신길역 = new Section(1L, 오호선, 영등포구청역, 신길역, 기본_거리_30);
+    private static Section 구간_영등포구청역_영등포시장역 = new Section(2L, 오호선, 영등포구청역, 영등포시장역, 절반_구간_거리_15);
+    private static Section 구간_양평역_신길역 = new Section(3L, 오호선, 양평역, 신길역, 두배_구간_거리_60);
 
-    private static Section 구간_오목교역_영등포구청역 = new Section(4L, 오호선, 오목교역, 영등포구청역, 기본_거리);
-    private static Section 구간_양평역_영등포구청역 = new Section(5L, 오호선, 양평역, 영등포구청역, 기본_거리);
+    private static Section 구간_오목교역_영등포구청역 = new Section(4L, 오호선, 오목교역, 영등포구청역, 기본_거리_30);
+    private static Section 구간_양평역_영등포구청역 = new Section(5L, 오호선, 양평역, 영등포구청역, 기본_거리_30);
 
     private Sections 구간_컬렉션;
 
     @BeforeEach
     void 초기화() {
-        오호선 = new Line(1L, "5호선", "보라색", 영등포구청역, 신길역, 기본_거리);
+        오호선 = new Line(1L, "5호선", "보라색", 영등포구청역, 신길역, 기본_거리_30);
         구간_컬렉션 = new Sections();
     }
 
