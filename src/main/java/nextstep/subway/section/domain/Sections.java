@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
@@ -52,31 +51,31 @@ public class Sections {
         }
     }
 
-    public void removeSectionByStation(Station targetStation) {
-        IntStream.range(START_INDEX, sections.size())
-                .forEach(index -> removeSectionByStation(targetStation, index));
-    }
+    private void removeSectionByStation(Station targetStation) {
+        Section targetSection = findRemovingSectionByStation(targetStation);
 
-    public void removeSectionByStation(Station targetStation, int index) {
-        Section section = sections.get(index);
+        int index = sections.indexOf(targetSection);
 
-        if (!section.haveStation(targetStation)) {
-            return;
-        }
-
-        if (isEdgeSection(index, sections)) {
-            sections.remove(section);
+        if (isEdgeSection(index)) {
+            sections.remove(targetSection);
             return;
         }
 
         Section beforeSection = sections.get(index - LAST_INDEX);
 
-        sections.remove(section);
+        sections.remove(targetSection);
         sections.remove(beforeSection);
-        sections.add(index - LAST_INDEX, section.createMiddleSection(beforeSection));
+        sections.add(index - LAST_INDEX, targetSection.createMiddleSection(beforeSection));
     }
 
-    private boolean isEdgeSection(int index, List<Section> sections) {
+    private Section findRemovingSectionByStation(Station targetStation) {
+        return sections.stream()
+                    .filter(section -> section.haveStation(targetStation))
+                    .findFirst()
+                    .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isEdgeSection(int index) {
         return index == sections.size() - LAST_INDEX || index == START_INDEX;
     }
 

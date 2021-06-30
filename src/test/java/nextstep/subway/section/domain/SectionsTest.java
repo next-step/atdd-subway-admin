@@ -89,13 +89,13 @@ class SectionsTest {
         Station 야탑역 = new Station(3L, "야탑역");
         Section 두번째_구간 = new Section(2L, 야탑역, 이매역, 첫번째_라인, 15);
 
-        Sections sections = new Sections(Lists.newArrayList(첫번째_구간, 두번째_구간));
+        Sections 구간들 = new Sections(Lists.newArrayList(첫번째_구간, 두번째_구간));
 
         //when
-        sections.removeSectionByStation(판교역, 0);
+        구간들.validateAndRemoveSectionByStation(판교역);
 
         //then
-        assertThat(sections.getSections()).containsExactly(두번째_구간);
+        assertThat(구간들.getSections()).containsExactly(두번째_구간);
     }
 
     @Test
@@ -113,13 +113,13 @@ class SectionsTest {
         Section 두번째_구간 = new Section(이매역, 야탑역, 15);
         Section 세번째_구간 = new Section(야탑역, 서현역, 5);
 
-        Sections sections = new Sections(Lists.newArrayList(첫번째_구간, 두번째_구간, 세번째_구간));
+        Sections 구간들 = new Sections(Lists.newArrayList(첫번째_구간, 두번째_구간, 세번째_구간));
 
         //when
-        sections.removeSectionByStation(서현역, 2);
+        구간들.validateAndRemoveSectionByStation(서현역);
 
         //then
-        assertThat(sections.getSections()).containsExactly(
+        assertThat(구간들.getSections()).containsExactly(
                 첫번째_구간,
                 두번째_구간
         );
@@ -140,14 +140,14 @@ class SectionsTest {
         Section 두번째_구간 = new Section(2L, 이매역, 야탑역, 15);
         Section 세번째_구간 = new Section(3L, 야탑역, 서현역, 5);
 
-        Sections sections = new Sections(Lists.newArrayList(첫번째_구간, 두번째_구간, 세번째_구간));
+        Sections 구간들 = new Sections(Lists.newArrayList(첫번째_구간, 두번째_구간, 세번째_구간));
 
         //when
-        sections.removeSectionByStation(야탑역, 1);
+        구간들.validateAndRemoveSectionByStation(야탑역);
 
         //then
         Section createdMiddleSection = new Section(2L, 판교역, 야탑역, 25);
-        assertThat(sections.getSections()).containsExactly(
+        assertThat(구간들.getSections()).containsExactly(
                 createdMiddleSection,
                 세번째_구간
         );
