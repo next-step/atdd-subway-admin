@@ -1,6 +1,7 @@
 package nextstep.subway.station.dto;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,8 +27,8 @@ public class StationResponse {
         return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
     }
 
-    public static List<StationResponse> fromList(List<Station> stations) {
-        return stations.stream()
+    public static List<StationResponse> fromList(Stations stations) {
+        return stations.get().stream()
                 .map((StationResponse::from))
                 .collect(Collectors.toList());
     }

@@ -1,7 +1,10 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.exception.BelowZeroDistanceException;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.Objects;
 
 @Embeddable
 public class Distance {
@@ -14,13 +17,37 @@ public class Distance {
     }
 
     public Distance(int value) {
-        validate(value);
+        validateIllegalConstructor(value);
         this.value = value;
     }
 
-    private void validate(int value) {
+    private void validateIllegalConstructor(int value) {
         if(value <= 0) {
-            throw new IllegalArgumentException("거리는 0이하가 될 수 없습니다.");
+            throw new BelowZeroDistanceException();
         }
+    }
+
+    public void minus(Distance distance) {
+        validateEnoughDistance(distance);
+        this.value -= distance.value;
+    }
+
+    private void validateEnoughDistance(Distance distance) {
+        if(this.value - distance.value <= 0) {
+            throw new BelowZeroDistanceException();
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Distance distance = (Distance) o;
+        return value == distance.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }
