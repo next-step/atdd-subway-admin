@@ -27,17 +27,15 @@ class LineServiceTest extends AcceptanceTest {
     @Autowired
     StationService stationService;
 
+    private static final int 기본_구간_거리 = 100;
+    private static final int 구간_사이_추가된_역간_거리 = 50;
     private static StationResponse 강남역;
     private static StationResponse 역삼역;
     private static StationResponse 서울대입구역;
     private static StationResponse 신도림역;
     private static StationResponse 사당역;
     private static StationResponse 영등포구청역;
-
     private static LineResponse 죠르디_선;
-
-    private static final int 기본_구간_거리 = 100;
-    private static final int 구간_사이_추가된_역간_거리 = 50;
 
     @BeforeEach
     void setBasicDomainData() {
@@ -134,6 +132,7 @@ class LineServiceTest extends AcceptanceTest {
         // when, then
         구간_추가_불가_예외_검증(죠르디_선.getId(), duplicatedRequest);
     }
+
     @Test
     void deleteStation_성공_케이스1() {
         deleteStation_성공_본문(강남역.getId());
