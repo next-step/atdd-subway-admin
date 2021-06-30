@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.section.exception.UnaddableSectionException;
+import nextstep.subway.section.exception.UndeletableStationInSectionException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
 
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @Embeddable
 public class Sections {
@@ -33,8 +36,17 @@ public class Sections {
         return result;
     }
 
-    private boolean isEmpty() {
+    public void deleteStation(Station deletingStation) {
+        validateDeletableStation(deletingStation);
+        deleteStationByCase(deletingStation);
+    }
+
+    public boolean isEmpty() {
         return values.isEmpty();
+    }
+
+    public int size() {
+        return values.size();
     }
 
     private void validateConnectableSection(Section section) {
@@ -58,6 +70,20 @@ public class Sections {
         if (!isEmpty() && result == ILLEGAL_UN_CONNECTABLE_STATION_COUNT) {
             throw new UnaddableSectionException("요청하신 구간은 연결이 불가합니다.");
         }
+    }
+
+    private void validateDeletableStation(Station removingStation) {
+        if (this.size() == 1) {
+            throw new UndeletableStationInSectionException("노선의 구간이 하나일 때는 지울 수 없습니다.");
+        } else if (!isExistingStation(removingStation)) {
+            throw new UndeletableStationInSectionException("이 역이 노선에 존재 하지 않습니다.");
+        }
+    }
+
+    private boolean isExistingStation(Station removingStation) {
+        Stations stations = toStations();
+
+        return stations.contains(removingStation);
     }
 
     private long getConnectedStationCount(Section section) {
@@ -88,12 +114,45 @@ public class Sections {
     private void connectSectionAtExistingSection(Section section) {
         Optional<Section> foundSection = values.stream()
                 .filter(value -> value.isSameStationWithUpStation(section.getUpStation())
-                                    || value.isSameStationWithDownStation(section.getDownStation()))
+                        || value.isSameStationWithDownStation(section.getDownStation()))
                 .findFirst();
+        if (foundSection.isPresent()) {
+            Section connectedSection = foundSection.get();
+            connectedSection.connectSectionBetween(section);
+            values.add(section);
+        }
+    }
 
-        Section connectedSection = foundSection.get();
-        connectedSection.connectSectionBetween(section);
-        values.add(section);
+    private void deleteStationByCase(Station deletingStation) {
+        final int SORTING_UP_SECTION = -1;
+        final int SORTING_DOWN_SECTION = 1;
+
+        List<Section> result = values.stream()
+                .filter(value -> (value.getUpStation().equals(deletingStation)
+                        || value.getDownStation().equals(deletingStation)))
+                .sorted((left, right) -> left.getDownStation().equals(deletingStation) ? SORTING_UP_SECTION : SORTING_DOWN_SECTION)
+                .collect(toList());
+
+        deleteStartOrEndStation(result);
+        deleteMiddleStation(result);
+    }
+
+    private void deleteStartOrEndStation(List<Section> filteredSections) {
+        final int STANDARD_OF_START_OR_END_STATION = 1;
+
+        if (filteredSections.size() == STANDARD_OF_START_OR_END_STATION) {
+            values.remove(filteredSections.get(0));
+        }
+    }
+
+    private void deleteMiddleStation(List<Section> filteredSections) {
+        final int STANDARD_OF_MIDDLE_STATION = 2;
+        if (filteredSections.size() == STANDARD_OF_MIDDLE_STATION) {
+            Section upSection = filteredSections.get(0);
+            Section downSection = filteredSections.get(1);
+            upSection.mergeWithDownSection(downSection);
+            values.remove(downSection);
+        }
     }
 
     private Stations getUpStations(Station upStation) {

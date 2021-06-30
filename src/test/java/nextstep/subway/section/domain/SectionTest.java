@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.exception.BelowZeroDistanceException;
+import nextstep.subway.section.exception.UnmergeableSectionException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Section 도메인 테스트")
 class SectionTest {
@@ -76,11 +78,12 @@ class SectionTest {
         assertThat(구간_영등포구청역_신길역.getDownStation()).isEqualTo(신길역);
         assertThat(구간_영등포구청역_신길역.getDistance()).isEqualTo(기본의_절반_거리);
     }
+
     @Test
     void connectSectionBetween_실패_케이스() {
         // when
         assertThatExceptionOfType(BelowZeroDistanceException.class)
-                .isThrownBy(()->구간_오목교역_영등포구청역.connectSectionBetween(구간_양평역_영등포구청역));
+                .isThrownBy(() -> 구간_오목교역_영등포구청역.connectSectionBetween(구간_양평역_영등포구청역));
     }
 
     @Test
@@ -93,5 +96,24 @@ class SectionTest {
     void isSameStationWithDownStation_케이스_별() {
         assertThat(구간_영등포구청역_신길역.isSameStationWithDownStation(신길역)).isTrue();
         assertThat(구간_영등포구청역_신길역.isSameStationWithDownStation(양평역)).isFalse();
+    }
+
+    @Test
+    void mergeWithDownSection_성공() {
+        // when
+        구간_양평역_영등포구청역.mergeWithDownSection(구간_영등포구청역_신길역);
+
+        // then
+        assertAll(
+                () -> assertThat(구간_양평역_영등포구청역.getUpStation()).isEqualTo(양평역),
+                () -> assertThat(구간_양평역_영등포구청역.getDownStation()).isEqualTo(신길역),
+                () -> assertThat(구간_양평역_영등포구청역.getDistance()).isEqualTo(new Distance(60))
+        );
+    }
+
+    @Test
+    void mergeWithDownSection_예외() {
+        assertThatExceptionOfType(UnmergeableSectionException.class)
+                .isThrownBy(() -> 구간_영등포구청역_영등포시장역.mergeWithDownSection(구간_영등포구청역_신길역));
     }
 }

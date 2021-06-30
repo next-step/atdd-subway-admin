@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.exception.UnmergeableSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -58,6 +59,15 @@ public class Section extends BaseEntity {
         return this.distance;
     }
 
+    public void mergeWithDownSection(Section downSection) {
+        if (!validateMergeWithDownSection(downSection)) {
+            throw new UnmergeableSectionException();
+        }
+
+        this.downStation = downSection.getDownStation();
+        this.distance.add(downSection.distance);
+    }
+
     public boolean isIncludeStation(Station station) {
         return this.upStation.equals(station) || this.downStation.equals(station);
     }
@@ -68,24 +78,29 @@ public class Section extends BaseEntity {
         distance.minus(section.distance);
     }
 
-    private void replaceUpStationIfSameUpStation(Section section) {
-        if(this.upStation.equals(section.getUpStation())) {
-            this.upStation = section.getDownStation();
-        }
-    }
-
-    private void replaceDownStationIfSameDownStation(Section section) {
-        if(this.downStation.equals(section.getDownStation())) {
-            this.downStation = section.getUpStation();
-        }
-    }
-
     public boolean isSameStationWithUpStation(Station station) {
         return this.upStation.equals(station);
     }
 
     public boolean isSameStationWithDownStation(Station station) {
         return this.downStation.equals(station);
+    }
+
+    private void replaceUpStationIfSameUpStation(Section section) {
+        if (this.upStation.equals(section.getUpStation())) {
+            this.upStation = section.getDownStation();
+        }
+    }
+
+    private void replaceDownStationIfSameDownStation(Section section) {
+        if (this.downStation.equals(section.getDownStation())) {
+            this.downStation = section.getUpStation();
+        }
+    }
+
+    private boolean validateMergeWithDownSection(Section downSection) {
+        return this.downStation.equals(downSection.getUpStation())
+                && !this.upStation.equals(downSection.getDownStation());
     }
 
     @Override
