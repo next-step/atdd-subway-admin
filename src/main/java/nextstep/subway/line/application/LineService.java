@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class LineService {
+    public static final String LINE_NOT_EXISTED = "해당 노선이 없습니다 : ";
     private LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -29,5 +31,11 @@ public class LineService {
                 .stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(Long id) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(LINE_NOT_EXISTED + id));
+        return LineResponse.of(line);
     }
 }

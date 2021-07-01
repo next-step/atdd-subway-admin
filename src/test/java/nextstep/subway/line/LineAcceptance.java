@@ -7,7 +7,6 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,7 +33,7 @@ public class LineAcceptance {
     }
 
     public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회() {

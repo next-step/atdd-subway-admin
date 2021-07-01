@@ -4,12 +4,14 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/lines")
@@ -31,9 +33,18 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLine(id));
+    }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity handleNoSuchElementException(NoSuchElementException e) {
+        return ResponseEntity.noContent().build();
     }
 }

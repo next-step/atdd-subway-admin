@@ -24,6 +24,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -38,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class LineControllerTest {
 
-//    @Autowired
+    //    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -90,7 +91,7 @@ class LineControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(lineRequest))
-        ).andExpect(status().isBadRequest());
+        ).andExpect(status().isConflict());
     }
 
     @Test
@@ -109,5 +110,38 @@ class LineControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
                 .andExpect(content().string(objectMapper.writeValueAsString(lineResponseList)));
+    }
+
+    @Test
+    void showLine() throws Exception {
+        //given
+        long lineId = 1L;
+        LineResponse lineResponse = LineResponse.of(new Line("2호선", "green"));
+        when(lineService.findLine(any())).thenReturn(lineResponse);
+
+        //when
+        //then
+        mockMvc.perform(
+                get("/lines/" + lineId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(lineResponse)));
+    }
+
+    @Test
+    void noSuchElementInShowLine() throws Exception {
+        //given
+        long lineId = 1L;
+        when(lineService.findLine(any())).thenThrow(NoSuchElementException.class);
+
+        //when
+        //then
+        mockMvc.perform(
+                get("/lines/" + lineId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNoContent());
+
     }
 }
