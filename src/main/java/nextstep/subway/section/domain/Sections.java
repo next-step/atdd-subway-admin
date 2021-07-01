@@ -31,4 +31,13 @@ public class Sections {
 
 		return stations;
 	}
+
+	public void addAll(Section upSection, Section downSection) {
+		this.sections.add(upSection);
+		this.sections.add(downSection);
+	}
+
+	public List<Section> getSections(){
+		return this.sections;
+	}
 }

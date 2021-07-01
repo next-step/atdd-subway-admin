@@ -192,4 +192,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// then
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 	}
+
+	public static ExtractableResponse<Response> 지하철_노선_등록되어있음(String name, String color, Long upStationId, Long downStationId, int distance) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		params.put("color", color);
+		params.put("upStationId", String.valueOf(upStationId));
+		params.put("downStationId", String.valueOf(downStationId));
+		params.put("distance", String.valueOf(distance));
+
+		// when
+		return RestAssured
+			.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().post("/lines")
+			.then().log().all().extract();
+	}
 }

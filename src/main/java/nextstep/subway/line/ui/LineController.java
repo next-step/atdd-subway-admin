@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.dto.SectionRequest;
 
 @RestController
 @RequestMapping("/lines")
@@ -61,6 +62,11 @@ public class LineController {
 		lineService.deleteLine(id);
 
 		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/{lineId}/sections")
+	public ResponseEntity addSection(@PathVariable("lineId") Long lineId, @RequestBody SectionRequest sectionRequest){
+		return ResponseEntity.status(HttpStatus.CREATED).body(lineService.addNewSection(lineId, sectionRequest));
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
