@@ -58,4 +58,22 @@ public class LineAcceptance {
     public static void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    public static void 지하철_노선_응답됨(ExtractableResponse<Response> createResponse, ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(
+                response.jsonPath()
+                        .getObject(".", LineResponse.class).getId().toString()
+        ).isEqualTo(
+                createResponse.header("Location")
+                        .split("/")[2]
+        );
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
+        return RestAssured
+                .given().log().all()
+                .when().get(createResponse.header("Location"))
+                .then().log().all().extract();
+    }
 }
