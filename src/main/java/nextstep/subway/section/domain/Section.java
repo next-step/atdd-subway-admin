@@ -60,9 +60,7 @@ public class Section extends BaseEntity {
     }
 
     public void mergeSection(Section downSection) {
-        if (!validateMergeWithDownSection(downSection)) {
-            throw new UnmergeableSectionException();
-        }
+        validateMergingSection(downSection);
 
         this.downStation = downSection.getDownStation();
         this.distance.add(downSection.distance);
@@ -98,9 +96,11 @@ public class Section extends BaseEntity {
         }
     }
 
-    private boolean validateMergeWithDownSection(Section downSection) {
-        return this.downStation.equals(downSection.getUpStation())
-                && !this.upStation.equals(downSection.getDownStation());
+    private void validateMergingSection(Section downSection) {
+        if(!this.downStation.equals(downSection.getUpStation())
+                || this.upStation.equals(downSection.getDownStation())) {
+            throw new UnmergeableSectionException();
+        }
     }
 
     @Override
