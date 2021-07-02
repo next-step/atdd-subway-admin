@@ -14,14 +14,14 @@ public class SectionQueryService {
     private final SectionRepository sectionRepository;
 
     public SectionQueryService(StationQueryService stationQueryService,
-                               SectionRepository sectionRepository) {
+        SectionRepository sectionRepository) {
         this.stationQueryService = stationQueryService;
         this.sectionRepository = sectionRepository;
     }
 
     public Section findById(Long sectionId) {
         return sectionRepository.findById(sectionId)
-                                .orElseThrow(() -> new IllegalArgumentException("section을 찾을 수 없습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("section을 찾을 수 없습니다."));
     }
 
     public Optional<Section> findByUpStationAndDownStation(Long upStationId, Long downStationId) {

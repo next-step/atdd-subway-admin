@@ -55,7 +55,7 @@ public class LineController {
     @PutMapping(value = "/{lineId}")
     public ResponseEntity<Void> updateLine(@PathVariable Long lineId,
         @RequestBody LineRequest lineRequest) {
-        lineCommandService.update(lineId, lineRequest.toLine());
+        lineCommandService.update(lineId, lineRequest.getName(), lineRequest.getColor());
         return ResponseEntity.ok().build();
     }
 

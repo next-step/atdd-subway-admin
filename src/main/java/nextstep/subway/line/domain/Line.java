@@ -12,6 +12,7 @@ import nextstep.subway.section.domain.LineSections;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SortedSection;
 import nextstep.subway.station.domain.SortedStations;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity implements Serializable {
@@ -22,7 +23,7 @@ public class Line extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", unique = true)
+    @Column(unique = true)
     private String name;
 
     @Column(name = "color")
@@ -47,12 +48,12 @@ public class Line extends BaseEntity implements Serializable {
 
     public void addSection(Section section) {
         lineSections.add(section);
-        section.toLine(this);
+        section.belongTo(this);
     }
 
     public void updateSections(LineSections lineSections) {
         this.lineSections = lineSections;
-        lineSections.getSections().forEach(section -> section.toLine(this));
+        lineSections.updateLine(this);
     }
 
     public Long getId() {
@@ -77,5 +78,9 @@ public class Line extends BaseEntity implements Serializable {
 
     public SortedSection getSortedSections() {
         return lineSections.toSortedSections();
+    }
+
+    public void deleteSection(Station station) {
+        lineSections.deleteSection(station);
     }
 }

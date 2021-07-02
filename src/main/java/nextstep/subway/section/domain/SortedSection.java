@@ -1,14 +1,15 @@
 package nextstep.subway.section.domain;
 
-import static java.util.stream.Collectors.toMap;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import nextstep.subway.station.domain.Station;
+
+import static java.util.stream.Collectors.toMap;
 
 public class SortedSection {
 
@@ -18,40 +19,36 @@ public class SortedSection {
 
     public SortedSection(LineSections lineSections) {
 
-        List<Section> sortedSections = lineSections.getSections();
+        Set<Section> sortedSections = lineSections.getSections();
 
         Section startSection = getStartSection(sortedSections);
         this.sections = Collections.unmodifiableList(linkToLastSection(startSection, sortedSections));
     }
 
-    private Section getStartSection(List<Section> sections) {
+    private Section getStartSection(Set<Section> sections) {
 
-        Map<Station, Station> stationMap =
+        Map<Station, Section> stationMap =
             sections.stream()
-                    .collect(toMap(Section::getDownStation,
-                                   Section::getUpStation));
+                .collect(toMap(Section::getDownStation,
+                    Function.identity()));
 
-        Entry<Station, Station> startEntry =
+        Entry<Station, Section> startEntry =
             stationMap.entrySet()
-                      .stream()
-                      .filter(entry -> !stationMap.containsKey(entry.getValue()))
-                      .findAny()
-                      .orElseThrow(
-                          () -> new IllegalStateException(MESSAGE_NOT_FOUND_UPSTATION));
+                .stream()
+                .filter(entry -> !stationMap.containsKey(entry.getValue().getUpStation()))
+                .findAny()
+                .orElseThrow(
+                    () -> new IllegalStateException(MESSAGE_NOT_FOUND_UPSTATION));
 
-        return sections.stream()
-                       .filter(section -> section.equalsUpStation(startEntry.getValue()))
-                       .filter(section -> section.equalsDownStation(startEntry.getKey()))
-                       .findAny()
-                       .orElseThrow(() -> new IllegalStateException(MESSAGE_NOT_FOUND_UPSTATION));
+        return startEntry.getValue();
     }
 
-    private List<Section> linkToLastSection(Section startSection, List<Section> sections) {
+    private List<Section> linkToLastSection(Section startSection, Set<Section> sections) {
 
         Map<Station, Section> sectionMap =
             sections.stream()
-                    .collect(toMap(Section::getUpStation,
-                                   Function.identity()));
+                .collect(toMap(Section::getUpStation,
+                    Function.identity()));
 
         List<Section> sortedSections = new ArrayList<>();
         sortedSections.add(startSection);

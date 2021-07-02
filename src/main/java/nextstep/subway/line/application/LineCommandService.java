@@ -4,7 +4,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.section.application.SectionCommandService;
 import nextstep.subway.section.application.SectionQueryService;
-import nextstep.subway.section.domain.LineSections;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +18,9 @@ public class LineCommandService {
     private final LineRepository lineRepository;
 
     public LineCommandService(LineQueryService lineQueryService,
-                              SectionCommandService sectionCommandService,
-                              SectionQueryService sectionQueryService,
-                              LineRepository lineRepository) {
+        SectionCommandService sectionCommandService,
+        SectionQueryService sectionQueryService,
+        LineRepository lineRepository) {
         this.lineQueryService = lineQueryService;
         this.sectionCommandService = sectionCommandService;
         this.sectionQueryService = sectionQueryService;
@@ -37,9 +36,9 @@ public class LineCommandService {
         return persistLine.getId();
     }
 
-    public void update(Long lineId, Line updateLine) {
+    public void update(Long lineId, String name, String color) {
         Line line = lineQueryService.findById(lineId);
-        line.update(updateLine.getName(), updateLine.getColor());
+        line.update(name, color);
 
         lineRepository.save(line);
     }
@@ -47,11 +46,5 @@ public class LineCommandService {
     public void deleteById(Long lineId) {
         Line line = lineQueryService.findById(lineId);
         lineRepository.delete(line);
-    }
-
-    public void updateSections(Long lineId, LineSections lineSections) {
-        Line persistLine = lineQueryService.findById(lineId);
-        persistLine.updateSections(lineSections);
-        lineRepository.save(persistLine);
     }
 }

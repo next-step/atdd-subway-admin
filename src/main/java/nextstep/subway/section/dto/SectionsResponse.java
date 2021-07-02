@@ -1,9 +1,9 @@
 package nextstep.subway.section.dto;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.List;
 import nextstep.subway.section.domain.SortedSection;
+
+import static java.util.stream.Collectors.toList;
 
 public class SectionsResponse {
 
@@ -17,9 +17,9 @@ public class SectionsResponse {
 
     public static SectionsResponse of(Long lineId, SortedSection sortedSection) {
         return new SectionsResponse(lineId, sortedSection.getSections()
-                                                         .stream()
-                                                         .map(SectionResponse::of)
-                                                         .collect(toList()));
+            .stream()
+            .map(SectionResponse::of)
+            .collect(toList()));
     }
 
     public Long getLineId() {
