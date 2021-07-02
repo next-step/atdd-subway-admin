@@ -55,6 +55,7 @@ class SectionsTest {
     @ParameterizedTest
     void add_성공(Section input1, Section input2) {
         // given
+        Distance expectedDistance  = new Distance(60);
         List<Station> expectedResult = new ArrayList<>(asList(양평역, 영등포구청역, 신길역));
 
         // when
@@ -63,6 +64,7 @@ class SectionsTest {
         // Then
         assertDoesNotThrow(() -> 구간_컬렉션.add(input2));
         assertThat(구간_컬렉션.toStations().get()).isEqualTo(expectedResult);
+        assertThat(구간_컬렉션.sumDistances()).isEqualTo(expectedDistance);
     }
 
     static Stream<Arguments> methodSource_add_성공() {
@@ -94,9 +96,17 @@ class SectionsTest {
                 .isThrownBy(() -> 구간_컬렉션.add(구간_양평역_영등포구청역.get()));
     }
 
+    static Stream<Arguments> methodSource_deleteStation_성공() {
+        return Stream.of(
+                Arguments.of(영등포구청역, new Stations(asList(영등포시장역, 신길역)), new Distance(15)),
+                Arguments.of(영등포시장역, new Stations(asList(영등포구청역, 신길역)), new Distance(30)),
+                Arguments.of(신길역, new Stations(asList(영등포구청역, 영등포시장역)), new Distance(15))
+        );
+    }
+
     @MethodSource("methodSource_deleteStation_성공")
     @ParameterizedTest
-    void deleteStation_성공(Station 삭제_역, Stations expectedResult) {
+    void deleteStation_성공(Station 삭제_역, Stations expectedStations, Distance expectedDistance) {
         // given
         구간_컬렉션.add(구간_영등포구청역_신길역.get());
         구간_컬렉션.add(구간_영등포구청역_영등포시장역.get());
@@ -106,15 +116,8 @@ class SectionsTest {
         Stations actualResult = 구간_컬렉션.toStations();
 
         // then
-        assertThat(actualResult).isEqualTo(expectedResult);
-    }
-
-    static Stream<Arguments> methodSource_deleteStation_성공() {
-        return Stream.of(
-                Arguments.of(영등포구청역, new Stations(asList(영등포시장역, 신길역))),
-                Arguments.of(영등포시장역, new Stations(asList(영등포구청역, 신길역))),
-                Arguments.of(신길역, new Stations(asList(영등포구청역, 영등포시장역)))
-        );
+        assertThat(actualResult).isEqualTo(expectedStations);
+        assertThat(구간_컬렉션.sumDistances()).isEqualTo(expectedDistance);
     }
 
 

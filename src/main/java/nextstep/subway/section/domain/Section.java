@@ -65,7 +65,7 @@ public class Section extends BaseEntity {
         validateMergingSection(downSection);
 
         this.downStation = downSection.getDownStation();
-        this.distance.add(downSection.distance);
+        this.distance = this.distance.add(downSection.distance);
     }
 
     public boolean isIncludeStation(Station station) {

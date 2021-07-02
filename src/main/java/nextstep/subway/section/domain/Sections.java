@@ -41,6 +41,16 @@ public class Sections {
         deleteStationByCase(deletingStation);
     }
 
+    public Distance sumDistances() {
+        Distance result = new Distance(1);
+
+        for(Section value : values) {
+            result = result.add(value.getDistance());
+        }
+
+        return result.minus(new Distance(1));
+    }
+
     public boolean isEmpty() {
         return values.isEmpty();
     }
