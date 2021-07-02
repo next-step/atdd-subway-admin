@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
@@ -68,6 +69,20 @@ class LineServiceTest {
     }
 
     @Test
+    void findLine() {
+        //given
+        Line line = new Line("2호선", "green");
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+
+        //when
+        LineResponse lineResponse = lineService.findLine(1L);
+
+        //then
+        assertThat(lineResponse.getName()).isEqualTo(line.getName());
+        assertThat(lineResponse.getColor()).isEqualTo(line.getColor());
+    }
+
+    @Test
     void updateLine() {
         //given
         LineRequest lineRequest = new LineRequest("2호선", "green");
@@ -80,5 +95,18 @@ class LineServiceTest {
 
         //then
         assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
+    }
+
+    @Test
+    void deleteLine() {
+        //given
+        Line line = new Line("2호선", "green");
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+
+        //when
+        lineService.deleteLine(1L);
+
+        //then
+        verify(lineRepository).delete(any(Line.class));
     }
 }

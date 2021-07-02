@@ -88,7 +88,7 @@ class LineControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(lineRequest))
-        ).andExpect(status().isConflict());
+        ).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -138,7 +138,7 @@ class LineControllerTest {
                 get("/lines/" + lineId)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isNoContent());
+        ).andExpect(status().isBadRequest());
 
     }
 
@@ -173,6 +173,21 @@ class LineControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(lineRequest))
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deleteLine() throws Exception {
+        //given
+        long lineId = 1L;
+        LineRequest lineRequest = new LineRequest("1호선", "deep blue");
+
+        //when
+        //then
+        mockMvc.perform(
+                delete("/lines/" + lineId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
     }
 }

@@ -45,4 +45,11 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException(LINE_NOT_EXISTED + id));
         line.update(lineRequest.toLine());
     }
+
+    @Transactional
+    public void deleteLine(Long id) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(LINE_NOT_EXISTED + id));
+        lineRepository.delete(line);
+    }
 }
