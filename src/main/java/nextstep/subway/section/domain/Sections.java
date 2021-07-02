@@ -45,7 +45,7 @@ public class Sections {
         return values.isEmpty();
     }
 
-    public int size() {
+    private int size() {
         return values.size();
     }
 
