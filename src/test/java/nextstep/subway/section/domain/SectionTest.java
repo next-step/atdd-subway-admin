@@ -113,7 +113,6 @@ class SectionTest {
 
     @Test
     void mergeWithDownSection_예외() {
-        구간_영등포구청역_영등포시장역.mergeSection(구간_영등포구청역_신길역);
         assertThatExceptionOfType(UnmergeableSectionException.class)
                 .isThrownBy(() -> 구간_영등포구청역_영등포시장역.mergeSection(구간_영등포구청역_신길역));
     }
