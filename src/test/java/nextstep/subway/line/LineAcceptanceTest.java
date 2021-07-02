@@ -111,13 +111,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineRequest lineRequest = new LineRequest("1호선", "blue");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(lineRequest);
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(createResponse);
 
         // then
         // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response);
+
     }
+
+
 
 
 }
