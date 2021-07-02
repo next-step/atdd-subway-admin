@@ -8,10 +8,8 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -87,12 +85,7 @@ public class LineAcceptance {
                 .then().log().all().extract();
     }
 
-    public static void 지하철_노선_수정됨(LineRequest lineRequest, ExtractableResponse<Response> createResponse, ExtractableResponse<Response> response) {
+    public static void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        LineResponse expectedLineResponse = createResponse.jsonPath().getObject(".", LineResponse.class);
-        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
-        assertThat(lineResponse.getId()).isEqualTo(expectedLineResponse.getId());
-        assertThat(lineResponse.getName()).isEqualTo(expectedLineResponse.getName());
-        assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor());
     }
 }

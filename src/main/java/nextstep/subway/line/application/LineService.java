@@ -38,4 +38,11 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException(LINE_NOT_EXISTED + id));
         return LineResponse.of(line);
     }
+
+    @Transactional
+    public void updateLine(long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(LINE_NOT_EXISTED + id));
+        line.update(lineRequest.toLine());
+    }
 }

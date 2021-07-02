@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,5 +65,20 @@ class LineServiceTest {
 
         //then
         assertThat(actual).containsAll(expected.stream().map(LineResponse::of).collect(Collectors.toList()));
+    }
+
+    @Test
+    void updateLine() {
+        //given
+        LineRequest lineRequest = new LineRequest("2호선", "green");
+        Line line = new Line("12호선", "green");
+        when(lineRepository.findById(any())).thenReturn(Optional.of(line));
+
+        //when
+        lineService.updateLine(1L, lineRequest);
+        LineResponse lineResponse = lineService.findLine(1L);
+
+        //then
+        assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName());
     }
 }

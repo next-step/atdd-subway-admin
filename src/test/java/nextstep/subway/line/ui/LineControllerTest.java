@@ -1,12 +1,10 @@
 package nextstep.subway.line.ui;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +14,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -117,7 +114,7 @@ class LineControllerTest {
         //given
         long lineId = 1L;
         LineResponse lineResponse = LineResponse.of(new Line("2호선", "green"));
-        when(lineService.findLine(any())).thenReturn(lineResponse);
+        when(lineService.findLine(anyLong())).thenReturn(lineResponse);
 
         //when
         //then
@@ -133,7 +130,7 @@ class LineControllerTest {
     void noSuchElementInShowLine() throws Exception {
         //given
         long lineId = 1L;
-        when(lineService.findLine(any())).thenThrow(NoSuchElementException.class);
+        when(lineService.findLine(anyLong())).thenThrow(NoSuchElementException.class);
 
         //when
         //then
@@ -143,5 +140,39 @@ class LineControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
 
+    }
+
+    @Test
+    void updateLine() throws Exception {
+        //given
+        long lineId = 1L;
+        LineRequest lineRequest = new LineRequest("1호선", "deep blue");
+
+        //when
+        //then
+        mockMvc.perform(
+                put("/lines/" + lineId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(lineRequest))
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void failUpdateLine() throws Exception {
+        //given
+        long lineId = 1L;
+        LineRequest lineRequest = new LineRequest("1호선", "deep blue");
+        doThrow(new NoSuchElementException())
+                .when(lineService)
+                .updateLine(anyLong(), any(LineRequest.class));
+        //when
+        //then
+        mockMvc.perform(
+                put("/lines/" + lineId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(lineRequest))
+        ).andExpect(status().isNoContent());
     }
 }
