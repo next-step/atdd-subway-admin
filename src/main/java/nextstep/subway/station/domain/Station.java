@@ -49,6 +49,7 @@ public class Station extends BaseEntity {
     public String toString() {
         return "Station{" +
                 "id=" + id +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

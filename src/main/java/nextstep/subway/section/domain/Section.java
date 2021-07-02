@@ -7,6 +7,8 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
+import static java.lang.String.format;
+
 @Entity
 public class Section extends BaseEntity {
     @Id
@@ -99,7 +101,9 @@ public class Section extends BaseEntity {
     private void validateMergingSection(Section downSection) {
         if(!this.downStation.equals(downSection.getUpStation())
                 || this.upStation.equals(downSection.getDownStation())) {
-            throw new UnmergeableSectionException();
+            throw new UnmergeableSectionException(format("%s-%s 구간과 %s-%s구간은 합칠 수 없습니다.",
+                this.upStation, this.downStation,
+                downSection.upStation, downSection.downStation));
         }
     }
 
