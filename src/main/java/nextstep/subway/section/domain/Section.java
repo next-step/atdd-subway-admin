@@ -2,9 +2,12 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.exception.UnmergeableSectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+
+import static java.lang.String.format;
 
 @Entity
 public class Section extends BaseEntity {
@@ -58,6 +61,13 @@ public class Section extends BaseEntity {
         return this.distance;
     }
 
+    public void mergeSection(Section downSection) {
+        validateMergingSection(downSection);
+
+        this.downStation = downSection.getDownStation();
+        this.distance = this.distance.add(downSection.distance);
+    }
+
     public boolean isIncludeStation(Station station) {
         return this.upStation.equals(station) || this.downStation.equals(station);
     }
@@ -65,19 +75,7 @@ public class Section extends BaseEntity {
     public void connectSectionBetween(Section section) {
         replaceUpStationIfSameUpStation(section);
         replaceDownStationIfSameDownStation(section);
-        distance.minus(section.distance);
-    }
-
-    private void replaceUpStationIfSameUpStation(Section section) {
-        if(this.upStation.equals(section.getUpStation())) {
-            this.upStation = section.getDownStation();
-        }
-    }
-
-    private void replaceDownStationIfSameDownStation(Section section) {
-        if(this.downStation.equals(section.getDownStation())) {
-            this.downStation = section.getUpStation();
-        }
+        this.distance = this.distance.minus(section.distance);
     }
 
     public boolean isSameStationWithUpStation(Station station) {
@@ -86,6 +84,27 @@ public class Section extends BaseEntity {
 
     public boolean isSameStationWithDownStation(Station station) {
         return this.downStation.equals(station);
+    }
+
+    private void replaceUpStationIfSameUpStation(Section section) {
+        if (this.upStation.equals(section.getUpStation())) {
+            this.upStation = section.getDownStation();
+        }
+    }
+
+    private void replaceDownStationIfSameDownStation(Section section) {
+        if (this.downStation.equals(section.getDownStation())) {
+            this.downStation = section.getUpStation();
+        }
+    }
+
+    private void validateMergingSection(Section downSection) {
+        if(!this.downStation.equals(downSection.getUpStation())
+                || this.upStation.equals(downSection.getDownStation())) {
+            throw new UnmergeableSectionException(format("%s-%s 구간과 %s-%s구간은 합칠 수 없습니다.",
+                this.upStation, this.downStation,
+                downSection.upStation, downSection.downStation));
+        }
     }
 
     @Override

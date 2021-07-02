@@ -60,4 +60,11 @@ public class LineService {
         foundLine.addSection(new Section(foundLine, upStation, downStation, new Distance(sectionRequest.getDistance())));
         return LineResponse.from(lineRepository.save(foundLine));
     }
+
+    public LineResponse deleteStationInSection(Long lineId, Long stationId) {
+        Line foundLine = lineRepository.getById(lineId);
+        Station foundStation = stationRepository.getById(stationId);
+        foundLine.deleteStation(foundStation);
+        return LineResponse.from(lineRepository.save(foundLine));
+    }
 }

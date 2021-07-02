@@ -33,7 +33,7 @@ public class LineControllerTestSnippet {
                 .extract();
     }
 
-    public static ExtractableResponse 지하철_노선_검색_요청(LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_검색_요청(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .when()
                 .formParam("name", lineRequest.getName())
@@ -43,7 +43,7 @@ public class LineControllerTestSnippet {
                 .extract();
     }
 
-    public static ExtractableResponse 지하철_노선_PK_조건_조회_요청(Long id) {
+    public static ExtractableResponse<Response> 지하철_노선_PK_조건_조회_요청(Long id) {
         return RestAssured.given().log().all()
                 .when()
                 .get("/lines/" + id)
@@ -51,7 +51,7 @@ public class LineControllerTestSnippet {
                 .extract();
     }
 
-    public static ExtractableResponse 지하철_노선_수정_요청(Long id, LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -61,7 +61,7 @@ public class LineControllerTestSnippet {
                 .extract();
     }
 
-    public static ExtractableResponse 지하철_노선_삭제_요청(Long id) {
+    public static ExtractableResponse<Response> 지하철_노선_삭제_요청(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -70,7 +70,7 @@ public class LineControllerTestSnippet {
                 .extract();
     }
 
-    public static ExtractableResponse 지하철_노선_구간_추가_요청(Long lineId, SectionRequest sectionRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_구간_추가_요청(Long lineId, SectionRequest sectionRequest) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -80,9 +80,19 @@ public class LineControllerTestSnippet {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_구간_삭제_요청(Long lineId, Long deletedStationId) {
+        return RestAssured.given().log().all()
+                .queryParam("stationId", deletedStationId)
+                .when()
+                .delete(format("/lines/%d/sections", lineId))
+                .then().log().all()
+                .extract();
+    }
+
     public static List<Long> 지하철_노선에_속한_여러_역의_ID추출(ExtractableResponse<Response> addingSectionResponse) {
         return addingSectionResponse.jsonPath().getList("stations", StationResponse.class).stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
     }
+
 }

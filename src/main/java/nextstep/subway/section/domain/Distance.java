@@ -17,23 +17,28 @@ public class Distance {
     }
 
     public Distance(int value) {
-        validateIllegalConstructor(value);
+        validateIllegalDistance(value);
         this.value = value;
     }
 
-    private void validateIllegalConstructor(int value) {
+    public Distance add(Distance addingDistance) {
+        validateIllegalDistance(addingDistance.value);
+        return new Distance(value + addingDistance.value);
+    }
+
+    public Distance minus(Distance subtractingDistance) {
+        validateEnoughDistance(subtractingDistance);
+        return new Distance(value - subtractingDistance.value);
+    }
+
+    private void validateIllegalDistance(int value) {
         if(value <= 0) {
             throw new BelowZeroDistanceException();
         }
     }
 
-    public void minus(Distance distance) {
-        validateEnoughDistance(distance);
-        this.value -= distance.value;
-    }
-
     private void validateEnoughDistance(Distance distance) {
-        if(this.value - distance.value <= 0) {
+        if (this.value - distance.value <= 0) {
             throw new BelowZeroDistanceException();
         }
     }

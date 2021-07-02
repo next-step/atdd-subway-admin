@@ -34,6 +34,10 @@ public class Stations {
         this.values.addAll(stations.values);
     }
 
+    public boolean contains(Station station) {
+        return values.contains(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

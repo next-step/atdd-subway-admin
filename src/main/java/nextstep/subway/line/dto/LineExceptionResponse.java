@@ -6,4 +6,8 @@ public class LineExceptionResponse {
     public LineExceptionResponse(String message) {
         this.message = message;
     }
+
+    public String getMessage() {
+        return message;
+    }
 }
