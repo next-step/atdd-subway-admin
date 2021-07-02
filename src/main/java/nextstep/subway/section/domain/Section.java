@@ -75,7 +75,7 @@ public class Section extends BaseEntity {
     public void connectSectionBetween(Section section) {
         replaceUpStationIfSameUpStation(section);
         replaceDownStationIfSameDownStation(section);
-        distance.minus(section.distance);
+        this.distance = this.distance.minus(section.distance);
     }
 
     public boolean isSameStationWithUpStation(Station station) {

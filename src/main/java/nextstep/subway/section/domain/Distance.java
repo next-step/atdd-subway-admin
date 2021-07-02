@@ -21,14 +21,14 @@ public class Distance {
         this.value = value;
     }
 
-    public void add(Distance addingDistance) {
+    public Distance add(Distance addingDistance) {
         validateIllegalDistance(addingDistance.value);
-        this.value += addingDistance.value;
+        return new Distance(value + addingDistance.value);
     }
 
-    public void minus(Distance subtractingDistance) {
+    public Distance minus(Distance subtractingDistance) {
         validateEnoughDistance(subtractingDistance);
-        this.value -= subtractingDistance.value;
+        return new Distance(value - subtractingDistance.value);
     }
 
     private void validateIllegalDistance(int value) {
