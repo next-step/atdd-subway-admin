@@ -11,14 +11,14 @@ public class LineTestData {
     private final List<StationResponse> stations;
 
     public LineTestData(String name, String color,
-                        StationResponse upStation,
-                        StationResponse downStation) {
+        StationResponse upStation,
+        StationResponse downStation) {
         this(name, color, 100, upStation, downStation);
     }
 
     public LineTestData(String name, String color, int distance,
-                        StationResponse upStation,
-                        StationResponse downStation) {
+        StationResponse upStation,
+        StationResponse downStation) {
         this.line = new LineRequest(name, color, upStation.getId(), downStation.getId(), distance);
         this.stations = Arrays.asList(upStation, downStation);
     }
