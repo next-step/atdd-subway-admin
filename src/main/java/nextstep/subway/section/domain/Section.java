@@ -59,7 +59,7 @@ public class Section extends BaseEntity {
         return this.distance;
     }
 
-    public void mergeWithDownSection(Section downSection) {
+    public void mergeSection(Section downSection) {
         if (!validateMergeWithDownSection(downSection)) {
             throw new UnmergeableSectionException();
         }

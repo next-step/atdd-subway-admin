@@ -101,7 +101,7 @@ class SectionTest {
     @Test
     void mergeWithDownSection_성공() {
         // when
-        구간_양평역_영등포구청역.mergeWithDownSection(구간_영등포구청역_신길역);
+        구간_양평역_영등포구청역.mergeSection(구간_영등포구청역_신길역);
 
         // then
         assertAll(
@@ -114,6 +114,6 @@ class SectionTest {
     @Test
     void mergeWithDownSection_예외() {
         assertThatExceptionOfType(UnmergeableSectionException.class)
-                .isThrownBy(() -> 구간_영등포구청역_영등포시장역.mergeWithDownSection(구간_영등포구청역_신길역));
+                .isThrownBy(() -> 구간_영등포구청역_영등포시장역.mergeSection(구간_영등포구청역_신길역));
     }
 }

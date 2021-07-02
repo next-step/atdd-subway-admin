@@ -150,7 +150,7 @@ public class Sections {
         if (filteredSections.size() == STANDARD_OF_MIDDLE_STATION) {
             Section upSection = filteredSections.get(0);
             Section downSection = filteredSections.get(1);
-            upSection.mergeWithDownSection(downSection);
+            upSection.mergeSection(downSection);
             values.remove(downSection);
         }
     }
