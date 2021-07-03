@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.exception.NotFoundLineException;
+import nextstep.subway.exception.NotFoundStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -68,7 +70,7 @@ public class LineService {
 
 	public LineResponse addNewSection(Long lineId, SectionRequest sectionRequest) {
 
-		Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
+		Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundLineException("Line이 존재하지 않습니다."));
 
 		Section newSection = toSection(line, sectionRequest);
 		line.addNewSection(newSection);
@@ -78,9 +80,9 @@ public class LineService {
 	private Section toSection(Line line, SectionRequest sectionRequest) {
 
 		Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
-			.orElseThrow(RuntimeException::new);
+			.orElseThrow(() -> new NotFoundStationException("Station이 존재하지 않습니다."));
 		Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
-			.orElseThrow(RuntimeException::new);
+			.orElseThrow(() -> new NotFoundStationException("Station이 존재하지 않습니다."));
 
 		return new Section(line, upStation, downStation, sectionRequest.getDistance());
 	}

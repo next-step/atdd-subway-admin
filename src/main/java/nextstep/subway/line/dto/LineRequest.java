@@ -46,6 +46,8 @@ public class LineRequest {
 	}
 
 	public Line toLine(Station upStation, Station downStation) {
-		return new Line(name, color, upStation, downStation, distance);
+		Line line = new Line(name, color);
+		line.addSection(upStation, downStation, distance);
+		return line;
 	}
 }

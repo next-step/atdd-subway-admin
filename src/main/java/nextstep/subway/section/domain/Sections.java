@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.exception.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -34,9 +35,15 @@ public class Sections {
 		this.sections.add(section);
 	}
 
+	private void checkExistBoth(Section section) {
+		if (isExistUpStation(section) && isExistDownStation(section)) {
+			throw new InvalidSectionException("상행역과 하행역이 이미 노선에 등록되어 있습니다.");
+		}
+	}
+
 	private void checkNotExistBoth(Section section) {
 		if (isNotExistUpStation(section) && isNotExistDownStation(section)) {
-			throw new RuntimeException();
+			throw new InvalidSectionException("상행역과 하행역 둘다 포함되어있지 않습니다.");
 		}
 	}
 
@@ -54,12 +61,6 @@ public class Sections {
 		);
 	}
 
-	private void checkExistBoth(Section section) {
-		if (isExistUpStation(section) && isExistDownStation(section)) {
-			throw new RuntimeException();
-		}
-	}
-
 	private boolean isExistDownStation(Section newSection) {
 		return sections.stream().anyMatch(section -> section.getDownStation() == newSection.getDownStation());
 	}
@@ -74,6 +75,20 @@ public class Sections {
 
 	private boolean isExistDownSection(Section newSection) {
 		return sections.stream().anyMatch(section -> section.getDownStation() == newSection.getDownStation());
+	}
+
+	private void updateUpSection(Section newSection) {
+		this.sections.stream()
+			.filter(oldSection -> newSection.getUpStation() == oldSection.getUpStation())
+			.findFirst()
+			.ifPresent(oldSection -> addUpSection(newSection, oldSection));
+	}
+
+	private void updateDownSection(Section newSection) {
+		this.sections.stream()
+			.filter(oldSection -> newSection.getDownStation() == oldSection.getDownStation())
+			.findFirst()
+			.ifPresent(oldSection -> addDownSection(newSection, oldSection));
 	}
 
 	private void addDownSection(Section newSection, Section oldSection) {
@@ -95,20 +110,6 @@ public class Sections {
 		sections.remove(oldSection);
 	}
 
-	private void updateUpSection(Section newSection) {
-		this.sections.stream()
-			.filter(oldSection -> newSection.getUpStation() == oldSection.getUpStation())
-			.findFirst()
-			.ifPresent(oldSection -> addUpSection(newSection, oldSection));
-	}
-
-	private void updateDownSection(Section newSection) {
-		this.sections.stream()
-			.filter(oldSection -> newSection.getDownStation() == oldSection.getDownStation())
-			.findFirst()
-			.ifPresent(oldSection -> addDownSection(newSection, oldSection));
-	}
-
 	public List<Station> getStations() {
 		List<Station> stations = new ArrayList<>();
 		Optional<Section> firstStation = findUpSection();
@@ -120,11 +121,6 @@ public class Sections {
 		}
 
 		return stations;
-	}
-
-	public void addAll(Section upSection, Section downSection) {
-		this.sections.add(upSection);
-		this.sections.add(downSection);
 	}
 
 	public List<Section> getSections() {
@@ -152,5 +148,10 @@ public class Sections {
 			.stream().filter(section -> section.getUpStation() == downStation)
 			.findFirst();
 		return station;
+	}
+
+	public void addAll(Section upSection, Section downSection) {
+		this.sections.add(upSection);
+		this.sections.add(downSection);
 	}
 }
