@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -18,15 +19,52 @@ public class Sections {
 	public Sections() {
 	}
 
-	public void add(Section section){
+	public void add(Section section) {
+		// TODO : section 추가. 연결을 시켜줘야함.
+		// 상행이 있는지, 하행이 있느지 여부에 따라 다를듯.
+		// A - C
+		// A - B - C
+		// C 의 상행을 A -> B
+		// A 의 하행을 C -> B 로 바꿔주면됨
+		updateUpSection(section);
+		updateDownSection(section);
 		this.sections.add(section);
 	}
 
-	public List<Station> getStations(){
+	private void addDownSection(Section newSection, Section oldSection) {
+		int distance = oldSection.getSubtractDistance(newSection);
+		sections.add(new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
+		sections.remove(oldSection);
+	}
+
+	private void addUpSection(Section newSection, Section oldSection) {
+		int distance = oldSection.getSubtractDistance(newSection);
+		sections.add(new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
+		sections.remove(oldSection);
+	}
+
+	private void updateUpSection(Section newSection) {
+		this.sections.stream()
+			.filter(oldSection -> newSection.getUpStation() == oldSection.getUpStation())
+			.findFirst()
+			.ifPresent(oldSection -> addUpSection(newSection, oldSection));
+	}
+
+	private void updateDownSection(Section newSection) {
+		this.sections.stream()
+			.filter(oldSection -> newSection.getDownStation() == oldSection.getDownStation())
+			.findFirst()
+			.ifPresent(oldSection -> addDownSection(newSection, oldSection));
+	}
+
+	public List<Station> getStations() {
 		List<Station> stations = new ArrayList<>();
-		for (Section section : sections){
-			stations.add(section.getUpStation());
+		Optional<Section> firstStation = findUpSection();
+
+		while (firstStation.isPresent()) {
+			Section section = firstStation.get();
 			stations.add(section.getDownStation());
+			firstStation = findDownSection(section.getDownStation());
 		}
 
 		return stations;
@@ -37,7 +75,30 @@ public class Sections {
 		this.sections.add(downSection);
 	}
 
-	public List<Section> getSections(){
-		return this.sections;
+	public List<Section> getSections() {
+		List<Section> stations = new ArrayList<>();
+		Optional<Section> firstStation = findUpSection();
+
+		while (firstStation.isPresent()) {
+			Section section = firstStation.get();
+			stations.add(section);
+			firstStation = findDownSection(section.getDownStation());
+		}
+
+		return stations;
+	}
+
+	private Optional<Section> findUpSection() {
+		Optional<Section> station = this.sections
+			.stream().filter(section -> section.getUpStation() == null)
+			.findFirst();
+		return station;
+	}
+
+	private Optional<Section> findDownSection(Station downStation) {
+		Optional<Section> station = this.sections
+			.stream().filter(section -> section.getUpStation() == downStation)
+			.findFirst();
+		return station;
 	}
 }

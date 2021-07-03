@@ -20,4 +20,8 @@ public class Distance {
 	public void setDistance(int distance) {
 		this.distance = distance;
 	}
+
+	public int subtract(int distance) {
+		return this.distance - distance;
+	}
 }

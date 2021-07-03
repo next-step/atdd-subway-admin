@@ -20,6 +20,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("구간 관리 기능")
@@ -55,7 +56,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// 새로운 역이 등록되었는지 확인
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		지하철_노선에_등록한_구간이_포함(response, Arrays.asList(강남역.getId(), 양재역.getId(), 광교역.getId()));
-
 	}
 
 	private ExtractableResponse<Response> 지하철_노선에_역_등록_요청(SectionRequest request) {
@@ -67,11 +67,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.then().log().all().extract();
 	}
 
-	private void 지하철_노선에_등록한_구간이_포함(ExtractableResponse<Response> response, List<Long> expectedStationIDds) {
+	private void 지하철_노선에_등록한_구간이_포함(ExtractableResponse<Response> response, List<Long> expectedStationIds) {
 		List<Long> resultStationIds = response.jsonPath().getList("sections", SectionResponse.class).stream()
 			.map(SectionResponse::getId)
 			.collect(Collectors.toList());
-		Assertions.assertThat(resultStationIds).containsAll(expectedStationIDds);
+		Assertions.assertThat(resultStationIds).isEqualTo(expectedStationIds);
 	}
 }
 
