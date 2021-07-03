@@ -20,6 +20,8 @@ public class Sections {
 	}
 
 	public void add(Section section) {
+		checkExistBoth(section);
+		checkNotExistBoth(section);
 		// 상행선이 있을떄
 		if (isExistUpSection(section)) {
 			updateUpSection(section);
@@ -30,6 +32,40 @@ public class Sections {
 		}
 
 		this.sections.add(section);
+	}
+
+	private void checkNotExistBoth(Section section) {
+		if (isNotExistUpStation(section) && isNotExistDownStation(section)) {
+			throw new RuntimeException();
+		}
+	}
+
+	private boolean isNotExistDownStation(Section newSection) {
+		return sections.stream().noneMatch(
+			section -> section.getDownStation() == newSection.getDownStation()
+			|| section.getDownStation() == newSection.getUpStation()
+		);
+	}
+
+	private boolean isNotExistUpStation(Section newSection) {
+		return sections.stream().noneMatch(
+			section -> section.getUpStation() == newSection.getUpStation()
+			|| section.getUpStation() == newSection.getDownStation()
+		);
+	}
+
+	private void checkExistBoth(Section section) {
+		if (isExistUpStation(section) && isExistDownStation(section)) {
+			throw new RuntimeException();
+		}
+	}
+
+	private boolean isExistDownStation(Section newSection) {
+		return sections.stream().anyMatch(section -> section.getDownStation() == newSection.getDownStation());
+	}
+
+	private boolean isExistUpStation(Section newSection) {
+		return sections.stream().anyMatch(section -> section.getUpStation() == newSection.getUpStation());
 	}
 
 	private boolean isExistUpSection(Section newSection) {
