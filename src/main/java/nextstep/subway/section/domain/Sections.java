@@ -20,12 +20,6 @@ public class Sections {
 	}
 
 	public void add(Section section) {
-		// TODO : section 추가. 연결을 시켜줘야함.
-		// 상행이 있는지, 하행이 있느지 여부에 따라 다를듯.
-		// A - C
-		// A - B - C
-		// C 의 상행을 A -> B
-		// A 의 하행을 C -> B 로 바꿔주면됨
 		updateUpSection(section);
 		updateDownSection(section);
 		this.sections.add(section);
@@ -33,13 +27,15 @@ public class Sections {
 
 	private void addDownSection(Section newSection, Section oldSection) {
 		int distance = oldSection.getSubtractDistance(newSection);
-		sections.add(new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
+		sections.add(
+			new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
 		sections.remove(oldSection);
 	}
 
 	private void addUpSection(Section newSection, Section oldSection) {
 		int distance = oldSection.getSubtractDistance(newSection);
-		sections.add(new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
+		sections.add(
+			new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
 		sections.remove(oldSection);
 	}
 

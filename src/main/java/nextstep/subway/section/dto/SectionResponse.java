@@ -8,7 +8,7 @@ public class SectionResponse {
 	private String name;
 	private int distance;
 
-	public SectionResponse(){
+	public SectionResponse() {
 
 	}
 
@@ -18,7 +18,7 @@ public class SectionResponse {
 		this.distance = distance;
 	}
 
-	public static SectionResponse of(Section section){
+	public static SectionResponse of(Section section) {
 		Station station = section.getDownStation();
 		return new SectionResponse(station.getId(), station.getName(), section.getDistance());
 	}

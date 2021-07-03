@@ -77,8 +77,10 @@ public class LineService {
 
 	private Section toSection(Line line, SectionRequest sectionRequest) {
 
-		Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(RuntimeException::new);
-		Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(RuntimeException::new);
+		Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
+			.orElseThrow(RuntimeException::new);
+		Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
+			.orElseThrow(RuntimeException::new);
 
 		return new Section(line, upStation, downStation, sectionRequest.getDistance());
 	}
