@@ -70,6 +70,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_등록한_구간이_포함(response, Arrays.asList(양재역.getId(), 강남역.getId(), 광교역.getId()));
 	}
 
+	@DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+	@Test
+	void addSectionAtLast() {
+		SectionRequest request = new SectionRequest(광교역.getId(), 양재역.getId(), 3);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_역_등록_요청(request);
+
+		// then
+		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		지하철_노선에_등록한_구간이_포함(response, Arrays.asList(강남역.getId(), 광교역.getId(), 양재역.getId()));
+	}
+
 	private ExtractableResponse<Response> 지하철_노선에_역_등록_요청(SectionRequest request) {
 		return RestAssured
 			.given().log().all()
