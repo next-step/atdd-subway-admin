@@ -22,6 +22,9 @@ public class Distance {
 	}
 
 	public int subtract(int distance) {
+		if(this.distance <= distance){
+			throw new RuntimeException();
+		}
 		return this.distance - distance;
 	}
 }

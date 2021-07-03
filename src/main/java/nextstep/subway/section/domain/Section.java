@@ -63,4 +63,8 @@ public class Section {
 	public int getSubtractDistance(Section section) {
 		return this.distance.subtract(section.getDistance());
 	}
+
+	public void updateDownStation(Station downStation) {
+		this.downStation = downStation;
+	}
 }

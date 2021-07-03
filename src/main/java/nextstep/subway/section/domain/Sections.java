@@ -20,12 +20,32 @@ public class Sections {
 	}
 
 	public void add(Section section) {
-		updateUpSection(section);
-		updateDownSection(section);
+		// 상행선이 있을떄
+		if (isExistUpSection(section)) {
+			updateUpSection(section);
+		}
+		// 하행선이 있을때
+		if (isExistDownSection(section)) {
+			updateDownSection(section);
+		}
+
 		this.sections.add(section);
 	}
 
+	private boolean isExistUpSection(Section newSection) {
+		return sections.stream().anyMatch(section -> section.getUpStation() == newSection.getUpStation());
+	}
+
+	private boolean isExistDownSection(Section newSection) {
+		return sections.stream().anyMatch(section -> section.getDownStation() == newSection.getDownStation());
+	}
+
 	private void addDownSection(Section newSection, Section oldSection) {
+		if (oldSection.getUpStation() == null) {
+			oldSection.updateDownStation(newSection.getUpStation());
+			return;
+		}
+
 		int distance = oldSection.getSubtractDistance(newSection);
 		sections.add(
 			new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
