@@ -23,7 +23,7 @@ public class Distance {
 
 	public int subtract(int distance) {
 		if(this.distance <= distance){
-			throw new RuntimeException();
+			throw new IllegalArgumentException("길이는 기존 역 사이의 길이보다 작아야합니다.");
 		}
 		return this.distance - distance;
 	}

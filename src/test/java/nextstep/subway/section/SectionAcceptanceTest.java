@@ -68,6 +68,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선에_역_등록_요청(request);
 
 		// then
+		// 새로운 역이 등록되었는지 확인
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		지하철_노선에_등록한_구간이_포함(response, Arrays.asList(양재역.getId(), 강남역.getId(), 광교역.getId()));
 	}
@@ -81,6 +82,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선에_역_등록_요청(request);
 
 		// then
+		// 새로운 역이 등록되었는지 확인
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		지하철_노선에_등록한_구간이_포함(response, Arrays.asList(강남역.getId(), 광교역.getId(), 양재역.getId()));
 	}
@@ -94,8 +96,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선에_역_등록_요청(request);
 
 		// then
-		// 새로운 역이 등록되었는지 확인
-		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
 	}
 
 	@DisplayName("상행역과 하행역이 이미 노선에 등록되어 있다면 추가할 수 없는지 테스트")
@@ -107,7 +108,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선에_역_등록_요청(request);
 
 		// then
-		// 새로운 역이 등록되었는지 확인
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
@@ -120,7 +120,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선에_역_등록_요청(request);
 
 		// then
-		// 새로운 역이 등록되었는지 확인
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 

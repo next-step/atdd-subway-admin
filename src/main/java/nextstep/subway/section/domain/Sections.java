@@ -36,45 +36,42 @@ public class Sections {
 	}
 
 	private void checkExistBoth(Section section) {
-		if (isExistUpStation(section) && isExistDownStation(section)) {
+		boolean isExistUpStation = sections.stream()
+			.anyMatch(sec -> sec.getUpStation() == section.getUpStation());
+		boolean isExistDownStation = sections.stream()
+			.anyMatch(sec -> sec.getDownStation() == section.getDownStation());
+
+		if (isExistUpStation && isExistDownStation) {
 			throw new InvalidSectionException("상행역과 하행역이 이미 노선에 등록되어 있습니다.");
 		}
 	}
 
 	private void checkNotExistBoth(Section section) {
-		if (isNotExistUpStation(section) && isNotExistDownStation(section)) {
+		boolean isNotExistUpStation = sections.stream()
+			.noneMatch(
+				sec -> sec.getUpStation() == section.getUpStation()
+					|| sec.getUpStation() == section.getDownStation()
+			);
+
+		boolean isNotExistDownStation = sections.stream()
+			.noneMatch(
+				sec -> sec.getDownStation() == section.getDownStation()
+					|| sec.getDownStation() == section.getUpStation()
+			);
+
+		if (isNotExistUpStation && isNotExistDownStation) {
 			throw new InvalidSectionException("상행역과 하행역 둘다 포함되어있지 않습니다.");
 		}
 	}
 
-	private boolean isNotExistDownStation(Section newSection) {
-		return sections.stream().noneMatch(
-			section -> section.getDownStation() == newSection.getDownStation()
-			|| section.getDownStation() == newSection.getUpStation()
-		);
-	}
-
-	private boolean isNotExistUpStation(Section newSection) {
-		return sections.stream().noneMatch(
-			section -> section.getUpStation() == newSection.getUpStation()
-			|| section.getUpStation() == newSection.getDownStation()
-		);
-	}
-
-	private boolean isExistDownStation(Section newSection) {
-		return sections.stream().anyMatch(section -> section.getDownStation() == newSection.getDownStation());
-	}
-
-	private boolean isExistUpStation(Section newSection) {
-		return sections.stream().anyMatch(section -> section.getUpStation() == newSection.getUpStation());
-	}
-
 	private boolean isExistUpSection(Section newSection) {
-		return sections.stream().anyMatch(section -> section.getUpStation() == newSection.getUpStation());
+		return sections.stream()
+			.anyMatch(section -> section.getUpStation() == newSection.getUpStation());
 	}
 
 	private boolean isExistDownSection(Section newSection) {
-		return sections.stream().anyMatch(section -> section.getDownStation() == newSection.getDownStation());
+		return sections.stream()
+			.anyMatch(section -> section.getDownStation() == newSection.getDownStation());
 	}
 
 	private void updateUpSection(Section newSection) {
@@ -98,15 +95,13 @@ public class Sections {
 		}
 
 		int distance = oldSection.getSubtractDistance(newSection);
-		sections.add(
-			new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
+		sections.add(new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
 		sections.remove(oldSection);
 	}
 
 	private void addUpSection(Section newSection, Section oldSection) {
 		int distance = oldSection.getSubtractDistance(newSection);
-		sections.add(
-			new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
+		sections.add(new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
 		sections.remove(oldSection);
 	}
 
@@ -137,17 +132,15 @@ public class Sections {
 	}
 
 	private Optional<Section> findUpSection() {
-		Optional<Section> station = this.sections
-			.stream().filter(section -> section.getUpStation() == null)
+		return this.sections.stream()
+			.filter(section -> section.getUpStation() == null)
 			.findFirst();
-		return station;
 	}
 
 	private Optional<Section> findDownSection(Station downStation) {
-		Optional<Section> station = this.sections
-			.stream().filter(section -> section.getUpStation() == downStation)
+		return this.sections.stream()
+			.filter(section -> section.getUpStation() == downStation)
 			.findFirst();
-		return station;
 	}
 
 	public void addAll(Section upSection, Section downSection) {
