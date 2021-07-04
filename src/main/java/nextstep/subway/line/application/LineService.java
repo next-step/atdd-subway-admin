@@ -2,12 +2,12 @@ package nextstep.subway.line.application;
 
 import javax.persistence.EntityNotFoundException;
 
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
-import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.application.StationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +34,27 @@ public class LineService {
         return LineResponse.of(lineRepository.save(line));
     }
 
+    public SectionResponse saveSection(Long lineId, SectionRequest request) {
+        Line line = getLineFrom(lineId);
+        Section section = getSectionFrom(request);
+        line.add(section);
+
+        return SectionResponse.of(section);
+    }
+
     private Section getSectionFrom(LineRequest request) {
         return new Section(
             stationService.getStation(request.getUpStationId()),
             stationService.getStation(request.getDownStationId()),
-            request.getDistance()
+            new SectionDistance(request.getDistance())
+        );
+    }
+
+    private Section getSectionFrom(SectionRequest request) {
+        return new Section(
+            stationService.getStation(request.getUpStationId()),
+            stationService.getStation(request.getDownStationId()),
+            new SectionDistance(request.getDistance())
         );
     }
 
@@ -47,6 +63,10 @@ public class LineService {
         line.add(section);
 
         return line;
+    }
+
+    private Line getLineFrom(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
