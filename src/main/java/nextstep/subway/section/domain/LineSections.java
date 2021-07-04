@@ -1,18 +1,22 @@
 package nextstep.subway.section.domain;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.SortedStations;
 import nextstep.subway.station.domain.Station;
-
-import static java.util.stream.Collectors.toList;
 
 @Embeddable
 public class LineSections implements Serializable {
@@ -24,6 +28,7 @@ public class LineSections implements Serializable {
     private static final String MESSAGE_HAS_ONE_SECTION = "노선에 구간이 1개이면 삭제할 수 없습니다.";
     private static final String MESSAGE_NOT_FOUND_SECTION = "삭제할 구간을 찾을 수 없습니다.";
     private static final String MESSAGE_EXIST_SECTION = "중복 섹션이 있습니다.";
+    private static final String MESSAGE_NOT_FOUND_UPSTATION = "상행역을 찾을 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Section> sections;
@@ -162,5 +167,22 @@ public class LineSections implements Serializable {
 
         upSection.updateDownStation(downSection.getDownStation());
         upSection.plusDistance(downSection.getDistance());
+    }
+
+    public Section getStartSection() {
+        Map<Station, Section> stationMap =
+            sections.stream()
+                .collect(toMap(Section::getDownStation,
+                    Function.identity()));
+
+        Entry<Station, Section> startEntry =
+            stationMap.entrySet()
+                .stream()
+                .filter(entry -> !stationMap.containsKey(entry.getValue().getUpStation()))
+                .findAny()
+                .orElseThrow(
+                    () -> new IllegalStateException(MESSAGE_NOT_FOUND_UPSTATION));
+
+        return startEntry.getValue();
     }
 }
