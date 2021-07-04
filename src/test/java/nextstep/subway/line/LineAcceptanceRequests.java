@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -24,6 +25,22 @@ public class LineAcceptanceRequests {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
+                .then().log().all()
+                .extract();
+        return response;
+    }
+
+    static ExtractableResponse<Response> requestAddSection(Long lineId, SectionRequest sectionRequest) {
+        Map<String, String> params = new HashMap<>();
+        params.put("downStationId", sectionRequest.getDownStationId().toString());
+        params.put("upStationId", sectionRequest.getUpStationId().toString());
+        params.put("distance", Integer.toString(sectionRequest.getDistance()));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/"+lineId.toString()+"/sections")
                 .then().log().all()
                 .extract();
         return response;

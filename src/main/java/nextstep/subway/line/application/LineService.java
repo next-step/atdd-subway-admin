@@ -6,6 +6,8 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,15 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(RuntimeException::new);
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(RuntimeException::new);
+        Section section = sectionRepository.save(new Section(upStation, downStation, sectionRequest.getDistance()));
+        Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        section.addLine(line);
+        return LineResponse.of(line);
+    }
+
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
@@ -67,11 +78,11 @@ public class LineService {
     }
 
     public void deleteLineById(Long id) {
-        List<Section> sections = lineRepository.findById(id)
+        Sections sections = lineRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("삭제할 Sections가 없습니다.")).getSections();
-        for (Section section : sections) {
+        sections.forEach(section -> {
             sectionRepository.delete(section);
-        }
+        });
         lineRepository.deleteById(id);
     }
 }

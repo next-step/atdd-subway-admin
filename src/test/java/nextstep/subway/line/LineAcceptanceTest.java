@@ -3,8 +3,13 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -28,10 +33,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Autowired
     private StationRepository stationRepository;
 
-    private Long createStation(String stationName) {
+    @Autowired
+    private LineRepository lineRepository;
 
+    @Autowired
+    private SectionRepository sectionRepository;
+
+    private Station createStation(String stationName) {
         Station stationSaved = stationRepository.save(new Station(stationName));
-        return stationSaved.getId();
+        return stationSaved;
+    }
+
+    private Line createLine(String name, String color, Section section) {
+        Line lineSaved = lineRepository.save(new Line(name, color, section));
+        return lineSaved;
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -40,7 +55,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_생성_요청
         LineRequest lineRequest = new LineRequest(NEW_BUNDANG_LINE_NAME, NEW_BUNDANG_LINE_COLOR,
-                createStation("강남역"), createStation("역삼역"), 10);
+                createStation("강남역").getId(), createStation("역삼역").getId(), 10);
         ExtractableResponse<Response> response = requestCreateLine(lineRequest);
 
         // then
@@ -55,7 +70,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest lineRequest = new LineRequest(NEW_BUNDANG_LINE_NAME, NEW_BUNDANG_LINE_COLOR,
-                createStation("강남역"), createStation("역삼역"), 10);
+                createStation("강남역").getId(), createStation("역삼역").getId(), 10);
         requestCreateLine(lineRequest);
 
         // when
@@ -72,16 +87,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철역 강남역 등록되어 있음
-        Long stationKang = createStation("강남역");
-        // 지하철역 역삼역 등록되어 있음
-        Long stationYeok = createStation("역삼역");
+        Station 강남역 = createStation("강남역");
+        Station 역삼역 = createStation("역삼역");
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequestFirst = new LineRequest(NEW_BUNDANG_LINE_NAME, NEW_BUNDANG_LINE_COLOR, stationKang, stationYeok, 10);
+        LineRequest lineRequestFirst = new LineRequest(NEW_BUNDANG_LINE_NAME, NEW_BUNDANG_LINE_COLOR, 강남역.getId(), 역삼역.getId(), 10);
         ExtractableResponse<Response> createResponse1 = requestCreateLine(lineRequestFirst);
         // 지하철_노선_등록되어_있음
-        LineRequest lineRequestSecond = new LineRequest(SECOND_LINE_COLOR, SECOND_LINE_NAME, stationKang, stationYeok, 5);
+        LineRequest lineRequestSecond = new LineRequest(SECOND_LINE_COLOR, SECOND_LINE_NAME, 강남역.getId(), 역삼역.getId(), 5);
         ExtractableResponse<Response> createResponse2 = requestCreateLine(lineRequestSecond);
+
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = requestShowLines();
@@ -104,7 +118,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // 지하철 노선이 등록되어 있음
         LineRequest lineRequest = new LineRequest(NEW_BUNDANG_LINE_NAME, NEW_BUNDANG_LINE_COLOR,
-                createStation("강남역"), createStation("역삼역"), 10);
+                createStation("강남역").getId(), createStation("역삼역").getId(), 10);
         ExtractableResponse<Response> createResponseLine = requestCreateLine(lineRequest);
 
         // when
@@ -122,7 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest lineRequestNew = new LineRequest(NEW_BUNDANG_LINE_COLOR, NEW_BUNDANG_LINE_NAME,
-                createStation("강남역"), createStation("역삼역"), 10);
+                createStation("강남역").getId(), createStation("역삼역").getId(), 10);
         ExtractableResponse<Response> createResponse = requestCreateLine(lineRequestNew);
 
         // when
@@ -142,7 +156,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest lineRequestNew = new LineRequest(NEW_BUNDANG_LINE_COLOR, NEW_BUNDANG_LINE_NAME,
-                createStation("강남역"), createStation("역삼역"), 10);
+                createStation("강남역").getId(), createStation("역삼역").getId(), 10);
         ExtractableResponse<Response> createResponse = requestCreateLine(lineRequestNew);
 
         // when
@@ -153,5 +167,121 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우")
+    @Test
+    void addSection_성공케이스_역사이에_새로운역_등록() {
+        //given
+        // 지하철_노선_등록되어_있음
+        Station 강남역 = createStation("강남역");
+        Station 잠실역 = createStation("잠실역");
+        Station 역삼역 = createStation("역삼역");
+        Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(강남역, 잠실역, 10));
+
+        //when
+        //노선에 구간 추가 요청함
+        ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(5, 강남역.getId(), 역삼역.getId()));
+
+        //then
+        //노선에 구간 추가됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("새로운역을_상행종점으로_등록할 경우")
+    @Test
+    void addSection_성공케이스_새로운역을_상행종점으로_등록() {
+        //given
+        //구간이 등록되어 있음
+        Station 강남역 = createStation("강남역");
+        Station 역삼역 = createStation("역삼역");
+        Station 잠실역 = createStation("잠실역");
+        Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(역삼역, 잠실역, 5));
+
+
+        //when
+        //노선에 구간 추가 요청함
+        ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(5, 강남역.getId(), 역삼역.getId()));
+
+
+        //then
+        //노선에 구간 추가됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("새로운역을_하행종점으로_등록할 경우")
+    @Test
+    void addSection_성공케이스_새로운역을_하행종점으로_등록() {
+        //given
+        //구간이 등록되어 있음
+        Station 강남역 = createStation("강남역");
+        Station 역삼역 = createStation("역삼역");
+        Station 잠실역 = createStation("잠실역");
+        Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+
+        //when
+        //노선에 구간 추가 요청함
+        ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(5, 역삼역.getId(), 잠실역.getId()));
+
+        //then
+        //노선에 구간 추가됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("예외케이스_역사이에_등록시_새로운역구간이_더큰_경우")
+    @Test
+    void addSection_예외케이스_역사이에_등록시_새로운역구간이_더큰경우() {
+        //given
+        //구간이 등록되어 있음
+        Station 강남역 = createStation("강남역");
+        Station 역삼역 = createStation("역삼역");
+        Station 잠실역 = createStation("잠실역");
+        Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+
+        //when
+        //노선에 구간 추가 요청함
+        ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(10, 강남역.getId(), 잠실역.getId()));
+
+        //then
+        //노선에 구간 추가됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("예외케이스_상행역_하행역_모두_이미노선에_등록된경우")
+    @Test
+    void addSection_예외케이스_상행역_하행역_모두_이미노선에_등록된경우() {
+        //given
+        //구간이 등록되어 있음
+        Station 강남역 = createStation("강남역");
+        Station 역삼역 = createStation("역삼역");
+        Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+
+        //when
+        //노선에 구간 추가 요청함
+        ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(5, 강남역.getId(), 역삼역.getId()));
+
+        //then
+        //노선에 구간 추가됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("예외케이스_상행역_하행역_모두_기존구간에_포함되어있지않은_경우")
+    @Test
+    void addSection_예외케이스_상행역_하행역_모두_기존구간에_포함되어있지않은_경우() {
+        //given
+        //구간이 등록되어 있음
+        Station 강남역 = createStation("강남역");
+        Station 역삼역 = createStation("역삼역");
+        Station 잠실역 = createStation("잠실역");
+        Station 잠실나루역 = createStation("잠실나루역");
+        Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+
+        //when
+        //노선에 구간 추가 요청함
+        ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(5, 잠실역.getId(), 잠실나루역.getId()));
+
+        //then
+        //노선에 구간 추가됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

@@ -2,11 +2,13 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,8 +21,13 @@ public class Line extends BaseEntity {
 
     private String color;
 
+/*
     @OneToMany(mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
+*/
+
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -30,13 +37,16 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public Line(String name, String color, Section section) {
+        this.name = name;
+        this.color = color;
+        section.toLine(this);
+        this.sections.initSections(section);
+    }
+
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
-    }
-
-    public void addSection(Section section) {
-        this.sections.add(section);
     }
 
     public Long getId() {
@@ -51,7 +61,13 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        this.sections.forEach(section -> section.getStations().stream().forEach(station -> stations.add(station)));
+        return stations.stream().distinct().collect(Collectors.toList());
     }
 }
