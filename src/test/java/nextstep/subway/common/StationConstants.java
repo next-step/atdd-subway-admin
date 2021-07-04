@@ -1,22 +1,29 @@
 package nextstep.subway.common;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public enum StationConstants {
 
@@ -35,17 +42,18 @@ public enum StationConstants {
     private final Long id;
     private final String name;
 
-    private static final Map<StationConstants, StationResponse> CACHE =
+    private static final EnumMap<StationConstants, StationResponse> CACHE =
         Arrays.stream(values())
-              .collect(collectingAndThen(
-                  toMap(Function.identity(),
-                        c -> new StationResponse(c.getId(), c.getName(), null, null)),
-                  Collections::unmodifiableMap));
+            .collect(
+                toMap(Function.identity(),
+                    c -> new StationResponse(c.getId(), c.getName(), null, null),
+                    (station1, station2) -> station1,
+                    () -> new EnumMap<>(StationConstants.class)));
 
     private static final List<StationResponse> ALL_STATIONS =
         Arrays.stream(values())
-              .map(CACHE::get)
-              .collect(collectingAndThen(toList(), Collections::unmodifiableList));
+            .map(CACHE::get)
+            .collect(collectingAndThen(toList(), Collections::unmodifiableList));
 
     StationConstants(Long id, String name) {
         this.id = id;
@@ -66,18 +74,22 @@ public enum StationConstants {
 
     public static void createAllStations() {
 
-        List<StationResponse> allStations = Arrays.stream(values())
-                                                  .map(CACHE::get)
-                                                  .collect(toList());
+//        EnumMap<StationConstants, StationResponse> map =
+//            Arrays.stream(values())
+//                  .collect(toMap(
+//                      Function.identity(),
+//                      c -> new StationResponse(c.getId(), c.getName(), null, null),
+//                      (station1, station2) -> station1,
+//                      () -> new EnumMap<>(StationConstants.class)));
 
-        allStations.forEach(stationResponse -> {
+        ALL_STATIONS.forEach(stationResponse -> {
             ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
-                           .body(new StationRequest(stationResponse.getName()))
-                           .contentType(MediaType.APPLICATION_JSON_VALUE)
-                           .when().post("/stations")
-                           .then().log().all()
-                           .extract();
+                    .body(new StationRequest(stationResponse.getName()))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/stations")
+                    .then().log().all()
+                    .extract();
 
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         });

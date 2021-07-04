@@ -22,13 +22,13 @@ public class LineQueryService {
 
     public List<LineResponse> findLines() {
         return lineRepository.findAll()
-                             .stream()
-                             .map(LineResponse::of)
-                             .collect(toList());
+            .stream()
+            .map(LineResponse::of)
+            .collect(toList());
     }
 
     public Line findById(Long lineId) {
         return lineRepository.findById(lineId)
-                             .orElseThrow(() -> new NotFoundLineException(lineId));
+            .orElseThrow(() -> new NotFoundLineException(lineId));
     }
 }

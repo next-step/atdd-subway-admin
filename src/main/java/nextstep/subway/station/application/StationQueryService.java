@@ -21,14 +21,14 @@ public class StationQueryService {
 
     public Station findById(Long stationId) {
         return stationRepository.findById(stationId)
-                                .orElseThrow(EntityNotFoundException::new);
+            .orElseThrow(EntityNotFoundException::new);
     }
 
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                       .map(StationResponse::of)
-                       .collect(Collectors.toList());
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
     }
 }

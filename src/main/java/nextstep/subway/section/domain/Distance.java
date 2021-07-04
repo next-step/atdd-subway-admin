@@ -36,6 +36,10 @@ public class Distance implements Serializable {
         return new Distance(this.value - value);
     }
 
+    public Distance plus(int value) {
+        return new Distance(this.value + value);
+    }
+
     public int getValue() {
         return value;
     }
