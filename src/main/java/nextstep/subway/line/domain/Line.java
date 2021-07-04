@@ -34,7 +34,7 @@ public class Line extends BaseEntity {
 		this.color = color;
 	}
 
-	public void addSection(Station upStation, Station downStation, int distance) {
+	public void addStationToSection(Station upStation, Station downStation, int distance) {
 		Section upSection = new Section(this, null, upStation, 0);
 		Section downSection = new Section(this, upStation, downStation, distance);
 
