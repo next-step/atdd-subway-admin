@@ -54,7 +54,7 @@ public class SectionCommandService {
         return sectionRepository.save(entity).getId();
     }
 
-    public LineSections upsert(Long lineId,
+    public LineSections addSection(Long lineId,
         LineSections sections,
         Long upStationId,
         Long downStationId,

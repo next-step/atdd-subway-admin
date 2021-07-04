@@ -41,7 +41,7 @@ public class SectionController {
         @RequestBody SectionRequest request) {
 
         LineSections sections = lineQueryService.findById(lineId).getSections();
-        sectionCommandService.upsert(lineId,
+        sectionCommandService.addSection(lineId,
             sections,
             request.getUpStationId(),
             request.getDownStationId(),
