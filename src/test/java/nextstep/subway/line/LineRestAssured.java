@@ -142,4 +142,18 @@ public class LineRestAssured {
             .then().log().all()
             .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Integer lineId, Integer upStationId, Integer downStationId, Long distance) {
+        return RestAssured.given().log().all()
+            .body(new HashMap<String, String>() {{
+                put("upStationId", upStationId + "");
+                put("downStationId", downStationId + "");
+                put("distance", distance + "");
+            }})
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines/" + lineId + "/sections")
+            .then().log().all()
+            .extract();
+    }
 }
