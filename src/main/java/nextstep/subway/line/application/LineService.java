@@ -2,12 +2,12 @@ package nextstep.subway.line.application;
 
 import javax.persistence.EntityNotFoundException;
 
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.*;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
-import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.application.StationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,17 +28,33 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Section section = getSectionFrom(request);
+        Section section = createSectionFrom(request);
         Line line = getLineFrom(request, section);
 
         return LineResponse.of(lineRepository.save(line));
     }
 
-    private Section getSectionFrom(LineRequest request) {
+    public SectionResponse saveSection(Long lineId, SectionRequest request) {
+        Line line = getLineFrom(lineId);
+        Section section = createSectionFrom(request);
+        line.add(section);
+
+        return SectionResponse.of(section);
+    }
+
+    private Section createSectionFrom(LineRequest request) {
         return new Section(
             stationService.getStation(request.getUpStationId()),
             stationService.getStation(request.getDownStationId()),
-            request.getDistance()
+            new SectionDistance(request.getDistance())
+        );
+    }
+
+    private Section createSectionFrom(SectionRequest request) {
+        return new Section(
+            stationService.getStation(request.getUpStationId()),
+            stationService.getStation(request.getDownStationId()),
+            new SectionDistance(request.getDistance())
         );
     }
 
@@ -47,6 +63,10 @@ public class LineService {
         line.add(section);
 
         return line;
+    }
+
+    private Line getLineFrom(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional(readOnly = true)

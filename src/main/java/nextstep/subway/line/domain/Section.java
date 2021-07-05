@@ -24,12 +24,13 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private Integer distance;
+    @Embedded
+    private SectionDistance distance;
 
     public Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, SectionDistance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -43,11 +44,36 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public Integer getDistance() {
+    public SectionDistance getDistance() {
         return distance;
     }
 
     public void add(Line line) {
         this.line = line;
+    }
+
+    public boolean isBetweenAndUpStationSameWith(Section oldSection) {
+        return upStation.equals(oldSection.getUpStation()) && !downStation.equals(oldSection.getDownStation());
+    }
+
+    public boolean isBetweenAndDownStationSameWith(Section oldSection) {
+        return downStation.equals(oldSection.getDownStation()) && !upStation.equals(oldSection.getUpStation());
+    }
+
+    public boolean isAtTheEndWith(Section oldSection) {
+        return downStation.equals(oldSection.getUpStation()) || upStation.equals(oldSection.getDownStation());
+    }
+
+    public void updateBy(Station newDownStation, SectionDistance newDistance) {
+        updateDownStationTo(newDownStation);
+        updateDistanceTo(newDistance);
+    }
+
+    private void updateDownStationTo(Station newDownStation) {
+        this.downStation = newDownStation;
+    }
+
+    private void updateDistanceTo(SectionDistance newDistance) {
+        this.distance = newDistance;
     }
 }
