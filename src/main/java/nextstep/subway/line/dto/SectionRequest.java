@@ -8,8 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SectionRequest {
-    private Long id;
     private Long upStationId;
     private Long downStationId;
     private Long distance;
+
 }

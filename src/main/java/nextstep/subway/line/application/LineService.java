@@ -5,6 +5,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
@@ -33,7 +35,7 @@ public class LineService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,"invalid station id: "+ request.getUpStationId()));
         Station downStation = stationService.findById(request.getDownStationId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,"invalid station id: "+ request.getDownStationId()));
-        Section downSection = Section.of(downStation,"0");
+        Section downSection = Section.of(downStation);
         Section upSection = Section.of(upStation, request.getDistance());
 
         Line persistLine = lineRepository.save(request.toLine(upSection,downSection));
@@ -63,7 +65,21 @@ public class LineService {
         lineRepository.delete(line);
     }
 
-    public void createSection(Long lineId) {
-        
+    public SectionResponse createSection(Long lineId, SectionRequest sectionRequest) {
+        Long upStationId = sectionRequest.getUpStationId();
+        Long downStationId = sectionRequest.getDownStationId();
+
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(()->new NotFoundException("invalid line id " + lineId));
+        Station upStation = stationService.findById(upStationId)
+                .orElseThrow(()->new NotFoundException("invalid station id " + upStationId));
+        Station downStation = stationService.findById(downStationId)
+                .orElseThrow(()->new NotFoundException("invalid station id " + upStationId));
+
+        Section upSection = Section.of(upStation,sectionRequest.getDistance());
+        Section downSection = Section.of(downStation,0L);
+
+        line.addSection(upSection,downSection);
+        return SectionResponse.of(upStation,downStation,sectionRequest.getDistance());
     }
 }
