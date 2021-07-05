@@ -59,4 +59,12 @@ public class Section {
 	public Integer getDistance() {
 		return distance.getDistance();
 	}
+
+	public int getSubtractDistance(Section section) {
+		return this.distance.subtract(section.getDistance());
+	}
+
+	public void updateDownStation(Station downStation) {
+		this.downStation = downStation;
+	}
 }

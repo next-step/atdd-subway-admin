@@ -6,10 +6,14 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.exception.NotFoundLineException;
+import nextstep.subway.exception.NotFoundStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -62,5 +66,24 @@ public class LineService {
 		if (lineRepository.findByName(request.getName()).isPresent()) {
 			throw new IllegalArgumentException("노선이 이미 존재합니다.");
 		}
+	}
+
+	public LineResponse addNewSection(Long lineId, SectionRequest sectionRequest) {
+
+		Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundLineException("Line이 존재하지 않습니다."));
+
+		Section newSection = toSection(line, sectionRequest);
+		line.addNewSection(newSection);
+		return LineResponse.of(line);
+	}
+
+	private Section toSection(Line line, SectionRequest sectionRequest) {
+
+		Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
+			.orElseThrow(() -> new NotFoundStationException("Station이 존재하지 않습니다."));
+		Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
+			.orElseThrow(() -> new NotFoundStationException("Station이 존재하지 않습니다."));
+
+		return new Section(line, upStation, downStation, sectionRequest.getDistance());
 	}
 }

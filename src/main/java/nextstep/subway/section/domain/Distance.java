@@ -20,4 +20,11 @@ public class Distance {
 	public void setDistance(int distance) {
 		this.distance = distance;
 	}
+
+	public int subtract(int distance) {
+		if(this.distance <= distance){
+			throw new IllegalArgumentException("길이는 기존 역 사이의 길이보다 작아야합니다.");
+		}
+		return this.distance - distance;
+	}
 }
