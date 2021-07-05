@@ -21,11 +21,6 @@ public class Line extends BaseEntity {
 
     private String color;
 
-/*
-    @OneToMany(mappedBy = "line")
-    private List<Section> sections = new ArrayList<>();
-*/
-
     @Embedded
     private Sections sections = new Sections();
 

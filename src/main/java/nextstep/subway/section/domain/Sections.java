@@ -1,6 +1,8 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.exception.CanNotAddNewSectionException;
+import nextstep.subway.exception.CanNotRemoveStationException;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
@@ -109,5 +111,54 @@ public class Sections {
                 .map(StationResponse::of))
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public void removeStation(Station removeStation) {
+        //가운데역삭제
+        Section foundUpSection = sections.stream()
+                .filter(oldSection -> oldSection.getDownStation().equals(removeStation))
+                .findFirst().orElse(null);
+
+        Section foundDownSection = sections.stream()
+                .filter(oldSection -> oldSection.getUpStation().equals(removeStation))
+                .findFirst().orElse(null);
+
+        validateRemoveStation(foundUpSection, foundDownSection);
+        removeMiddleStation(foundUpSection, foundDownSection);
+        removeDownSectionStation(foundUpSection, foundDownSection);
+        removeUpSectionStation(foundUpSection, foundDownSection);
+
+
+    }
+
+    private void validateRemoveStation(Section foundUpSection, Section foundDownSection) {
+        if (sections.size() <= 1)
+            throw new CanNotRemoveStationException("구간이 하나 밖에 없습니다.");
+
+        if (foundUpSection == null && foundDownSection == null) {
+            throw new CanNotRemoveStationException("삭제할 역이 없습니다.");
+        }
+    }
+
+    private void removeMiddleStation(Section foundUpSection, Section foundDownSection) {
+        if (foundUpSection != null && foundDownSection != null) {
+            sections.remove(foundUpSection);
+            sections.remove(foundDownSection);
+            sections.add(new Section(foundUpSection.getUpStation(),
+                    foundDownSection.getDownStation(),
+                    foundUpSection.getDistance() + foundDownSection.getDistance()));
+        }
+    }
+
+    private void removeDownSectionStation(Section foundUpSection, Section foundDownSection) {
+        if (foundUpSection == null && foundDownSection != null) {
+            sections.remove(foundDownSection);
+        }
+    }
+
+    private void removeUpSectionStation(Section foundUpSection, Section foundDownSection) {
+        if (foundUpSection != null && foundDownSection == null) {
+            sections.remove(foundUpSection);
+        }
     }
 }

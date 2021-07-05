@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.exception.CanNotFoundLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -84,5 +85,10 @@ public class LineService {
             sectionRepository.delete(section);
         });
         lineRepository.deleteById(id);
+    }
+
+    public void removeSectionByStationId(Long lineId, Station station) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new CanNotFoundLineException("해당 이름의 노선이 존재하지 않습니다."));
+        line.getSections().removeStation(station);
     }
 }

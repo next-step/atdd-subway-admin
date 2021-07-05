@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.exception.CanNotRemoveStationException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
@@ -157,5 +158,105 @@ class LineTest {
             if (section.getUpStation().getName().equals("강남역"))
                 assertThat(section.getDistance()).isEqualTo(5);
         });
+    }
+
+    @DisplayName("LineTest_성공케이스_중간역제거_경우")
+    @Test
+    void Line_removeStation_중간역제거_성공() {
+        //given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 잠실역 = new Station("잠실역");
+
+        Line line = new Line(SECOND_LINE_NAME,SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+        line.getSections().addSection(new Section(역삼역, 잠실역, 5));
+
+        //when
+        line.getSections().removeStation(역삼역);
+
+        //then
+        assertThat(line.getStations()).containsExactly(강남역, 잠실역);
+
+        line.getSections().forEach(section -> {
+            if (section.getUpStation().getName().equals("강남역"))
+                assertThat(section.getDistance()).isEqualTo(10);
+        });
+    }
+
+    @DisplayName("LineTest_성공케이스_상행역제거_경우")
+    @Test
+    void Line_removeStation_상행역제거_성공() {
+        //given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 잠실역 = new Station("잠실역");
+
+        Line line = new Line(SECOND_LINE_NAME,SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+        line.getSections().addSection(new Section(역삼역, 잠실역, 5));
+
+        //when
+        line.getSections().removeStation(강남역);
+
+        //then
+        assertThat(line.getStations()).containsExactly(역삼역, 잠실역);
+
+        line.getSections().forEach(section -> {
+            if (section.getUpStation().getName().equals("역삼역"))
+                assertThat(section.getDistance()).isEqualTo(5);
+        });
+    }
+
+    @DisplayName("LineTest_성공케이스_하행역제거_경우")
+    @Test
+    void Line_removeStation_하행역제거_성공() {
+        //given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 잠실역 = new Station("잠실역");
+
+        Line line = new Line(SECOND_LINE_NAME,SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+        line.getSections().addSection(new Section(역삼역, 잠실역, 5));
+
+        //when
+        line.getSections().removeStation(잠실역);
+
+        //then
+        assertThat(line.getStations()).containsExactly(강남역, 역삼역);
+
+        line.getSections().forEach(section -> {
+            if (section.getUpStation().getName().equals("강남역"))
+                assertThat(section.getDistance()).isEqualTo(5);
+        });
+    }
+
+    @DisplayName("LineTest_예외케이스_없는역을_삭제하는_경우")
+    @Test
+    void Line_addSection_예외케이스_없는역을_삭제하는_경우() {
+        //given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 잠실역 = new Station("잠실역");
+        Station 잠실나루역 = new Station("잠실나루역");
+
+        Line line = new Line(SECOND_LINE_NAME,SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+        line.getSections().addSection(new Section(역삼역, 잠실역, 5));
+
+        //when-then
+        assertThatThrownBy(() ->line.getSections().removeStation(잠실나루역))
+                .isInstanceOf(CanNotRemoveStationException.class);
+    }
+
+    @DisplayName("LineTest_예외케이스_구간하나일때_삭제하는_경우")
+    @Test
+    void Line_addSection_예외케이스_구간하나일때_삭제하는_경우() {
+        //given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+
+        Line line = new Line(SECOND_LINE_NAME,SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+
+        //when-then
+        assertThatThrownBy(() ->line.getSections().removeStation(강남역))
+                .isInstanceOf(CanNotRemoveStationException.class);
     }
 }
