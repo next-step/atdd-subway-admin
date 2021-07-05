@@ -3,29 +3,24 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.assertj.core.api.Assertions;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LineAcceptance {
+public class LineAcceptance extends AcceptanceTest {
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
 
-        return RestAssured
-                .given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all().extract();
+        return post(lineRequest, "/lines");
     }
+
 
     public static void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -37,12 +32,10 @@ public class LineAcceptance {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회() {
-        return RestAssured
-                .given().log().all()
-                .when().get("/lines")
-                .then().log().all().extract();
+        return get("/lines");
 
     }
+
 
     public static void 지하철_노선_목록_포함됨(List<ExtractableResponse<Response>> createResponseList, ExtractableResponse<Response> response) {
         List<Long> expectedLineIds = createResponseList.stream()
@@ -63,7 +56,7 @@ public class LineAcceptance {
         assertThat(
                 response.jsonPath()
                         .getObject(".", LineResponse.class).getId().toString()
-        ).isEqualTo(
+        ).hasToString(
                 createResponse.header("Location")
                         .split("/")[2]
         );
@@ -78,12 +71,7 @@ public class LineAcceptance {
 
 
     public static ExtractableResponse<Response> 지하철_노선_수정_요청(LineRequest lineRequest, ExtractableResponse<Response> createResponse) {
-        return RestAssured
-                .given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(createResponse.header("Location"))
-                .then().log().all().extract();
+        return put(lineRequest, createResponse.header("Location"));
     }
 
     public static void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
@@ -95,10 +83,7 @@ public class LineAcceptance {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> createResponse) {
-        return RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete(createResponse.header("Location"))
-                .then().log().all().extract();
+        return delete(createResponse.header("Location"));
     }
+
 }

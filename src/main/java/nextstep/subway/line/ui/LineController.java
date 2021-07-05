@@ -4,7 +4,6 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +22,7 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
@@ -51,12 +50,12 @@ public class LineController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+    public <T> ResponseEntity<T> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity handleNoSuchElementException(NoSuchElementException e) {
+    public <T> ResponseEntity<T> handleNoSuchElementException(NoSuchElementException e) {
         return ResponseEntity.badRequest().build();
     }
 }
