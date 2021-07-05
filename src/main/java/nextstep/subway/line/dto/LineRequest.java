@@ -2,7 +2,7 @@ package nextstep.subway.line.dto;
 
 import lombok.Builder;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.domain.Section;
+import nextstep.subway.line.domain.Section;
 
 
 @Builder
@@ -36,7 +36,7 @@ public class LineRequest {
     public Line toLine() {
         return new Line(this);
     }
-    public Line toLine(Section... sections) {
-        return new Line(this,sections);
+    public Line toLine(Section upSection, Section downSection) {
+        return new Line(this,upSection,downSection);
     }
 }

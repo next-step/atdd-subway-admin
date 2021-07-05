@@ -19,6 +19,10 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
+    public Station(long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

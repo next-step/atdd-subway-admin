@@ -63,6 +63,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [x] 노선 수정
     - [x] 노선 제거
 2. [x] 인수테스트 작성
-3. [ ] 노선 생성 시 상행선, 하행선 추가
-4. [ ] 노선 조회 시 역 목록 추가
+3. [x] 노선 생성 시 상행선, 하행선 추가
+4. [x] 노선 조회 시 역 목록 추가
+5. [ ] 지하철 구간 등록 추가
+6. [ ] 예외처리 추가
 

@@ -255,7 +255,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .build();
     }
 
-    private ExtractableResponse<Response> createLine(LineRequest req) {
+    public static ExtractableResponse<Response> createLine(LineRequest req) {
         return RestAssured
                 .given().log().all()
                 .body(req)

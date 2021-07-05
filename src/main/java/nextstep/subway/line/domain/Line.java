@@ -2,17 +2,11 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.station.domain.Section;
-import nextstep.subway.station.domain.Sections;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.Stations;
-import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
@@ -25,7 +19,7 @@ public class Line extends BaseEntity {
 
     @Embedded
     @AssociationOverride(name ="sections", joinColumns = {@JoinColumn(name="line_id")})
-    private Sections sections = new Sections();
+    private Sections sections;
 
     public Line() {
     }
@@ -40,12 +34,9 @@ public class Line extends BaseEntity {
         this.color = request.getColor();
     }
 
-    public Line(LineRequest request, Section... sections) {
+    public Line(LineRequest request, Section upSection, Section downSection) {
         this(request);
-        for( Section section: sections) {
-            this.sections.addSection(section);
-        }
-
+        sections = new Sections(upSection, downSection);
     }
 
     public void update(Line line) {
@@ -82,5 +73,13 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public Sections getSections() {
+        return sections;
+    }
+
+    public void addSection(Section upSection, Section downSection) {
+        this.sections.addSection(upSection,downSection);
     }
 }

@@ -5,11 +5,15 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/lines")
@@ -50,10 +54,24 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity<SectionResponse> createSection(@PathVariable Long lineId,
+                                                         @RequestBody SectionRequest sectionRequest) {
+
+        return ResponseEntity.ok(lineService.createSection(lineId, sectionRequest));
+    }
+
     @ExceptionHandler(value={NotFoundException.class})
     public ResponseEntity errorHandler(Exception ex) {
         //log ex
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(value={IllegalArgumentException.class})
+    public ResponseEntity illegalArgumentHandler(Exception ex) {
+        Map<String,Object> errResponse = new HashMap<>();
+        errResponse.put("message",ex.getMessage());
+        return ResponseEntity.badRequest().body(errResponse);
     }
 
 }
