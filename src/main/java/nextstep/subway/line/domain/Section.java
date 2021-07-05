@@ -53,18 +53,15 @@ public class Section extends BaseEntity {
     }
 
     public boolean isBetweenAndUpStationSameWith(Section oldSection) {
-        return upStation.getId().equals(oldSection.getUpStation().getId()) &&
-            !downStation.getId().equals(oldSection.getDownStation().getId());
+        return upStation.equals(oldSection.getUpStation()) && !downStation.equals(oldSection.getDownStation());
     }
 
     public boolean isBetweenAndDownStationSameWith(Section oldSection) {
-        return downStation.getId().equals(oldSection.getDownStation().getId()) &&
-            !upStation.getId().equals(oldSection.getUpStation().getId());
+        return downStation.equals(oldSection.getDownStation()) && !upStation.equals(oldSection.getUpStation());
     }
 
     public boolean isAtTheEndWith(Section oldSection) {
-        return downStation.getId().equals(oldSection.getUpStation().getId()) ||
-            upStation.getId().equals(oldSection.getDownStation().getId());
+        return downStation.equals(oldSection.getUpStation()) || upStation.equals(oldSection.getDownStation());
     }
 
     public void updateBy(Station newDownStation, SectionDistance newDistance) {
