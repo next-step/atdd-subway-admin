@@ -28,7 +28,7 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Section section = getSectionFrom(request);
+        Section section = createSectionFrom(request);
         Line line = getLineFrom(request, section);
 
         return LineResponse.of(lineRepository.save(line));
@@ -36,13 +36,13 @@ public class LineService {
 
     public SectionResponse saveSection(Long lineId, SectionRequest request) {
         Line line = getLineFrom(lineId);
-        Section section = getSectionFrom(request);
+        Section section = createSectionFrom(request);
         line.add(section);
 
         return SectionResponse.of(section);
     }
 
-    private Section getSectionFrom(LineRequest request) {
+    private Section createSectionFrom(LineRequest request) {
         return new Section(
             stationService.getStation(request.getUpStationId()),
             stationService.getStation(request.getDownStationId()),
@@ -50,7 +50,7 @@ public class LineService {
         );
     }
 
-    private Section getSectionFrom(SectionRequest request) {
+    private Section createSectionFrom(SectionRequest request) {
         return new Section(
             stationService.getStation(request.getUpStationId()),
             stationService.getStation(request.getDownStationId()),
