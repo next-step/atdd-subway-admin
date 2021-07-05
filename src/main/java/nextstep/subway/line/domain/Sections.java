@@ -32,29 +32,42 @@ public class Sections {
         Station newDownStation = newSection.getDownStation();
         SectionDistance newDistance = newSection.getDistance();
 
-        for (Section oldSection : sections) {
-            Station oldDownStation = oldSection.getDownStation();
-            SectionDistance oldDistance = oldSection.getDistance();
+        addSectionIfBetweenAndUpStationSame(newSection, newDownStation, newDistance);
+        addSectionIfBetweenAndDownStationSame(newSection, newUpStation, newDownStation, newDistance);
+        addSectionIfAtTheEnd(newSection, newUpStation, newDownStation, newDistance);
+    }
 
-            if (newSection.isBetweenAndUpStationSameWith(oldSection)) {
-                oldDistance.checkDistanceWith(newDistance);
-                oldSection.updateBy(newDownStation, newDistance);
-                this.sections.add(new Section(newDownStation, oldDownStation, oldDistance.minus(newDistance)));
-                return;
-            }
+    private void addSectionIfBetweenAndUpStationSame(Section newSection, Station newDownStation, SectionDistance newDistance) {
+        sections.stream()
+            .filter(newSection::isBetweenAndUpStationSameWith)
+            .findFirst()
+            .ifPresent(section -> {
+                section.getDistance().checkDistanceWith(newDistance);
+                sections.add(createSectionFrom(newDownStation, section.getDownStation(), section.getDistance().minus(newDistance)));
+                section.updateBy(newDownStation, newDistance);
+            });
+    }
 
-            if (newSection.isBetweenAndDownStationSameWith(oldSection)) {
-                oldDistance.checkDistanceWith(newDistance);
-                oldSection.updateBy(newUpStation, oldDistance.minus(newDistance));
-                this.sections.add(new Section(newUpStation, newDownStation, newDistance));
-                return;
-            }
+    private void addSectionIfBetweenAndDownStationSame(Section newSection, Station newUpStation, Station newDownStation, SectionDistance newDistance) {
+        sections.stream()
+            .filter(newSection::isBetweenAndDownStationSameWith)
+            .findFirst()
+            .ifPresent(section -> {
+                section.getDistance().checkDistanceWith(newDistance);
+                sections.add(createSectionFrom(newUpStation, newDownStation, newDistance));
+                section.updateBy(newUpStation, section.getDistance().minus(newDistance));
+            });
+    }
 
-            if (newSection.isAtTheEndWith(oldSection)) {
-                this.sections.add(new Section(newUpStation, newDownStation, newDistance));
-                return;
-            }
-        }
+    private void addSectionIfAtTheEnd(Section newSection, Station newUpStation, Station newDownStation, SectionDistance newDistance) {
+        sections.stream()
+            .filter(newSection::isAtTheEndWith)
+            .findFirst()
+            .ifPresent(section -> sections.add(createSectionFrom(newUpStation, newDownStation, newDistance)));
+    }
+
+    private Section createSectionFrom(Station upStation, Station downStation, SectionDistance distance) {
+        return new Section(upStation, downStation, distance);
     }
 
     public List<Section> getSections() {
