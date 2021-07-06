@@ -123,6 +123,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
+	@DisplayName("중간에 있는 역을 제거할 경우")
+	@Test
+	void removeSectionAtMiddle() {
+		// given
+		SectionRequest request = new SectionRequest(강남역.getId(), 양재역.getId(), 3);
+		지하철_노선에_역_등록_요청(request);
+
+		// when
+		ExtractableResponse<Response> response = RestAssured
+			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().delete("/lines/" + 신분당선.getId() + "/sections?stationId=" + 양재역.getId())
+			.then().log().all().extract();
+
+		// then
+		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
 	private ExtractableResponse<Response> 지하철_노선에_역_등록_요청(SectionRequest request) {
 		return RestAssured
 			.given().log().all()
