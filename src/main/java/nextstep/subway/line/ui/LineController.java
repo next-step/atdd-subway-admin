@@ -79,4 +79,9 @@ public class LineController {
 	public ResponseEntity handleException(IllegalArgumentException e) {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity handleRunTimeException(RuntimeException e) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+	}
 }
