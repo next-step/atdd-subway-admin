@@ -57,6 +57,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// 새로운 역이 등록되었는지 확인
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		지하철_노선에_등록한_구간이_포함(response, Arrays.asList(강남역.getId(), 양재역.getId(), 광교역.getId()));
+		지하철_노선의_거리가_일치(response, Arrays.asList(0, 3, 7));
 	}
 
 	@DisplayName("새로운 역을 상행 종점으로 등록할 경우")
@@ -71,6 +72,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// 새로운 역이 등록되었는지 확인
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		지하철_노선에_등록한_구간이_포함(response, Arrays.asList(양재역.getId(), 강남역.getId(), 광교역.getId()));
+		지하철_노선의_거리가_일치(response, Arrays.asList(0, 3, 10));
 	}
 
 	@DisplayName("새로운 역을 하행 종점으로 등록할 경우")
@@ -85,6 +87,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		// 새로운 역이 등록되었는지 확인
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		지하철_노선에_등록한_구간이_포함(response, Arrays.asList(강남역.getId(), 광교역.getId(), 양재역.getId()));
+		지하철_노선의_거리가_일치(response, Arrays.asList(0, 10, 3));
 	}
 
 	@DisplayName("역 사이에 새로운 역 등록시, 기존역 사이 길이보다 크거나 같으면 등록할 수 없는지 테스트")
@@ -139,6 +142,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		지하철_노선에_등록한_구간이_포함(response, Arrays.asList(강남역.getId(), 광교역.getId()));
+		지하철_노선의_거리가_일치(response, Arrays.asList(0, 10));
 	}
 
 	private ExtractableResponse<Response> 지하철_노선에_역_등록_요청(SectionRequest request) {
@@ -155,6 +160,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.map(SectionResponse::getId)
 			.collect(Collectors.toList());
 		Assertions.assertThat(resultStationIds).isEqualTo(expectedStationIds);
+	}
+
+	private void 지하철_노선의_거리가_일치(ExtractableResponse<Response> response, List<Integer> expectedDistances){
+		List<Integer> resultStationIds = response.jsonPath().getList("sections", SectionResponse.class).stream()
+			.map(SectionResponse::getDistance)
+			.collect(Collectors.toList());
+		Assertions.assertThat(resultStationIds).isEqualTo(expectedDistances);
 	}
 }
 

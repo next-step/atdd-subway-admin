@@ -26,4 +26,8 @@ public class SectionResponse {
 	public Long getId() {
 		return id;
 	}
+
+	public int getDistance() {
+		return distance;
+	}
 }
