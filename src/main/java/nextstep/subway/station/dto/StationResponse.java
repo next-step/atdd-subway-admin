@@ -15,10 +15,6 @@ public class StationResponse {
         return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
     }
 
-    public Station toStation() {
-        return new Station(id, name);
-    }
-
     public StationResponse() {
     }
 
