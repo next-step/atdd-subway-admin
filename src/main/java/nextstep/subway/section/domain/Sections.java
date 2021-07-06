@@ -121,8 +121,7 @@ public class Sections {
 
 	private void addUpSection(Section newSection, Section oldSection) {
 		int distance = oldSection.getSubtractDistance(newSection);
-		sections.add(
-			new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
+		sections.add(new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
 		sections.remove(oldSection);
 	}
 
