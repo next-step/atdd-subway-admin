@@ -10,7 +10,6 @@ import javax.persistence.OneToMany;
 
 import nextstep.subway.exception.DeleteSectionException;
 import nextstep.subway.exception.InvalidSectionException;
-import nextstep.subway.exception.NotFoundStationException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
