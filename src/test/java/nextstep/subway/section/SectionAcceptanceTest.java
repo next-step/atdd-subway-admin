@@ -167,6 +167,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선의_거리가_일치(response2, Arrays.asList(0, 3));
 	}
 
+	@DisplayName("하행 종점에 있는 역을 제거할 경우")
+	@Test
+	void removeSectionAtLast() {
+		// given
+		SectionRequest request = new SectionRequest(광교역.getId(), 판교역.getId(), 3);
+		ExtractableResponse<Response> response1 = 지하철_노선에_역_등록_요청(request);
+		지하철_노선에_등록한_구간이_포함(response1, Arrays.asList(강남역.getId(), 광교역.getId(), 판교역.getId()));
+
+		// when
+		ExtractableResponse<Response> response2 = RestAssured
+			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().delete("/lines/" + 신분당선.getId() + "/sections?stationId=" + 강남역.getId())
+			.then().log().all().extract();
+
+		// then
+		Assertions.assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
+		지하철_노선에_등록한_구간이_포함(response2, Arrays.asList(광교역.getId(), 판교역.getId()));
+		지하철_노선의_거리가_일치(response2, Arrays.asList(0, 3));
+	}
+
 	private ExtractableResponse<Response> 지하철_노선에_역_등록_요청(SectionRequest request) {
 		return RestAssured
 			.given().log().all()

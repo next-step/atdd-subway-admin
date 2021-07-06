@@ -37,10 +37,6 @@ public class Sections {
 	}
 
 	public void remove(Long stationId) {
-		// TODO : 중간역을 삭제 -> 삭제할 역의 하행역의 상행선을 삭제할 역의 하행선과 연결.
-		// TODO : 삭제할 역 찾기 -> 구간에서 상행선이나 하행선 중 삭제할 역과 같은 id. -> 하행선만 찾으면 된다.!!
-		//  왜냐면 맨앞에 구간은 (null, A) 중간 (A, B), 마지막 (B, C) 구간이니깐 삭제할 역은 어떤 구간이든 하행선에 포함되있으면 찾을 수 있음.
-
 		Section deleteSection = this.sections.stream()
 			.filter(section -> section.getDownStation().getId() == stationId)
 			.findFirst()
