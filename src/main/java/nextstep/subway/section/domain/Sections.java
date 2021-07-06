@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.exception.DeleteSectionException;
 import nextstep.subway.exception.InvalidSectionException;
 import nextstep.subway.exception.NotFoundStationException;
 import nextstep.subway.station.domain.Station;
@@ -37,12 +38,15 @@ public class Sections {
 	}
 
 	public void remove(Long stationId) {
+		if (this.sections.size() == 2) {
+			throw new DeleteSectionException("구간이 하나만 존재하므로 지울 수 없습니다.");
+		}
+
 		Section deleteSection = this.sections.stream()
 			.filter(section -> section.getDownStation().getId() == stationId)
 			.findFirst()
-			.orElseThrow(NotFoundStationException::new);
+			.orElseThrow(() -> new DeleteSectionException("존재하지 않는 구간은 지울 수 없습니다."));
 
-		// 찾은 것의 하행선을 상행으로 가지고 있는 애를 찾아서 찾은 것의 상행선으로 업데이트
 		this.sections.stream()
 			.filter(section -> section.getUpStation() == deleteSection.getDownStation())
 			.findFirst()
@@ -117,7 +121,8 @@ public class Sections {
 
 	private void addUpSection(Section newSection, Section oldSection) {
 		int distance = oldSection.getSubtractDistance(newSection);
-		sections.add(new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
+		sections.add(
+			new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
 		sections.remove(oldSection);
 	}
 
