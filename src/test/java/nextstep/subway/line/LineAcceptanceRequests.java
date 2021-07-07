@@ -46,6 +46,18 @@ public class LineAcceptanceRequests {
         return response;
     }
 
+    static ExtractableResponse<Response> requestRemoveStation(Long lineId, Long stationId) {
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .queryParam("stationId", stationId)
+                .delete("/lines/"+lineId.toString()+"/sections")
+                .then().log().all()
+                .extract();
+        return response;
+    }
+
     static ExtractableResponse<Response> requestShowLines() {
         return RestAssured.given().log().all()
                 .when()

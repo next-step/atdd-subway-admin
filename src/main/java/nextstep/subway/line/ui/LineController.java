@@ -4,6 +4,9 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +18,12 @@ import java.util.List;
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
+    private final StationService stationService;
 
-    public LineController(final LineService lineService) {
+
+    public LineController(final LineService lineService, StationService stationService) {
         this.lineService = lineService;
+        this.stationService = stationService;
     }
 
     @PostMapping
@@ -51,6 +57,12 @@ public class LineController {
     public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
         LineResponse line = lineService.addSection(id, sectionRequest);
         return ResponseEntity.ok().body(line);
+    }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity removeStation(@PathVariable Long id, @RequestParam Long stationId) {
+        lineService.removeSectionByStationId(id, stationId);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

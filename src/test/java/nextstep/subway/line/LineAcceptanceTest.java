@@ -3,6 +3,8 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.exception.CanNotRemoveStationException;
+import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -26,6 +28,7 @@ import static nextstep.subway.common.Constants.*;
 import static nextstep.subway.line.LineAcceptanceRequests.*;
 import static nextstep.subway.station.StationAcceptanceRequests.requestCreateStation;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -43,6 +46,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Station stationSaved = stationRepository.save(new Station(stationName));
         return stationSaved;
     }
+
+    private Section createSection(Station upStation, Station downStation, int distnace) {
+        Section sectionSaved = sectionRepository.save(new Section(upStation, downStation, distnace));
+        return sectionSaved;
+    }
+
+    private Line addSection(Long id, Section section) {
+        Section sectionSaved = sectionRepository.save(section);
+        Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        sectionSaved.addLine(line);
+        return line;
+    }
+
 
     private Line createLine(String name, String color, Section section) {
         Line lineSaved = lineRepository.save(new Line(name, color, section));
@@ -239,11 +255,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
 
         //when
-        //노선에 구간 추가 요청함
         ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(10, 강남역.getId(), 잠실역.getId()));
 
         //then
-        //노선에 구간 추가됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -257,11 +271,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
 
         //when
-        //노선에 구간 추가 요청함
         ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(5, 강남역.getId(), 역삼역.getId()));
 
         //then
-        //노선에 구간 추가됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -277,11 +289,104 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
 
         //when
-        //노선에 구간 추가 요청함
         ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(5, 잠실역.getId(), 잠실나루역.getId()));
 
         //then
-        //노선에 구간 추가됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간의_가운데역을_제거하는_경우")
+    @Test
+    void removeStation_성공케이스_가운데역을_삭제() {
+        //given
+        //구간이 등록되어 있음
+        Station 강남역 = createStation("강남역");
+        Station 역삼역 = createStation("역삼역");
+        Station 잠실역 = createStation("잠실역");
+        Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(역삼역, 잠실역, 5));
+        //노선에 구간 추가 요청함
+        ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(5, 강남역.getId(), 역삼역.getId()));
+
+        //when
+        ExtractableResponse<Response> removedResponse = requestRemoveStation(line.getId(), 역삼역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간의_상행역을_제거하는_경우")
+    @Test
+    void removeStation_성공케이스_상행역을_삭제() {
+        //given
+        //구간이 등록되어 있음
+        Station 강남역 = createStation("강남역");
+        Station 역삼역 = createStation("역삼역");
+        Station 잠실역 = createStation("잠실역");
+        Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(역삼역, 잠실역, 5));
+        //노선에 구간 추가 요청함
+        ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(5, 강남역.getId(), 역삼역.getId()));
+
+        //when
+        ExtractableResponse<Response> removedResponse = requestRemoveStation(line.getId(), 강남역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간의_상행역을_제거하는_경우")
+    @Test
+    void removeStation_성공케이스_하행역을_삭제() {
+        //given
+        //구간이 등록되어 있음
+        Station 강남역 = createStation("강남역");
+        Station 역삼역 = createStation("역삼역");
+        Station 잠실역 = createStation("잠실역");
+        Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(역삼역, 잠실역, 5));
+        //노선에 구간 추가 요청함
+        ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(5, 강남역.getId(), 역삼역.getId()));
+
+        //when
+        ExtractableResponse<Response> removedResponse = requestRemoveStation(line.getId(), 잠실역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("예외케이스_없는역을_제거하는_경우")
+    @Test
+    void removeStation_예외케이스_없는역_삭제() {
+        //given
+        //구간이 등록되어 있음
+        Station 강남역 = createStation("강남역");
+        Station 역삼역 = createStation("역삼역");
+        Station 잠실역 = createStation("잠실역");
+        Station 잠실나루 = createStation("잠실나루");
+        Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(역삼역, 잠실역, 5));
+        //노선에 구간 추가 요청함
+        ExtractableResponse<Response> response = requestAddSection(line.getId(), new SectionRequest(5, 강남역.getId(), 역삼역.getId()));
+
+        //when-then
+        ExtractableResponse<Response> removedResponse = requestRemoveStation(line.getId(), 잠실나루.getId());
+
+        //then
+        assertThat(removedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    @DisplayName("예외케이스_구간하나일때_제거하는_경우")
+    @Test
+    void removeStation_예외케이스_구간하나일때_삭제() {
+        //given
+        //구간이 등록되어 있음
+        Station 강남역 = createStation("강남역");
+        Station 역삼역 = createStation("역삼역");
+        Line line = createLine(SECOND_LINE_NAME, SECOND_LINE_COLOR, new Section(강남역, 역삼역, 5));
+
+        //when-then
+        ExtractableResponse<Response> removedResponse = requestRemoveStation(line.getId(), 강남역.getId());
+
+        //then
+        assertThat(removedResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
     }
 }
