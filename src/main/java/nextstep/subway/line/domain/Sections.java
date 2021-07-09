@@ -89,45 +89,44 @@ public class Sections {
     }
 
     private void remove(Station station) {
-        for (int i = 0; i < sections.size(); i++) {
-            Section section = sections.get(i);
+        removeIfLeftMost(station);
+        removeIfRightMost(station);
+        removeIfInMiddle(station);
+    }
 
-            if (isLeftMostStation(station, section)) {
-                sections.remove(section);
-                return;
-            }
-
-            if (isRightMostStation(station, i, section)) {
-                sections.remove(section);
-                return;
-            }
-
-            Section nextSection = sections.get(i + 1);
-            if (isMiddleStation(station, section, nextSection)) {
+    private void removeIfInMiddle(Station station) {
+        sections
+            .stream()
+            .filter(section -> section.getDownStation().equals(station) && getNextSectionOf(section).getUpStation().equals(station))
+            .findFirst()
+            .ifPresent(section -> {
+                Section nextSection = getNextSectionOf(section);
                 sections.remove(nextSection);
                 section.updateBy(nextSection.getDownStation(), section.getDistance().plus(nextSection.getDistance()));
-                return;
-            }
-        }
+            });
+    }
+
+    private void removeIfRightMost(Station station) {
+        sections
+            .stream()
+            .skip(sections.size() - 1)
+            .filter(section -> section.getDownStation().equals(station))
+            .findFirst()
+            .ifPresent(sections::remove);
+    }
+
+    private void removeIfLeftMost(Station station) {
+        sections.stream()
+            .filter(section -> section.getUpStation().equals(station))
+            .findFirst()
+            .ifPresent(sections::remove);
+    }
+
+    private Section getNextSectionOf(Section section) {
+        return sections.get(sections.indexOf(section) + 1);
     }
 
     private boolean isSizeOne() {
         return sections.size() == 1;
-    }
-
-    private boolean isLeftMostStation(Station station, Section section) {
-        return section.getUpStation().equals(station);
-    }
-
-    private boolean isRightMostStation(Station station, int i, Section section) {
-        return isLastSection(i) && section.getDownStation().equals(station);
-    }
-
-    private boolean isMiddleStation(Station station, Section section, Section nextSection) {
-        return section.getDownStation().equals(station) && nextSection.getUpStation().equals(station);
-    }
-
-    private boolean isLastSection(int i) {
-        return i + 1 == sections.size();
     }
 }
