@@ -77,6 +77,13 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
+	public LineResponse removeSectionByStationId(Long lineId, Long stationId) {
+		Line line = lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
+
+		line.removeSection(stationId);
+		return LineResponse.of(line);
+	}
+
 	private Section toSection(Line line, SectionRequest sectionRequest) {
 
 		Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
@@ -86,4 +93,5 @@ public class LineService {
 
 		return new Section(line, upStation, downStation, sectionRequest.getDistance());
 	}
+
 }

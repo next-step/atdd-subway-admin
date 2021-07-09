@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.exception.DeleteSectionException;
 import nextstep.subway.exception.InvalidSectionException;
 import nextstep.subway.station.domain.Station;
 
@@ -33,6 +34,24 @@ public class Sections {
 		}
 
 		this.sections.add(section);
+	}
+
+	public void remove(Long stationId) {
+		if (this.sections.size() == 2) {
+			throw new DeleteSectionException("구간이 하나만 존재하므로 지울 수 없습니다.");
+		}
+
+		Section deleteSection = this.sections.stream()
+			.filter(section -> section.getDownStation().getId() == stationId)
+			.findFirst()
+			.orElseThrow(() -> new DeleteSectionException("존재하지 않는 구간은 지울 수 없습니다."));
+
+		this.sections.stream()
+			.filter(section -> section.getUpStation() == deleteSection.getDownStation())
+			.findFirst()
+			.ifPresent(section -> section.updateUpStation(deleteSection.getUpStation(), deleteSection.getDistance()));
+
+		this.sections.remove(deleteSection);
 	}
 
 	private void checkExistBoth(Section section) {
@@ -95,13 +114,14 @@ public class Sections {
 		}
 
 		int distance = oldSection.getSubtractDistance(newSection);
-		sections.add(new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
+		sections.add(new Section(newSection.getLine(), oldSection.getUpStation(), newSection.getUpStation(), distance));
 		sections.remove(oldSection);
 	}
 
 	private void addUpSection(Section newSection, Section oldSection) {
 		int distance = oldSection.getSubtractDistance(newSection);
-		sections.add(new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
+		sections.add(
+			new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), distance));
 		sections.remove(oldSection);
 	}
 
