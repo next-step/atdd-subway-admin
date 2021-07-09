@@ -14,11 +14,11 @@ public class SectionDistance {
     }
 
     public SectionDistance plus(SectionDistance requestDistance) {
-        return new SectionDistance(this.distance + requestDistance.distance);
+        return new SectionDistance(distance + requestDistance.distance);
     }
 
     public SectionDistance minus(SectionDistance requestDistance) {
-        return new SectionDistance(this.distance - requestDistance.distance);
+        return new SectionDistance(distance - requestDistance.distance);
     }
 
     public Integer getDistance() {
