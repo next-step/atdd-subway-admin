@@ -5,6 +5,7 @@ import nextstep.subway.common.BaseEntity;
 import javax.persistence.*;
 
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
 
 @Entity
@@ -37,8 +38,7 @@ public class Line extends BaseEntity {
     }
 
     public void add(Section section) {
-        section.add(this);
-        sections.add(section);
+        sections.add(section, this);
     }
 
     public Long getId() {
@@ -62,5 +62,9 @@ public class Line extends BaseEntity {
 
     public Stations getAllStations(){
         return sections.getAllStations();
+    }
+
+    public void removeSectionBy(Station station) {
+        sections.removeSectionBy(station);
     }
 }

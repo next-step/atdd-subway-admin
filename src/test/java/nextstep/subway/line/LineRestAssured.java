@@ -156,4 +156,14 @@ public class LineRestAssured {
             .then().log().all()
             .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선의_지하철역_제거_요청(Integer lineId, Integer stationId) {
+        return RestAssured.given().log().all()
+            .queryParam("stationId", stationId)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete("/lines/" + lineId + "/sections")
+            .then().log().all()
+            .extract();
+    }
 }

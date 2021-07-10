@@ -12,8 +12,8 @@ import org.springframework.http.HttpStatus;
 import static nextstep.subway.line.LineRestAssured.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철 구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+@DisplayName("지하철 구간 추가 관련 기능")
+public class SectionCreateAcceptanceTest extends AcceptanceTest {
     private Integer lineId;
     private Integer oldUpStationId;
     private Integer oldDownStationId;
