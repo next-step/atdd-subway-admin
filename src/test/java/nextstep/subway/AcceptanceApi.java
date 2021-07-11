@@ -6,9 +6,14 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
 
 public class AcceptanceApi {
+    public static ExtractableResponse<Response> 지하철_구간_생성_요청(Long id, SectionRequest params) {
+        return POST_요청("/lines/" + id +"/sections", params);
+    }
+
     public static ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest params) {
         return POST_요청("/stations", params);
     }

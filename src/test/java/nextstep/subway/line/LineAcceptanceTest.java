@@ -38,7 +38,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선", 1L,2L, 10L));
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선", 1L,2L, 10));
 
         // then
         // 지하철_노선_생성됨
@@ -51,7 +51,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest params = makeParam("bg-red-600", "신분당선", 1L,2L, 10L);
+        LineRequest params = makeParam("bg-red-600", "신분당선", 1L,2L, 10);
         지하철_노선_생성_요청(params);
 
         // when
@@ -69,10 +69,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
 
         // 지하철_노선_등록되어_있음
-        LineRequest 신분당선 = makeParam("bg-red-600", "신분당선", 1L,2L, 10L);
+        LineRequest 신분당선 = makeParam("bg-red-600", "신분당선", 1L,2L, 10);
         ExtractableResponse<Response> 신분당선_생성_응답 = 지하철_노선_생성_요청(신분당선);
         // 지하철_노선_등록되어_있음
-        LineRequest 분당선 = makeParam("bg-red-600", "분당선", 3L,4L, 10L);
+        LineRequest 분당선 = makeParam("bg-red-600", "분당선", 3L,4L, 10);
         ExtractableResponse<Response> 분당선_생성_응답 = 지하철_노선_생성_요청(분당선);
 
         // when
@@ -102,7 +102,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선", 1L,2L, 10L));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선", 1L,2L, 10));
         // when
         // 지하철_노선_조회_요청
         Long id = Long.parseLong(createResponse.header("Location").split("/")[2]);
@@ -135,7 +135,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선", 1L,2L, 10L));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선", 1L,2L, 10));
 
         // when
         // 지하철_노선_수정_요청
@@ -151,7 +151,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선", 1L,2L, 10L));
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(makeParam("bg-red-600", "신분당선", 1L,2L, 10));
 
         // when
         // 지하철_노선_제거_요청
@@ -163,7 +163,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private LineRequest makeParam(String color, String name, Long upStationId, Long downStationId, Long distance) {
+    private LineRequest makeParam(String color, String name, Long upStationId, Long downStationId, int distance) {
         return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 

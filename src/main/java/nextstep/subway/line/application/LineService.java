@@ -11,7 +11,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -59,5 +60,8 @@ public class LineService {
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
             .orElseThrow(NoDataException::new);
+    }
+
+    public void addLineSection(Long lineId, SectionRequest sectionRequest) {
     }
 }
