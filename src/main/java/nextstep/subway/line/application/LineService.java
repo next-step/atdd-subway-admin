@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.common.exception.DuplicateSectionException;
 import nextstep.subway.common.exception.NoDataException;
+import nextstep.subway.common.exception.NotMatchStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -31,8 +33,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Station upStation = stationService.findStationById(request.getUpStationId());
         Station downStation = stationService.findStationById(request.getDownStationId());
-        Section section = new Section(upStation, downStation, request.getDistance());
-        Line persistLine = lineRepository.save(request.toLine(section));
+        Line persistLine = lineRepository.save(new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
         return LineResponse.of(persistLine);
     }
 
@@ -57,11 +58,42 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    public void addLineSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findLineById(lineId);
+        Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+
+        List<Station> stations = line.getStations();
+
+        boolean upStationMatched = stations.stream().anyMatch(station -> station == upStation);
+        boolean downStationMatched = stations.stream().anyMatch(station -> station == downStation);
+
+        if(upStationMatched && downStationMatched) {
+            throw new DuplicateSectionException();
+        }
+
+        if(!upStationMatched && !downStationMatched) {
+            throw new NotMatchStationException();
+        }
+        // 추가 상행역이 역들 중에 있는 경우
+        if(upStationMatched) {
+            // 역들 사이에 들어가는 경우, 기존 구간 정보 업데이트
+            line.getSections().findNextSectionByUpStation(upStation)
+                .ifPresent(section -> section.updateUpStation(downStation, sectionRequest.getDistance()));
+        }
+
+        // 추가 하행역이 역들 중에 있는 경우
+        if(downStationMatched) {
+            //역들 사이에 들어가는 경우, 기존 구간 정보 업데이트
+            line.getSections().findNextSectionByDownStation(downStation)
+            .ifPresent(section -> section.updateDownStation(upStation, sectionRequest.getDistance()));
+        }
+        // 구간 추가
+        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+    }
+
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
             .orElseThrow(NoDataException::new);
-    }
-
-    public void addLineSection(Long lineId, SectionRequest sectionRequest) {
     }
 }
