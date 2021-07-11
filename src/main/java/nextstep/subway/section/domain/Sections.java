@@ -25,8 +25,11 @@ public class Sections {
 	}
 
 	public List<Station> getStations() {
-		return sections.stream().map(Section::getStations)
-			.flatMap(Collection::stream).distinct().collect(Collectors.toList());
+		return sections.stream()
+			.map(Section::getStations)
+			.flatMap(Collection::stream)
+			.distinct()
+			.collect(Collectors.toList());
 	}
 
 	public void add(Section section) {
