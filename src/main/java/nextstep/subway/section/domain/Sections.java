@@ -29,9 +29,7 @@ public class Sections {
 		return stations;
 	}
 
-	public Section add(Line line, Station upStation, Station downStation, int distance) {
-		Section newSection = new Section(line, upStation, downStation, distance);
-		sections.add(newSection);
-		return newSection;
+	public void add(Section section) {
+		sections.add(section);
 	}
 }

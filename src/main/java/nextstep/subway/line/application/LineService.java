@@ -37,7 +37,7 @@ public class LineService {
         Station upStation = stationService.getById(request.getUpStationId());
         Station downStation = stationService.getById(request.getDownStationId());
         Line line = request.toLine();
-        line.addStations(upStation, downStation, distance);
+        line.addSection(upStation, downStation, distance);
         return LineResponse.of(lineRepository.save(line));
     }
 
