@@ -47,6 +47,10 @@ public class Line extends BaseEntity {
         return section;
     }
 
+    public List<Station> stations() {
+        return sections.orderedStations();
+    }
+
     public Long getId() {
         return id;
     }
@@ -59,7 +63,4 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> stations() {
-        return sections.serializeStations();
-    }
 }

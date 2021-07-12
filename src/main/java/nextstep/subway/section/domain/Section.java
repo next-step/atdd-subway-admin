@@ -1,6 +1,6 @@
 package nextstep.subway.section.domain;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -44,26 +44,7 @@ public class Section extends BaseEntity {
 		return line;
 	}
 
-	public boolean contains(Station station) {
-		return station == upStation || downStation == station;
-	}
-
-	public Station[] stations() {
-		return new Station[]{
-			upStation, downStation
-		};
-	}
-
-	/**
-	 * 직렬화하기 위해 사용하는 메서드이다.
-	 * stations에 중복으로 Station이 포함되지 않도록 구현.
-	 *
-	 * @param stations 직렬화 하기 위한 List 인스턴스.
-	 */
-	public void appendStations(List<Station> stations) {
-		if (stations.size() == 0) {
-			stations.add(upStation);
-		}
-		stations.add(downStation);
+	public Stream<Station> stations() {
+		return Stream.of(upStation, downStation);
 	}
 }

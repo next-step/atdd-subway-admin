@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,10 +25,11 @@ public class Sections {
 	public Sections() {
 	}
 
-	public List<Station> serializeStations() {
-		List<Station> stations = new LinkedList<>();
-		sections.forEach(s -> s.appendStations(stations));
-		return stations;
+	public List<Station> orderedStations() {
+		return sections.stream()
+			.flatMap(Section::stations)
+			.distinct()
+			.collect(toList());
 	}
 
 	public void add(Section section) {
