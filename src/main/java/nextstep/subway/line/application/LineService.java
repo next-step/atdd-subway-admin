@@ -36,8 +36,7 @@ public class LineService {
         int distance = request.getDistance();
         Station upStation = stationService.getById(request.getUpStationId());
         Station downStation = stationService.getById(request.getDownStationId());
-        Line line = request.toLine();
-        line.addSection(upStation, downStation, distance);
+        Line line = request.toLine(upStation, downStation, distance);
         return LineResponse.of(lineRepository.save(line));
     }
 
@@ -62,7 +61,7 @@ public class LineService {
     public LineResponse updateById(Long id, LineRequest request) throws LineNotFoundException {
         Line line = lineRepository.findById(id)
             .orElseThrow(LineNotFoundException::new);
-        line.update(request.toLine());
+        line.update(request.getName(), request.getColor());
         return LineResponse.of(line);
     }
 

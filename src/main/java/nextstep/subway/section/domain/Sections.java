@@ -9,7 +9,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 /**
@@ -22,7 +21,11 @@ public class Sections {
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
 	private final List<Section> sections = new LinkedList<>();
 
-	public Sections() {
+	public Sections(Section section) {
+		if (section == null) {
+			throw new IllegalArgumentException("section is null");
+		}
+		this.sections.add(section);
 	}
 
 	public List<Station> orderedStations() {
@@ -32,7 +35,15 @@ public class Sections {
 			.collect(toList());
 	}
 
-	public void add(Section section) {
+	public void addSection(Section section) {
+		validateAddable(section);
 		sections.add(section);
+	}
+
+	private void validateAddable(Section section) {
+		// TODO validateAddable
+		// 1. 상행/하행이 동일한 섹션이 있는 경우.
+		// 2. 상행/하행이 포함된 섹션이 모두 없는 경우.
+		// 3. 거리 확인.
 	}
 }

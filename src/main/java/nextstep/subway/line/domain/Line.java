@@ -27,23 +27,25 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private final Sections sections = new Sections();
+    private Sections sections;
 
     protected Line() {}
 
-    public Line(String name, String color) {
+    public Line(Station upStation, Station downStation, int distance, String name, String color) {
+        this.name = name;
+        this.color = color;
+        Section section = new Section(this, upStation, downStation, distance);
+        this.sections = new Sections(section);
+    }
+
+    public void update(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
-
     public Section addSection(Station upStation, Station downStation, int distance) {
         Section section = new Section(this, upStation, downStation, distance);
-        this.sections.add(section);
+        this.sections.addSection(section);
         return section;
     }
 
