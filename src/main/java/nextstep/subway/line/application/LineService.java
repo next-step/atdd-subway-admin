@@ -63,33 +63,7 @@ public class LineService {
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
 
-        List<Station> stations = line.getStations();
-
-        boolean upStationMatched = stations.stream().anyMatch(station -> station == upStation);
-        boolean downStationMatched = stations.stream().anyMatch(station -> station == downStation);
-
-        if(upStationMatched && downStationMatched) {
-            throw new DuplicateSectionException();
-        }
-
-        if(!upStationMatched && !downStationMatched) {
-            throw new NotMatchStationException();
-        }
-        // 추가 상행역이 역들 중에 있는 경우
-        if(upStationMatched) {
-            // 역들 사이에 들어가는 경우, 기존 구간 정보 업데이트
-            line.getSections().findNextSectionByUpStation(upStation)
-                .ifPresent(section -> section.updateUpStation(downStation, sectionRequest.getDistance()));
-        }
-
-        // 추가 하행역이 역들 중에 있는 경우
-        if(downStationMatched) {
-            //역들 사이에 들어가는 경우, 기존 구간 정보 업데이트
-            line.getSections().findNextSectionByDownStation(downStation)
-            .ifPresent(section -> section.updateDownStation(upStation, sectionRequest.getDistance()));
-        }
-        // 구간 추가
-        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     private Line findLineById(Long id) {

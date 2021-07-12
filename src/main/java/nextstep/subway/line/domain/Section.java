@@ -56,6 +56,10 @@ public class Section extends BaseEntity {
 		return downStation;
 	}
 
+	public int getDistance() {
+		return distance;
+	}
+
 	public List<Station> getStations() {
 		return Arrays.asList(upStation, downStation);
 	}
