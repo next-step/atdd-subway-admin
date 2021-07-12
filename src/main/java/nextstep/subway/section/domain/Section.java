@@ -47,4 +47,20 @@ public class Section extends BaseEntity {
 	public Stream<Station> stations() {
 		return Stream.of(upStation, downStation);
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+
+	public Station getUpStation() {
+		return upStation;
+	}
+
+	public Station getDownStation() {
+		return downStation;
+	}
 }

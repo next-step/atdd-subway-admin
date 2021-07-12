@@ -44,7 +44,7 @@ public class LineController {
 
     @GetMapping("{id}")
     public ResponseEntity<LineResponse> getLineById(@PathVariable Long id) throws LineNotFoundException {
-        return ResponseEntity.ok(lineService.findById(id));
+        return ResponseEntity.ok(lineService.getLineResponseById(id));
     }
 
     @PutMapping("{id}")

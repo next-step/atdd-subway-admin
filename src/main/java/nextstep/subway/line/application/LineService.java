@@ -13,6 +13,9 @@ import nextstep.subway.line.domain.LineNotFoundException;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationNotFoundException;
@@ -52,7 +55,7 @@ public class LineService {
             .collect(toList());
     }
 
-    public LineResponse findById(Long id) throws LineNotFoundException {
+    public LineResponse getLineResponseById(Long id) throws LineNotFoundException {
         return LineResponse.of(lineRepository.findById(id)
             .orElseThrow(LineNotFoundException::new)
         );
@@ -69,5 +72,22 @@ public class LineService {
         Line line = lineRepository.findById(id)
             .orElseThrow(LineNotFoundException::new);
         lineRepository.delete(line);
+    }
+
+    public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) throws
+            LineNotFoundException,
+            StationNotFoundException {
+        Line line = getLineById(lineId);
+        Section section = line.addSection(
+            stationService.getById(sectionRequest.getUpStationId()),
+            stationService.getById(sectionRequest.getDownStationId()),
+            sectionRequest.getDistance()
+        );
+        return SectionResponse.of(section);
+    }
+
+    private Line getLineById(Long id) throws LineNotFoundException {
+        return lineRepository.findById(id)
+            .orElseThrow(LineNotFoundException::new);
     }
 }
