@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
+import nextstep.subway.common.exception.InvalidDistanceException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -35,16 +35,29 @@ public class Section extends BaseEntity {
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
-	private Long distance;
+	private int distance;
 
 	protected Section() {
 
 	}
 
-	public Section(Station upStation, Station downStation, Long distance) {
+	public Section(Line line, Station upStation, Station downStation, int distance) {
+		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
+	}
+
+	public Station getUpStation() {
+		return upStation;
+	}
+
+	public Station getDownStation() {
+		return downStation;
+	}
+
+	public int getDistance() {
+		return distance;
 	}
 
 	public List<Station> getStations() {
@@ -53,5 +66,21 @@ public class Section extends BaseEntity {
 
 	public void addLine(Line line) {
 		this.line = line;
+	}
+
+	public void updateUpStation(Station station, int newDistance) {
+		if(this.distance <= newDistance) {
+			throw new InvalidDistanceException();
+		}
+		upStation = station;
+		this.distance -= newDistance;
+	}
+
+	public void updateDownStation(Station station, int newDistance) {
+		if(this.distance <= newDistance) {
+			throw new InvalidDistanceException();
+		}
+		downStation = station;
+		this.distance -= newDistance;
 	}
 }

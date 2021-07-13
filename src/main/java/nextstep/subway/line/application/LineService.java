@@ -6,11 +6,15 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.common.exception.DuplicateSectionException;
+import nextstep.subway.common.exception.NoDataException;
+import nextstep.subway.common.exception.NotMatchStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -29,8 +33,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Station upStation = stationService.findStationById(request.getUpStationId());
         Station downStation = stationService.findStationById(request.getDownStationId());
-        Section section = new Section(upStation, downStation, request.getDistance());
-        Line persistLine = lineRepository.save(request.toLine(section));
+        Line persistLine = lineRepository.save(new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
         return LineResponse.of(persistLine);
     }
 
@@ -55,8 +58,16 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    public void addLineSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findLineById(lineId);
+        Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
+    }
+
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("해당 라인이 존재하지 않습니다."));
+            .orElseThrow(NoDataException::new);
     }
 }
