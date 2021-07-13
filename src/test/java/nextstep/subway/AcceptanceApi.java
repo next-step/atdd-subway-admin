@@ -14,6 +14,10 @@ public class AcceptanceApi {
         return POST_요청("/lines/" + id +"/sections", params);
     }
 
+    public static ExtractableResponse<Response> 지하철_구간_삭제_요청(Long id, Long stationId) {
+        return DELETE_요청("/lines/" + id +"/sections?stationId=" + stationId);
+    }
+
     public static ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest params) {
         return POST_요청("/stations", params);
     }
@@ -33,7 +37,6 @@ public class AcceptanceApi {
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return GET_요청("/lines");
     }
-
 
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
         return GET_요청("/lines/" + id);
