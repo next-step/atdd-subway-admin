@@ -82,17 +82,21 @@ public class Line extends BaseEntity {
         // 추가 상행역이 역들 중에 있는 경우
         if(upStationMatched) {
             // 역들 사이에 들어가는 경우, 기존 구간 정보 업데이트
-            this.getSections().findNextSectionByUpStation(upStation)
+            this.getSections().findSectionByUpStation(upStation)
                 .ifPresent(section -> section.updateUpStation(downStation, distance));
         }
 
         // 추가 하행역이 역들 중에 있는 경우
         if(downStationMatched) {
             //역들 사이에 들어가는 경우, 기존 구간 정보 업데이트
-            this.getSections().findNextSectionByDownStation(downStation)
+            this.getSections().findSectionByDownStation(downStation)
                 .ifPresent(section -> section.updateDownStation(upStation, distance));
         }
 
         this.sections.add(new Section(this, upStation, downStation, distance));
+    }
+
+    public void removeStation(Station station) {
+        sections.removeStation(this, station);
     }
 }
