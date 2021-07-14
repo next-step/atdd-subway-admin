@@ -10,8 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.common.exception.DuplicateSectionException;
-import nextstep.subway.common.exception.NotMatchStationException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -67,33 +65,7 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        List<Station> stations = this.getStations();
-
-        boolean upStationMatched = stations.stream().anyMatch(station -> station == upStation);
-        boolean downStationMatched = stations.stream().anyMatch(station -> station == downStation);
-
-        if(upStationMatched && downStationMatched) {
-            throw new DuplicateSectionException();
-        }
-
-        if(!upStationMatched && !downStationMatched) {
-            throw new NotMatchStationException();
-        }
-        // 추가 상행역이 역들 중에 있는 경우
-        if(upStationMatched) {
-            // 역들 사이에 들어가는 경우, 기존 구간 정보 업데이트
-            this.getSections().findSectionByUpStation(upStation)
-                .ifPresent(section -> section.updateUpStation(downStation, distance));
-        }
-
-        // 추가 하행역이 역들 중에 있는 경우
-        if(downStationMatched) {
-            //역들 사이에 들어가는 경우, 기존 구간 정보 업데이트
-            this.getSections().findSectionByDownStation(downStation)
-                .ifPresent(section -> section.updateDownStation(upStation, distance));
-        }
-
-        this.sections.add(new Section(this, upStation, downStation, distance));
+        this.sections.addStation(this, upStation, downStation, distance);
     }
 
     public void removeStation(Station station) {

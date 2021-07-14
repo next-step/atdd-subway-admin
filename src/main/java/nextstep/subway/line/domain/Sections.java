@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.common.exception.DuplicateSectionException;
 import nextstep.subway.common.exception.NotMatchStationException;
 import nextstep.subway.common.exception.SectionsRemoveInValidSizeException;
 import nextstep.subway.station.domain.Station;
@@ -37,10 +38,6 @@ public class Sections {
 			.collect(Collectors.toList());
 	}
 
-	public void add(Section section) {
-		sections.add(section);
-	}
-
 	public Optional<Section> findSectionByDownStation(Station station) {
 		return sections.stream()
 			.filter(it -> it.getDownStation() == station)
@@ -51,6 +48,41 @@ public class Sections {
 		return sections.stream()
 			.filter(it -> it.getUpStation() == station)
 			.findFirst();
+	}
+
+	public void add(Section section) {
+		sections.add(section);
+	}
+
+	public void addStation(Line line, Station upStation, Station downStation, int distance) {
+		List<Station> stations = getStations();
+
+		boolean upStationMatched = stations.stream().anyMatch(station -> station == upStation);
+		boolean downStationMatched = stations.stream().anyMatch(station -> station == downStation);
+
+		if(upStationMatched && downStationMatched) {
+			throw new DuplicateSectionException();
+		}
+
+		if(!upStationMatched && !downStationMatched) {
+			throw new NotMatchStationException();
+		}
+
+		// 추가 상행역이 역들 중에 있는 경우
+		if(upStationMatched) {
+			// 역들 사이에 들어가는 경우, 기존 구간 정보 업데이트
+			findSectionByUpStation(upStation)
+				.ifPresent(section -> section.updateUpStation(downStation, distance));
+		}
+
+		// 추가 하행역이 역들 중에 있는 경우
+		if(downStationMatched) {
+			//역들 사이에 들어가는 경우, 기존 구간 정보 업데이트
+			findSectionByDownStation(downStation)
+				.ifPresent(section -> section.updateDownStation(upStation, distance));
+		}
+
+		sections.add(new Section(line, upStation, downStation, distance));
 	}
 
 	public void removeStation(Line line, Station station) {
