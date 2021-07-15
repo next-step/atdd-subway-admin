@@ -2,12 +2,9 @@ package nextstep.subway.section;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.Arguments;
 
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
