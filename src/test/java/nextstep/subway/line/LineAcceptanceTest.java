@@ -18,6 +18,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.ui.LineController;
+import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -76,6 +77,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .containsExactly(
                 tuple(upStationId, upStationName),
                 tuple(downStationId, downStationName)
+            );
+        assertThat(line.getSections())
+            .hasSize(1)
+            .extracting(res -> res.getUpStation().getId(), res -> res.getDownStation().getId(), SectionResponse::getDistance)
+            .containsExactly(
+                tuple(upStationId, downStationId, distance)
             );
         assertThat(response.header("Location"))
             .isNotBlank()
