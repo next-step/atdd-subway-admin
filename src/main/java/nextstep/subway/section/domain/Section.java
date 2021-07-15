@@ -63,4 +63,91 @@ public class Section extends BaseEntity {
 	public Station getDownStation() {
 		return downStation;
 	}
+
+	@Override
+	public String toString() {
+		return "Section{" +
+			"id=" + id +
+			", distance=" + distance +
+			", line=" + line +
+			", upStation=" + upStation +
+			", downStation=" + downStation +
+			'}';
+	}
+
+	public boolean containsNoneStations(Section newSection) {
+		boolean hasDownStation = hasStation(newSection.getDownStation());
+		boolean hasUpStation = hasStation(newSection.getUpStation());
+		return !hasDownStation && !hasUpStation;
+	}
+
+	public boolean containsOneStation(Section newSection) {
+		boolean hasDownStation = hasStation(newSection.getDownStation());
+		boolean hasUpStation = hasStation(newSection.getUpStation());
+		if (hasDownStation && hasUpStation) {
+			return false;
+		}
+		//noinspection RedundantIfStatement
+		if (!hasDownStation && !hasUpStation) {
+			return false;
+		}
+		return true;
+	}
+
+	public void appendStations(Section section) {
+		if (containsNoneStations(section)) {
+			return;
+		}
+		Station first = null;
+		Station second = null;
+		Station third = null;
+		if (this.upStation == section.downStation) {
+			first = section.upStation;
+			second = upStation;
+			third = downStation;
+			swapDistance(section);
+		}
+		if (this.upStation == section.upStation) {
+			first = upStation;
+			second = section.downStation;
+			third = downStation;
+			int gab = this.distance - section.distance;
+			this.distance = section.distance;
+			section.distance = gab;
+		}
+		if (this.downStation == section.downStation) {
+			first = upStation;
+			second = section.upStation;
+			third = downStation;
+			this.distance = this.distance - section.distance;
+		}
+		if (this.downStation == section.upStation) {
+			first = upStation;
+			second = downStation;
+			third = section.downStation;
+		}
+		this.upStation = first;
+		this.downStation = second;
+		section.upStation = second;
+		section.downStation = third;
+		if (first == null || second == null || third == null) {
+			// 발생하지 않는 상황
+			throw new RuntimeException();
+		}
+	}
+
+	private void swapDistance(Section section) {
+		int distance = this.distance;
+		this.distance = section.distance;
+		section.distance = distance;
+	}
+
+	private boolean matchedDownStation(Section section) {
+		return this.downStation == section.getDownStation();
+	}
+
+	private boolean hasStation(Station station) {
+		return this.upStation == station || this.downStation == station;
+	}
+
 }

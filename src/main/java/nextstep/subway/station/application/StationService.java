@@ -1,18 +1,17 @@
 package nextstep.subway.station.application;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationNotFoundException;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.persistence.EntityNotFoundException;
 
 @Service
 @Transactional
@@ -47,10 +46,7 @@ public class StationService {
 	}
 
     public Station getById(Long upStationId) throws StationNotFoundException {
-        try {
-            return stationRepository.getOne(upStationId);
-        } catch (EntityNotFoundException e) {
-            throw new StationNotFoundException(upStationId, e);
-        }
+        return stationRepository.findById(upStationId)
+            .orElseThrow(() -> new StationNotFoundException(upStationId));
     }
 }

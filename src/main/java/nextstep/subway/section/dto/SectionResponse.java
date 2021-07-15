@@ -1,29 +1,29 @@
 package nextstep.subway.section.dto;
 
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.dto.StationResponse;
 
 public class SectionResponse {
 
-	private final Long id;
+	private Long id;
 
-	private final int distance;
+	private int distance;
 
-	private final Long lineId;
+	private StationResponse upStation;
 
-	private final Long upStationId;
-
-	private final Long downStationId;
+	private StationResponse downStation;
 
 	public static SectionResponse of(Section section) {
 		return new SectionResponse(section);
 	}
 
+	protected SectionResponse() {}
+
 	private SectionResponse(Section section) {
 		this.id = section.getId();
 		this.distance = section.getDistance();
-		this.lineId = section.getLine().getId();
-		this.upStationId = section.getUpStation().getId();
-		this.downStationId = section.getDownStation().getId();
+		this.upStation = StationResponse.of(section.getUpStation());
+		this.downStation = StationResponse.of(section.getDownStation());
 	}
 
 	public Long getId() {
@@ -34,15 +34,11 @@ public class SectionResponse {
 		return distance;
 	}
 
-	public Long getLineId() {
-		return lineId;
+	public StationResponse getUpStation() {
+		return upStation;
 	}
 
-	public Long getUpStationId() {
-		return upStationId;
-	}
-
-	public Long getDownStationId() {
-		return downStationId;
+	public StationResponse getDownStation() {
+		return downStation;
 	}
 }
