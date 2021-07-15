@@ -67,7 +67,7 @@ class LineTest {
 			잠실역
 		);
 
-		Section section = line.getSections().findNextSectionByUpStation(사당역).orElse(null);
+		Section section = line.getSections().findSectionByUpStation(사당역).orElse(null);
 		assertThat(section.getDownStation()).isEqualTo(서초역);
 	}
 
@@ -77,7 +77,7 @@ class LineTest {
 		Station 서초역 = new Station("서초역");
 		line.addSection(사당역, 서초역, 1);
 
-		Section section = line.getSections().findNextSectionByUpStation(서초역).orElse(null);
+		Section section = line.getSections().findSectionByUpStation(서초역).orElse(null);
 		assertThat(section.getDownStation()).isEqualTo(잠실역);
 		assertThat(section.getDistance()).isEqualTo(3);
 
