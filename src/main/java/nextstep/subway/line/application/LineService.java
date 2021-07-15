@@ -13,10 +13,9 @@ import nextstep.subway.line.domain.LineNotFoundException;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionCannotAddException;
+import nextstep.subway.section.domain.SectionDistanceNotEnoughException;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationNotFoundException;
@@ -78,7 +77,7 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) throws
             LineNotFoundException,
             StationNotFoundException,
-            SectionCannotAddException {
+            SectionCannotAddException, SectionDistanceNotEnoughException {
         Line line = getLineById(lineId);
         line.addSection(
             stationService.getById(sectionRequest.getUpStationId()),

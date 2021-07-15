@@ -94,9 +94,12 @@ public class Section extends BaseEntity {
 		return true;
 	}
 
-	public void appendStations(Section section) {
+	public void appendStations(Section section) throws SectionDistanceNotEnoughException {
 		if (containsNoneStations(section)) {
 			return;
+		}
+		if (section.distance >= this.distance) {
+			throw new SectionDistanceNotEnoughException(this.getId(), section.getId());
 		}
 		Station first = null;
 		Station second = null;

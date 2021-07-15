@@ -38,7 +38,8 @@ public class Sections {
 			.collect(toList());
 	}
 
-	public void addSection(Section section) throws SectionCannotAddException {
+	public void addSection(Section section) throws SectionCannotAddException, SectionDistanceNotEnoughException {
+		// 거리에 대한 validation exception 은 section 추가시 발생한다.
 		validateAddable(section);
 		for (Section existSection : sections) {
 			existSection.appendStations(section);
@@ -50,14 +51,8 @@ public class Sections {
 		return Collections.unmodifiableList(this.sections);
 	}
 
-	/**
-	 * 1. UpStation, DownStation 중 하나만 포함 되어야함
-	 * 2. 역간 거리가 유효해야함
-	 */
 	private void validateAddable(Section section) throws SectionCannotAddException {
-		// TODO validateAddable
 		this.validateContainsOnlyOneStation(section);
-		this.validateAddableDistanceSection(section);
 	}
 
 	private void validateContainsOnlyOneStation(Section newSection) throws SectionCannotAddException {
@@ -67,9 +62,5 @@ public class Sections {
 		if (matchedContainingOneStation != 1L) {
 			throw new SectionCannotAddException("failed validate contains only one station");
 		}
-	}
-
-	private void validateAddableDistanceSection(Section section) {
-
 	}
 }

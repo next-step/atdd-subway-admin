@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.LineNotFoundException;
 import nextstep.subway.section.domain.SectionCannotAddException;
+import nextstep.subway.section.domain.SectionDistanceNotEnoughException;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.StationNotFoundException;
 
@@ -27,7 +28,8 @@ public class LineSectionController {
 	public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) throws
 			LineNotFoundException,
 			StationNotFoundException,
-			SectionCannotAddException {
+			SectionCannotAddException,
+			SectionDistanceNotEnoughException {
 		lineService.addSection(lineId, sectionRequest);
 		return ResponseEntity.ok().build();
 	}

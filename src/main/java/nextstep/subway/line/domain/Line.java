@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionCannotAddException;
+import nextstep.subway.section.domain.SectionDistanceNotEnoughException;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
@@ -44,7 +45,9 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Section addSection(Station upStation, Station downStation, int distance) throws SectionCannotAddException {
+    public Section addSection(Station upStation, Station downStation, int distance) throws
+            SectionCannotAddException,
+            SectionDistanceNotEnoughException {
         Section section = new Section(this, upStation, downStation, distance);
         this.sections.addSection(section);
         return section;

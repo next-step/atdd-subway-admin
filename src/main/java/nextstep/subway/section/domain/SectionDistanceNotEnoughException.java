@@ -7,7 +7,7 @@ import nextstep.subway.common.exception.ConflictException;
  * @author heetaek.kim
  */
 public class SectionDistanceNotEnoughException extends ConflictException {
-	public SectionDistanceNotEnoughException(int base, int append) {
+	public SectionDistanceNotEnoughException(Long base, Long append) {
 		super(String.format("origin: %d, append: %s", base, append));
 	}
 }
