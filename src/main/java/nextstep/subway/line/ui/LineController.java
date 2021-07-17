@@ -18,6 +18,8 @@ import nextstep.subway.line.domain.LineNameDuplicatedException;
 import nextstep.subway.line.domain.LineNotFoundException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.StationExistsAlreadyException;
+import nextstep.subway.station.domain.StationNotFoundException;
 
 @RestController
 @RequestMapping("/lines")
@@ -30,7 +32,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) throws
-            LineNameDuplicatedException {
+            LineNameDuplicatedException, StationNotFoundException, StationExistsAlreadyException {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
@@ -42,7 +44,7 @@ public class LineController {
 
     @GetMapping("{id}")
     public ResponseEntity<LineResponse> getLineById(@PathVariable Long id) throws LineNotFoundException {
-        return ResponseEntity.ok(lineService.findById(id));
+        return ResponseEntity.ok(lineService.getLineResponseById(id));
     }
 
     @PutMapping("{id}")

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -14,13 +15,33 @@ import io.restassured.mapper.TypeRef;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.ui.LineController;
+import nextstep.subway.section.dto.SectionResponse;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    String upStationName = "강남역";
+
+    String downStationName = "역삼역";
+
+    Long upStationId;
+
+    Long downStationId;
+
+    int distance;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        upStationId = postStation(new StationRequest(upStationName)).getId();
+        downStationId = postStation(new StationRequest(downStationName)).getId();
+        distance = 10;
+    }
 
     /**
      * {@link nextstep.subway.line.ui.LineController#createLine(LineRequest)}
@@ -31,7 +52,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         String lineName = "line name";
         String lineColor = "line color";
-        LineRequest params = new LineRequest(lineName, lineColor);
+        LineRequest params = new LineRequest(lineName, lineColor, upStationId, downStationId, distance);
 
         // when
         // 지하철_노선_생성_요청
@@ -46,9 +67,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.body().as(Line.class))
+        LineResponse line = response.body().as(LineResponse.class);
+        assertThat(line)
             .hasFieldOrPropertyWithValue("name", lineName)
             .hasFieldOrPropertyWithValue("color", lineColor);
+        assertThat(line.getStations())
+            .hasSize(2)
+            .extracting(StationResponse::getId, StationResponse::getName)
+            .containsExactly(
+                tuple(upStationId, upStationName),
+                tuple(downStationId, downStationName)
+            );
+        assertThat(line.getSections())
+            .hasSize(1)
+            .extracting(res -> res.getUpStation().getId(), res -> res.getDownStation().getId(), SectionResponse::getDistance)
+            .containsExactly(
+                tuple(upStationId, downStationId, distance)
+            );
         assertThat(response.header("Location"))
             .isNotBlank()
             .startsWith("/lines/");
@@ -64,7 +99,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         String lineName = "line name";
         String lineColor = "line color";
-        LineRequest params = new LineRequest(lineName, lineColor);
+        LineRequest params = new LineRequest(lineName, lineColor, upStationId, downStationId, distance);
         postLine(params);
 
         // when
@@ -83,7 +118,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * {@link LineController#getLines()}
+     * {@link nextstep.subway.line.ui.LineController#createLine(LineRequest)}
      */
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
@@ -92,11 +127,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         String lineName = "line name";
         String lineColor = "line color";
-        postLine(new LineRequest(lineName, lineColor));
+        postLine(new LineRequest(lineName, lineColor, upStationId, downStationId, distance));
         // 지하철_노선_등록되어_있음
         String lineName2 = "line name2";
         String lineColor2 = "line color2";
-        postLine(new LineRequest(lineName2, lineColor2));
+        postLine(new LineRequest(lineName2, lineColor2, upStationId, downStationId, distance));
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -115,7 +150,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lines)
             .hasSize(2)
             .extracting(LineResponse::getName, LineResponse::getColor)
-            .containsExactlyInAnyOrder(
+            .containsExactly(
                 tuple(lineName, lineColor),
                 tuple(lineName2, lineColor2)
             );
@@ -131,7 +166,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         String lineName = "line name";
         String lineColor = "line color";
-        LineResponse lineResponse = postLine(new LineRequest(lineName, lineColor));
+        LineResponse lineResponse = postLine(new LineRequest(lineName, lineColor, upStationId, downStationId, distance));
 
         // when
         // 지하철_노선_조회_요청
@@ -151,7 +186,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .hasFieldOrPropertyWithValue("id", lineResponse.getId())
             .hasFieldOrPropertyWithValue("name", lineName)
             .hasFieldOrPropertyWithValue("color", lineColor)
-            .extracting("stations").asList().hasSize(0)
+            .extracting("stations").asList().hasSize(2)
         ;
     }
 
@@ -163,7 +198,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineResponse lineResponse = postLine(new LineRequest("line name", "line color"));
+        LineResponse lineResponse = postLine(new LineRequest("line name", "line color", upStationId, downStationId,
+            distance));
 
         // when
         // 지하철_노선_수정_요청
@@ -171,7 +207,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .pathParam("id", lineResponse.getId())
-            .body(new LineRequest(updateLineName, updateLineColor))
+            .body(new LineRequest(updateLineName, updateLineColor, upStationId, downStationId, distance))
             .when()
             .put("/lines/{id}")
             .then().log().all()
@@ -195,7 +231,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineResponse lineResponse = postLine(new LineRequest("line name", "line color"));
+        LineResponse lineResponse = postLine(new LineRequest("line name", "line color", upStationId, downStationId,
+            distance));
 
         // when
         // 지하철_노선_제거_요청
@@ -218,16 +255,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then()
             .statusCode(HttpStatus.NOT_FOUND.value())
         ;
-    }
-
-    LineResponse postLine(LineRequest params) {
-        return RestAssured.given()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then()
-            .statusCode(HttpStatus.CREATED.value())
-            .extract().body().as(LineResponse.class);
     }
 }

@@ -13,20 +13,34 @@ import nextstep.subway.line.domain.LineNotFoundException;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.SectionCannotAddException;
+import nextstep.subway.section.domain.SectionDistanceNotEnoughException;
+import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationNotFoundException;
 
 @Service
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
+    private final StationService stationService;
+
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
-    public LineResponse saveLine(LineRequest request) throws LineNameDuplicatedException {
+    public LineResponse saveLine(LineRequest request) throws
+            LineNameDuplicatedException,
+            StationNotFoundException {
         checkNameDuplication(request.getName());
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        int distance = request.getDistance();
+        Station upStation = stationService.getById(request.getUpStationId());
+        Station downStation = stationService.getById(request.getDownStationId());
+        Line line = request.toLine(upStation, downStation, distance);
+        return LineResponse.of(lineRepository.save(line));
     }
 
     private void checkNameDuplication(String name) throws LineNameDuplicatedException {
@@ -41,7 +55,7 @@ public class LineService {
             .collect(toList());
     }
 
-    public LineResponse findById(Long id) throws LineNotFoundException {
+    public LineResponse getLineResponseById(Long id) throws LineNotFoundException {
         return LineResponse.of(lineRepository.findById(id)
             .orElseThrow(LineNotFoundException::new)
         );
@@ -50,13 +64,30 @@ public class LineService {
     public LineResponse updateById(Long id, LineRequest request) throws LineNotFoundException {
         Line line = lineRepository.findById(id)
             .orElseThrow(LineNotFoundException::new);
-        line.update(request.toLine());
-        return LineResponse.of(lineRepository.save(line));
+        line.update(request.getName(), request.getColor());
+        return LineResponse.of(line);
     }
 
     public void deleteById(Long id) throws LineNotFoundException {
         Line line = lineRepository.findById(id)
             .orElseThrow(LineNotFoundException::new);
         lineRepository.delete(line);
+    }
+
+    public void addSection(Long lineId, SectionRequest sectionRequest) throws
+            LineNotFoundException,
+            StationNotFoundException,
+            SectionCannotAddException, SectionDistanceNotEnoughException {
+        Line line = getLineById(lineId);
+        line.addSection(
+            stationService.getById(sectionRequest.getUpStationId()),
+            stationService.getById(sectionRequest.getDownStationId()),
+            sectionRequest.getDistance()
+        );
+    }
+
+    private Line getLineById(Long id) throws LineNotFoundException {
+        return lineRepository.findById(id)
+            .orElseThrow(LineNotFoundException::new);
     }
 }
