@@ -57,7 +57,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         Map<String, String> body = lineBody("1호선", "blue");
-        givenLine(body);
+        createLine(body);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -77,8 +77,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineResponse firstLineResponse = givenLine(lineBody("1호선", "blue"));
-        LineResponse secondLineResponse = givenLine(lineBody("2호선", "green"));
+        LineResponse firstLineResponse = createLine(lineBody("1호선", "blue")).as(LineResponse.class);
+        LineResponse secondLineResponse = createLine(lineBody("2호선", "green")).as(LineResponse.class);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -103,9 +103,9 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void getLine() {
+    void retrieveLine() {
         // given
-        LineResponse firstLineResponse = givenLine(lineBody("1호선", "blue"));
+        LineResponse firstLineResponse = createLine(lineBody("1호선", "blue")).as(LineResponse.class);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -126,7 +126,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
     @Test
     void getLine_notExistsLine_404() {
-        // given
+        //given, when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
             .get("/lines/{id}", Long.MIN_VALUE)
@@ -142,7 +142,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineResponse firstLineResponse = givenLine(lineBody("1호선", "blue"));
+        LineResponse createdFirstLine = createLine(lineBody("1호선", "blue")).as(LineResponse.class);
         String updatedSecondLineName = "2호선";
         String updatedRedColor = "red";
 
@@ -151,23 +151,24 @@ class LineAcceptanceTest extends AcceptanceTest {
             .contentType(ContentType.JSON)
             .body(lineBody(updatedSecondLineName, updatedRedColor))
             .when()
-            .put("/lines/{id}", firstLineResponse.getId())
+            .put("/lines/{id}", createdFirstLine.getId())
             .then().log().all()
             .extract();
 
         // then
+        LineResponse updatedLine = retrieveLine(createdFirstLine.getId()).as(LineResponse.class);
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.as(LineResponse.class))
-                .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor)
-                .containsExactly(firstLineResponse.getId(), updatedSecondLineName, updatedRedColor)
+            () -> assertThat(updatedLine)
+                .extracting(LineResponse::getName, LineResponse::getColor)
+                .containsExactly(updatedSecondLineName, updatedRedColor)
         );
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
     @Test
     void updateLine_notExistsLine_404() {
-        // when
+        //given, when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(lineBody("1호선", "blue"))
@@ -185,18 +186,22 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineResponse firstLineResponse = givenLine(lineBody("1호선", "blue"));
+        LineResponse createdFirstLine = createLine(lineBody("1호선", "blue")).as(LineResponse.class);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete("/lines/{id}", firstLineResponse.getId())
+            .delete("/lines/{id}", createdFirstLine.getId())
             .then().log().all()
             .extract();
 
         // then
-        assertThat(response.statusCode())
-            .isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> retrievedResponse = retrieveLine(createdFirstLine.getId());
+        assertAll(
+            () -> assertThat(response.statusCode())
+                .isEqualTo(HttpStatus.NO_CONTENT.value()),
+            () -> assertThat(retrievedResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value())
+        );
     }
 
     private Map<String, String> lineBody(String name, String color) {
@@ -206,14 +211,21 @@ class LineAcceptanceTest extends AcceptanceTest {
         return body;
     }
 
-    private LineResponse givenLine(Map<String, String> body) {
+    private ExtractableResponse<Response> createLine(Map<String, String> body) {
         return RestAssured.given().log().all()
             .body(body)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
             .then().log().all()
-            .extract()
-            .as(LineResponse.class);
+            .extract();
+    }
+
+    private ExtractableResponse<Response> retrieveLine(Long id) {
+        return RestAssured.given().log().all()
+            .when()
+            .get("/lines/{id}", id)
+            .then().log().all()
+            .extract();
     }
 }

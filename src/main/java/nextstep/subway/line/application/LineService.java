@@ -40,10 +40,9 @@ public class LineService {
         return LineResponse.of(line(id));
     }
 
-    public LineResponse update(Long id, LineRequest request) {
+    public void update(Long id, LineRequest request) {
         Line line = line(id);
         line.update(request.toLine());
-        return LineResponse.of(line);
     }
 
     public void delete(Long id) {

@@ -45,7 +45,8 @@ public class LineController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
-        return ResponseEntity.ok().body(lineService.update(id, request));
+        lineService.update(id, request);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/{id}")
