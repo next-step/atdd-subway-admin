@@ -103,14 +103,15 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void retrieveLine() {
+    void getLine() {
         // given
-        LineResponse firstLineResponse = createLine(lineBody("1호선", "blue")).as(LineResponse.class);
+        ExtractableResponse<Response> createdFirstLineResponse = createLine(lineBody("1호선", "blue"));
+        LineResponse firstLine = createdFirstLineResponse.as(LineResponse.class);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .get("/lines/{id}", firstLineResponse.getId())
+            .get(createdFirstLineResponse.header("Location"))
             .then().log().all()
             .extract();
 
@@ -119,7 +120,7 @@ class LineAcceptanceTest extends AcceptanceTest {
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
             () -> assertThat(response.as(LineResponse.class))
                 .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor)
-                .containsExactly(firstLineResponse.getId(), firstLineResponse.getName(), firstLineResponse.getColor())
+                .containsExactly(firstLine.getId(), firstLine.getName(), firstLine.getColor())
         );
     }
 
@@ -142,7 +143,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineResponse createdFirstLine = createLine(lineBody("1호선", "blue")).as(LineResponse.class);
+        String createdFirstLineUri = createLine(lineBody("1호선", "blue")).header("Location");
         String updatedSecondLineName = "2호선";
         String updatedRedColor = "red";
 
@@ -151,15 +152,14 @@ class LineAcceptanceTest extends AcceptanceTest {
             .contentType(ContentType.JSON)
             .body(lineBody(updatedSecondLineName, updatedRedColor))
             .when()
-            .put("/lines/{id}", createdFirstLine.getId())
+            .put(createdFirstLineUri)
             .then().log().all()
             .extract();
 
         // then
-        LineResponse updatedLine = retrieveLine(createdFirstLine.getId()).as(LineResponse.class);
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(updatedLine)
+            () -> assertThat(retrieveLine(createdFirstLineUri).as(LineResponse.class))
                 .extracting(LineResponse::getName, LineResponse::getColor)
                 .containsExactly(updatedSecondLineName, updatedRedColor)
         );
@@ -186,21 +186,21 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineResponse createdFirstLine = createLine(lineBody("1호선", "blue")).as(LineResponse.class);
+        String createdFirstLineUri = createLine(lineBody("1호선", "blue")).header("Location");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
-            .delete("/lines/{id}", createdFirstLine.getId())
+            .delete(createdFirstLineUri)
             .then().log().all()
             .extract();
 
         // then
-        ExtractableResponse<Response> retrievedResponse = retrieveLine(createdFirstLine.getId());
         assertAll(
             () -> assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.NO_CONTENT.value()),
-            () -> assertThat(retrievedResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value())
+            () -> assertThat(retrieveLine(createdFirstLineUri).statusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND.value())
         );
     }
 
@@ -221,10 +221,10 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> retrieveLine(Long id) {
+    private ExtractableResponse<Response> retrieveLine(String uri) {
         return RestAssured.given().log().all()
             .when()
-            .get("/lines/{id}", id)
+            .get(uri)
             .then().log().all()
             .extract();
     }
