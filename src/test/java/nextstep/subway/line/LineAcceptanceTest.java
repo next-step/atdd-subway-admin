@@ -214,7 +214,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> createLine(Map<String, String> body) {
         return RestAssured.given()
             .body(body)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(ContentType.JSON)
             .post("/lines")
             .then()
             .extract();
