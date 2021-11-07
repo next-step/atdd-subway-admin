@@ -185,13 +185,18 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineResponse firstLineResponse = givenLine(lineBody("1호선", "blue"));
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .delete("/lines/{id}", firstLineResponse.getId())
+            .then().log().all()
+            .extract();
 
         // then
-        // 지하철_노선_삭제됨
+        assertThat(response.statusCode())
+            .isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private Map<String, String> lineBody(String name, String color) {
