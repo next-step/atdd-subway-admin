@@ -1,16 +1,22 @@
 package nextstep.subway.line.application;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+
+    private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
@@ -19,5 +25,33 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    @Transactional(readOnly = true)
+    public List<LineResponse> findAll() {
+        return lineRepository.findAll()
+            .stream()
+            .map(LineResponse::of)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse findOne(Long id) {
+        return LineResponse.of(line(id));
+    }
+
+    public LineResponse update(Long id, LineRequest request) {
+        Line line = line(id);
+        line.update(request.toLine());
+        return LineResponse.of(line);
+    }
+
+    public void delete(Long id) {
+        lineRepository.deleteById(id);
+    }
+
+    private Line line(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException(String.format("line id(%d) does not exist", id)));
     }
 }
