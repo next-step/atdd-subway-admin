@@ -123,6 +123,21 @@ class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
+    @Test
+    void getLine_notExistsLine_404() {
+        // given
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/{id}", Long.MIN_VALUE)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode())
+            .isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
@@ -133,6 +148,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
             .body(lineBody(updatedSecondLineName, updatedRedColor))
             .when()
             .put("/lines/{id}", firstLineResponse.getId())
@@ -146,6 +162,23 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor)
                 .containsExactly(firstLineResponse.getId(), updatedSecondLineName, updatedRedColor)
         );
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 수정한다.")
+    @Test
+    void updateLine_notExistsLine_404() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(lineBody("1호선", "blue"))
+            .when()
+            .put("/lines/{id}", Integer.MIN_VALUE)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode())
+            .isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
