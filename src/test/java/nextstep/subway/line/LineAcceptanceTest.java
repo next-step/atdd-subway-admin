@@ -54,7 +54,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void createLine_duplicateName_400() {
         // given
         Map<String, String> body = lineBody("1호선", "blue");
         createLine(body);
