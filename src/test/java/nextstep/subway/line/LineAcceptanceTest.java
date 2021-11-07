@@ -32,7 +32,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(lineParams(firstLineName, blueColor))
+            .body(lineBody(firstLineName, blueColor))
             .contentType(ContentType.JSON)
             .when()
             .post("/lines")
@@ -56,12 +56,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        Map<String, String> params = lineParams("1호선", "blue");
-        givenLine(params);
+        Map<String, String> body = lineBody("1호선", "blue");
+        givenLine(body);
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .body(params)
+            .body(body)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -77,8 +77,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineResponse firstLineResponse = givenLine(lineParams("1호선", "blue"));
-        LineResponse secondLineResponse = givenLine(lineParams("2호선", "green"));
+        LineResponse firstLineResponse = givenLine(lineBody("1호선", "blue"));
+        LineResponse secondLineResponse = givenLine(lineBody("2호선", "green"));
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -90,38 +90,62 @@ class LineAcceptanceTest extends AcceptanceTest {
         //then
         List<LineResponse> lineResponses = response.as(new TypeRef<List<LineResponse>>() {
         });
-        assertThat(lineResponses)
-            .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor)
-            .containsExactly(
-                tuple(firstLineResponse.getId(), firstLineResponse.getName(), firstLineResponse.getColor()),
-                tuple(secondLineResponse.getId(), secondLineResponse.getName(), secondLineResponse.getColor())
-            );
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(lineResponses)
+                .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor)
+                .containsExactly(
+                    tuple(firstLineResponse.getId(), firstLineResponse.getName(), firstLineResponse.getColor()),
+                    tuple(secondLineResponse.getId(), secondLineResponse.getName(), secondLineResponse.getColor())
+                )
+        );
     }
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineResponse firstLineResponse = givenLine(lineBody("1호선", "blue"));
 
         // when
-        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/{id}", firstLineResponse.getId())
+            .then().log().all()
+            .extract();
 
         // then
-        // 지하철_노선_응답됨
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.as(LineResponse.class))
+                .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor)
+                .containsExactly(firstLineResponse.getId(), firstLineResponse.getName(), firstLineResponse.getColor())
+        );
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineResponse firstLineResponse = givenLine(lineBody("1호선", "blue"));
+        String updatedSecondLineName = "2호선";
+        String updatedRedColor = "red";
 
         // when
-        // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(lineBody(updatedSecondLineName, updatedRedColor))
+            .when()
+            .put("/lines/{id}", firstLineResponse.getId())
+            .then().log().all()
+            .extract();
 
         // then
-        // 지하철_노선_수정됨
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.as(LineResponse.class))
+                .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor)
+                .containsExactly(firstLineResponse.getId(), updatedSecondLineName, updatedRedColor)
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -137,11 +161,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_삭제됨
     }
 
-    private Map<String, String> lineParams(String name, String color) {
-        HashMap<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        return params;
+    private Map<String, String> lineBody(String name, String color) {
+        HashMap<String, String> body = new HashMap<>();
+        body.put("name", name);
+        body.put("color", color);
+        return body;
     }
 
     private LineResponse givenLine(Map<String, String> body) {
