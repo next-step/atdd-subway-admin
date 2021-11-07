@@ -212,20 +212,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createLine(Map<String, String> body) {
-        return RestAssured.given().log().all()
+        return RestAssured.given()
             .body(body)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
             .post("/lines")
-            .then().log().all()
+            .then()
             .extract();
     }
 
     private ExtractableResponse<Response> retrieveLine(String uri) {
-        return RestAssured.given().log().all()
-            .when()
-            .get(uri)
-            .then().log().all()
+        return RestAssured.get(uri)
+            .then()
             .extract();
     }
 }

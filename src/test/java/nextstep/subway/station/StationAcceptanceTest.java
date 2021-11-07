@@ -111,12 +111,11 @@ class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createStation(Map<String, String> body) {
-        return RestAssured.given().log().all()
+        return RestAssured.given()
             .body(body)
             .contentType(ContentType.JSON)
-            .when()
             .post("/stations")
-            .then().log().all()
+            .then()
             .extract();
     }
 
