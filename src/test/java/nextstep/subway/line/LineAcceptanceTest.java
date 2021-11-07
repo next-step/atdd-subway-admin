@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
@@ -13,13 +14,14 @@ import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.mapper.TypeRef;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -75,15 +77,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+        LineResponse firstLineResponse = givenLine(lineParams("1호선", "blue"));
+        LineResponse secondLineResponse = givenLine(lineParams("2호선", "green"));
 
         // when
-        // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
 
-        // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
+        //then
+        List<LineResponse> lineResponses = response.as(new TypeRef<List<LineResponse>>() {
+        });
+        assertThat(lineResponses)
+            .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor)
+            .containsExactly(
+                tuple(firstLineResponse.getId(), firstLineResponse.getName(), firstLineResponse.getColor()),
+                tuple(secondLineResponse.getId(), secondLineResponse.getName(), secondLineResponse.getColor())
+            );
     }
 
     @DisplayName("지하철 노선을 조회한다.")
