@@ -231,14 +231,14 @@ class LineAcceptanceTest extends AcceptanceTest {
             .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void 지하철_노선_생성됨(ExtractableResponse<Response> response, String name, String color) {
+    private void 지하철_노선_생성됨(ExtractableResponse<Response> response, String expectedName, String expectedColor) {
         LineResponse lineResponse = response.as(LineResponse.class);
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
             () -> assertThat(headerLocation(response)).isNotBlank(),
             () -> assertThat(lineResponse.getId()).isNotNull(),
-            () -> assertThat(lineResponse.getName()).isEqualTo(name),
-            () -> assertThat(lineResponse.getColor()).isEqualTo(color),
+            () -> assertThat(lineResponse.getName()).isEqualTo(expectedName),
+            () -> assertThat(lineResponse.getColor()).isEqualTo(expectedColor),
             () -> assertThat(lineResponse.getCreatedDate()).isNotNull(),
             () -> assertThat(lineResponse.getModifiedDate()).isNotNull()
         );
