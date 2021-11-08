@@ -66,7 +66,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 지하철 노선을 조회한다.
   
 ### 3. 지하철 노선 수정과 관련된 인수 테스트를 작성한다.
-- [ ] 지하철 노선을 수정한다.
+- [X] 지하철 노선을 수정한다.
   
 ### 4. 지하철 노선 제거(삭제)와 관련된 인수 테스트를 작성한다.
 - [ ] 지하철 노선을 제거한다.
