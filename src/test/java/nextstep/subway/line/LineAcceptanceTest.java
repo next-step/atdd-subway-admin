@@ -98,16 +98,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철 노선을 제거한다.")
-    @Test
-    void deleteLine() {
+    @ParameterizedTest
+    @CsvSource(value = {"신분당선,RED", "분당선,YELLOW", "1호선,BLUE", "2호선,GREEN"})
+    void deleteLine(String name, String color) {
         // given
-        // 지하철_노선_등록되어_있음
+        LineResponse line = 지하철_노선_등록되어_있음(name, color);
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(line);
 
         // then
-        // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(LineResponse line) {
+        return RestAssured.given().log().all()
+                          .when()
+                          .delete("/lines/{id}", line.getId())
+                          .then().log().all()
+                          .extract();
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(LineResponse line, String updateName, String updateColor) {
@@ -161,6 +170,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                           .then().log().all()
                           .extract()
                           .as(LineResponse.class);
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
