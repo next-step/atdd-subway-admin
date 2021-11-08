@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 public class LineRequest {
     private String name;
     private String color;
+    private Long id;
 
     public LineRequest() {
     }
@@ -25,4 +26,5 @@ public class LineRequest {
     public Line toLine() {
         return new Line(name, color);
     }
+
 }
