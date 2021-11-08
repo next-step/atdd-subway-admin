@@ -1,7 +1,13 @@
 package nextstep.subway.line;
 
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +22,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -45,31 +52,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
-    @Test
-    void getLines() {
+    @ParameterizedTest
+    @CsvSource(value = {"신분당선,RED,분당선,YELLOW", "1호선,BLUE,2호선,GREEN"})
+    void getLines(String name1, String color1, String name2, String color2) {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+        LineResponse line1 = 지하철_노선_등록되어_있음(name1, color1);
+        LineResponse line2 = 지하철_노선_등록되어_있음(name2, color2);
 
         // when
-        // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
+        지하철_노선_목록_응답됨(response);
+        지하철_노선_목록_포함됨(response, Arrays.asList(line1, line2));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void getLine() {
+    @ParameterizedTest
+    @CsvSource(value = {"신분당선,RED", "분당선,YELLOW", "1호선,BLUE", "2호선,GREEN"})
+    void getLine(String name, String color) {
         // given
-        // 지하철_노선_등록되어_있음
+        LineResponse line = 지하철_노선_등록되어_있음(name, color);
 
         // when
-        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(
+            line);
 
         // then
-        // 지하철_노선_응답됨
+        지하철_노선_응답됨(response);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -98,6 +108,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_삭제됨
     }
 
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(LineResponse line) {
+        return RestAssured.given().log().all()
+                          .when()
+                          .get("/lines/{id}", line.getId())
+                          .then().log().all()
+                          .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return RestAssured.given().log().all()
+                          .when()
+                          .get("/lines")
+                          .then().log().all()
+                          .extract();
+    }
+
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
         Map<String, String> params = createLineParams(name, color);
 
@@ -121,6 +147,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
                           .then().log().all()
                           .extract()
                           .as(LineResponse.class);
+    }
+
+    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<LineResponse> expectedLines) {
+        List<Long> expectedLineIds = expectedLines.stream()
+                                                  .map(LineResponse::getId)
+                                                  .collect(Collectors.toList());
+        List<Long> resultLineIds = response.jsonPath()
+                                           .getList(".", LineResponse.class)
+                                           .stream()
+                                           .map(LineResponse::getId)
+                                           .collect(Collectors.toList());
+        assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
