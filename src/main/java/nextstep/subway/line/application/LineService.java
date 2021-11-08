@@ -1,12 +1,12 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -51,6 +51,6 @@ public class LineService {
 
     private Line line(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(String.format("line id(%d) does not exist", id)));
+            .orElseThrow(() -> new NotFoundException(String.format("line id(%d) does not exist", id)));
     }
 }
