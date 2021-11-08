@@ -37,9 +37,19 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse readLine(Long id) {
-        Line line = lineRepository.findById(id)
-                                  .orElseThrow(() -> new NoSuchElementException(
-                                      String.format("id=%s 에 해당하는 노선이 존재하지 않습니다.", id)));
+        Line line = readLineById(id);
         return LineResponse.of(line);
+    }
+
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = readLineById(id);
+        line.update(lineRequest.toLine());
+    }
+
+    private Line readLineById(Long id) {
+        return lineRepository.findById(id)
+                             .orElseThrow(
+                                 () -> new NoSuchElementException(String.format("id=%s 에 해당하는 노선이 존재하지 않습니다.",
+                                                                                id)));
     }
 }
