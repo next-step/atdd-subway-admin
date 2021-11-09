@@ -84,9 +84,9 @@ class LineRepositoryTest {
 
     private void savedLine(Line actualLine, Name expectedName, Color expectedColor) {
         assertAll(
-            () -> assertThat(actualLine.getId()).isNotNull(),
-            () -> assertThat(actualLine.getName()).isEqualTo(expectedName),
-            () -> assertThat(actualLine.getColor()).isEqualTo(expectedColor)
+            () -> assertThat(actualLine.id()).isNotNull(),
+            () -> assertThat(actualLine.name()).isEqualTo(expectedName),
+            () -> assertThat(actualLine.color()).isEqualTo(expectedColor)
         );
     }
 

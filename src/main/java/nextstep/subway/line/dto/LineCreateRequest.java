@@ -5,7 +5,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import nextstep.subway.common.domain.Name;
 import nextstep.subway.line.domain.Color;
-import nextstep.subway.line.domain.Distance;
 
 public class LineCreateRequest {
 
@@ -46,17 +45,5 @@ public class LineCreateRequest {
 
     public Color color() {
         return Color.from(color);
-    }
-
-    public Long upStationId() {
-        return section.getUpStationId();
-    }
-
-    public Long downStationId() {
-        return section.getDownStationId();
-    }
-
-    public Distance distance() {
-        return section.distance();
     }
 }
