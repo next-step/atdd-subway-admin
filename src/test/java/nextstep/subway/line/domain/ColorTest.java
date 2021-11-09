@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import org.junit.jupiter.api.DisplayName;
@@ -18,11 +19,13 @@ class ColorTest {
             .isThrownBy(() -> Color.from(value));
     }
 
-    @NullAndEmptySource
     @ParameterizedTest(name = "[{index}] {argumentsWithNames} 으로 객체화 불가능")
+    @DisplayName("비어있는 값으로 객체화하면 IllegalArgumentException")
+    @NullAndEmptySource
     void instance_emptyValue_thrownIllegalArgumentException(String value) {
-        assertThatNoException()
-            .isThrownBy(() -> Color.from(value));
+        assertThatIllegalStateException()
+            .isThrownBy(() -> Color.from(value))
+            .withMessage("color must not be empty");
     }
 
 }
