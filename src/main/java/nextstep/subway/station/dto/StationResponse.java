@@ -23,8 +23,8 @@ public class StationResponse {
     }
 
     public static StationResponse of(Station station) {
-        return new StationResponse(station.getId(),
-            String.valueOf(station.getName()),
+        return new StationResponse(station.id(),
+            String.valueOf(station.name()),
             station.getCreatedDate(),
             station.getModifiedDate());
     }

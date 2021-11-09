@@ -46,7 +46,7 @@ class StationServiceTest {
         save(new StationRequest(expectedName));
 
         //then
-        assertThat(savedStation().getName())
+        assertThat(savedStation().name())
             .isEqualTo(Name.from(expectedName));
     }
 
