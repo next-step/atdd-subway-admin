@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.assertj.core.api.AbstractIntegerAssert;
 import org.assertj.core.api.AbstractListAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -23,9 +25,21 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
+
+    private static final int GANGNAM_YEOKSAM_DISTANCE = 10;
+
+    private static StationResponse gangnamStation;
+    private static StationResponse yeoksamStation;
+
+    @BeforeEach
+    void beforeEach() {
+        gangnamStation = 지하철_역_생성("강남역");
+        yeoksamStation = 지하철_역_생성("역삼역");
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -35,7 +49,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         String blueColor = "blue";
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(firstLineName, blueColor);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(
+            firstLineName, blueColor, gangnamStation.getId(), yeoksamStation.getId(), GANGNAM_YEOKSAM_DISTANCE);
 
         // then
         지하철_노선_생성됨(response, firstLineName, blueColor);
@@ -47,21 +62,38 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         String firstLineName = "1호선";
         String blueColor = "blue";
-        지하철_노선_등록되어_있음(firstLineName, blueColor);
+        지하철_노선_등록되어_있음(firstLineName, blueColor, gangnamStation.getId(), yeoksamStation.getId(),
+            GANGNAM_YEOKSAM_DISTANCE);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(firstLineName, blueColor);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(
+            firstLineName, blueColor, gangnamStation.getId(), yeoksamStation.getId(), GANGNAM_YEOKSAM_DISTANCE);
 
         // then
         지하철_노선_생성_실패됨(response);
+    }
+
+    @DisplayName("존재하지 않는 역으로 노선을 생성한다.")
+    @Test
+    void createLine_notExistsStation_404() {
+        // given, when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(
+            "1호선", "blue", Long.MIN_VALUE, Long.MAX_VALUE, GANGNAM_YEOKSAM_DISTANCE);
+
+        // then
+        지하철_역_못찾음(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
         // given
-        LineResponse firstLineResponse = 지하철_노선_등록되어_있음("1호선", "blue").as(LineResponse.class);
-        LineResponse secondLineResponse = 지하철_노선_등록되어_있음("2호선", "green").as(LineResponse.class);
+        LineResponse firstLineResponse = 지하철_노선_등록되어_있음(
+            "1호선", "blue", gangnamStation.getId(), yeoksamStation.getId(), GANGNAM_YEOKSAM_DISTANCE)
+            .as(LineResponse.class);
+        LineResponse secondLineResponse = 지하철_노선_등록되어_있음(
+            "2호선", "green", gangnamStation.getId(), yeoksamStation.getId(), GANGNAM_YEOKSAM_DISTANCE)
+            .as(LineResponse.class);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -77,7 +109,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createdFirstLineResponse = 지하철_노선_등록되어_있음("1호선", "blue");
+        ExtractableResponse<Response> createdFirstLineResponse = 지하철_노선_등록되어_있음(
+            "1호선", "blue", gangnamStation.getId(), yeoksamStation.getId(), GANGNAM_YEOKSAM_DISTANCE);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdFirstLineResponse);
@@ -100,7 +133,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createdResponse = 지하철_노선_등록되어_있음("1호선", "blue");
+        ExtractableResponse<Response> createdResponse = 지하철_노선_등록되어_있음(
+            "1호선", "blue", gangnamStation.getId(), yeoksamStation.getId(), GANGNAM_YEOKSAM_DISTANCE);
         String updatedSecondLineName = "2호선";
         String updatedRedColor = "red";
 
@@ -126,7 +160,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createdResponse = 지하철_노선_등록되어_있음("1호선", "blue");
+        ExtractableResponse<Response> createdResponse = 지하철_노선_등록되어_있음(
+            "1호선", "blue", gangnamStation.getId(), yeoksamStation.getId(), GANGNAM_YEOKSAM_DISTANCE);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(createdResponse);
@@ -135,21 +170,48 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(response, createdResponse);
     }
 
+    private StationResponse 지하철_역_생성(String name) {
+        return RestAssured.given()
+            .contentType(ContentType.JSON)
+            .body(Collections.singletonMap("name", name))
+            .when()
+            .post("/stations")
+            .then()
+            .extract()
+            .as(StationResponse.class);
+    }
+
     private String headerLocation(ExtractableResponse<Response> response) {
         return response.header("Location");
     }
 
     private void 지하철_노선_응답됨(ExtractableResponse<Response> response, LineResponse expectedLine) {
+        LineResponse line = response.as(LineResponse.class);
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.as(LineResponse.class))
-                .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor)
-                .containsExactly(expectedLine.getId(), expectedLine.getName(), expectedLine.getColor())
+            () -> assertThat(line.getId()).isNotNull(),
+            () -> assertThat(line.getName()).isEqualTo(expectedLine.getName()),
+            () -> assertThat(line.getColor()).isEqualTo(expectedLine.getColor()),
+            () -> assertThat(line.getStations())
+                .hasSize(2)
+                .extracting(StationResponse::getId, StationResponse::getName)
+                .containsExactly(
+                    tuple(gangnamStation.getId(), gangnamStation.getName()),
+                    tuple(yeoksamStation.getId(), yeoksamStation.getName())
+                )
         );
     }
 
+    private void 지하철_역_못찾음(ExtractableResponse<Response> response) {
+        찾을_수_없음(response);
+    }
+
     private void 지하철_노선_못찾음(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode())
+        찾을_수_없음(response);
+    }
+
+    private AbstractIntegerAssert<?> 찾을_수_없음(ExtractableResponse<Response> response) {
+        return assertThat(response.statusCode())
             .isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
@@ -175,7 +237,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         String name, String color) {
         return RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .body(lineBody(name, color))
+            .body(updatedBody(name, color))
             .when()
             .put(headerLocation(createdResponse))
             .then().log().all()
@@ -185,7 +247,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 존재하지_않는_지하철_노선_수정_요청() {
         return RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .body(lineBody("1호선", "blue"))
+            .body(updatedBody("1호선", "blue"))
             .when()
             .put("/lines/{id}", Integer.MIN_VALUE)
             .then().log().all()
@@ -218,10 +280,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         List<LineResponse> lineResponses = response.as(new TypeRef<List<LineResponse>>() {
         });
         return assertThat(lineResponses)
-            .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor)
+            .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor, LineResponse::getStations)
             .containsExactly(
                 expectedLines.stream()
-                    .map(line -> tuple(line.getId(), line.getName(), line.getColor()))
+                    .map(line -> tuple(line.getId(), line.getName(), line.getColor(), line.getStations()))
                     .toArray(Tuple[]::new)
             );
     }
@@ -232,21 +294,28 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response, String expectedName, String expectedColor) {
-        LineResponse lineResponse = response.as(LineResponse.class);
+        LineResponse line = response.as(LineResponse.class);
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
             () -> assertThat(headerLocation(response)).isNotBlank(),
-            () -> assertThat(lineResponse.getId()).isNotNull(),
-            () -> assertThat(lineResponse.getName()).isEqualTo(expectedName),
-            () -> assertThat(lineResponse.getColor()).isEqualTo(expectedColor),
-            () -> assertThat(lineResponse.getCreatedDate()).isNotNull(),
-            () -> assertThat(lineResponse.getModifiedDate()).isNotNull()
-        );
+            () -> assertThat(line.getId()).isNotNull(),
+            () -> assertThat(line.getName()).isEqualTo(expectedName),
+            () -> assertThat(line.getColor()).isEqualTo(expectedColor),
+            () -> assertThat(line.getCreatedDate()).isNotNull(),
+            () -> assertThat(line.getModifiedDate()).isNotNull(),
+            () -> assertThat(line.getStations())
+                .hasSize(2)
+                .extracting(StationResponse::getId, StationResponse::getName)
+                .containsExactly(
+                    tuple(gangnamStation.getId(), gangnamStation.getName()),
+                    tuple(yeoksamStation.getId(), yeoksamStation.getName())
+                ));
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color,
+        long upStationId, long downStationId, int distance) {
         return RestAssured.given().log().all()
-            .body(lineBody(name, color))
+            .body(createdBody(name, color, upStationId, downStationId, distance))
             .contentType(ContentType.JSON)
             .when()
             .post("/lines")
@@ -254,9 +323,10 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color) {
+    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color,
+        long upStationId, long downStationId, int distance) {
         return RestAssured.given()
-            .body(lineBody(name, color))
+            .body(createdBody(name, color, upStationId, downStationId, distance))
             .contentType(ContentType.JSON)
             .post("/lines")
             .then()
@@ -280,7 +350,18 @@ class LineAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private Map<String, String> lineBody(String name, String color) {
+    private Map<String, String> createdBody(String name, String color, long upStationId, long downStationId,
+        int distance) {
+        HashMap<String, String> body = new HashMap<>();
+        body.put("name", name);
+        body.put("color", color);
+        body.put("upStationId", String.valueOf(upStationId));
+        body.put("downStationId", String.valueOf(downStationId));
+        body.put("distance", String.valueOf(distance));
+        return body;
+    }
+
+    private Map<String, String> updatedBody(String name, String color) {
         HashMap<String, String> body = new HashMap<>();
         body.put("name", name);
         body.put("color", color);
