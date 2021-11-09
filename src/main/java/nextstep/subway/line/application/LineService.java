@@ -1,5 +1,7 @@
 package nextstep.subway.line.application;
 
+import static nextstep.subway.constant.ErrorMessage.*;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -51,8 +53,6 @@ public class LineService {
 
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
-                             .orElseThrow(
-                                 () -> new NoSuchElementException(String.format("id=%s 에 해당하는 노선이 존재하지 않습니다.",
-                                                                                id)));
+                             .orElseThrow(() -> new NoSuchElementException(String.format(NOT_EXIST_LINE, id)));
     }
 }
