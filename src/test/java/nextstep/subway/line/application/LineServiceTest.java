@@ -31,7 +31,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataIntegrityViolationException;
 
 @DisplayName("노선 서비스")
 @ExtendWith(MockitoExtension.class)
@@ -65,8 +64,8 @@ class LineServiceTest {
     }
 
     @Test
-    @DisplayName("이미 존재하는 이름으로 저장하면 DataIntegrityViolationException")
-    void saveLine_alreadyExistsName_thrownDataIntegrityViolationException() {
+    @DisplayName("이미 존재하는 이름으로 저장하면 DuplicateDataException")
+    void saveLine_alreadyExistsName_thrownDuplicateDataException() {
         //given
         String requestName = "name";
         alreadyExistsDuplicationName(requestName);
@@ -75,7 +74,7 @@ class LineServiceTest {
         ThrowingCallable saveCall = () -> save(lineCreateRequest(requestName, "color"));
 
         //then
-        assertThatExceptionOfType(DataIntegrityViolationException.class)
+        assertThatExceptionOfType(DuplicateDataException.class)
             .isThrownBy(saveCall);
     }
 

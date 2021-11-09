@@ -2,7 +2,10 @@ package nextstep.subway.station.ui;
 
 import java.net.URI;
 import java.util.List;
-
+import javax.validation.Valid;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,21 +16,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.dto.StationRequest;
-import nextstep.subway.station.dto.StationResponse;
-
 @RestController
 @RequestMapping("/stations")
 public class StationController {
-    private StationService stationService;
+
+    private final StationService stationService;
 
     public StationController(StationService stationService) {
         this.stationService = stationService;
     }
 
     @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> createStation(
+        @Valid @RequestBody StationRequest stationRequest) {
         StationResponse station = stationService.saveStation(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
     }
