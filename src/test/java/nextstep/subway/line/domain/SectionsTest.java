@@ -36,24 +36,29 @@ class SectionsTest {
     @DisplayName("지하철 역들")
     void stations() {
         //given
-        Name firstStation = Name.from("강남");
-        Name secondStation = Name.from("역삼");
-        Name thirdStation = Name.from("잠실");
+        Name gangnam = Name.from("강남");
+        Name yeoksam = Name.from("역삼");
+        Name jamsil = Name.from("잠실");
 
         Sections sections = Sections.from(Arrays.asList(
-            section(firstStation, secondStation),
-            section(secondStation, thirdStation)
+            section(gangnam, yeoksam),
+            section(yeoksam, jamsil)
         ));
 
         //when
         List<Station> stations = sections.stations();
 
         //then
+        hasThreeAndNotHasDuplicates(stations, gangnam, yeoksam, jamsil);
+    }
+
+    private void hasThreeAndNotHasDuplicates(
+        List<Station> stations, Name expectedFirst, Name expectedSecond, Name expectedThird) {
         assertThat(stations)
             .hasSize(3)
             .doesNotHaveDuplicates()
             .extracting(Station::name)
-            .containsExactly(firstStation, secondStation, thirdStation);
+            .containsExactly(expectedFirst, expectedSecond, expectedThird);
     }
 
 
