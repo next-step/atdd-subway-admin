@@ -74,6 +74,7 @@ public class Line extends BaseEntity {
 
     private void setSections(Sections sections) {
         Assert.notNull(sections, "'sections' must not be null");
+        sections.setLine(this);
         this.sections = sections;
     }
 
