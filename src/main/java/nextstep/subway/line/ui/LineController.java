@@ -36,13 +36,13 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LineResponse>> readLines() {
-        return ResponseEntity.ok().body(lineService.readLines());
+    public ResponseEntity<List<LineResponse>> showLines() {
+        return ResponseEntity.ok().body(lineService.findLines());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> readLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.readLine(id));
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
     @PutMapping("/{id}")

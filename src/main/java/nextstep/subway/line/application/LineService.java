@@ -2,7 +2,6 @@ package nextstep.subway.line.application;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<LineResponse> readLines() {
+    public List<LineResponse> findLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
                     .map(LineResponse::of)
@@ -36,13 +35,13 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse readLine(Long id) {
-        Line line = readLineById(id);
+    public LineResponse findLine(Long id) {
+        Line line = findLineById(id);
         return LineResponse.of(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = readLineById(id);
+        Line line = findLineById(id);
         line.update(lineRequest.toLine());
     }
 
@@ -50,7 +49,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private Line readLineById(Long id) {
+    private Line findLineById(Long id) {
         return lineRepository.findById(id)
                              .orElseThrow(
                                  () -> new NoSuchElementException(String.format("id=%s 에 해당하는 노선이 존재하지 않습니다.",
