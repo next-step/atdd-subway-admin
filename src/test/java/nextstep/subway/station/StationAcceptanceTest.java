@@ -30,7 +30,8 @@ class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
+    void
+    createStation() {
         // given
         String gangnam = "강남역";
 
@@ -41,7 +42,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_생성됨(response, gangnam);
     }
 
-    @ParameterizedTest(name = "[{index}] 지하철 역 이름이 {argumentsWithNames} 으로는 생성할 수 없다.")
+    @ParameterizedTest(name = "[{index}] 지하철 역 이름이 \"{0}\" 으로는 생성할 수 없다.")
     @DisplayName("이름이 비어있는 상태로 지하철역을 생성한다.")
     @NullAndEmptySource
     void createStation_emptyName_400(String emptyOrNull) {
