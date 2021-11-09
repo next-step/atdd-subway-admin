@@ -52,8 +52,8 @@ class LineTest {
 
         //then
         assertAll(
-            () -> assertThat(line.getName()).isEqualTo(updatedName),
-            () -> assertThat(line.getColor()).isEqualTo(updatedColor)
+            () -> assertThat(line.name()).isEqualTo(updatedName),
+            () -> assertThat(line.color()).isEqualTo(updatedColor)
         );
     }
 

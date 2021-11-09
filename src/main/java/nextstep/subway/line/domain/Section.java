@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -50,6 +52,14 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
+    List<Station> stations() {
+        return Arrays.asList(upStation, downStation);
+    }
+
+    void setLine(Line line) {
+        this.line = line;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -78,9 +88,5 @@ public class Section {
             ", downStation=" + downStation +
             ", distance=" + distance +
             '}';
-    }
-
-    void setLine(Line line) {
-        this.line = line;
     }
 }

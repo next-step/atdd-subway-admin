@@ -350,12 +350,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         List<LineResponse> lineResponses = response.as(new TypeRef<List<LineResponse>>() {
         });
         return assertThat(lineResponses)
-            .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor,
-                LineResponse::getStations)
+            .extracting(LineResponse::getId, LineResponse::getName, LineResponse::getColor)
             .containsExactly(
                 expectedLines.stream()
-                    .map(line -> tuple(line.getId(), line.getName(), line.getColor(),
-                        line.getStations()))
+                    .map(line -> tuple(line.getId(), line.getName(), line.getColor()))
                     .toArray(Tuple[]::new)
             );
     }

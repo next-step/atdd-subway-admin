@@ -1,7 +1,9 @@
 package nextstep.subway.line.domain;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -26,8 +28,8 @@ public class Sections {
         return new Sections(list);
     }
 
-    List<Station> getStations() {
-        return Collections.emptyList();
+    List<Station> stations() {
+        return new ArrayList<>(removedDuplicateStations());
     }
 
     @Override
@@ -41,5 +43,13 @@ public class Sections {
         for (Section section : list) {
             section.setLine(line);
         }
+    }
+
+    private Set<Station> removedDuplicateStations() {
+        Set<Station> stations = new LinkedHashSet<>();
+        for (Section section : list) {
+            stations.addAll(section.stations());
+        }
+        return stations;
     }
 }
