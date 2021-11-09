@@ -50,17 +50,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @ParameterizedTest
     @CsvSource(value = {"신분당선,RED,분당선,YELLOW", "1호선,BLUE,2호선,GREEN"})
-    void getLines(String name1, String color1, String name2, String color2) {
+    void getLines(String firstLineName, String firstLineColor, String secondLineName, String secondLineColor) {
         // given
-        LineResponse line1 = 지하철_노선_등록되어_있음(name1, color1);
-        LineResponse line2 = 지하철_노선_등록되어_있음(name2, color2);
+        LineResponse firstLine = 지하철_노선_등록되어_있음(firstLineName, firstLineColor);
+        LineResponse secondLine = 지하철_노선_등록되어_있음(secondLineName, secondLineColor);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         지하철_노선_목록_응답됨(response);
-        지하철_노선_목록_포함됨(response, Arrays.asList(line1, line2));
+        지하철_노선_목록_포함됨(response, Arrays.asList(firstLine, secondLine));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
