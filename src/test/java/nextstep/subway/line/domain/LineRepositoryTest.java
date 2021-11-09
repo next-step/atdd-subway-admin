@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.Collections;
+import java.util.List;
 import nextstep.subway.common.domain.Name;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -65,7 +67,7 @@ class LineRepositoryTest {
             .isThrownBy(saveCall);
     }
 
-    @ParameterizedTest(name = "[{index}] \"{0}\"은 이미 존재하는 이름이라는 사실이 {1}")
+    @ParameterizedTest(name = "[{index}] \"{0}\"은 이미 존재하는 이름인 것이 {1}")
     @DisplayName("이미 존재하는 이름인지 확인")
     @CsvSource({"1호선,true", "2호선,false"})
     void existsByName(String name, boolean expected) {
@@ -82,9 +84,9 @@ class LineRepositoryTest {
 
     private void savedLine(Line actualLine, Name expectedName, Color expectedColor) {
         assertAll(
-            () -> assertThat(actualLine.id()).isNotNull(),
-            () -> assertThat(actualLine.name()).isEqualTo(expectedName),
-            () -> assertThat(actualLine.color()).isEqualTo(expectedColor)
+            () -> assertThat(actualLine.getId()).isNotNull(),
+            () -> assertThat(actualLine.getName()).isEqualTo(expectedName),
+            () -> assertThat(actualLine.getColor()).isEqualTo(expectedColor)
         );
     }
 
@@ -97,7 +99,7 @@ class LineRepositoryTest {
             Line.of(name, color, Sections.from(gangnamYeoksamSection())));
     }
 
-    private Section gangnamYeoksamSection() {
-        return Section.of(gangnam, yeoksam, Distance.from(10));
+    private List<Section> gangnamYeoksamSection() {
+        return Collections.singletonList(Section.of(gangnam, yeoksam, Distance.from(10)));
     }
 }

@@ -79,4 +79,8 @@ public class Section {
             ", distance=" + distance +
             '}';
     }
+
+    void setLine(Line line) {
+        this.line = line;
+    }
 }

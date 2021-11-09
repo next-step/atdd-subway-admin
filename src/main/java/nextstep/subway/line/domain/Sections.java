@@ -36,4 +36,10 @@ public class Sections {
             "list=" + list +
             '}';
     }
+
+    void setLine(Line line) {
+        for (Section section : list) {
+            section.setLine(line);
+        }
+    }
 }
