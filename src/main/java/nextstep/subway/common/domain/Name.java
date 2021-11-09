@@ -3,6 +3,7 @@ package nextstep.subway.common.domain;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import org.springframework.util.Assert;
 
 @Embeddable
 public class Name {
@@ -14,6 +15,7 @@ public class Name {
     }
 
     private Name(String value) {
+        Assert.hasText(value, "name value must not be empty");
         this.value = value;
     }
 

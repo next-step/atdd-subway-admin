@@ -2,15 +2,14 @@ package nextstep.subway.line.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -22,9 +21,8 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+    public LineResponse saveLine(LineCreateRequest request){
+        return null;
     }
 
     @Transactional(readOnly = true)
@@ -40,9 +38,9 @@ public class LineService {
         return LineResponse.of(line(id));
     }
 
-    public void update(Long id, LineRequest request) {
+    public void update(Long id, LineUpdateRequest request) {
         Line line = line(id);
-        line.update(request.toLine());
+        line.update(request.toName(), request.toColor());
     }
 
     public void delete(Long id) {

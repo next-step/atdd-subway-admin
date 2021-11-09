@@ -1,40 +1,106 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
+import java.util.Objects;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
-
-import javax.persistence.*;
+import nextstep.subway.common.domain.Name;
+import nextstep.subway.station.domain.Station;
+import org.springframework.util.Assert;
 
 @Entity
 public class Line extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String name;
-    private String color;
 
-    public Line() {
+    @Embedded
+    private Name name;
+
+    @Embedded
+    private Color color;
+
+    @Embedded
+    private Sections sections;
+
+    protected Line() {
     }
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+    private Line(Name name, Color color, Sections sections) {
+        setName(name);
+        setColor(color);
+        setSections(sections);
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+    public static Line of(Name name, Color color, Sections sections) {
+        return new Line(name, color, sections);
+    }
+
+    public void update(Name name, Color color) {
+        setName(name);
+        setColor(color);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
+    public Name getName() {
         return name;
     }
 
-    public String getColor() {
+    private void setName(Name name) {
+        Assert.notNull(name, "'name' must not be null");
+        this.name = name;
+    }
+
+    public Color getColor() {
         return color;
+    }
+
+    private void setColor(Color color) {
+        Assert.notNull(color, "'color' must not be null");
+        this.color = color;
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    private void setSections(Sections sections) {
+        Assert.notNull(sections, "'sections' must not be null");
+        this.sections = sections;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+            "id=" + id +
+            ", name=" + name +
+            ", color=" + color +
+            ", sections=" + sections +
+            '}';
     }
 }
