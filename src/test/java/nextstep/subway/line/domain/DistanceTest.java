@@ -21,7 +21,7 @@ class DistanceTest {
     void instance_negativeValue_thrownIllegalArgumentException() {
         assertThatIllegalArgumentException()
             .isThrownBy(() -> Distance.from(Integer.MIN_VALUE))
-            .withMessageEndingWith("must be greater than zero");
+            .withMessageMatching("distance value\\(\\d+\\) must be positive");
     }
 
 }
