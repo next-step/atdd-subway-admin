@@ -1,8 +1,10 @@
 package nextstep.subway.line.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
+import java.util.List;
 import java.util.stream.Stream;
 import nextstep.subway.common.domain.Name;
 import nextstep.subway.station.domain.Station;
@@ -32,6 +34,25 @@ class SectionTest {
         assertThatIllegalArgumentException()
             .isThrownBy(() -> Section.of(upStation, downStation, distance))
             .withMessageEndingWith(" must not be null");
+    }
+
+    @Test
+    @DisplayName("지하철 역들")
+    void stations() {
+        Name gangnam = Name.from("강남");
+        Name yeoksam = Name.from("역삼");
+        Section section = Section.of(
+            Station.from(gangnam), Station.from(yeoksam), Distance.from(10));
+
+        //when
+        List<Station> stations = section.stations();
+
+        //then
+        assertThat(stations)
+            .hasSize(2)
+            .doesNotHaveDuplicates()
+            .extracting(Station::name)
+            .containsExactly(gangnam, yeoksam);
     }
 
     private static Stream<Arguments> instance_emptyArgument_thrownIllegalArgumentException() {

@@ -32,11 +32,11 @@ public class Station extends BaseEntity {
         return new Station(name);
     }
 
-    public Long getId() {
+    public Long id() {
         return id;
     }
 
-    public Name getName() {
+    public Name name() {
         return name;
     }
 
