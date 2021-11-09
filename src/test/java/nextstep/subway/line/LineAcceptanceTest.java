@@ -75,7 +75,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨(response);
     }
 
-    @ParameterizedTest(name = "[{index}] [name:{0}, color:{1}, upStationId:{2}, downStationId:{3}, distance:{4}] 값으로 지하철 노선을 생성할 수 없다.")
+    @ParameterizedTest(name = "[{index}] {argumentsWithNames} 값으로 지하철 노선을 생성할 수 없다.")
     @DisplayName("빈 값 존재하면 지하철 노선은 생성할 수 없다.")
     @CsvSource({",color,1,2,10", "name,,1,2,10",
         "name,color,,2,10", "name,color,1,,10", "name,color,1,2,"})
@@ -165,7 +165,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정됨(response, createdResponse, updatedSecondLineName, updatedRedColor);
     }
 
-    @ParameterizedTest(name = "[{index}] [name:{0}, color:{1}] 값으로 수정할 수 없다.")
+    @ParameterizedTest(name = "[{index}] {argumentsWithNames} 값으로 수정할 수 없다.")
     @DisplayName("이름 또는 색상을 빈값으로 지하철 노선을 수정한다.")
     @CsvSource({",color", "name,"})
     void updateLine_emptyNameOrColor_400(String updatedName, String updatedColor) {
