@@ -67,7 +67,7 @@ class LineRepositoryTest {
             .isThrownBy(saveCall);
     }
 
-    @ParameterizedTest(name = "[{index}] \"{0}\"은 이미 존재하는 이름인 것이 {1}")
+    @ParameterizedTest(name = "[{index}] \"{0}\"은 이미 존재하는 이름이라는 사실이 {1}")
     @DisplayName("이미 존재하는 이름인지 확인")
     @CsvSource({"1호선,true", "2호선,false"})
     void existsByName(String name, boolean expected) {

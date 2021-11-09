@@ -30,11 +30,11 @@ public class Station extends BaseEntity {
         return new Station(name);
     }
 
-    public Long id() {
+    public Long getId() {
         return id;
     }
 
-    public Name name() {
+    public Name getName() {
         return name;
     }
 

@@ -2,7 +2,6 @@ package nextstep.subway.station.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,15 +37,14 @@ class StationServiceTest {
     @DisplayName("저장")
     void saveStation() {
         //given
-        String expectedName = "강남";
+        String expectedName = "name";
         notExistsDuplicationName(expectedName);
-        returnSavedStation(mockStation());
 
         //when
-        save(new StationRequest(expectedName));
+        save(new StationRequest("강남"));
 
         //then
-        assertThat(savedStation().name())
+        assertThat(savedStation().getName())
             .isEqualTo(Name.from(expectedName));
     }
 
@@ -62,8 +60,7 @@ class StationServiceTest {
 
         //then
         assertThatExceptionOfType(DuplicateDataException.class)
-            .isThrownBy(saveCall)
-            .withMessageEndingWith("already exists");
+            .isThrownBy(saveCall);
     }
 
     @Test
@@ -78,16 +75,7 @@ class StationServiceTest {
         //then
         assertThatExceptionOfType(NotFoundException.class)
             .isThrownBy(findOneCall)
-            .withMessageEndingWith("does not exist");
-    }
-
-    private void returnSavedStation(Station station) {
-        when(repository.save(any(Station.class)))
-            .thenReturn(station);
-    }
-
-    private Station mockStation() {
-        return Station.from(Name.from("강남"));
+            .withMessageMatching("station\\(\\d+\\) is not exists");
     }
 
     private void notExistsStation() {

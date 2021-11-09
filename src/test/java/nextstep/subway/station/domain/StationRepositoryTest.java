@@ -77,8 +77,8 @@ class StationRepositoryTest {
 
     private void savedStation(Station station, Name expectedName) {
         assertAll(
-            () -> assertThat(station.id()).isNotNull(),
-            () -> assertThat(station.name()).isEqualTo(expectedName),
+            () -> assertThat(station.getId()).isNotNull(),
+            () -> assertThat(station.getName()).isEqualTo(expectedName),
             () -> assertThat(station.getCreatedDate()).isNotNull(),
             () -> assertThat(station.getModifiedDate()).isNotNull()
         );
