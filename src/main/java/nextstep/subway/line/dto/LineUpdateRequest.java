@@ -28,12 +28,12 @@ public class LineUpdateRequest {
         return color;
     }
 
-    public Name toName() {
+    public Name name() {
         return Name.from(name);
     }
 
-    public Color toColor() {
-        return Color.from(name);
+    public Color color() {
+        return Color.from(color);
     }
 
 }

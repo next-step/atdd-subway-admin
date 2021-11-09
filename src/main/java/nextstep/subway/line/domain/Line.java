@@ -46,36 +46,20 @@ public class Line extends BaseEntity {
         setColor(color);
     }
 
-    public Long getId() {
+    public Long id() {
         return id;
     }
 
-    public Name getName() {
+    public Name name() {
         return name;
     }
 
-    private void setName(Name name) {
-        Assert.notNull(name, "'name' must not be null");
-        this.name = name;
-    }
-
-    public Color getColor() {
+    public Color color() {
         return color;
     }
 
-    private void setColor(Color color) {
-        Assert.notNull(color, "'color' must not be null");
-        this.color = color;
-    }
-
-    public List<Station> getStations() {
-        return sections.getStations();
-    }
-
-    private void setSections(Sections sections) {
-        Assert.notNull(sections, "'sections' must not be null");
-        sections.setLine(this);
-        this.sections = sections;
+    public List<Station> stations() {
+        return sections.stations();
     }
 
     public void addSection(Section section) {
@@ -125,5 +109,21 @@ public class Line extends BaseEntity {
             ", color=" + color +
             ", sections=" + sections +
             '}';
+    }
+
+    private void setName(Name name) {
+        Assert.notNull(name, "'name' must not be null");
+        this.name = name;
+    }
+
+    private void setColor(Color color) {
+        Assert.notNull(color, "'color' must not be null");
+        this.color = color;
+    }
+
+    private void setSections(Sections sections) {
+        Assert.notNull(sections, "'sections' must not be null");
+        sections.setLine(this);
+        this.sections = sections;
     }
 }
