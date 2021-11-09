@@ -8,7 +8,7 @@ import org.springframework.util.Assert;
 @Embeddable
 public class Name {
 
-    @Column(name = "name", unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String value;
 
     protected Name() {
