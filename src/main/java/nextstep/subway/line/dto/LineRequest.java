@@ -1,17 +1,22 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Line;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 public class LineRequest {
+
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String color;
 
-    public LineRequest() {
-    }
+    @Valid
+    @JsonUnwrapped
+    private SectionRequest section;
 
-    public LineRequest(String name, String color) {
-        this.name = name;
-        this.color = color;
+    private LineRequest() {
     }
 
     public String getName() {
@@ -22,7 +27,19 @@ public class LineRequest {
         return color;
     }
 
-    public Line toLine() {
-        return new Line(name, color);
+    public Long getUpStationId() {
+        return section.getUpStationId();
+    }
+
+    public Long getDownStationId() {
+        return section.getDownStationId();
+    }
+
+    public Integer getDistance() {
+        return section.getDistance();
+    }
+
+    public SectionRequest getSection() {
+        return section;
     }
 }
