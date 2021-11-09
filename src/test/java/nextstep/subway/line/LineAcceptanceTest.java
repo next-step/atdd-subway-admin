@@ -3,16 +3,11 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpStatus;
@@ -22,8 +17,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -120,10 +115,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(LineResponse line, String updateName, String updateColor) {
-        Map<String, String> params = createLineParams(updateName, updateColor);
+        LineRequest lineRequest = createLineRequest(updateName, updateColor);
 
         return RestAssured.given().log().all()
-                          .body(params)
+                          .body(lineRequest)
                           .contentType(MediaType.APPLICATION_JSON_VALUE)
                           .when()
                           .put("/lines/{id}", line.getId())
@@ -148,10 +143,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-        Map<String, String> params = createLineParams(name, color);
+        LineRequest lineRequest = createLineRequest(name, color);
 
         return RestAssured.given().log().all()
-                          .body(params)
+                          .body(lineRequest)
                           .contentType(MediaType.APPLICATION_JSON_VALUE)
                           .when()
                           .post("/lines")
@@ -160,10 +155,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private LineResponse 지하철_노선_등록되어_있음(String name, String color) {
-        Map<String, String> params = createLineParams(name, color);
+        LineRequest lineRequest = createLineRequest(name, color);
 
         return RestAssured.given().log().all()
-                          .body(params)
+                          .body(lineRequest)
                           .contentType(MediaType.APPLICATION_JSON_VALUE)
                           .when()
                           .post("/lines")
@@ -214,10 +209,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private Map<String, String> createLineParams(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        return params;
+    private LineRequest createLineRequest(String name, String color) {
+        return new LineRequest(name, color);
     }
 }
