@@ -1,23 +1,16 @@
 package nextstep.subway.line;
 
-import static org.assertj.core.api.Assertions.*;
+import static nextstep.subway.line.LineAcceptanceMethods.*;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -104,112 +97,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_삭제됨(response);
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_제거_요청(LineResponse line) {
-        return RestAssured.given().log().all()
-                          .when()
-                          .delete("/lines/{id}", line.getId())
-                          .then().log().all()
-                          .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(LineResponse line, String updateName, String updateColor) {
-        LineRequest lineRequest = createLineRequest(updateName, updateColor);
-
-        return RestAssured.given().log().all()
-                          .body(lineRequest)
-                          .contentType(MediaType.APPLICATION_JSON_VALUE)
-                          .when()
-                          .put("/lines/{id}", line.getId())
-                          .then().log().all()
-                          .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
-        return RestAssured.given().log().all()
-                          .when()
-                          .get("/lines/{id}", id)
-                          .then().log().all()
-                          .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return RestAssured.given().log().all()
-                          .when()
-                          .get("/lines")
-                          .then().log().all()
-                          .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-        LineRequest lineRequest = createLineRequest(name, color);
-
-        return RestAssured.given().log().all()
-                          .body(lineRequest)
-                          .contentType(MediaType.APPLICATION_JSON_VALUE)
-                          .when()
-                          .post("/lines")
-                          .then().log().all()
-                          .extract();
-    }
-
-    private LineResponse 지하철_노선_등록되어_있음(String name, String color) {
-        LineRequest lineRequest = createLineRequest(name, color);
-
-        return RestAssured.given().log().all()
-                          .body(lineRequest)
-                          .contentType(MediaType.APPLICATION_JSON_VALUE)
-                          .when()
-                          .post("/lines")
-                          .then().log().all()
-                          .extract()
-                          .as(LineResponse.class);
-    }
-
-    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private void 지하철_노선_포함됨(ExtractableResponse<Response> response, LineResponse line) {
-        LineResponse resultLine = response.jsonPath()
-                                          .getObject(".", LineResponse.class);
-        assertThat(resultLine.getId()).isEqualTo(line.getId());
-    }
-
-    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<LineResponse> expectedLines) {
-        List<Long> expectedLineIds = expectedLines.stream()
-                                                  .map(LineResponse::getId)
-                                                  .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath()
-                                           .getList(".", LineResponse.class)
-                                           .stream()
-                                           .map(LineResponse::getId)
-                                           .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
-    }
-
-    private void 지하철_노선_응답됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private LineRequest createLineRequest(String name, String color) {
-        return new LineRequest(name, color);
     }
 }
