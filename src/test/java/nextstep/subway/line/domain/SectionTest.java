@@ -48,11 +48,7 @@ class SectionTest {
         List<Station> stations = section.stations();
 
         //then
-        assertThat(stations)
-            .hasSize(2)
-            .doesNotHaveDuplicates()
-            .extracting(Station::name)
-            .containsExactly(gangnam, yeoksam);
+        hasTwoSizeAndContains(stations, gangnam, yeoksam);
     }
 
     private static Stream<Arguments> instance_emptyArgument_thrownIllegalArgumentException() {
@@ -61,5 +57,14 @@ class SectionTest {
             Arguments.of(Station.from(Name.from("강남")), null, Distance.from(10)),
             Arguments.of(Station.from(Name.from("강남")), Station.from(Name.from("역삼")), null)
         );
+    }
+
+    private void hasTwoSizeAndContains(List<Station> stations, Name firstExpectedName,
+        Name secondExpectedName) {
+        assertThat(stations)
+            .hasSize(2)
+            .doesNotHaveDuplicates()
+            .extracting(Station::name)
+            .containsExactly(firstExpectedName, secondExpectedName);
     }
 }
