@@ -20,11 +20,7 @@ public class StationRequest {
         return name;
     }
 
-    public Name name() {
-        return Name.from(name);
-    }
-
     public Station toStation() {
-        return Station.from(name());
+        return Station.from(Name.from(name));
     }
 }
