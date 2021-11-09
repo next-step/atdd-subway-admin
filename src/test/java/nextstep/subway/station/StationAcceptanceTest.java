@@ -1,28 +1,29 @@
 package nextstep.subway.station;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.assertj.core.api.AbstractIntegerAssert;
-import org.assertj.core.api.AbstractListAssert;
-import org.assertj.core.api.ObjectAssert;
-import org.assertj.core.groups.Tuple;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.mapper.TypeRef;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
+import org.assertj.core.api.AbstractIntegerAssert;
+import org.assertj.core.api.AbstractListAssert;
+import org.assertj.core.api.ObjectAssert;
+import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends AcceptanceTest {
@@ -41,6 +42,17 @@ class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_생성됨(response, gangnam);
     }
 
+    @ParameterizedTest(name = "[{index}] 지하철 역 이름이 \"{0}\" 으로는 생성할 수 없다.")
+    @DisplayName("이름이 비어있는 상태로 지하철역을 생성한다.")
+    @NullAndEmptySource
+    void createStation_emptyName_400(String emptyOrNull) {
+        //when
+        ExtractableResponse<Response> response = 지하철역_생성_요청(emptyOrNull);
+
+        // then
+        지하철_역_생성_실패됨(response);
+    }
+
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
@@ -52,8 +64,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성_요청(gangnamStation);
 
         // then
-        assertThat(response.statusCode())
-            .isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_역_생성_실패됨(response);
     }
 
     @DisplayName("지하철역을 조회한다.")
@@ -86,6 +97,11 @@ class StationAcceptanceTest extends AcceptanceTest {
         지하철_역_삭제됨(response);
     }
 
+    private void 지하철_역_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode())
+            .isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private AbstractListAssert<?, List<? extends Tuple>, Tuple, ObjectAssert<Tuple>> 지하철_역_목록_포함됨(
         ExtractableResponse<Response> response, List<StationResponse> expectedStations) {
         List<StationResponse> stationResponses = response.as(new TypeRef<List<StationResponse>>() {
@@ -116,7 +132,8 @@ class StationAcceptanceTest extends AcceptanceTest {
             .isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> 지하철_역_삭제_요청(ExtractableResponse<Response> createdResponse) {
+    private ExtractableResponse<Response> 지하철_역_삭제_요청(
+        ExtractableResponse<Response> createdResponse) {
         return RestAssured.given().log().all()
             .when()
             .delete(headerLocation(createdResponse))
