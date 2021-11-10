@@ -36,13 +36,17 @@ public class LineService {
         return LineResponse.of(findLineById(id));
     }
 
-    private Line findLineById(Long id) {
-        return lineRepository.findById(id)
-                .orElseThrow(RuntimeException::new);
-    }
-
     public void updateLine(Long id, LineRequest lineUpdateRequest) {
         Line line = findLineById(id);
         line.update(lineUpdateRequest.toLine());
+    }
+
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
+
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(RuntimeException::new);
     }
 }
