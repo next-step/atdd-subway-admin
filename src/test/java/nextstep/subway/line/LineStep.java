@@ -29,4 +29,8 @@ public class LineStep {
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
         return 지하철_노선_생성_요청(lineRequest);
     }
+
+    public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

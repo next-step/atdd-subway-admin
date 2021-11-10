@@ -44,7 +44,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선_요청);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_노선_생성_실패됨(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
