@@ -1,17 +1,14 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.line.LineStep.지하철_노선_생성_요청;
+import static nextstep.subway.line.LineStep.지하철_노선_생성됨;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -19,16 +16,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = RestAssured
-                                                    .given().log().all()
-                                                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                    .body(new LineRequest("신분당선", "bg-red-600"))
-                                                    .when().post("/lines")
-                                                    .then().log().all()
-                                                    .extract();
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(new LineRequest("신분당선", "bg-red-600"));
+
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        지하철_노선_생성됨(response);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
