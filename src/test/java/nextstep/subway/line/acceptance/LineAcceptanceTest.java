@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 
-@DisplayName("지하철 노선 관련 기능")
+@DisplayName("지하철 노선 인수 테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -81,7 +81,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse 이호선 = 지하철_노선_등록되어_있음("2호선", "green");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청("4호선", "blue");
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(이호선.getId(), "4호선", "blue");
 
         // then
         지하철_노선_수정됨(response);
@@ -94,7 +94,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse 이호선 = 지하철_노선_등록되어_있음("2호선", "green");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청();
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(이호선.getId());
 
         // then
         지하철_노선_삭제됨(response);
@@ -134,7 +134,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(String name, String color) {
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -143,15 +143,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines")
+                .when().put("/lines/{id}", id)
                 .then().log().all()
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_제거_요청() {
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
         return RestAssured
                 .given().log().all()
-                .when().delete("/lines")
+                .when().delete("/lines/{id}", id)
                 .then().log().all()
                 .extract();
     }
