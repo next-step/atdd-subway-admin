@@ -68,4 +68,18 @@ public class LineStep {
                 .then().log().all()
                 .extract();
     }
+
+    public static void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(LineResponse 신분당선_응답, LineRequest 구분당선_요청) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(구분당선_요청)
+                .when().put("/lines/{id}", 신분당선_응답.getId())
+                .then().log().all()
+                .extract();
+    }
 }

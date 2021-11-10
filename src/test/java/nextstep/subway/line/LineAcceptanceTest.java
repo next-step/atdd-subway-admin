@@ -22,6 +22,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private LineRequest 신분당선_요청;
     private LineRequest 이호선_요청;
+    private LineRequest 구분당선_요청;
 
     @BeforeEach
     public void setUp() {
@@ -29,6 +30,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         신분당선_요청 = new LineRequest("신분당선", "bg-red-600");
         이호선_요청 = new LineRequest("2호선", "bg-green-600");
+        구분당선_요청 = new LineRequest("구분당선", "bg-blue-600");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -86,23 +88,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
         LineResponse 신분당선_응답 = 지하철_노선_등록되어_있음(신분당선_요청);
-        LineRequest 구분당선_요청 = new LineRequest("구분당선", "bg-blue-600");
 
         // when
-        // 지하철_노선_수정_요청
-        ExtractableResponse<Response> response = RestAssured
-                                                    .given().log().all()
-                                                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                    .body(구분당선_요청)
-                                                    .when().put("/lines/{id}", 신분당선_응답.getId())
-                                                    .then().log().all()
-                                                    .extract();
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(신분당선_응답, 구분당선_요청);
 
         // then
-        // 지하철_노선_수정됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        지하철_노선_수정됨(response);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
