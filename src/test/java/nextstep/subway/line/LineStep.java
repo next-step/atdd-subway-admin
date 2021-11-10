@@ -82,4 +82,16 @@ public class LineStep {
                 .then().log().all()
                 .extract();
     }
+
+    public static void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_제거_요청(LineResponse 신분당선_응답) {
+        return RestAssured
+                .given().log().all()
+                .when().delete("/lines/{id}", 신분당선_응답.getId())
+                .then().log().all()
+                .extract();
+    }
 }
