@@ -1,7 +1,6 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
-import io.restassured.mapper.TypeRef;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -14,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static nextstep.subway.line.LineStep.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,18 +76,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineResponse 신분당선_응답 = 지하철_노선_등록되어_있음(신분당선_요청);
 
         // when
-        // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = RestAssured
-                                                    .given().log().all()
-                                                    .accept(MediaType.APPLICATION_JSON_VALUE)
-                                                    .when().get("/lines/{id}", 신분당선_응답.getId())
-                                                    .then().log().all()
-                                                    .extract();
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선_응답);
 
         // then
-        // 지하철_노선_응답됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.as(LineResponse.class)).isEqualTo(신분당선_응답);
+        지하철_노선_응답됨(신분당선_응답, response);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
