@@ -1,13 +1,20 @@
 package nextstep.subway.line;
 
+import io.restassured.RestAssured;
+import io.restassured.mapper.TypeRef;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static nextstep.subway.line.LineStep.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,12 +23,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private LineRequest 신분당선_요청;
+    private LineRequest 이호선_요청;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
 
         신분당선_요청 = new LineRequest("신분당선", "bg-red-600");
+        이호선_요청 = new LineRequest("2호선", "bg-green-600");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -51,15 +60,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+        LineResponse 신분당선_응답 = 지하철_노선_등록되어_있음(신분당선_요청);
+        LineResponse 이호선_응답 = 지하철_노선_등록되어_있음(이호선_요청);
 
         // when
-        // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
+        지하철_노선_목록_응답됨(response);
+        지하철_노선_목록_포함됨(response, Arrays.asList(신분당선_응답, 이호선_응답));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
