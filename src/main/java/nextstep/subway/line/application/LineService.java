@@ -40,4 +40,9 @@ public class LineService {
         return lineRepository.findById(id)
                 .orElseThrow(RuntimeException::new);
     }
+
+    public void updateLine(Long id, LineRequest lineUpdateRequest) {
+        Line line = findLineById(id);
+        line.update(lineUpdateRequest.toLine());
+    }
 }
