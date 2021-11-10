@@ -15,34 +15,30 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 public class LineAcceptanceMethods extends AcceptanceTest {
+	public static final String LOCATION_HEADER_NAME = "Location";
 
-	public static ExtractableResponse<Response> 지하철_노선_제거_요청(LineResponse line) {
-		return delete("/lines/" + line.getId());
+	public static ExtractableResponse<Response> 지하철_노선_제거_요청(String path) {
+		return delete(path);
 	}
 
-	public static ExtractableResponse<Response> 지하철_노선_수정_요청(LineResponse line, String updateName, String updateColor) {
-		LineRequest lineRequest = createLineRequest(updateName, updateColor);
-		return put("/lines/" + line.getId(), lineRequest);
+	public static ExtractableResponse<Response> 지하철_노선_수정_요청(String path, LineRequest lineRequest) {
+		return put(path, lineRequest);
 	}
 
-	public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
-		return get("/lines/" + id);
+	public static ExtractableResponse<Response> 지하철_노선_조회_요청(String path) {
+		return get(path);
 	}
 
-	public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-		return get("/lines");
+	public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청(String path) {
+		return get(path);
 	}
 
-	public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-		LineRequest lineRequest = createLineRequest(name, color);
-		return post("/lines", lineRequest);
+	public static ExtractableResponse<Response> 지하철_노선_생성_요청(String path, LineRequest lineRequest) {
+		return post(path, lineRequest);
 	}
 
-	public static LineResponse 지하철_노선_등록되어_있음(String name, String color) {
-		LineRequest lineRequest = createLineRequest(name, color);
-		ExtractableResponse<Response> response = post("/lines", lineRequest);
-
-		return response.as(LineResponse.class);
+	public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String path, LineRequest lineRequest) {
+		return post(path, lineRequest);
 	}
 
 	public static void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
@@ -53,16 +49,13 @@ public class LineAcceptanceMethods extends AcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
-	public static void 지하철_노선_포함됨(ExtractableResponse<Response> response, LineResponse line) {
+	public static void 지하철_노선_포함됨(ExtractableResponse<Response> response, Long id) {
 		LineResponse resultLine = response.jsonPath()
 										  .getObject(".", LineResponse.class);
-		assertThat(resultLine.getId()).isEqualTo(line.getId());
+		assertThat(resultLine.getId()).isEqualTo(id);
 	}
 
-	public static void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<LineResponse> expectedLines) {
-		List<Long> expectedLineIds = expectedLines.stream()
-												  .map(LineResponse::getId)
-												  .collect(Collectors.toList());
+	public static void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<Long> expectedLineIds) {
 		List<Long> resultLineIds = response.jsonPath()
 										   .getList(".", LineResponse.class)
 										   .stream()
@@ -86,10 +79,6 @@ public class LineAcceptanceMethods extends AcceptanceTest {
 
 	public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-	}
-
-	private static LineRequest createLineRequest(String name, String color) {
-		return new LineRequest(name, color);
 	}
 
 	private LineAcceptanceMethods() {}
