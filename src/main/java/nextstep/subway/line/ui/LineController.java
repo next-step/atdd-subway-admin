@@ -29,6 +29,11 @@ public class LineController {
         return ResponseEntity.ok(lineService.findLines());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity findLine(@PathVariable Long id) {
+        return ResponseEntity.ok(lineService.findLine(id));
+    }
+
     @ExceptionHandler
     public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
