@@ -3,6 +3,7 @@ package nextstep.subway.configuration;
 import java.util.Map;
 import java.util.stream.Collectors;
 import nextstep.subway.common.exception.DuplicateDataException;
+import nextstep.subway.common.exception.InvalidDataException;
 import nextstep.subway.common.exception.NotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,11 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(DuplicateDataException.class)
     public ResponseEntity<String> handleDuplicateDataException(DuplicateDataException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidDataException.class)
+    public ResponseEntity<String> handleDuplicateDataException(InvalidDataException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
