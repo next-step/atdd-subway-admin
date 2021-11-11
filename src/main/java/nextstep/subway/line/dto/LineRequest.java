@@ -13,7 +13,7 @@ public class LineRequest {
         this.color = color;
     }
 
-    public static LineRequest of(String name, String color) {
+    public static LineRequest from(String name, String color) {
         return new LineRequest(name, color);
     }
 

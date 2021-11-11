@@ -25,21 +25,21 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        return LineResponse.from(persistLine);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                    .map(LineResponse::of)
+                    .map(LineResponse::from)
                     .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         Line line = findLineById(id);
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {

@@ -24,7 +24,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @CsvSource(value = {"신분당선,RED", "분당선,YELLOW", "1호선,BLUE", "2호선,GREEN"})
     void createLine(String name, String color) {
         // given
-        LineRequest lineRequest = LineRequest.of(name, color);
+        LineRequest lineRequest = LineRequest.from(name, color);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(LINE_URL_PATH, lineRequest);
@@ -38,7 +38,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @CsvSource(value = {"신분당선,RED", "분당선,YELLOW", "1호선,BLUE", "2호선,GREEN"})
     void createLine2(String name, String color) {
         // given
-        LineRequest lineRequest = LineRequest.of(name, color);
+        LineRequest lineRequest = LineRequest.from(name, color);
         지하철_노선_등록되어_있음(LINE_URL_PATH, lineRequest);
 
         // when
@@ -53,8 +53,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @CsvSource(value = {"신분당선,RED,분당선,YELLOW", "1호선,BLUE,2호선,GREEN"})
     void getLines(String firstLineName, String firstLineColor, String secondLineName, String secondLineColor) {
         // given
-        LineRequest firstLineRequest = LineRequest.of(firstLineName, firstLineColor);
-        LineRequest secondLineRequest = LineRequest.of(secondLineName, secondLineColor);
+        LineRequest firstLineRequest = LineRequest.from(firstLineName, firstLineColor);
+        LineRequest secondLineRequest = LineRequest.from(secondLineName, secondLineColor);
 
         ExtractableResponse<Response> firstCreateResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, firstLineRequest);
         ExtractableResponse<Response> secondCreateResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, secondLineRequest);
@@ -75,7 +75,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @CsvSource(value = {"신분당선,RED", "분당선,YELLOW", "1호선,BLUE", "2호선,GREEN"})
     void getLine(String name, String color) {
         // given
-        LineRequest lineRequest = LineRequest.of(name, color);
+        LineRequest lineRequest = LineRequest.from(name, color);
         ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, lineRequest);
 
         // when
@@ -92,12 +92,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @CsvSource(value = {"신분당선,RED,신분당선2,RED2", "분당선,YELLOW,분당선2,YELLOW2", "1호선,BLUE,1호선2,BLUE2"})
     void updateLine(String name, String color, String updateName, String updateColor) {
         // given
-        LineRequest lineRequest = LineRequest.of(name, color);
+        LineRequest lineRequest = LineRequest.from(name, color);
         ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, lineRequest);
 
         // when
         String location = createResponse.header(LOCATION_HEADER_NAME);
-        LineRequest updateLineRequest = LineRequest.of(updateName, updateColor);
+        LineRequest updateLineRequest = LineRequest.from(updateName, updateColor);
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(location, updateLineRequest);
 
         // then
@@ -109,7 +109,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @CsvSource(value = {"신분당선,RED", "분당선,YELLOW", "1호선,BLUE", "2호선,GREEN"})
     void deleteLine(String name, String color) {
         // given
-        LineRequest lineRequest = LineRequest.of(name, color);
+        LineRequest lineRequest = LineRequest.from(name, color);
         ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, lineRequest);
 
         // when

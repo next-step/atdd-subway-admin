@@ -1,6 +1,7 @@
 package nextstep.subway.station.domain;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,20 +16,20 @@ public class Station extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", unique = true, nullable = false)
-    private String name;
+    @Embedded
+    private StationName name;
 
     public Station() {}
 
     public Station(String name) {
-        this.name = name;
+        this.name = StationName.from(name);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
+    public StationName getName() {
         return name;
     }
 }

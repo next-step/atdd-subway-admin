@@ -12,11 +12,11 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", unique = true, nullable = false)
-    private String name;
+    @Embedded
+    private LineName name;
 
-    @Column(name = "color", nullable = false)
-    private String color;
+    @Embedded
+    private LineColor color;
 
     @Embedded
     private Sections sections = Sections.createEmpty();
@@ -24,8 +24,8 @@ public class Line extends BaseEntity {
     public Line() {}
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this.name = LineName.from(name);
+        this.color = LineColor.from(color);
     }
 
     public void update(Line line) {
@@ -37,11 +37,11 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public String getName() {
+    public LineName getName() {
         return name;
     }
 
-    public String getColor() {
+    public LineColor getColor() {
         return color;
     }
 }
