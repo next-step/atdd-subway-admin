@@ -7,11 +7,16 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.common.exception.InvalidDataException;
 import nextstep.subway.station.domain.Station;
 import org.springframework.util.Assert;
 
 @Embeddable
 public class Sections {
+
+    private static final int FIRST_INDEX = 0;
+    private static final int PREVIOUS_INDEX_SIZE = 1;
+    private static final int NOT_EXIST_INDEX = -1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> list;
@@ -43,6 +48,60 @@ public class Sections {
         for (Section section : list) {
             section.setLine(line);
         }
+    }
+
+    public void addSection(Section section) {
+        List<Station> stations = stations();
+        int upStationIndex = stations.indexOf(section.upStation());
+        int downStationIndex = stations.indexOf(section.downStation());
+        validateIndexes(section, upStationIndex, downStationIndex);
+
+        if (isFist(downStationIndex)) {
+            list.add(FIRST_INDEX, section);
+            return;
+        }
+        if (isLast(upStationIndex)) {
+            list.add(section);
+            return;
+        }
+        if (isExistIndex(upStationIndex)) {
+            list.get(upStationIndex).changeUpStation(section);
+            list.add(upStationIndex, section);
+            return;
+        }
+        list.get(downStationIndex - PREVIOUS_INDEX_SIZE).changeDownStation(section);
+        list.add(downStationIndex, section);
+    }
+
+    private boolean isLast(int index) {
+        return index == (list.size() - PREVIOUS_INDEX_SIZE);
+    }
+
+    private void validateIndexes(Section section, int upStationIndex, int downStationIndex) {
+        if (doesNotContainOne(upStationIndex, downStationIndex)) {
+            throw new InvalidDataException(
+                String.format(
+                    "stations of section(%s) must be only one overlapping station", section));
+        }
+    }
+
+    private boolean doesNotContainOne(int upStationIndex, int downStationIndex) {
+        return isExistIndex(upStationIndex) == isExistIndex(downStationIndex);
+    }
+
+    private boolean isExistIndex(int index) {
+        return index > NOT_EXIST_INDEX;
+    }
+
+    private boolean isFist(int index) {
+        return index == FIRST_INDEX;
+    }
+
+    private int includedStationSize(Section section) {
+        Set<Station> stations = removedDuplicateStations();
+        int originalSize = stations.size();
+        stations.addAll(section.stations());
+        return stations.size() - originalSize;
     }
 
     private Set<Station> removedDuplicateStations() {

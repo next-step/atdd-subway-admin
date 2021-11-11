@@ -5,13 +5,18 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import nextstep.subway.common.domain.Name;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("구간들")
 class SectionsTest {
@@ -36,13 +41,13 @@ class SectionsTest {
     @DisplayName("지하철 역들")
     void stations() {
         //given
-        Name gangnam = Name.from("강남");
-        Name yeoksam = Name.from("역삼");
-        Name jamsil = Name.from("잠실");
+        String gangnam = "강남";
+        String yeoksam = "역삼";
+        String jamsil = "잠실";
 
         Sections sections = Sections.from(Arrays.asList(
-            section(gangnam, yeoksam),
-            section(yeoksam, jamsil)
+            section(gangnam, yeoksam, Integer.MAX_VALUE),
+            section(yeoksam, jamsil, Integer.MAX_VALUE)
         ));
 
         //when
@@ -52,20 +57,60 @@ class SectionsTest {
         hasThreeAndNotHasDuplicates(stations, gangnam, yeoksam, jamsil);
     }
 
+
+    @ParameterizedTest
+    @DisplayName("구간 추가")
+    @MethodSource
+    void addSection(Section section, Station... expected) {
+        //given
+        String gyodae = "교대";
+        String yeoksam = "역삼";
+        String samseong = "삼성";
+
+        Sections sections = Sections.from(new ArrayList<>(Arrays.asList(
+            section(gyodae, yeoksam, Integer.MAX_VALUE),
+            section(yeoksam, samseong, Integer.MAX_VALUE)
+        )));
+
+        //when
+        sections.addSection(section);
+
+        //then
+        assertThat(sections.stations())
+            .hasSize(4)
+            .doesNotHaveDuplicates()
+            .containsExactly(expected);
+    }
+
+    private static Stream<Arguments> addSection() {
+
+        return Stream.of(
+            Arguments.of()
+        );
+    }
+
     private void hasThreeAndNotHasDuplicates(
-        List<Station> stations, Name expectedFirst, Name expectedSecond, Name expectedThird) {
+        List<Station> stations, String... expected) {
         assertThat(stations)
             .hasSize(3)
             .doesNotHaveDuplicates()
-            .extracting(Station::name)
-            .containsExactly(expectedFirst, expectedSecond, expectedThird);
+            .containsExactly(
+                Arrays.stream(expected)
+                    .map(this::station)
+                    .toArray(Station[]::new)
+            );
     }
 
 
-    private Section section(Name upStation, Name downStation) {
-        return Section.of(Station.from(upStation),
-            Station.from(downStation),
-            Distance.from(Integer.MAX_VALUE));
+    private Section section(String upStation, String downStation, int distance) {
+        return Section.of(station(upStation),
+            station(downStation),
+            Distance.from(distance)
+        );
+    }
+
+    private Station station(String name) {
+        return Station.from(Name.from(name));
     }
 
 

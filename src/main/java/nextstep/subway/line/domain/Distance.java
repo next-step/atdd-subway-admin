@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import nextstep.subway.common.exception.InvalidDataException;
 
 @Embeddable
 public class Distance {
@@ -22,30 +23,6 @@ public class Distance {
         return new Distance(value);
     }
 
-    public boolean moreThan(Distance distance) {
-        return value >= distance.value;
-    }
-
-    public Distance subtract(Distance distance) {
-        return from(value - distance.value);
-    }
-
-    private void validate(int value) {
-        if (lessThanOrEqualZero(value)) {
-            throw new IllegalArgumentException(
-                String.format("distance value(%d) must be greater than zero", value));
-        }
-    }
-
-    private boolean lessThanOrEqualZero(int value) {
-        return value <= 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -59,7 +36,27 @@ public class Distance {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
     public String toString() {
         return String.valueOf(value);
+    }
+
+    public Distance subtract(Distance distance) {
+        return from(value - distance.value);
+    }
+
+    private void validate(int value) {
+        if (negative(value)) {
+            throw new InvalidDataException(
+                String.format("distance value(%d) must be greater than zero", value));
+        }
+    }
+
+    private boolean negative(int value) {
+        return value <= 0;
     }
 }
