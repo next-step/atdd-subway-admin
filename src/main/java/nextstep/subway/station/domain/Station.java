@@ -1,18 +1,22 @@
 package nextstep.subway.station.domain;
 
+import java.util.Objects;
+
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
 
 @Entity
 public class Station extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
