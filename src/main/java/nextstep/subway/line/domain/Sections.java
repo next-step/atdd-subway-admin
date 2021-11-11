@@ -48,42 +48,58 @@ public class Sections {
         List<Station> stations = stations();
         int upStationIndex = stations.indexOf(section.upStation());
         int downStationIndex = stations.indexOf(section.downStation());
-        validateIndexes(section, upStationIndex, downStationIndex);
+        validateFoundIndexes(section, upStationIndex, downStationIndex);
+        addSectionByFoundIndexes(section, upStationIndex, downStationIndex);
+    }
 
-        if (isFist(downStationIndex)) {
-            list.add(FIRST_INDEX, section);
+    private void addSectionByFoundIndexes(
+        Section section, int upStationIndex, int downStationIndex) {
+        if (isExistIndex(upStationIndex)) {
+            addSectionByUpStationIndex(section, upStationIndex);
             return;
         }
-        if (isLast(stations, upStationIndex)) {
+        addSectionByDownStationIndex(section, downStationIndex);
+    }
+
+    private void addSectionByUpStationIndex(Section section, int index) {
+        if (isLastIndex(index)) {
             list.add(section);
             return;
         }
-        if (isExistIndex(upStationIndex)) {
-            list.get(upStationIndex).changeUpStation(section);
-            list.add(upStationIndex, section);
+        list.get(index).remove(section);
+        list.add(index, section);
+    }
+
+    private void addSectionByDownStationIndex(Section section, int index) {
+        if (isFistIndex(index)) {
+            list.add(FIRST_INDEX, section);
             return;
         }
-        list.get(downStationIndex - PREVIOUS_INDEX_SIZE).changeDownStation(section);
-        list.add(downStationIndex - PREVIOUS_INDEX_SIZE, section);
+        list.get(index - PREVIOUS_INDEX_SIZE).remove(section);
+        list.add(index, section);
     }
 
     private void validateNotNull(Section section) {
         Assert.notNull(section, "section must not be null");
     }
 
-    private boolean isLast(List<Station> stations, int index) {
-        return index == (stations.size() - PREVIOUS_INDEX_SIZE);
+    private boolean isLastIndex(int index) {
+        return index == lastStationIndex();
     }
 
-    private void validateIndexes(Section section, int upStationIndex, int downStationIndex) {
-        if (doesNotContainOne(upStationIndex, downStationIndex)) {
+    private int lastStationIndex() {
+        return list.size();
+    }
+
+    private void validateFoundIndexes(Section section, int upStationIndex, int downStationIndex) {
+        if (doesNotContainOnlyOneStation(upStationIndex, downStationIndex)) {
             throw new InvalidDataException(
                 String.format(
                     "stations of section(%s) must be only one overlapping station", section));
         }
     }
 
-    private boolean doesNotContainOne(int upStationIndex, int downStationIndex) {
+    private boolean doesNotContainOnlyOneStation(int upStationIndex, int downStationIndex) {
         return isExistIndex(upStationIndex) == isExistIndex(downStationIndex);
     }
 
@@ -91,7 +107,7 @@ public class Sections {
         return index > NOT_EXIST_INDEX;
     }
 
-    private boolean isFist(int index) {
+    private boolean isFistIndex(int index) {
         return index == FIRST_INDEX;
     }
 

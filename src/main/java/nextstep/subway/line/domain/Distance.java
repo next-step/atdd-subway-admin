@@ -23,6 +23,10 @@ public class Distance {
         return new Distance(value);
     }
 
+    public boolean moreThan(Distance distance) {
+        return value >= distance.value;
+    }
+
     public Distance subtract(Distance distance) {
         return from(value - distance.value);
     }

@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.common.exception.InvalidDataException;
 import nextstep.subway.station.domain.Station;
 import org.springframework.util.Assert;
 
@@ -40,12 +41,19 @@ public class Section {
     }
 
     private Section(Station upStation, Station downStation, Distance distance) {
-        Assert.notNull(upStation, "'upStation' must not be null");
-        Assert.notNull(downStation, "'downStation' must not be null");
-        Assert.notNull(distance, "'distance' must not be null");
+        validate(upStation, downStation, distance);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validate(Station upStation, Station downStation, Distance distance) {
+        Assert.notNull(upStation, "'upStation' must not be null");
+        Assert.notNull(downStation, "'downStation' must not be null");
+        Assert.notNull(distance, "'distance' must not be null");
+        Assert.isTrue(!upStation.equals(downStation),
+            String.format("upStation(%s) and downStation(%s) must not equal",
+                upStation, downStation));
     }
 
     public static Section of(Station upStation, Station downStation, Distance distance) {
@@ -68,26 +76,44 @@ public class Section {
         this.line = line;
     }
 
-    public void changeUpStation(Section section) {
-        this.upStation = section.downStation;
-        subtractDistance(section.distance);
+    public void remove(Section section) {
+        Assert.notNull(section, "removed section must not be null");
+        cutSection(section);
+        minusDistance(section.distance);
     }
 
-    public void changeDownStation(Section section) {
-        this.downStation = section.upStation;
-        subtractDistance(section.distance);
+    private void cutSection(Section section) {
+        validateSectionStation(section);
+        if (this.upStation.equals(section.upStation)) {
+            upStation = section.downStation;
+            return;
+        }
+        downStation = section.upStation;
     }
 
-    public boolean equalsUpStation(Station station) {
-        return upStation.equals(station);
+    private void validateSectionStation(Section section) {
+        if (isNotEqualStationOnlyOneDirection(section)) {
+            throw new InvalidDataException(
+                String.format("%s can not be removed from %s", this, section));
+        }
     }
 
-    public boolean equalsDownStation(Station station) {
-        return downStation.equals(station);
+    private boolean isNotEqualStationOnlyOneDirection(Section section) {
+        return this.upStation.equals(section.upStation) ==
+            this.downStation.equals(section.downStation);
     }
 
-    private void subtractDistance(Distance distance) {
+    private void minusDistance(Distance distance) {
+        validateSubtractDistance(distance);
         this.distance = this.distance.subtract(distance);
+    }
+
+    private void validateSubtractDistance(Distance distance) {
+        if (distance.moreThan(this.distance)) {
+            throw new InvalidDataException(
+                String.format("removed section distance(%s) must be less than %s",
+                    distance, this.distance));
+        }
     }
 
     @Override
