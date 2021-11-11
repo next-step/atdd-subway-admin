@@ -11,7 +11,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.Optional;
 import nextstep.subway.common.domain.Name;
 import nextstep.subway.common.exception.DuplicateDataException;
@@ -253,13 +252,13 @@ class LineServiceTest {
 
     private Line mockLine() {
         return Line.of(Name.from("name"), Color.from("color"),
-            Sections.from(Collections.singletonList(
+            Sections.from(
                 Section.of(
                     Station.from(Name.from("강남")),
                     Station.from(Name.from("역삼")),
                     Distance.from(10)
                 )
-            ))
+            )
         );
     }
 

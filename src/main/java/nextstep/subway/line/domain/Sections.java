@@ -19,18 +19,18 @@ public class Sections {
     private static final int NOT_EXIST_INDEX = -1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> list;
+    private List<Section> list = new ArrayList<>();
 
     protected Sections() {
     }
 
-    private Sections(List<Section> list) {
-        Assert.notEmpty(list, "section list must not be empty");
-        this.list = list;
+    private Sections(Section section) {
+        Assert.notNull(section, "section must not be null");
+        this.list.add(section);
     }
 
-    public static Sections from(List<Section> list) {
-        return new Sections(list);
+    public static Sections from(Section section) {
+        return new Sections(section);
     }
 
     List<Station> stations() {

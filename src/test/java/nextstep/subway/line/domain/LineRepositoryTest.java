@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.util.Collections;
-import java.util.List;
 import nextstep.subway.common.domain.Name;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -99,7 +97,7 @@ class LineRepositoryTest {
             Line.of(name, color, Sections.from(gangnamYeoksamSection())));
     }
 
-    private List<Section> gangnamYeoksamSection() {
-        return Collections.singletonList(Section.of(gangnam, yeoksam, Distance.from(10)));
+    private Section gangnamYeoksamSection() {
+        return Section.of(gangnam, yeoksam, Distance.from(10));
     }
 }
