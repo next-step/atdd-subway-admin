@@ -83,4 +83,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ### 2. 노선 조회 시 응답 결과에 역 목록을 추가한다.
 - [X] 노선(Line) 조회 시 역(Station) 목록을 함께 응답할 수 있도록 변경
 - [X] Response Model 에 역(Station) 목록 추가
-- [ ] 상행역 부터 하행역 순으로 정렬
+- [X] 상행역 부터 하행역 순으로 정렬

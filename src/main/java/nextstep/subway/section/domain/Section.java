@@ -51,6 +51,10 @@ public class Section {
         this.line = line;
     }
 
+    public boolean isUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
     public Station getUpStation() {
         return upStation;
     }
