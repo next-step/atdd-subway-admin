@@ -14,26 +14,29 @@ import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 public class StationAcceptanceMethods extends AcceptanceTest {
+    private static final String STATION_URL_PATH = "/stations";
 
-    public static ExtractableResponse<Response> 지하철_역_생성_요청(String path, StationRequest stationRequest) {
-        return post(path, stationRequest);
+    private StationAcceptanceMethods() {}
+
+    public static ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest stationRequest) {
+        return post(STATION_URL_PATH, stationRequest);
     }
 
-    public static ExtractableResponse<Response> 지하철_역_등록되어_있음(String path, StationRequest stationRequest) {
-        return post(path, stationRequest);
+    public static ExtractableResponse<Response> 지하철_역_등록되어_있음(StationRequest stationRequest) {
+        return post(STATION_URL_PATH, stationRequest);
     }
 
-    public static ExtractableResponse<Response> 지하철_역_목록_조회_요청(String path) {
-        return get(path);
+    public static ExtractableResponse<Response> 지하철_역_목록_조회_요청() {
+        return get(STATION_URL_PATH);
     }
 
-    public static ExtractableResponse<Response> 지하철_역_제거_요청(String path) {
-        return delete(path);
+    public static ExtractableResponse<Response> 지하철_역_제거_요청(Long stationId) {
+        return delete(STATION_URL_PATH + SLASH_SIGN + stationId);
     }
 
     public static void 지하철_역_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.header(LOCATION_HEADER_NAME)).isNotBlank();
     }
 
     public static void 지하철_역_생성_실패됨(ExtractableResponse<Response> response) {

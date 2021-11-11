@@ -16,8 +16,6 @@ import nextstep.subway.station.dto.StationRequest;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-    private static final String STATION_URL_PATH = "/stations";
-    private static final String SLASH_SIGN = "/";
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -26,7 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest stationRequest = StationRequest.from("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_역_생성_요청(STATION_URL_PATH, stationRequest);
+        ExtractableResponse<Response> response = 지하철_역_생성_요청(stationRequest);
 
         // then
         지하철_역_생성됨(response);
@@ -37,10 +35,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         StationRequest stationRequest = StationRequest.from("강남역");
-        지하철_역_등록되어_있음(STATION_URL_PATH, stationRequest);
+        지하철_역_등록되어_있음(stationRequest);
 
         // when
-        ExtractableResponse<Response> response = 지하철_역_생성_요청(STATION_URL_PATH, stationRequest);
+        ExtractableResponse<Response> response = 지하철_역_생성_요청(stationRequest);
 
         // then
         지하철_역_생성_실패됨(response);
@@ -53,11 +51,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         StationRequest firstStationRequest = StationRequest.from("강남역");
         StationRequest secondStationRequest = StationRequest.from("역삼역");
 
-        ExtractableResponse<Response> firstCreateResponse = 지하철_역_등록되어_있음(STATION_URL_PATH, firstStationRequest);
-        ExtractableResponse<Response> secondCreateResponse = 지하철_역_등록되어_있음(STATION_URL_PATH, secondStationRequest);
+        ExtractableResponse<Response> firstCreateResponse = 지하철_역_등록되어_있음(firstStationRequest);
+        ExtractableResponse<Response> secondCreateResponse = 지하철_역_등록되어_있음(secondStationRequest);
 
         // when
-        ExtractableResponse<Response> response = 지하철_역_목록_조회_요청(STATION_URL_PATH);
+        ExtractableResponse<Response> response = 지하철_역_목록_조회_요청();
 
         // then
         List<Long> createStationIds = Stream.of(firstCreateResponse, secondCreateResponse)
@@ -72,11 +70,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void deleteStation() {
         // given
         StationRequest stationRequest = StationRequest.from("강남역");
-        ExtractableResponse<Response> createResponse = 지하철_역_등록되어_있음(STATION_URL_PATH, stationRequest);
+        ExtractableResponse<Response> createResponse = 지하철_역_등록되어_있음(stationRequest);
 
         // when
-        String uri = createResponse.header(LOCATION_HEADER_NAME);
-        ExtractableResponse<Response> response = 지하철_역_제거_요청(uri);
+        Long createdId = parseIdFromLocationHeader(createResponse);
+        ExtractableResponse<Response> response = 지하철_역_제거_요청(createdId);
 
         // then
         지하철_역_삭제됨(response);

@@ -25,7 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest lineRequest = LineRequest.from("신분당선", "RED");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(LINE_URL_PATH, lineRequest);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
         // then
         지하철_노선_생성됨(response);
@@ -36,10 +36,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         LineRequest lineRequest = LineRequest.from("신분당선", "RED");
-        지하철_노선_등록되어_있음(LINE_URL_PATH, lineRequest);
+        지하철_노선_등록되어_있음(lineRequest);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(LINE_URL_PATH, lineRequest);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
         // then
         지하철_노선_생성_실패됨(response);
@@ -52,11 +52,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest firstLineRequest = LineRequest.from("신분당선", "RED");
         LineRequest secondLineRequest = LineRequest.from("1호선", "BLUE");
 
-        ExtractableResponse<Response> firstCreateResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, firstLineRequest);
-        ExtractableResponse<Response> secondCreateResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, secondLineRequest);
+        ExtractableResponse<Response> firstCreateResponse = 지하철_노선_등록되어_있음(firstLineRequest);
+        ExtractableResponse<Response> secondCreateResponse = 지하철_노선_등록되어_있음(secondLineRequest);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청(LINE_URL_PATH);
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         List<Long> createLineIds = Stream.of(firstCreateResponse, secondCreateResponse)
@@ -71,11 +71,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         LineRequest lineRequest = LineRequest.from("신분당선","RED");
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, lineRequest);
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
-        String location = createResponse.header(LOCATION_HEADER_NAME);
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(location);
+        Long createdId = parseIdFromLocationHeader(createResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdId);
 
         // then
         지하철_노선_응답됨(response);
@@ -87,12 +87,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         LineRequest lineRequest = LineRequest.from("신분당선","RED");
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, lineRequest);
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
-        String location = createResponse.header(LOCATION_HEADER_NAME);
+        Long createdId = parseIdFromLocationHeader(createResponse);
         LineRequest updateLineRequest = LineRequest.from("신분당선(수정)","RED(수정)");
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(location, updateLineRequest);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdId, updateLineRequest);
 
         // then
         지하철_노선_수정됨(response);
@@ -103,11 +103,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         LineRequest lineRequest = LineRequest.from("신분당선","RED");
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, lineRequest);
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
-        String location = createResponse.header(LOCATION_HEADER_NAME);
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(location);
+        Long createdId = parseIdFromLocationHeader(createResponse);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(createdId);
 
         // then
         지하철_노선_삭제됨(response);

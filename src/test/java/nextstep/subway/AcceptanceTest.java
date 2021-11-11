@@ -14,7 +14,7 @@ import nextstep.subway.utils.DatabaseCleanup;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
     public static final String LOCATION_HEADER_NAME = "Location";
-    private static final String SLASH_SIGN = "/";
+    protected static final String SLASH_SIGN = "/";
 
     @LocalServerPort
     int port;

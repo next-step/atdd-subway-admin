@@ -15,29 +15,32 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 public class LineAcceptanceMethods extends AcceptanceTest {
+    private static final String LINE_URL_PATH = "/lines";
 
-	public static ExtractableResponse<Response> 지하철_노선_제거_요청(String path) {
-		return delete(path);
+    private LineAcceptanceMethods() {}
+
+	public static ExtractableResponse<Response> 지하철_노선_제거_요청(Long lineId) {
+		return delete(LINE_URL_PATH + SLASH_SIGN + lineId);
 	}
 
-	public static ExtractableResponse<Response> 지하철_노선_수정_요청(String path, LineRequest lineRequest) {
-		return put(path, lineRequest);
+	public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long lineId, LineRequest lineRequest) {
+		return put(LINE_URL_PATH + SLASH_SIGN + lineId, lineRequest);
 	}
 
-	public static ExtractableResponse<Response> 지하철_노선_조회_요청(String path) {
-		return get(path);
+	public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
+		return get(LINE_URL_PATH + SLASH_SIGN + lineId);
 	}
 
-	public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청(String path) {
-		return get(path);
+	public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+		return get(LINE_URL_PATH);
 	}
 
-	public static ExtractableResponse<Response> 지하철_노선_생성_요청(String path, LineRequest lineRequest) {
-		return post(path, lineRequest);
+	public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
+		return post(LINE_URL_PATH, lineRequest);
 	}
 
-	public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String path, LineRequest lineRequest) {
-		return post(path, lineRequest);
+	public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
+		return post(LINE_URL_PATH, lineRequest);
 	}
 
 	public static void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
@@ -79,6 +82,4 @@ public class LineAcceptanceMethods extends AcceptanceTest {
 	public static void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
 		Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
-
-	private LineAcceptanceMethods() {}
 }
