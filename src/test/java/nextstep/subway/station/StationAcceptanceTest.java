@@ -34,7 +34,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
-    void createStationWithDuplicateName() {
+    void createStation_with_duplicated_name() {
         // given
         final Map<String, String> params = params("강남역");
         post(params);
