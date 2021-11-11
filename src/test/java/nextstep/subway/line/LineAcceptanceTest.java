@@ -1,37 +1,23 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 
 import static nextstep.subway.line.LineStep.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private LineRequest 신분당선_요청;
-    private LineRequest 이호선_요청;
-    private LineRequest 구분당선_요청;
-
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
-
-        신분당선_요청 = new LineRequest("신분당선", "bg-red-600");
-        이호선_요청 = new LineRequest("2호선", "bg-green-600");
-        구분당선_요청 = new LineRequest("구분당선", "bg-blue-600");
-    }
+    private static LineRequest 신분당선_요청 = new LineRequest("신분당선", "bg-red-600");
+    private static LineRequest 이호선_요청 = new LineRequest("2호선", "bg-green-600");
+    private static LineRequest 구분당선_요청 = new LineRequest("구분당선", "bg-blue-600");
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
