@@ -68,36 +68,6 @@ public class Section {
         this.line = line;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Section section = (Section) o;
-        return Objects.equals(id, section.id) && Objects
-            .equals(upStation, section.upStation) && Objects
-            .equals(downStation, section.downStation) && Objects
-            .equals(distance, section.distance);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, upStation, downStation, distance);
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-            "id=" + id +
-            ", upStation=" + upStation +
-            ", downStation=" + downStation +
-            ", distance=" + distance +
-            '}';
-    }
-
     public void changeUpStation(Section section) {
         this.upStation = section.downStation;
         subtractDistance(section.distance);
@@ -118,5 +88,35 @@ public class Section {
 
     private void subtractDistance(Distance distance) {
         this.distance = this.distance.subtract(distance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, upStation, downStation, distance);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(id, section.id) && Objects
+            .equals(upStation, section.upStation) && Objects
+            .equals(downStation, section.downStation) && Objects
+            .equals(distance, section.distance);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+            "id=" + id +
+            ", upStation=" + upStation +
+            ", downStation=" + downStation +
+            ", distance=" + distance +
+            '}';
     }
 }

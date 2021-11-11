@@ -39,6 +39,11 @@ public class Station extends BaseEntity {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -48,11 +53,6 @@ public class Station extends BaseEntity {
         }
         Station station = (Station) o;
         return Objects.equals(id, station.id) && Objects.equals(name, station.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
     }
 
     @Override

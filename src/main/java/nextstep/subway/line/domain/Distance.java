@@ -23,6 +23,26 @@ public class Distance {
         return new Distance(value);
     }
 
+    public Distance subtract(Distance distance) {
+        return from(value - distance.value);
+    }
+
+    private void validate(int value) {
+        if (lessThanOrEqualZero(value)) {
+            throw new InvalidDataException(
+                String.format("distance value(%d) must be greater than zero", value));
+        }
+    }
+
+    private boolean lessThanOrEqualZero(int value) {
+        return value <= 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -36,27 +56,7 @@ public class Distance {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
-
-    @Override
     public String toString() {
         return String.valueOf(value);
-    }
-
-    public Distance subtract(Distance distance) {
-        return from(value - distance.value);
-    }
-
-    private void validate(int value) {
-        if (negative(value)) {
-            throw new InvalidDataException(
-                String.format("distance value(%d) must be greater than zero", value));
-        }
-    }
-
-    private boolean negative(int value) {
-        return value <= 0;
     }
 }

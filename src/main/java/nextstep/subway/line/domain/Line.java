@@ -62,33 +62,6 @@ public class Line extends BaseEntity {
         return sections.stations();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Line line = (Line) o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
-    }
-
-    @Override
-    public String toString() {
-        return "Line{" +
-            "id=" + id +
-            ", name=" + name +
-            ", color=" + color +
-            ", sections=" + sections +
-            '}';
-    }
-
     public void addSection(Section section) {
         sections.addSection(section);
     }
@@ -107,5 +80,32 @@ public class Line extends BaseEntity {
         Assert.notNull(sections, "'sections' must not be null");
         sections.setLine(this);
         this.sections = sections;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+            "id=" + id +
+            ", name=" + name +
+            ", color=" + color +
+            ", sections=" + sections +
+            '}';
     }
 }
