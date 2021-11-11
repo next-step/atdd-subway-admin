@@ -1,7 +1,5 @@
 package nextstep.subway.line.application;
 
-import static nextstep.subway.constant.ErrorMessage.*;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -17,6 +15,8 @@ import nextstep.subway.line.dto.LineResponse;
 @Service
 @Transactional
 public class LineService {
+    public static final String NOT_EXIST_LINE = "id=%s 에 해당하는 노선이 존재하지 않습니다.";
+
     private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
