@@ -59,4 +59,8 @@ public class LineResponse {
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
+
+    public List<StationResponse> getStations() {
+        return stations;
+    }
 }
