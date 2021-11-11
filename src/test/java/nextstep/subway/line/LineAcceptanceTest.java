@@ -497,7 +497,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         @ParameterizedTest(name = "[{index}] {argumentsWithNames} 추가되는 구간이 기존 구간보다 커서 등록할 수 없다.")
         @MethodSource
         @DisplayName("사이 거리가 더 크면 등록이 불가능")
-        void addSection_greaterThanOrEqualsBetweenDistance_400(
+        void addSection_greaterThanBetweenDistance_400(
             StationResponse upStation, StationResponse downStation, int distance) {
             //when
             ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
@@ -566,7 +566,7 @@ class LineAcceptanceTest extends AcceptanceTest {
             );
         }
 
-        private Stream<Arguments> addSection_greaterThanOrEqualsBetweenDistance_400() {
+        private Stream<Arguments> addSection_greaterThanBetweenDistance_400() {
             return Stream.of(
                 Arguments.of(gangnamStation, yeoksamStation, Integer.MAX_VALUE),
                 Arguments.of(yeoksamStation, seolleungStation, Integer.MAX_VALUE)

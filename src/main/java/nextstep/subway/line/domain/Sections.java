@@ -25,7 +25,7 @@ public class Sections {
     }
 
     private Sections(Section section) {
-        Assert.notNull(section, "section must not be null");
+        validateNotNull(section);
         this.list.add(section);
     }
 
@@ -51,6 +51,7 @@ public class Sections {
     }
 
     public void addSection(Section section) {
+        validateNotNull(section);
         List<Station> stations = stations();
         int upStationIndex = stations.indexOf(section.upStation());
         int downStationIndex = stations.indexOf(section.downStation());
@@ -60,7 +61,7 @@ public class Sections {
             list.add(FIRST_INDEX, section);
             return;
         }
-        if (isLast(upStationIndex)) {
+        if (isLast(stations, upStationIndex)) {
             list.add(section);
             return;
         }
@@ -70,11 +71,15 @@ public class Sections {
             return;
         }
         list.get(downStationIndex - PREVIOUS_INDEX_SIZE).changeDownStation(section);
-        list.add(downStationIndex, section);
+        list.add(downStationIndex - PREVIOUS_INDEX_SIZE, section);
     }
 
-    private boolean isLast(int index) {
-        return index == (list.size() - PREVIOUS_INDEX_SIZE);
+    private void validateNotNull(Section section) {
+        Assert.notNull(section, "section must not be null");
+    }
+
+    private boolean isLast(List<Station> stations, int index) {
+        return index == (stations.size() - PREVIOUS_INDEX_SIZE);
     }
 
     private void validateIndexes(Section section, int upStationIndex, int downStationIndex) {
