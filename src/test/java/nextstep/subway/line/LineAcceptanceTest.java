@@ -433,12 +433,27 @@ class LineAcceptanceTest extends AcceptanceTest {
         return new LineUpdateRequest(name, color);
     }
 
+    private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long lineId,
+        Long upStationId, Long downStationId, Integer distance) {
+        return RestAssured.given()
+            .contentType(ContentType.JSON)
+            .body(new SectionRequest(upStationId, downStationId, distance))
+            .when()
+            .post("/lines/{id}/sections", lineId)
+            .then().log().all()
+            .extract();
+    }
+
+    private void 지하철_노선_구간_생성_실패됨(ExtractableResponse<Response> response) {
+        잘못된_요청(response);
+    }
+
     @Nested
     @DisplayName("구간 등록")
     @TestInstance(Lifecycle.PER_CLASS)
     class SectionAcceptanceTest {
 
-        private LineResponse secondLine;
+        private ExtractableResponse<Response> secondLineResponse;
         private StationResponse gyodaeStation;
         private StationResponse samseongStation;
         private StationResponse yeoksamStation;
@@ -449,10 +464,10 @@ class LineAcceptanceTest extends AcceptanceTest {
             samseongStation = 지하철_역_생성("삼성역");
             yeoksamStation = 지하철_역_생성("역삼역");
 
-            secondLine = 지하철_노선_등록되어_있음(
+            secondLineResponse = 지하철_노선_등록되어_있음(
                 "2호선", "blue",
                 gangnamStation.getId(), seolleungStation.getId(), GANGNAM_SEOLLENUNG_DISTANCE
-            ).as(LineResponse.class);
+            );
         }
 
         @ParameterizedTest(name = "[{index}] {argumentsWithNames} 구간을 1호선 강남,역삼 구간에 추가한다.")
@@ -461,7 +476,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         void addSection(StationResponse upStation, StationResponse downStation, int distance) {
             // when
             ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-                secondLine.getId(), upStation.getId(), downStation.getId(), distance);
+                givenLineId(), upStation.getId(), downStation.getId(), distance);
 
             // then
             지하철_노선에_지하철역_등록됨(response);
@@ -486,7 +501,7 @@ class LineAcceptanceTest extends AcceptanceTest {
             StationResponse upStation, StationResponse downStation, int distance) {
             //when
             ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-                secondLine.getId(), upStation.getId(), downStation.getId(), distance);
+                givenLineId(), upStation.getId(), downStation.getId(), distance);
 
             //then
             지하철_노선_구간_생성_실패됨(response);
@@ -499,7 +514,7 @@ class LineAcceptanceTest extends AcceptanceTest {
             StationResponse upStation, StationResponse downStation, int distance) {
             //when
             ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-                secondLine.getId(), upStation.getId(), downStation.getId(), distance);
+                givenLineId(), upStation.getId(), downStation.getId(), distance);
 
             //then
             지하철_노선_구간_생성_실패됨(response);
@@ -514,30 +529,25 @@ class LineAcceptanceTest extends AcceptanceTest {
 
             //when
             ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-                secondLine.getId(), guro.getId(), gaebong.getId(), Integer.MAX_VALUE);
+                givenLineId(), guro.getId(), gaebong.getId(), Integer.MAX_VALUE);
 
             //then
             지하철_노선_구간_생성_실패됨(response);
         }
 
+        private Long givenLineId() {
+            return secondLineResponse.as(LineResponse.class)
+                .getId();
+        }
+
         private void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
-            assertThat(response.statusCode())
-                .isEqualTo(HttpStatus.CREATED.value());
-        }
-
-        private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long lineId,
-            Long upStationId, Long downStationId, Integer distance) {
-            return RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(new SectionRequest(upStationId, downStationId, distance))
-                .when()
-                .post("/lines/{id}/sections", lineId)
-                .then().log().all()
-                .extract();
-        }
-
-        private void 지하철_노선_구간_생성_실패됨(ExtractableResponse<Response> response) {
-            잘못된_요청(response);
+            LineResponse secondLine = 지하철_노선_조회_요청(secondLineResponse).as(LineResponse.class);
+            assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(secondLine.getStations())
+                    .hasSize(3)
+                    .containsAnyOf(gyodaeStation, gangnamStation, yeoksamStation, seolleungStation)
+            );
         }
 
         private Stream<Arguments> addSection() {

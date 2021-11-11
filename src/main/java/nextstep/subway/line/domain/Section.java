@@ -56,6 +56,14 @@ public class Section {
         return Arrays.asList(upStation, downStation);
     }
 
+    Station upStation() {
+        return upStation;
+    }
+
+    Station downStation() {
+        return downStation;
+    }
+
     void setLine(Line line) {
         this.line = line;
     }
@@ -88,5 +96,27 @@ public class Section {
             ", downStation=" + downStation +
             ", distance=" + distance +
             '}';
+    }
+
+    public void changeUpStation(Section section) {
+        this.upStation = section.downStation;
+        subtractDistance(section.distance);
+    }
+
+    public void changeDownStation(Section section) {
+        this.downStation = section.upStation;
+        subtractDistance(section.distance);
+    }
+
+    public boolean equalsUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean equalsDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    private void subtractDistance(Distance distance) {
+        this.distance = this.distance.subtract(distance);
     }
 }

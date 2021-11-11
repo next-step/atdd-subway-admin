@@ -60,6 +60,12 @@ public class LineService {
         repository.deleteById(id);
     }
 
+    public LineResponse addSection(long id, SectionRequest request) {
+        Line line = line(id);
+        line.addSection(section(request));
+        return LineResponse.from(line);
+    }
+
     private Line savedLine(LineCreateRequest request) {
         return repository.save(
             Line.of(request.name(), request.color(), sections(request.getSection()))
@@ -74,12 +80,16 @@ public class LineService {
 
     private Sections sections(SectionRequest request) {
         return Sections.from(Collections.singletonList(
-            Section.of(
-                station(request.getUpStationId()),
-                station(request.getDownStationId()),
-                request.distance()
-            )
+            section(request)
         ));
+    }
+
+    private Section section(SectionRequest request) {
+        return Section.of(
+            station(request.getUpStationId()),
+            station(request.getDownStationId()),
+            request.distance()
+        );
     }
 
     private Station station(Long id) {

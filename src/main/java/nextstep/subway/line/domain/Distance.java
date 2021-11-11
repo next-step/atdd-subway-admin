@@ -3,7 +3,7 @@ package nextstep.subway.line.domain;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import org.springframework.util.Assert;
+import nextstep.subway.common.exception.InvalidDataException;
 
 @Embeddable
 public class Distance {
@@ -15,7 +15,7 @@ public class Distance {
     }
 
     private Distance(int value) {
-        Assert.isTrue(positive(value), String.format("distance value(%d) must be positive", value));
+        validate(value);
         this.value = value;
     }
 
@@ -45,7 +45,18 @@ public class Distance {
         return String.valueOf(value);
     }
 
-    private boolean positive(int value) {
-        return value >= 0;
+    public Distance subtract(Distance distance) {
+        return from(value - distance.value);
+    }
+
+    private void validate(int value) {
+        if (negative(value)) {
+            throw new InvalidDataException(
+                String.format("distance value(%d) must be greater than zero", value));
+        }
+    }
+
+    private boolean negative(int value) {
+        return value <= 0;
     }
 }
