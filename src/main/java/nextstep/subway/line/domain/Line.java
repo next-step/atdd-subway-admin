@@ -63,8 +63,6 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        Assert.notNull(section, "added section must not be null");
-        section.setLine(this);
         sections.addSection(section);
     }
 
@@ -109,25 +107,5 @@ public class Line extends BaseEntity {
             ", color=" + color +
             ", sections=" + sections +
             '}';
-    }
-
-    public void addSection(Section section) {
-        sections.addSection(section);
-    }
-
-    private void setName(Name name) {
-        Assert.notNull(name, "'name' must not be null");
-        this.name = name;
-    }
-
-    private void setColor(Color color) {
-        Assert.notNull(color, "'color' must not be null");
-        this.color = color;
-    }
-
-    private void setSections(Sections sections) {
-        Assert.notNull(sections, "'sections' must not be null");
-        sections.setLine(this);
-        this.sections = sections;
     }
 }

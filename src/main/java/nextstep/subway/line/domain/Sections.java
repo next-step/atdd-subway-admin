@@ -37,13 +37,6 @@ public class Sections {
         return new ArrayList<>(removedDuplicateStations());
     }
 
-    @Override
-    public String toString() {
-        return "Sections{" +
-            "list=" + list +
-            '}';
-    }
-
     void setLine(Line line) {
         for (Section section : list) {
             section.setLine(line);
@@ -102,18 +95,18 @@ public class Sections {
         return index == FIRST_INDEX;
     }
 
-    private int includedStationSize(Section section) {
-        Set<Station> stations = removedDuplicateStations();
-        int originalSize = stations.size();
-        stations.addAll(section.stations());
-        return stations.size() - originalSize;
-    }
-
     private Set<Station> removedDuplicateStations() {
         Set<Station> stations = new LinkedHashSet<>();
         for (Section section : list) {
             stations.addAll(section.stations());
         }
         return stations;
+    }
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+            "list=" + list +
+            '}';
     }
 }
