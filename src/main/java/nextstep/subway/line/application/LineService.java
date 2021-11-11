@@ -15,6 +15,7 @@ import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationResponse;
 
 @Service
 @Transactional
@@ -27,28 +28,29 @@ public class LineService {
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this. stationRepository = stationRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
         Line line = request.toLine();
         line.addSection(buildSection(request));
+        Line savedLine = lineRepository.save(line);
 
-        return LineResponse.from(lineRepository.save(line));
+        return LineResponse.of(savedLine, createStationResponses(savedLine));
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                    .map(LineResponse::from)
+                    .map(line -> LineResponse.of(line, createStationResponses(line)))
                     .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
         Line line = findLineById(id);
-        return LineResponse.from(line);
+        return LineResponse.of(line, createStationResponses(line));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
@@ -75,5 +77,12 @@ public class LineService {
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
                                 .orElseThrow(() -> new NoSuchElementException(String.format(NOT_EXIST_STATION, id)));
+    }
+
+    private List<StationResponse> createStationResponses(Line line) {
+        return line.getStations()
+                   .stream()
+                   .map(StationResponse::from)
+                   .collect(Collectors.toList());
     }
 }

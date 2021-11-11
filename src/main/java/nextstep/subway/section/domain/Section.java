@@ -50,4 +50,12 @@ public class Section {
     public void registerLine(Line line) {
         this.line = line;
     }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
 }

@@ -81,6 +81,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 노선(Line) 생성 시, 상행, 하행, 거리 정보를 요청 파라미터에 추가
 
 ### 2. 노선 조회 시 응답 결과에 역 목록을 추가한다.
-- [ ] 노선(Line) 조회 시 역(Station) 목록을 함께 응답할 수 있도록 변경
+- [X] 노선(Line) 조회 시 역(Station) 목록을 함께 응답할 수 있도록 변경
 - [ ] 상행역 부터 하행역 순으로 정렬
 - [ ] Response Model 에 역(Station) 목록 추가
