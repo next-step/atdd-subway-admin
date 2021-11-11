@@ -15,7 +15,6 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 public class LineAcceptanceMethods extends AcceptanceTest {
-	public static final String LOCATION_HEADER_NAME = "Location";
 
 	public static ExtractableResponse<Response> 지하철_노선_제거_요청(String path) {
 		return delete(path);

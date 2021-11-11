@@ -18,7 +18,6 @@ import nextstep.subway.line.dto.LineRequest;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     private static final String LINE_URL_PATH = "/lines";
-    private static final String SLASH_SIGN = "/";
 
     @DisplayName("지하철 노선을 생성한다.")
     @ParameterizedTest
@@ -61,14 +60,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> secondCreateResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, secondLineRequest);
 
         // when
-        ExtractableResponse<Response> deleteResponse = 지하철_노선_목록_조회_요청(LINE_URL_PATH);
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청(LINE_URL_PATH);
 
         // then
         List<Long> createLineIds = Stream.of(firstCreateResponse, secondCreateResponse)
                                          .map(this::parseIdFromLocationHeader)
                                          .collect(Collectors.toList());
-        지하철_노선_목록_응답됨(deleteResponse);
-        지하철_노선_목록_포함됨(deleteResponse, createLineIds);
+        지하철_노선_목록_응답됨(response);
+        지하철_노선_목록_포함됨(response, createLineIds);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -119,10 +118,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_삭제됨(response);
-    }
-
-    private Long parseIdFromLocationHeader(ExtractableResponse<Response> response) {
-        String locationValue = response.header(LOCATION_HEADER_NAME).split(SLASH_SIGN)[2];
-        return Long.parseLong(locationValue);
     }
 }

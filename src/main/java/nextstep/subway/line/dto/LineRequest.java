@@ -6,8 +6,7 @@ public class LineRequest {
     private String name;
     private String color;
 
-    public LineRequest() {
-    }
+    private LineRequest() {}
 
     private LineRequest(String name, String color) {
         this.name = name;
