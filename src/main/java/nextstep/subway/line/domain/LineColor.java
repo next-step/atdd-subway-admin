@@ -1,13 +1,13 @@
 package nextstep.subway.line.domain;
 
-import java.util.Objects;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+
+import org.springframework.util.StringUtils;
 
 @Embeddable
 public class LineColor {
+    private static final String EMPTY_COLOR_ERROR_MESSAGE = "노선색깔이 비어있습니다. color=%s";
 
     @Column(name = "color", nullable = false)
     private String color;
@@ -19,10 +19,17 @@ public class LineColor {
     }
 
     public static LineColor from(String color) {
+        validateLineColor(color);
         return new LineColor(color);
     }
 
     public String getValue() {
         return color;
+    }
+
+    private static void validateLineColor(String color) {
+        if (!StringUtils.hasLength(color)) {
+            throw new IllegalArgumentException(String.format(EMPTY_COLOR_ERROR_MESSAGE, color));
+        }
     }
 }
