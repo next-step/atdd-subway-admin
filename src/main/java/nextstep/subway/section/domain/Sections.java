@@ -11,7 +11,7 @@ import javax.persistence.OneToMany;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
     protected Sections() {}
 
@@ -21,5 +21,9 @@ public class Sections {
 
     public static Sections createEmpty() {
         return new Sections(new ArrayList<>());
+    }
+
+    public void add(Section section) {
+        this.sections.add(section);
     }
 }

@@ -34,4 +34,20 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
+
+    protected Section() {}
+
+    private Section(Station upStation, Station downStation, Distance distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public static Section of(Station upStation, Station downStation, Distance distance) {
+        return new Section(upStation, downStation, distance);
+    }
+
+    public void registerLine(Line line) {
+        this.line = line;
+    }
 }

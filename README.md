@@ -78,7 +78,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ### 1. 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가한다.
 - [X] 구간(Section) 엔티티 생성
 - [X] 노선(Line), 구간(Section), 역(Station) 연관관계 추가
-- [ ] 노선(Line) 생성 시, 상행, 하행, 거리 정보를 요청 파라미터에 추가
+- [X] 노선(Line) 생성 시, 상행, 하행, 거리 정보를 요청 파라미터에 추가
 
 ### 2. 노선 조회 시 응답 결과에 역 목록을 추가한다.
 - [ ] 노선(Line) 조회 시 역(Station) 목록을 함께 응답할 수 있도록 변경

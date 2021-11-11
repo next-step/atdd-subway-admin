@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 
 import javax.persistence.*;
@@ -21,16 +22,25 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = Sections.createEmpty();
 
-    public Line() {}
+    protected Line() {}
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         this.name = LineName.from(name);
         this.color = LineColor.from(color);
+    }
+
+    public static Line of(String name, String color) {
+        return new Line(name, color);
     }
 
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+        section.registerLine(this);
     }
 
     public Long getId() {

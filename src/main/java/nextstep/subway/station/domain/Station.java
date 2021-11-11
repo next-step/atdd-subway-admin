@@ -1,6 +1,5 @@
 package nextstep.subway.station.domain;
 
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,10 +18,22 @@ public class Station extends BaseEntity {
     @Embedded
     private StationName name;
 
-    public Station() {}
+    protected Station() {}
 
-    public Station(String name) {
+    private Station(String name) {
         this.name = StationName.from(name);
+    }
+
+    private Station(Long id) {
+        this.id = id;
+    }
+
+    public static Station from(Long stationId) {
+        return new Station(stationId);
+    }
+
+    public static Station from(String name) {
+        return new Station(name);
     }
 
     public Long getId() {

@@ -1,11 +1,13 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceMethods.*;
+import static nextstep.subway.station.StationAcceptanceMethods.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,17 +15,31 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final String LINE_URL_PATH = "/lines";
+    private static final int DISTANCE = 10;
+
+    private Station pangyoStation;
+    private Station jeongjaStation;
+
+    @BeforeEach
+    void beforeEach() {
+        pangyoStation = 지하철_역_생성_요청(StationRequest.from("판교역")).as(Station.class);
+        jeongjaStation = 지하철_역_생성_요청(StationRequest.from("정자역")).as(Station.class);
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        LineRequest lineRequest = LineRequest.from("신분당선", "RED");
-
+        LineRequest lineRequest = LineRequest.from("신분당선",
+                                                   "RED",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
@@ -35,7 +51,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        LineRequest lineRequest = LineRequest.from("신분당선", "RED");
+        LineRequest lineRequest = LineRequest.from("신분당선",
+                                                   "RED",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
         지하철_노선_등록되어_있음(lineRequest);
 
         // when
@@ -49,8 +69,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineRequest firstLineRequest = LineRequest.from("신분당선", "RED");
-        LineRequest secondLineRequest = LineRequest.from("1호선", "BLUE");
+        LineRequest firstLineRequest = LineRequest.from("신분당선",
+                                                        "RED",
+                                                        pangyoStation.getId(),
+                                                        jeongjaStation.getId(),
+                                                        DISTANCE);
+        LineRequest secondLineRequest = LineRequest.from("1호선",
+                                                         "BLUE",
+                                                         pangyoStation.getId(),
+                                                         jeongjaStation.getId(),
+                                                         DISTANCE);
 
         ExtractableResponse<Response> firstCreateResponse = 지하철_노선_등록되어_있음(firstLineRequest);
         ExtractableResponse<Response> secondCreateResponse = 지하철_노선_등록되어_있음(secondLineRequest);
@@ -70,7 +98,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineRequest lineRequest = LineRequest.from("신분당선","RED");
+        LineRequest lineRequest = LineRequest.from("신분당선",
+                                                   "RED",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
         ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
@@ -86,12 +118,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineRequest lineRequest = LineRequest.from("신분당선","RED");
+        LineRequest lineRequest = LineRequest.from("신분당선",
+                                                   "RED",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
         ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
         Long createdId = parseIdFromLocationHeader(createResponse);
-        LineRequest updateLineRequest = LineRequest.from("신분당선(수정)","RED(수정)");
+        LineRequest updateLineRequest = LineRequest.from("신분당선(수정)",
+                                                         "RED(수정)",
+                                                         pangyoStation.getId(),
+                                                         jeongjaStation.getId(),
+                                                         DISTANCE);
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdId, updateLineRequest);
 
         // then
@@ -102,7 +142,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineRequest lineRequest = LineRequest.from("신분당선","RED");
+        LineRequest lineRequest = LineRequest.from("신분당선",
+                                                   "RED",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
         ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
