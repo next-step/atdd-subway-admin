@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.domain.Name;
+import org.springframework.util.Assert;
 
 @Entity
 public class Station extends BaseEntity {
@@ -23,6 +24,7 @@ public class Station extends BaseEntity {
     }
 
     private Station(Name name) {
+        Assert.notNull(name, "'name' must not be null");
         this.name = name;
     }
 
