@@ -45,9 +45,4 @@ public class LineController {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler
-    public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
-    }
 }
