@@ -59,14 +59,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
+        final ExtractableResponse<Response> createResponse1 = postResponse(
+            params("신분당선", "bg-red-600")
+        );
         // 지하철_노선_등록되어_있음
+        final ExtractableResponse<Response> createResponse2 = postResponse(
+            params("분당선", "bg-yellow-600")
+        );
 
         // when
         // 지하철_노선_목록_조회_요청
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines")
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_목록_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
+        List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
+            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+            .collect(Collectors.toList());
+        List<Long> actualLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+            .map(LineResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
