@@ -2,7 +2,11 @@ package nextstep.subway.line.ui;
 
 import java.net.URI;
 import java.util.List;
-
+import javax.validation.Valid;
+import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.dto.LineCreateRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,13 +18,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
-
 @RestController
 @RequestMapping("/lines")
 public class LineController {
+
     private final LineService lineService;
 
     public LineController(final LineService lineService) {
@@ -28,8 +29,9 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLine(lineRequest);
+    public ResponseEntity<LineResponse> createLine(
+        @Valid @RequestBody LineCreateRequest lineCreateRequest) {
+        LineResponse line = lineService.saveLine(lineCreateRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
@@ -44,7 +46,8 @@ public class LineController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id,
+        @Valid @RequestBody LineUpdateRequest request) {
         lineService.update(id, request);
         return ResponseEntity.ok().build();
     }

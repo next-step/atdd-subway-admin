@@ -1,7 +1,7 @@
 package nextstep.subway.configuration;
 
-import java.util.NoSuchElementException;
-
+import nextstep.subway.common.exception.DuplicateDataException;
+import nextstep.subway.common.exception.NotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,8 +15,13 @@ public class RestExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<Void> handleIllegalArgsException(NoSuchElementException e) {
+    @ExceptionHandler(DuplicateDataException.class)
+    public ResponseEntity<Void> handleDuplicateDataException(DuplicateDataException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Void> handleIllegalArgsException(NotFoundException e) {
         return ResponseEntity.notFound().build();
     }
 }
