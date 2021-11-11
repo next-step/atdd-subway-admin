@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
@@ -19,18 +20,18 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping
-    public ResponseEntity findLines() {
+    public ResponseEntity<List<LineResponse>> findLines() {
         return ResponseEntity.ok(lineService.findLines());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity findLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.findLine(id));
     }
 
