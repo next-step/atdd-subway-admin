@@ -54,7 +54,7 @@ public class LineService {
 
     private void checkDuplicateLineName(String name) {
         List<Line> findByNameLines = lineRepository.findLineByName(name);
-        if (findByNameLines.size() > 1) {
+        if (findByNameLines.size() > 0) {
             throw new InputDataErrorException(InputDataErrorCode.THERE_IS_A_DUPLICATE_NAME);
         }
     }
