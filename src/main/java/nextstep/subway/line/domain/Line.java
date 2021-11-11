@@ -1,20 +1,27 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Sections;
 
 import javax.persistence.*;
 
 @Entity
 public class Line extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
+
+    @Column(name = "color", nullable = false)
     private String color;
 
-    public Line() {
-    }
+    @Embedded
+    private Sections sections = Sections.createEmpty();
+
+    public Line() {}
 
     public Line(String name, String color) {
         this.name = name;
