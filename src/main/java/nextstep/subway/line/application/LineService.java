@@ -1,6 +1,5 @@
 package nextstep.subway.line.application;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.common.domain.Name;
@@ -73,13 +72,13 @@ public class LineService {
     }
 
     private Sections sections(SectionRequest request) {
-        return Sections.from(Collections.singletonList(
+        return Sections.from(
             Section.of(
                 station(request.getUpStationId()),
                 station(request.getDownStationId()),
                 request.distance()
             )
-        ));
+        );
     }
 
     private Station station(Long id) {
