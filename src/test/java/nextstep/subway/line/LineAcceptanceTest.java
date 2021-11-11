@@ -143,12 +143,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        final ExtractableResponse<Response> createResponse = post(params("신분당선", "bg-red-600"));
+        final Long lineId = createResponse.as(LineResponse.class).getId();
 
         // when
         // 지하철_노선_제거_요청
+        final ExtractableResponse<Response> response = Fixture.delete("/lines/{id}", lineId);
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 제거한다.")
+    @Test
+    void deleteLine_notFound() {
+        final ExtractableResponse<Response> response = Fixture.delete("/lines/{id}", 0L);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private Map<String, String> params(String name, String color) {

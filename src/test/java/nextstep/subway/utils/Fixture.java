@@ -21,8 +21,8 @@ public class Fixture {
 		return response(request(body).put(path, pathParams));
 	}
 
-	public static ExtractableResponse<Response> delete(String path) {
-		return response(request().delete(path));
+	public static ExtractableResponse<Response> delete(String path, Object... pathParams) {
+		return response(request().delete(path, pathParams));
 	}
 
 	private static RequestSpecification request() {

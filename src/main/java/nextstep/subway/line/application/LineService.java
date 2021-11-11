@@ -5,7 +5,9 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
@@ -40,6 +42,12 @@ public class LineService {
 	public void updateLine(Long id, LineRequest request) {
 		final Line line = findLine(id);
 		line.update(request.toLine());
+	}
+
+	public void deleteLine(Long id) {
+		if (lineRepository.existsById(id)) {
+			lineRepository.deleteById(id);
+		}
 	}
 
 	private Line findLine(Long id) {
