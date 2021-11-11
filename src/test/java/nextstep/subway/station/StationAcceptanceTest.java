@@ -11,13 +11,12 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.utils.Fixture;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -26,7 +25,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        final ExtractableResponse<Response> response = postResponse(params("강남역"));
+        final ExtractableResponse<Response> response = post(params("강남역"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -38,17 +37,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         final Map<String, String> params = params("강남역");
-        postResponse(params);
+        post(params);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/stations")
-                .then()
-                .log().all()
-                .extract();
+        final ExtractableResponse<Response> response = post(params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -58,15 +50,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        final ExtractableResponse<Response> createResponse1 = postResponse(params("강남역"));
-        final ExtractableResponse<Response> createResponse2 = postResponse(params("역삼역"));
+        final ExtractableResponse<Response> createResponse1 = post(params("강남역"));
+        final ExtractableResponse<Response> createResponse2 = post(params("역삼역"));
 
         // when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> response = Fixture.get("/stations");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -83,15 +71,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        final ExtractableResponse<Response> createResponse = postResponse(params("강남역"));
+        final ExtractableResponse<Response> createResponse = post(params("강남역"));
 
         // when
         final String uri = createResponse.header("Location");
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        final ExtractableResponse<Response> response = Fixture.delete(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -103,13 +87,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         }};
     }
 
-    private ExtractableResponse<Response> postResponse(Map<String, String> params) {
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then().log().all()
-            .extract();
+    private ExtractableResponse<Response> post(Map<String, String> params) {
+        return Fixture.post("/stations", params);
     }
 }

@@ -13,7 +13,8 @@ import java.util.List;
 
 @RestController
 public class StationController {
-    private StationService stationService;
+
+    private final StationService stationService;
 
     public StationController(StationService stationService) {
         this.stationService = stationService;
@@ -26,7 +27,7 @@ public class StationController {
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
+    public ResponseEntity<List<StationResponse>> getStations() {
         return ResponseEntity.ok().body(stationService.findAllStations());
     }
 
