@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
 
 @Embeddable
 public class LineColor {
-    private static final String EMPTY_COLOR_ERROR_MESSAGE = "노선색깔이 비어있습니다. color=%s";
+    private static final String EMPTY_LINE_COLOR_ERROR_MESSAGE = "노선색깔이 비어있습니다. color=%s";
 
     @Column(name = "color", nullable = false)
     private String color;
@@ -29,7 +29,7 @@ public class LineColor {
 
     private static void validateLineColor(String color) {
         if (!StringUtils.hasLength(color)) {
-            throw new IllegalArgumentException(String.format(EMPTY_COLOR_ERROR_MESSAGE, color));
+            throw new IllegalArgumentException(String.format(EMPTY_LINE_COLOR_ERROR_MESSAGE, color));
         }
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
 
 @Embeddable
 public class LineName {
-    private static final String EMPTY_NAME_ERROR_MESSAGE = "노선이름이 비어있습니다. name=%s";
+    private static final String EMPTY_LINE_NAME_ERROR_MESSAGE = "노선이름이 비어있습니다. name=%s";
 
     @Column(name = "name", unique = true, nullable = false)
     private String name;
@@ -29,7 +29,7 @@ public class LineName {
 
     private static void validateLineName(String name) {
         if (!StringUtils.hasLength(name)) {
-            throw new IllegalArgumentException(String.format(EMPTY_NAME_ERROR_MESSAGE, name));
+            throw new IllegalArgumentException(String.format(EMPTY_LINE_NAME_ERROR_MESSAGE, name));
         }
     }
 }
