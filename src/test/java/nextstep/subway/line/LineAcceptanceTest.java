@@ -11,13 +11,12 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.utils.Fixture;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -27,7 +26,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        final ExtractableResponse<Response> response = postResponse(
+        final ExtractableResponse<Response> response = post(
             params("신분당선", "bg-red-600")
         );
 
@@ -43,11 +42,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         final Map<String, String> params = params("신분당선", "bg-red-600");
-        postResponse(params);
+        post(params);
 
         // when
         // 지하철_노선_생성_요청
-        final ExtractableResponse<Response> response = postResponse(params);
+        final ExtractableResponse<Response> response = post(params);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -59,27 +58,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        final ExtractableResponse<Response> createResponse1 = postResponse(
+        final ExtractableResponse<Response> postResponse1 = post(
             params("신분당선", "bg-red-600")
         );
         // 지하철_노선_등록되어_있음
-        final ExtractableResponse<Response> createResponse2 = postResponse(
+        final ExtractableResponse<Response> postResponse2 = post(
             params("분당선", "bg-yellow-600")
         );
 
         // when
         // 지하철_노선_목록_조회_요청
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when()
-            .get("/lines")
-            .then().log().all()
-            .extract();
+        final ExtractableResponse<Response> response = Fixture.get("/lines");
 
         // then
         // 지하철_노선_목록_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // 지하철_노선_목록_포함됨
-        final List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
+        final List<Long> expectedLineIds = Stream.of(postResponse1, postResponse2)
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
         final List<Long> actualLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
@@ -93,12 +88,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        final ExtractableResponse<Response> createResponse = post(params("신분당선", "bg-red-600"));
+        final Long lineId = createResponse.as(LineResponse.class).getId();
 
         // when
         // 지하철_노선_조회_요청
+        final ExtractableResponse<Response> response = Fixture.get("/lines/{id}", lineId);
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.as(LineResponse.class).getId()).isEqualTo(lineId);
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 조회한다.")
+    @Test
+    void getLine_notFound() {
+        final ExtractableResponse<Response> response = Fixture.get("/lines/{id}", 0L);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -134,13 +141,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }};
     }
 
-    private ExtractableResponse<Response> postResponse(Map<String, String> params) {
-        return RestAssured.given().log().all()
-            .body(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/lines")
-            .then().log().all()
-            .extract();
+    private ExtractableResponse<Response> post(Map<String, String> params) {
+        return Fixture.post("/lines", params);
     }
 }

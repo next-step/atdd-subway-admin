@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,5 +34,10 @@ public class LineController {
     @GetMapping
     public ResponseEntity<List<LineResponse>> getLines() {
         return ResponseEntity.ok().body(lineService.findLines());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> getLine(@PathVariable("id") Long id) {
+        return ResponseEntity.ok().body(lineService.findLine(id));
     }
 }
