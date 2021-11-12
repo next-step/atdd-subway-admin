@@ -60,19 +60,31 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection2() {
         // given
+        StationResponse jeongjaStation = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
+        SectionRequest sectionRequest = SectionRequest.of(jeongjaStation.getId(),
+                                                          pangyoStation.getId(),
+                                                          5);
 
         // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(shinbundangLine.getId(), sectionRequest);
 
         // then
+        지하철_노선에_지하철역_등록됨(response);
     }
 
     @DisplayName("노선에 새로운 하행 종점역을 등록한다.")
     @Test
     void addSection3() {
         // given
+        StationResponse jeongjaStation = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
+        SectionRequest sectionRequest = SectionRequest.of(migeumStation.getId(),
+                                                          jeongjaStation.getId(),
+                                                          5);
 
         // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(shinbundangLine.getId(), sectionRequest);
 
         // then
+        지하철_노선에_지하철역_등록됨(response);
     }
 }
