@@ -16,6 +16,10 @@ public class HttpUtils {
         return response(request(request).post(path));
     }
 
+    public static ExtractableResponse<Response> delete(String path, Object... params) {
+        return response(request().delete(path, params));
+    }
+
     public static ExtractableResponse<Response> put(String path, Object request, Object... params) {
         return response(request(request).put(path, params));
     }

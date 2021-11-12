@@ -99,27 +99,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> actual = put("/lines/{id}", 이호선, response.getId());
-        LineResponse asActual = actual.as(LineResponse.class);
 
         // then
-        assertAll(
-                () -> assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(asActual.getName()).isEqualTo(이호선.getName()),
-                () -> assertThat(asActual.getColor()).isEqualTo(이호선.getColor())
-        );
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineRequest request = 신분당선;
+        LineResponse response = post("/lines", request).as(LineResponse.class);
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> actual = delete("/lines/{id}", response.getId());
 
         // then
-        // 지하철_노선_삭제됨
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
 
