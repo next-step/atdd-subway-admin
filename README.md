@@ -91,7 +91,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 1. 지하철 구간 등록 인수 테스트를 작성한다.
 - [X] 역 사이에 새로운 역을 추가
-  - [ ] 노선에 구간 등록 로직 구현
+  - [X] 노선에 구간 등록 로직 구현
 - [ ] 새로운 역을 상행 종점으로 추가
 - [ ] 새로운 역을 하행 종점으로 추가
 

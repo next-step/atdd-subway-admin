@@ -64,7 +64,8 @@ public class LineService {
     }
 
     public void addSection(Long id, SectionRequest sectionRequest) {
-        throw new IllegalStateException();
+        Line line = findLineById(id);
+        line.addSection(sectionRequest.toSection());
     }
 
     private Section buildSection(LineRequest request) {
