@@ -13,6 +13,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 
 public class LineAcceptanceMethods extends AcceptanceTest {
     private static final String LINE_URL_PATH = "/lines";
@@ -64,6 +65,15 @@ public class LineAcceptanceMethods extends AcceptanceTest {
 										   .map(LineResponse::getId)
 										   .collect(Collectors.toList());
 		assertThat(resultLineIds).containsAll(expectedLineIds);
+	}
+
+	public static void 지하철_역_정렬됨(ExtractableResponse<Response> response, List<Long> expectedSortedStationIds) {
+		List<Long> resultStationIds = response.jsonPath()
+											  .getList("stations", StationResponse.class)
+											  .stream()
+											  .map(StationResponse::getId)
+											  .collect(Collectors.toList());
+		assertThat(resultStationIds).isEqualTo(expectedSortedStationIds);
 	}
 
 	public static void 지하철_노선_응답됨(ExtractableResponse<Response> response) {

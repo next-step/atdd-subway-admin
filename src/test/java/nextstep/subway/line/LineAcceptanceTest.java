@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import static nextstep.subway.line.LineAcceptanceMethods.*;
 import static nextstep.subway.station.StationAcceptanceMethods.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -110,8 +111,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdId);
 
         // then
+        List<Long> sortedStationIds = Stream.of(pangyoStation.getId(), jeongjaStation.getId())
+                                            .collect(Collectors.toList());
         지하철_노선_응답됨(response);
         지하철_노선_포함됨(response, parseIdFromLocationHeader(createResponse));
+        지하철_역_정렬됨(response, sortedStationIds);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
