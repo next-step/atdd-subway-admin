@@ -3,8 +3,10 @@ package nextstep.subway.line.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,11 +22,25 @@ import static org.assertj.core.api.Assertions.*;
 @DisplayName("지하철 노선 인수 테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    private LineResponse 이호선;
+    private LineResponse 사호선;
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        이호선 = 지하철_노선_등록되어_있음(new LineRequest("2호선", "green", 1L, 2L, 10));
+        사호선 = 지하철_노선_등록되어_있음(new LineRequest("4호선", "blue", 3L, 4L, 20));
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        // given
+        LineRequest lineRequest = new LineRequest("3호선", "orange", 1L, 2L, 10);
+
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
         // then
         지하철_노선_생성됨(response);
@@ -34,10 +50,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        LineResponse 이호선 = 지하철_노선_등록되어_있음("2호선", "green");
+        LineRequest lineRequest = new LineRequest(이호선.getName(), "red", 1L, 2L, 10);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(이호선.getName(), "red");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
         // then
         지하철_노선_생성_실패됨(response);
@@ -46,10 +62,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
-        // given
-        LineResponse 이호선 = 지하철_노선_등록되어_있음("2호선", "green");
-        LineResponse 사호선 = 지하철_노선_등록되어_있음("4호선", "blue");
-
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
@@ -61,9 +73,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
-        // given
-        LineResponse 이호선 = 지하철_노선_등록되어_있음("2호선", "green");
-
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
 
@@ -75,10 +84,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineResponse 이호선 = 지하철_노선_등록되어_있음("2호선", "green");
+        LineRequest updateLineRequest = new LineRequest(이호선.getName(), "red", 5L, 6L, 15);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(이호선.getId(), "4호선", "blue");
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(이호선.getId(), updateLineRequest);
 
         // then
         지하철_노선_수정됨(response);
@@ -87,9 +96,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
-        // given
-        LineResponse 이호선 = 지하철_노선_등록되어_있음("2호선", "green");
-
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(이호선.getId());
 
