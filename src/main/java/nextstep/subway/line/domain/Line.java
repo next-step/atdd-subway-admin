@@ -1,16 +1,12 @@
 package nextstep.subway.line.domain;
 
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -23,9 +19,6 @@ public class Line extends BaseEntity {
     private String name;
 
     private String color;
-
-    @OneToMany
-    private Set<Station> stations;
 
     protected Line() {
     }
