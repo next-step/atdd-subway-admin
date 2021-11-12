@@ -3,17 +3,14 @@ package nextstep.subway.line.application;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityNotFoundException;
-
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.LineNotFoundException;
 
 @Service
 @Transactional
@@ -52,6 +49,6 @@ public class LineService {
 
 	private Line findLine(Long id) {
 		return lineRepository.findById(id)
-			.orElseThrow(EntityNotFoundException::new);
+			.orElseThrow(LineNotFoundException::new);
 	}
 }
