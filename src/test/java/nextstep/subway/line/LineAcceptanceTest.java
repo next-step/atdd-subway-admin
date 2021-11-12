@@ -15,14 +15,13 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.HttpUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600");
-    private static LineRequest 이호선 = new LineRequest("2호선", "green");
-    
+    private static final LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600");
+    private static final LineRequest 이호선 = new LineRequest("2호선", "green");
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -64,9 +63,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> actual = get("/lines");
 
         // then
-        List<Long> expectedLineIds = Arrays.asList(response1, response2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[1]))
-                .collect(Collectors.toList());
+        List<Long> expectedLineIds =
+                Arrays.asList(response1.as(LineResponse.class).getId(), response2.as(LineResponse.class).getId());
+
         List<Long> resultLineIds = actual.jsonPath().getList(".", LineResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
