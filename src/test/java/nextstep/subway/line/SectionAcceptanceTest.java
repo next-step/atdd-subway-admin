@@ -16,6 +16,7 @@ import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
@@ -205,5 +206,40 @@ class SectionAcceptanceTest extends AcceptanceTest {
             .get("/lines/{id}", line.getId())
             .then().log().all()
             .extract();
+    }
+
+    @Nested
+    class SectionDeleteAcceptanceTest {
+
+        @BeforeEach
+        void beforeEach() {
+            지하철_노선에_지하철역_등록_요청(secondLine.getId(),
+                gangnamStation.getId(), yeoksamStation.getId(), 10);
+        }
+
+        @Test
+        @DisplayName("구간 삭제")
+        void deleteSection() {
+            //when
+            ExtractableResponse<Response> response =
+                지하철_노선에_역_구간_삭제_요청(secondLine.getId(), yeoksamStation.getId());
+
+            //then
+            지하철_노선에_역_구간_삭제_됨(response);
+        }
+
+        private ExtractableResponse<Response> 지하철_노선에_역_구간_삭제_요청(Long lineId, Long stationId) {
+            return RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .when()
+                .delete("/lines/{id}/sections", lineId)
+                .then().log().all()
+                .extract();
+        }
+
+        private void 지하철_노선에_역_구간_삭제_됨(ExtractableResponse<Response> response) {
+            assertThat(response.statusCode())
+                .isEqualTo(HttpStatus.NO_CONTENT.value());
+        }
     }
 }
