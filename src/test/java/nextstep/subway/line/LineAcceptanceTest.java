@@ -86,21 +86,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actual.as(LineResponse.class).getId()).isEqualTo(id);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void findOneEmptyLine() {
-        // given
-        LineRequest request = getLineRequest("신분당선", "bg-red-600");
-        Long id = post("/lines", request).as(LineResponse.class).getId();
-
-        // when
-        ExtractableResponse<Response> actual = get("/lines/{id}", id + 1);
-
-        // then
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(actual.as(LineResponse.class).getId()).isEqualTo(id);
-    }
-
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
