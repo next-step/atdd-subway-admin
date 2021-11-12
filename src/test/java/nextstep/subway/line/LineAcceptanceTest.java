@@ -293,7 +293,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         String name, String color) {
         return RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .body(updatedBody(name, color))
+            .body(new LineUpdateRequest(name, color))
             .when()
             .put(headerLocation(createdResponse))
             .then().log().all()
@@ -303,7 +303,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 존재하지_않는_지하철_노선_수정_요청() {
         return RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .body(updatedBody("1호선", "blue"))
+            .body(new LineUpdateRequest("1호선", "blue"))
             .when()
             .put("/lines/{id}", Integer.MIN_VALUE)
             .then().log().all()
@@ -418,9 +418,5 @@ class LineAcceptanceTest extends AcceptanceTest {
             .delete(headerLocation(createdResponse))
             .then().log().all()
             .extract();
-    }
-
-    private LineUpdateRequest updatedBody(String name, String color) {
-        return new LineUpdateRequest(name, color);
     }
 }
