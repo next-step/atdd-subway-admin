@@ -38,14 +38,12 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse getLine(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+        Line line = findById(id);
         return LineResponse.of(line);
     }
 
     public void updateLine(Long id, LineRequest updateLineRequest) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+        Line line = findById(id);
         line.update(updateLineRequest.toLine());
     }
 
@@ -61,5 +59,10 @@ public class LineService {
 
     private boolean isNameDuplicated(LineRequest request) {
         return lineRepository.existsByName(request.getName());
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
     }
 }
