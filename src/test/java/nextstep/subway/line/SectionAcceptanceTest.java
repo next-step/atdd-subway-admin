@@ -35,7 +35,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         secondLine = 지하철_노선_등록되어_있음(
             "2호선", "blue",
-            gangnamStation.getId(), seolleungStation.getId(), Integer.MAX_VALUE
+            gangnamStation.getId(), seolleungStation.getId(), 10
         ).as(LineResponse.class);
     }
 
@@ -96,7 +96,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_notExistsLine_404() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            Long.MIN_VALUE, gangnamStation.getId(), yeoksamStation.getId(), Integer.MAX_VALUE);
+            Long.MIN_VALUE, gangnamStation.getId(), yeoksamStation.getId(), 1);
 
         // then
         지하철_노선_못찾음(response);
