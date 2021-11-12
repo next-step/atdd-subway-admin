@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import nextstep.subway.common.exception.InvalidDataException;
 
 @Embeddable
 public class Distance {
@@ -33,7 +32,7 @@ public class Distance {
 
     private void validate(int value) {
         if (lessThanOrEqualZero(value)) {
-            throw new InvalidDataException(
+            throw new IllegalArgumentException(
                 String.format("distance value(%d) must be greater than zero", value));
         }
     }
