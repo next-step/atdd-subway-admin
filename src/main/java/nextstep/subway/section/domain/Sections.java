@@ -28,6 +28,10 @@ public class Sections {
         return new Sections(new ArrayList<>());
     }
 
+    public static Sections from(List<Section> sections) {
+        return new Sections(sections);
+    }
+
     public void add(Section section) {
         this.sections.add(section);
     }
@@ -55,7 +59,7 @@ public class Sections {
                        .orElseThrow(() -> new IllegalStateException(NOT_EXIST_UP_STATION));
     }
 
-    private Section findFirstSection() {
+    protected Section findFirstSection() {
         return sections.stream()
                        .filter(section -> !findDownStations().contains(section.getUpStation()))
                        .findFirst()
