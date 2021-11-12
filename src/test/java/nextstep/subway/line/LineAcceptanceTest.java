@@ -1,136 +1,203 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceMethods.*;
+import static nextstep.subway.station.StationAcceptanceMethods.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.api.Test;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final String LINE_URL_PATH = "/lines";
-    private static final String SLASH_SIGN = "/";
+    private static final int DISTANCE = 10;
+
+    private StationResponse pangyoStation;
+    private StationResponse jeongjaStation;
+
+    @BeforeEach
+    void beforeEach() {
+        pangyoStation = 지하철_역_생성_요청(StationRequest.from("판교역")).as(StationResponse.class);
+        jeongjaStation = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
-    @ParameterizedTest
-    @CsvSource(value = {"신분당선,RED", "분당선,YELLOW", "1호선,BLUE", "2호선,GREEN"})
-    void createLine(String name, String color) {
+    @Test
+    void createLine() {
         // given
-        LineRequest lineRequest = createLineRequest(name, color);
-
+        LineRequest lineRequest = LineRequest.from("신분당선",
+                                                   "RED",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(LINE_URL_PATH, lineRequest);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
         // then
         지하철_노선_생성됨(response);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
-    @ParameterizedTest
-    @CsvSource(value = {"신분당선,RED", "분당선,YELLOW", "1호선,BLUE", "2호선,GREEN"})
-    void createLine2(String name, String color) {
+    @Test
+    void createLine2() {
         // given
-        LineRequest lineRequest = createLineRequest(name, color);
-        지하철_노선_등록되어_있음(LINE_URL_PATH, lineRequest);
+        LineRequest lineRequest = LineRequest.from("신분당선",
+                                                   "RED",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
+        지하철_노선_등록되어_있음(lineRequest);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(LINE_URL_PATH, lineRequest);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
         // then
         지하철_노선_생성_실패됨(response);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
-    @ParameterizedTest
-    @CsvSource(value = {"신분당선,RED,분당선,YELLOW", "1호선,BLUE,2호선,GREEN"})
-    void getLines(String firstLineName, String firstLineColor, String secondLineName, String secondLineColor) {
+    @Test
+    void getLines() {
         // given
-        LineRequest firstLineRequest = createLineRequest(firstLineName, firstLineColor);
-        LineRequest secondLineRequest = createLineRequest(secondLineName, secondLineColor);
+        LineRequest firstLineRequest = LineRequest.from("신분당선",
+                                                        "RED",
+                                                        pangyoStation.getId(),
+                                                        jeongjaStation.getId(),
+                                                        DISTANCE);
+        LineRequest secondLineRequest = LineRequest.from("1호선",
+                                                         "BLUE",
+                                                         pangyoStation.getId(),
+                                                         jeongjaStation.getId(),
+                                                         DISTANCE);
 
-        ExtractableResponse<Response> firstCreateResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, firstLineRequest);
-        ExtractableResponse<Response> secondCreateResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, secondLineRequest);
+        ExtractableResponse<Response> firstCreateResponse = 지하철_노선_등록되어_있음(firstLineRequest);
+        ExtractableResponse<Response> secondCreateResponse = 지하철_노선_등록되어_있음(secondLineRequest);
 
         // when
-        ExtractableResponse<Response> deleteResponse = 지하철_노선_목록_조회_요청(LINE_URL_PATH);
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         List<Long> createLineIds = Stream.of(firstCreateResponse, secondCreateResponse)
                                          .map(this::parseIdFromLocationHeader)
                                          .collect(Collectors.toList());
-        지하철_노선_목록_응답됨(deleteResponse);
-        지하철_노선_목록_포함됨(deleteResponse, createLineIds);
+        지하철_노선_목록_응답됨(response);
+        지하철_노선_목록_포함됨(response, createLineIds);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
-    @ParameterizedTest
-    @CsvSource(value = {"신분당선,RED", "분당선,YELLOW", "1호선,BLUE", "2호선,GREEN"})
-    void getLine(String name, String color) {
+    @Test
+    void getLine1() {
         // given
-        LineRequest lineRequest = createLineRequest(name, color);
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, lineRequest);
+        LineRequest lineRequest = LineRequest.from("신분당선",
+                                                   "RED",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
-        String location = extractHeaderValue(createResponse, LOCATION_HEADER_NAME);
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(location);
+        Long createdId = parseIdFromLocationHeader(createResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdId);
 
         // then
+        List<Long> sortedStationIds = Stream.of(pangyoStation.getId(), jeongjaStation.getId())
+                                            .collect(Collectors.toList());
         지하철_노선_응답됨(response);
         지하철_노선_포함됨(response, parseIdFromLocationHeader(createResponse));
+        지하철_역_정렬됨(response, sortedStationIds);
+    }
+
+    @DisplayName("등록되지 않은 지하철 노선을 조회 할 수 없다.")
+    @Test
+    void getLine2() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(1L);
+
+        // then
+        지하철_노선_조회_실패(response);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
-    @ParameterizedTest
-    @CsvSource(value = {"신분당선,RED,신분당선2,RED2", "분당선,YELLOW,분당선2,YELLOW2", "1호선,BLUE,1호선2,BLUE2"})
-    void updateLine(String name, String color, String updateName, String updateColor) {
+    @Test
+    void updateLine1() {
         // given
-        LineRequest lineRequest = createLineRequest(name, color);
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, lineRequest);
+        LineRequest lineRequest = LineRequest.from("신분당선",
+                                                   "RED",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
-        String location = extractHeaderValue(createResponse, LOCATION_HEADER_NAME);
-        LineRequest updateLineRequest = createLineRequest(updateName, updateColor);
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(location, updateLineRequest);
+        Long createdId = parseIdFromLocationHeader(createResponse);
+        LineRequest updateLineRequest = LineRequest.from("신분당선(수정)",
+                                                         "RED(수정)",
+                                                         pangyoStation.getId(),
+                                                         jeongjaStation.getId(),
+                                                         DISTANCE);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdId, updateLineRequest);
 
         // then
         지하철_노선_수정됨(response);
     }
 
-    @DisplayName("지하철 노선을 제거한다.")
-    @ParameterizedTest
-    @CsvSource(value = {"신분당선,RED", "분당선,YELLOW", "1호선,BLUE", "2호선,GREEN"})
-    void deleteLine(String name, String color) {
+    @DisplayName("기존에 존재하는 이름으로 지하철 노선을 수정 할 수 없다.")
+    @Test
+    void updateLine2() {
         // given
-        LineRequest lineRequest = createLineRequest(name, color);
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(LINE_URL_PATH, lineRequest);
+        LineRequest firstLineRequest = LineRequest.from("신분당선",
+                                                   "RED",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
+        LineRequest secondLineRequest = LineRequest.from("1호선",
+                                                   "BLUE",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
+        ExtractableResponse<Response> firstCreateResponse = 지하철_노선_등록되어_있음(firstLineRequest);
+        ExtractableResponse<Response> secondCreateResponse = 지하철_노선_등록되어_있음(secondLineRequest);
 
         // when
-        String location = extractHeaderValue(createResponse, LOCATION_HEADER_NAME);
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(location);
+        Long createdId = parseIdFromLocationHeader(firstCreateResponse);
+        LineRequest updateLineRequest = LineRequest.from("1호선",
+                                                         "RED(수정)",
+                                                         pangyoStation.getId(),
+                                                         jeongjaStation.getId(),
+                                                         DISTANCE);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdId, updateLineRequest);
+
+        // then
+        지하철_노선_수정_실패(response);
+    }
+
+    @DisplayName("지하철 노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        LineRequest lineRequest = LineRequest.from("신분당선",
+                                                   "RED",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest);
+
+        // when
+        Long createdId = parseIdFromLocationHeader(createResponse);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(createdId);
 
         // then
         지하철_노선_삭제됨(response);
-    }
-
-    private static String extractHeaderValue(ExtractableResponse<Response> response, String headerName) {
-        return response.header(headerName);
-    }
-
-    private static LineRequest createLineRequest(String name, String color) {
-        return new LineRequest(name, color);
-    }
-
-    private Long parseIdFromLocationHeader(ExtractableResponse<Response> response) {
-        String locationValue = extractHeaderValue(response, LOCATION_HEADER_NAME).split(SLASH_SIGN)[2];
-        return Long.parseLong(locationValue);
     }
 }

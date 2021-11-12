@@ -70,3 +70,17 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   
 ### 4. 지하철 노선 제거(삭제)와 관련된 인수 테스트를 작성한다.
 - [X] 지하철 노선을 제거한다.
+
+---
+
+# 2단계 : 인수 테스트 리팩터링
+
+### 1. 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가한다.
+- [X] 구간(Section) 엔티티 생성
+- [X] 노선(Line), 구간(Section), 역(Station) 연관관계 추가
+- [X] 노선(Line) 생성 시, 상행, 하행, 거리 정보를 요청 파라미터에 추가
+
+### 2. 노선 조회 시 응답 결과에 역 목록을 추가한다.
+- [X] 노선(Line) 조회 시 역(Station) 목록을 함께 응답할 수 있도록 변경
+- [X] Response Model 에 역(Station) 목록 추가
+- [X] 상행역 부터 하행역 순으로 정렬
