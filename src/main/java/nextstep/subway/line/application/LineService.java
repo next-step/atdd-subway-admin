@@ -25,9 +25,6 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        if (findByName(request).isPresent()) {
-            throw new DuplicateLineException();
-        }
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
@@ -51,10 +48,6 @@ public class LineService {
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
-    }
-
-    private Optional<Line> findByName(LineRequest request) {
-        return lineRepository.findByName(request.getName());
     }
 
     private Line findLineById(Long id) {
