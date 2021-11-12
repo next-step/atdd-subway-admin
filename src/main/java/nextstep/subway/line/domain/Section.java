@@ -96,7 +96,7 @@ public class Section {
     private void validateRemovedSection(Section section) {
         Assert.notNull(section, "removed section must not be null");
         validateRemovedSectionStation(section);
-        validateSubtractDistance(distance);
+        validateSubtractDistance(section.distance);
     }
 
     private void cutSection(Section section) {

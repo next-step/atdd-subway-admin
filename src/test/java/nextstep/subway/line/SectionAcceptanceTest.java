@@ -25,7 +25,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private StationResponse gangnamStation;
     private StationResponse yeoksamStation;
     private StationResponse seolleungStation;
-    private ExtractableResponse<Response> secondLineResponse;
+    private LineResponse secondLine;
 
     @BeforeEach
     void beforeEach() {
@@ -33,10 +33,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
         yeoksamStation = 지하철_역_생성("역삼역");
         seolleungStation = 지하철_역_생성("선릉역");
 
-        secondLineResponse = 지하철_노선_등록되어_있음(
+        secondLine = 지하철_노선_등록되어_있음(
             "2호선", "blue",
-            gangnamStation.getId(), seolleungStation.getId(), 10
-        );
+            gangnamStation.getId(), seolleungStation.getId(), Integer.MAX_VALUE
+        ).as(LineResponse.class);
     }
 
     @Test
@@ -47,7 +47,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            givenLineId(), gyodaeStation.getId(), gangnamStation.getId(), Integer.MAX_VALUE);
+            secondLine.getId(), gyodaeStation.getId(), gangnamStation.getId(), Integer.MAX_VALUE);
 
         // then
         지하철_노선에_지하철역_등록됨(response, gyodaeStation, gangnamStation, seolleungStation);
@@ -61,7 +61,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            givenLineId(), seolleungStation.getId(), samseongStation.getId(), Integer.MAX_VALUE);
+            secondLine.getId(), seolleungStation.getId(), samseongStation.getId(),
+            Integer.MAX_VALUE);
 
         // then
         지하철_노선에_지하철역_등록됨(response, gangnamStation, seolleungStation, samseongStation);
@@ -72,7 +73,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_inBetweenByUpStation() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            givenLineId(), gangnamStation.getId(), yeoksamStation.getId(), 5);
+            secondLine.getId(), gangnamStation.getId(), yeoksamStation.getId(), 1);
 
         // then
         지하철_노선에_지하철역_등록됨(response, gangnamStation, yeoksamStation, seolleungStation);
@@ -83,7 +84,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_inBetweenByDownStation() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            givenLineId(), yeoksamStation.getId(), seolleungStation.getId(), 5);
+            secondLine.getId(), yeoksamStation.getId(), seolleungStation.getId(), 1);
 
         // then
         지하철_노선에_지하철역_등록됨(response, gangnamStation, yeoksamStation, seolleungStation);
@@ -106,7 +107,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_greaterThanBetweenDistance_400() {
         //when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            givenLineId(), yeoksamStation.getId(), seolleungStation.getId(), Integer.MAX_VALUE);
+            secondLine.getId(), yeoksamStation.getId(), seolleungStation.getId(),
+            Integer.MAX_VALUE);
 
         //then
         지하철_노선_구간_생성_실패됨(response);
@@ -117,7 +119,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_upAndDownStationExistsStation_400() {
         //when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            givenLineId(), gangnamStation.getId(), seolleungStation.getId(), 10);
+            secondLine.getId(), gangnamStation.getId(), seolleungStation.getId(), 1);
 
         //then
         지하철_노선_구간_생성_실패됨(response);
@@ -132,7 +134,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         //when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            givenLineId(), guro.getId(), gaebong.getId(), Integer.MAX_VALUE);
+            secondLine.getId(), guro.getId(), gaebong.getId(), 1);
 
         //then
         지하철_노선_구간_생성_실패됨(response);
@@ -181,14 +183,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
             .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private Long givenLineId() {
-        return secondLineResponse.as(LineResponse.class)
-            .getId();
-    }
-
     private void 지하철_노선에_지하철역_등록됨(
         ExtractableResponse<Response> response, StationResponse... expectedStations) {
-        LineResponse secondLine = 지하철_노선_조회_요청(secondLineResponse).as(LineResponse.class);
+        LineResponse secondLine = 지하철_노선_조회_요청(this.secondLine).as(LineResponse.class);
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
             () -> assertThat(secondLine.getStations())
@@ -202,11 +199,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(
-        ExtractableResponse<Response> createdResponse) {
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(LineResponse line) {
         return RestAssured.given().log().all()
             .when()
-            .get(createdResponse.header("Location"))
+            .get("/lines/{id}", line.getId())
             .then().log().all()
             .extract();
     }

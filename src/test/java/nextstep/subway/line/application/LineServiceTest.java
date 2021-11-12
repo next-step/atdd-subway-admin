@@ -122,7 +122,7 @@ class LineServiceTest {
         Line updatedLine = givenLine();
 
         //when
-        service.update(Long.MAX_VALUE, lineUpdateRequest(expectedName, expectedColor));
+        service.update(Long.MAX_VALUE, new LineUpdateRequest(expectedName, expectedColor));
 
         //then
         assertAll(
@@ -140,7 +140,7 @@ class LineServiceTest {
 
         //when
         ThrowingCallable updateCall = () -> service
-            .update(Long.MAX_VALUE, lineUpdateRequest(updatedName, "any"));
+            .update(Long.MAX_VALUE, new LineUpdateRequest(updatedName, "any"));
 
         //then
         assertThatExceptionOfType(DuplicateDataException.class)
@@ -156,7 +156,7 @@ class LineServiceTest {
 
         //when
         ThrowingCallable updateCall = () -> service
-            .update(Long.MAX_VALUE, lineUpdateRequest("any", "any"));
+            .update(Long.MAX_VALUE, new LineUpdateRequest("any", "any"));
 
         //then
         assertThatExceptionOfType(NotFoundException.class)
@@ -213,10 +213,6 @@ class LineServiceTest {
     private void notExistsDuplicationName(String name) {
         when(repository.existsByName(Name.from(name)))
             .thenReturn(false);
-    }
-
-    private LineUpdateRequest lineUpdateRequest(String name, String color) {
-        return new LineUpdateRequest(name, color);
     }
 
     private LineCreateRequest lineCreateRequest(String name, String color) {
