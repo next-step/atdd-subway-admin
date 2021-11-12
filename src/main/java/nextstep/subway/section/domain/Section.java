@@ -55,12 +55,24 @@ public class Section {
         this.line = line;
     }
 
-    public boolean isUpStation(Station upStation) {
+    public boolean isSameUpStation(Station upStation) {
         return this.upStation.equals(upStation);
+    }
+
+    public boolean isSameDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
     }
 
     public boolean isSameDistance(Distance distance) {
         return this.distance.equals(distance);
+    }
+
+    public void changeUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void changeDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 
     public Long getId() {
@@ -96,6 +108,6 @@ public class Section {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, upStation, downStation, distance, line);
+        return Objects.hash(id);
     }
 }
