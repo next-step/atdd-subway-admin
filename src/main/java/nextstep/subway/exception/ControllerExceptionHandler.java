@@ -5,10 +5,15 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class ExceptionController {
+public class ControllerExceptionHandler {
 
     @ExceptionHandler(DuplicateLineException.class)
-    public ResponseEntity duplicateUserException(DuplicateLineException e) {
+    public ResponseEntity<String> handleDuplicateLineException(DuplicateLineException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(LineNotFoundException.class)
+    public ResponseEntity<String> handleLineNotFoundException(LineNotFoundException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
