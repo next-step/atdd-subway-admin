@@ -22,7 +22,6 @@ import org.springframework.http.HttpStatus;
 @DisplayName("지하철 구간 관련 기능")
 class SectionAcceptanceTest extends AcceptanceTest {
 
-    private StationResponse gyodaeStation;
     private StationResponse gangnamStation;
     private StationResponse yeoksamStation;
     private StationResponse seolleungStation;
@@ -30,7 +29,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void beforeEach() {
-        gyodaeStation = 지하철_역_생성("교대역");
         gangnamStation = 지하철_역_생성("강남역");
         yeoksamStation = 지하철_역_생성("역삼역");
         seolleungStation = 지하철_역_생성("선릉역");
@@ -42,14 +40,31 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("노선 가장 앞에 구간을 추가한다.")
+    @DisplayName("상행 종점 구간을 추가한다.")
     void addSection_firstSection() {
+        //given
+        StationResponse gyodaeStation = 지하철_역_생성("교대역");
+
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
             givenLineId(), gyodaeStation.getId(), gangnamStation.getId(), Integer.MAX_VALUE);
 
         // then
         지하철_노선에_지하철역_등록됨(response, gyodaeStation, gangnamStation, seolleungStation);
+    }
+
+    @Test
+    @DisplayName("하행 종점 구간을 추가한다.")
+    void addSection_lastSection() {
+        //given
+        StationResponse samseongStation = 지하철_역_생성("삼성역");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
+            givenLineId(), seolleungStation.getId(), samseongStation.getId(), Integer.MAX_VALUE);
+
+        // then
+        지하철_노선에_지하철역_등록됨(response, gangnamStation, seolleungStation, samseongStation);
     }
 
     @Test
@@ -64,7 +79,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("하행선으로 사이에 구간을 추가한다.")
+    @DisplayName("하행선으로 노선 사이에 구간을 추가한다.")
     void addSection_inBetweenByDownStation() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
@@ -80,7 +95,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_notExistsLine_404() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            Long.MIN_VALUE, gyodaeStation.getId(), gangnamStation.getId(), Integer.MAX_VALUE);
+            Long.MIN_VALUE, gangnamStation.getId(), yeoksamStation.getId(), Integer.MAX_VALUE);
 
         // then
         지하철_노선_못찾음(response);
@@ -109,7 +124,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("구간의 역들이 존재하지 않으면 생성할 수 없다.")
+    @DisplayName("추가하려는 구간의 역들이 노선에 존재하지 않으면 생성할 수 없다.")
     void addSection_notExistsAnyStation_400() {
         //given
         StationResponse guro = 지하철_역_생성("구로");
