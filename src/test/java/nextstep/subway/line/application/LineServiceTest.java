@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineNameDuplicatedException;
+import nextstep.subway.line.domain.LineNotFoundException;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -10,10 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,13 +104,13 @@ class LineServiceTest {
         lineService.updateLine(이호선.getId(), updateLineRequest);
 
         // then
-        Line line = lineRepository.getOne(이호선.getId());
+        LineResponse lineResponse = lineService.getLine(이호선.getId());
         assertAll(
-                () -> assertThat(line.getId()).isEqualTo(이호선.getId()),
-                () -> assertThat(line.getName()).isEqualTo(updateLineRequest.getName()),
-                () -> assertThat(line.getColor()).isEqualTo(updateLineRequest.getColor()),
-                () -> assertThat(line.getCreatedDate()).isNotNull(),
-                () -> assertThat(line.getModifiedDate()).isNotNull()
+                () -> assertThat(lineResponse.getId()).isEqualTo(이호선.getId()),
+                () -> assertThat(lineResponse.getName()).isEqualTo(updateLineRequest.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(updateLineRequest.getColor()),
+                () -> assertThat(lineResponse.getCreatedDate()).isNotNull(),
+                () -> assertThat(lineResponse.getModifiedDate()).isNotNull()
         );
     }
 
@@ -122,7 +121,7 @@ class LineServiceTest {
         lineService.deleteLine(이호선.getId());
 
         // then
-        assertThatExceptionOfType(JpaObjectRetrievalFailureException.class)
-                .isThrownBy(() -> lineRepository.getOne(이호선.getId()));
+        assertThatExceptionOfType(LineNotFoundException.class)
+                .isThrownBy(() -> lineService.getLine(이호선.getId()));
     }
 }
