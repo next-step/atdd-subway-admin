@@ -15,20 +15,20 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     private static final int DISTANCE = 10;
 
-    private Station pangyoStation;
-    private Station jeongjaStation;
+    private StationResponse pangyoStation;
+    private StationResponse jeongjaStation;
 
     @BeforeEach
     void beforeEach() {
-        pangyoStation = 지하철_역_생성_요청(StationRequest.from("판교역")).as(Station.class);
-        jeongjaStation = 지하철_역_생성_요청(StationRequest.from("정자역")).as(Station.class);
+        pangyoStation = 지하철_역_생성_요청(StationRequest.from("판교역")).as(StationResponse.class);
+        jeongjaStation = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
     }
 
     @DisplayName("지하철 노선을 생성한다.")

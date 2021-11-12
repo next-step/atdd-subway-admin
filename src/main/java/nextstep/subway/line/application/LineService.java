@@ -80,7 +80,7 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        return line.getSortedStations()
+        return line.getStations()
                    .stream()
                    .map(StationResponse::from)
                    .collect(Collectors.toList());
