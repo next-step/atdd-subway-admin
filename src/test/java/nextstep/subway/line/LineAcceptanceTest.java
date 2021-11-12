@@ -97,7 +97,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void getLine() {
+    void getLine1() {
         // given
         LineRequest lineRequest = LineRequest.from("신분당선",
                                                    "RED",
@@ -118,9 +118,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_역_정렬됨(response, sortedStationIds);
     }
 
+    @DisplayName("등록되지 않은 지하철 노선을 조회 할 수 없다.")
+    @Test
+    void getLine2() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(1L);
+
+        // then
+        지하철_노선_조회_실패(response);
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
-    void updateLine() {
+    void updateLine1() {
         // given
         LineRequest lineRequest = LineRequest.from("신분당선",
                                                    "RED",
@@ -140,6 +150,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_수정됨(response);
+    }
+
+    @DisplayName("기존에 존재하는 이름으로 지하철 노선을 수정 할 수 없다.")
+    @Test
+    void updateLine2() {
+        // given
+        LineRequest firstLineRequest = LineRequest.from("신분당선",
+                                                   "RED",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
+        LineRequest secondLineRequest = LineRequest.from("1호선",
+                                                   "BLUE",
+                                                   pangyoStation.getId(),
+                                                   jeongjaStation.getId(),
+                                                   DISTANCE);
+        ExtractableResponse<Response> firstCreateResponse = 지하철_노선_등록되어_있음(firstLineRequest);
+        ExtractableResponse<Response> secondCreateResponse = 지하철_노선_등록되어_있음(secondLineRequest);
+
+        // when
+        Long createdId = parseIdFromLocationHeader(firstCreateResponse);
+        LineRequest updateLineRequest = LineRequest.from("1호선",
+                                                         "RED(수정)",
+                                                         pangyoStation.getId(),
+                                                         jeongjaStation.getId(),
+                                                         DISTANCE);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createdId, updateLineRequest);
+
+        // then
+        지하철_노선_수정_실패(response);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
