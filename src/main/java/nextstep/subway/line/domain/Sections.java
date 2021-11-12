@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.PreUpdate;
 import nextstep.subway.common.exception.InvalidDataException;
 import nextstep.subway.station.domain.Station;
 import org.springframework.util.Assert;
@@ -18,6 +20,7 @@ public class Sections {
     private static final int PREVIOUS_INDEX_SIZE = 1;
     private static final int NOT_EXIST_INDEX = -1;
 
+    @OrderColumn(name = "index")
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> list = new ArrayList<>();
 
@@ -117,6 +120,14 @@ public class Sections {
             stations.addAll(section.stations());
         }
         return stations;
+    }
+
+    @PreUpdate
+    private void prepareIndex() {
+        for (int index = 0; index < list.size(); index++) {
+            list.get(index)
+                .setIndex(index);
+        }
     }
 
     @Override

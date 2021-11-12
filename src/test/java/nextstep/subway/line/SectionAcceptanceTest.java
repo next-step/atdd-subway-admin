@@ -22,50 +22,34 @@ import org.springframework.http.HttpStatus;
 @DisplayName("지하철 구간 관련 기능")
 class SectionAcceptanceTest extends AcceptanceTest {
 
+    private StationResponse gyodaeStation;
     private StationResponse gangnamStation;
     private StationResponse yeoksamStation;
     private StationResponse seolleungStation;
-    private LineResponse secondLine;
+    private ExtractableResponse<Response> secondLineResponse;
 
     @BeforeEach
     void beforeEach() {
+        gyodaeStation = 지하철_역_생성("교대역");
         gangnamStation = 지하철_역_생성("강남역");
         yeoksamStation = 지하철_역_생성("역삼역");
         seolleungStation = 지하철_역_생성("선릉역");
 
-        secondLine = 지하철_노선_등록되어_있음(
+        secondLineResponse = 지하철_노선_등록되어_있음(
             "2호선", "blue",
             gangnamStation.getId(), seolleungStation.getId(), 10
-        ).as(LineResponse.class);
+        );
     }
 
     @Test
-    @DisplayName("상행 종점 구간을 추가한다.")
+    @DisplayName("노선 가장 앞에 구간을 추가한다.")
     void addSection_firstSection() {
-        //given
-        StationResponse gyodaeStation = 지하철_역_생성("교대역");
-
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            secondLine.getId(), gyodaeStation.getId(), gangnamStation.getId(), Integer.MAX_VALUE);
+            givenLineId(), gyodaeStation.getId(), gangnamStation.getId(), Integer.MAX_VALUE);
 
         // then
         지하철_노선에_지하철역_등록됨(response, gyodaeStation, gangnamStation, seolleungStation);
-    }
-
-    @Test
-    @DisplayName("하행 종점 구간을 추가한다.")
-    void addSection_lastSection() {
-        //given
-        StationResponse samseongStation = 지하철_역_생성("삼성역");
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            secondLine.getId(), seolleungStation.getId(), samseongStation.getId(),
-            Integer.MAX_VALUE);
-
-        // then
-        지하철_노선에_지하철역_등록됨(response, gangnamStation, seolleungStation, samseongStation);
     }
 
     @Test
@@ -73,18 +57,18 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_inBetweenByUpStation() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            secondLine.getId(), gangnamStation.getId(), yeoksamStation.getId(), 1);
+            givenLineId(), gangnamStation.getId(), yeoksamStation.getId(), 5);
 
         // then
         지하철_노선에_지하철역_등록됨(response, gangnamStation, yeoksamStation, seolleungStation);
     }
 
     @Test
-    @DisplayName("하행선으로 노선 사이에 구간을 추가한다.")
+    @DisplayName("하행선으로 사이에 구간을 추가한다.")
     void addSection_inBetweenByDownStation() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            secondLine.getId(), yeoksamStation.getId(), seolleungStation.getId(), 1);
+            givenLineId(), yeoksamStation.getId(), seolleungStation.getId(), 5);
 
         // then
         지하철_노선에_지하철역_등록됨(response, gangnamStation, yeoksamStation, seolleungStation);
@@ -96,7 +80,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_notExistsLine_404() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            Long.MIN_VALUE, gangnamStation.getId(), yeoksamStation.getId(), 1);
+            Long.MIN_VALUE, gyodaeStation.getId(), gangnamStation.getId(), Integer.MAX_VALUE);
 
         // then
         지하철_노선_못찾음(response);
@@ -107,8 +91,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_greaterThanBetweenDistance_400() {
         //when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            secondLine.getId(), yeoksamStation.getId(), seolleungStation.getId(),
-            Integer.MAX_VALUE);
+            givenLineId(), yeoksamStation.getId(), seolleungStation.getId(), Integer.MAX_VALUE);
 
         //then
         지하철_노선_구간_생성_실패됨(response);
@@ -119,14 +102,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_upAndDownStationExistsStation_400() {
         //when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            secondLine.getId(), gangnamStation.getId(), seolleungStation.getId(), 1);
+            givenLineId(), gangnamStation.getId(), seolleungStation.getId(), 10);
 
         //then
         지하철_노선_구간_생성_실패됨(response);
     }
 
     @Test
-    @DisplayName("추가하려는 구간의 역들이 노선에 존재하지 않으면 생성할 수 없다.")
+    @DisplayName("구간의 역들이 존재하지 않으면 생성할 수 없다.")
     void addSection_notExistsAnyStation_400() {
         //given
         StationResponse guro = 지하철_역_생성("구로");
@@ -134,7 +117,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         //when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(
-            secondLine.getId(), guro.getId(), gaebong.getId(), 1);
+            givenLineId(), guro.getId(), gaebong.getId(), Integer.MAX_VALUE);
 
         //then
         지하철_노선_구간_생성_실패됨(response);
@@ -183,9 +166,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
             .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    private Long givenLineId() {
+        return secondLineResponse.as(LineResponse.class)
+            .getId();
+    }
+
     private void 지하철_노선에_지하철역_등록됨(
         ExtractableResponse<Response> response, StationResponse... expectedStations) {
-        LineResponse secondLine = 지하철_노선_조회_요청(this.secondLine).as(LineResponse.class);
+        LineResponse secondLine = 지하철_노선_조회_요청(secondLineResponse).as(LineResponse.class);
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
             () -> assertThat(secondLine.getStations())
@@ -199,10 +187,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(LineResponse line) {
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(
+        ExtractableResponse<Response> createdResponse) {
         return RestAssured.given().log().all()
             .when()
-            .get("/lines/{id}", line.getId())
+            .get(createdResponse.header("Location"))
             .then().log().all()
             .extract();
     }

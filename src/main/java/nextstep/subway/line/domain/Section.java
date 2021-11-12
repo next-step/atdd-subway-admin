@@ -3,19 +3,23 @@ package nextstep.subway.line.domain;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import nextstep.subway.common.exception.InvalidDataException;
 import nextstep.subway.station.domain.Station;
 import org.springframework.util.Assert;
 
 @Entity
+@Table(indexes = @Index(name = "idx_section_index", columnList = "index"))
 public class Section {
 
     @Id
@@ -33,6 +37,9 @@ public class Section {
     @Embedded
     private Distance distance;
 
+    @Column(nullable = false)
+    private int index;
+
     @ManyToOne
     @JoinColumn(name = "line_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
@@ -47,21 +54,22 @@ public class Section {
         this.distance = distance;
     }
 
-    private void validate(Station upStation, Station downStation, Distance distance) {
-        Assert.notNull(upStation, "'upStation' must not be null");
-        Assert.notNull(downStation, "'downStation' must not be null");
-        Assert.notNull(distance, "'distance' must not be null");
-        Assert.isTrue(!upStation.equals(downStation),
-            String.format("upStation(%s) and downStation(%s) must not equal",
-                upStation, downStation));
-    }
-
     public static Section of(Station upStation, Station downStation, Distance distance) {
         return new Section(upStation, downStation, distance);
     }
 
+    public void remove(Section section) {
+        Assert.notNull(section, "removed section must not be null");
+        cutSection(section);
+        minusDistance(section.distance);
+    }
+
     List<Station> stations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    void setIndex(int index) {
+        this.index = index;
     }
 
     Station upStation() {
@@ -76,10 +84,13 @@ public class Section {
         this.line = line;
     }
 
-    public void remove(Section section) {
-        Assert.notNull(section, "removed section must not be null");
-        cutSection(section);
-        minusDistance(section.distance);
+    private void validate(Station upStation, Station downStation, Distance distance) {
+        Assert.notNull(upStation, "'upStation' must not be null");
+        Assert.notNull(downStation, "'downStation' must not be null");
+        Assert.notNull(distance, "'distance' must not be null");
+        Assert.isTrue(!upStation.equals(downStation),
+            String.format("upStation(%s) and downStation(%s) must not equal",
+                upStation, downStation));
     }
 
     private void cutSection(Section section) {

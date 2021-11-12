@@ -91,7 +91,7 @@ class SectionsTest {
         //then
         assertThatExceptionOfType(InvalidDataException.class)
             .isThrownBy(addSectionCall)
-            .withMessageMatching("distance value\\(\\d+\\) must be greater than zero");
+            .withMessageContaining("must be less than");
     }
 
     private static Stream<Arguments> addSection() {

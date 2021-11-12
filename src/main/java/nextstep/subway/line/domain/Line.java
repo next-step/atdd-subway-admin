@@ -63,6 +63,8 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
+        Assert.notNull(section, "added section must not be null");
+        section.setLine(this);
         sections.addSection(section);
     }
 
