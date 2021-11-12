@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.utils;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -7,25 +7,24 @@ import io.restassured.specification.RequestSpecification;
 import nextstep.subway.line.dto.LineRequest;
 import org.springframework.http.MediaType;
 
-public class LineAcceptanceTestMethod {
+public class HttpUtils {
 
     public static LineRequest getLineRequest(String name, String color) {
         return new LineRequest(name, color);
     }
 
-    public static ExtractableResponse<Response> getLinePostResponse(String path, LineRequest request) {
-        return response(postRequest(request).post(path));
-
+    public static ExtractableResponse<Response> post(String path, Object request) {
+        return response(request(request).post(path));
     }
 
-    public static ExtractableResponse<Response> getLineGetResponse(String path) {
-        return response(request().get(path));
-
+    public static ExtractableResponse<Response> get(String path, Object... params) {
+        return response(request().get(path, params));
     }
 
-    private static RequestSpecification postRequest(Object body) {
-        return RestAssured.given().log().all().body(body)
-                .contentType(MediaType.APPLICATION_JSON_VALUE);
+    private static RequestSpecification request(Object body) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(body);
     }
 
     private static RequestSpecification request() {

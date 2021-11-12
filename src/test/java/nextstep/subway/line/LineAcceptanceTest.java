@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -9,13 +8,12 @@ import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.line.LineAcceptanceTestMethod.*;
+import static nextstep.subway.utils.HttpUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -27,7 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest request = getLineRequest("신분당선", "bg-red-600");
 
         // when
-        ExtractableResponse<Response> response = getLinePostResponse("/lines", request);
+        ExtractableResponse<Response> response = post("/lines", request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -39,10 +37,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineWithDuplicateName() {
         // given
         LineRequest request = getLineRequest("신분당선", "bg-red-600");
-        getLinePostResponse("/lines", request);
+        post("/lines", request);
 
         // when
-        ExtractableResponse<Response> response = getLinePostResponse("/lines", request);
+        ExtractableResponse<Response> response = post("/lines", request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -50,24 +48,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
-    void getLines() {
+    void findAllLine() {
         // given
         LineRequest request1 = getLineRequest("신분당선", "bg-red-600");
-        ExtractableResponse<Response> response1 = getLinePostResponse("/lines", request1);
+        ExtractableResponse<Response> response1 = post("/lines", request1);
 
         LineRequest request2 = getLineRequest("2호선", "bg-green-600");
-        ExtractableResponse<Response> response2 = getLinePostResponse("/lines", request2);
+        ExtractableResponse<Response> response2 = post("/lines", request2);
 
         // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get("/lines")
-                .then().log().all().extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response = get("/lines");
 
         // then
         List<Long> expectedLineIds = Arrays.asList(response1, response2).stream()
@@ -76,21 +66,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
+
         assertThat(resultLineIds).containsAll(expectedLineIds);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void getLine() {
+    void findOneLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineRequest request = getLineRequest("신분당선", "bg-red-600");
+        Long id = post("/lines", request).as(LineResponse.class).getId();
 
         // when
-        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> actual = get("/lines/{id}", id);
 
         // then
-        // 지하철_노선_응답됨
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.as(LineResponse.class).getId()).isEqualTo(id);
+    }
 
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void findOneEmptyLine() {
+        // given
+        LineRequest request = getLineRequest("신분당선", "bg-red-600");
+        Long id = post("/lines", request).as(LineResponse.class).getId();
+
+        // when
+        ExtractableResponse<Response> actual = get("/lines/{id}", id + 1);
+
+        // then
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(actual.as(LineResponse.class).getId()).isEqualTo(id);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -118,7 +126,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
     }
-
 
 
 }
