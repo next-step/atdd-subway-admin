@@ -53,8 +53,7 @@ public class LineService {
     }
 
     private void checkDuplicateLineName(String name) {
-        List<Line> findByNameLines = lineRepository.findLineByName(name);
-        if (findByNameLines.size() > 0) {
+        if (lineRepository.existsByName(name)) {
             throw new InputDataErrorException(InputDataErrorCode.THERE_IS_A_DUPLICATE_NAME);
         }
     }

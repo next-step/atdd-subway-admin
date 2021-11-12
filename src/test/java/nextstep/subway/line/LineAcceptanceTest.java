@@ -101,7 +101,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse1 = createLine("1호선", "blue");
+        createLine("1호선", "blue");
         // when
         // 지하철_노선_제거_요청
         ExtractableResponse<Response> response = removeLine("1");
@@ -136,16 +136,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void isLineOKResponse(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private ExtractableResponse<Response> createLine(Map<String, String> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
     }
 
     private void checkLineList(ExtractableResponse<Response> createResponse1, ExtractableResponse<Response> createResponse2, ExtractableResponse<Response> response) {
