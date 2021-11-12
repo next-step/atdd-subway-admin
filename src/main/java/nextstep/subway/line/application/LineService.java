@@ -36,10 +36,10 @@ public class LineService {
         return LineResponse.of(findOneById(id));
     }
 
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+    public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findOneById(id);
         line.update(lineRequest.toLine());
-        return LineResponse.of(lineRepository.save(line));
+        lineRepository.save(line);
     }
 
     private Line findOneById(Long id) {
@@ -47,4 +47,7 @@ public class LineService {
                 .orElseThrow(EntityNotFoundException::new);
     }
 
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
