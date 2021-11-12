@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -20,7 +22,10 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    public Line() {
+    @OneToMany(mappedBy = "line")
+    private List<Section> sections;
+
+    protected Line() {
     }
 
     public Line(String name, String color) {
