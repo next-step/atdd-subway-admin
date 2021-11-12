@@ -15,14 +15,19 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.HttpUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    private static LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600");
+    private static LineRequest 이호선 = new LineRequest("2호선", "green");
+    
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // given
-        LineRequest request = getLineRequest("신분당선", "bg-red-600");
+        LineRequest request = 신분당선;
 
         // when
         ExtractableResponse<Response> response = post("/lines", request);
@@ -36,46 +41,45 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        LineRequest request = getLineRequest("신분당선", "bg-red-600");
-        post("/lines", request);
+        post("/lines", 신분당선);
 
         // when
-        ExtractableResponse<Response> response = post("/lines", request);
+        ExtractableResponse<Response> actual = post("/lines", 신분당선);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void findAllLine() {
         // given
-        LineRequest request1 = getLineRequest("신분당선", "bg-red-600");
+        LineRequest request1 = 신분당선;
         ExtractableResponse<Response> response1 = post("/lines", request1);
 
-        LineRequest request2 = getLineRequest("2호선", "bg-green-600");
+        LineRequest request2 = 이호선;
         ExtractableResponse<Response> response2 = post("/lines", request2);
 
         // when
-        ExtractableResponse<Response> response = get("/lines");
+        ExtractableResponse<Response> actual = get("/lines");
 
         // then
         List<Long> expectedLineIds = Arrays.asList(response1, response2).stream()
                 .map(it -> Long.parseLong(it.header("Location").split("/")[1]))
                 .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+        List<Long> resultLineIds = actual.jsonPath().getList(".", LineResponse.class).stream()
                 .map(it -> it.getId())
                 .collect(Collectors.toList());
 
         assertThat(resultLineIds).containsAll(expectedLineIds);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void findOneLine() {
         // given
-        LineRequest request = getLineRequest("신분당선", "bg-red-600");
+        LineRequest request = 신분당선;
         Long id = post("/lines", request).as(LineResponse.class).getId();
 
         // when
@@ -90,13 +94,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineRequest request = 신분당선;
+        LineResponse response = post("/lines", request).as(LineResponse.class);
 
         // when
-        // 지하철_노선_수정_요청
+        ExtractableResponse<Response> actual = put("/lines/{id}", 이호선, response.getId());
+        LineResponse asActual = actual.as(LineResponse.class);
 
         // then
-        // 지하철_노선_수정됨
+        assertAll(
+                () -> assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(asActual.getName()).isEqualTo(이호선.getName()),
+                () -> assertThat(asActual.getColor()).isEqualTo(이호선.getColor())
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")

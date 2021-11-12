@@ -4,21 +4,20 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import nextstep.subway.line.dto.LineRequest;
 import org.springframework.http.MediaType;
 
 public class HttpUtils {
 
-    public static LineRequest getLineRequest(String name, String color) {
-        return new LineRequest(name, color);
+    public static ExtractableResponse<Response> get(String path, Object... params) {
+        return response(request().get(path, params));
     }
 
     public static ExtractableResponse<Response> post(String path, Object request) {
         return response(request(request).post(path));
     }
 
-    public static ExtractableResponse<Response> get(String path, Object... params) {
-        return response(request().get(path, params));
+    public static ExtractableResponse<Response> put(String path, Object request, Object... params) {
+        return response(request(request).put(path, params));
     }
 
     private static RequestSpecification request(Object body) {
