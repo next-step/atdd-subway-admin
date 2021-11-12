@@ -59,7 +59,7 @@ public class Section {
     }
 
     public void remove(Section section) {
-        Assert.notNull(section, "removed section must not be null");
+        validateRemovedSection(section);
         cutSection(section);
         minusDistance(section.distance);
     }
@@ -93,8 +93,13 @@ public class Section {
                 upStation, downStation));
     }
 
+    private void validateRemovedSection(Section section) {
+        Assert.notNull(section, "removed section must not be null");
+        validateRemovedSectionStation(section);
+        validateSubtractDistance(distance);
+    }
+
     private void cutSection(Section section) {
-        validateSectionStation(section);
         if (this.upStation.equals(section.upStation)) {
             upStation = section.downStation;
             return;
@@ -102,7 +107,7 @@ public class Section {
         downStation = section.upStation;
     }
 
-    private void validateSectionStation(Section section) {
+    private void validateRemovedSectionStation(Section section) {
         if (isNotEqualStationOnlyOneDirection(section)) {
             throw new InvalidDataException(
                 String.format("%s can not be removed from %s", this, section));
@@ -115,7 +120,6 @@ public class Section {
     }
 
     private void minusDistance(Distance distance) {
-        validateSubtractDistance(distance);
         this.distance = this.distance.subtract(distance);
     }
 
