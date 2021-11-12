@@ -44,6 +44,10 @@ public class Sections {
         return stations;
     }
 
+    public boolean contains(Section section) {
+        return this.sections.contains(section);
+    }
+
     private Section findSectionByUpStation(Station upStation) {
         return sections.stream()
                        .filter(section -> section.isUpStation(upStation))

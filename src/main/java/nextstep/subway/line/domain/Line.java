@@ -11,6 +11,7 @@ import javax.persistence.*;
 
 @Entity
 public class Line extends BaseEntity {
+    private static String ALREADY_CONTAIN_SECTION_MESSAGE = "이미 포함된 Section 입니다. sectionId=%s";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +43,8 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
+        validateAddableSection(section);
+
         sections.add(section);
         section.registerLine(this);
     }
@@ -60,5 +63,11 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return sections.getSortedStations();
+    }
+
+    private void validateAddableSection(Section section) {
+        if (sections.contains(section)) {
+            throw new IllegalStateException(String.format(ALREADY_CONTAIN_SECTION_MESSAGE, section.getId()));
+        }
     }
 }
