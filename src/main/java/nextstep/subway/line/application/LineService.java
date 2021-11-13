@@ -1,16 +1,17 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.utils.ValidationUtils;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.ErrorCode;
 import nextstep.subway.line.exception.LineNotFoundException;
-import nextstep.subway.station.exception.StationNotFoundException;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,9 @@ public class LineService {
     }
 
     private Station findOneStation(Long stationId) {
+        if (ValidationUtils.isNull(stationId)) {
+            throw new StationNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "종점역 입력값이 없습니다.");
+        }
         return stationRepository.findById(stationId)
                 .orElseThrow(() -> new StationNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "종점역이 없습니다."));
     }
