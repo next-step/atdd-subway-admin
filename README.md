@@ -52,3 +52,29 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+## 기능 구현 목록 지하철 노선 관리
+- [x] 지하철 노선 생성 request
+  - [x] post 방식
+  - [x] Content-Type: application/json
+  - [] 종점역(상행, 하행) 정보 추가
+    - [] 두 종점역은 구간의 형태로 관리되어야 함
+- [x] 지하철 노선 목록 조회 request
+  - [x] get 방식 
+- [x] 지하철 노선 목록 조회 response
+  - [x] Content-Type: application/json
+  - [] 역 목록 추가
+    - 상행역 부터 하행역 순으로 정렬
+- [x] 지하철 노선 조회 request
+  - get 방식
+- [x] 지하철 노선 조회 response
+  - [x] Content-Type: application/json
+- [x] 지하철 노선 수정 request
+  - put 방식
+  - [x] Content-Type: application/json
+- [x] 지하철 노선 수정 response 
+  - [x] noContent
+- 지하철 노선 삭제 request
+  - [x] delete 방식
+- 지하철 노선 삭제 response
+  - [x] noContent
