@@ -5,6 +5,8 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceTestMethod.*;
+import static nextstep.subway.utils.HttpUtils.post;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -131,6 +136,41 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         응답_확인_BAD_REQUEST(actual);
+    }
+
+    private static final StationRequest 강남역  = new StationRequest("강남역");
+    private static final StationRequest 광교역  = new StationRequest("광교역");
+
+    @DisplayName("지하철 노선을 생성한다.(구간 정보 추가)")
+    @Test
+    void createLineAndSections() {
+        // given
+        Long 강남역_아이디 = 신규_역_생성_요청("/stations", 강남역).as(StationResponse.class).getId();
+        Long 광교역_아이디 = 신규_역_생성_요청("/stations", 강남역).as(StationResponse.class).getId();
+        신분당선.setUpStationId(강남역_아이디);
+        신분당선.setDownStationId(광교역_아이디);
+
+        LineRequest request = 신분당선;
+
+        // when
+        ExtractableResponse<Response> actual = 신규_지하철_노선_생성_요청("/lines", 신분당선);
+
+        // then
+        응답_확인_CREATED(actual);
+        지하철_노선_생성_확인_종점_종점간거리_추가(actual, request);
+    }
+
+    private ExtractableResponse<Response> 신규_역_생성_요청(String path, StationRequest request) {
+        return post(path, request);
+    }
+
+    private void 지하철_노선_생성_확인_종점_종점간거리_추가(ExtractableResponse<Response> actualResponse, LineRequest excepted) {
+        LineResponse actual = actualResponse.as(LineResponse.class);
+        assertAll(
+                () -> assertThat(actual.getName()).isEqualTo(excepted.getName()),
+                () -> assertThat(actual.getColor()).isEqualTo(excepted.getColor())
+        );
+
     }
 
 }
