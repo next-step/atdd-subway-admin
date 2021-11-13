@@ -1,7 +1,7 @@
-package nextstep.subway.section;
+package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceMethods.*;
-import static nextstep.subway.section.SectionAcceptanceMethods.*;
+import static nextstep.subway.line.LineSectionAddAcceptanceMethods.*;
 import static nextstep.subway.station.StationAcceptanceMethods.*;
 
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선에 구간 추가 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+public class LineSectionAddAcceptanceTest extends AcceptanceTest {
     private static final int DISTANCE = 10;
 
     private StationResponse 판교역;
