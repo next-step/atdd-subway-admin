@@ -1,5 +1,6 @@
 package nextstep.subway.line.exception;
 
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,14 @@ public class LineExceptionHandler {
 
     @ExceptionHandler(LineNotFoundException.class)
     public ResponseEntity handleLineNotFoundException(LineNotFoundException e) {
+        ErrorResponse response = ErrorResponse.build()
+                .httpStatus(e.getErrorCode().getHttpStatus())
+                .message(e.getMessage());
+        return new ResponseEntity(response, response.getHttpStatus());
+    }
+
+    @ExceptionHandler(StationNotFoundException.class)
+    public ResponseEntity handleStationNotFoundException(StationNotFoundException e) {
         ErrorResponse response = ErrorResponse.build()
                 .httpStatus(e.getErrorCode().getHttpStatus())
                 .message(e.getMessage());
