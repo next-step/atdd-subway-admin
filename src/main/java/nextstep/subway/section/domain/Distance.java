@@ -18,4 +18,12 @@ public class Distance {
     public static Distance from(int distance) {
         return new Distance(distance);
     }
+
+    public boolean isGreaterThanOrEqualTo(Distance distance) {
+        return this.distance >= distance.getDistance();
+    }
+
+    public int getDistance() {
+        return distance;
+    }
 }

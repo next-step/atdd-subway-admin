@@ -9,6 +9,8 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -46,50 +48,65 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection1() {
         // given
-        StationResponse jeongjaStation = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
-        SectionRequest sectionRequest = SectionRequest.of(판교역.getId(), jeongjaStation.getId(), 5);
+        StationResponse 정자역 = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
+        SectionRequest 판교_정자_구간 = SectionRequest.of(판교역.getId(), 정자역.getId(), 5);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 판교_정자_구간);
 
         // then
         ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(신분당선.getId());
 
         지하철_노선에_지하철역_등록됨(response);
-        지하철_역_정렬됨(findLineResponse, Arrays.asList(판교역.getId(), jeongjaStation.getId(), 미금역.getId()));
+        지하철_역_정렬됨(findLineResponse, Arrays.asList(판교역.getId(), 정자역.getId(), 미금역.getId()));
     }
 
     @DisplayName("노선에 새로운 상행 종점역을 등록한다.")
     @Test
     void addSection2() {
         // given
-        StationResponse jeongjaStation = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
-        SectionRequest sectionRequest = SectionRequest.of(jeongjaStation.getId(), 판교역.getId(), 5);
+        StationResponse 정자역 = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
+        SectionRequest 정자_판교_구간 = SectionRequest.of(정자역.getId(), 판교역.getId(), 5);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 정자_판교_구간);
 
         // then
         ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(신분당선.getId());
 
         지하철_노선에_지하철역_등록됨(response);
-        지하철_역_정렬됨(findLineResponse, Arrays.asList(jeongjaStation.getId(), 판교역.getId(), 미금역.getId()));
+        지하철_역_정렬됨(findLineResponse, Arrays.asList(정자역.getId(), 판교역.getId(), 미금역.getId()));
     }
 
     @DisplayName("노선에 새로운 하행 종점역을 등록한다.")
     @Test
     void addSection3() {
         // given
-        StationResponse jeongjaStation = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
-        SectionRequest sectionRequest = SectionRequest.of(미금역.getId(), jeongjaStation.getId(), 5);
+        StationResponse 정자역 = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
+        SectionRequest 미금_정자_구간 = SectionRequest.of(미금역.getId(), 정자역.getId(), 5);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 미금_정자_구간);
 
         // then
         ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(신분당선.getId());
 
         지하철_노선에_지하철역_등록됨(response);
-        지하철_역_정렬됨(findLineResponse, Arrays.asList(판교역.getId(), 미금역.getId(), jeongjaStation.getId()));
+        지하철_역_정렬됨(findLineResponse, Arrays.asList(판교역.getId(), 미금역.getId(), 정자역.getId()));
+    }
+
+    @DisplayName("노선 중간에 새로운 역을 등록하는 경우, 기존 구간 길이보다 크거나 같으면 등록할 수 없다.")
+    @ParameterizedTest
+    @ValueSource(ints = {10, 11, 50, 100})
+    void addSection4(int distance) {
+        // given
+        StationResponse 정자역 = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
+        SectionRequest 판교_정자_구간 = SectionRequest.of(판교역.getId(), 정자역.getId(), distance);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 판교_정자_구간);
+
+        // then
+        지하철_구간_등록_실패(response);
     }
 }

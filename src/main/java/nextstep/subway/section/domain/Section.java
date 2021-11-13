@@ -68,6 +68,10 @@ public class Section {
         return this.distance.equals(distance);
     }
 
+    public boolean isGreaterThanOrEqualDistanceTo(Section section) {
+        return this.distance.isGreaterThanOrEqualTo(section.distance);
+    }
+
     public void changeUpStation(Station upStation) {
         this.upStation = upStation;
     }
@@ -86,6 +90,10 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Distance getDistance() {
+        return this.distance;
     }
 
     private static void validateCreateSection(Station upStation, Station downStation, Distance distance) {
