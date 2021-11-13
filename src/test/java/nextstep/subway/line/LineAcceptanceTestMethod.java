@@ -4,27 +4,37 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.HttpUtils.*;
-import static nextstep.subway.utils.HttpUtils.delete;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class LineAcceptanceTestMethod {
 
-    public static void 지하철_노선_생성_확인(ExtractableResponse<Response> response) {
-        assertThat(response.header("Location")).isNotBlank();
+    public static ExtractableResponse<Response> 신규_지하철_노선_생성_요청(String path, LineRequest lineRequest, int distance,
+                                                                StationRequest upStations, StationRequest downStations) {
+
+        Long upStationId = post("/stations", upStations).as(StationResponse.class).getId();
+        Long downStationId = post("/stations", downStations).as(StationResponse.class).getId();
+        lineRequest.setUpStationId(upStationId);
+        lineRequest.setDownStationId(downStationId);
+        lineRequest.setDistance(distance);
+
+        return post(path, lineRequest);
     }
 
-    public static ExtractableResponse<Response> 신규_지하철_노선_생성_요청(String path, LineRequest request) {
-        return post(path, request);
-    }
-
-    public static void 지하철_노선_생성_오류_확인(ExtractableResponse<Response> actual) {
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    public static void 지하철_노선_생성_확인(ExtractableResponse<Response> actualResponse, LineRequest excepted) {
+        LineResponse actual = actualResponse.as(LineResponse.class);
+        assertAll(
+                () -> assertThat(actual.getName()).isEqualTo(excepted.getName()),
+                () -> assertThat(actual.getColor()).isEqualTo(excepted.getColor())
+        );
     }
 
     public static void 지하철_노선_목록_확인(ExtractableResponse<Response> actual, List<Long> excepted) {
