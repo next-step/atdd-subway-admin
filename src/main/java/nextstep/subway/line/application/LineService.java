@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,8 +43,10 @@ public class LineService {
 	}
 
 	public void deleteLine(Long id) {
-		if (lineRepository.existsById(id)) {
+		try {
 			lineRepository.deleteById(id);
+		} catch (EmptyResultDataAccessException e) {
+			throw new LineNotFoundException();
 		}
 	}
 

@@ -159,7 +159,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine_notFound() {
         final ExtractableResponse<Response> response = Fixture.delete("/lines/{id}", 0L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private Map<String, String> params(String name, String color) {
