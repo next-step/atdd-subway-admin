@@ -146,7 +146,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLineAndSections() {
         // given
         Long 강남역_아이디 = 신규_역_생성_요청("/stations", 강남역).as(StationResponse.class).getId();
-        Long 광교역_아이디 = 신규_역_생성_요청("/stations", 강남역).as(StationResponse.class).getId();
+        Long 광교역_아이디 = 신규_역_생성_요청("/stations", 광교역).as(StationResponse.class).getId();
         신분당선.setUpStationId(강남역_아이디);
         신분당선.setDownStationId(광교역_아이디);
 
