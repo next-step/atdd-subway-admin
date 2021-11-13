@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineInfoResponse;
 import nextstep.subway.line.dto.LineResponse;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -66,14 +67,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+        LineResponse redLine = createSubwayLine("신분당선", "bg-red-600");
+        LineResponse secondLine = createSubwayLine("2호선", "bg-green-600");
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = requestSearchLineInfo("");
 
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());       
+
+        Assertions.assertThat(response.as(LineInfoResponse[].class)).hasSize(2);
+        assertAll(
+            () -> Assertions.assertThat(response.as(LineInfoResponse[].class)[0].getColor()).isEqualTo(redLine.getColor()),
+            () -> Assertions.assertThat(response.as(LineInfoResponse[].class)[0].getName()).isEqualTo(redLine.getName()),
+            () -> Assertions.assertThat(response.as(LineInfoResponse[].class)[0].getStations()).isEmpty()
+        );
+        assertAll(
+            () -> Assertions.assertThat(response.as(LineInfoResponse[].class)[1].getColor()).isEqualTo(secondLine.getColor()),
+            () -> Assertions.assertThat(response.as(LineInfoResponse[].class)[1].getName()).isEqualTo(secondLine.getName()),
+            () -> Assertions.assertThat(response.as(LineInfoResponse[].class)[1].getStations()).isEmpty()
+        );
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -131,6 +147,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
                             contentType(MediaType.APPLICATION_JSON_VALUE).
                             when().
                             post("/lines").
+                            then().
+                            log().all().
+                            extract();
+    }
+
+    private ExtractableResponse<Response> requestSearchLineInfo(String subwayLineId) {
+        String requestLineIdURL = "";
+
+        if (subwayLineId != "") {
+            requestLineIdURL = "/" + subwayLineId;
+        }
+
+        return RestAssured.given().log().all().
+                            contentType(MediaType.APPLICATION_JSON_VALUE).
+                            when().
+                            get("/lines" + requestLineIdURL).
                             then().
                             log().all().
                             extract();
