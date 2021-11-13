@@ -37,12 +37,9 @@ public class LineAcceptanceTestMethod {
         );
     }
 
-    public static void 지하철_노선_목록_확인(ExtractableResponse<Response> actual, List<Long> excepted) {
-        List<Long> result = actual.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-
-        assertThat(result).containsAll(excepted);
+    public static void 지하철_노선_목록_확인(ExtractableResponse<Response> actual) {
+        List<LineResponse> result = actual.jsonPath().getList(".", LineResponse.class);
+        assertThat(result).isNotEmpty();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청(String path) {

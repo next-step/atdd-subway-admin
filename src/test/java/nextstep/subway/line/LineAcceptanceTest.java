@@ -58,17 +58,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void findAllLine() {
-        // given
         List<Long> excepted = new ArrayList<>();
         excepted.add(신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역).as(LineResponse.class).getId());
-        excepted.add(신규_지하철_노선_생성_요청("/lines", 이호선, 10, 홍대역, 신촌역).as(LineResponse.class).getId());
+        excepted.add(신규_지하철_노선_생성_요청("/lines", 이호선, 16, 홍대역, 신촌역).as(LineResponse.class).getId());
 
         // when
         ExtractableResponse<Response> actual = 지하철_노선_목록_조회_요청("/lines");
 
         // then
         응답_확인_OK(actual);
-        지하철_노선_목록_확인(actual, excepted);
+        지하철_노선_목록_확인(actual);
     }
 
 
@@ -137,28 +136,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         응답_확인_BAD_REQUEST(actual);
-    }
-
-
-    @DisplayName("지하철 노선 목록을 조회한다.(구간포함)")
-    @Test
-    void findAllLineAndSections() {
-        // given
-        List<Long> excepted = new ArrayList<>();
-        excepted.add(신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역).as(LineResponse.class).getId());
-        excepted.add(신규_지하철_노선_생성_요청("/lines", 이호선, 16, 홍대역, 신촌역).as(LineResponse.class).getId());
-
-        // when
-        ExtractableResponse<Response> actual = 지하철_노선_목록_조회_요청("/lines");
-
-        // then
-        응답_확인_OK(actual);
-        지하철_노선_목록_확인_구간포함(actual);
-    }
-
-    public static void 지하철_노선_목록_확인_구간포함(ExtractableResponse<Response> actual) {
-        List<LineResponse> result = actual.jsonPath().getList(".", LineResponse.class);
-        assertThat(result).isNotEmpty();
     }
 
 }
