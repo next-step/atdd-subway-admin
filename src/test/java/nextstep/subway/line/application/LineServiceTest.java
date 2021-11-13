@@ -1,9 +1,11 @@
 package nextstep.subway.line.application;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +52,25 @@ public class LineServiceTest {
             () -> Assertions.assertThat(LineInfoResponses.get(1).getName()).isEqualTo(sample.get(1).getName()),
             () -> Assertions.assertThat(LineInfoResponses.get(1).getColor()).isEqualTo(sample.get(1).getColor()),
             () -> Assertions.assertThat(LineInfoResponses.get(1).getStations()).isEqualTo(sample.get(1).getStations())
+        );
+    }
+
+    @DisplayName("지하철 노선정보를 조회")
+    @Test
+    void find_lineInfo() {
+        // given
+        Line sample = new Line("신분당선", "bg-red-600");
+        
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(sample));
+
+        // when
+        LineInfoResponse LineInfoResponses = lineService.findLineInfo(1L);
+
+        // then
+        assertAll(
+            () -> Assertions.assertThat(LineInfoResponses.getName()).isEqualTo(sample.getName()),
+            () -> Assertions.assertThat(LineInfoResponses.getColor()).isEqualTo(sample.getColor()),
+            () -> Assertions.assertThat(LineInfoResponses.getStations()).isEqualTo(sample.getStations())
         );
     }
 }

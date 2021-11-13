@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.LineResponse;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,12 +98,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineResponse redLine = createSubwayLine("신분당선", "bg-red-600");
+        LineResponse secondLine = createSubwayLine("2호선", "bg-green-600");
 
+        LineInfoResponse searchingLine = Arrays.stream(requestSearchLineInfo("").as(LineInfoResponse[].class))
+                                                .filter(item -> item.getName().equals("2호선"))
+                                                .findFirst()
+                                                .get();
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = requestSearchLineInfo(String.valueOf(searchingLine.getId()));
 
         // then
         // 지하철_노선_응답됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        assertAll(
+            () -> Assertions.assertThat(response.as(LineInfoResponse.class).getName()).isEqualTo(searchingLine.getName()),
+            () -> Assertions.assertThat(response.as(LineInfoResponse.class).getColor()).isEqualTo(searchingLine.getColor()),
+            () -> Assertions.assertThat(response.as(LineInfoResponse.class).getStations()).isEqualTo(searchingLine.getStations())
+        );
     }
 
     @DisplayName("지하철 노선을 수정한다.")

@@ -33,4 +33,11 @@ public class LineService {
                                 .map(LineInfoResponse::of)
                                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public LineInfoResponse findLineInfo(Long lineId) {
+        return lineRepository.findById(lineId)
+                                .map(LineInfoResponse::of)
+                                .orElse(new LineInfoResponse());
+    }
 }
