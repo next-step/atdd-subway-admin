@@ -3,7 +3,7 @@ package nextstep.subway.line.domain;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-import org.springframework.util.StringUtils;
+import nextstep.subway.utils.StringUtils;
 
 @Embeddable
 public class LineName {
@@ -28,7 +28,7 @@ public class LineName {
     }
 
     private static void validateLineName(String name) {
-        if (!StringUtils.hasLength(name)) {
+        if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException(String.format(EMPTY_LINE_NAME_ERROR_MESSAGE, name));
         }
     }
