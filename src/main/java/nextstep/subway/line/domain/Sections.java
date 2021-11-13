@@ -24,7 +24,10 @@ public class Sections {
         if (sections.size() == 0) {
             return new ArrayList<>();
         }
+        return makeStations();
+    }
 
+    private List<Station> makeStations() {
         List<Station> stations = sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
