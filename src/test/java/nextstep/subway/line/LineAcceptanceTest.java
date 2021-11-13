@@ -1,8 +1,22 @@
 package nextstep.subway.line;
 
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -11,9 +25,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+
+        ExtractableResponse<Response> response = requestCreateLine(params);
 
         // then
         // 지하철_노선_생성됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        assertAll(
+            () -> Assertions.assertThat(response.as(LineResponse.class).getColor()).isEqualTo(params.get("color")),
+            () -> Assertions.assertThat(response.as(LineResponse.class).getName()).isEqualTo(params.get("name"))
+        );
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -81,5 +106,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+    
+    private ExtractableResponse<Response> requestCreateLine(Map<String, String> params) {
+        return RestAssured.given().log().all().
+                            body(params).
+                            contentType(MediaType.APPLICATION_JSON_VALUE).
+                            when().
+                            post("/lines").
+                            then().
+                            log().all().
+                            extract();
     }
 }
