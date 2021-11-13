@@ -3,19 +3,17 @@ package nextstep.subway.station;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static nextstep.subway.station.StationStep.*;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    private static Map<String, String> 강남역 = station("강남역");
-    private static Map<String, String> 역삼역 = station("역삼역");
+    private static StationRequest 강남역 = station("강남역");
+    private static StationRequest 역삼역 = station("역삼역");
 
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -67,9 +65,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철역_제거됨(response);
     }
 
-    private static Map<String, String> station(String 강남역) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", 강남역);
-        return params;
+    private static StationRequest station(String name) {
+        return new StationRequest(name);
     }
 }
