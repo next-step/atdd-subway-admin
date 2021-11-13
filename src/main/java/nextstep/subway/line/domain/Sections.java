@@ -19,6 +19,7 @@ public class Sections {
     private static final int FIRST_INDEX = 0;
     private static final int PREVIOUS_INDEX_SIZE = 1;
     private static final int NOT_EXIST_INDEX = -1;
+    private static final int MINIMUM_SECTION_SIZE = 1;
 
     @OrderColumn(name = "index")
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -55,8 +56,36 @@ public class Sections {
         addSectionByFoundIndexes(section, upStationIndex, downStationIndex);
     }
 
-    public void deleteStation(Station station) {
-        Assert.notNull(station, "deleted station must not null");
+    void deleteStation(Station station) {
+        validateDeletion(station);
+
+        int index = stations().indexOf(station);
+        if (isNotExistIndex(index)) {
+            throw new InvalidDataException(
+                String.format("station(%s) is not exist in sections", station));
+        }
+        deleteByFoundIndex(index);
+    }
+
+    private void deleteByFoundIndex(int index) {
+        if (extracted(index)) {
+            return;
+        }
+        list.get(index - PREVIOUS_INDEX_SIZE)
+            .connect(list.get(index));
+        list.remove(index);
+    }
+
+    private boolean extracted(int index) {
+        if (isFistStationIndex(index)) {
+            list.remove(index);
+            return true;
+        }
+        if (isLastStationIndex(index)) {
+            list.remove(index - PREVIOUS_INDEX_SIZE);
+            return true;
+        }
+        return false;
     }
 
     private void addSectionByFoundIndexes(
@@ -69,7 +98,7 @@ public class Sections {
     }
 
     private void addSectionByUpStationIndex(Section section, int index) {
-        if (isLastIndex(index)) {
+        if (isLastStationIndex(index)) {
             list.add(section);
             return;
         }
@@ -78,7 +107,7 @@ public class Sections {
     }
 
     private void addSectionByDownStationIndex(Section section, int index) {
-        if (isFistIndex(index)) {
+        if (isFistStationIndex(index)) {
             list.add(FIRST_INDEX, section);
             return;
         }
@@ -90,12 +119,16 @@ public class Sections {
         Assert.notNull(section, "section must not be null");
     }
 
-    private boolean isLastIndex(int index) {
+    private boolean isLastStationIndex(int index) {
         return index == lastStationIndex();
     }
 
     private int lastStationIndex() {
         return list.size();
+    }
+
+    private boolean hasSizeEqualMinimum() {
+        return list.size() == MINIMUM_SECTION_SIZE;
     }
 
     private void validateFoundIndexes(Section section, int upStationIndex, int downStationIndex) {
@@ -110,11 +143,15 @@ public class Sections {
         return isExistIndex(upStationIndex) == isExistIndex(downStationIndex);
     }
 
+    private boolean isNotExistIndex(int index) {
+        return !isExistIndex(index);
+    }
+
     private boolean isExistIndex(int index) {
         return index > NOT_EXIST_INDEX;
     }
 
-    private boolean isFistIndex(int index) {
+    private boolean isFistStationIndex(int index) {
         return index == FIRST_INDEX;
     }
 
@@ -124,6 +161,13 @@ public class Sections {
             stations.addAll(section.stations());
         }
         return stations;
+    }
+
+    private void validateDeletion(Station station) {
+        Assert.notNull(station, "deleted station must not null");
+        if (hasSizeEqualMinimum()) {
+            throw new InvalidDataException("sections must have at least one section");
+        }
     }
 
     @PreUpdate

@@ -58,7 +58,7 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
-    public void remove(Section section) {
+    void remove(Section section) {
         validateRemovedSection(section);
         cutSection(section);
         minusDistance(section.distance);
@@ -82,6 +82,12 @@ public class Section {
 
     void setLine(Line line) {
         this.line = line;
+    }
+
+    void connect(Section section) {
+        validateConnect(section);
+        connectStation(section);
+        plusDistance(section.distance);
     }
 
     private void validate(Station upStation, Station downStation, Distance distance) {
@@ -129,6 +135,30 @@ public class Section {
                 String.format("removed section distance(%s) must be less than %s",
                     distance, this.distance));
         }
+    }
+
+    private void plusDistance(Distance distance) {
+        this.distance = this.distance.sum(distance);
+    }
+
+    private void connectStation(Section section) {
+        if (downStation.equals(section.upStation)) {
+            downStation = section.downStation;
+            return;
+        }
+        upStation = section.upStation;
+    }
+
+    private void validateConnect(Section section) {
+        Assert.notNull(section, "connected section must not be null");
+        Assert.isTrue(hasOverlapStation(section), String
+            .format("section(%s) and connected section(%s) must have overlapping stations", this,
+                section));
+    }
+
+    private boolean hasOverlapStation(Section section) {
+        return downStation.equals(section.upStation) ||
+            upStation.equals(section.downStation);
     }
 
     @Override

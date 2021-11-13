@@ -68,6 +68,10 @@ public class Line extends BaseEntity {
         sections.addSection(section);
     }
 
+    public void deleteStation(Station station) {
+        sections.deleteStation(station);
+    }
+
     private void setName(Name name) {
         Assert.notNull(name, "'name' must not be null");
         this.name = name;

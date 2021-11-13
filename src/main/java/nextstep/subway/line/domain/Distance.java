@@ -30,6 +30,10 @@ public class Distance {
         return from(value - distance.value);
     }
 
+    public Distance sum(Distance distance) {
+        return from(value + distance.value);
+    }
+
     private void validate(int value) {
         if (lessThanOrEqualZero(value)) {
             throw new IllegalArgumentException(

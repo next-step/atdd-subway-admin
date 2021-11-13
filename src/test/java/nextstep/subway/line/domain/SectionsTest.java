@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import nextstep.subway.common.domain.Name;
 import nextstep.subway.common.exception.InvalidDataException;
-import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -124,7 +123,7 @@ class SectionsTest {
         }
 
         @Test
-        @DisplayName("null 로 제공된 역 삭제")
+        @DisplayName("null 로 제공된 역 삭제하면 IllegalArgumentException")
         void deleteStation() {
             //given, when
             ThrowingCallable deleteStationCall =
@@ -137,8 +136,9 @@ class SectionsTest {
         }
 
         @Test
-        @DisplayName("존재하지 않는 역 삭제")
-        void deleteStation_notStation_thrownNotFoundException() {
+        @DisplayName("존재하지 않는 역 삭제하면 InvalidDataException")
+        void deleteStation_notExistStation_thrownInvalidDataException() {
+            //given
             Station banpo = station("반포");
 
             //when
@@ -146,14 +146,15 @@ class SectionsTest {
                 () -> gyodaeGangnamYeoksamSections.deleteStation(banpo);
 
             //then
-            assertThatExceptionOfType(NotFoundException.class)
+            assertThatExceptionOfType(InvalidDataException.class)
                 .isThrownBy(deleteStationCall)
-                .withMessageEndingWith("is not exist");
+                .withMessageEndingWith("is not exist in sections");
         }
 
         @Test
-        @DisplayName("존재하지 않는 역 삭제")
+        @DisplayName("한 구간만 남아있는 경우 역 삭제하면 InvalidDataException")
         void deleteStation_remainedLastSection_thrownInvalidDataException() {
+            //given
             gyodaeGangnamYeoksamSections.deleteStation(station("강남"));
 
             //when
@@ -163,17 +164,7 @@ class SectionsTest {
             //then
             assertThatExceptionOfType(InvalidDataException.class)
                 .isThrownBy(deleteStationCall)
-                .withMessageEndingWith("sections that has only one section can not delete station");
-        }
-
-        @Test
-        @DisplayName("존재하지 않는 역 삭제")
-        void deleteStation_notStation(Station station, String... expectedNames) {
-            //when
-            gyodaeGangnamYeoksamSections.deleteStation(station);
-
-            //then
-            doesNotHaveDuplicates(gyodaeGangnamYeoksamSections.stations(), 2, expectedNames);
+                .withMessageEndingWith("sections must have at least one section");
         }
 
         private Stream<Arguments> deleteSection() {
@@ -243,6 +234,4 @@ class SectionsTest {
                     .toArray(Station[]::new)
             );
     }
-
-
 }

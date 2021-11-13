@@ -65,8 +65,9 @@ public class LineService {
         return LineResponse.from(line);
     }
 
-    public LineResponse deleteStation(long id, long stationId) {
-        return null;
+    public void deleteStation(long id, long stationId) {
+        line(id)
+            .deleteStation(station(stationId));
     }
 
     private Line savedLine(LineCreateRequest request) {
