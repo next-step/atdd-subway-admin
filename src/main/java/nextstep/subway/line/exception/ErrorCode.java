@@ -18,19 +18,6 @@ public enum ErrorCode {
         this.message = message;
     }
 
-    public static ErrorCode of(HttpStatus httpStatus) {
-        for (ErrorCode value : ErrorCode.values()) {
-            if (value.compareTo(httpStatus)) {
-                return value;
-            }
-        }
-        return DEFAULT_ERROR;
-    }
-
-    private boolean compareTo(HttpStatus httpStatus) {
-        return this.httpStatus.equals(httpStatus);
-    }
-
     public HttpStatus getHttpStatus() {
         return httpStatus;
     }

@@ -25,11 +25,10 @@ public class LineExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException() {
-        ErrorCode errorCode = ErrorCode.of(HttpStatus.BAD_REQUEST);
+    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(errorCode.getMessage());
+                .status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
     }
 
 }
