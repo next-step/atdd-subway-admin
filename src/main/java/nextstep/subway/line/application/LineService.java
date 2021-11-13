@@ -4,6 +4,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.ErrorCode;
+import nextstep.subway.line.exception.LineNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,17 +39,22 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = findOneById(id);
+        Line line = findOneNotEmpty(id);
         line.update(lineRequest.toLine());
         lineRepository.save(line);
     }
 
     private Line findOneById(Long id) {
+        return lineRepository.findById(id).get();
+    }
+
+    private Line findOneNotEmpty(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new LineNotFoundException(ErrorCode.NOT_FOUND_ENTITY));
     }
 
     public void deleteLine(Long id) {
-        lineRepository.deleteById(id);
+        Line findOne = findOneNotEmpty(id);
+        lineRepository.deleteById(findOne.getId());
     }
 }
