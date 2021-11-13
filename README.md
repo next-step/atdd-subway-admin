@@ -17,7 +17,7 @@
 ### 요구사항
 - [] 지하철 노선 관련 인수테스트 작성-`LineAcceptanceTest`를 완성
   - [x] 지하철 노선을 생성한다.
-  - [] 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.
+  - [x] 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.
   - [] 지하철 노선 목록을 조회한다.
   - [] 지하철 노선을 조회한다.
   - [] 지하철 노선을 수정한다.
@@ -49,7 +49,7 @@ content-type: application/json; charset=UTF-8
 <details><summary>Response</summary>
 
 ```python
-HTTP/1.1 201 
+HTTP/1.1 201
 Location: /lines/1
 Content-Type: application/json
 Date: Fri, 13 Nov 2020 00:11:51 GMT
@@ -77,7 +77,7 @@ host: localhost:49468
 <details><summary>Response</summary>
 
 ```python
-HTTP/1.1 200 
+HTTP/1.1 200
 Content-Type: application/json
 Date: Fri, 13 Nov 2020 00:11:51 GMT
 
@@ -87,7 +87,7 @@ Date: Fri, 13 Nov 2020 00:11:51 GMT
         "name": "신분당선",
         "color": "bg-red-600",
         "stations": [
-            
+
         ],
         "createdDate": "2020-11-13T09:11:52.084",
         "modifiedDate": "2020-11-13T09:11:52.084"
@@ -97,7 +97,7 @@ Date: Fri, 13 Nov 2020 00:11:51 GMT
         "name": "2호선",
         "color": "bg-green-600",
         "stations": [
-            
+
         ],
         "createdDate": "2020-11-13T09:11:52.098",
         "modifiedDate": "2020-11-13T09:11:52.098"
@@ -119,7 +119,7 @@ host: localhost:49468
 <details><summary>Response</summary>
 
 ```python
-HTTP/1.1 200 
+HTTP/1.1 200
 Content-Type: application/json
 Date: Fri, 13 Nov 2020 00:11:51 GMT
 
@@ -128,7 +128,7 @@ Date: Fri, 13 Nov 2020 00:11:51 GMT
     "name": "신분당선",
     "color": "bg-red-600",
     "stations": [
-        
+
     ],
     "createdDate": "2020-11-13T09:11:51.866",
     "modifiedDate": "2020-11-13T09:11:51.866"
@@ -156,7 +156,7 @@ host: localhost:49468
 <details><summary>Response</summary>
 
 ```python
-HTTP/1.1 200 
+HTTP/1.1 200
 Date: Fri, 13 Nov 2020 00:11:51 GMT
 ```
 </details>
@@ -175,7 +175,7 @@ host: localhost:49468
 <details><summary>Response</summary>
 
 ```python
-HTTP/1.1 204 
+HTTP/1.1 204
 Date: Fri, 13 Nov 2020 00:11:51 GMT
 ```
 </details>

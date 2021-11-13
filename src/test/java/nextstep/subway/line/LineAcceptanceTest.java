@@ -46,12 +46,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
+        createSubwayLine("신분당선", "bg-red-600");
 
         // when
         // 지하철_노선_생성_요청
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-blue-600");
+
+        ExtractableResponse<Response> response = requestCreateLine(params);
 
         // then
         // 지하철_노선_생성_실패됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -107,7 +114,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
     }
-    
+
+    private LineResponse createSubwayLine(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        ExtractableResponse<Response> response = requestCreateLine(params);
+
+        return response.as(LineResponse.class);
+    }
+
     private ExtractableResponse<Response> requestCreateLine(Map<String, String> params) {
         return RestAssured.given().log().all().
                             body(params).
