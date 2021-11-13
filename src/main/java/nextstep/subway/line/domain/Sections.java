@@ -55,6 +55,10 @@ public class Sections {
         addSectionByFoundIndexes(section, upStationIndex, downStationIndex);
     }
 
+    public void deleteStation(Station station) {
+        Assert.notNull(station, "deleted station must not null");
+    }
+
     private void addSectionByFoundIndexes(
         Section section, int upStationIndex, int downStationIndex) {
         if (isExistIndex(upStationIndex)) {

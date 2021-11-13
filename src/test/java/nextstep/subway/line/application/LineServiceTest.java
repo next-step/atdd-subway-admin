@@ -190,13 +190,31 @@ class LineServiceTest {
         givenStation(2L, Station.from(Name.from("강남")));
 
         //when
-        LineResponse lineResponse = service.addSection(anyLong(),
-            new SectionRequest(1L, 2L, 10));
+        LineResponse lineResponse = service.addSection(
+            anyLong(), new SectionRequest(1L, 2L, 10));
 
         //then
         assertThat(lineResponse.getStations())
             .extracting(StationResponse::getName)
             .containsExactly("교대", "강남", "역삼");
+    }
+
+    @Test
+    @DisplayName("역 삭제")
+    void deleteStation() {
+        //given
+        Line gyodaeGangnamYoeksamLine = gangnamYoeksamLine();
+        gyodaeGangnamYoeksamLine.addSection(sectionTenDistance("교대", "강남"));
+        givenLine(gyodaeGangnamYoeksamLine);
+        givenStation(anyLong(), Station.from(Name.from("강남")));
+
+        //when
+        service.deleteStation(anyLong(), anyLong());
+
+        //then
+        assertThat(gyodaeGangnamYoeksamLine.stations())
+            .extracting(Station::name)
+            .containsExactly(Name.from("교대"), Name.from("역삼"));
     }
 
     private void lineSaved(String expectedName, String expectedColor,
@@ -267,13 +285,15 @@ class LineServiceTest {
 
     private Line gangnamYoeksamLine() {
         return Line.of(Name.from("name"), Color.from("color"),
-            Sections.from(
-                Section.of(
-                    Station.from(Name.from("강남")),
-                    Station.from(Name.from("역삼")),
-                    Distance.from(10)
-                )
-            )
+            Sections.from(sectionTenDistance("강남", "역삼"))
+        );
+    }
+
+    private Section sectionTenDistance(String upStationName, String downStationName) {
+        return Section.of(
+            Station.from(Name.from(upStationName)),
+            Station.from(Name.from(downStationName)),
+            Distance.from(10)
         );
     }
 
