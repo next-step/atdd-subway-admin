@@ -57,8 +57,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 - [x] 지하철 노선 생성 
   - [x] post 방식
-  - [] 종점역(상행, 하행) 정보 추가
-    - [] 두 종점역은 구간의 형태로 관리되어야 함
+  - [x] 종점역(상행, 하행) 정보 추가
+    - [x] 두 종점역은 구간의 형태로 관리되어야 함
     
 - [x] 지하철 노선 조회
   - [x] get 방식
