@@ -8,7 +8,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.ErrorCode;
 import nextstep.subway.line.exception.LineNotFoundException;
-import nextstep.subway.line.exception.StationNotFoundException;
+import nextstep.subway.station.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
