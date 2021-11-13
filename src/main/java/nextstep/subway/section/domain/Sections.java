@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -129,6 +130,14 @@ public class Sections {
 
         Optional<Section> sectionByDownStation = findSectionByDownStation(section.getDownStation());
         return sectionByDownStation.orElseThrow(() -> new IllegalStateException(NOT_EXIST_SECTION_BY_STATION));
+    }
+
+    public List<Station> findAllStations() {
+        return sections.stream()
+                       .map(Section::getStations)
+                       .flatMap(Collection::stream)
+                       .distinct()
+                       .collect(Collectors.toList());
     }
 
     private void validateAddableSectionDistance(Section section, Section middleSection) {

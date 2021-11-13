@@ -21,7 +21,7 @@ import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
-@DisplayName("지하철 구간 관련 기능")
+@DisplayName("지하철 노선에 구간 추가 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
     private static final int DISTANCE = 10;
 
@@ -105,6 +105,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 판교_정자_구간);
+
+        // then
+        지하철_구간_등록_실패(response);
+    }
+
+    @DisplayName("신규 구간의 상행역과 하행역이 이미 노선에 존재하면 추가할 수 없다.")
+    @Test
+    void addSection5() {
+        // given
+        SectionRequest 판교_미금_구간 = SectionRequest.of(판교역.getId(), 미금역.getId(), DISTANCE);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 판교_미금_구간);
 
         // then
         지하철_구간_등록_실패(response);

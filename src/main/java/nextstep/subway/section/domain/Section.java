@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Embedded;
@@ -92,8 +94,8 @@ public class Section {
         return downStation;
     }
 
-    public Distance getDistance() {
-        return this.distance;
+    public List<Station> getStations() {
+        return Arrays.asList(upStation, downStation);
     }
 
     private static void validateCreateSection(Station upStation, Station downStation, Distance distance) {
