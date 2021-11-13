@@ -51,16 +51,16 @@ class LineTest {
     @Test
     void registerSection() {
         // given
-        Station upStation = Station.from("판교역");
-        Station downStation = Station.from("정자역");
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 판교역 = Station.from("판교역");
+        Station 정자역 = Station.from("정자역");
         Distance distance = Distance.from(10);
-        Section section = Section.of(upStation, downStation, distance);
-        Line line = Line.of("신분당선", "RED");
+        Section 판교_정자_구간 = Section.of(판교역, 정자역, distance);
 
-        line.addSection(section);
+        신분당선.addSection(판교_정자_구간);
 
         // when & then
-        assertThatIllegalStateException().isThrownBy(() -> line.addSection(section))
+        assertThatIllegalStateException().isThrownBy(() -> 신분당선.addSection(판교_정자_구간))
                                          .withMessageContaining("이미 포함된 Section 입니다.");
     }
 }

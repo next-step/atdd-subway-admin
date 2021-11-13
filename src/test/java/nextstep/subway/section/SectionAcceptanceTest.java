@@ -23,23 +23,23 @@ import nextstep.subway.station.dto.StationResponse;
 public class SectionAcceptanceTest extends AcceptanceTest {
     private static final int DISTANCE = 10;
 
-    private StationResponse pangyoStation;
-    private StationResponse migeumStation;
-    private LineResponse shinbundangLine;
+    private StationResponse 판교역;
+    private StationResponse 미금역;
+    private LineResponse 신분당선;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        pangyoStation = 지하철_역_등록되어_있음(StationRequest.from("판교역")).as(StationResponse.class);
-        migeumStation = 지하철_역_등록되어_있음(StationRequest.from("미금역")).as(StationResponse.class);
+        판교역 = 지하철_역_등록되어_있음(StationRequest.from("판교역")).as(StationResponse.class);
+        미금역 = 지하철_역_등록되어_있음(StationRequest.from("미금역")).as(StationResponse.class);
 
         LineRequest lineRequest = LineRequest.from("신분당선",
                                                    "RED",
-                                                   pangyoStation.getId(),
-                                                   migeumStation.getId(),
+                                                   판교역.getId(),
+                                                   미금역.getId(),
                                                    DISTANCE);
-        shinbundangLine = 지하철_노선_등록되어_있음(lineRequest).as(LineResponse.class);
+        신분당선 = 지하철_노선_등록되어_있음(lineRequest).as(LineResponse.class);
     }
 
     @DisplayName("노선 중간에 새로운 역을 등록한다.")
@@ -47,16 +47,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection1() {
         // given
         StationResponse jeongjaStation = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
-        SectionRequest sectionRequest = SectionRequest.of(pangyoStation.getId(), jeongjaStation.getId(), 5);
+        SectionRequest sectionRequest = SectionRequest.of(판교역.getId(), jeongjaStation.getId(), 5);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(shinbundangLine.getId(), sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
 
         // then
-        ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(shinbundangLine.getId());
+        ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(신분당선.getId());
 
         지하철_노선에_지하철역_등록됨(response);
-        지하철_역_정렬됨(findLineResponse, Arrays.asList(pangyoStation.getId(), jeongjaStation.getId(), migeumStation.getId()));
+        지하철_역_정렬됨(findLineResponse, Arrays.asList(판교역.getId(), jeongjaStation.getId(), 미금역.getId()));
     }
 
     @DisplayName("노선에 새로운 상행 종점역을 등록한다.")
@@ -64,16 +64,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection2() {
         // given
         StationResponse jeongjaStation = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
-        SectionRequest sectionRequest = SectionRequest.of(jeongjaStation.getId(), pangyoStation.getId(), 5);
+        SectionRequest sectionRequest = SectionRequest.of(jeongjaStation.getId(), 판교역.getId(), 5);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(shinbundangLine.getId(), sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
 
         // then
-        ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(shinbundangLine.getId());
+        ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(신분당선.getId());
 
         지하철_노선에_지하철역_등록됨(response);
-        지하철_역_정렬됨(findLineResponse, Arrays.asList(jeongjaStation.getId(), pangyoStation.getId(), migeumStation.getId()));
+        지하철_역_정렬됨(findLineResponse, Arrays.asList(jeongjaStation.getId(), 판교역.getId(), 미금역.getId()));
     }
 
     @DisplayName("노선에 새로운 하행 종점역을 등록한다.")
@@ -81,15 +81,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection3() {
         // given
         StationResponse jeongjaStation = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
-        SectionRequest sectionRequest = SectionRequest.of(migeumStation.getId(), jeongjaStation.getId(), 5);
+        SectionRequest sectionRequest = SectionRequest.of(미금역.getId(), jeongjaStation.getId(), 5);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(shinbundangLine.getId(), sectionRequest);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), sectionRequest);
 
         // then
-        ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(shinbundangLine.getId());
+        ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(신분당선.getId());
 
         지하철_노선에_지하철역_등록됨(response);
-        지하철_역_정렬됨(findLineResponse, Arrays.asList(pangyoStation.getId(), migeumStation.getId(), jeongjaStation.getId()));
+        지하철_역_정렬됨(findLineResponse, Arrays.asList(판교역.getId(), 미금역.getId(), jeongjaStation.getId()));
     }
 }

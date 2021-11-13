@@ -21,10 +21,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        StationRequest stationRequest = StationRequest.from("강남역");
+        StationRequest 강남역 = StationRequest.from("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_역_생성_요청(stationRequest);
+        ExtractableResponse<Response> response = 지하철_역_생성_요청(강남역);
 
         // then
         지하철_역_생성됨(response);
@@ -34,11 +34,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        StationRequest stationRequest = StationRequest.from("강남역");
-        지하철_역_등록되어_있음(stationRequest);
+        StationRequest 강남역 = StationRequest.from("강남역");
+        지하철_역_등록되어_있음(강남역);
 
         // when
-        ExtractableResponse<Response> response = 지하철_역_생성_요청(stationRequest);
+        ExtractableResponse<Response> response = 지하철_역_생성_요청(강남역);
 
         // then
         지하철_역_생성_실패됨(response);
@@ -48,11 +48,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        StationRequest firstStationRequest = StationRequest.from("강남역");
-        StationRequest secondStationRequest = StationRequest.from("역삼역");
+        StationRequest 강남역 = StationRequest.from("강남역");
+        StationRequest 역삼역 = StationRequest.from("역삼역");
 
-        ExtractableResponse<Response> firstCreateResponse = 지하철_역_등록되어_있음(firstStationRequest);
-        ExtractableResponse<Response> secondCreateResponse = 지하철_역_등록되어_있음(secondStationRequest);
+        ExtractableResponse<Response> firstCreateResponse = 지하철_역_등록되어_있음(강남역);
+        ExtractableResponse<Response> secondCreateResponse = 지하철_역_등록되어_있음(역삼역);
 
         // when
         ExtractableResponse<Response> response = 지하철_역_목록_조회_요청();
@@ -69,8 +69,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        StationRequest stationRequest = StationRequest.from("강남역");
-        ExtractableResponse<Response> createResponse = 지하철_역_등록되어_있음(stationRequest);
+        StationRequest 강남역 = StationRequest.from("강남역");
+        ExtractableResponse<Response> createResponse = 지하철_역_등록되어_있음(강남역);
 
         // when
         Long createdId = parseIdFromLocationHeader(createResponse);

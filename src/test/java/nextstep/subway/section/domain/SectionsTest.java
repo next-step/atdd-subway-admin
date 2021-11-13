@@ -10,31 +10,30 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 class SectionsTest {
     private static final int DISTANCE = 10;
 
-    private Station firstStation;
-    private Station secondStation;
-    private Station thirdStation;
-    private Station forthStation;
+    private Station 판교역;
+    private Station 정자역;
+    private Station 미금역;
+    private Station 동천역;
     private Distance distance;
-    private Section firstSection;
-    private Section secondSection;
-    private Section thirdSection;
+    private Section 판교_정자_구간;
+    private Section 정자_미금_구간;
+    private Section 미금_동천_구간;
 
     @BeforeEach
     void setUp() {
-        firstStation = Station.from(1L, "판교역");
-        secondStation = Station.from(2L, "정자역");
-        thirdStation = Station.from(3L, "미금역");
-        forthStation = Station.from(4L, "동천역");
+        판교역 = Station.from(1L, "판교역");
+        정자역 = Station.from(2L, "정자역");
+        미금역 = Station.from(3L, "미금역");
+        동천역 = Station.from(4L, "동천역");
         distance = Distance.from(DISTANCE);
-        firstSection = Section.of(firstStation, secondStation, distance);
-        secondSection = Section.of(secondStation, thirdStation, distance);
-        thirdSection = Section.of(thirdStation, forthStation, distance);
+        판교_정자_구간 = Section.of(판교역, 정자역, distance);
+        정자_미금_구간 = Section.of(정자역, 미금역, distance);
+        미금_동천_구간 = Section.of(미금역, 동천역, distance);
     }
 
     @DisplayName("Sections 을 Section 목록으로 생성한다.")
@@ -42,19 +41,19 @@ class SectionsTest {
     void create() {
         // when & then
         assertThatNoException().isThrownBy(
-            () -> Sections.from(Arrays.asList(firstSection, secondSection, thirdSection)));
+            () -> Sections.from(Arrays.asList(판교_정자_구간, 정자_미금_구간, 미금_동천_구간)));
     }
 
     @DisplayName("상행에서 하행순으로 지하철 역 목록을 반환한다.")
     @Test
     void sortStations() {
         // given
-        Sections sections = Sections.from(Arrays.asList(secondSection, thirdSection, firstSection));
+        Sections sections = Sections.from(Arrays.asList(정자_미금_구간, 미금_동천_구간, 판교_정자_구간));
 
         // when
         List<Station> stations = sections.getSortedStations();
 
         // then
-        assertEquals(stations, Arrays.asList(firstStation, secondStation, thirdStation, forthStation));
+        assertEquals(stations, Arrays.asList(판교역, 정자역, 미금역, 동천역));
     }
 }
