@@ -12,6 +12,7 @@ public class LineExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity handleException(Exception e) {
+        e.printStackTrace();
         return ResponseEntity
                 .status(ErrorCode.DEFAULT_ERROR.getHttpStatus())
                 .body(ErrorCode.DEFAULT_ERROR.getMessage());
