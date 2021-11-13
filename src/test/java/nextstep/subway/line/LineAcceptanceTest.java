@@ -2,9 +2,7 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.utils.Fixture;
 
@@ -26,8 +25,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        final ExtractableResponse<Response> response = post(
-            params("신분당선", "bg-red-600")
+        final ExtractableResponse<Response> response = postLines(
+            lineRequest("신분당선", "bg-red-600")
         );
 
         // then
@@ -41,12 +40,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine_with_duplicated_name() {
         // given
         // 지하철_노선_등록되어_있음
-        final Map<String, String> params = params("신분당선", "bg-red-600");
-        post(params);
+        final LineRequest lineRequest = lineRequest("신분당선", "bg-red-600");
+        postLines(lineRequest);
 
         // when
         // 지하철_노선_생성_요청
-        final ExtractableResponse<Response> response = post(params);
+        final ExtractableResponse<Response> response = postLines(lineRequest);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -58,12 +57,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        final ExtractableResponse<Response> postResponse1 = post(
-            params("신분당선", "bg-red-600")
+        final ExtractableResponse<Response> postResponse1 = postLines(
+            lineRequest("신분당선", "bg-red-600")
         );
         // 지하철_노선_등록되어_있음
-        final ExtractableResponse<Response> postResponse2 = post(
-            params("분당선", "bg-yellow-600")
+        final ExtractableResponse<Response> postResponse2 = postLines(
+            lineRequest("분당선", "bg-yellow-600")
         );
 
         // when
@@ -88,8 +87,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        final ExtractableResponse<Response> createResponse = post(params("신분당선", "bg-red-600"));
-        final Long lineId = createResponse.as(LineResponse.class).getId();
+        final Long lineId = postLines(lineRequest("신분당선", "bg-red-600"))
+            .as(LineResponse.class).getId();
 
         // when
         // 지하철_노선_조회_요청
@@ -113,13 +112,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        final ExtractableResponse<Response> createResponse = post(params("신분당선", "bg-red-600"));
-        final Long lineId = createResponse.as(LineResponse.class).getId();
+        final Long lineId = postLines(lineRequest("신분당선", "bg-red-600"))
+            .as(LineResponse.class).getId();
 
         // when
         // 지하철_노선_수정_요청
         final ExtractableResponse<Response> response = Fixture.put(
-            params("쉰분당선", "bg-magenta-600"),
+            lineRequest("쉰분당선", "bg-magenta-600"),
             "/lines/{id}", lineId
         );
 
@@ -132,7 +131,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine_notFound() {
         final ExtractableResponse<Response> response = Fixture.put(
-            params("유령선", "bg-grey-600"),
+            lineRequest("유령선", "bg-grey-600"),
             "/lines/{id}", 0L
         );
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
@@ -143,8 +142,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        final ExtractableResponse<Response> createResponse = post(params("신분당선", "bg-red-600"));
-        final Long lineId = createResponse.as(LineResponse.class).getId();
+        final Long lineId = postLines(lineRequest("신분당선", "bg-red-600"))
+            .as(LineResponse.class).getId();
 
         // when
         // 지하철_노선_제거_요청
@@ -162,14 +161,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    private Map<String, String> params(String name, String color) {
-        return new HashMap<String, String>() {{
-            put("name", name);
-            put("color", color);
-        }};
+    private LineRequest lineRequest(String name, String color) {
+        return new LineRequest(name, color);
     }
 
-    private ExtractableResponse<Response> post(Map<String, String> params) {
-        return Fixture.post("/lines", params);
+    private ExtractableResponse<Response> postLines(LineRequest lineRequest) {
+        return Fixture.post("/lines", lineRequest);
     }
 }
