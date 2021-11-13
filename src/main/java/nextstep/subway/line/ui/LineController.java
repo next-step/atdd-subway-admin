@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping(value = "/lines")
 public class LineController {
     private final LineService lineService;
 
@@ -18,29 +19,29 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> findOneLine(@PathVariable("id") Long id) {
+        return ResponseEntity.ok().body(lineService.findOneLine(id));
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<LineResponse>> findAllLine() {
+        return ResponseEntity.ok().body(lineService.findAllLine());
+    }
+
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLineAndTerminal(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> findAllLine() {
-        return ResponseEntity.ok().body(lineService.findAllLine());
-    }
-
-    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> findOneLine(@PathVariable("id") Long id) {
-        return ResponseEntity.ok().body(lineService.findOneLine(id));
-    }
-
-    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = "/lines/{id}")
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity deleteLine(@PathVariable("id") Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
