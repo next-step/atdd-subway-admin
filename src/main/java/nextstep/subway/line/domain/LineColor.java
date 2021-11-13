@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -31,5 +33,20 @@ public class LineColor {
         if (!StringUtils.hasLength(color)) {
             throw new IllegalArgumentException(String.format(EMPTY_LINE_COLOR_ERROR_MESSAGE, color));
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        LineColor lineColor = (LineColor)o;
+        return Objects.equals(color, lineColor.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color);
     }
 }
