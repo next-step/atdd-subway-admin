@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceTestMethod.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -133,6 +135,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         응답_확인_BAD_REQUEST(actual);
+    }
+
+
+    @DisplayName("지하철 노선 목록을 조회한다.(구간포함)")
+    @Test
+    void findAllLineAndSections() {
+        // given
+        List<Long> excepted = new ArrayList<>();
+        excepted.add(신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역).as(LineResponse.class).getId());
+        excepted.add(신규_지하철_노선_생성_요청("/lines", 이호선, 10, 홍대역, 신촌역).as(LineResponse.class).getId());
+
+        // when
+        ExtractableResponse<Response> actual = 지하철_노선_목록_조회_요청("/lines");
+
+        // then
+        응답_확인_OK(actual);
+        지하철_노선_목록_확인_구간포함(actual);
+    }
+
+    public static void 지하철_노선_목록_확인_구간포함(ExtractableResponse<Response> actual) {
+        List<Section> result = actual.as(LineResponse.class).getSections();
+
+        assertThat(result).isNotEmpty();
     }
 
 }
