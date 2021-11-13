@@ -37,4 +37,16 @@ public class LineRequest {
         this.downStationId = downStationId;
     }
 
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
 }
