@@ -6,6 +6,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,14 +18,22 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private LineRepository lineRepository;
+    private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
         checkDuplicateLineName(lineRequest.getName());
-        Line persistLine = lineRepository.save(lineRequest.toLine());
+
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
+                .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION));
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
+                .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION));
+
+        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
@@ -48,7 +58,11 @@ public class LineService {
 
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
         Line modifyLine = lineRepository.getOne(id);
-        modifyLine.update(lineRequest.toLine());
+        Station upStaion = stationRepository.findById(lineRequest.getUpStationId())
+                .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION));
+        Station downStaion = stationRepository.findById(lineRequest.getDownStationId())
+                .orElseThrow(() -> new InputDataErrorException(InputDataErrorCode.THERE_IS_NOT_SEARCHED_STATION));
+        modifyLine.update(lineRequest.toLine(upStaion, downStaion));
         return LineResponse.of(modifyLine);
     }
 
