@@ -19,12 +19,17 @@ public class Section {
     @JoinColumn(name = "station_id")
     private Station station;
 
+    private int distance;
+
     protected Section () {}
 
-    public Section(Line line, Station station) {
+    public Section(Line line, Station station, int distance) {
         this.line = line;
         this.station = station;
+        this.distance = distance;
     }
 
-
+    public Station getStation() {
+        return station;
+    }
 }

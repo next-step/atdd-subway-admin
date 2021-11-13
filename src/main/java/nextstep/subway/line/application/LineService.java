@@ -34,7 +34,7 @@ public class LineService {
 
     public LineResponse saveLineAndTerminal(LineRequest request) {
         Line persistLine = saveLine(request.toLine());
-        saveTerminalStation(persistLine, request.getUpStationId(), request.getDownStationId());
+        saveTerminalStation(persistLine, request.getUpStationId(), request.getDownStationId(), request.getDistance());
         return LineResponse.of(persistLine);
     }
 
@@ -42,10 +42,14 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    public void saveTerminalStation(Line line, Long upStationId, Long downStationId) {
+    public void saveTerminalStation(Line line, Long upStationId, Long downStationId, int distance) {
         Station upStation = findOneStation(upStationId);
+        line.addSection(new Section(line, upStation, distance));
+
         Station downStation = findOneStation(downStationId);
-        sectionRepository.saveAll(Arrays.asList(new Section(line, upStation), new Section(line, downStation)));
+        line.addSection(new Section(line, downStation, distance));
+
+        sectionRepository.saveAll(line.getSections());
     }
 
     private Station findOneStation(Long stationId) {
