@@ -1,7 +1,6 @@
 package nextstep.subway.global;
 
 import nextstep.subway.line.domain.LineNameDuplicatedException;
-import nextstep.subway.line.domain.LineNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -16,7 +15,7 @@ public class GlobalExceptionHandler {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST);
     }
 
-    @ExceptionHandler(LineNotFoundException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     public void handleEntityNotFoundException(HttpServletResponse response) throws IOException {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
