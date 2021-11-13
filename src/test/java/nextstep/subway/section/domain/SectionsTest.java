@@ -27,10 +27,10 @@ class SectionsTest {
 
     @BeforeEach
     void setUp() {
-        firstStation = Station.from("판교역");
-        secondStation = Station.from("정자역");
-        thirdStation = Station.from("미금역");
-        forthStation = Station.from("동천역");
+        firstStation = Station.from(1L, "판교역");
+        secondStation = Station.from(2L, "정자역");
+        thirdStation = Station.from(3L, "미금역");
+        forthStation = Station.from(4L, "동천역");
         distance = Distance.from(DISTANCE);
         firstSection = Section.of(firstStation, secondStation, distance);
         secondSection = Section.of(secondStation, thirdStation, distance);

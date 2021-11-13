@@ -65,16 +65,4 @@ class SectionTest {
         assertThatIllegalArgumentException().isThrownBy(() -> Section.of(upStation, downStation, null))
                                             .withMessageContaining("Section 생성에 필요한 필수 정보를 확인해주세요.");
     }
-
-    @DisplayName("Line 에 중복해서 Section 을 추가할 수 없다.")
-    @Test
-    void registerLine() {
-        // given
-        Section section = Section.of(upStation, downStation, distance);
-        line.addSection(section);
-
-        // when & then
-        assertThatIllegalStateException().isThrownBy(() -> line.addSection(section))
-                                         .withMessageContaining("이미 포함된 Section 입니다.");
-    }
 }
