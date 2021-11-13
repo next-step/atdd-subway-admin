@@ -38,6 +38,10 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public void changeLine(Line line) {
+        this.line = line;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

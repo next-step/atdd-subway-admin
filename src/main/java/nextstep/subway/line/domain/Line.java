@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,7 +25,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @OneToMany(mappedBy = "line")
-    private List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
     protected Line() {
     }
@@ -49,6 +50,11 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+        section.changeLine(this);
     }
 
     @Override
