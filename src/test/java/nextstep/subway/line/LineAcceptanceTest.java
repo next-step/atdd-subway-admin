@@ -7,14 +7,11 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static nextstep.subway.utils.HttpUtils.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.line.LineAcceptanceTestMethod.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -29,93 +26,111 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest request = 신분당선;
 
         // when
-        ExtractableResponse<Response> response = post("/lines", request);
+        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", request);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        응답_확인_CREATED(response);
+        지하철_노선_생성_확인(response);
     }
+
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLineWithDuplicateName() {
         // given
-        post("/lines", 신분당선);
+        신규_지하철_노선_생성_요청("/lines", 신분당선);
 
         // when
-        ExtractableResponse<Response> actual = post("/lines", 신분당선);
+        ExtractableResponse<Response> actual = 신규_지하철_노선_생성_요청("/lines", 신분당선);
 
         // then
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        응답_확인_BAD_REQUEST(actual);
+        지하철_노선_생성_오류_확인(actual);
     }
+
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void findAllLine() {
         // given
-        LineRequest request1 = 신분당선;
-        ExtractableResponse<Response> response1 = post("/lines", request1);
-
-        LineRequest request2 = 이호선;
-        ExtractableResponse<Response> response2 = post("/lines", request2);
+        List<Long> excepted = new ArrayList<>();
+        excepted.add(신규_지하철_노선_생성_요청("/lines", 신분당선).as(LineResponse.class).getId());
+        excepted.add(신규_지하철_노선_생성_요청("/lines", 이호선).as(LineResponse.class).getId());
 
         // when
-        ExtractableResponse<Response> actual = get("/lines");
+        ExtractableResponse<Response> actual = 지하철_노선_목록_조회_요청("/lines");
 
         // then
-        List<Long> expectedLineIds =
-                Arrays.asList(response1.as(LineResponse.class).getId(), response2.as(LineResponse.class).getId());
-
-        List<Long> resultLineIds = actual.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-
-        assertThat(resultLineIds).containsAll(expectedLineIds);
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답_확인_OK(actual);
+        지하철_노선_목록_확인(actual, excepted);
     }
+
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void findOneLine() {
         // given
-        LineRequest request = 신분당선;
-        Long id = post("/lines", request).as(LineResponse.class).getId();
+        ExtractableResponse<Response> 생성_신분당선 = 신규_지하철_노선_생성_요청("/lines", 신분당선);
 
         // when
-        ExtractableResponse<Response> actual = get("/lines/{id}", id);
+        ExtractableResponse<Response> actual = 지하철_노선_단건_조회("/lines/{id}", 생성_신분당선.as(LineResponse.class).getId());
 
         // then
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actual.as(LineResponse.class).getId()).isEqualTo(id);
+        응답_확인_OK(actual);
+        지하철_노선_단건_조회_확인(actual, 생성_신분당선.as(LineResponse.class).getId());
     }
+
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
-        LineRequest request = 신분당선;
-        LineResponse response = post("/lines", request).as(LineResponse.class);
+        ExtractableResponse<Response> 생성_신분당선 = 신규_지하철_노선_생성_요청("/lines", 신분당선);
 
         // when
-        ExtractableResponse<Response> actual = put("/lines/{id}", 이호선, response.getId());
+        ExtractableResponse<Response> actual = 지하철_노선_수정_요청("/lines/{id}", 이호선, 생성_신분당선.as(LineResponse.class).getId());
 
         // then
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답_확인_OK(actual);
+    }
+
+    @DisplayName("지하철 노선을 수정한다.(없을 경우 오류 발생)")
+    @Test
+    void updateEmptyLine() {
+        // given
+        ExtractableResponse<Response> 생성_신분당선 = 신규_지하철_노선_생성_요청("/lines", 신분당선);
+
+        // when
+        ExtractableResponse<Response> actual = 지하철_노선_수정_요청("/lines/{id}", 이호선, 생성_신분당선.as(LineResponse.class).getId() + 1);
+
+        // then
+        응답_확인_BAD_REQUEST(actual);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
-        LineRequest request = 신분당선;
-        LineResponse response = post("/lines", request).as(LineResponse.class);
+        ExtractableResponse<Response> 생성_신분당선 = 신규_지하철_노선_생성_요청("/lines", 신분당선);
 
         // when
-        ExtractableResponse<Response> actual = delete("/lines/{id}", response.getId());
+        ExtractableResponse<Response> actual = 지하철_노선_삭제_요청("/lines/{id}", 생성_신분당선.as(LineResponse.class).getId());
 
         // then
-        assertThat(actual.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        응답_확인_NO_CONTENT(actual);
     }
 
+    @DisplayName("지하철 노선을 제거한다.(없을 경우 오류 발생)")
+    @Test
+    void deleteEmptyLine() {
+        // given
+        ExtractableResponse<Response> 생성_신분당선 = 신규_지하철_노선_생성_요청("/lines", 신분당선);
+
+        // when
+        ExtractableResponse<Response> actual = 지하철_노선_삭제_요청("/lines/{id}", 생성_신분당선.as(LineResponse.class).getId() + 1);
+
+        // then
+        응답_확인_BAD_REQUEST(actual);
+    }
 
 }
