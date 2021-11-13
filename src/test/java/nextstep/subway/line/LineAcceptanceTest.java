@@ -149,6 +149,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long 광교역_아이디 = 신규_역_생성_요청("/stations", 광교역).as(StationResponse.class).getId();
         신분당선.setUpStationId(강남역_아이디);
         신분당선.setDownStationId(광교역_아이디);
+        신분당선.setDistance(10);
 
         LineRequest request = 신분당선;
 
