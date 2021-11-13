@@ -122,4 +122,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_구간_등록_실패(response);
     }
+
+    @DisplayName("신규 구간의 상행역과 하행역이 노선에 포함되어있지 않으면 추가할 수 없다.")
+    @Test
+    void addSection6() {
+        // given
+        StationResponse 정자역 = 지하철_역_생성_요청(StationRequest.from("정자역")).as(StationResponse.class);
+        StationResponse 동천역 = 지하철_역_생성_요청(StationRequest.from("동천역")).as(StationResponse.class);
+        SectionRequest 정자_동천_구간 = SectionRequest.of(정자역.getId(), 동천역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 정자_동천_구간);
+
+        // then
+        지하철_구간_등록_실패(response);
+    }
 }

@@ -48,6 +48,26 @@ public class Sections {
         sections.add(section);
     }
 
+    public List<Station> findAllStations() {
+        return sections.stream()
+                       .map(Section::getStations)
+                       .flatMap(Collection::stream)
+                       .distinct()
+                       .collect(Collectors.toList());
+    }
+
+    public boolean retainStations(List<Station> stations) {
+        return findAllStations().retainAll(stations);
+    }
+
+    public boolean isEmpty() {
+        return sections.isEmpty();
+    }
+
+    public boolean contains(Section section) {
+        return this.sections.contains(section);
+    }
+
     public List<Station> getSortedStations() {
         List<Station> stations = new ArrayList<>();
         stations.add(findFirstSection().getUpStation());
@@ -59,10 +79,6 @@ public class Sections {
         }
 
         return stations;
-    }
-
-    public boolean contains(Section section) {
-        return this.sections.contains(section);
     }
 
     private void updateMiddleSection(Section middleSection, Section section) {
@@ -130,14 +146,6 @@ public class Sections {
 
         Optional<Section> sectionByDownStation = findSectionByDownStation(section.getDownStation());
         return sectionByDownStation.orElseThrow(() -> new IllegalStateException(NOT_EXIST_SECTION_BY_STATION));
-    }
-
-    public List<Station> findAllStations() {
-        return sections.stream()
-                       .map(Section::getStations)
-                       .flatMap(Collection::stream)
-                       .distinct()
-                       .collect(Collectors.toList());
     }
 
     private void validateAddableSectionDistance(Section section, Section middleSection) {

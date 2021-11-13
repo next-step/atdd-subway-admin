@@ -12,7 +12,8 @@ import javax.persistence.*;
 @Entity
 public class Line extends BaseEntity {
     private static final String ALREADY_CONTAIN_SECTION_MESSAGE = "이미 포함된 Section 입니다. sectionId=%s";
-    private static final String ALREADY_CONTAIN_UP_AND_DOWN_STATIONS_MESSAGE = "신구 구간의 상행역, 하행역이 이미 노선에 포함되있습니다. upStationId=%s, downStationId=%s";
+    private static final String ALREADY_CONTAIN_UP_AND_DOWN_STATIONS_MESSAGE = "신규 구간의 상행역, 하행역이 이미 노선에 포함되있습니다. upStationId=%s, downStationId=%s";
+    private static final String NO_EXIST_BOTH_UP_AND_DOWN_STATIONS_MESSAGE = "신규 구간의 상행역, 하행역이 둘다 노선에 포함되지 않습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +46,7 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         validateAddableSection(section);
+        validateAddableStations(section);
 
         sections.add(section);
         section.registerLine(this);
@@ -67,20 +69,33 @@ public class Line extends BaseEntity {
     }
 
     private void validateAddableSection(Section section) {
-        validateAddableStations(section);
-
-        if (sections.contains(section)) {
+        if (!sections.isEmpty() && sections.contains(section)) {
             throw new IllegalStateException(String.format(ALREADY_CONTAIN_SECTION_MESSAGE, section.getId()));
         }
     }
 
     private void validateAddableStations(Section section) {
+        if (sections.isEmpty()) {
+            return;
+        }
+
+        validateAlreadyContainStations(section);
+        validateNoRetainStations(section);
+    }
+
+    private void validateAlreadyContainStations(Section section) {
         List<Station> stations = sections.findAllStations();
 
         if (stations.containsAll(section.getStations())) {
             throw new IllegalArgumentException(String.format(ALREADY_CONTAIN_UP_AND_DOWN_STATIONS_MESSAGE,
                                                              section.getUpStation().getId(),
                                                              section.getDownStation().getId()));
+        }
+    }
+
+    private void validateNoRetainStations(Section section) {
+        if (!sections.retainStations(section.getStations())) {
+            throw new IllegalArgumentException(NO_EXIST_BOTH_UP_AND_DOWN_STATIONS_MESSAGE);
         }
     }
 }
