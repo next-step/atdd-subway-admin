@@ -11,7 +11,7 @@ import javax.persistence.*;
 
 @Entity
 public class Line extends BaseEntity {
-    private static String ALREADY_CONTAIN_SECTION_MESSAGE = "이미 포함된 Section 입니다. sectionId=%s";
+    private static final String ALREADY_CONTAIN_SECTION_MESSAGE = "이미 포함된 Section 입니다. sectionId=%s";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
