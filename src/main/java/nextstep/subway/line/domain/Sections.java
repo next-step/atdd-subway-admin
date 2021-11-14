@@ -56,7 +56,7 @@ public class Sections {
 
     public void addSection(Section section) {
         validateAdditionalSection(section);
-        addVerifiedSection(section);
+        addValidatedSection(section);
         deleteSectionsCache();
     }
 
@@ -67,7 +67,7 @@ public class Sections {
             .orElseThrow(() -> new InvalidDataException("not exists"));
     }
 
-    private void addVerifiedSection(Section section) {
+    private void addValidatedSection(Section section) {
         if (isExist(section.upStation())) {
             addByUpStation(section);
             return;
