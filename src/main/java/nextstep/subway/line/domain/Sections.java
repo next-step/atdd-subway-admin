@@ -71,9 +71,13 @@ public class Sections {
 
     private Section firstSection() {
         return list.stream()
-            .filter(section -> !hasSectionByDownStation(section.upStation()))
+            .filter(this::doesNotHavePreviousSection)
             .findFirst()
             .orElseThrow(() -> new InvalidDataException("not exists"));
+    }
+
+    private boolean doesNotHavePreviousSection(Section section) {
+        return !hasSectionByDownStation(section.upStation());
     }
 
     private void addValidatedSection(Section section) {
