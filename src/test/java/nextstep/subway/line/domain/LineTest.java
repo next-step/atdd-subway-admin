@@ -63,4 +63,21 @@ class LineTest {
         assertThatIllegalStateException().isThrownBy(() -> 신분당선.addSection(판교_정자_구간))
                                          .withMessageContaining("이미 포함된 Section 입니다.");
     }
+
+    @DisplayName("Line 에 Section 이 1개만 존재하는 경우, Station 을 삭제 할 수 없다.")
+    @Test
+    void deleteStation1() {
+        // given
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 판교역 = Station.from("판교역");
+        Station 정자역 = Station.from("정자역");
+        Distance distance = Distance.from(10);
+        Section 판교_정자_구간 = Section.of(판교역, 정자역, distance);
+
+        신분당선.addSection(판교_정자_구간);
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.removeStation(판교역))
+                                         .withMessageContaining("노선의 구간이 1개인 경우, 지하철 역을 삭제 할 수 없습니다.");
+    }
 }

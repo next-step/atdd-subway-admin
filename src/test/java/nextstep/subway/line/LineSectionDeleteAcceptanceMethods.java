@@ -2,6 +2,7 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.assertj.core.api.Assertions;
 import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
@@ -21,5 +22,9 @@ public class LineSectionDeleteAcceptanceMethods extends AcceptanceTest {
 
     public static void 지하철_노선에_지하철역_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static void 지하철_노선에_지하철역_삭제_실패(ExtractableResponse<Response> response) {
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

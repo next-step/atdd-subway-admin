@@ -74,6 +74,10 @@ public class Sections {
         return sections.isEmpty();
     }
 
+    public int size() {
+        return sections.size();
+    }
+
     public void removeEndStation(Station station) {
         if (isFirstEndStation(station)) {
             remove(findFirstSection());

@@ -76,4 +76,17 @@ public class LineSectionDeleteAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_지하철역_삭제됨(response);
     }
+
+    @DisplayName("구간이 1개뿐인 노선에서는 역을 제거 할 수 없다.")
+    @Test
+    void deleteSection4() {
+        // given
+        지하철_노선의_지하철역_삭제_요청(신분당선.getId(), 미금역.getId());
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선의_지하철역_삭제_요청(신분당선.getId(), 정자역.getId());
+
+        // then
+        지하철_노선에_지하철역_삭제_실패(response);
+    }
 }
