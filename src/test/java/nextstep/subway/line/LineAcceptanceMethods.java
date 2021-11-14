@@ -14,6 +14,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.utils.StreamUtils;
 
 public class LineAcceptanceMethods extends AcceptanceTest {
     private static final String LINE_URL_PATH = "/lines";
@@ -59,20 +60,18 @@ public class LineAcceptanceMethods extends AcceptanceTest {
 	}
 
 	public static void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<Long> expectedLineIds) {
-		List<Long> resultLineIds = response.jsonPath()
-										   .getList(".", LineResponse.class)
-										   .stream()
-										   .map(LineResponse::getId)
-										   .collect(Collectors.toList());
+		List<LineResponse> lineResponses = response.jsonPath()
+												   .getList(".", LineResponse.class);
+		List<Long> resultLineIds = StreamUtils.mapToList(lineResponses, LineResponse::getId);
+
 		assertThat(resultLineIds).containsAll(expectedLineIds);
 	}
 
 	public static void 지하철_역_정렬됨(ExtractableResponse<Response> response, List<Long> expectedSortedStationIds) {
-		List<Long> resultStationIds = response.jsonPath()
-											  .getList("stations", StationResponse.class)
-											  .stream()
-											  .map(StationResponse::getId)
-											  .collect(Collectors.toList());
+		List<StationResponse> stationResponses = response.jsonPath()
+														 .getList("stations", StationResponse.class);
+		List<Long> resultStationIds = StreamUtils.mapToList(stationResponses, StationResponse::getId);
+
 		assertThat(resultStationIds).isEqualTo(expectedSortedStationIds);
 	}
 

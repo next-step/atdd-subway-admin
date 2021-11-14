@@ -53,17 +53,13 @@ public class Sections {
     }
 
     public Section findByUpStation(Station station) {
-        return sections.stream()
-                       .filter(section -> section.isSameUpStation(station))
-                       .findFirst()
-                       .orElseThrow(() -> new IllegalStateException(NOT_EXIST_SECTION_BY_STATION));
+        return StreamUtils.filterAndFindFirst(sections, section -> section.isSameUpStation(station))
+                          .orElseThrow(() -> new IllegalStateException(NOT_EXIST_SECTION_BY_STATION));
     }
 
     public Section findByDownStation(Station station) {
-        return sections.stream()
-                       .filter(section -> section.isSameDownStation(station))
-                       .findFirst()
-                       .orElseThrow(() -> new IllegalStateException(NOT_EXIST_SECTION_BY_STATION));
+        return StreamUtils.filterAndFindFirst(sections, section -> section.isSameDownStation(station))
+                          .orElseThrow(() -> new IllegalStateException(NOT_EXIST_SECTION_BY_STATION));
     }
 
     public boolean retainStations(List<Station> stations) {

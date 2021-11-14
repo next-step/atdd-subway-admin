@@ -2,7 +2,6 @@ package nextstep.subway.line.application;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +16,7 @@ import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.utils.StreamUtils;
 
 @Service
 @Transactional
@@ -43,9 +43,7 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findLines() {
         List<Line> lines = lineRepository.findAll();
-        return lines.stream()
-                    .map(line -> LineResponse.of(line, createStationResponses(line)))
-                    .collect(Collectors.toList());
+        return StreamUtils.mapToList(lines, line -> LineResponse.of(line, createStationResponses(line)));
     }
 
     @Transactional(readOnly = true)
@@ -91,9 +89,6 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        return line.getStations()
-                   .stream()
-                   .map(StationResponse::from)
-                   .collect(Collectors.toList());
+        return StreamUtils.mapToList(line.getStations(), StationResponse::from);
     }
 }
