@@ -9,11 +9,14 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import nextstep.subway.common.exception.InvalidDataException;
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import org.springframework.util.Assert;
 
 @Embeddable
 public class Sections {
+
+    private static final int MINIMUM_SECTION_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> list = new ArrayList<>();
@@ -49,6 +52,12 @@ public class Sections {
     void addSection(Section section) {
         validateAddition(section);
         addValidatedSection(section);
+        deleteSectionsCache();
+    }
+
+    void deleteStation(Station station) {
+        validateDeletion(station);
+        deleteValidatedStation(station);
         deleteSectionsCache();
     }
 
@@ -132,7 +141,6 @@ public class Sections {
         return downStationToSection.get(station);
     }
 
-
     private Section sectionByUpStation(Station station) {
         if (upStationToSection == null) {
             upStationToSection = list.stream()
@@ -143,6 +151,44 @@ public class Sections {
 
     private void validateNotNull(Section section) {
         Assert.notNull(section, "section must not be null");
+    }
+
+    private void deleteValidatedStation(Station station) {
+        if (isLocatedBetween(station)) {
+            sectionByDownStation(station)
+                .connect(sectionByUpStation(station));
+        }
+        list.remove(removedSection(station));
+    }
+
+    private boolean isLocatedBetween(Station station) {
+        return hasSectionByUpStation(station) && hasSectionByDownStation(station);
+    }
+
+    private Section removedSection(Station station) {
+        if (!hasSectionByUpStation(station)) {
+            return sectionByDownStation(station);
+        }
+        return sectionByUpStation(station);
+    }
+
+    private void validateDeletion(Station station) {
+        Assert.notNull(station, "deleted station must not be null");
+        if (isNotExist(station)) {
+            throw new NotFoundException(
+                String.format("station(%s) is not exist in sections", station));
+        }
+        if (hasSizeEqualMinimum()) {
+            throw new InvalidDataException("sections must have at least one section");
+        }
+    }
+
+    private boolean isNotExist(Station station) {
+        return !isExist(station);
+    }
+
+    private boolean hasSizeEqualMinimum() {
+        return list.size() == MINIMUM_SECTION_SIZE;
     }
 
     private void deleteSectionsCache() {
