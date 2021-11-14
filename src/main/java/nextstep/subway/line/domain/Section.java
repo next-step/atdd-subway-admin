@@ -3,23 +3,19 @@ package nextstep.subway.line.domain;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import nextstep.subway.common.exception.InvalidDataException;
 import nextstep.subway.station.domain.Station;
 import org.springframework.util.Assert;
 
 @Entity
-@Table(indexes = @Index(name = "idx_section_index", columnList = "index"))
 public class Section {
 
     @Id
@@ -36,9 +32,6 @@ public class Section {
 
     @Embedded
     private Distance distance;
-
-    @Column(nullable = false)
-    private int index;
 
     @ManyToOne
     @JoinColumn(name = "line_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_line"))
@@ -66,10 +59,6 @@ public class Section {
 
     List<Station> stations() {
         return Arrays.asList(upStation, downStation);
-    }
-
-    void setIndex(int index) {
-        this.index = index;
     }
 
     Station upStation() {
