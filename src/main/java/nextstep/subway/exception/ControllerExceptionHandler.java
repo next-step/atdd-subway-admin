@@ -17,4 +17,9 @@ public class ControllerExceptionHandler {
     public ResponseEntity<String> handleLineNotFoundException(LineNotFoundException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(StationNotFoundException.class)
+    public ResponseEntity<String> handleStationNotFoundException(StationNotFoundException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

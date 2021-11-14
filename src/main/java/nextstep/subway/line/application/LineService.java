@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.exception.LineNotFoundException;
+import nextstep.subway.exception.StationNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -34,7 +35,7 @@ public class LineService {
 
     private Station getStationById(Long upStationId) {
         return stationRepository.findById(upStationId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(StationNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
