@@ -52,6 +52,20 @@ public class Sections {
         return StreamUtils.flatMapToList(sections, Section::getStations, Collection::stream);
     }
 
+    public Section findByUpStation(Station station) {
+        return sections.stream()
+                       .filter(section -> section.isSameUpStation(station))
+                       .findFirst()
+                       .orElseThrow(() -> new IllegalStateException(NOT_EXIST_SECTION_BY_STATION));
+    }
+
+    public Section findByDownStation(Station station) {
+        return sections.stream()
+                       .filter(section -> section.isSameDownStation(station))
+                       .findFirst()
+                       .orElseThrow(() -> new IllegalStateException(NOT_EXIST_SECTION_BY_STATION));
+    }
+
     public boolean retainStations(List<Station> stations) {
         return findAllStations().retainAll(stations);
     }
@@ -62,6 +76,10 @@ public class Sections {
 
     public boolean contains(Section section) {
         return this.sections.contains(section);
+    }
+
+    public void remove(Section section) {
+        this.sections.remove(section);
     }
 
     public boolean containStations(List<Station> stations) {

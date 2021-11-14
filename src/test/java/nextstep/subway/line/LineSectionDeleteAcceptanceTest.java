@@ -23,8 +23,8 @@ public class LineSectionDeleteAcceptanceTest extends AcceptanceTest {
     private static final int DISTANCE = 10;
 
     private StationResponse 판교역;
-    private StationResponse 미금역;
     private StationResponse 정자역;
+    private StationResponse 미금역;
     private LineResponse 신분당선;
 
     @BeforeEach

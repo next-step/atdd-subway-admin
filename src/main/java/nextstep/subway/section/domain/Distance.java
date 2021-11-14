@@ -19,6 +19,10 @@ public class Distance {
         return new Distance(distance);
     }
 
+    public static Distance merge(Distance upDistance, Distance downDistance) {
+        return Distance.from(upDistance.distance + downDistance.distance);
+    }
+
     public boolean isGreaterThanOrEqualTo(Distance distance) {
         return this.distance >= distance.getDistance();
     }

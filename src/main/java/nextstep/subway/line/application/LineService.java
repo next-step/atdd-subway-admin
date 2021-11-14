@@ -68,8 +68,9 @@ public class LineService {
         line.addSection(sectionRequest.toSection());
     }
 
-    public void deleteSection(Long lineId, Long stationId) {
-        throw new IllegalStateException();
+    public void deleteStation(Long id, Long stationId) {
+        Line line = findLineById(id);
+        line.removeStation(Station.from(stationId));
     }
 
     private Section buildSection(LineRequest request) {

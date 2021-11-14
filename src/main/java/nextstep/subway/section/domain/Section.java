@@ -82,6 +82,10 @@ public class Section {
         this.downStation = downStation;
     }
 
+    public void changeDistance(Distance distance) {
+        this.distance = distance;
+    }
+
     public Long getId() {
         return id;
     }
@@ -96,6 +100,10 @@ public class Section {
 
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
     private static void validateCreateSection(Station upStation, Station downStation, Distance distance) {

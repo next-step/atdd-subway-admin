@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import java.util.List;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -52,6 +53,13 @@ public class Line extends BaseEntity {
         section.registerLine(this);
     }
 
+    public void removeStation(Station station) {
+        Section upSection = sections.findByUpStation(station);
+        Section downSection = sections.findByDownStation(station);
+
+        rearrangeSections(upSection, downSection);
+    }
+
     public Long getId() {
         return id;
     }
@@ -66,6 +74,13 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return sections.getSortedStations();
+    }
+
+    private void rearrangeSections(Section upSection, Section downSection) {
+        upSection.changeDownStation(downSection.getDownStation());
+        upSection.changeDistance(Distance.merge(upSection.getDistance(), downSection.getDistance()));
+
+        sections.remove(downSection);
     }
 
     private void validateAddableSection(Section section) {
