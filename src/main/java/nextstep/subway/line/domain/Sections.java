@@ -1,14 +1,13 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.PreUpdate;
+import javax.persistence.Transient;
 import nextstep.subway.common.exception.InvalidDataException;
 import nextstep.subway.station.domain.Station;
 import org.springframework.util.Assert;
@@ -16,13 +15,14 @@ import org.springframework.util.Assert;
 @Embeddable
 public class Sections {
 
-    private static final int FIRST_INDEX = 0;
-    private static final int PREVIOUS_INDEX_SIZE = 1;
-    private static final int NOT_EXIST_INDEX = -1;
-
-    @OrderColumn(name = "index")
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> list = new ArrayList<>();
+
+    @Transient
+    private Map<Station, Section> upStationToSection;
+
+    @Transient
+    private Map<Station, Section> downStationToSection;
 
     protected Sections() {
     }
@@ -37,7 +37,15 @@ public class Sections {
     }
 
     List<Station> stations() {
-        return new ArrayList<>(removedDuplicateStations());
+        Section firstSection = firstSection();
+        List<Station> stations = new ArrayList<>(firstSection.stations());
+        Station nextStation = firstSection.downStation();
+        while (hasNextSection(nextStation)) {
+            nextStation = nextSection(nextStation)
+                .downStation();
+            stations.add(nextStation);
+        }
+        return stations;
     }
 
     void setLine(Line line) {
@@ -47,87 +55,91 @@ public class Sections {
     }
 
     public void addSection(Section section) {
+        validateAdditionalSection(section);
+        addVerifiedSection(section);
+        deleteSectionsCache();
+    }
+
+    private Section firstSection() {
+        return list.stream()
+            .filter(section -> !hasPreviousSection(section.upStation()))
+            .findFirst()
+            .orElseThrow(() -> new InvalidDataException("not exists"));
+    }
+
+    private void addVerifiedSection(Section section) {
+        if (isExist(section.upStation())) {
+            addByUpStation(section);
+            return;
+        }
+        addByDownStation(section);
+    }
+
+    private void addByUpStation(Section section) {
+        if (hasNextSection(section.upStation())) {
+            nextSection(section.upStation())
+                .remove(section);
+        }
+        list.add(section);
+    }
+
+    private void addByDownStation(Section section) {
+        if (hasPreviousSection(section.downStation())) {
+            previousSection(section.downStation())
+                .remove(section);
+        }
+        list.add(section);
+    }
+
+    private void validateAdditionalSection(Section section) {
         validateNotNull(section);
-        List<Station> stations = stations();
-        int upStationIndex = stations.indexOf(section.upStation());
-        int downStationIndex = stations.indexOf(section.downStation());
-        validateFoundIndexes(section, upStationIndex, downStationIndex);
-        addSectionByFoundIndexes(section, upStationIndex, downStationIndex);
+        if (doesNotContainOnlyOneStation(section)) {
+            throw new InvalidDataException(
+                String.format("stations of section(%s) must be only one overlapping station",
+                    section));
+        }
     }
 
-    private void addSectionByFoundIndexes(
-        Section section, int upStationIndex, int downStationIndex) {
-        if (isExistIndex(upStationIndex)) {
-            addSectionByUpStationIndex(section, upStationIndex);
-            return;
-        }
-        addSectionByDownStationIndex(section, downStationIndex);
+    private boolean doesNotContainOnlyOneStation(Section section) {
+        return isExist(section.upStation()) == isExist(section.downStation());
     }
 
-    private void addSectionByUpStationIndex(Section section, int index) {
-        if (isLastIndex(index)) {
-            list.add(section);
-            return;
-        }
-        list.get(index).remove(section);
-        list.add(index, section);
+    private boolean isExist(Station station) {
+        return hasPreviousSection(station) || hasNextSection(station);
     }
 
-    private void addSectionByDownStationIndex(Section section, int index) {
-        if (isFistIndex(index)) {
-            list.add(FIRST_INDEX, section);
-            return;
+    private boolean hasNextSection(Station station) {
+        return nextSection(station) != null;
+    }
+
+    private boolean hasPreviousSection(Station station) {
+        return previousSection(station) != null;
+    }
+
+    private Section previousSection(Station station) {
+        if (downStationToSection == null) {
+            downStationToSection = list.stream()
+                .collect(Collectors.toMap(Section::downStation, section -> section));
         }
-        list.get(index - PREVIOUS_INDEX_SIZE).remove(section);
-        list.add(index, section);
+        return downStationToSection.get(station);
+    }
+
+
+    private Section nextSection(Station station) {
+        if (upStationToSection == null) {
+            upStationToSection = list.stream()
+                .collect(Collectors.toMap(Section::upStation, section -> section));
+        }
+        return upStationToSection.get(station);
     }
 
     private void validateNotNull(Section section) {
         Assert.notNull(section, "section must not be null");
     }
 
-    private boolean isLastIndex(int index) {
-        return index == lastStationIndex();
-    }
-
-    private int lastStationIndex() {
-        return list.size();
-    }
-
-    private void validateFoundIndexes(Section section, int upStationIndex, int downStationIndex) {
-        if (doesNotContainOnlyOneStation(upStationIndex, downStationIndex)) {
-            throw new InvalidDataException(
-                String.format(
-                    "stations of section(%s) must be only one overlapping station", section));
-        }
-    }
-
-    private boolean doesNotContainOnlyOneStation(int upStationIndex, int downStationIndex) {
-        return isExistIndex(upStationIndex) == isExistIndex(downStationIndex);
-    }
-
-    private boolean isExistIndex(int index) {
-        return index > NOT_EXIST_INDEX;
-    }
-
-    private boolean isFistIndex(int index) {
-        return index == FIRST_INDEX;
-    }
-
-    private Set<Station> removedDuplicateStations() {
-        Set<Station> stations = new LinkedHashSet<>();
-        for (Section section : list) {
-            stations.addAll(section.stations());
-        }
-        return stations;
-    }
-
-    @PreUpdate
-    private void prepareIndex() {
-        for (int index = 0; index < list.size(); index++) {
-            list.get(index)
-                .setIndex(index);
-        }
+    private void deleteSectionsCache() {
+        upStationToSection = null;
+        downStationToSection = null;
     }
 
     @Override
