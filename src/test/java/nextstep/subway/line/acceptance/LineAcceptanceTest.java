@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.api.Assertions;
@@ -44,8 +45,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         사호선 = 지하철_노선_등록되어_있음(new LineRequest("4호선", "blue", 사당역.getId(), 방배역.getId(), 20));
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
     @Test
+    @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
         // given
         LineRequest lineRequest = new LineRequest("3호선", "orange", 강남역.getId(), 사당역.getId(), 10);
@@ -57,8 +58,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성됨(response);
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     void createLine2() {
         // given
         LineRequest lineRequest = new LineRequest(이호선.getName(), "red", 강남역.getId(), 사당역.getId(), 10);
@@ -70,8 +71,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨(response);
     }
 
-    @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
+    @DisplayName("지하철 노선 목록을 조회한다.")
     void getLines() {
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -81,8 +82,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_포함됨(response, Arrays.asList(이호선, 사호선));
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
     @Test
+    @DisplayName("지하철 노선을 조회한다.")
     void getLine() {
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선.getId());
@@ -91,8 +92,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_응답됨(response);
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
     @Test
+    @DisplayName("지하철 노선을 수정한다.")
     void updateLine() {
         // given
         LineRequest updateLineRequest = new LineRequest(이호선.getName(), "red", 역삼역.getId(), 방배역.getId(), 15);
@@ -104,14 +105,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정됨(response);
     }
 
-    @DisplayName("지하철 노선을 삭제한다.")
     @Test
+    @DisplayName("지하철 노선을 삭제한다.")
     void deleteLine() {
         // when
         ExtractableResponse<Response> response = 지하철_노선_삭제_요청(이호선.getId());
 
         // then
         지하철_노선_삭제됨(response);
+    }
+
+    @Test
+    @DisplayName("지하철 노선에 구간을 등록한다.")
+    void addSection() {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 사당역.getId(), 10);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(이호선.getId(), sectionRequest);
+
+        // then
+        지하철_노선에_구간_등록됨(response);
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
@@ -147,5 +161,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void 지하철_노선에_구간_등록됨(ExtractableResponse<Response> response) {
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
