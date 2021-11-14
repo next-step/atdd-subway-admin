@@ -55,7 +55,7 @@ public class Sections {
     }
 
     void addSection(Section section) {
-        validateAdditionalSection(section);
+        validateAddition(section);
         addValidatedSection(section);
         deleteSectionsCache();
     }
@@ -95,7 +95,7 @@ public class Sections {
         list.add(section);
     }
 
-    private void validateAdditionalSection(Section section) {
+    private void validateAddition(Section section) {
         validateNotNull(section);
         if (doesNotContainOnlyOneStation(section)) {
             throw new InvalidDataException(
