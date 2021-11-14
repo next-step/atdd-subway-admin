@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import nextstep.subway.common.domain.Name;
 import nextstep.subway.common.exception.InvalidDataException;
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -132,7 +133,7 @@ class SectionsTest {
             //then
             assertThatIllegalArgumentException()
                 .isThrownBy(deleteStationCall)
-                .withMessage("deleted station must not null");
+                .withMessage("deleted station must not be null");
         }
 
         @Test
@@ -146,7 +147,7 @@ class SectionsTest {
                 () -> gyodaeGangnamYeoksamSections.deleteStation(banpo);
 
             //then
-            assertThatExceptionOfType(InvalidDataException.class)
+            assertThatExceptionOfType(NotFoundException.class)
                 .isThrownBy(deleteStationCall)
                 .withMessageEndingWith("is not exist in sections");
         }

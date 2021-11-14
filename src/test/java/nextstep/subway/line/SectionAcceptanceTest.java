@@ -148,7 +148,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @BeforeEach
         void beforeEach() {
             지하철_노선에_지하철역_등록_요청(secondLine.getId(),
-                gangnamStation.getId(), yeoksamStation.getId(), 10);
+                gangnamStation.getId(), yeoksamStation.getId(), 5);
         }
 
         @Test
@@ -214,7 +214,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 secondLine.getId(), null);
 
             // then
-            찾을_수_없는_요청(response);
+            지하철_노선에_역_구간_삭제_실패(response);
         }
 
         @Test

@@ -206,10 +206,10 @@ class LineServiceTest {
         Line gyodaeGangnamYoeksamLine = gangnamYoeksamLine();
         gyodaeGangnamYoeksamLine.addSection(sectionTenDistance("교대", "강남"));
         givenLine(gyodaeGangnamYoeksamLine);
-        givenStation(anyLong(), Station.from(Name.from("강남")));
+        givenStation(1L, Station.from(Name.from("강남")));
 
         //when
-        service.deleteStation(anyLong(), anyLong());
+        service.deleteStation(1, 1);
 
         //then
         assertThat(gyodaeGangnamYoeksamLine.stations())
