@@ -11,11 +11,11 @@ import java.util.Optional;
 public interface LineRepository extends JpaRepository<Line, Long> {
 
     @Override
-    @EntityGraph(attributePaths = {"sections.station"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"sections.upStation","sections.downStation"}, type = EntityGraph.EntityGraphType.LOAD)
     Optional<Line> findById(Long id);
 
     @Override
-    @EntityGraph(attributePaths = {"sections.station"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"sections.upStation","sections.downStation"}, type = EntityGraph.EntityGraphType.LOAD)
     List<Line> findAll();
 
 }
