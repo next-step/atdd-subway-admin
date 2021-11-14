@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.utils.StreamUtils;
 
 @Embeddable
 public class Sections {
@@ -49,11 +49,7 @@ public class Sections {
     }
 
     private List<Station> findAllStations() {
-        return sections.stream()
-                       .map(Section::getStations)
-                       .flatMap(Collection::stream)
-                       .distinct()
-                       .collect(Collectors.toList());
+        return StreamUtils.flatMapToList(sections, Section::getStations, Collection::stream);
     }
 
     public boolean retainStations(List<Station> stations) {
@@ -103,44 +99,32 @@ public class Sections {
             || lastSection.isSameDownStation(section.getUpStation());
     }
     
-    private Optional<Section> findSectionByUpStation(Station upStation) {
-        return sections.stream()
-                       .filter(section -> section.isSameUpStation(upStation))
-                       .findFirst();
+    private Optional<Section> findSectionByUpStation(Station station) {
+        return StreamUtils.filterAndFindFirst(sections, section -> section.isSameUpStation(station));
     }
 
-    private Optional<Section> findSectionByDownStation(Station downStation) {
-        return sections.stream()
-                       .filter(section -> section.isSameDownStation(downStation))
-                       .findFirst();
+    private Optional<Section> findSectionByDownStation(Station station) {
+        return StreamUtils.filterAndFindFirst(sections, section -> section.isSameDownStation(station));
     }
 
     private Section findFirstSection() {
         List<Station> downStations = findDownStations();
-        return sections.stream()
-                       .filter(section -> !downStations.contains(section.getUpStation()))
-                       .findFirst()
-                       .orElseThrow(() -> new IllegalStateException(NOT_EXIST_FIRST_SECTION));
+        return StreamUtils.filterAndFindFirst(sections, section -> !downStations.contains(section.getUpStation()))
+                          .orElseThrow(() -> new IllegalStateException(NOT_EXIST_FIRST_SECTION));
     }
 
     private Section findLastSection() {
         List<Station> upStations = findUpStations();
-        return sections.stream()
-                       .filter(section -> !upStations.contains(section.getDownStation()))
-                       .findFirst()
-                       .orElseThrow(() -> new IllegalStateException(NOT_EXIST_LAST_SECTION));
+        return StreamUtils.filterAndFindFirst(sections, section -> !upStations.contains(section.getDownStation()))
+                          .orElseThrow(() -> new IllegalStateException(NOT_EXIST_LAST_SECTION));
     }
 
     private List<Station> findUpStations() {
-        return sections.stream()
-                       .map(Section::getUpStation)
-                       .collect(Collectors.toList());
+        return StreamUtils.mapToList(sections, Section::getUpStation);
     }
     
     private List<Station> findDownStations() {
-        return sections.stream()
-                       .map(Section::getDownStation)
-                       .collect(Collectors.toList());
+        return StreamUtils.mapToList(sections, Section::getDownStation);
     }
 
     private Section findMiddleSection(Section section) {
