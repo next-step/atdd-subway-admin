@@ -37,15 +37,7 @@ public class Sections {
     }
 
     List<Station> stations() {
-        Section firstSection = firstSection();
-        List<Station> stations = new ArrayList<>(firstSection.stations());
-        Station nextStation = firstSection.downStation();
-        while (hasSectionByUpStation(nextStation)) {
-            nextStation = sectionByUpStation(nextStation)
-                .downStation();
-            stations.add(nextStation);
-        }
-        return stations;
+        return sortedUpToDownStations();
     }
 
     void setLine(Line line) {
@@ -58,6 +50,18 @@ public class Sections {
         validateAddition(section);
         addValidatedSection(section);
         deleteSectionsCache();
+    }
+
+    private List<Station> sortedUpToDownStations() {
+        Section firstSection = firstSection();
+        List<Station> stations = new ArrayList<>(firstSection.stations());
+        Station nextStation = firstSection.downStation();
+        while (hasSectionByUpStation(nextStation)) {
+            nextStation = sectionByUpStation(nextStation)
+                .downStation();
+            stations.add(nextStation);
+        }
+        return stations;
     }
 
     private Section firstSection() {
