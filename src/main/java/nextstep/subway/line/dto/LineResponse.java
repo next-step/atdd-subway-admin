@@ -28,20 +28,18 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate, List<Station> sections) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-        this.stations = sections;
+    public LineResponse(Line line) {
+        this.id = line.getId();
+        this.name = line.getName();
+        this.color = line.getColor();
+        this.createdDate = line.getCreatedDate();
+        this.modifiedDate = line.getModifiedDate();
+        this.stations = line.getSections().stream().map(Section::getStation).collect(Collectors.toList());
     }
 
     public static LineResponse of(Line line) {
-        List<Station> stations = line.getSections().stream().map(Section::getStation).collect(Collectors.toList());
-        stationsSort(stations);
-        return new LineResponse(line.getId(), line.getName(), line.getColor(),
-                line.getCreatedDate(), line.getModifiedDate(), stations);
+        stationsSort(line.getSections().stream().map(Section::getStation).collect(Collectors.toList()));
+        return new LineResponse(line);
     }
 
     private static void stationsSort(List<Station> stations) {
