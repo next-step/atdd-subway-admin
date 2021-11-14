@@ -27,7 +27,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_생성_요청
         Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        params.put("name", "2호선");
         params.put("color", "green lighten-1");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -50,7 +50,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        params.put("name", "2호선");
         params.put("color", "green lighten-1");
 
         RestAssured.given().log().all()
@@ -82,7 +82,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         Map<String, String> params1 = new HashMap<>();
-        params1.put("name", "강남역");
+        params1.put("name", "2호선");
         params1.put("color", "green lighten-1");
 
         ExtractableResponse<Response> createResponse1 = RestAssured.given().log().all()
@@ -95,8 +95,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // 지하철_노선_등록되어_있음
         Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "사당역");
-        params2.put("color", "green lighten-1");
+        params2.put("name", "4호선");
+        params2.put("color", "blue lighten-1");
 
         ExtractableResponse<Response> createResponse2 = RestAssured.given().log().all()
             .body(params2)
@@ -133,7 +133,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         Map<String, String> param = new HashMap<>();
-        param.put("name", "강남역");
+        param.put("name", "2호선");
         param.put("color", "green lighten-1");
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
@@ -182,7 +182,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         Map<String, String> createParam = new HashMap<>();
-        createParam.put("name", "강남역");
+        createParam.put("name", "2호선");
         createParam.put("color", "green lighten-1");
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
@@ -196,8 +196,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_수정_요청
         Map<String, String> param = new HashMap<>();
-        param.put("name", "사당역");
-        param.put("color", "green lighten-1");
+        param.put("name", "4호선");
+        param.put("color", "blue lighten-1");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(param)
@@ -221,8 +221,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_조회_요청
         Map<String, String> param = new HashMap<>();
-        param.put("name", "사당역");
-        param.put("color", "green lighten-1");
+        param.put("name", "4호선");
+        param.put("color", "blue lighten-1");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .body(param)
@@ -243,7 +243,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         Map<String, String> param = new HashMap<>();
-        param.put("name", "강남역");
+        param.put("name", "2호선");
         param.put("color", "green lighten-1");
 
         ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
