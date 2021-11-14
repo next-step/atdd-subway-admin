@@ -1,6 +1,6 @@
 package nextstep.subway.station.exception;
 
-import nextstep.subway.line.exception.ErrorCode;
+import nextstep.subway.excetpion.ErrorCode;
 
 public class StationNotFoundException extends RuntimeException{
 

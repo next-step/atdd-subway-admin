@@ -5,7 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.exception.ErrorCode;
+import nextstep.subway.excetpion.ErrorCode;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
@@ -15,7 +15,6 @@ import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -1,5 +1,7 @@
 package nextstep.subway.line.exception;
 
+import nextstep.subway.excetpion.ErrorCode;
+
 public class LineNotFoundException extends RuntimeException{
 
     private ErrorCode errorCode;

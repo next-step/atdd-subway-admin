@@ -1,4 +1,4 @@
-package nextstep.subway.line.exception;
+package nextstep.subway.excetpion;
 
 import org.springframework.http.HttpStatus;
 
