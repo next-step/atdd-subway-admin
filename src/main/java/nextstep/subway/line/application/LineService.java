@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -39,5 +40,11 @@ public class LineService {
         return lineRepository.findById(lineId)
                                 .map(LineInfoResponse::of)
                                 .orElse(new LineInfoResponse());
+    }
+
+    @Transactional
+    public void updateLineInfo(Long lineId, Line newLine) {
+        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+        line.update(newLine);
     }
 }

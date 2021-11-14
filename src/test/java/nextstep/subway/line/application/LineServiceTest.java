@@ -73,4 +73,24 @@ public class LineServiceTest {
             () -> Assertions.assertThat(LineInfoResponses.getStations()).isEqualTo(sample.getStations())
         );
     }
+
+    @DisplayName("지하철 노선정보를 변경")
+    @Test
+    void update_lineInfo() {
+        // given
+        Line sample = new Line("신분당선", "bg-red-600");
+        
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(sample));
+
+        // when
+        lineService.updateLineInfo(1L, new Line("구분당선", "bg-blue-600"));
+
+        // then
+        LineInfoResponse lineResponse = lineService.findLineInfo(1L);
+
+        assertAll(
+            () -> Assertions.assertThat(lineResponse.getName()).isEqualTo("구분당선"),
+            () -> Assertions.assertThat(lineResponse.getColor()).isEqualTo("bg-blue-600")
+        );
+    }
 }
