@@ -38,14 +38,18 @@ public class StationStep {
         return response;
     }
 
-    public static ExtractableResponse<Response> 지하철역_생성_요청(StationRequest params) {
+    public static ExtractableResponse<Response> 지하철역_생성_요청(StationRequest request) {
         return RestAssured.given().log().all()
-                .body(params)
+                .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    public static StationResponse 지하철역_생성되어_있음(StationRequest request) {
+        return 지하철역_생성_요청(request).as(StationResponse.class);
     }
 
     public static void 지하철역_생성됨(ExtractableResponse<Response> response) {

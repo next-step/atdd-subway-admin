@@ -5,19 +5,39 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
 import static nextstep.subway.line.LineStep.*;
+import static nextstep.subway.station.StationStep.지하철역_생성되어_있음;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private static LineRequest 신분당선_요청 = new LineRequest("신분당선", "bg-red-600");
+    private static LineRequest 신분당선_요청;
     private static LineRequest 이호선_요청 = new LineRequest("2호선", "bg-green-600");
     private static LineRequest 구분당선_요청 = new LineRequest("구분당선", "bg-blue-600");
+
+    private static StationRequest 강남역_요청 = new StationRequest("강남역");
+    private static StationRequest 역삼역_요청 = new StationRequest("역삼역");
+
+    private StationResponse 강남역;
+    private StationResponse 역삼역;
+
+    @BeforeEach
+    void beforeEach() {
+        super.setUp();
+
+        강남역 = 지하철역_생성되어_있음(강남역_요청);
+        역삼역 = 지하철역_생성되어_있음(역삼역_요청);
+
+        신분당선_요청 = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
