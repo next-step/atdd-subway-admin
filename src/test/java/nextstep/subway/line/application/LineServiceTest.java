@@ -2,6 +2,8 @@ package nextstep.subway.line.application;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -92,5 +94,17 @@ public class LineServiceTest {
             () -> Assertions.assertThat(lineResponse.getName()).isEqualTo("구분당선"),
             () -> Assertions.assertThat(lineResponse.getColor()).isEqualTo("bg-blue-600")
         );
+    }
+
+    @DisplayName("지하철 노선정보를 삭제")
+    @Test
+    void delete_line() {
+        // given
+
+        // when
+        lineService.deleteLineInfo(1L);
+
+        // then
+        verify(lineRepository, times(1)).deleteById(anyLong());
     }
 }

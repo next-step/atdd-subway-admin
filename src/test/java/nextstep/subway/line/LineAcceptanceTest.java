@@ -127,7 +127,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_등록되어_있음
         LineResponse redLine = createSubwayLine("신분당선", "bg-red-600");
 
-
         // when
         // 지하철_노선_수정_요청
         Map<String, String> params = new HashMap<>();
@@ -149,12 +148,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineResponse redLine = createSubwayLine("신분당선", "bg-red-600");
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = requestDeleteLine(String.valueOf(redLine.getId()));
 
         // then
         // 지하철_노선_삭제됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> searchResponse = requestSearchLineInfo("");
+        Assertions.assertThat(searchResponse.as(LineInfoResponse[].class)).isEmpty();
     }
 
     private LineResponse createSubwayLine(String name, String color) {
@@ -205,4 +210,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                             extract();
     }
 
+    private ExtractableResponse<Response> requestDeleteLine(String subwayLineId) {
+        return RestAssured.given().log().all().
+                            contentType(MediaType.APPLICATION_JSON_VALUE).
+                            when().
+                            delete("/lines/" + subwayLineId).
+                            then().
+                            log().all().
+                            extract();
+    }
 }
