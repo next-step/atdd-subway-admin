@@ -1,19 +1,20 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.global.EntityNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineNameDuplicatedException;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,18 +32,27 @@ class LineServiceTest {
     @Autowired
     private LineRepository lineRepository;
 
+    @Autowired
+    private StationRepository stationRepository;
+
+    private Station 강남역;
+    private Station 역삼역;
+    private Station 사당역;
     private LineResponse 이호선;
 
     @BeforeEach
     void setUp() {
-        이호선 = lineService.saveLine(new LineRequest("2호선", "green"));
+        강남역 = stationRepository.save(new Station("강남역"));
+        역삼역 = stationRepository.save(new Station("역삼역"));
+        사당역 = stationRepository.save(new Station("사당역"));
+        이호선 = lineService.saveLine(new LineRequest("2호선", "green", 강남역.getId(), 역삼역.getId(), 10));
     }
 
     @Test
     @DisplayName("지하철 노선을 저장한다.")
     void saveLine() {
         // given
-        LineRequest 사호선 = new LineRequest("4호선", "blue");
+        LineRequest 사호선 = new LineRequest("4호선", "blue", 강남역.getId(), 사당역.getId(), 10);
 
         // when
         LineResponse lineResponse = lineService.saveLine(사호선);
@@ -59,7 +69,7 @@ class LineServiceTest {
     void saveLineThrowException() {
         // when & then
         assertThatExceptionOfType(LineNameDuplicatedException.class)
-                .isThrownBy(() -> lineService.saveLine(new LineRequest(이호선.getName(), "blue")))
+                .isThrownBy(() -> lineService.saveLine(new LineRequest(이호선.getName(), "blue", 강남역.getId(), 사당역.getId(), 10)))
                 .withMessageMatching(LineNameDuplicatedException.MESSAGE);
     }
 
@@ -99,19 +109,19 @@ class LineServiceTest {
     @DisplayName("지하철 노선을 수정한다.")
     void updateLine() {
         // given
-        LineRequest updateLineRequest = new LineRequest("3호선", "orange");
+        LineRequest updateLineRequest = new LineRequest("3호선", "orange", 사당역.getId(), 역삼역.getId(), 10);
 
         // when
         lineService.updateLine(이호선.getId(), updateLineRequest);
 
         // then
-        Line line = lineRepository.getOne(이호선.getId());
+        LineResponse lineResponse = lineService.getLine(이호선.getId());
         assertAll(
-                () -> assertThat(line.getId()).isEqualTo(이호선.getId()),
-                () -> assertThat(line.getName()).isEqualTo(updateLineRequest.getName()),
-                () -> assertThat(line.getColor()).isEqualTo(updateLineRequest.getColor()),
-                () -> assertThat(line.getCreatedDate()).isNotNull(),
-                () -> assertThat(line.getModifiedDate()).isNotNull()
+                () -> assertThat(lineResponse.getId()).isEqualTo(이호선.getId()),
+                () -> assertThat(lineResponse.getName()).isEqualTo(updateLineRequest.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(updateLineRequest.getColor()),
+                () -> assertThat(lineResponse.getCreatedDate()).isNotNull(),
+                () -> assertThat(lineResponse.getModifiedDate()).isNotNull()
         );
     }
 
@@ -122,7 +132,9 @@ class LineServiceTest {
         lineService.deleteLine(이호선.getId());
 
         // then
-        assertThatExceptionOfType(JpaObjectRetrievalFailureException.class)
-                .isThrownBy(() -> lineRepository.getOne(이호선.getId()));
+        assertThatExceptionOfType(EntityNotFoundException.class)
+                .isThrownBy(() -> lineService.getLine(이호선.getId()))
+                .withMessageContaining(EntityNotFoundException.MESSAGE)
+                .withMessageContaining("Line");
     }
 }
