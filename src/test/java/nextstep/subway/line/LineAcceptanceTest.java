@@ -82,7 +82,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_목록_응답됨(response);
-        지하철_노석_목록_포함됨(response, 노선_2호선_생성_응답, 노선_4호선_생성_응답);
+        지하철_노선_목록_포함됨(response, 노선_2호선_생성_응답, 노선_4호선_생성_응답);
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
@@ -97,7 +97,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private void 지하철_노석_목록_포함됨(ExtractableResponse<Response> response, LineResponse ...createLineResponses) {
+    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, LineResponse ...createLineResponses) {
         List<Long> expectedLineIds = Stream.of(createLineResponses)
             .map(LineResponse::getId)
             .collect(Collectors.toList());
