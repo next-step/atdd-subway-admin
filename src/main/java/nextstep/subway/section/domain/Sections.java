@@ -74,6 +74,29 @@ public class Sections {
         return sections.isEmpty();
     }
 
+    public void removeEndStation(Station station) {
+        if (isFirstEndStation(station)) {
+            remove(findFirstSection());
+        }
+
+        remove(findLastSection());
+    }
+
+    public void removeMiddleStation(Station station) {
+        Section upSection = findByUpStation(station);
+        Section downSection = findByDownStation(station);
+        rearrangeSections(upSection, downSection);
+
+        sections.remove(downSection);
+    }
+
+    public boolean isEndStation(Station station) {
+        Section firstSection = findFirstSection();
+        Section lastSection = findLastSection();
+
+        return firstSection.isSameUpStation(station) || lastSection.isSameDownStation(station);
+    }
+
     public boolean contains(Section section) {
         return this.sections.contains(section);
     }
@@ -98,6 +121,11 @@ public class Sections {
         }
 
         return stations;
+    }
+
+    private void rearrangeSections(Section upSection, Section downSection) {
+        upSection.changeDownStation(downSection.getDownStation());
+        upSection.changeDistance(Distance.merge(upSection.getDistance(), downSection.getDistance()));
     }
 
     private void updateMiddleSection(Section middleSection, Section section) {
@@ -149,6 +177,10 @@ public class Sections {
         return findSectionByUpStation(section.getUpStation())
             .orElseGet(() -> findSectionByDownStation(section.getDownStation())
             .orElseThrow(() -> new IllegalStateException(NOT_EXIST_SECTION_BY_STATION)));
+    }
+
+    private boolean isFirstEndStation(Station station) {
+        return false;
     }
 
     private void validateAddableSectionDistance(Section section, Section middleSection) {

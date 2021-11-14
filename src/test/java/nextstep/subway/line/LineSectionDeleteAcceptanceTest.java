@@ -57,13 +57,23 @@ public class LineSectionDeleteAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_삭제됨(response);
     }
 
-    @DisplayName("노선 종점역을 제거한다.")
+    @DisplayName("노선 상행 종점역을 제거한다.")
     @Test
     void deleteSection2() {
-        // given
-
         // when
+        ExtractableResponse<Response> response = 지하철_노선의_지하철역_삭제_요청(신분당선.getId(), 판교역.getId());
 
         // then
+        지하철_노선에_지하철역_삭제됨(response);
+    }
+
+    @DisplayName("노선 하행 종점역을 제거한다.")
+    @Test
+    void deleteSection3() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선의_지하철역_삭제_요청(신분당선.getId(), 미금역.getId());
+
+        // then
+        지하철_노선에_지하철역_삭제됨(response);
     }
 }

@@ -54,10 +54,12 @@ public class Line extends BaseEntity {
     }
 
     public void removeStation(Station station) {
-        Section upSection = sections.findByUpStation(station);
-        Section downSection = sections.findByDownStation(station);
+        if (sections.isEndStation(station)) {
+            sections.removeEndStation(station);
+            return;
+        }
 
-        rearrangeSections(upSection, downSection);
+        sections.removeMiddleStation(station);
     }
 
     public Long getId() {
@@ -74,13 +76,6 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return sections.getSortedStations();
-    }
-
-    private void rearrangeSections(Section upSection, Section downSection) {
-        upSection.changeDownStation(downSection.getDownStation());
-        upSection.changeDistance(Distance.merge(upSection.getDistance(), downSection.getDistance()));
-
-        sections.remove(downSection);
     }
 
     private void validateAddableSection(Section section) {
