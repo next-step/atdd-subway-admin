@@ -57,7 +57,7 @@ public class Sections {
         }
     }
 
-    public void addSection(Section section) {
+    void addSection(Section section) {
         validateAdditionalSection(section);
         addValidatedSection(section);
         deleteSectionsCache();
