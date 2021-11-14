@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.*;
 public enum ErrorCode {
 
     DEFAULT_ERROR(INTERNAL_SERVER_ERROR, "internal_error"),
+    NOT_FOUND_ARGUMENT(BAD_REQUEST, "not found argument"),
     NOT_FOUND_ENTITY(BAD_REQUEST, "not found entity"),
     ALREADY_EXIST_ENTITY(BAD_REQUEST, "already exist entity");
 

@@ -19,19 +19,21 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private List<Section> sections = new ArrayList<>();
 
-    protected Line() {}
+    protected Line() {
+    }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public void update(Line line) {
+    public Line update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+        return line;
     }
 
     public void addSection(Section section) {
