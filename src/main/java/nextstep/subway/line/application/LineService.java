@@ -68,6 +68,10 @@ public class LineService {
         line.addSection(sectionRequest.toSection());
     }
 
+    public void deleteSection(Long lineId, Long stationId) {
+        throw new IllegalStateException();
+    }
+
     private Section buildSection(LineRequest request) {
         Station upStation = findStationById(request.getUpStationId());
         Station downStation = findStationById(request.getDownStationId());
