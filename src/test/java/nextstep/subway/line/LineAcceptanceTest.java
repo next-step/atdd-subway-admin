@@ -20,14 +20,16 @@ import static nextstep.subway.station.StationStep.지하철역_생성되어_있�
 public class LineAcceptanceTest extends AcceptanceTest {
 
     private static LineRequest 신분당선_요청;
-    private static LineRequest 이호선_요청 = new LineRequest("2호선", "bg-green-600");
+    private static LineRequest 이호선_요청;
     private static LineRequest 구분당선_요청 = new LineRequest("구분당선", "bg-blue-600");
 
     private static StationRequest 강남역_요청 = new StationRequest("강남역");
     private static StationRequest 역삼역_요청 = new StationRequest("역삼역");
+    private static StationRequest 교대역_요청 = new StationRequest("교대역");
 
     private StationResponse 강남역;
     private StationResponse 역삼역;
+    private StationResponse 교대역;
 
     @BeforeEach
     void beforeEach() {
@@ -35,8 +37,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         강남역 = 지하철역_생성되어_있음(강남역_요청);
         역삼역 = 지하철역_생성되어_있음(역삼역_요청);
+        교대역 = 지하철역_생성되어_있음(교대역_요청);
 
         신분당선_요청 = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+        이호선_요청 = new LineRequest("2호선", "bg-green-600", 강남역.getId(), 교대역.getId(), 30);
     }
 
     @DisplayName("지하철 노선을 생성한다.")

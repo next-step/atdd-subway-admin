@@ -1,17 +1,16 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.exception.DuplicateLineException;
-import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,14 +18,23 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        Station upStation = getStationById(request.getUpStationId());
+        Station downStation = getStationById(request.getDownStationId());
+        Line line = lineRepository.save(request.toLine(upStation, downStation));
+        return LineResponse.of(line);
+    }
+
+    private Station getStationById(Long upStationId) {
+        return stationRepository.findById(upStationId)
+                .orElseThrow(RuntimeException::new);
     }
 
     @Transactional(readOnly = true)
@@ -43,7 +51,7 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest lineUpdateRequest) {
         Line line = findLineById(id);
-        line.update(lineUpdateRequest.toLine());
+        line.update(lineUpdateRequest.toLine(null, null));
     }
 
     public void deleteLine(Long id) {
