@@ -84,9 +84,7 @@ public class Line extends BaseEntity {
     }
 
     private void validateAlreadyContainStations(Section section) {
-        List<Station> stations = sections.findAllStations();
-
-        if (stations.containsAll(section.getStations())) {
+        if (sections.containStations(section.getStations())) {
             throw new IllegalArgumentException(String.format(ALREADY_CONTAIN_UP_AND_DOWN_STATIONS_MESSAGE,
                                                              section.getUpStation().getId(),
                                                              section.getDownStation().getId()));

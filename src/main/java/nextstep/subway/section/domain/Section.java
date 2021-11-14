@@ -58,12 +58,12 @@ public class Section {
         this.line = line;
     }
 
-    public boolean isSameUpStation(Station upStation) {
-        return this.upStation.equals(upStation);
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
-    public boolean isSameDownStation(Station downStation) {
-        return this.downStation.equals(downStation);
+    public boolean isSameDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public boolean isSameDistance(Distance distance) {

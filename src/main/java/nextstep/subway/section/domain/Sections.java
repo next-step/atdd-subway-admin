@@ -48,7 +48,7 @@ public class Sections {
         sections.add(section);
     }
 
-    public List<Station> findAllStations() {
+    private List<Station> findAllStations() {
         return sections.stream()
                        .map(Section::getStations)
                        .flatMap(Collection::stream)
@@ -68,14 +68,19 @@ public class Sections {
         return this.sections.contains(section);
     }
 
+    public boolean containStations(List<Station> stations) {
+        return findAllStations().containsAll(stations);
+    }
+
     public List<Station> getSortedStations() {
         List<Station> stations = new ArrayList<>();
         stations.add(findFirstSection().getUpStation());
 
         for (int i = 0; i < sections.size(); i++) {
-            Optional<Section> sectionOpt = findSectionByUpStation(stations.get(i));
-            stations.add(sectionOpt.map(Section::getDownStation)
-                                   .orElseThrow(() -> new IllegalStateException(NOT_EXIST_UP_STATION)));
+            Station station = findSectionByUpStation(stations.get(i))
+                                .map(Section::getDownStation)
+                                .orElseThrow(() -> new IllegalStateException(NOT_EXIST_UP_STATION));
+            stations.add(station);
         }
 
         return stations;
@@ -139,13 +144,9 @@ public class Sections {
     }
 
     private Section findMiddleSection(Section section) {
-        Optional<Section> sectionByUpStation = findSectionByUpStation(section.getUpStation());
-        if (sectionByUpStation.isPresent()) {
-            return sectionByUpStation.get();
-        }
-
-        Optional<Section> sectionByDownStation = findSectionByDownStation(section.getDownStation());
-        return sectionByDownStation.orElseThrow(() -> new IllegalStateException(NOT_EXIST_SECTION_BY_STATION));
+        return findSectionByUpStation(section.getUpStation())
+            .orElseGet(() -> findSectionByDownStation(section.getDownStation())
+            .orElseThrow(() -> new IllegalStateException(NOT_EXIST_SECTION_BY_STATION)));
     }
 
     private void validateAddableSectionDistance(Section section, Section middleSection) {
