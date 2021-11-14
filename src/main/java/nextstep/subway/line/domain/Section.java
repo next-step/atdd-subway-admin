@@ -37,6 +37,22 @@ public class Section {
 
     }
 
+    public boolean isUpStation(Station upStation) {
+        return this.upStation == upStation;
+    }
+
+    public boolean isDownStation(Station downStation) {
+        return this.downStation == downStation;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
     @Override
     public String toString() {
         return "Section{" +
