@@ -80,4 +80,27 @@ class LineTest {
         assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.removeStation(판교역))
                                          .withMessageContaining("노선의 구간이 1개인 경우, 지하철 역을 삭제 할 수 없습니다.");
     }
+
+    @DisplayName("Line 에 존재하지 않는 Station 은 삭제 할 수 없다.")
+    @Test
+    void deleteStation2() {
+        // given
+        Line 신분당선 = Line.of("신분당선", "RED");
+        Station 판교역 = Station.from(1L, "판교역");
+        Station 정자역 = Station.from(2L, "정자역");
+        Station 미금역 = Station.from(3L, "미금역");
+
+        Section 판교_정자_구간 = Section.of(판교역, 정자역, Distance.from(10));
+        Section 정자_미금_구간 = Section.of(정자역, 미금역, Distance.from(5));
+
+        신분당선.addSection(판교_정자_구간);
+        신분당선.addSection(정자_미금_구간);
+
+        // when
+        Station 강남역 = Station.from(10L, "강남역");
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.removeStation(강남역))
+                                            .withMessageContaining("노선에 존재하지 않는 역입니다.");
+    }
 }

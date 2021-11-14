@@ -101,6 +101,10 @@ public class Sections {
         return firstSection.isSameUpStation(station) || lastSection.isSameDownStation(station);
     }
 
+    public boolean hasStation(Station station) {
+        return findAllStations().contains(station);
+    }
+
     public boolean contains(Section section) {
         return this.sections.contains(section);
     }

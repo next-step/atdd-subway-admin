@@ -116,4 +116,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 2. 구간 제거 관련 예외 케이스 처리 인수 테스트를 작성한다.
 - [X] 구간이 1개뿐인 노선에서는 역을 제거 할 수 없음
-- [ ] 노선에 존재하지 않는 역을 제거 할 수 없음
+- [X] 노선에 존재하지 않는 역을 제거 할 수 없음

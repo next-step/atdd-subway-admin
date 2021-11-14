@@ -15,6 +15,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -85,6 +86,19 @@ public class LineSectionDeleteAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철_노선의_지하철역_삭제_요청(신분당선.getId(), 정자역.getId());
+
+        // then
+        지하철_노선에_지하철역_삭제_실패(response);
+    }
+
+    @DisplayName("노선에 존재하지 않는 역은 제거 할 수 없다.")
+    @Test
+    void deleteSection5() {
+        // given
+        Station 강남역 = Station.from(10L, "강남역");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선의_지하철역_삭제_요청(신분당선.getId(), 강남역.getId());
 
         // then
         지하철_노선에_지하철역_삭제_실패(response);
