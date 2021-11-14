@@ -181,12 +181,60 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Map<String, String> createParam = new HashMap<>();
+        createParam.put("name", "강남역");
+        createParam.put("color", "green lighten-1");
+
+        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+            .body(createParam)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post("/lines")
+            .then().log().all()
+            .extract();
 
         // when
         // 지하철_노선_수정_요청
+        Map<String, String> param = new HashMap<>();
+        param.put("name", "사당역");
+        param.put("color", "green lighten-1");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(param)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/{lineId}", createResponse.jsonPath().getObject(".", LineResponse.class).getId())
+            .then().log().all()
+            .extract();
 
         // then
         // 지하철_노선_수정됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("생성되지 않은 지하철 노선을 수정한다.")
+    @Test
+    void updatedNotCreatedLine() {
+        // given
+        Long unknownId = 7L;
+
+        // when
+        // 지하철_노선_조회_요청
+        Map<String, String> param = new HashMap<>();
+        param.put("name", "사당역");
+        param.put("color", "green lighten-1");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(param)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/{lineId}", unknownId)
+            .then().log().all()
+            .extract();
+
+        // then
+        // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
