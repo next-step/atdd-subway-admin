@@ -5,17 +5,13 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,14 +67,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        createLine("1호선", "blue", "청량리역", "영등포역", 10);
-
+        ExtractableResponse<Response> response = createLine("1호선", "blue", "청량리역", "영등포역", 10);
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = selectOneLine("1");
+        String savedLineId = response.header("Location").split("/")[2];
+        ExtractableResponse<Response> selectResponse = selectOneLine(savedLineId);
         // then
         // 지하철_노선_응답됨
-        isLineOKResponse(response);
+        isLineOKResponse(selectResponse);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -169,17 +165,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void isLineOKResponse(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private void checkLineList(ExtractableResponse<Response> createResponse1, ExtractableResponse<Response> createResponse2, ExtractableResponse<Response> response) {
-        // 지하철_노선_목록_포함됨
-        List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-        assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
     private ExtractableResponse<Response> selectAllLines() {

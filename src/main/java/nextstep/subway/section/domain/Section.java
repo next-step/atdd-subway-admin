@@ -14,7 +14,10 @@ public class Section extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Station station;
+    private Station upStation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Station downStation;
 
     @ManyToOne
     @JoinColumn(name = "line_id")
@@ -22,18 +25,14 @@ public class Section extends BaseEntity {
 
     private int distance;
 
-    public Section() {
+    protected Section() {
 
     }
 
-    public Section(Long id, Line line, Station station, int distance) {
-        this(line, station, distance);
-        this.id = id;
-    }
-
-    public Section(Line line, Station station, int distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
-        this.station = station;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
@@ -41,15 +40,20 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public Station getStation() {
-        return station;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Line getLine() {
-        return line;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Long getId() {
         return id;
     }
+
+    public void addLine(Line line) {
+        this.line = line;
+    }
+
 }

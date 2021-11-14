@@ -2,13 +2,11 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,10 +17,10 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line")
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
-    public Line() {
+    protected Line() {
 
     }
 
@@ -31,22 +29,24 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, List<Section> sections) {
+    public Line(Long id, String name, String color) {
+        this(name, color);
+        this.id = id;
+    }
+
+    public Line(String name, String color, Sections sections) {
         this(name, color);
         this.sections = sections;
     }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this(name, color);
-        Section upStationSection = new Section(this, upStation, 0);
-        Section downStationSection = new Section(this, downStation, distance);
-        this.sections = Arrays.asList(upStationSection, downStationSection);
-
+        addSection(new Section(this, upStation, downStation, distance));
     }
 
-    public Line(Long id, String name, String color) {
-        this(name, color);
-        this.id = id;
+    private void addSection(Section section) {
+        this.sections.addSection(section);
+        section.addLine(this);
     }
 
     public void update(Line line) {
@@ -67,18 +67,10 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
-    public void addSection(Section section) {
-        if (!sections.contains(section)) {
-            sections.add(section);
-        }
-    }
-
-    public List<Station> getStations(){
-        return this.sections.stream()
-                .map(section -> section.getStation())
-                .collect(Collectors.toList());
+    public List<Station> getStations() {
+        return sections.getStation();
     }
 }

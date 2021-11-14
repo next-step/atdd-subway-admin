@@ -1,12 +1,8 @@
 package nextstep.subway.station.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Station extends BaseEntity {
@@ -16,11 +12,7 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "station")
-    private List<Section> sections = new ArrayList<>();
-
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
@@ -35,13 +27,4 @@ public class Station extends BaseEntity {
         return name;
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    public void addSection(Section section) {
-        if (!sections.contains(section)) {
-            this.sections.add(section);
-        }
-    }
 }
