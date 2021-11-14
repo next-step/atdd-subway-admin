@@ -4,12 +4,13 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.HttpUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,9 +38,13 @@ public class LineAcceptanceTestMethod {
         );
     }
 
-    public static void 지하철_노선_목록_확인(ExtractableResponse<Response> actual) {
-        List<LineResponse> result = actual.jsonPath().getList(".", LineResponse.class);
-        assertThat(result).isNotEmpty();
+    public static void 지하철_노선_목록_확인(ExtractableResponse<Response> actual, List<Station> excepted) {
+        List<LineResponse> responses = actual.jsonPath().getList(".", LineResponse.class);
+        List<Station> actualStations = new ArrayList<>();
+        responses.forEach(response -> {
+            actualStations.addAll(response.getStations());
+        });
+        assertThat(actualStations).containsAll(excepted);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청(String path) {

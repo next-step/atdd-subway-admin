@@ -9,8 +9,8 @@ import nextstep.subway.station.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static nextstep.subway.line.LineAcceptanceTestMethod.*;
 
@@ -54,16 +54,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void findAllLine() {
-        List<Long> excepted = new ArrayList<>();
-        excepted.add(신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역).as(LineResponse.class).getId());
-        excepted.add(신규_지하철_노선_생성_요청("/lines", 이호선, 16, 홍대역, 신촌역).as(LineResponse.class).getId());
+        LineResponse response1 = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역).as(LineResponse.class);
+        LineResponse response2 = 신규_지하철_노선_생성_요청("/lines", 이호선, 16, 홍대역, 신촌역).as(LineResponse.class);
 
         // when
         ExtractableResponse<Response> actual = 지하철_노선_목록_조회_요청("/lines");
 
         // then
         응답_확인_OK(actual);
-        지하철_노선_목록_확인(actual);
+        지하철_노선_목록_확인(actual, Stream.concat(response1.getStations().stream(),
+                response2.getStations().stream()).collect(Collectors.toList()));
     }
 
 
