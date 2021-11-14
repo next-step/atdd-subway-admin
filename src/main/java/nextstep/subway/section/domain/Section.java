@@ -17,15 +17,15 @@ public class Section extends BaseEntity implements Comparable<Section>{
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_up_station"))
+    @JoinColumn(name = "up_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_upStation"))
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_down_station"))
+    @JoinColumn(name = "down_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_downStation"))
     private Station downStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "line_id" , nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_line"))
+    @JoinColumn(name = "line_id" , nullable = false, foreignKey = @ForeignKey(name = "fk_section_line"))
     private Line line;
 
     @Embedded
