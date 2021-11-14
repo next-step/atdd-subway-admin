@@ -40,8 +40,8 @@ public class Sections {
         Section firstSection = firstSection();
         List<Station> stations = new ArrayList<>(firstSection.stations());
         Station nextStation = firstSection.downStation();
-        while (hasNextSection(nextStation)) {
-            nextStation = nextSection(nextStation)
+        while (hasSectionByUpStation(nextStation)) {
+            nextStation = sectionByUpStation(nextStation)
                 .downStation();
             stations.add(nextStation);
         }
@@ -62,7 +62,7 @@ public class Sections {
 
     private Section firstSection() {
         return list.stream()
-            .filter(section -> !hasPreviousSection(section.upStation()))
+            .filter(section -> !hasSectionByDownStation(section.upStation()))
             .findFirst()
             .orElseThrow(() -> new InvalidDataException("not exists"));
     }
@@ -76,16 +76,16 @@ public class Sections {
     }
 
     private void addByUpStation(Section section) {
-        if (hasNextSection(section.upStation())) {
-            nextSection(section.upStation())
+        if (hasSectionByUpStation(section.upStation())) {
+            sectionByUpStation(section.upStation())
                 .remove(section);
         }
         list.add(section);
     }
 
     private void addByDownStation(Section section) {
-        if (hasPreviousSection(section.downStation())) {
-            previousSection(section.downStation())
+        if (hasSectionByDownStation(section.downStation())) {
+            sectionByDownStation(section.downStation())
                 .remove(section);
         }
         list.add(section);
@@ -105,18 +105,18 @@ public class Sections {
     }
 
     private boolean isExist(Station station) {
-        return hasPreviousSection(station) || hasNextSection(station);
+        return hasSectionByDownStation(station) || hasSectionByUpStation(station);
     }
 
-    private boolean hasNextSection(Station station) {
-        return nextSection(station) != null;
+    private boolean hasSectionByUpStation(Station station) {
+        return sectionByUpStation(station) != null;
     }
 
-    private boolean hasPreviousSection(Station station) {
-        return previousSection(station) != null;
+    private boolean hasSectionByDownStation(Station station) {
+        return sectionByDownStation(station) != null;
     }
 
-    private Section previousSection(Station station) {
+    private Section sectionByDownStation(Station station) {
         if (downStationToSection == null) {
             downStationToSection = list.stream()
                 .collect(Collectors.toMap(Section::downStation, section -> section));
@@ -125,7 +125,7 @@ public class Sections {
     }
 
 
-    private Section nextSection(Station station) {
+    private Section sectionByUpStation(Station station) {
         if (upStationToSection == null) {
             upStationToSection = list.stream()
                 .collect(Collectors.toMap(Section::upStation, section -> section));
