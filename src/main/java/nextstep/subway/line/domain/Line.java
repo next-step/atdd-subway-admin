@@ -2,10 +2,13 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,8 +22,8 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
-    private List<Section> sections = new ArrayList<>();
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private final List<Section> sections = new ArrayList<>();
 
     protected Line() {
     }
@@ -37,7 +40,7 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        this.sections.add(section);
+        sections.add(section);
     }
 
     public Long getId() {
@@ -52,7 +55,12 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public List<Station> getSections() {
+        Set<Station> result = new LinkedHashSet<>();
+        sections.forEach(section -> {
+            result.add(section.getUpStation());
+            result.add(section.getDownStation());
+        });
+        return new ArrayList<>(result);
     }
 }

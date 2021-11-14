@@ -23,7 +23,7 @@ public class LineController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> findOneLine(@PathVariable("id") Long id) {
-        Line findLine = lineService.findOneLine(id);
+        Line findLine = lineService.findLine(id);
         if (findLine == null) {
             return ResponseEntity.ok().body(new LineResponse());
         }
@@ -32,7 +32,7 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> findAllLine() {
-        List<Line> lines = lineService.findAllLine();
+        List<Line> lines = lineService.findLine();
 
         return ResponseEntity.ok().body(lines.stream()
                 .map(LineResponse::of)

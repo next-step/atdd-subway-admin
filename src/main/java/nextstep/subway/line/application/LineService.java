@@ -32,13 +32,13 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public Line findOneLine(Long id) {
+    public Line findLine(Long id) {
         Optional<Line> findLine = findLineById(id);
         return findLine.orElse(null);
     }
 
-    public List<Line> findAllLine() {
-        List<Line> lines = lineRepository.findAll();
+    public List<Line> findLine() {
+        List<Line> lines = findLineAll();
         return lines;
     }
 
@@ -54,25 +54,14 @@ public class LineService {
     }
 
     private void saveTerminalStation(Line line, Long upStationId, Long downStationId, int distance) {
-        Station upStation = findOneStation(upStationId)
-                .orElseThrow(() -> new StationNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "상행역이 없습니다."));
-        line.addSection(new Section(line, upStation, distance));
-
-        Station downStation = findOneStation(downStationId)
-                .orElseThrow(() -> new StationNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "하행역이 없습니다."));
-        line.addSection(new Section(line, downStation, distance));
-    }
-
-    private Optional<Line> findLineById(Long id) {
-        if (isNull(id)) {
-            throw new LineNotFoundException(ErrorCode.NOT_FOUND_ARGUMENT, "검색 노선 아이디가 없습니다.");
-        }
-        return lineRepository.findById(id);
+        Station upStation = findOneStation(upStationId).orElse(null);
+        Station downStation = findOneStation(downStationId).orElse(null);
+        line.addSection(new Section(line, upStation, downStation, distance));
     }
 
     private Optional<Station> findOneStation(Long stationId) {
         if (isNull(stationId)) {
-            throw new StationNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "검색 역 아이디가 없습니다.");
+            throw new StationNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "검색할 역 아이디 입력은 필수입니다.");
         }
         return stationRepository.findById(stationId);
     }
@@ -91,4 +80,16 @@ public class LineService {
 
         lineRepository.delete(line);
     }
+
+    private Optional<Line> findLineById(Long id) {
+        if (isNull(id)) {
+            throw new LineNotFoundException(ErrorCode.NOT_FOUND_ARGUMENT, "검색할 노선 아이디 입력은 필수입니다.");
+        }
+        return lineRepository.findById(id);
+    }
+
+    private List<Line> findLineAll() {
+        return lineRepository.findAll();
+    }
+
 }
