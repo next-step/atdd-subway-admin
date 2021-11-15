@@ -35,11 +35,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_생성_요청
-        Response response = createResponse(params);
+        Response createResponse = createResponse(params);
 
         // then
         // 지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(CREATED.value());
+        assertThat(createResponse.statusCode()).isEqualTo(CREATED.value());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -47,16 +47,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        LineResponse params = toLineResponse(createResponse(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED)));
-        LineRequest lineRequest = new LineRequest(params.getName(), params.getColor());
+        LineResponse lineResponse = toLineResponse(createResponse(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED)));
+        LineRequest lineRequest = new LineRequest(lineResponse.getName(), lineResponse.getColor());
 
         // when
         // 존재하는 지하철 노선 생성
-        Response response = createResponse(lineRequest);
+        Response createResponse = createResponse(lineRequest);
 
         // then
         // 지하철_노선_생성_실패됨
-        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(createResponse.statusCode()).isEqualTo(BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -85,7 +85,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Long id = getCreateResponseToLineResponseToGetId(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
+        Long id = createResponseToLineResponseToGetId(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
 
         // when
         // 지하철_노선_조회_요청
@@ -107,7 +107,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Long id = getCreateResponseToLineResponseToGetId(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
+        Long id = createResponseToLineResponseToGetId(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
 
         // when
         // 지하철_노선_수정_요청
@@ -136,7 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Long id = getCreateResponseToLineResponseToGetId(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
+        Long id = createResponseToLineResponseToGetId(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
 
 
         // when
@@ -153,7 +153,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(NO_CONTENT.value());
     }
 
-    private Long getCreateResponseToLineResponseToGetId(LineRequest lineRequest) {
+    private Long createResponseToLineResponseToGetId(LineRequest lineRequest) {
         LineResponse lineResponse = toLineResponse(createResponse(lineRequest));
         return lineResponse.getId();
     }
