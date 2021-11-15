@@ -31,7 +31,7 @@ public class LineController {
 	}
 
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
 		LineResponse line = lineService.saveLine(lineRequest);
 		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
 	}
@@ -42,7 +42,7 @@ public class LineController {
 	}
 
 	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity showLine(@PathVariable Long id) {
+	public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
 		return ResponseEntity.ok().body(lineService.findLineById(id));
 	}
 
