@@ -1,85 +1,173 @@
 package nextstep.subway.line;
 
+import static org.assertj.core.api.Assertions.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.testFactory.AcceptanceTestFactory;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    @DisplayName("지하철 노선을 생성한다.")
-    @Test
-    void createLine() {
-        // when
-        // 지하철_노선_생성_요청
 
-        // then
-        // 지하철_노선_생성됨
-    }
+	private static final String lineServicePath="/lines";
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
-    @Test
-    void createLine2() {
-        // given
-        // 지하철_노선_등록되어_있음
+	@DisplayName("지하철 노선을 생성한다.")
+	@Test
+	void createLine() {
+		// given
+		// 지하철 노선은 이름과 색깔을 속성으로 가진다.
+		Map<String, String> params = AcceptanceTestFactory.getNameAndColorContent("신분당선","bg-red-600");
 
-        // when
-        // 지하철_노선_생성_요청
+		// when
+		// 지하철 노선 생성 요청
+		ExtractableResponse<Response> response = AcceptanceTestFactory.post(params,lineServicePath);
 
-        // then
-        // 지하철_노선_생성_실패됨
-    }
+		// then
+		// 지하철 노선 생성됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(response.header("Location")).isNotBlank();
+	}
 
-    @DisplayName("지하철 노선 목록을 조회한다.")
-    @Test
-    void getLines() {
-        // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+	@Test
+	void createLine2() {
+		// given
+		// 지하철 노선 A가 등록되어있다.
+		Map<String, String> params =  AcceptanceTestFactory.getNameAndColorContent("신분당선","bg-red-600");
+		AcceptanceTestFactory.post(params,lineServicePath);
 
-        // when
-        // 지하철_노선_목록_조회_요청
+		// when
+		// 지하철 노선 A와 동일한 이름으로 노선 등록을 요청한다.
+		ExtractableResponse<Response> response = AcceptanceTestFactory.post(params,lineServicePath);
 
-        // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
-    }
+		// then
+		// 중복 등록 오류로 생성에 실패한다.
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
 
-    @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void getLine() {
-        // given
-        // 지하철_노선_등록되어_있음
+	@DisplayName("지하철 노선 목록을 조회한다.")
+	@Test
+	void getLines() {
+		// given
+		// 지하철 노선이 등록되어 있다.
+		Map<String, String> params1 = AcceptanceTestFactory.getNameAndColorContent("신분당선","bg-red-600");
+		ExtractableResponse<Response> createResponse1 = AcceptanceTestFactory.post(params1,lineServicePath);
 
-        // when
-        // 지하철_노선_조회_요청
+		Map<String, String> params2 = AcceptanceTestFactory.getNameAndColorContent("2호선","bg-green-600");
+		ExtractableResponse<Response> createResponse2 =   AcceptanceTestFactory.post(params2,lineServicePath);
 
-        // then
-        // 지하철_노선_응답됨
-    }
+		// when
+		// 지하철 노선 목록을 요청한다.
+		ExtractableResponse<Response> response = AcceptanceTestFactory.get(lineServicePath);
 
-    @DisplayName("지하철 노선을 수정한다.")
-    @Test
-    void updateLine() {
-        // given
-        // 지하철_노선_등록되어_있음
+		// then
+		// 지하철 노선 목록을 응답한다.
+		// 등록했던 노선이 포함되어있는지 확인한다.
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
+			.map(it -> Long.parseLong(it.header("Location").split("/")[2]))
+			.collect(Collectors.toList());
+		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+			.map(it -> it.getId())
+			.collect(Collectors.toList());
+		assertThat(resultLineIds).containsAll(expectedLineIds);
+	}
 
-        // when
-        // 지하철_노선_수정_요청
+	@DisplayName("특정 지하철 노선을 조회한다.")
+	@Test
+	void getLine() {
+		// given
+		// 지하철 노선이 등록되어 있다.
+		Map<String, String> params = AcceptanceTestFactory.getNameAndColorContent("신분당선","bg-red-600");
+		ExtractableResponse<Response> createResponse = AcceptanceTestFactory.post(params,lineServicePath);
+		String createdUri = createResponse.header("Location");
 
-        // then
-        // 지하철_노선_수정됨
-    }
+		// when
+		// 등록 되어있는 지하철 노선을 조회한다.
+		ExtractableResponse<Response> response = AcceptanceTestFactory.get(createdUri);
 
-    @DisplayName("지하철 노선을 제거한다.")
-    @Test
-    void deleteLine() {
-        // given
-        // 지하철_노선_등록되어_있음
+		// then
+		// 지하철 노선을 응답한다.
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.jsonPath().getObject(".", LineResponse.class).getId()).isEqualTo(
+			Long.parseLong(createdUri.split("/")[2]));
+	}
 
-        // when
-        // 지하철_노선_제거_요청
+	@DisplayName("없는 지하철 노선을 조회한다.")
+	@Test
+	void getLine2() {
+		// given
+		// 조회 대상 지하철 노선이 등록되어있지 않다.
+		String notCreatedUri = lineServicePath+"/1";
+		// when
+		// 등록 되어있는 지하철 노선을 조회한다.
+		ExtractableResponse<Response> response = AcceptanceTestFactory.get(notCreatedUri);
 
-        // then
-        // 지하철_노선_삭제됨
-    }
+		// then
+		// 없는 지하철역 수정 오류
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@DisplayName("지하철 노선을 수정한다.")
+	@Test
+	void updateLine() {
+		// given
+		// 지하철 노선이 등록되어있다.
+		Map<String, String> params = AcceptanceTestFactory.getNameAndColorContent("신분당선","bg-red-600");
+		ExtractableResponse<Response> createResponse =  AcceptanceTestFactory.post(params,lineServicePath);
+		String createdUri = createResponse.header("Location");
+
+		// when
+		// 지하철 노선 수정 요청
+		Map<String, String> params2 = AcceptanceTestFactory.getNameAndColorContent("구분당","bg-blue-600");
+		ExtractableResponse<Response> response = AcceptanceTestFactory.put(params,createdUri);
+
+		// then
+		// 지하철 노선 수정 정상 처리
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	@DisplayName("없는 지하철 노선을 수정한다.")
+	@Test
+	void updateLine2() {
+		// given
+		// 수정 대상 지하철 노선이 등록되어있지 않다.
+		String notCreatedUri = lineServicePath+"/1";
+		// when
+		// 지하철 노선 수정 요청
+		Map<String, String> params = AcceptanceTestFactory.getNameAndColorContent("구분당","bg-blue-600");
+		ExtractableResponse<Response> response = AcceptanceTestFactory.put(params,notCreatedUri);
+
+		// then
+		// 없는 지하철 수정 요청 오류
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@DisplayName("지하철 노선을 제거한다.")
+	@Test
+	void deleteLine() {
+		// given
+		// 지하철 노선이 등록되어있다.
+		Map<String, String> params = AcceptanceTestFactory.getNameAndColorContent("신분당선","bg-red-600");
+		ExtractableResponse<Response> createResponse =  AcceptanceTestFactory.post(params,lineServicePath);
+		String createdUri = createResponse.header("Location");
+
+		// when
+		// 지하철 노선 제거 요청
+		ExtractableResponse<Response> response =  AcceptanceTestFactory.delete(createdUri);
+
+		// then
+		// 지하철 노선 삭제됨
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
 }
