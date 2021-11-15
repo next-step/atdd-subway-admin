@@ -48,11 +48,38 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
+        Map<String, String> params = new HashMap<>();
+        params.put(NAME, "1호선");
+        params.put(COLOR, "남색");
+
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = RestAssured
+            .given()
+            .log().all()
+            .body(params)
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .post("lines")
+            .then()
+            .log().all()
+            .extract();
+
+        // when
+        ExtractableResponse<Response> response = RestAssured
+            .given()
+            .log().all()
+            .body(params)
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .post("lines")
+            .then()
+            .log().all()
+            .extract();
 
         // then
         // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
