@@ -30,6 +30,11 @@ public class Sections {
             return;
         }
 
+        if (section.isDownStationEquals(findStartStation()) && isNewUpStation(section)) {
+            sections.add(section);
+            return;
+        }
+
         Optional<Section> sectionUpStationMatchedOptional = findByUpStation(section);
         Optional<Section> sectionDownStationMatchedOptional = findByDownStation(section);
 
@@ -67,6 +72,25 @@ public class Sections {
             sections.add(section);
             sections.remove(sectionDownStationMatched);
         }
+    }
+
+    private Station findStartStation() {
+        Section section = sections.get(0);
+        Optional<Section> sectionOptional = Optional.of(section);
+
+        while (sectionOptional.isPresent()) {
+            section = sectionOptional.get();
+            sectionOptional = sections.stream()
+                    .filter(section::isUpStationEqualsWithDownStation)
+                    .findFirst();
+        }
+
+        return section.getUpStation();
+    }
+
+    private boolean isNewUpStation(Section section) {
+        return !sections.stream()
+                .allMatch(section::isUpStationEqualsWithDownStation);
     }
 
     public List<Station> toStations() {

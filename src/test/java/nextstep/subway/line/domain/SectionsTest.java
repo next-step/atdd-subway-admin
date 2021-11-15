@@ -81,6 +81,25 @@ class SectionsTest {
     }
 
     @Test
+    @DisplayName("새로운 역을 상행 종점으로 설정하는 구간을 추가한다.")
+    void add3() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(강남역, 역삼역, new Distance(10)));
+
+        // when
+        sections.add(new Section(사당역, 강남역, new Distance(15)));
+
+        // then
+        assertThat(sections).isEqualTo(new Sections(
+                Arrays.asList(
+                        new Section(강남역, 역삼역, new Distance(10)),
+                        new Section(사당역, 강남역, new Distance(15))
+                )
+        ));
+    }
+
+    @Test
     @DisplayName("상행역과 하행역이 노선에 포함되어 있는 구간을 등록할 경우 예외가 발생한다.")
     void addThrowException1() {
         // given
