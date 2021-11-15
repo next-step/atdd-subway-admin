@@ -117,6 +117,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        
         ExtractableResponse<Response> searchResponse = requestSearchLineInfo("");
         verifyLineInfoResponse(searchResponse.as(LineInfoResponse[].class)[0], LineInfoResponse.of(new Line(lineRequest.getName(), lineRequest.getColor())));
     }
@@ -134,7 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         ExtractableResponse<Response> searchResponse = requestSearchLineInfo("");
         Assertions.assertThat(searchResponse.as(LineInfoResponse[].class)).isEmpty();

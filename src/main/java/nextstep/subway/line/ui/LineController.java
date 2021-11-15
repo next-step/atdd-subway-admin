@@ -48,12 +48,12 @@ public class LineController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateLineInfo(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateLineInfo(id, new Line(lineRequest.getName(), lineRequest.getColor()));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLineInfo(@PathVariable Long id) {
         lineService.deleteLineInfo(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
