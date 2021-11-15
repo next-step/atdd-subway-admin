@@ -137,6 +137,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> createSubwayLineSection(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssured.given()
+                .log().all()
+                .when()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+
     private ExtractableResponse<Response> updateSubwayLine(ExtractableResponse<Response> createResponse, String name, String color) {
         String lineId = createResponse.header("Location").split("/")[2];
 
