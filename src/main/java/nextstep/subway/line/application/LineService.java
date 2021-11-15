@@ -42,6 +42,11 @@ public class LineService {
         findLine.update(lineRequest.toLine());
     }
 
+    public void deleteLine(Long id) {
+        Line findLine = findLineById(id);
+        lineRepository.delete(findLine);
+    }
+
     private List<LineResponse> convertToLineResponses(List<Line> lines) {
         List<LineResponse> responseLines = new ArrayList<>();
         for (Line line : lines) {
@@ -53,10 +58,5 @@ public class LineService {
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("not found line id : " + id));
-    }
-
-    public void deleteLine(Long id) {
-        Line findLine = findLineById(id);
-        lineRepository.delete(findLine);
     }
 }
