@@ -16,6 +16,14 @@ public class Distance {
         this.distance = distance;
     }
 
+    public boolean isLessThanOrEquals(Distance distance) {
+        return this.distance <= distance.distance;
+    }
+
+    public int getRemainDistance(Distance distance) {
+        return this.distance - distance.distance;
+    }
+
     private void validate(int distance) {
         if (distance <= 0) {
             throw new IllegalArgumentException("거리는 0보다 커야 합니다.");

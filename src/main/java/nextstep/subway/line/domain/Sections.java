@@ -39,6 +39,34 @@ public class Sections {
         if (!sectionUpStationMatchedOptional.isPresent() && !sectionDownStationMatchedOptional.isPresent()) {
             throw new SectionAddFailedException("상행역과 하행역중 1개는 노선에 포함되어야 합니다.");
         }
+
+        if (sectionUpStationMatchedOptional.isPresent()) {
+            Section sectionUpStationMatched = sectionUpStationMatchedOptional.get();
+            if (sectionUpStationMatched.isLessThanOrEquals(section)) {
+                throw new SectionAddFailedException("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
+            }
+            sections.add(section);
+            sections.add(new Section(
+                    section.getDownStation(),
+                    sectionUpStationMatched.getDownStation(),
+                    sectionUpStationMatched.getRemainDistance(section))
+            );
+            sections.remove(sectionUpStationMatched);
+        }
+
+        if (sectionDownStationMatchedOptional.isPresent()) {
+            Section sectionDownStationMatched = sectionDownStationMatchedOptional.get();
+            if (sectionDownStationMatched.isLessThanOrEquals(section)) {
+                throw new SectionAddFailedException("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
+            }
+            sections.add(new Section(
+                    sectionDownStationMatched.getUpStation(),
+                    section.getUpStation(),
+                    sectionDownStationMatched.getRemainDistance(section))
+            );
+            sections.add(section);
+            sections.remove(sectionDownStationMatched);
+        }
     }
 
     public List<Station> toStations() {

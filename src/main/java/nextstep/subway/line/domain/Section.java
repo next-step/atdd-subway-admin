@@ -50,6 +50,30 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public Distance getDistance() {
+        return distance;
+    }
+
+    public boolean isLessThanOrEquals(Section section) {
+        return this.distance.isLessThanOrEquals(section.distance);
+    }
+
+    public boolean isUpStationEquals(Section section) {
+        return this.upStation.equals(section.upStation);
+    }
+
+    public boolean isDownStationEquals(Section section) {
+        return this.downStation.equals(section.downStation);
+    }
+
+    public boolean isDownStationEquals(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean isUpStationEqualsWithDownStation(Section section) {
+        return this.upStation.equals(section.getDownStation());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -67,5 +91,9 @@ public class Section extends BaseEntity {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException("상행역과 하행역은 같을 수 없습니다.");
         }
+    }
+
+    public Distance getRemainDistance(Section section) {
+        return new Distance(this.distance.getRemainDistance(section.distance));
     }
 }
