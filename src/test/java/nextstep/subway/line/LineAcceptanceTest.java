@@ -22,6 +22,7 @@ import nextstep.subway.line.dto.LineResponse;
 public class LineAcceptanceTest extends AcceptanceTest {
     private static final LineRequest 노선_2호선_생성_요청값 = new LineRequest("2호선", "green lighten-1");
     private static final LineRequest 노선_4호선_생성_요청값 = new LineRequest("4호선", "blue lighten-1");
+    private static final Long UNKNOWN_LINE_ID = 7L;
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -97,7 +98,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, LineResponse ...createLineResponses) {
+    private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, LineResponse... createLineResponses) {
         List<Long> expectedLineIds = Stream.of(createLineResponses)
             .map(LineResponse::getId)
             .collect(Collectors.toList());
@@ -135,11 +136,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("생성되지 않은 지하철 노선을 조회한다.")
     @Test
     void getNotCreatedLine() {
-        // given
-        Long unknownId = 7L;
-
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(unknownId);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(UNKNOWN_LINE_ID);
 
         // then
         지하철_노선_찾지_못함(response);
@@ -179,11 +177,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("생성되지 않은 지하철 노선을 수정한다.")
     @Test
     void updatedNotCreatedLine() {
-        // given
-        Long unknownId = 7L;
-
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(unknownId, 노선_4호선_생성_요청값);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(UNKNOWN_LINE_ID, 노선_4호선_생성_요청값);
 
         // then
         지하철_노선_찾지_못함(response);
@@ -218,11 +213,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("생성되지 않은 지하철 노선을 제거한다.")
     @Test
     void deleteNotCreatedLine() {
-        // given
-        Long unknownId = 7L;
-
         // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(unknownId);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(UNKNOWN_LINE_ID);
 
         // then
         지하철_노선_찾지_못함(response);
