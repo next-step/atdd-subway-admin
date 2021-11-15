@@ -31,4 +31,8 @@ public class LineService {
             .map(line -> LineResponse.of(line))
             .collect(Collectors.toList());
     }
+
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
