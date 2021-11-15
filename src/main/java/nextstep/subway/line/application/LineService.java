@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import static java.util.stream.Collectors.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.NotExistsLineException;
 
 @Service
 @Transactional
@@ -43,5 +45,13 @@ public class LineService {
             lineRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new)
         );
+    }
+
+    public LineResponse updateLine(final Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(NotExistsLineException::new);
+
+        line.update(lineRequest.toLine());
+        return LineResponse.of(lineRepository.save(line));
     }
 }

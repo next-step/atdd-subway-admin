@@ -7,12 +7,14 @@ import nextstep.subway.line.application.DuplicationKeyException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.NotExistsLineException;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,8 +52,17 @@ public class LineController {
         return ResponseEntity.ok(lineService.findLineById(id));
     }
 
-    @ExceptionHandler(DuplicationKeyException.class)
-    public ResponseEntity handleIllegalArgsException(DuplicationKeyException e) {
+    @PatchMapping(value ="{id}",consumes = {APPLICATION_JSON_VALUE})
+    public ResponseEntity<LineResponse> updateLine(final @PathVariable(value = "id") Long id,
+        @RequestBody LineRequest lineRequest) {
+        if (lineRequest == null)
+            throw new IllegalArgumentException();
+        LineResponse lineResponse = lineService.updateLine(id, lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
+    }
+
+    @ExceptionHandler(value = {NotExistsLineException.class, DuplicationKeyException.class})
+    public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
 }
