@@ -46,4 +46,8 @@ public class LineService {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new LineNotFoundException("라인을 찾을 수 없습니다."));
     }
+
+    public void deleteLind(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
