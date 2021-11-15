@@ -29,7 +29,7 @@ public class LineResponse {
         this.color = line.getColor();
         this.createdDate = line.getCreatedDate();
         this.modifiedDate = line.getModifiedDate();
-        this.stations = line.getSections();
+        this.stations = line.getSections().getStations();
     }
 
     public static LineResponse of(Line line) {
@@ -46,14 +46,6 @@ public class LineResponse {
 
     public String getColor() {
         return color;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
     }
 
     public List<Station> getStations() {

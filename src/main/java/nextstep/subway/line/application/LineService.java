@@ -23,12 +23,10 @@ import static nextstep.subway.common.utils.ValidationUtils.isNull;
 @Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
     }
 
@@ -56,7 +54,7 @@ public class LineService {
     private void saveTerminalStation(Line line, Long upStationId, Long downStationId, int distance) {
         Station upStation = findOneStation(upStationId).orElse(null);
         Station downStation = findOneStation(downStationId).orElse(null);
-        line.addSection(new Section(line, upStation, downStation, distance));
+        line.addSections(new Section(line, upStation, downStation, distance));
     }
 
     private Optional<Station> findOneStation(Long stationId) {
@@ -85,11 +83,11 @@ public class LineService {
         if (isNull(id)) {
             throw new LineNotFoundException(ErrorCode.NOT_FOUND_ARGUMENT, "검색할 노선 아이디 입력은 필수입니다.");
         }
-        return lineRepository.findById(id);
+        return lineRepository.findOneWithStations(id);
     }
 
     private List<Line> findLineAll() {
-        return lineRepository.findAll();
+        return lineRepository.findAllWithStations();
     }
 
 }
