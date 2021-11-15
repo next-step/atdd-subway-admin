@@ -43,15 +43,19 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> getAllLines() {
-        return lineRepository.findAll().stream().map(LineResponse::of).collect(Collectors.toList());
+        return lineRepository.findAll().stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 
-
+    @Transactional(readOnly = true)
     public LineResponse getLine(Long lineId) {
         return LineResponse.of(findById(lineId));
     }
 
+    @Transactional(readOnly = true)
     public Line findById(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new DataIntegrityViolationException("Not Found lineId" + lineId));
