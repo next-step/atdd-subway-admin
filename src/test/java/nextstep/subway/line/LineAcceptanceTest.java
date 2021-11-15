@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -164,12 +165,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void updateLine() {
 		// given
 		// 지하철_노선_등록되어_있음
+		LineResponse 이호선 = 지하철_노선_등록되어_있음(이호선_생성_요청값());
 
 		// when
 		// 지하철_노선_수정_요청
+		ExtractableResponse<Response> response = 지하철_노선_수정_요청(이호선.getId(), 신분당선_생성_요청값());
 
 		// then
 		// 지하철_노선_수정됨
+		지하철_노선_수정됨(response, 이호선);
+	}
+
+	ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineRequest params) {
+		return RestAssured
+			.given().log().all()
+			.body(params)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().put(LINE_PATH + "/" + id)
+			.then().log().all().extract();
+	}
+
+	void 지하철_노선_수정됨(ExtractableResponse<Response> response, LineResponse expectLine) {
+		LineResponse lineResponse = response.as(LineResponse.class);
+
+		assertAll(
+			() -> assertThat(lineResponse.getId()).isEqualTo(expectLine.getId()),
+			() -> assertThat(lineResponse.getName()).isNotEqualTo(expectLine.getName()),
+			() -> assertThat(lineResponse.getName()).isEqualTo(신분당선_생성_요청값().getName())
+		);
 	}
 
 	@DisplayName("지하철 노선을 제거한다.")
