@@ -170,12 +170,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = save(new LineRequest("1호선", "남색"));
+        LineResponse lineResponse = createResponse.jsonPath().getObject(".", LineResponse.class);
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .param("id", lineResponse.getId())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when().delete("lines/")
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> save(LineRequest lineOne) {

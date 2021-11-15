@@ -12,6 +12,7 @@ import nextstep.subway.line.exception.NotExistsLineException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -59,6 +60,12 @@ public class LineController {
             throw new IllegalArgumentException();
         LineResponse lineResponse = lineService.updateLine(id, lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
+    }
+
+    @DeleteMapping(consumes = {APPLICATION_JSON_VALUE})
+    public ResponseEntity updateLine(final @RequestParam Long id) {
+        lineService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(value = {NotExistsLineException.class, DuplicationKeyException.class})
