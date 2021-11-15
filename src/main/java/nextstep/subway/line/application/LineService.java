@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
@@ -49,6 +50,7 @@ public class LineService {
 	}
 
 	private Line getLine(Long id) {
-		return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선입니다."));
+		Optional<Line> findLine = lineRepository.findById(id);
+		return findLine.orElseThrow(() -> new IllegalArgumentException("없는 노선입니다."));
 	}
 }
