@@ -5,15 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -25,27 +19,23 @@ import nextstep.subway.line.dto.LineResponse;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    public static final String NAME = "name";
-    public static final String COLOR = "color";
+    public static final String LINE_ONE = "1호선";
+    public static final String LINE_ONE_COLOR_RED = "bg-red-600";
+    public static final String LINE_TWO = "2호선";
+    public static final String LINE_TWO_COLOR_GREEN = "bg-green-600";
+    public static final String LINE_THREE = "3호선";
+    public static final String LINE_THREE_YELLOW = "bg-yellow-600";
+    public static final String ID = "id";
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
 
-        Map<String, String> params = new HashMap<>();
-        params.put(NAME, "1호선");
-        params.put(COLOR, "남색");
+        LineRequest params = new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured
-            .given().log().all()
-            .body(params)
-            .contentType(APPLICATION_JSON_VALUE)
-            .when()
-            .post("lines")
-            .then().log().all()
-            .extract();
+        Response response = createResponse(params);
 
         // then
         // 지하철_노선_생성됨
@@ -55,34 +45,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
-        Map<String, String> params = new HashMap<>();
-        params.put(NAME, "1호선");
-        params.put(COLOR, "남색");
-
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = RestAssured
-            .given()
-            .log().all()
-            .body(params)
-            .contentType(APPLICATION_JSON_VALUE)
-            .when()
-            .post("lines")
-            .then()
-            .log().all()
-            .extract();
+        LineResponse params = toLineResponse(createResponse(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED)));
+        LineRequest lineRequest = new LineRequest(params.getName(), params.getColor());
 
         // when
-        ExtractableResponse<Response> response = RestAssured
-            .given()
-            .log().all()
-            .body(params)
-            .contentType(APPLICATION_JSON_VALUE)
-            .when()
-            .post("lines")
-            .then()
-            .log().all()
-            .extract();
+        // 존재하는 지하철 노선 생성
+        Response response = createResponse(lineRequest);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -93,15 +63,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        save(new LineRequest("1호선","bg-red-600"));
-        save(new LineRequest("2호선","bg-green-600"));
+        createResponse(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
+        createResponse(new LineRequest(LINE_TWO, LINE_TWO_COLOR_GREEN));
 
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> findResponse = RestAssured
             .given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(PageRequest.of(1,10))
+            .body(PageRequest.of(1, 10))
             .when().get("lines")
             .then().log().all()
             .extract();
@@ -115,20 +85,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> request = save(new LineRequest("1호선", "bg-red-600"));
-        LineResponse lineResponse = request.jsonPath().getObject(".", LineResponse.class);
+        Long id = getCreateResponseToLineResponseToGetId(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
 
         // when
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = RestAssured
             .given().log().all()
             .contentType(APPLICATION_JSON_VALUE)
-            .pathParam("id", lineResponse.getId())
+            .pathParam(ID, id)
             .get("lines/{id}")
             .then().log().all()
             .extract();
-
-
 
         // then
         // 지하철_노선_응답됨
@@ -140,27 +107,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = save(new LineRequest("1호선", "남색"));
-        LineResponse lineResponse = createResponse.jsonPath().getObject(".", LineResponse.class);
+        Long id = getCreateResponseToLineResponseToGetId(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
 
         // when
         // 지하철_노선_수정_요청
         ExtractableResponse<Response> updateResponse = RestAssured
             .given().log().all()
-            .body(new LineRequest("3호선", "보라색"))
-            .pathParam("id", lineResponse.getId())
+            .body(new LineRequest(LINE_THREE, LINE_THREE_YELLOW))
+            .pathParam(ID, id)
             .contentType(APPLICATION_JSON_VALUE)
             .when().patch("lines/{id}")
             .then().log().all()
             .extract();
 
-        LineResponse expected = updateResponse.jsonPath().getObject(".", LineResponse.class);
         // then
         // 지하철_노선_수정됨
+        LineResponse expected = toLineResponse(updateResponse.response());
         assertThat(updateResponse.statusCode()).isEqualTo(CREATED.value());
         assertAll(
-            () -> assertThat(expected.getName().equals("3호선")).isTrue(),
-            () -> assertThat(expected.getColor().equals("보라색")).isTrue()
+            () -> assertThat(expected.getName().equals(LINE_THREE)).isTrue(),
+            () -> assertThat(expected.getColor().equals(LINE_THREE_YELLOW)).isTrue()
         );
 
     }
@@ -170,31 +136,41 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> createResponse = save(new LineRequest("1호선", "남색"));
-        LineResponse lineResponse = createResponse.jsonPath().getObject(".", LineResponse.class);
+        Long id = getCreateResponseToLineResponseToGetId(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
+
 
         // when
         // 지하철_노선_제거_요청
         ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .param("id", lineResponse.getId())
-                .contentType(APPLICATION_JSON_VALUE)
-                .when().delete("lines/")
-                .then().log().all().extract();
+            .given().log().all()
+            .param(ID, id)
+            .contentType(APPLICATION_JSON_VALUE)
+            .when().delete("lines")
+            .then().log().all().extract();
 
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> save(LineRequest lineOne) {
-        ExtractableResponse<Response> createResponse = RestAssured
+    private Long getCreateResponseToLineResponseToGetId(LineRequest lineRequest) {
+        LineResponse lineResponse = toLineResponse(createResponse(lineRequest));
+        return lineResponse.getId();
+    }
+
+    private Response createResponse(LineRequest lineOne) {
+        ExtractableResponse<Response> lines = RestAssured
             .given().log().all()
             .body(lineOne)
             .contentType(APPLICATION_JSON_VALUE)
             .when().post("lines")
             .then().log().all()
             .extract();
-        return createResponse;
+
+        return lines.response();
+    }
+
+    private LineResponse toLineResponse(Response resource) {
+        return resource.jsonPath().getObject(".", LineResponse.class);
     }
 }
