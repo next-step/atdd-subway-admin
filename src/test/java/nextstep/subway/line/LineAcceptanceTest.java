@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.Matchers.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -63,13 +65,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
+        Line 잠실역 = lineRepository.save(new Line("잠실역", "bg-green"));
+        Line 명동역 = lineRepository.save(new Line("명동역", "bg-blue"));
 
         // when
         // 지하철_노선_목록_조회_요청
+        Response response = RestAssured
+            .given().log().all()
+            .when()
+            .get("/lines");
 
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ValidatableResponse then = response.then().log().all();
+        then.body("$", hasSize(2));
+        then.body("id", hasItems(잠실역.getId().intValue(), 명동역.getId().intValue()));
     }
 
     @DisplayName("지하철 노선을 조회한다.")
