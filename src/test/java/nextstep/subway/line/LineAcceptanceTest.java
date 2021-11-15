@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -47,7 +48,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        LineResponse lineResponse = toLineResponse(post(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED)));
+        LineResponse lineResponse = toLine(post(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED)));
         LineRequest lineRequest = new LineRequest(lineResponse.getName(), lineResponse.getColor());
 
         // when
@@ -68,17 +69,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> findResponse = RestAssured
-            .given()
-            .contentType(APPLICATION_JSON_VALUE)
-            .body(PageRequest.of(1, 10))
-            .when().get("lines")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> findResponse = get();
 
         // then
         assertThat(findResponse.statusCode()).isEqualTo(OK.value());
     }
+
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
@@ -111,7 +107,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
-        LineResponse expected = toLineResponse(updateResponse);
+        LineResponse expected = toLine(updateResponse);
         assertThat(updateResponse.statusCode()).isEqualTo(CREATED.value());
         assertAll(
             () -> assertThat(expected.getName().equals(LINE_THREE)).isTrue(),
@@ -135,54 +131,55 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(NO_CONTENT.value());
     }
 
-
-    private ExtractableResponse<Response> get(Long id) {
-        return RestAssured
-            .given().log().all()
-            .contentType(APPLICATION_JSON_VALUE)
-            .pathParam(ID, id)
-            .get("lines/{id}")
-            .then().log().all()
-            .extract();
-    }
-
     private ExtractableResponse<Response> post(Object obj) {
-        return RestAssured
-            .given().log().all()
+        return given()
             .body(obj)
-            .contentType(APPLICATION_JSON_VALUE)
             .when().post("lines")
             .then().log().all()
             .extract();
     }
 
     private Long postGetId(LineRequest lineRequest) {
-        LineResponse lineResponse = toLineResponse(post(lineRequest));
-        return lineResponse.getId();
+        return toLine(post(lineRequest)).getId();
     }
 
-    private LineResponse toLineResponse(ExtractableResponse<Response> resource) {
+    private LineResponse toLine(ExtractableResponse<Response> resource) {
         return resource.jsonPath().getObject(".", LineResponse.class);
     }
 
-    private ExtractableResponse<Response> update(Long id, Object obj) {
-        return RestAssured
-            .given().log().all()
-            .body(obj)
+    private ExtractableResponse<Response> get(Long id) {
+        return given()
             .pathParam(ID, id)
-            .contentType(APPLICATION_JSON_VALUE)
+            .get("lines/{id}")
+            .then().log().all()
+            .extract();
+    }
+    private ExtractableResponse<Response> get() {
+        return given()
+            .body(PageRequest.of(1, 10))
+            .when().get("lines")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> update(Long id, Object obj) {
+        return given().body(obj).pathParam(ID, id)
             .when().patch("lines/{id}")
             .then().log().all()
             .extract();
     }
 
     private ExtractableResponse<Response> delete(Long id) {
-        return RestAssured
-            .given().log().all()
+        return given()
             .param(ID, id)
-            .contentType(APPLICATION_JSON_VALUE)
             .when().delete("lines")
             .then().log().all().extract();
+    }
+
+    private RequestSpecification given() {
+        return RestAssured
+            .given().log().all()
+            .contentType(APPLICATION_JSON_VALUE);
     }
 
 }
