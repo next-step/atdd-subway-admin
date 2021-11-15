@@ -35,6 +35,11 @@ public class Sections {
             return;
         }
 
+        if (section.isUpStationEquals(findEndStation()) && isNewDownStation(section)) {
+            sections.add(section);
+            return;
+        }
+
         Optional<Section> sectionUpStationMatchedOptional = findByUpStation(section);
         Optional<Section> sectionDownStationMatchedOptional = findByDownStation(section);
 
@@ -74,6 +79,13 @@ public class Sections {
         }
     }
 
+    public List<Station> toStations() {
+        if (sections.size() == 0) {
+            return new ArrayList<>();
+        }
+        return makeStations();
+    }
+
     private Station findStartStation() {
         Section section = sections.get(0);
         Optional<Section> sectionOptional = Optional.of(section);
@@ -84,8 +96,20 @@ public class Sections {
                     .filter(section::isUpStationEqualsWithDownStation)
                     .findFirst();
         }
-
         return section.getUpStation();
+    }
+
+    private Station findEndStation() {
+        Section section = sections.get(0);
+        Optional<Section> sectionOptional = Optional.of(section);
+
+        while (sectionOptional.isPresent()) {
+            section = sectionOptional.get();
+            sectionOptional = sections.stream()
+                    .filter(section::isDownStationEqualsWithUpStation)
+                    .findFirst();
+        }
+        return section.getDownStation();
     }
 
     private boolean isNewUpStation(Section section) {
@@ -93,11 +117,9 @@ public class Sections {
                 .allMatch(section::isUpStationEqualsWithDownStation);
     }
 
-    public List<Station> toStations() {
-        if (sections.size() == 0) {
-            return new ArrayList<>();
-        }
-        return makeStations();
+    private boolean isNewDownStation(Section section) {
+        return !sections.stream()
+                .allMatch(section::isDownStationEqualsWithUpStation);
     }
 
     private List<Station> makeStations() {

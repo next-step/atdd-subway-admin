@@ -62,6 +62,10 @@ public class Section extends BaseEntity {
         return this.upStation.equals(section.upStation);
     }
 
+    public boolean isUpStationEquals(Station station) {
+        return this.upStation.equals(station);
+    }
+
     public boolean isDownStationEquals(Section section) {
         return this.downStation.equals(section.downStation);
     }
@@ -72,6 +76,10 @@ public class Section extends BaseEntity {
 
     public boolean isUpStationEqualsWithDownStation(Section section) {
         return this.upStation.equals(section.getDownStation());
+    }
+
+    public boolean isDownStationEqualsWithUpStation(Section section) {
+        return this.downStation.equals(section.getUpStation());
     }
 
     @Override
