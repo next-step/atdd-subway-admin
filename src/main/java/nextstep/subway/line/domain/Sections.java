@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -152,15 +151,25 @@ public class Sections {
     }
 
     private List<Station> makeStations() {
-        List<Station> stations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-        stations.add(getLastStation());
+        List<Station> stations = new ArrayList<>();
+        Optional<Section> sectionOptional = findFirstSection();
+
+        while (sectionOptional.isPresent()) {
+            Section section = sectionOptional.get();
+            stations.add(section.getUpStation());
+            sectionOptional = sections.stream()
+                    .filter(it -> it.isUpStationEqualsWithDownStation(section))
+                    .findFirst();
+        }
+
+        stations.add(findEndStation());
         return stations;
     }
 
-    private Station getLastStation() {
-        return sections.get(sections.size() - 1).getDownStation();
+    private Optional<Section> findFirstSection() {
+        return sections.stream()
+                .filter(section -> section.isUpStationEquals(findStartStation()))
+                .findFirst();
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -26,21 +27,6 @@ class SectionsTest {
         사당역 = new Station("사당역");
         방배역 = new Station("방배역");
     }
-
-//    @Test
-//    @DisplayName("지하철 구간 순서에 맞는 지하철역 목록을 반환한다.")
-//    void toStations() {
-//        // given
-//        Sections sections = new Sections();
-//        sections.add(new Section(강남역, 역삼역, new Distance(10)));
-//        sections.add(new Section(역삼역, 사당역, new Distance(15)));
-//
-//        // when
-//        List<Station> stations = sections.toStations();
-//
-//        // then
-//        assertThat(stations).containsExactly(강남역, 역삼역, 사당역);
-//    }
 
     @Test
     @DisplayName("상행역이 노선에 포함되어 있는 역 사이에 구간을 추가한다.")
@@ -74,8 +60,8 @@ class SectionsTest {
         // then
         assertThat(sections).isEqualTo(new Sections(
                 Arrays.asList(
-                        new Section(강남역, 사당역, new Distance(4)),
-                        new Section(사당역, 역삼역, new Distance(6))
+                        new Section(사당역, 역삼역, new Distance(6)),
+                        new Section(강남역, 사당역, new Distance(4))
                 )
         ));
     }
@@ -170,5 +156,21 @@ class SectionsTest {
         assertThatExceptionOfType(SectionAddFailedException.class)
                 .isThrownBy(() -> sections.add(new Section(사당역, 역삼역, new Distance(input))))
                 .withMessageMatching("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
+    }
+
+    @Test
+    @DisplayName("지하철 구간 순서에 맞는 지하철역 목록을 반환한다.")
+    void toStations() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(강남역, 역삼역, new Distance(10)));
+        sections.add(new Section(사당역, 역삼역, new Distance(6)));
+        sections.add(new Section(방배역, 강남역, new Distance(10)));
+
+        // when
+        List<Station> stations = sections.toStations();
+
+        // then
+        assertThat(stations).containsExactly(방배역, 강남역, 사당역, 역삼역);
     }
 }
