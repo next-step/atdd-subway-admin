@@ -1,5 +1,7 @@
 package nextstep.subway.station.domain;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -31,5 +33,20 @@ public class StationName {
         if (!StringUtils.hasLength(name)) {
             throw new IllegalArgumentException(String.format(EMPTY_STATION_NAME_ERROR_MESSAGE, name));
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        StationName that = (StationName)o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

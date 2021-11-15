@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Embedded;
@@ -11,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
@@ -23,11 +26,11 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "up_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_up_station"))
     private Station upStation;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "down_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_down_station"))
     private Station downStation;
 
@@ -55,12 +58,28 @@ public class Section {
         this.line = line;
     }
 
-    public boolean isUpStation(Station upStation) {
-        return this.upStation.equals(upStation);
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public boolean isSameDistance(Distance distance) {
         return this.distance.equals(distance);
+    }
+
+    public boolean isGreaterThanOrEqualDistanceTo(Section section) {
+        return this.distance.isGreaterThanOrEqualTo(section.distance);
+    }
+
+    public void changeUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void changeDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 
     public Long getId() {
@@ -73,6 +92,10 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public List<Station> getStations() {
+        return Arrays.asList(upStation, downStation);
     }
 
     private static void validateCreateSection(Station upStation, Station downStation, Distance distance) {
@@ -96,6 +119,6 @@ public class Section {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, upStation, downStation, distance, line);
+        return Objects.hash(id);
     }
 }

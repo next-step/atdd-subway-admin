@@ -30,12 +30,21 @@ public class Station extends BaseEntity {
         this.id = id;
     }
 
+    private Station(Long id, StationName name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public static Station from(Long stationId) {
         return new Station(stationId);
     }
 
     public static Station from(String name) {
         return new Station(name);
+    }
+
+    public static Station from(Long id, String name) {
+        return new Station(id, StationName.from(name));
     }
 
     public Long getId() {
@@ -53,11 +62,11 @@ public class Station extends BaseEntity {
         if (o == null || getClass() != o.getClass())
             return false;
         Station station = (Station)o;
-        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
+        return Objects.equals(id, station.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id);
     }
 }

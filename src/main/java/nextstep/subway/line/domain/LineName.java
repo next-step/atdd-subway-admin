@@ -1,9 +1,11 @@
 package nextstep.subway.line.domain;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-import org.springframework.util.StringUtils;
+import nextstep.subway.utils.StringUtils;
 
 @Embeddable
 public class LineName {
@@ -28,8 +30,23 @@ public class LineName {
     }
 
     private static void validateLineName(String name) {
-        if (!StringUtils.hasLength(name)) {
+        if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException(String.format(EMPTY_LINE_NAME_ERROR_MESSAGE, name));
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        LineName lineName = (LineName)o;
+        return Objects.equals(name, lineName.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
