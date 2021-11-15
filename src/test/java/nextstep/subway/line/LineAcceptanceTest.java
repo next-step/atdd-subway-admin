@@ -23,6 +23,7 @@ import nextstep.subway.line.dto.LineResponse;
 public class LineAcceptanceTest extends AcceptanceTest {
 
 	private static final String LINE_PATH = "/lines";
+	private static final String SLASH = "/";
 
 	LineRequest 이호선_생성_요청값() {
 		return new LineRequest("2호선", "bg-green-600");
@@ -152,7 +153,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		return RestAssured
 			.given().log().all()
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when().get(LINE_PATH + "/" + id)
+			.when().get(LINE_PATH + SLASH + id)
 			.then().log().all().extract();
 	}
 
@@ -181,7 +182,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.given().log().all()
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
-			.when().put(LINE_PATH + "/" + id)
+			.when().put(LINE_PATH + SLASH + id)
 			.then().log().all().extract();
 	}
 
@@ -200,11 +201,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void deleteLine() {
 		// given
 		// 지하철_노선_등록되어_있음
+		LineResponse 이호선 = 지하철_노선_등록되어_있음(이호선_생성_요청값());
 
 		// when
 		// 지하철_노선_제거_요청
+		ExtractableResponse<Response> response = 지하철_노선_제거_요청(이호선.getId());
 
 		// then
 		// 지하철_노선_삭제됨
+		지하철_노선_삭제됨(response);
+	}
+
+	ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
+		return RestAssured
+			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().delete(LINE_PATH + SLASH + id)
+			.then().log().all().extract();
+	}
+
+	private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 }
