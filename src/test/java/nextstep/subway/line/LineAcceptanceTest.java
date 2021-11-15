@@ -197,7 +197,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
 			.then().log().all().extract();
 	}
 
-	private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+	void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+	}
+
+	@DisplayName("기존에 존재하지 않는 지하철 노선을 수정한다.")
+	@Test
+	void updateLineNullException() {
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_수정_요청(2L, 이호선_생성_요청값());
+
+		// then
+		지하철_노선_수정_실패됨(response);
+	}
+
+	void 지하철_노선_수정_실패됨(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+	}
+
+	@DisplayName("기존에 존재하지 않는 지하철 노선을 삭제한다.")
+	@Test
+	void deleteLineNullException() {
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_수정_요청(2L, 이호선_생성_요청값());
+
+		// then
+		지하철_노선_삭제_실패됨(response);
+	}
+
+	void 지하철_노선_삭제_실패됨(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 }
