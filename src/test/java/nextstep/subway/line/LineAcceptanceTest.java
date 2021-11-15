@@ -127,10 +127,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("특정 지하철 노선을 조회한다.")
     @Test
     void getLine() {
-
         // given
         // 지하철 노선이 등록되어 있다.
         Map<String, String> params1 = new HashMap<>();
@@ -155,7 +154,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철 노선을 응답한다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList(".", LineResponse.class).get(0).getId()).isEqualTo(createResponse.header("Location").split("/")[2]);
+        assertThat(response.jsonPath().getObject(".",LineResponse.class).getId()).isEqualTo(Long.parseLong(createResponse.header("Location").split("/")[2]));
+    }
+
+    @DisplayName("없는 지하철 노선을 조회한다.")
+    @Test
+    void getLine2() {
+        // given
+        // 지하철 노선이 등록되지 않았다.
+
+        // when
+        // 등록 되어있는 지하철 노선을 조회한다.
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when()
+            .get("/lines/1")
+            .then().log().all()
+            .extract();
+
+        // then
+        // 지하철 노선을 응답한다.
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -197,7 +215,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
-
         // given
         // 지하철 노선이 등록되어있다.
         Map<String, String> params1 = new HashMap<>();
