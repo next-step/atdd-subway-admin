@@ -154,7 +154,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         @DisplayName("지하철 노선의 상행 종점 역을 삭제한다.")
         void deleteSection_upStation() {
-            // when
+            // given, when
             ExtractableResponse<Response> response = 지하철_노선에_역_구간_삭제_요청(
                 secondLine.getId(), gangnamStation.getId());
 
@@ -165,7 +165,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         @DisplayName("지하철 노선의 하행 종점 역을 삭제한다.")
         void deleteSection_downStation() {
-            // when
+            // given, when
             ExtractableResponse<Response> response = 지하철_노선에_역_구간_삭제_요청(
                 secondLine.getId(), seolleungStation.getId());
 
@@ -176,7 +176,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         @DisplayName("지하철 노선 사이에 존재하는 역을 삭제한다.")
         void deleteSection_inBetween() {
-            // when
+            // given, when
             ExtractableResponse<Response> response = 지하철_노선에_역_구간_삭제_요청(
                 secondLine.getId(), yeoksamStation.getId());
 
@@ -187,7 +187,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         @DisplayName("존재하지 않는 노선의 역 구간을 삭제한다.")
         void deleteSection_notExistLine_404() {
-            // when
+            // given, when
             ExtractableResponse<Response> response = 지하철_노선에_역_구간_삭제_요청(
                 Long.MIN_VALUE, gangnamStation.getId());
 
@@ -198,7 +198,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         @DisplayName("존재하지 않는 역을 삭제한다.")
         void deleteSection_notExistStation_404() {
-            // when
+            // given, when
             ExtractableResponse<Response> response = 지하철_노선에_역_구간_삭제_요청(
                 secondLine.getId(), Long.MIN_VALUE);
 
@@ -209,7 +209,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         @DisplayName("삭제할 지하철 역이 없는 상태로 삭제한다.")
         void deleteSection_nullStation_404() {
-            // when
+            // given, when
             ExtractableResponse<Response> response = 지하철_노선에_역_구간_삭제_요청(
                 secondLine.getId(), null);
 
