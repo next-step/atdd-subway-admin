@@ -63,7 +63,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ## 기능 목록
 
 - 지하철 노선 (Line)
-  - [ ] 지하철 노선을 생성한다.
+  - [x] 지하철 노선을 생성한다.
   - [ ] 지하철 노선 목록을 조회한다.
   - [ ] 지하철 노선을 수정한다.
   - [ ] 지하철 노선을 삭제한다.
