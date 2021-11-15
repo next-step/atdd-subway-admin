@@ -46,6 +46,10 @@ public class LineResponse {
         return color;
     }
 
+    public List<StationResponse> getStations() {
+        return stations;
+    }
+
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
@@ -53,9 +57,4 @@ public class LineResponse {
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
-
-    public List<StationResponse> getStations() {
-        return stations;
-    }
-
 }

@@ -5,15 +5,19 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -47,35 +51,38 @@ public class LineAcceptanceTest extends AcceptanceTest {
         failCreatedLine(response);
     }
 
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLine() {
+        // given
+        // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> createResponse = createLine("1호선", "blue", "청량리역", "영등포역", 10);
+        // when
+        // 지하철_노선_조회_요청
+        String savedLineId = createResponse.header("Location").split("/")[2];
+        ExtractableResponse<Response> selectResponse = selectOneLine(savedLineId);
+        // then
+        // 지하철_노선_응답됨
+        checkLine(selectResponse);
+        validLine(createResponse, selectResponse);
+    }
+
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        createLine("1호선", "blue", "청량리역", "영등포역", 10);
-        createLine("2호선", "green", "당산역", "한양대역", 10);
+        ExtractableResponse<Response> createResponse1 = createLine("1호선", "blue", "청량리역", "영등포역", 10);
+        ExtractableResponse<Response> createResponse2 = createLine("2호선", "green", "당산역", "한양대역", 10);
 
         // when
         // 지하철_노선_목록_조회_요청
         ExtractableResponse<Response> response = selectAllLines();
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        validLines(createResponse1, createResponse2, response);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void getLine() {
-        // given
-        // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> response = createLine("1호선", "blue", "청량리역", "영등포역", 10);
-        // when
-        // 지하철_노선_조회_요청
-        String savedLineId = response.header("Location").split("/")[2];
-        ExtractableResponse<Response> selectResponse = selectOneLine(savedLineId);
-        // then
-        // 지하철_노선_응답됨
-        isLineOKResponse(selectResponse);
-    }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
@@ -163,8 +170,44 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void isLineOKResponse(ExtractableResponse<Response> response) {
+    private void checkLine(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void validLine(ExtractableResponse<Response> createResponse, ExtractableResponse<Response> selectResponse) {
+        LineResponse createLineResponse = createResponse.jsonPath()
+                .getObject(".", LineResponse.class);
+        LineResponse selectLineResponse = selectResponse.jsonPath()
+                .getObject(".", LineResponse.class);
+
+        compareValues(createLineResponse, selectLineResponse);
+    }
+
+    private void compareValues(LineResponse createLineResponse, LineResponse selectLineResponse) {
+        List<StationResponse> createStations = createLineResponse.getStations();
+        List<StationResponse> selectStations = selectLineResponse.getStations();
+
+        assertAll(
+                () -> assertThat(createLineResponse.getId()).isEqualTo(selectLineResponse.getId()),
+                () -> assertThat(createLineResponse.getName()).isEqualTo(selectLineResponse.getName()),
+                () -> assertThat(createLineResponse.getColor()).isEqualTo(selectLineResponse.getColor()),
+                () -> assertThat(createStations.get(0).getName()).isEqualTo(selectStations.get(0).getName()),
+                () -> assertThat(createStations.get(1).getName()).isEqualTo(selectStations.get(1).getName())
+        );
+    }
+
+    private void validLines(ExtractableResponse<Response> createResponse1, ExtractableResponse<Response> createResponse2,
+                            ExtractableResponse<Response> response) {
+        LineResponse createLineResponse1 = createResponse1.jsonPath()
+                .getObject(".", LineResponse.class);
+        LineResponse createLineResponse2 = createResponse2.jsonPath()
+                .getObject(".", LineResponse.class);
+
+        List<LineResponse> selectLineResponses = response.jsonPath()
+                .getList(".", LineResponse.class);
+
+        compareValues(createLineResponse1, selectLineResponses.get(0));
+        compareValues(createLineResponse2, selectLineResponses.get(1));
     }
 
     private ExtractableResponse<Response> selectAllLines() {

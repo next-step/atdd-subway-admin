@@ -12,13 +12,8 @@ import java.util.Set;
 
 @Embeddable
 public class Sections {
-
     @OneToMany(mappedBy = "line" ,cascade = {CascadeType.PERSIST, CascadeType.MERGE},orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
-
-    public List<Section> getSections() {
-        return sections;
-    }
 
     public List<Station> getStation(){
         Set<Station> stationBasket = new LinkedHashSet<>();

@@ -30,10 +30,6 @@ public class LineRequest {
         return name;
     }
 
-    public String getColor() {
-        return color;
-    }
-
     public Line toLine(Station upStation, Station downStation) {
         return new Line(name, color, upStation, downStation, distance);
     }
@@ -50,7 +46,7 @@ public class LineRequest {
         return downStationId;
     }
 
-    public int getDistance() {
-        return distance;
+    public String getColor(){
+        return color;
     }
 }

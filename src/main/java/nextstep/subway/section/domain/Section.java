@@ -14,9 +14,11 @@ public class Section extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
     private Station downStation;
 
     @ManyToOne
@@ -51,9 +53,4 @@ public class Section extends BaseEntity {
     public Long getId() {
         return id;
     }
-
-    public void addLine(Line line) {
-        this.line = line;
-    }
-
 }
