@@ -121,10 +121,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = RestAssured
             .given().log().all()
-            .pathParam("id", lineResponse.getId())
             .contentType(APPLICATION_JSON_VALUE)
-            .when().get("lines/{id}")
-            .then().log().all().extract();
+            .pathParam("id", lineResponse.getId())
+            .get("lines/{id}")
+            .then().log().all()
+            .extract();
+
+
 
         // then
         // 지하철_노선_응답됨

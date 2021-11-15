@@ -37,4 +37,11 @@ public class LineService {
             .map(LineResponse::of)
             .collect(toList());
     }
+
+    public LineResponse findLineById(final Long id) {
+        return LineResponse.of(
+            lineRepository.findById(id)
+                .orElseThrow(IllegalArgumentException::new)
+        );
+    }
 }
