@@ -19,6 +19,12 @@ public class AcceptanceTestFactory {
 		return params;
 	}
 
+	public static Map<String, String> getNameContent(String name) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		return params;
+	}
+
 	public static ExtractableResponse<Response> post(Map<String, String> params, String path) {
 		return postBase(preBase(params).post(path));
 	}
@@ -33,10 +39,6 @@ public class AcceptanceTestFactory {
 
 	public static ExtractableResponse<Response> delete(String path) {
 		return postBase(preBase().delete(path));
-	}
-
-	public static String getIdFromHeaderLocation(ExtractableResponse<Response> response){
-		return response.header("Location").split("/")[2];
 	}
 
 	private static RequestSpecification preBase(Map<String, String> params){

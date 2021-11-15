@@ -75,7 +75,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// 등록했던 노선이 포함되어있는지 확인한다.
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-			.map(it -> Long.parseLong(AcceptanceTestFactory.getIdFromHeaderLocation(it)))
+			.map(it -> Long.parseLong(it.header("Location").split("/")[2]))
 			.collect(Collectors.toList());
 		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
 			.map(it -> it.getId())
@@ -90,17 +90,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// 지하철 노선이 등록되어 있다.
 		Map<String, String> params = AcceptanceTestFactory.getNameAndColorContent("신분당선","bg-red-600");
 		ExtractableResponse<Response> createResponse = AcceptanceTestFactory.post(params,lineServicePath);
-		String createdLineId = AcceptanceTestFactory.getIdFromHeaderLocation(createResponse);
+		String createdUri = createResponse.header("Location");
 
 		// when
 		// 등록 되어있는 지하철 노선을 조회한다.
-		ExtractableResponse<Response> response = AcceptanceTestFactory.get(lineServicePath+"/"+ createdLineId);
+		ExtractableResponse<Response> response = AcceptanceTestFactory.get(createdUri);
 
 		// then
 		// 지하철 노선을 응답한다.
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		assertThat(response.jsonPath().getObject(".", LineResponse.class).getId()).isEqualTo(
-			Long.parseLong(createdLineId));
+			Long.parseLong(createdUri.split("/")[2]));
 	}
 
 	@DisplayName("없는 지하철 노선을 조회한다.")
@@ -108,10 +108,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void getLine2() {
 		// given
 		// 조회 대상 지하철 노선이 등록되어있지 않다.
-		String notCreatedLineId = "1";
+		String notCreatedUri = lineServicePath+"/1";
 		// when
 		// 등록 되어있는 지하철 노선을 조회한다.
-		ExtractableResponse<Response> response = AcceptanceTestFactory.get(lineServicePath+"/"+ notCreatedLineId);
+		ExtractableResponse<Response> response = AcceptanceTestFactory.get(notCreatedUri);
 
 		// then
 		// 없는 지하철역 수정 오류
@@ -125,12 +125,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// 지하철 노선이 등록되어있다.
 		Map<String, String> params = AcceptanceTestFactory.getNameAndColorContent("신분당선","bg-red-600");
 		ExtractableResponse<Response> createResponse =  AcceptanceTestFactory.post(params,lineServicePath);
-		String createdLineId = AcceptanceTestFactory.getIdFromHeaderLocation(createResponse);
+		String createdUri = createResponse.header("Location");
 
 		// when
 		// 지하철 노선 수정 요청
 		Map<String, String> params2 = AcceptanceTestFactory.getNameAndColorContent("구분당","bg-blue-600");
-		ExtractableResponse<Response> response = AcceptanceTestFactory.put(params,lineServicePath+"/" + createdLineId);
+		ExtractableResponse<Response> response = AcceptanceTestFactory.put(params,createdUri);
 
 		// then
 		// 지하철 노선 수정 정상 처리
@@ -142,12 +142,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	void updateLine2() {
 		// given
 		// 수정 대상 지하철 노선이 등록되어있지 않다.
-		String notCreatedLineId = "1";
-
+		String notCreatedUri = lineServicePath+"/1";
 		// when
 		// 지하철 노선 수정 요청
 		Map<String, String> params = AcceptanceTestFactory.getNameAndColorContent("구분당","bg-blue-600");
-		ExtractableResponse<Response> response = AcceptanceTestFactory.put(params,lineServicePath+"/" + notCreatedLineId);
+		ExtractableResponse<Response> response = AcceptanceTestFactory.put(params,notCreatedUri);
 
 		// then
 		// 없는 지하철 수정 요청 오류
@@ -161,11 +160,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		// 지하철 노선이 등록되어있다.
 		Map<String, String> params = AcceptanceTestFactory.getNameAndColorContent("신분당선","bg-red-600");
 		ExtractableResponse<Response> createResponse =  AcceptanceTestFactory.post(params,lineServicePath);
-		String createdLineId = AcceptanceTestFactory.getIdFromHeaderLocation(createResponse);
+		String createdUri = createResponse.header("Location");
 
 		// when
 		// 지하철 노선 제거 요청
-		ExtractableResponse<Response> response =  AcceptanceTestFactory.delete(lineServicePath+"/" + createdLineId);
+		ExtractableResponse<Response> response =  AcceptanceTestFactory.delete(createdUri);
 
 		// then
 		// 지하철 노선 삭제됨
