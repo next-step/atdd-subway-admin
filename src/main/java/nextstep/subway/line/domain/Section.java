@@ -42,6 +42,10 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
+    public void changeLine(Section section) {
+        changeLine(section.line);
+    }
+
     public Station getUpStation() {
         return upStation;
     }

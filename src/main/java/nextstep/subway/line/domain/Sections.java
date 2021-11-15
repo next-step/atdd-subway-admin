@@ -13,7 +13,7 @@ import java.util.Optional;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
@@ -116,11 +116,9 @@ public class Sections {
 
     private void addSplitSections(Section section, Section matchedSection, Station newUpStation, Station newDownStation) {
         sections.add(section);
-        sections.add(new Section(
-                newUpStation,
-                newDownStation,
-                matchedSection.getRemainDistance(section))
-        );
+        Section newSection = new Section(newUpStation, newDownStation, matchedSection.getRemainDistance(section));
+        newSection.changeLine(section);
+        sections.add(newSection);
         sections.remove(matchedSection);
     }
 
