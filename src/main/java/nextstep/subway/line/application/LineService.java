@@ -39,7 +39,15 @@ public class LineService {
 	}
 
 	public LineResponse findLineById(Long id) {
-		Optional<Line> findLine = lineRepository.findById(id);
-		return LineResponse.of(findLine.orElseThrow(() -> new IllegalArgumentException("없는 노선입니다.")));
+		return LineResponse.of(getLine(id));
+	}
+
+	public void updateLine(Long id, LineRequest lineRequest) {
+		Line findLine = getLine(id);
+		findLine.update(lineRequest.toLine());
+	}
+
+	private Line getLine(Long id) {
+		return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("없는 노선입니다."));
 	}
 }
