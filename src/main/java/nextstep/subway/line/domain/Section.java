@@ -82,6 +82,10 @@ public class Section extends BaseEntity {
         return this.downStation.equals(section.getUpStation());
     }
 
+    public Distance getRemainDistance(Section section) {
+        return new Distance(this.distance.getRemainDistance(section.distance));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,9 +103,5 @@ public class Section extends BaseEntity {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException("상행역과 하행역은 같을 수 없습니다.");
         }
-    }
-
-    public Distance getRemainDistance(Section section) {
-        return new Distance(this.distance.getRemainDistance(section.distance));
     }
 }

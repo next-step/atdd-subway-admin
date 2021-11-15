@@ -17,7 +17,7 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Section> sections = new ArrayList<>();
 
-    public Sections() {
+    protected Sections() {
     }
 
     public Sections(List<Section> sections) {
@@ -25,21 +25,49 @@ public class Sections {
     }
 
     public void add(Section section) {
+        if (isAddFirst() || isAddPreviousStartStation(section) || isAddNextEndStation(section)) {
+            sections.add(section);
+            return;
+        }
+
+        validate(section);
+
+        if (addSectionsUpStationMatched(section)) {
+            return;
+        }
+        addSectionsDownStationMatched(section);
+    }
+
+    public List<Station> toStations() {
         if (sections.size() == 0) {
-            sections.add(section);
-            return;
+            return new ArrayList<>();
         }
+        return makeStations();
+    }
 
-        if (section.isDownStationEquals(findStartStation()) && isNewUpStation(section)) {
-            sections.add(section);
-            return;
-        }
+    private boolean isAddFirst() {
+        return sections.size() == 0;
+    }
 
-        if (section.isUpStationEquals(findEndStation()) && isNewDownStation(section)) {
-            sections.add(section);
-            return;
-        }
+    private boolean isAddNextEndStation(Section section) {
+        return section.isUpStationEquals(findEndStation()) && isNewDownStation(section);
+    }
 
+    private boolean isAddPreviousStartStation(Section section) {
+        return section.isDownStationEquals(findStartStation()) && isNewUpStation(section);
+    }
+
+    private boolean isNewUpStation(Section section) {
+        return !sections.stream()
+                .allMatch(section::isUpStationEqualsWithDownStation);
+    }
+
+    private boolean isNewDownStation(Section section) {
+        return !sections.stream()
+                .allMatch(section::isDownStationEqualsWithUpStation);
+    }
+
+    private void validate(Section section) {
         Optional<Section> sectionUpStationMatchedOptional = findByUpStation(section);
         Optional<Section> sectionDownStationMatchedOptional = findByDownStation(section);
 
@@ -49,41 +77,52 @@ public class Sections {
         if (!sectionUpStationMatchedOptional.isPresent() && !sectionDownStationMatchedOptional.isPresent()) {
             throw new SectionAddFailedException("상행역과 하행역중 1개는 노선에 포함되어야 합니다.");
         }
-
-        if (sectionUpStationMatchedOptional.isPresent()) {
-            Section sectionUpStationMatched = sectionUpStationMatchedOptional.get();
-            if (sectionUpStationMatched.isLessThanOrEquals(section)) {
-                throw new SectionAddFailedException("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
-            }
-            sections.add(section);
-            sections.add(new Section(
-                    section.getDownStation(),
-                    sectionUpStationMatched.getDownStation(),
-                    sectionUpStationMatched.getRemainDistance(section))
-            );
-            sections.remove(sectionUpStationMatched);
+        if (sectionUpStationMatchedOptional.isPresent() && sectionUpStationMatchedOptional.get().isLessThanOrEquals(section)) {
+            throw new SectionAddFailedException("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
         }
-
-        if (sectionDownStationMatchedOptional.isPresent()) {
-            Section sectionDownStationMatched = sectionDownStationMatchedOptional.get();
-            if (sectionDownStationMatched.isLessThanOrEquals(section)) {
-                throw new SectionAddFailedException("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
-            }
-            sections.add(new Section(
-                    sectionDownStationMatched.getUpStation(),
-                    section.getUpStation(),
-                    sectionDownStationMatched.getRemainDistance(section))
-            );
-            sections.add(section);
-            sections.remove(sectionDownStationMatched);
+        if (sectionDownStationMatchedOptional.isPresent() && sectionDownStationMatchedOptional.get().isLessThanOrEquals(section)) {
+            throw new SectionAddFailedException("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
         }
     }
 
-    public List<Station> toStations() {
-        if (sections.size() == 0) {
-            return new ArrayList<>();
+    private boolean addSectionsUpStationMatched(Section section) {
+        Optional<Section> sectionUpStationMatchedOptional = findByUpStation(section);
+        if (sectionUpStationMatchedOptional.isPresent()) {
+            Section sectionUpStationMatched = sectionUpStationMatchedOptional.get();
+            addSplitSections(section, sectionUpStationMatched, section.getDownStation(), sectionUpStationMatched.getDownStation());
+            return true;
         }
-        return makeStations();
+        return false;
+    }
+
+    private void addSectionsDownStationMatched(Section section) {
+        Optional<Section> sectionDownStationMatchedOptional = findByDownStation(section);
+        if (sectionDownStationMatchedOptional.isPresent()) {
+            Section sectionDownStationMatched = sectionDownStationMatchedOptional.get();
+            addSplitSections(section, sectionDownStationMatched, sectionDownStationMatched.getUpStation(), section.getUpStation());
+        }
+    }
+
+    private Optional<Section> findByUpStation(Section section) {
+        return sections.stream()
+                .filter(section::isUpStationEquals)
+                .findFirst();
+    }
+
+    private Optional<Section> findByDownStation(Section section) {
+        return sections.stream()
+                .filter(section::isDownStationEquals)
+                .findFirst();
+    }
+
+    private void addSplitSections(Section section, Section matchedSection, Station newUpStation, Station newDownStation) {
+        sections.add(section);
+        sections.add(new Section(
+                newUpStation,
+                newDownStation,
+                matchedSection.getRemainDistance(section))
+        );
+        sections.remove(matchedSection);
     }
 
     private Station findStartStation() {
@@ -112,16 +151,6 @@ public class Sections {
         return section.getDownStation();
     }
 
-    private boolean isNewUpStation(Section section) {
-        return !sections.stream()
-                .allMatch(section::isUpStationEqualsWithDownStation);
-    }
-
-    private boolean isNewDownStation(Section section) {
-        return !sections.stream()
-                .allMatch(section::isDownStationEqualsWithUpStation);
-    }
-
     private List<Station> makeStations() {
         List<Station> stations = sections.stream()
                 .map(Section::getUpStation)
@@ -132,18 +161,6 @@ public class Sections {
 
     private Station getLastStation() {
         return sections.get(sections.size() - 1).getDownStation();
-    }
-
-    private Optional<Section> findByUpStation(Section section) {
-        return sections.stream()
-                .filter(section::isUpStationEquals)
-                .findFirst();
-    }
-
-    private Optional<Section> findByDownStation(Section section) {
-        return sections.stream()
-                .filter(section::isDownStationEquals)
-                .findFirst();
     }
 
     @Override
