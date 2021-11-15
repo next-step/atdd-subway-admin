@@ -12,43 +12,170 @@
 
 <br>
 
-# 지하철 노선도 미션
-[ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션
+# 인수테스트 주도 개발(지하철 노선도 미션)
+## 1단계-지하철 노선관리
+### 요구사항
+- [x] 지하철 노선 관련 인수테스트 작성-`LineAcceptanceTest`를 완성
+  - [x] 지하철 노선을 생성한다.
+  - [x] 기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.
+  - [x] 지하철 노선 목록을 조회한다.
+  - [x] 지하철 노선을 조회한다.
+  - [x] 지하철 노선을 수정한다.
+  - [x] 지하철 노선을 제거한다.
+- [x] 지하철 노선 관련 기능 구현-`LineController`를 통해 요청 및 처리하는 기능을 구현
+  - [x] 노선 목록을 조회한다.
+  - [x] 노선을 조회한다.
+  - [x] 노선을 수정한다.
+  - [x] 노선을 제거한다.
+- [x] 인수 테스트 리팩터링
+  - [x] 인수 테스트의 각 스템을 메서드로 분리하여 재사용
 
-<br>
+### 지하철 노선 생성 전문관련 내용
+#### 노선 생성
+<details><summary>Request</summary>
 
-## 🚀 Getting Started
+```python
+POST /lines HTTP/1.1
+accept: */*
+content-type: application/json; charset=UTF-8
 
-### Install
-#### npm 설치
+{
+    "color": "bg-red-600",
+    "name": "신분당선"
+}
 ```
-cd frontend
-npm install
+</details>
+
+<details><summary>Response</summary>
+
+```python
+HTTP/1.1 201
+Location: /lines/1
+Content-Type: application/json
+Date: Fri, 13 Nov 2020 00:11:51 GMT
+
+{
+    "id": 1,
+    "name": "신분당선",
+    "color": "bg-red-600",
+    "createdDate": "2020-11-13T09:11:51.997",
+    "modifiedDate": "2020-11-13T09:11:51.997"
+}
 ```
-> `frontend` 디렉토리에서 수행해야 합니다.
+</details>
 
-### Usage
-#### webpack server 구동
+#### 노선 목록 조회
+<details><summary>Request</summary>
+
+```python
+GET /lines HTTP/1.1
+accept: application/json
+host: localhost:49468
 ```
-npm run dev
+</details>
+
+<details><summary>Response</summary>
+
+```python
+HTTP/1.1 200
+Content-Type: application/json
+Date: Fri, 13 Nov 2020 00:11:51 GMT
+
+[
+    {
+        "id": 1,
+        "name": "신분당선",
+        "color": "bg-red-600",
+        "stations": [
+
+        ],
+        "createdDate": "2020-11-13T09:11:52.084",
+        "modifiedDate": "2020-11-13T09:11:52.084"
+    },
+    {
+        "id": 2,
+        "name": "2호선",
+        "color": "bg-green-600",
+        "stations": [
+
+        ],
+        "createdDate": "2020-11-13T09:11:52.098",
+        "modifiedDate": "2020-11-13T09:11:52.098"
+    }
+]
 ```
-#### application 구동
+</details>
+
+#### 노선 조회
+<details><summary>Request</summary>
+
+```python
+GET /lines/1 HTTP/1.1
+accept: application/json
+host: localhost:49468
 ```
-./gradlew bootRun
+</details>
+
+<details><summary>Response</summary>
+
+```python
+HTTP/1.1 200
+Content-Type: application/json
+Date: Fri, 13 Nov 2020 00:11:51 GMT
+
+{
+    "id": 1,
+    "name": "신분당선",
+    "color": "bg-red-600",
+    "stations": [
+
+    ],
+    "createdDate": "2020-11-13T09:11:51.866",
+    "modifiedDate": "2020-11-13T09:11:51.866"
+}
 ```
-<br>
+</details>
 
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+#### 노선 수정
+<details><summary>Request</summary>
 
-<br>
+```python
+PUT /lines/1 HTTP/1.1
+accept: */*
+content-type: application/json; charset=UTF-8
+content-length: 45
+host: localhost:49468
 
-## 🐞 Bug Report
+{
+    "color": "bg-blue-600",
+    "name": "구분당선"
+}
+```
+</details>
 
-버그를 발견한다면, [Issues](https://github.com/next-step/atdd-subway-admin/issues) 에 등록해주세요 :)
+<details><summary>Response</summary>
 
-<br>
+```python
+HTTP/1.1 200
+Date: Fri, 13 Nov 2020 00:11:51 GMT
+```
+</details>
 
-## 📝 License
 
-This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+#### 노선 삭제
+<details><summary>Request</summary>
+
+```python
+DELETE /lines/1 HTTP/1.1
+accept: */*
+host: localhost:49468
+```
+</details>
+
+<details><summary>Response</summary>
+
+```python
+HTTP/1.1 204
+Date: Fri, 13 Nov 2020 00:11:51 GMT
+```
+</details>

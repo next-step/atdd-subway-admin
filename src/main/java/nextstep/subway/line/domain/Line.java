@@ -1,6 +1,9 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.domain.Station;
+
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -13,7 +16,10 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    public Line() {
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Station> stations;
+
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -27,14 +33,18 @@ public class Line extends BaseEntity {
     }
 
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getColor() {
-        return color;
+        return this.color;
+    }
+
+    public List<Station> getStations() {
+        return this.stations;
     }
 }
