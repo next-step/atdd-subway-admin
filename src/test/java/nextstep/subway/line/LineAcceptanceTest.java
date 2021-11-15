@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,17 +19,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    @BeforeEach
-    public void setUp() {
-
-    }
-
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         //given
-        LineRequest lineRequest = new LineRequest("2호", "green");
+        LineRequest lineRequest = new LineRequest("2호선", "green");
 
         // when
         // 지하철_노선_생성_요청
