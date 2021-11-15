@@ -4,9 +4,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.dto.StationRequest;
 import org.springframework.http.MediaType;
 
-public class HttpUtils {
+public class Fixture {
 
     public static ExtractableResponse<Response> get(String path, Object... params) {
         return response(request().get(path, params));
@@ -23,6 +25,13 @@ public class HttpUtils {
     public static ExtractableResponse<Response> put(String path, Object request, Object... params) {
         return response(request(request).put(path, params));
     }
+
+    public static LineRequest 신분당선() { return new LineRequest("신분당선", "bg-red-600"); }
+    public static LineRequest 이호선() { return new LineRequest("신분당선", "bg-red-600"); }
+    public static StationRequest 강남역(){ return new StationRequest("강남역"); }
+    public static StationRequest 광교역(){ return new StationRequest("광교역"); }
+    public static StationRequest 홍대역(){ return new StationRequest("홍대역"); }
+    public static StationRequest 신촌역(){ return new StationRequest("신촌역"); }
 
     private static RequestSpecification request(Object body) {
         return RestAssured.given().log().all()
