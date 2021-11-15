@@ -52,7 +52,7 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest lineUpdateRequest) {
         Line line = findLineById(id);
-        line.update(lineUpdateRequest.toLine(null, null));
+        line.update(lineUpdateRequest.toLine());
     }
 
     public void deleteLine(Long id) {
