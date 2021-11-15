@@ -117,7 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("지하철 노선에 구간을 등록한다.")
-    void addSection() {
+    void addSection1() {
         // given
         SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 사당역.getId(), 10);
 
@@ -126,6 +126,71 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록됨(response);
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역이 노선에 포함되어 있는 구간을 등록한다.")
+    void addSection2() {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 10);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(이호선.getId(), sectionRequest);
+
+        // then
+        지하철_노선에_구간_등록_실패됨(response);
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역이 노선에 포함되어 있지 않은 구간을 등록한다.")
+    void addSection3() {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(사당역.getId(), 방배역.getId(), 10);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(이호선.getId(), sectionRequest);
+
+        // then
+        지하철_노선에_구간_등록_실패됨(response);
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역이 노선에 포함되어 있지 않은 구간을 등록한다.")
+    void addSection4() {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(사당역.getId(), 방배역.getId(), 10);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(이호선.getId(), sectionRequest);
+
+        // then
+        지하철_노선에_구간_등록_실패됨(response);
+    }
+
+    @Test
+    @DisplayName("상행역이 노선에 포함되어 있는 역 사이에 구간을 등록할 경우 기존 역 사이 거리보다 크거나 같은 구간을 등록한다.")
+    void addSection5() {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 사당역.getId(), 15);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(이호선.getId(), sectionRequest);
+
+        // then
+        지하철_노선에_구간_등록_실패됨(response);
+    }
+
+    @Test
+    @DisplayName("하행역이 노선에 포함되어 있는 역 사이에 구간을 등록할 경우 기존 역 사이 거리보다 크거나 같은 구간을 등록한다.")
+    void addSection6() {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(사당역.getId(), 역삼역.getId(), 15);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(이호선.getId(), sectionRequest);
+
+        // then
+        지하철_노선에_구간_등록_실패됨(response);
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
@@ -165,5 +230,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선에_구간_등록됨(ExtractableResponse<Response> response) {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선에_구간_등록_실패됨(ExtractableResponse<Response> response) {
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
