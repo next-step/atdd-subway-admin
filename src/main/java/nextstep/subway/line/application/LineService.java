@@ -14,7 +14,7 @@ import nextstep.subway.line.dto.LineResponse;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
@@ -29,6 +29,13 @@ public class LineService {
     public List<LineResponse> getLines() {
         List<Line> lines = lineRepository.findAll();
         return convertToLineResponses(lines);
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse getLine(Long id) {
+        Line findLine = lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("not found line id : " + id));
+        return LineResponse.of(findLine);
     }
 
     private List<LineResponse> convertToLineResponses(List<Line> lines) {
