@@ -1,7 +1,6 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nextstep.subway.line.domain.Line;
@@ -13,27 +12,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class LineService {
-	private LineRepository lineRepository;
+	private final LineRepository lineRepository;
 
 	public LineService(LineRepository lineRepository) {
 		this.lineRepository = lineRepository;
 	}
 
+	@Transactional
 	public LineResponse saveLine(LineRequest request) {
 		Line persistLine = lineRepository.save(request.toLine());
 		return LineResponse.of(persistLine);
 	}
 
-	@Transactional(readOnly = true)
 	public List<LineResponse> findAllLines() {
 		List<Line> lines = lineRepository.findAll();
 		return lines.stream()
-			.map(line -> LineResponse.of(line))
+			.map(LineResponse::of)
 			.collect(Collectors.toList());
 	}
 
+	@Transactional
 	public void deleteLineById(Long id) {
 		lineRepository.deleteById(id);
 	}
@@ -42,6 +42,7 @@ public class LineService {
 		return LineResponse.of(getLine(id));
 	}
 
+	@Transactional
 	public void updateLine(Long id, LineRequest lineRequest) {
 		Line findLine = getLine(id);
 		findLine.update(lineRequest.toLine());
