@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +33,17 @@ public class LineService {
     }
 
     public LineResponse findOne(Long id) {
-        return LineResponse.of(lineRepository.findById(id)
-                .orElseThrow(() -> new LineNotFoundException("라인을 찾을 수 없습니다.")));
+        return LineResponse.of(findLine(id));
+    }
+
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line line = findLine(id);
+        line.update(lineRequest.toLine());
+        return LineResponse.of(line);
+    }
+
+    private Line findLine(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new LineNotFoundException("라인을 찾을 수 없습니다."));
     }
 }
