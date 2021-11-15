@@ -47,13 +47,13 @@ public class LineServiceTest {
         assertAll(
             () -> Assertions.assertThat(LineInfoResponses.get(0).getName()).isEqualTo(sample.get(0).getName()),
             () -> Assertions.assertThat(LineInfoResponses.get(0).getColor()).isEqualTo(sample.get(0).getColor()),
-            () -> Assertions.assertThat(LineInfoResponses.get(0).getStations()).isEqualTo(sample.get(0).getStations())
+            () -> Assertions.assertThat(LineInfoResponses.get(0).getSections()).isEqualTo(sample.get(0).getSections())
         );
 
         assertAll(
             () -> Assertions.assertThat(LineInfoResponses.get(1).getName()).isEqualTo(sample.get(1).getName()),
             () -> Assertions.assertThat(LineInfoResponses.get(1).getColor()).isEqualTo(sample.get(1).getColor()),
-            () -> Assertions.assertThat(LineInfoResponses.get(1).getStations()).isEqualTo(sample.get(1).getStations())
+            () -> Assertions.assertThat(LineInfoResponses.get(1).getSections()).isEqualTo(sample.get(1).getSections())
         );
     }
 
@@ -72,7 +72,7 @@ public class LineServiceTest {
         assertAll(
             () -> Assertions.assertThat(LineInfoResponses.getName()).isEqualTo(sample.getName()),
             () -> Assertions.assertThat(LineInfoResponses.getColor()).isEqualTo(sample.getColor()),
-            () -> Assertions.assertThat(LineInfoResponses.getStations()).isEqualTo(sample.getStations())
+            () -> Assertions.assertThat(LineInfoResponses.getSections()).isEqualTo(sample.getSections())
         );
     }
 

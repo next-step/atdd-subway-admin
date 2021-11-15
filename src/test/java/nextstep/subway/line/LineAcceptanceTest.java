@@ -153,7 +153,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertAll(
             () -> Assertions.assertThat(response.getColor()).isEqualTo(expectedResponse.getColor()),
             () -> Assertions.assertThat(response.getName()).isEqualTo(expectedResponse.getName()),
-            () -> Assertions.assertThat(response.getStations()).isEmpty()
+            () -> Assertions.assertThat(response.getSections()).isEmpty()
         );
     }
 

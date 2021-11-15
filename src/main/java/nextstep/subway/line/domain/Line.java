@@ -1,7 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.section.domain.Section;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Station> stations;
+    private List<Section> sections;
 
     protected Line() {
     }
@@ -44,7 +44,7 @@ public class Line extends BaseEntity {
         return this.color;
     }
 
-    public List<Station> getStations() {
-        return this.stations;
+    public List<Section> getSections() {
+        return this.sections;
     }
 }
