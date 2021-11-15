@@ -31,10 +31,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-green");
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(
+            createRequestLine("2호선", "bg-green"));
 
         // then
         // 지하철_노선_생성됨
@@ -46,14 +44,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        lineRepository.save(new Line("2호선", "bg-green"));
+        지하철_노선_등록되어_있음("2호선", "bg-green");
 
         // when
         // 지하철_노선_생성_요청
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "bg-green");
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(createRequestLine("2호선", "bg-green"));
 
         // then
         // 지하철_노선_생성_실패됨
@@ -66,8 +61,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        Line lineTwo = lineRepository.save(new Line("2호선", "bg-green"));
-        Line lineFour = lineRepository.save(new Line("4호선", "bg-blue"));
+        Line lineTwo = 지하철_노선_등록되어_있음("2호선", "bg-green");
+        Line lineFour = 지하철_노선_등록되어_있음("4호선", "bg-blue");
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -81,6 +76,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
         ValidatableResponse then = response.then().log().all();
         then.body("$", hasSize(2));
         then.body("id", hasItems(lineTwo.getId().intValue(), lineFour.getId().intValue()));
@@ -92,7 +88,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Line lineTwo = lineRepository.save(new Line("2호선", "bg-green"));
+        Line lineTwo = 지하철_노선_등록되어_있음("2호선", "bg-green");
 
         // when
         // 지하철_노선_조회_요청
@@ -113,17 +109,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Line lineTwo = lineRepository.save(new Line("2호선", "bg-green"));
+        Line lineTwo = 지하철_노선_등록되어_있음("2호선", "bg-green");
 
         // when
         // 지하철_노선_수정_요청
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "4호선");
-        params.put("color", "bg-blue");
+        String updateLine = "4호선";
+        String updateColor = "bg-blue";
         ExtractableResponse<Response> response = RestAssured
             .given().log().all()
-            .body(params)
+            .body(createRequestLine(updateLine, updateColor))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put("/lines/{id}", lineTwo.getId())
@@ -133,10 +128,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         // then
         // 지하철_노선_수정됨
-        Line findLine = lineRepository.findById(lineTwo.getId()).orElse(null);
+        Line findLine = findLineByIdOrElseNull(lineTwo.getId());
         assertNotNull(findLine);
-        assertEquals(params.get("name"), findLine.getName());
-        assertEquals(params.get("color"), findLine.getColor());
+        assertEquals(updateLine, findLine.getName());
+        assertEquals(updateColor, findLine.getColor());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -144,7 +139,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Line lineTwo = lineRepository.save(new Line("2호선", "bg-green"));
+        Line lineTwo = 지하철_노선_등록되어_있음("2호선", "bg-green");
 
         // when
         // 지하철_노선_제거_요청
@@ -159,7 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         // then
         // 지하철_노선_삭제됨
-        Line findLine = lineRepository.findById(lineTwo.getId()).orElse(null);
+        Line findLine = findLineByIdOrElseNull(lineTwo.getId());
         assertNull(findLine);
     }
 
@@ -173,5 +168,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .post("/lines")
             .then()
             .log().all().extract();
+    }
+
+    private Line 지하철_노선_등록되어_있음(String name, String color) {
+        return lineRepository.save(new Line(name, color));
+    }
+
+    private Line findLineByIdOrElseNull(Long lineId) {
+        return lineRepository.findById(lineId).orElse(null);
+    }
+
+    private Map<String, String> createRequestLine(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        return params;
     }
 }
