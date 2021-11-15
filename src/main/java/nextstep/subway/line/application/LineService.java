@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -64,6 +65,15 @@ public class LineService {
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public void addSection(Long id, SectionRequest sectionRequest) {
+        Line line = findLineById(id);
+        Section section = sectionRequest.toSection(
+                findStationById(sectionRequest.getUpStationId()),
+                findStationById(sectionRequest.getDownStationId())
+        );
+        line.addSection(section);
     }
 
     private void validateLine(LineRequest request) {
