@@ -52,7 +52,7 @@ public class Section {
     }
 
     void remove(Section section) {
-        validateRemovedSection(section);
+        validateRemoval(section);
         cutSection(section);
         minusDistance(section.distance);
     }
@@ -74,8 +74,8 @@ public class Section {
     }
 
     void connect(Section section) {
-        validateConnect(section);
-        connectStation(section);
+        validateConnection(section);
+        connectSection(section);
         plusDistance(section.distance);
     }
 
@@ -88,7 +88,7 @@ public class Section {
                 upStation, downStation));
     }
 
-    private void validateRemovedSection(Section section) {
+    private void validateRemoval(Section section) {
         Assert.notNull(section, "removed section must not be null");
         validateRemovedSectionStation(section);
         validateSubtractDistance(section.distance);
@@ -130,7 +130,7 @@ public class Section {
         this.distance = this.distance.sum(distance);
     }
 
-    private void connectStation(Section section) {
+    private void connectSection(Section section) {
         if (downStation.equals(section.upStation)) {
             downStation = section.downStation;
             return;
@@ -138,16 +138,17 @@ public class Section {
         upStation = section.upStation;
     }
 
-    private void validateConnect(Section section) {
+    private void validateConnection(Section section) {
         Assert.notNull(section, "connected section must not be null");
-        Assert.isTrue(hasOverlapStation(section), String
-            .format("section(%s) and connected section(%s) must have overlapping stations", this,
-                section));
+        if (doesNotHaveOverlappingStation(section)) {
+            throw new InvalidDataException(String.format(
+                "section(%s) and connected section(%s) must have overlapping one station",
+                this, section));
+        }
     }
 
-    private boolean hasOverlapStation(Section section) {
-        return downStation.equals(section.upStation) ||
-            upStation.equals(section.downStation);
+    private boolean doesNotHaveOverlappingStation(Section section) {
+        return !downStation.equals(section.upStation) && !upStation.equals(section.downStation);
     }
 
     @Override

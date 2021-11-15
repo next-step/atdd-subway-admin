@@ -13,10 +13,13 @@ import nextstep.subway.station.domain.Station;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @DisplayName("구간")
 class SectionTest {
 
@@ -78,8 +81,24 @@ class SectionTest {
             .isEqualTo(expected);
     }
 
+    @Test
+    @DisplayName("null 구간을 제거하면 IllegalArgumentException")
+    void remove_nullSection_thrownIllegalArgumentException() {
+        //given
+        Section section = Section.of(
+            station("교대"), station("역삼"), Distance.from(5));
+
+        //when
+        ThrowingCallable removeCall = () -> section.remove(null);
+
+        //then
+        assertThatIllegalArgumentException()
+            .isThrownBy(removeCall)
+            .withMessageContaining("removed section must not be null");
+    }
+
     @ParameterizedTest(name = "[{index}] 교대,역삼 구간에서 {0} 구간을 제거할 수 없다")
-    @MethodSource
+    @MethodSource("sameOrNotExistStation")
     @DisplayName("모든 역이 같거나 다른 구간을 제거하면 IllegalArgumentException")
     void remove_sameOrNotExistStation_thrownIllegalArgumentException(Section removedSection) {
         Section section = Section.of(
@@ -111,6 +130,54 @@ class SectionTest {
             .withMessageContaining("must be less than");
     }
 
+
+    @ParameterizedTest(name = "[{index}] 교대,강남 구간에 {0} 구간을 추가하면 {1}")
+    @MethodSource
+    @DisplayName("구간 연결")
+    void connect(Section connectedSection, Section expected) {
+        Section section = Section.of(
+            station("교대"), station("강남"), Distance.from(5));
+
+        //when
+        section.connect(connectedSection);
+
+        //then
+        assertThat(section)
+            .isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("null 구간을 연결하면 IllegalArgumentException")
+    void connect_nullSection_thrownIllegalArgumentException() {
+        //given
+        Section section = Section.of(
+            station("교대"), station("역삼"), Distance.from(5));
+
+        //when
+        ThrowingCallable connectCall = () -> section.connect(null);
+
+        //then
+        assertThatIllegalArgumentException()
+            .isThrownBy(connectCall)
+            .withMessageContaining("connected section must not be null");
+    }
+
+    @ParameterizedTest(name = "[{index}] 교대,강남 구간에 {0} 구간을 연결할 수 없다.")
+    @MethodSource("sameOrNotExistStation")
+    @DisplayName("모든 역이 같거나 다른 구간을 연결하면 IllegalArgumentException")
+    void connect_sameOrNotExistStation_thrownIllegalArgumentException(Section connectedSection) {
+        Section section = Section.of(
+            station("교대"), station("역삼"), Distance.from(5));
+
+        //when
+        ThrowingCallable removeCall = () -> section.connect(connectedSection);
+
+        //then
+        assertThatExceptionOfType(InvalidDataException.class)
+            .isThrownBy(removeCall)
+            .withMessageContaining("must have overlapping one station");
+    }
+
     private static Station station(String name) {
         return Station.from(Name.from(name));
     }
@@ -136,7 +203,20 @@ class SectionTest {
         );
     }
 
-    private static Stream<Arguments> remove_sameOrNotExistStation_thrownIllegalArgumentException() {
+    private static Stream<Arguments> connect() {
+        return Stream.of(
+            Arguments.of(
+                Section.of(station("강남"), station("역삼"), Distance.from(5)),
+                Section.of(station("교대"), station("역삼"), Distance.from(10))
+            ),
+            Arguments.of(
+                Section.of(station("서초"), station("교대"), Distance.from(5)),
+                Section.of(station("서초"), station("강남"), Distance.from(10))
+            )
+        );
+    }
+
+    private static Stream<Arguments> sameOrNotExistStation() {
         return Stream.of(
             Arguments.of(Section.of(station("반포"), station("논현"), Distance.from(3))),
             Arguments.of(Section.of(station("교대"), station("역삼"), Distance.from(3)))
