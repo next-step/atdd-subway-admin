@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.station.domain.Station;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.Set;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line" ,cascade = {CascadeType.PERSIST, CascadeType.MERGE},orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public List<Section> getSections() {
