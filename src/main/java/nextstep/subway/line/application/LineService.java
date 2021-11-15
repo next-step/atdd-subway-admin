@@ -38,4 +38,14 @@ public class LineService {
 			.orElseThrow(IllegalArgumentException::new);
 		return LineResponse.of(line);
 	}
+
+	public LineResponse updateLine(Long id, LineRequest lineRequest) {
+		Line line = lineRepository.findById(id)
+			.orElseThrow(IllegalArgumentException::new);
+
+		line.update(lineRequest.toLine());
+		lineRepository.save(line);
+
+		return LineResponse.of(line);
+	}
 }
