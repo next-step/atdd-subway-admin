@@ -11,12 +11,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -111,12 +114,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> request = save(new LineRequest("1호선", "bg-red-600"));
+        LineResponse lineResponse = request.jsonPath().getObject(".", LineResponse.class);
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = RestAssured
+            .given().log().all()
+            .pathParam("id", lineResponse.getId())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when().get("lines/{id}")
+            .then().log().all().extract();
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(OK.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
