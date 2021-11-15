@@ -17,19 +17,13 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createLine() {
+    void createResponse() {
         // given
         LineRequest params = new LineRequest("신분당선", "bg-red-600");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = createResponse(params, "/lines");
 
         // then
         // 지하철_노선_생성됨
@@ -42,12 +36,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
+        LineRequest params = new LineRequest("신분당선", "bg-red-600");
+        createResponse(params, "/lines");
 
         // when
         // 지하철_노선_생성_요청
+        ExtractableResponse<Response> response = createResponse(params, "lines");
 
         // then
         // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -102,5 +100,15 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+
+    private ExtractableResponse<Response> createResponse(LineRequest params, String path) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(path)
+                .then().log().all()
+                .extract();
     }
 }
