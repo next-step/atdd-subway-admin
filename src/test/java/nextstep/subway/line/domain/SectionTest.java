@@ -162,7 +162,7 @@ class SectionTest {
             .withMessageContaining("connected section must not be null");
     }
 
-    @ParameterizedTest(name = "[{index}] 교대,강남 구간에 {0} 구간을 연결할 수 없다.")
+    @ParameterizedTest(name = "[{index}] 교대,역삼 구간에 {0} 구간을 연결할 수 없다.")
     @MethodSource("sameOrNotExistStation")
     @DisplayName("모든 역이 같거나 다른 구간을 연결하면 IllegalArgumentException")
     void connect_sameOrNotExistStation_thrownIllegalArgumentException(Section connectedSection) {
