@@ -220,6 +220,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         @DisplayName("한 구간 남은 지하철 노선의 역을 삭제한다.")
         void deleteSection_remainedLastSection_400() {
+            // given
             지하철_노선에_역_구간_삭제_됨(secondLine.getId(), yeoksamStation.getId());
 
             // when
@@ -233,6 +234,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         @DisplayName("지하철 노선에 존재하지 않는 역을 삭제한다.")
         void deleteSection_notExistStationInSecondLine_404() {
+            // given
             StationResponse banpoStation = 지하철_역_생성("반포");
 
             // when
@@ -244,8 +246,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color,
-        long upStationId, long downStationId, int distance) {
+    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(
+        String name, String color, long upStationId, long downStationId, int distance) {
         return RestAssured.given()
             .body(new LineCreateRequest(name, color,
                 new SectionRequest(upStationId, downStationId, distance)))
