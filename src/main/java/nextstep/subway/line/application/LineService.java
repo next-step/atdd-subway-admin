@@ -54,4 +54,9 @@ public class LineService {
         return lineRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("not found line id : " + id));
     }
+
+    public void deleteLine(Long id) {
+        Line findLine = findLineById(id);
+        lineRepository.delete(findLine);
+    }
 }

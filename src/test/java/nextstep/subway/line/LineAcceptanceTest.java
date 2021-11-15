@@ -144,12 +144,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Line 잠실역 = lineRepository.save(new Line("잠실역", "bg-green"));
 
         // when
         // 지하철_노선_제거_요청
+        // when
+        ExtractableResponse<Response> response = RestAssured
+            .given().log().all()
+            .when()
+            .delete("/lines/{id}", 잠실역.getId())
+            .then().log().all().extract();
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        // then
         // 지하철_노선_삭제됨
+        Line findLine = lineRepository.findById(잠실역.getId()).orElse(null);
+        assertNull(findLine);
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
