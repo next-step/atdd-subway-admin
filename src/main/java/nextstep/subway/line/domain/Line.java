@@ -13,7 +13,7 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
