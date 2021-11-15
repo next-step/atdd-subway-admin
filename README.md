@@ -49,7 +49,7 @@ npm run dev
     - [x] 생성
     - [x] 목록 조회
     - [x] 조회
-    - [ ] 수정
+    - [x] 수정
     - [ ] 삭제
     
 ## ✏️ Code Review Process

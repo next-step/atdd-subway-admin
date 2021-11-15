@@ -2,6 +2,7 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,6 +73,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_조회_요청
         Response response = RestAssured
             .given().log().all()
+            .accept(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get("/lines");
 
@@ -82,6 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ValidatableResponse then = response.then().log().all();
         then.body("$", hasSize(2));
         then.body("id", hasItems(잠실역.getId().intValue(), 명동역.getId().intValue()));
+        then.extract();
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -95,7 +98,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = RestAssured
             .given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get("/lines/{id}", 잠실역.getId())
             .then().log().all().extract();
@@ -110,12 +113,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        Line 잠실역 = lineRepository.save(new Line("잠실역", "bg-green"));
 
         // when
         // 지하철_노선_수정_요청
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "명동역");
+        params.put("color", "bg-blue");
+        ExtractableResponse<Response> response = RestAssured
+            .given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/{id}", 잠실역.getId())
+            .then().log().all().extract();
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // then
         // 지하철_노선_수정됨
+        Line findLine = lineRepository.findById(잠실역.getId()).orElse(null);
+        assertNotNull(findLine);
+        assertEquals(params.get("name"), findLine.getName());
+        assertEquals(params.get("color"), findLine.getColor());
     }
 
     @DisplayName("지하철 노선을 제거한다.")

@@ -33,9 +33,13 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse getLine(Long id) {
-        Line findLine = lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("not found line id : " + id));
+        Line findLine = findLineById(id);
         return LineResponse.of(findLine);
+    }
+
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line findLine = findLineById(id);
+        findLine.update(lineRequest.toLine());
     }
 
     private List<LineResponse> convertToLineResponses(List<Line> lines) {
@@ -44,5 +48,10 @@ public class LineService {
             responseLines.add(LineResponse.of(line));
         }
         return responseLines;
+    }
+
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("not found line id : " + id));
     }
 }
