@@ -32,11 +32,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
 
-        LineRequest params = new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED);
+        LineRequest lineRequest = new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED);
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> post = post(params);
+        ExtractableResponse<Response> post = post(lineRequest);
 
         // then
         // 지하철_노선_생성됨
