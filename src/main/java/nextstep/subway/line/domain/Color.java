@@ -24,6 +24,11 @@ public class Color {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -33,11 +38,6 @@ public class Color {
         }
         Color color = (Color) o;
         return Objects.equals(value, color.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
     }
 
     @Override

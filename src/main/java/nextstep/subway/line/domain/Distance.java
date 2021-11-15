@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import org.springframework.util.Assert;
 
 @Embeddable
 public class Distance {
@@ -15,12 +14,36 @@ public class Distance {
     }
 
     private Distance(int value) {
-        Assert.isTrue(positive(value), String.format("distance value(%d) must be positive", value));
+        validate(value);
         this.value = value;
     }
 
     public static Distance from(int value) {
         return new Distance(value);
+    }
+
+    public boolean moreThan(Distance distance) {
+        return value >= distance.value;
+    }
+
+    public Distance subtract(Distance distance) {
+        return from(value - distance.value);
+    }
+
+    private void validate(int value) {
+        if (lessThanOrEqualZero(value)) {
+            throw new IllegalArgumentException(
+                String.format("distance value(%d) must be greater than zero", value));
+        }
+    }
+
+    private boolean lessThanOrEqualZero(int value) {
+        return value <= 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 
     @Override
@@ -36,16 +59,7 @@ public class Distance {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
-
-    @Override
     public String toString() {
         return String.valueOf(value);
-    }
-
-    private boolean positive(int value) {
-        return value >= 0;
     }
 }

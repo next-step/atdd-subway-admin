@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.common.domain.Name;
+import org.springframework.util.Assert;
 
 @Entity
 public class Station extends BaseEntity {
@@ -23,6 +24,7 @@ public class Station extends BaseEntity {
     }
 
     private Station(Name name) {
+        Assert.notNull(name, "'name' must not be null");
         this.name = name;
     }
 
@@ -39,6 +41,11 @@ public class Station extends BaseEntity {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -48,11 +55,6 @@ public class Station extends BaseEntity {
         }
         Station station = (Station) o;
         return Objects.equals(id, station.id) && Objects.equals(name, station.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
     }
 
     @Override

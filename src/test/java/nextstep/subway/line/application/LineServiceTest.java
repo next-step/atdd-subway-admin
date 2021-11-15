@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,10 +21,12 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.dto.LineCreateRequest;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,7 @@ class LineServiceTest {
         Station gangnam = givenGangnamStations(1L);
         Station yeoksam = givenYeoksamStations(2L);
         notExistsDuplicationName(expectedName);
-        returnSavedLine(mockLine());
+        returnSavedLine(gangnamYoeksamLine());
 
         //when
         save(lineCreateRequest(expectedName, expectedColor));
@@ -119,15 +120,16 @@ class LineServiceTest {
         String expectedName = "name";
         String expectedColor = "color";
         notExistsDuplicationName(expectedName);
-        Line updatedLine = givenLine();
+        Line line = gangnamYoeksamLine();
+        givenLine(line);
 
         //when
-        service.update(Long.MAX_VALUE, lineUpdateRequest(expectedName, expectedColor));
+        service.update(Long.MAX_VALUE, new LineUpdateRequest(expectedName, expectedColor));
 
         //then
         assertAll(
-            () -> assertThat(updatedLine.name()).isEqualTo(Name.from(expectedName)),
-            () -> assertThat(updatedLine.color()).isEqualTo(Color.from(expectedColor))
+            () -> assertThat(line.name()).isEqualTo(Name.from(expectedName)),
+            () -> assertThat(line.color()).isEqualTo(Color.from(expectedColor))
         );
     }
 
@@ -140,7 +142,7 @@ class LineServiceTest {
 
         //when
         ThrowingCallable updateCall = () -> service
-            .update(Long.MAX_VALUE, lineUpdateRequest(updatedName, "any"));
+            .update(Long.MAX_VALUE, new LineUpdateRequest(updatedName, "any"));
 
         //then
         assertThatExceptionOfType(DuplicateDataException.class)
@@ -156,7 +158,7 @@ class LineServiceTest {
 
         //when
         ThrowingCallable updateCall = () -> service
-            .update(Long.MAX_VALUE, lineUpdateRequest("any", "any"));
+            .update(Long.MAX_VALUE, new LineUpdateRequest("any", "any"));
 
         //then
         assertThatExceptionOfType(NotFoundException.class)
@@ -178,6 +180,25 @@ class LineServiceTest {
             .deleteById(deletedId);
     }
 
+    @Test
+    @DisplayName("구간 추가")
+    void addSection() {
+        //given
+        Line line = gangnamYoeksamLine();
+        givenLine(line);
+        givenStation(1L, Station.from(Name.from("교대")));
+        givenStation(2L, Station.from(Name.from("강남")));
+
+        //when
+        LineResponse lineResponse = service.addSection(anyLong(),
+            new SectionRequest(1L, 2L, 10));
+
+        //then
+        assertThat(lineResponse.getStations())
+            .extracting(StationResponse::getName)
+            .containsExactly("교대", "강남", "역삼");
+    }
+
     private void lineSaved(String expectedName, String expectedColor,
         Station firstExpectedStation, Station secondExpectedStation, Line savedLine) {
         assertAll(
@@ -193,11 +214,9 @@ class LineServiceTest {
             .thenReturn(Optional.empty());
     }
 
-    private Line givenLine() {
-        Line line = Line.of(Name.from("name"), Color.from("color"), mock(Sections.class));
+    private void givenLine(Line line) {
         when(repository.findById(anyLong()))
             .thenReturn(Optional.of(line));
-        return line;
     }
 
     private void notExistsStation(long id) {
@@ -213,10 +232,6 @@ class LineServiceTest {
     private void notExistsDuplicationName(String name) {
         when(repository.existsByName(Name.from(name)))
             .thenReturn(false);
-    }
-
-    private LineUpdateRequest lineUpdateRequest(String name, String color) {
-        return new LineUpdateRequest(name, color);
     }
 
     private LineCreateRequest lineCreateRequest(String name, String color) {
@@ -250,7 +265,7 @@ class LineServiceTest {
             .thenReturn(line);
     }
 
-    private Line mockLine() {
+    private Line gangnamYoeksamLine() {
         return Line.of(Name.from("name"), Color.from("color"),
             Sections.from(
                 Section.of(
