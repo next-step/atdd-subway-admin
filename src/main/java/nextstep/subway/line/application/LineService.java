@@ -30,4 +30,9 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public LineResponse findOne(Long id) {
+        return LineResponse.of(lineRepository.findById(id)
+                .orElseThrow(() -> new LineNotFoundException("라인을 찾을 수 없습니다.")));
+    }
 }

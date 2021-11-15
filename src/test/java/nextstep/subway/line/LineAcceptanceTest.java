@@ -6,14 +6,12 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,12 +83,18 @@ class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        createPostResponse(new LineRequest("2호선", "bg-green-600"), "/lines");
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = createGetResponse("lines/1");
 
         // then
         // 지하철_노선_응답됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getObject(".", LineResponse.class))
+                .extracting("name", "color")
+                .contains("2호선", "bg-green-600");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -120,7 +124,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createPostResponse(LineRequest params, String path) {
-        return RestAssured.given().log().all()
+        return RestAssured.given().log().params()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -130,7 +134,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> createGetResponse(String path) {
-        return RestAssured.given().log().all()
+        return RestAssured.given().log().params()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get(path)
