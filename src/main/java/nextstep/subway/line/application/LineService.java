@@ -88,11 +88,11 @@ public class LineService {
 
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Line"));
+                .orElseThrow(() -> new EntityNotFoundException(Line.class));
     }
 
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Station"));
+                .orElseThrow(() -> new EntityNotFoundException(Station.class));
     }
 }
