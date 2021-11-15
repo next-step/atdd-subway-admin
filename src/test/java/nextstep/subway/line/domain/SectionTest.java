@@ -131,7 +131,7 @@ class SectionTest {
     }
 
 
-    @ParameterizedTest(name = "[{index}] 교대,강남 구간에 {0} 구간을 추가하면 {1}")
+    @ParameterizedTest(name = "[{index}] 교대,강남 구간에 {0} 구간을 연결하면 {1}")
     @MethodSource
     @DisplayName("구간 연결")
     void connect(Section connectedSection, Section expected) {
