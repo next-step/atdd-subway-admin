@@ -36,14 +36,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
-		// given
-
 		// when
-		// 지하철_노선_생성_요청
 		ExtractableResponse<Response> response = 지하철_노선_생성_요청(이호선_생성_요청값());
 
 		// then
-		// 지하철_노선_생성됨
 		지하철_노선_생성됨(response);
 	}
 
@@ -65,15 +61,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLine2() {
 		// given
-		// 지하철_노선_등록되어_있음
 		지하철_노선_생성_요청(이호선_생성_요청값());
 
 		// when
-		// 지하철_노선_생성_요청
 		ExtractableResponse<Response> response = 지하철_노선_생성_요청(이호선_생성_요청값());
 
 		// then
-		// 지하철_노선_생성_실패됨
 		지하철_노선_생성_실패됨(response);
 	}
 
@@ -85,21 +78,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLines() {
 		// given
-		// 지하철_노선_등록되어_있음
 		LineResponse 이호선_등록되어_있음 = 지하철_노선_등록되어_있음(이호선_생성_요청값());
-
-		// 지하철_노선_등록되어_있음
 		LineResponse 신분당선_등록되어_있음 = 지하철_노선_등록되어_있음(신분당선_생성_요청값());
 
 		// when
-		// 지하철_노선_목록_조회_요청
 		ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
 		// then
-		// 지하철_노선_목록_응답됨
 		지하철_노선_목록_응답됨(response);
-
-		// 지하철_노선_목록_포함됨
 		지하철_노선_목록_포함됨(response, 이호선_등록되어_있음, 신분당선_등록되어_있음);
 	}
 
@@ -137,15 +123,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void getLine() {
 		// given
-		// 지하철_노선_등록되어_있음
 		LineResponse 이호선_노선_등록_응답 = 지하철_노선_등록되어_있음(이호선_생성_요청값());
 
 		// when
-		// 지하철_노선_조회_요청
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선_노선_등록_응답.getId());
 
 		// then
-		// 지하철_노선_응답됨
 		지하철_노선_응답됨(response);
 	}
 
@@ -165,15 +148,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLine() {
 		// given
-		// 지하철_노선_등록되어_있음
 		LineResponse 이호선 = 지하철_노선_등록되어_있음(이호선_생성_요청값());
 
 		// when
-		// 지하철_노선_수정_요청
 		ExtractableResponse<Response> response = 지하철_노선_수정_요청(이호선.getId(), 신분당선_생성_요청값());
 
 		// then
-		// 지하철_노선_수정됨
 		지하철_노선_수정됨(response, 이호선);
 	}
 
@@ -200,15 +180,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
-		// 지하철_노선_등록되어_있음
 		LineResponse 이호선 = 지하철_노선_등록되어_있음(이호선_생성_요청값());
 
 		// when
-		// 지하철_노선_제거_요청
 		ExtractableResponse<Response> response = 지하철_노선_제거_요청(이호선.getId());
 
 		// then
-		// 지하철_노선_삭제됨
 		지하철_노선_삭제됨(response);
 	}
 
