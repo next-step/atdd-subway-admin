@@ -5,6 +5,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineInfoResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -29,6 +31,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // when
         // 지하철_노선_생성_요청
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+
+        ExtractableResponse<Response> response = requestCreateLine(lineRequest);
+
+        // then
+        // 지하철_노선_생성됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        verifyLineResponse(response.as(LineResponse.class), LineResponse.of(new Line(lineRequest.getName(), lineRequest.getColor())));
+    }
+
+    @DisplayName("구간을 포함하여 지하철 노선을 생성한다.")
+    @Test
+    void createLineWithSection() {
+        // given 
+        StationResponse upStation = StationAcceptanceTest.createStation("대화");
+        StationResponse downStation =  StationAcceptanceTest.createStation("수서");
+
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
 
         ExtractableResponse<Response> response = requestCreateLine(lineRequest);
 

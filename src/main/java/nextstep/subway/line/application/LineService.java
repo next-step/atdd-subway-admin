@@ -3,8 +3,6 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineInfoResponse;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -22,9 +20,8 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+    public Line saveLine(Line line) {
+        return lineRepository.save(line);
     }
 
     @Transactional(readOnly = true)
