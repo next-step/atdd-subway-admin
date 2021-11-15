@@ -49,6 +49,23 @@ npm run dev
 
 <br>
 
+## 🚩 기능 구현 목록
+### 지하철 노선 관리
+- [ ] 인수테스트 먼저 작성
+    - [ ] `LineAcceptanceTest` 완성
+
+- [ ] 기능 구현
+    - [ ] 지하철 노선 생성 (POST /lines) - created
+    - [ ] 목록 조회 (GET /lines) - ok collection
+    - [ ] 조회 (GET /lines/{id}) - ok
+    - [ ] 수정 (PUT /lines/{id}) - ok
+    - [ ] 삭제 (DELETE /lines/{id}) - no content
+
+- [ ] 인수테스트 리팩토링
+    - [ ] 반복되는 코드 메서드로 분리
+    - [ ] 의도 드러내기 - 한글 메서드로 분류
+    - [ ] 다른 인수 테스트에서 재사용 가능한지 확인 후 추상화하기
+
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
