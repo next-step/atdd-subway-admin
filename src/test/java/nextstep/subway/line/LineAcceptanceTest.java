@@ -214,4 +214,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @DisplayName("생성되지 않은 지하철 노선을 제거한다.")
+    @Test
+    void deleteNotCreatedLine() {
+        // given
+        Long unknownId = 7L;
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(unknownId);
+
+        // then
+        지하철_노선_찾지_못함(response);
+    }
 }

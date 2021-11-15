@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -47,6 +48,7 @@ public class LineService {
     }
 
     public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
+        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        lineRepository.delete(line);
     }
 }
