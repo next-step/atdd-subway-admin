@@ -77,7 +77,7 @@ class LineTest {
         신분당선.addSection(판교_정자_구간);
 
         // when & then
-        assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.removeStation(판교역))
+        assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.remove(판교역))
                                          .withMessageContaining("노선의 구간이 1개인 경우, 지하철 역을 삭제 할 수 없습니다.");
     }
 
@@ -100,7 +100,7 @@ class LineTest {
         Station 강남역 = Station.from(10L, "강남역");
 
         // then
-        assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.removeStation(강남역))
+        assertThatIllegalArgumentException().isThrownBy(() -> 신분당선.remove(강남역))
                                             .withMessageContaining("노선에 존재하지 않는 역입니다.");
     }
 }

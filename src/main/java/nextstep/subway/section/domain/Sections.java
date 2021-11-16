@@ -83,11 +83,11 @@ public class Sections {
     }
 
     public void removeMiddleStation(Station station) {
-        Section upSection = findByUpStation(station);
-        Section downSection = findByDownStation(station);
-        rearrangeSections(upSection, downSection);
+        Section prevSection = findByDownStation(station);
+        Section postSection = findByUpStation(station);
+        rearrangeSections(prevSection, postSection);
 
-        sections.remove(downSection);
+        remove(postSection);
     }
 
     public boolean isEndStation(Station station) {
@@ -105,8 +105,8 @@ public class Sections {
         return this.sections.contains(section);
     }
 
-    public void remove(Section section) {
-        this.sections.remove(section);
+    public boolean contains(Station station) {
+        return findAllStations().contains(station);
     }
 
     public boolean containStations(List<Station> stations) {
@@ -127,9 +127,13 @@ public class Sections {
         return stations;
     }
 
-    private void rearrangeSections(Section upSection, Section downSection) {
-        upSection.changeDownStation(downSection.getDownStation());
-        upSection.changeDistance(Distance.merge(upSection.getDistance(), downSection.getDistance()));
+    private void remove(Section section) {
+        this.sections.remove(section);
+    }
+
+    private void rearrangeSections(Section prevSection, Section postSection) {
+        prevSection.changeDownStation(postSection.getDownStation());
+        prevSection.changeDistance(Distance.merge(prevSection.getDistance(), postSection.getDistance()));
     }
 
     private void updateMiddleSection(Section middleSection, Section section) {
@@ -184,7 +188,7 @@ public class Sections {
     }
 
     private boolean isFirstEndStation(Station station) {
-        return false;
+        return findFirstSection().isSameUpStation(station);
     }
 
     private void validateAddableSectionDistance(Section section, Section middleSection) {
