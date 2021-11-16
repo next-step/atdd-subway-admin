@@ -43,7 +43,7 @@ class LineServiceTest {
         Mockito.when(lineRepository.findById(ArgumentMatchers.anyLong()))
             .thenReturn(Optional.of(line));
 
-        LineResponse byId = lineService.findById(1L);
+        LineResponse byId = lineService.findLine(1L);
 
         assertAll(() -> {
             assertThat(byId.getName()).isEqualTo(line.getName());
@@ -57,7 +57,7 @@ class LineServiceTest {
         Mockito.when(lineRepository.findById(ArgumentMatchers.anyLong()))
             .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> lineService.findById(1L))
+        assertThatThrownBy(() -> lineService.findLine(1L))
             .isInstanceOf(NotFoundException.class);
     }
 
@@ -66,7 +66,7 @@ class LineServiceTest {
     public void findAll() {
         Mockito.when(lineRepository.findAll())
             .thenReturn(Arrays.asList(line));
-        List<LineResponse> lineResponseList = lineService.findAll();
+        List<LineResponse> lineResponseList = lineService.findLines();
         assertThat(lineResponseList.size()).isEqualTo(1);
 
         System.out.println(lineResponseList);

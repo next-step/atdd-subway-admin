@@ -24,13 +24,12 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public LineResponse findById(Long lineId) {
-        Line line = lineRepository.findById(lineId)
-            .orElseThrow(() -> new NotFoundException());
+    public LineResponse findLine(Long lineId) {
+        Line line = findById(lineId);
         return LineResponse.of(line);
     }
 
-    public List<LineResponse> findAll() {
+    public List<LineResponse> findLines() {
         List<Line> lineList = lineRepository.findAll();
         return lineList
                 .stream()
@@ -39,8 +38,7 @@ public class LineService {
     }
 
     public Long updateLine(Long lineId, LineRequest lineRequest) {
-        Line line = lineRepository.findById(lineId)
-            .orElseThrow(() -> new NotFoundException());
+        Line line = findById(lineId);
 
         line.update(lineRequest.toLine());
         Line save = lineRepository.save(line);
@@ -48,10 +46,14 @@ public class LineService {
     }
 
     public void deleteLine(Long lineId) {
-        Line line = lineRepository.findById(lineId)
-            .orElseThrow(() -> new NotFoundException());
+        Line line = findById(lineId);
 
         lineRepository.delete(line);
+    }
+
+    private Line findById(Long lineId) {
+        return lineRepository.findById(lineId)
+            .orElseThrow(() -> new NotFoundException());
     }
 
 }
