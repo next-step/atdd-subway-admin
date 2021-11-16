@@ -8,7 +8,6 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -180,50 +179,54 @@ public class Sections {
     }
 
     private Station findStartStation() {
+        Station findStation = Station.EMPTY;
         Section section = sections.get(0);
-        Optional<Section> sectionOptional = Optional.of(section);
 
-        while (sectionOptional.isPresent()) {
-            section = sectionOptional.get();
-            sectionOptional = sections.stream()
+        while (!section.isEmpty()) {
+            findStation = section.getUpStation();
+            section = sections.stream()
                     .filter(section::isUpStationEqualsWithDownStation)
-                    .findFirst();
+                    .findFirst()
+                    .orElse(Section.EMPTY);
         }
-        return section.getUpStation();
+        return findStation;
     }
 
     private Station findEndStation() {
+        Station findStation = Station.EMPTY;
         Section section = sections.get(0);
-        Optional<Section> sectionOptional = Optional.of(section);
 
-        while (sectionOptional.isPresent()) {
-            section = sectionOptional.get();
-            sectionOptional = sections.stream()
+        while (!section.isEmpty()) {
+            findStation = section.getDownStation();
+            section = sections.stream()
                     .filter(section::isDownStationEqualsWithUpStation)
-                    .findFirst();
+                    .findFirst()
+                    .orElse(Section.EMPTY);
         }
-        return section.getDownStation();
+        return findStation;
     }
 
     private List<Station> makeStations() {
         List<Station> stations = new ArrayList<>();
-        Optional<Section> sectionOptional = findFirstSection();
+        Section section = findFirstSection();
 
-        while (sectionOptional.isPresent()) {
-            Section section = sectionOptional.get();
-            stations.add(section.getUpStation());
-            sectionOptional = sections.stream()
-                    .filter(it -> it.isUpStationEqualsWithDownStation(section))
-                    .findFirst();
+        while (!section.isEmpty()) {
+            Section finalSection = section;
+            stations.add(finalSection.getUpStation());
+            section = sections.stream()
+                    .filter(it -> it.isUpStationEqualsWithDownStation(finalSection))
+                    .findFirst()
+                    .orElse(Section.EMPTY);
         }
 
         stations.add(findEndStation());
         return stations;
     }
 
-    private Optional<Section> findFirstSection() {
+    private Section findFirstSection() {
         return sections.stream()
                 .filter(section -> section.isUpStationEquals(findStartStation()))
-                .findFirst();
+                .findFirst()
+                .orElse(Section.EMPTY);
     }
 }

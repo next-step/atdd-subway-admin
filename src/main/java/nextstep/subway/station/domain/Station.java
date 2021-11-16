@@ -12,6 +12,8 @@ import java.util.Objects;
 @Entity
 public class Station extends BaseEntity {
 
+    public final static Station EMPTY = new Station();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
