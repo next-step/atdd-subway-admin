@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import org.springframework.http.MediaType;
 
 public class LineSteps {
@@ -55,6 +56,16 @@ public class LineSteps {
         return RestAssured
                 .given().log().all()
                 .when().delete(LINE_URI + "/{id}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(Long id, SectionRequest sectionRequest) {
+        return RestAssured
+                .given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(LINE_URI + "/{id}/sections", id)
                 .then().log().all()
                 .extract();
     }

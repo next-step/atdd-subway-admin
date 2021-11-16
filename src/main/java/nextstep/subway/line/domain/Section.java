@@ -42,12 +42,52 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
+    public void changeLine(Section section) {
+        changeLine(section.line);
+    }
+
     public Station getUpStation() {
         return upStation;
     }
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
+    }
+
+    public boolean isLessThanOrEquals(Section section) {
+        return this.distance.isLessThanOrEquals(section.distance);
+    }
+
+    public boolean isUpStationEquals(Section section) {
+        return this.upStation.equals(section.upStation);
+    }
+
+    public boolean isUpStationEquals(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isDownStationEquals(Section section) {
+        return this.downStation.equals(section.downStation);
+    }
+
+    public boolean isDownStationEquals(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean isUpStationEqualsWithDownStation(Section section) {
+        return this.upStation.equals(section.getDownStation());
+    }
+
+    public boolean isDownStationEqualsWithUpStation(Section section) {
+        return this.downStation.equals(section.getUpStation());
+    }
+
+    public Distance getRemainDistance(Section section) {
+        return new Distance(this.distance.getRemainDistance(section.distance));
     }
 
     @Override

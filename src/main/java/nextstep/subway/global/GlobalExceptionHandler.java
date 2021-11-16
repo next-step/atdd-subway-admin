@@ -1,6 +1,7 @@
 package nextstep.subway.global;
 
 import nextstep.subway.line.domain.LineNameDuplicatedException;
+import nextstep.subway.line.domain.SectionAddFailedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -10,7 +11,7 @@ import java.io.IOException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(LineNameDuplicatedException.class)
+    @ExceptionHandler({LineNameDuplicatedException.class, SectionAddFailedException.class})
     public void handleLineNameDuplicatedException(HttpServletResponse response) throws IOException {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST);
     }

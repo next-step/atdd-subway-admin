@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -66,6 +67,15 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    public void addSection(Long id, SectionRequest sectionRequest) {
+        Line line = findLineById(id);
+        Section section = sectionRequest.toSection(
+                findStationById(sectionRequest.getUpStationId()),
+                findStationById(sectionRequest.getDownStationId())
+        );
+        line.addSection(section);
+    }
+
     private void validateLine(LineRequest request) {
         if (isNameDuplicated(request)) {
             throw new LineNameDuplicatedException();
@@ -78,11 +88,11 @@ public class LineService {
 
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Line"));
+                .orElseThrow(() -> new EntityNotFoundException(Line.class));
     }
 
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Station"));
+                .orElseThrow(() -> new EntityNotFoundException(Station.class));
     }
 }
