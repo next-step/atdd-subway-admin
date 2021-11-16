@@ -1,6 +1,7 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.line.domain.LineStation;
 
 import nextstep.subway.excetpion.ErrorCode;
+import nextstep.subway.line.domain.Line.Line;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.StationNotFoundException;
 

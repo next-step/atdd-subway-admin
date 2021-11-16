@@ -1,6 +1,8 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.line.domain.Line;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.domain.LineStation.LineStation;
+import nextstep.subway.line.domain.LineStation.LineStations;
 
 import javax.persistence.*;
 

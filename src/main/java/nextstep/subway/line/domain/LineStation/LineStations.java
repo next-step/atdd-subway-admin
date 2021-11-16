@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.line.domain.LineStation;
 
 import nextstep.subway.excetpion.ErrorCode;
 import nextstep.subway.line.exception.DuplicateLineStationException;

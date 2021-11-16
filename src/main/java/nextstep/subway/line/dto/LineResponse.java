@@ -1,6 +1,6 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Line.Line;
 import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;

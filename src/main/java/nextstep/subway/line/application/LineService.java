@@ -1,10 +1,10 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.excetpion.ErrorCode;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.line.domain.LineStationRepository;
+import nextstep.subway.line.domain.Line.Line;
+import nextstep.subway.line.domain.Line.LineRepository;
+import nextstep.subway.line.domain.LineStation.LineStation;
+import nextstep.subway.line.domain.LineStation.LineStationRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationRequest;
