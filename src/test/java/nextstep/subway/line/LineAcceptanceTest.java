@@ -81,7 +81,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회(createdResponse);
 
         // then
-        // 지하철_노선_응답됨
         지하철_노선_정상_응답_확인(response);
         지하철_노선_포함_확인(response, createdResponse.as(LineResponse.class));
     }
