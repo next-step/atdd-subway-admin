@@ -3,10 +3,11 @@ package nextstep.subway.line.domain;
 import java.util.Objects;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 
 import nextstep.subway.line.exception.IllegalSectionException;
 import nextstep.subway.station.domain.Station;
@@ -18,10 +19,10 @@ public class Section {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Station upStation;
 
-	@OneToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Station downStation;
 
 	private int distance;
