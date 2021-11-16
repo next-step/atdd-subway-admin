@@ -18,10 +18,11 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void addSection() {
-        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선(), 10, 강남역(), 광교역());
+        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 역_생성(강남역), 역_생성(광교역));
         Long id = response.as(LineResponse.class).getId();
 
-        ExtractableResponse<Response> actual = 지하철_노선_구간_추가("/lines/{id}/lineStations", id, 구간_추가_판교역());
+        ExtractableResponse<Response> actual
+                = 지하철_노선_구간_추가("/lines/{id}/lineStations", id, 구간_추가(역_생성(강남역), 역_생성(판교역), 5));
 
         응답_확인_OK(actual);
     }

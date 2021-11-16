@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineStationRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
@@ -19,12 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class LineAcceptanceTestMethod {
 
     public static ExtractableResponse<Response> 신규_지하철_노선_생성_요청(String path, LineRequest lineRequest, int distance,
-                                                                StationRequest upStations, StationRequest downStations) {
-
-        Long upStationId = post("/stations", upStations).as(StationResponse.class).getId();
-        Long downStationId = post("/stations", downStations).as(StationResponse.class).getId();
-        lineRequest.setUpStationId(upStationId);
-        lineRequest.setDownStationId(downStationId);
+                                                                StationResponse preStations, StationResponse nextStations) {
+        lineRequest.setPreStationId(preStations.getId());
+        lineRequest.setNextStationId(nextStations.getId());
         lineRequest.setDistance(distance);
 
         return post(path, lineRequest);
@@ -66,6 +64,13 @@ public class LineAcceptanceTestMethod {
     public static ExtractableResponse<Response> 지하철_노선_삭제_요청(String path, Long id) {
         return delete(path, id);
     }
+
+    public static StationResponse 역_생성 (StationRequest stationRequest) {
+        return post("/stations", stationRequest).as(StationResponse.class);
+    }
+
+    public static LineStationRequest 구간_추가(StationResponse pre, StationResponse next, int distance){
+        return new LineStationRequest(pre.getId(), next.getId(), distance); }
 
     public static void 응답_확인_OK(ExtractableResponse<Response> actual) {
         assertThat(actual.statusCode()).isEqualTo(HttpStatus.OK.value());
