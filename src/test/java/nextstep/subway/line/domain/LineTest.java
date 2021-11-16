@@ -21,8 +21,8 @@ class LineTest {
         // given
         Line 이호선 = new Line("2호선", "green");
         List<Section> sections = Arrays.asList(
-                new Section(이호선, 교대역, 강남역, 10),
                 new Section(이호선, 삼성역, 잠실역, 20),
+                new Section(이호선, 교대역, 강남역, 10),
                 new Section(이호선, 역삼역, 삼성역, 30),
                 new Section(이호선, 강남역, 역삼역, 40));
         이호선.updateSections(sections);
