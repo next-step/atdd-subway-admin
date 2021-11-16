@@ -13,6 +13,8 @@ import java.util.Objects;
 @Entity
 public class Section extends BaseEntity {
 
+    public final static Section EMPTY = new Section();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -88,6 +90,10 @@ public class Section extends BaseEntity {
 
     public Distance getRemainDistance(Section section) {
         return new Distance(this.distance.getRemainDistance(section.distance));
+    }
+
+    public boolean isEmpty() {
+        return this == EMPTY;
     }
 
     @Override

@@ -13,6 +13,9 @@ import java.util.Optional;
 @Embeddable
 public class Sections {
 
+    private static final boolean SPLIT_SECTIONS_ADDED = true;
+    private static final boolean SPLIT_SECTIONS_NOT_ADDED = false;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -31,7 +34,7 @@ public class Sections {
 
         validate(section);
 
-        if (addSectionsUpStationMatched(section)) {
+        if (addSectionsUpStationMatched(section) == SPLIT_SECTIONS_ADDED) {
             return;
         }
         addSectionsDownStationMatched(section);
@@ -67,51 +70,53 @@ public class Sections {
     }
 
     private void validate(Section section) {
-        Optional<Section> sectionUpStationMatchedOptional = findByUpStation(section);
-        Optional<Section> sectionDownStationMatchedOptional = findByDownStation(section);
+        Section sectionUpStationMatched = findByUpStation(section);
+        Section sectionDownStationMatched = findByDownStation(section);
 
-        if (sectionUpStationMatchedOptional.isPresent() && sectionDownStationMatchedOptional.isPresent()) {
-            throw new SectionAddFailedException("상행역과 하행역이 노선에 포함되어 있는 구간은 등록할 수 없습니다.");
-        }
-        if (!sectionUpStationMatchedOptional.isPresent() && !sectionDownStationMatchedOptional.isPresent()) {
+        if (sectionUpStationMatched.isEmpty() && sectionDownStationMatched.isEmpty()) {
             throw new SectionAddFailedException("상행역과 하행역중 1개는 노선에 포함되어야 합니다.");
         }
-        if (sectionUpStationMatchedOptional.isPresent() && sectionUpStationMatchedOptional.get().isLessThanOrEquals(section)) {
+        if (!sectionUpStationMatched.isEmpty() && !sectionDownStationMatched.isEmpty()) {
+            throw new SectionAddFailedException("상행역과 하행역이 노선에 포함되어 있는 구간은 등록할 수 없습니다.");
+        }
+        if (!sectionUpStationMatched.isEmpty() && sectionUpStationMatched.isLessThanOrEquals(section)) {
             throw new SectionAddFailedException("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
         }
-        if (sectionDownStationMatchedOptional.isPresent() && sectionDownStationMatchedOptional.get().isLessThanOrEquals(section)) {
+        if (!sectionDownStationMatched.isEmpty() && sectionDownStationMatched.isLessThanOrEquals(section)) {
             throw new SectionAddFailedException("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
         }
     }
 
     private boolean addSectionsUpStationMatched(Section section) {
-        Optional<Section> sectionUpStationMatchedOptional = findByUpStation(section);
-        if (sectionUpStationMatchedOptional.isPresent()) {
-            Section sectionUpStationMatched = sectionUpStationMatchedOptional.get();
-            addSplitSections(section, sectionUpStationMatched, section.getDownStation(), sectionUpStationMatched.getDownStation());
-            return true;
+        Section sectionUpStationMatched = findByUpStation(section);
+        if (!sectionUpStationMatched.isEmpty()) {
+            addSplitSections(section, sectionUpStationMatched, section.getDownStation(),
+                    sectionUpStationMatched.getDownStation());
+            return SPLIT_SECTIONS_ADDED;
         }
-        return false;
+        return SPLIT_SECTIONS_NOT_ADDED;
     }
 
     private void addSectionsDownStationMatched(Section section) {
-        Optional<Section> sectionDownStationMatchedOptional = findByDownStation(section);
-        if (sectionDownStationMatchedOptional.isPresent()) {
-            Section sectionDownStationMatched = sectionDownStationMatchedOptional.get();
-            addSplitSections(section, sectionDownStationMatched, sectionDownStationMatched.getUpStation(), section.getUpStation());
+        Section sectionDownStationMatched = findByDownStation(section);
+        if (!sectionDownStationMatched.isEmpty()) {
+            addSplitSections(section, sectionDownStationMatched, sectionDownStationMatched.getUpStation(),
+                    section.getUpStation());
         }
     }
 
-    private Optional<Section> findByUpStation(Section section) {
+    private Section findByUpStation(Section section) {
         return sections.stream()
                 .filter(section::isUpStationEquals)
-                .findFirst();
+                .findFirst()
+                .orElse(Section.EMPTY);
     }
 
-    private Optional<Section> findByDownStation(Section section) {
+    private Section findByDownStation(Section section) {
         return sections.stream()
                 .filter(section::isDownStationEquals)
-                .findFirst();
+                .findFirst()
+                .orElse(Section.EMPTY);
     }
 
     private void addSplitSections(Section section, Section matchedSection, Station newUpStation, Station newDownStation) {
