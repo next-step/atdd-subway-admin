@@ -19,7 +19,7 @@
 
 <img src=https://nextstep-storage.s3.ap-northeast-2.amazonaws.com/663eba46f3a140f79c74c567d37e431b>
 
-## 2단계 - 지하철 노선에 구간 등록
+## [2단계 - 지하철 노선에 구간 등록](./docs/2step.md)
 
 ## 3단계 - 노선에 등록된 역 목록 조회
 
