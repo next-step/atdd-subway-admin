@@ -37,9 +37,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse getLineResponseById(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(LINE));
-
+        Line line = getLineById(id);
         return LineResponse.of(line);
     }
 
