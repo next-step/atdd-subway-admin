@@ -29,7 +29,7 @@ public class LineResponse {
         this.color = line.getColor();
         this.createdDate = line.getCreatedDate();
         this.modifiedDate = line.getModifiedDate();
-        this.stations = line.getSections().getStations();
+        this.stations = line.getLineStations().getStations();
     }
 
     public static LineResponse of(Line line) {

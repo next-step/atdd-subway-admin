@@ -5,7 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.line.dto.LineStationRequest;
 import nextstep.subway.station.dto.StationRequest;
 import org.springframework.http.MediaType;
 
@@ -38,7 +38,7 @@ public class Fixture {
     public static StationRequest 홍대역(){ return new StationRequest("홍대역"); }
     public static StationRequest 신촌역(){ return new StationRequest("신촌역"); }
 
-    public static SectionRequest 구간_추가_판교역(){ return new SectionRequest(1L, 2L, 5); }
+    public static LineStationRequest 구간_추가_판교역(){ return new LineStationRequest(1L, 2L, 5); }
 
     private static RequestSpecification request(Object body) {
         return RestAssured.given().log().all()

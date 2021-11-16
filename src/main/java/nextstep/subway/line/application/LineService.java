@@ -3,11 +3,12 @@ package nextstep.subway.line.application;
 import nextstep.subway.excetpion.ErrorCode;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.LineStation;
+import nextstep.subway.line.domain.LineStationRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineStationRequest;
 import nextstep.subway.line.exception.LineNotFoundException;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.exception.StationNotFoundException;
@@ -24,10 +25,13 @@ import static nextstep.subway.common.utils.ValidationUtils.isNull;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final LineStationRepository lineStationRepository;
 
-    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, LineStationRepository lineStationRepository,
+                       StationRepository stationRepository, LineStationRepository lineStationRepository1) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.lineStationRepository = lineStationRepository1;
     }
 
     public Line findLine(Long id) {
@@ -51,10 +55,10 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    private void saveTerminalStation(Line line, Long upStationId, Long downStationId, int distance) {
-        Station upStation = findOneStation(upStationId).orElse(null);
-        Station downStation = findOneStation(downStationId).orElse(null);
-        line.addSections(new Section(line, upStation, downStation, distance));
+    private void saveTerminalStation(Line line, Long preStationId, Long nextStationId, int distance) {
+        Station preStation = findOneStation(preStationId).orElse(null);
+        Station nextStation = findOneStation(nextStationId).orElse(null);
+        line.addLineStation(new LineStation(line, preStation, nextStation, distance));
     }
 
     private Optional<Station> findOneStation(Long stationId) {
@@ -66,7 +70,7 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findLineById(id).orElseThrow(() ->
-                        new LineNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "노선이 존재하지 않습니다."))
+                new LineNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "노선이 존재하지 않습니다."))
                 .update(lineRequest.toLine());
 
         lineRepository.save(line);
@@ -79,6 +83,12 @@ public class LineService {
         lineRepository.delete(line);
     }
 
+    public void addSection(Long id, LineStationRequest lineStationRequest) {
+        Line persistLine = findLineById(id).orElse(null);
+
+        saveTerminalStation(persistLine, lineStationRequest.getUpStationId(), lineStationRequest.getDownStationId(), lineStationRequest.getDistance());
+    }
+
     private Optional<Line> findLineById(Long id) {
         if (isNull(id)) {
             throw new LineNotFoundException(ErrorCode.NOT_FOUND_ARGUMENT, "검색할 노선 아이디 입력은 필수입니다.");
@@ -89,5 +99,4 @@ public class LineService {
     private List<Line> findLineAll() {
         return lineRepository.findAllWithStations();
     }
-
 }
