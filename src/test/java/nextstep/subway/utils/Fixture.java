@@ -13,7 +13,7 @@ import org.springframework.http.MediaType;
 public class Fixture {
 
     public static LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600");
-    public static LineRequest 이호선 = new LineRequest("신분당선", "bg-red-600");
+    public static LineRequest 이호선 = new LineRequest("이호선", "이호선");
     public static StationRequest 강남역 = new StationRequest("강남역");
     public static StationRequest 광교역 = new StationRequest("광교역");
     public static StationRequest 홍대역 = new StationRequest("홍대역");
