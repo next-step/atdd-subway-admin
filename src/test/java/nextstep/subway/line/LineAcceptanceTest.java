@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -18,26 +19,39 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.domain.Station;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
 	private static final String LINE_PATH = "/lines";
 	private static final String SLASH = "/";
+	private static Station 강남역;
+	private static Station 광교역;
+	private static Station 신도림역;
+	private static Station 성수역;
+
+	@BeforeEach
+	void setup() {
+		강남역 = new Station("강남역");
+		광교역 = new Station("광교역");
+		신도림역 = new Station("신도림역");
+		성수역 = new Station("성수역");
+	}
 
 	LineRequest 이호선_생성_요청값() {
-		return new LineRequest("2호선", "bg-green-600");
+		return new LineRequest("2호선", "bg-green-600", 신도림역.getId(), 성수역.getId(), 20);
 	}
 
 	LineRequest 신분당선_생성_요청값() {
-		return new LineRequest("신분당선", "bg-red-600");
+		return new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10);
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
 	@Test
 	void createLine() {
 		// when
-		ExtractableResponse<Response> response = 지하철_노선_생성_요청(이호선_생성_요청값());
+		ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선_생성_요청값());
 
 		// then
 		지하철_노선_생성됨(response);
