@@ -9,22 +9,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 
 @Service
 @Transactional
 public class LineService {
 
 	private final LineRepository lineRepository;
+	private final StationService stationService;
 
-	public LineService(LineRepository lineRepository) {
+	public LineService(LineRepository lineRepository, StationService stationService) {
 		this.lineRepository = lineRepository;
+		this.stationService = stationService;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		return LineResponse.of(lineRepository.save(request.toLine()));
+		final Line line = request.toLine();
+		final Station upStation = stationService.getStation(request.getUpStationId());
+		final Station downStation = stationService.getStation(request.getDownStationId());
+		line.add(new Section(upStation, downStation, request.getDistance()));
+		return LineResponse.of(lineRepository.save(line));
 	}
 
 	public List<LineResponse> getLines() {

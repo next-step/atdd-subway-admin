@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -15,10 +16,21 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.Fixture;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
+    private Long upStationId;
+    private Long downStationId;
+
+    @BeforeEach
+    void setupTerminalStations() {
+        upStationId = postStations("강남역").as(StationResponse.class).getId();
+        downStationId = postStations("광교역").as(StationResponse.class).getId();
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -33,6 +45,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+        assertThat(response.as(LineResponse.class).getStations().stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList())).containsExactly(upStationId, downStationId);
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -162,10 +177,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private LineRequest lineRequest(String name, String color) {
-        return new LineRequest(name, color);
+        final int distance = 10;
+        return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 
     private ExtractableResponse<Response> postLines(LineRequest lineRequest) {
         return Fixture.post("/lines", lineRequest);
+    }
+
+    private ExtractableResponse<Response> postStations(String name) {
+        return Fixture.post("/stations", new StationRequest(name));
     }
 }
