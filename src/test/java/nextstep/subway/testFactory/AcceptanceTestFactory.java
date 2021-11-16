@@ -12,13 +12,6 @@ import io.restassured.specification.RequestSpecification;
 
 public class AcceptanceTestFactory {
 
-	public static Map<String, String> getNameAndColorContent(String name, String color) {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
-		params.put("color", color);
-		return params;
-	}
-
 	public static Map<String, String> getNameContent(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
@@ -58,6 +51,16 @@ public class AcceptanceTestFactory {
 		return response
 			.then().log().all()
 			.extract();
+	}
+
+	public static Map<String, String> getLineInfo(String name, String color, Long upStationId, Long downStationId, int distance) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		params.put("color", color);
+		params.put("upStationId", String.valueOf(upStationId));
+		params.put("downStationId", String.valueOf(downStationId));
+		params.put("distance", String.valueOf(distance));
+		return params;
 	}
 }
 

@@ -29,8 +29,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	@BeforeEach
 	public void setUpLineAcceptance() {
 		//	given
-		신분당선_정보 = 지하철_노선_이름과_색깔_정의("신분당선", "bg-red-600");
-		이호선_정보 = 지하철_노선_이름과_색깔_정의("2호", "bg-이호선_정보-600");
+		신분당선_정보 = 지하철_노선_정보_정의("신분당선", "bg-red-600",1L,2L,10);
+		이호선_정보 = 지하철_노선_정보_정의("2호", "bg-이호선_정보-600",1L,2L,10);
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
@@ -108,7 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		String 신분당선_요청_경로 = 신분당선_생성_되어있음.header("Location");
 
 		// when
-		Map<String, String> 신분당선_수정정보 = 지하철_노선_이름과_색깔_정의("구분당", "bg-blue-600");
+		Map<String, String> 신분당선_수정정보 = 지하철_노선_정보_정의("구분당", "bg-blue-600",1L,2L,10);
 		ExtractableResponse<Response> 신분당선_수정_결과 = 지하철_노선_수정(신분당선_수정정보, 신분당선_요청_경로);
 
 		// then
@@ -126,7 +126,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		String 미등록_노선_요청_경로 = LINE_SERVICE_PATH + "/1";
 
 		// when
-		Map<String, String> 미등록_노선_수정정보 = 지하철_노선_이름과_색깔_정의("구분당", "bg-blue-600");
+		Map<String, String> 미등록_노선_수정정보 = 지하철_노선_정보_정의("구분당", "bg-blue-600",1L,2L,10);
 		ExtractableResponse<Response> 미등록_노선_수정_결과 = 지하철_노선_수정(미등록_노선_수정정보, 미등록_노선_요청_경로);
 
 		// then
@@ -147,8 +147,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		삭제_완료_확인(신분당선_삭제_결과);
 	}
 
-	private static Map<String, String> 지하철_노선_이름과_색깔_정의(String name, String color) {
-		return AcceptanceTestFactory.getNameAndColorContent(name, color);
+	private static Map<String, String> 지하철_노선_정보_정의(String name, String color,Long upStationId, Long downStationId, int distance) {
+		return AcceptanceTestFactory.getLineInfo(name, color,upStationId,downStationId,distance);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_생성(Map<String, String> params) {
