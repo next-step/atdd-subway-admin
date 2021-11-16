@@ -46,6 +46,26 @@ public class Section {
 		line.addSection(this);
 	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public Line getLine() {
+		return line;
+	}
+
+	public Station getUpStation() {
+		return upStation;
+	}
+
+	public Station getDownStation() {
+		return downStation;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -73,23 +93,4 @@ public class Section {
 			'}';
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public Line getLine() {
-		return line;
-	}
-
-	public Station getUpStation() {
-		return upStation;
-	}
-
-	public Station getDownStation() {
-		return downStation;
-	}
-
-	public int getDistance() {
-		return distance;
-	}
 }
