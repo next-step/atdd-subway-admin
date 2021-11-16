@@ -32,12 +32,33 @@ public class Sections {
             return;
         }
 
-        validate(section);
+        validateAdd(section);
 
         if (addSectionsUpStationMatched(section) == SPLIT_SECTIONS_ADDED) {
             return;
         }
         addSectionsDownStationMatched(section);
+    }
+
+    public void remove(Station station) {
+        if (findByUpStation(station) == Section.EMPTY && findByDownStation(station) == Section.EMPTY) {
+            throw new SectionRemoveFailedException("노선에 등록되어 있지 않은 역입니다.");
+        }
+
+
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sections sections1 = (Sections) o;
+        return Objects.equals(sections, sections1.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sections);
     }
 
     public List<Station> toStations() {
@@ -69,7 +90,7 @@ public class Sections {
                 .allMatch(section::isDownStationEqualsWithUpStation);
     }
 
-    private void validate(Section section) {
+    private void validateAdd(Section section) {
         Section sectionUpStationMatched = findByUpStation(section);
         Section sectionDownStationMatched = findByDownStation(section);
 
@@ -106,15 +127,23 @@ public class Sections {
     }
 
     private Section findByUpStation(Section section) {
+        return findByUpStation(section.getUpStation());
+    }
+
+    private Section findByUpStation(Station station) {
         return sections.stream()
-                .filter(section::isUpStationEquals)
+                .filter(section -> section.isUpStationEquals(station))
                 .findFirst()
                 .orElse(Section.EMPTY);
     }
 
     private Section findByDownStation(Section section) {
+        return findByDownStation(section.getDownStation());
+    }
+
+    private Section findByDownStation(Station station) {
         return sections.stream()
-                .filter(section::isDownStationEquals)
+                .filter(section -> section.isDownStationEquals(station))
                 .findFirst()
                 .orElse(Section.EMPTY);
     }
@@ -173,18 +202,5 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isUpStationEquals(findStartStation()))
                 .findFirst();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Sections sections1 = (Sections) o;
-        return Objects.equals(sections, sections1.sections);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(sections);
     }
 }

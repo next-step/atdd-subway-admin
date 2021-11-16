@@ -64,16 +64,8 @@ public class Section extends BaseEntity {
         return this.distance.isLessThanOrEquals(section.distance);
     }
 
-    public boolean isUpStationEquals(Section section) {
-        return this.upStation.equals(section.upStation);
-    }
-
     public boolean isUpStationEquals(Station station) {
         return this.upStation.equals(station);
-    }
-
-    public boolean isDownStationEquals(Section section) {
-        return this.downStation.equals(section.downStation);
     }
 
     public boolean isDownStationEquals(Station station) {

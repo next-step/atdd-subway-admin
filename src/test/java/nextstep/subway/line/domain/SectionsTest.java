@@ -19,6 +19,7 @@ class SectionsTest {
     private Station 역삼역;
     private Station 사당역;
     private Station 방배역;
+    private Sections sections;
 
     @BeforeEach
     void setUp() {
@@ -26,15 +27,14 @@ class SectionsTest {
         역삼역 = new Station("역삼역");
         사당역 = new Station("사당역");
         방배역 = new Station("방배역");
+
+        sections = new Sections();
+        sections.add(new Section(강남역, 역삼역, new Distance(10)));
     }
 
     @Test
     @DisplayName("상행역이 노선에 포함되어 있는 역 사이에 구간을 추가한다.")
     void add1() {
-        // given
-        Sections sections = new Sections();
-        sections.add(new Section(강남역, 역삼역, new Distance(10)));
-
         // when
         sections.add(new Section(강남역, 사당역, new Distance(6)));
 
@@ -50,10 +50,6 @@ class SectionsTest {
     @Test
     @DisplayName("하행역이 노선에 포함되어 있는 역 사이에 구간을 추가한다.")
     void add2() {
-        // given
-        Sections sections = new Sections();
-        sections.add(new Section(강남역, 역삼역, new Distance(10)));
-
         // when
         sections.add(new Section(사당역, 역삼역, new Distance(6)));
 
@@ -69,10 +65,6 @@ class SectionsTest {
     @Test
     @DisplayName("새로운 역을 상행 종점으로 설정하는 구간을 추가한다.")
     void add3() {
-        // given
-        Sections sections = new Sections();
-        sections.add(new Section(강남역, 역삼역, new Distance(10)));
-
         // when
         sections.add(new Section(사당역, 강남역, new Distance(15)));
 
@@ -88,10 +80,6 @@ class SectionsTest {
     @Test
     @DisplayName("새로운 역을 하행 종점으로 설정하는 구간을 추가한다.")
     void add4() {
-        // given
-        Sections sections = new Sections();
-        sections.add(new Section(강남역, 역삼역, new Distance(10)));
-
         // when
         sections.add(new Section(역삼역, 사당역, new Distance(15)));
 
@@ -107,11 +95,7 @@ class SectionsTest {
     @Test
     @DisplayName("상행역과 하행역이 노선에 포함되어 있는 구간을 등록할 경우 예외가 발생한다.")
     void addThrowException1() {
-        // given
-        Sections sections = new Sections();
-        sections.add(new Section(강남역, 역삼역, new Distance(10)));
-
-        // when
+        // when & then
         assertThatExceptionOfType(SectionAddFailedException.class)
                 .isThrownBy(() -> sections.add(new Section(강남역, 역삼역, new Distance(5))))
                 .withMessageMatching("상행역과 하행역이 노선에 포함되어 있는 구간은 등록할 수 없습니다.");
@@ -120,11 +104,7 @@ class SectionsTest {
     @Test
     @DisplayName("상행역과 하행역이 노선에 포함되어 있지 않은 구간을 등록할 경우 예외가 발생한다.")
     void addThrowException2() {
-        // given
-        Sections sections = new Sections();
-        sections.add(new Section(강남역, 역삼역, new Distance(10)));
-
-        // when
+        // when & then
         assertThatExceptionOfType(SectionAddFailedException.class)
                 .isThrownBy(() -> sections.add(new Section(사당역, 방배역, new Distance(5))))
                 .withMessageMatching("상행역과 하행역중 1개는 노선에 포함되어야 합니다.");
@@ -134,11 +114,7 @@ class SectionsTest {
     @ValueSource(ints = {10, 11})
     @DisplayName("상행역이 노선에 포함되어 있는 역 사이에 구간을 등록할 경우 기존 역 사이 거리보다 크거나 같으면 예외가 발생한다.")
     void addThrowException3(int input) {
-        // given
-        Sections sections = new Sections();
-        sections.add(new Section(강남역, 역삼역, new Distance(10)));
-
-        // when
+        // when & then
         assertThatExceptionOfType(SectionAddFailedException.class)
                 .isThrownBy(() -> sections.add(new Section(강남역, 사당역, new Distance(input))))
                 .withMessageMatching("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
@@ -148,11 +124,7 @@ class SectionsTest {
     @ValueSource(ints = {10, 11})
     @DisplayName("하행역이 노선에 포함되어 있는 역 사이에 구간을 등록할 경우 기존 역 사이 거리보다 크거나 같으면 예외가 발생한다.")
     void addThrowException4(int input) {
-        // given
-        Sections sections = new Sections();
-        sections.add(new Section(강남역, 역삼역, new Distance(10)));
-
-        // when
+        // when & then
         assertThatExceptionOfType(SectionAddFailedException.class)
                 .isThrownBy(() -> sections.add(new Section(사당역, 역삼역, new Distance(input))))
                 .withMessageMatching("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
@@ -162,8 +134,6 @@ class SectionsTest {
     @DisplayName("지하철 구간 순서에 맞는 지하철역 목록을 반환한다.")
     void toStations() {
         // given
-        Sections sections = new Sections();
-        sections.add(new Section(강남역, 역삼역, new Distance(10)));
         sections.add(new Section(사당역, 역삼역, new Distance(6)));
         sections.add(new Section(방배역, 강남역, new Distance(10)));
 
@@ -172,5 +142,14 @@ class SectionsTest {
 
         // then
         assertThat(stations).containsExactly(방배역, 강남역, 사당역, 역삼역);
+    }
+
+    @Test
+    @DisplayName("노선에 등록되어 있지 않은 역을 제거하면 예외가 발생한다.")
+    void removeThrowException1() {
+        // when & then
+        assertThatExceptionOfType(SectionRemoveFailedException.class)
+                .isThrownBy(() -> sections.remove(사당역))
+                .withMessageMatching("노선에 등록되어 있지 않은 역입니다.");
     }
 }
