@@ -34,4 +34,8 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(NotFoundDataException::new);
         line.update(Line.of(updatedLine));
     }
+
+    public void delete(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
