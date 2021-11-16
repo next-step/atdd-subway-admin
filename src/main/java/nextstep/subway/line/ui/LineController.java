@@ -1,5 +1,6 @@
 package nextstep.subway.line.ui;
 
+import java.net.URI;
 import java.util.List;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
@@ -14,11 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-
 @RestController
 @RequestMapping("/lines")
 public class LineController {
+
     private final LineService lineService;
 
     public LineController(final LineService lineService) {
@@ -42,7 +42,8 @@ public class LineController {
     }
 
     @PutMapping("{lineId}")
-    public ResponseEntity updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity updateLine(@PathVariable Long lineId,
+        @RequestBody LineRequest lineRequest) {
         lineService.updateLine(lineId, lineRequest);
         return ResponseEntity.ok().build();
     }

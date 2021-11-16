@@ -1,9 +1,12 @@
 package nextstep.subway;
 
 import io.restassured.RestAssured;
+import io.restassured.internal.path.ObjectConverter;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = "test")
 public class AcceptanceTest {
+
     @LocalServerPort
     int port;
 
@@ -68,5 +72,16 @@ public class AcceptanceTest {
             .delete(url)
             .then().log().all()
             .extract();
+    }
+
+    protected <T> List<T> getIdsByResponse(List<ExtractableResponse<Response>> responses,
+        Class<T> genericType) {
+        if (genericType == null) {
+            throw new IllegalArgumentException("타입지정은 필수입니다.");
+        }
+        return responses.stream()
+            .map(it -> ObjectConverter
+                .convertObjectTo(it.header("Location").split("/")[2], genericType))
+            .collect(Collectors.toList());
     }
 }

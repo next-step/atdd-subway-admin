@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class LineService {
+
     private LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -32,9 +33,9 @@ public class LineService {
     public List<LineResponse> findLines() {
         List<Line> lineList = lineRepository.findAll();
         return lineList
-                .stream()
-                .map(line -> LineResponse.of(line))
-                .collect(Collectors.toList());
+            .stream()
+            .map(line -> LineResponse.of(line))
+            .collect(Collectors.toList());
     }
 
     public Long updateLine(Long lineId, LineRequest lineRequest) {

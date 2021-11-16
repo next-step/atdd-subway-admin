@@ -1,5 +1,5 @@
 package nextstep.subway.exception;
 
-public class NotFoundException extends RuntimeException{
+public class NotFoundException extends RuntimeException {
 
 }

@@ -7,10 +7,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -33,7 +31,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             assertThat(response.header("Location")).isNotBlank();
-            assertThat(response.body().jsonPath().get("name").equals(lineRequest.getName())).isTrue();
+            assertThat(response.body().jsonPath().get("name").equals(lineRequest.getName()))
+                .isTrue();
         });
     }
 
@@ -74,12 +73,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_목록_포함됨
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            List<Long> expectedLineIds = Arrays.asList(createResponse1, createResponse2).stream()
-                .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
-                .collect(Collectors.toList());
-            List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
+            List<Long> expectedLineIds = getIdsByResponse(
+                Arrays.asList(createResponse1, createResponse2), Long.class);
+            List<Long> resultLineIds = response.jsonPath().getList("id", Long.class);
             assertThat(resultLineIds).containsAll(expectedLineIds);
         });
     }
@@ -100,10 +96,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_응답됨
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.body().jsonPath().get("name").equals(createResponse.body().jsonPath().get("name"))).isTrue();
+            assertThat(response.body().jsonPath().get("name")
+                .equals(createResponse.body().jsonPath().get("name"))).isTrue();
         });
-
-
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -140,6 +135,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-
     }
 }
