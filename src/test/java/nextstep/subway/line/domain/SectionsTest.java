@@ -132,8 +132,8 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("지하철 노선에서 가구간을 제거한다.")
-    void remove() {
+    @DisplayName("지하철 노선에서 중간 역을 제거한다.")
+    void remove1() {
         // given
         sections.add(new Section(역삼역, 방배역, new Distance(15)));
 
@@ -144,6 +144,40 @@ class SectionsTest {
         assertThat(sections).isEqualTo(new Sections(
                 Collections.singletonList(
                         new Section(강남역, 방배역, new Distance(25))
+                )
+        ));
+    }
+
+    @Test
+    @DisplayName("지하철 노선에서 상행 종점역을 제거한다.")
+    void remove2() {
+        // given
+        sections.add(new Section(역삼역, 방배역, new Distance(15)));
+
+        // when
+        sections.remove(강남역);
+
+        // then
+        assertThat(sections).isEqualTo(new Sections(
+                Collections.singletonList(
+                        new Section(역삼역, 방배역, new Distance(15))
+                )
+        ));
+    }
+
+    @Test
+    @DisplayName("지하철 노선에서 하행 종점역을 제거한다.")
+    void remove3() {
+        // given
+        sections.add(new Section(역삼역, 방배역, new Distance(15)));
+
+        // when
+        sections.remove(방배역);
+
+        // then
+        assertThat(sections).isEqualTo(new Sections(
+                Collections.singletonList(
+                        new Section(강남역, 역삼역, new Distance(10))
                 )
         ));
     }

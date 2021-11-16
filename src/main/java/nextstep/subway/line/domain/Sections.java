@@ -15,6 +15,7 @@ public class Sections {
 
     private static final boolean SPLIT_SECTIONS_ADDED = true;
     private static final boolean SPLIT_SECTIONS_NOT_ADDED = false;
+    private static final int HAS_ONE_SECTION = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -45,6 +46,13 @@ public class Sections {
         removeSection(station);
     }
 
+    public List<Station> toStations() {
+        if (sections.size() == 0) {
+            return new ArrayList<>();
+        }
+        return makeStations();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -56,13 +64,6 @@ public class Sections {
     @Override
     public int hashCode() {
         return Objects.hash(sections);
-    }
-
-    public List<Station> toStations() {
-        if (sections.size() == 0) {
-            return new ArrayList<>();
-        }
-        return makeStations();
     }
 
     private boolean isAddFirst() {
@@ -124,10 +125,10 @@ public class Sections {
     }
 
     private void validateRemove(Station station) {
-        if (findByUpStation(station) == Section.EMPTY && findByDownStation(station) == Section.EMPTY) {
+        if (findByUpStation(station).isEmpty() && findByDownStation(station).isEmpty()) {
             throw new SectionRemoveFailedException("노선에 등록되어 있지 않은 역입니다.");
         }
-        if (sections.size() == 1) {
+        if (sections.size() == HAS_ONE_SECTION) {
             throw new SectionRemoveFailedException("구간이 하나인 노선은 구간을 제거할 수 없습니다.");
         }
     }
@@ -135,13 +136,17 @@ public class Sections {
     private void removeSection(Station station) {
         Section previousSection = findByDownStation(station);
         Section nextSection = findByUpStation(station);
-
-        Section mergedSection = new Section(previousSection.getUpStation(), nextSection.getDownStation(), previousSection.getMergedDistance(nextSection));
-        mergedSection.changeLine(previousSection);
-
-        sections.add(mergedSection);
         sections.remove(previousSection);
         sections.remove(nextSection);
+        addMergedSection(previousSection, nextSection);
+    }
+
+    private void addMergedSection(Section previousSection, Section nextSection) {
+        if (previousSection != Section.EMPTY && nextSection != Section.EMPTY) {
+            Section mergedSection = new Section(previousSection.getUpStation(), nextSection.getDownStation(), previousSection.getMergedDistance(nextSection));
+            mergedSection.changeLine(previousSection);
+            sections.add(mergedSection);
+        }
     }
 
     private Section findByUpStation(Section section) {
