@@ -6,10 +6,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.common.ErrorCode;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.exception.LineException;
 
 @Service
 @Transactional
@@ -56,6 +58,8 @@ public class LineService {
 
 	private Line lineFindById(Long id) {
 		return lineRepository.findById(id)
-			.orElseThrow(IllegalArgumentException::new);
+			.orElseThrow(() ->
+				new LineException(ErrorCode.LINE_NULL_POINTER_ERROR)
+			);
 	}
 }
