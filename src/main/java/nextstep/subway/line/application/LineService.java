@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.exception.NotFoundDataException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -27,5 +28,10 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         return LineResponse.of(lineRepository.findById(id).orElse(new Line()));
+    }
+
+    public void update(Long id, LineRequest updatedLine) {
+        Line line = lineRepository.findById(id).orElseThrow(NotFoundDataException::new);
+        line.update(Line.of(updatedLine));
     }
 }
