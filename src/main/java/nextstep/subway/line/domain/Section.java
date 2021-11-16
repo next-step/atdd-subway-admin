@@ -51,8 +51,8 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
-    public void remove(Section section) {
-        validateRemovedSection(section);
+    void remove(Section section) {
+        validateRemoval(section);
         cutSection(section);
         minusDistance(section.distance);
     }
@@ -73,6 +73,12 @@ public class Section {
         this.line = line;
     }
 
+    void connect(Section section) {
+        validateConnection(section);
+        connectSection(section);
+        plusDistance(section.distance);
+    }
+
     private void validate(Station upStation, Station downStation, Distance distance) {
         Assert.notNull(upStation, "'upStation' must not be null");
         Assert.notNull(downStation, "'downStation' must not be null");
@@ -82,7 +88,7 @@ public class Section {
                 upStation, downStation));
     }
 
-    private void validateRemovedSection(Section section) {
+    private void validateRemoval(Section section) {
         Assert.notNull(section, "removed section must not be null");
         validateRemovedSectionStation(section);
         validateSubtractDistance(section.distance);
@@ -118,6 +124,31 @@ public class Section {
                 String.format("removed section distance(%s) must be less than %s",
                     distance, this.distance));
         }
+    }
+
+    private void plusDistance(Distance distance) {
+        this.distance = this.distance.sum(distance);
+    }
+
+    private void connectSection(Section section) {
+        if (downStation.equals(section.upStation)) {
+            downStation = section.downStation;
+            return;
+        }
+        upStation = section.upStation;
+    }
+
+    private void validateConnection(Section section) {
+        Assert.notNull(section, "connected section must not be null");
+        if (doesNotHaveOverlappingStation(section)) {
+            throw new InvalidDataException(String.format(
+                "section(%s) and connected section(%s) must have overlapping one station",
+                this, section));
+        }
+    }
+
+    private boolean doesNotHaveOverlappingStation(Section section) {
+        return !downStation.equals(section.upStation) && !upStation.equals(section.downStation);
     }
 
     @Override

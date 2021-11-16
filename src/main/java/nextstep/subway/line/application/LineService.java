@@ -65,6 +65,11 @@ public class LineService {
         return LineResponse.from(line);
     }
 
+    public void deleteStation(long id, long stationId) {
+        line(id)
+            .deleteStation(station(stationId));
+    }
+
     private Line savedLine(LineCreateRequest request) {
         return repository.save(
             Line.of(request.name(), request.color(), sections(request.getSection()))
