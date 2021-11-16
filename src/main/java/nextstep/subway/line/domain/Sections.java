@@ -44,7 +44,9 @@ public class Sections {
         if (findByUpStation(station) == Section.EMPTY && findByDownStation(station) == Section.EMPTY) {
             throw new SectionRemoveFailedException("노선에 등록되어 있지 않은 역입니다.");
         }
-
+        if (sections.size() == 1) {
+            throw new SectionRemoveFailedException("구간이 하나인 노선은 구간을 제거할 수 없습니다.");
+        }
 
     }
 

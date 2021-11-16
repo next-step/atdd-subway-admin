@@ -147,9 +147,30 @@ class SectionsTest {
     @Test
     @DisplayName("노선에 등록되어 있지 않은 역을 제거하면 예외가 발생한다.")
     void removeThrowException1() {
+        // given
+        sections.add(new Section(역삼역, 방배역, new Distance(6)));
+
         // when & then
         assertThatExceptionOfType(SectionRemoveFailedException.class)
                 .isThrownBy(() -> sections.remove(사당역))
                 .withMessageMatching("노선에 등록되어 있지 않은 역입니다.");
+    }
+
+    @Test
+    @DisplayName("구간이 하나인 노선에서 상행 종점역을 제거하면 예외가 발생한다.")
+    void removeThrowException2() {
+        // when & then
+        assertThatExceptionOfType(SectionRemoveFailedException.class)
+                .isThrownBy(() -> sections.remove(강남역))
+                .withMessageMatching("구간이 하나인 노선은 구간을 제거할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("구간이 하나인 노선에서 상행 종점역을 제거하면 예외가 발생한다.")
+    void removeThrowException3() {
+        // when & then
+        assertThatExceptionOfType(SectionRemoveFailedException.class)
+                .isThrownBy(() -> sections.remove(역삼역))
+                .withMessageMatching("구간이 하나인 노선은 구간을 제거할 수 없습니다.");
     }
 }
