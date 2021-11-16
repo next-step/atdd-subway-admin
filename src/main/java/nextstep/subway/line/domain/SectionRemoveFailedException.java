@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
-public class SectionRemoveFailedException extends  RuntimeException {
+import nextstep.subway.global.BusinessException;
+
+public class SectionRemoveFailedException extends BusinessException {
 
     public SectionRemoveFailedException(String message) {
         super(message);
