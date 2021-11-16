@@ -38,6 +38,20 @@ npm run dev
 ```
 <br>
 
+## 1단계 - 지하철 노선 관리
+### 요구사항
+지하철 노선 관리 기능을 구현하기
+- 기능 구현 전 인수 테스트 작성
+- 기능 구현 후 인수 테스트 리팩터링
+
+### 구현할 기능 목록
+- 기능 목록
+    - [x] 생성
+    - [x] 목록 조회
+    - [x] 조회
+    - [x] 수정
+    - [x] 삭제
+    
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
