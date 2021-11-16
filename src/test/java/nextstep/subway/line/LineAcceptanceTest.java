@@ -155,6 +155,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
         요청_결과_검증(response, HttpStatus.OK);
     }
 
+    @DisplayName("존재하지 않는 아이디로 지하철 노선을 수정한다.")
+    @Test
+    void updateNotFoundLine() {
+        // when
+        ExtractableResponse<Response> response = 존재하지_않는_지하철_노선_수정_요청(신분당선);
+
+        // then
+        지하철_노선_수정_실패(response);
+    }
+
+    private ExtractableResponse<Response> 존재하지_않는_지하철_노선_수정_요청(LineRequest updatedLineRequest) {
+        return RestAssured
+                .given().log().all()
+                .body(updatedLineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/1")
+                .then().log().all().extract();
+    }
+
+    private void 지하철_노선_수정_실패(ExtractableResponse<Response> response) {
+        요청_결과_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
