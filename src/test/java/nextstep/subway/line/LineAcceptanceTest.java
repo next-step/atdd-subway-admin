@@ -42,7 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
-    void createLine2() {
+    void createDuplicateLine() {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest lineRequest = new LineRequest("2호선", "green");

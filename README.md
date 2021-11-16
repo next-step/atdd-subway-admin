@@ -58,7 +58,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [X] 지하철 노선 관련 기능의 인수 테스트 작성
 - 기능 목록 / 구현
   - [X] 생성
-  - [ ] 목록 조회
+  - [X] 목록 조회
   - [ ] 조회
   - [ ] 수정
   - [ ] 삭제
