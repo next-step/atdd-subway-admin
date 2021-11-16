@@ -2,10 +2,12 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.*;
 
@@ -54,5 +56,21 @@ public class Line extends BaseEntity {
 
     public List<Section> getSections() {
         return Collections.unmodifiableList(this.sections);
+    }
+
+    public List<Station> getStations() {
+        if (this.sections.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Station> stations = this.sections.stream()
+                                                .map(Section::getUpStation)
+                                                .collect(Collectors.toList());
+
+        Section lastSection = this.sections.get(this.sections.size() - 1);
+
+        stations.add(lastSection.getDownStation());
+
+        return stations;
     }
 }

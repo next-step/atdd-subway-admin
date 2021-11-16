@@ -8,6 +8,9 @@ public class Distance {
     @Column(name = "distance")
     private Integer value;
 
+    protected Distance() {
+    }
+
     private Distance(Integer value) {
         validate(value);
 

@@ -36,7 +36,7 @@ public class LineService {
     public LineInfoResponse findLineInfo(Long lineId) {
         return lineRepository.findById(lineId)
                                 .map(LineInfoResponse::of)
-                                .orElse(new LineInfoResponse());
+                                .orElseThrow();
     }
 
     @Transactional

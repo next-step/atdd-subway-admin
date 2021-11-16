@@ -5,7 +5,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineInfoResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.application.SectionService;
 import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.application.StationService;
@@ -48,7 +47,6 @@ public class LineController {
             Section section = Section.valueOf(upStation, downStation, Distance.valueOf(lineRequest.getDistance()));
             section.addSectionAtLine(savingLine);
         } catch(NoSuchElementException ex) {
-
         }
 
         LineResponse line = LineResponse.of(lineService.saveLine(savingLine));

@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,6 +21,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineInfoResponse;
+import nextstep.subway.section.domain.Distance;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 @DisplayName("지하철 노선 서비스 관련 기능")
 @ExtendWith(MockitoExtension.class)
@@ -47,13 +51,13 @@ public class LineServiceTest {
         assertAll(
             () -> Assertions.assertThat(LineInfoResponses.get(0).getName()).isEqualTo(sample.get(0).getName()),
             () -> Assertions.assertThat(LineInfoResponses.get(0).getColor()).isEqualTo(sample.get(0).getColor()),
-            () -> Assertions.assertThat(LineInfoResponses.get(0).getSections()).isEqualTo(sample.get(0).getSections())
+            () -> Assertions.assertThat(LineInfoResponses.get(0).getStations()).isEmpty()
         );
 
         assertAll(
             () -> Assertions.assertThat(LineInfoResponses.get(1).getName()).isEqualTo(sample.get(1).getName()),
             () -> Assertions.assertThat(LineInfoResponses.get(1).getColor()).isEqualTo(sample.get(1).getColor()),
-            () -> Assertions.assertThat(LineInfoResponses.get(1).getSections()).isEqualTo(sample.get(1).getSections())
+            () -> Assertions.assertThat(LineInfoResponses.get(1).getStations()).isEmpty()
         );
     }
 
@@ -72,7 +76,7 @@ public class LineServiceTest {
         assertAll(
             () -> Assertions.assertThat(LineInfoResponses.getName()).isEqualTo(sample.getName()),
             () -> Assertions.assertThat(LineInfoResponses.getColor()).isEqualTo(sample.getColor()),
-            () -> Assertions.assertThat(LineInfoResponses.getSections()).isEqualTo(sample.getSections())
+            () -> Assertions.assertThat(LineInfoResponses.getStations()).isEmpty()
         );
     }
 
@@ -106,5 +110,27 @@ public class LineServiceTest {
 
         // then
         verify(lineRepository, times(1)).deleteById(anyLong());
+    }
+
+    @DisplayName("구간정보를 포함한 지하철 노선정보를 생성")
+    @Test
+    void create_lineWithSection() {
+        // given
+        Line expectedLine = new Line("3호선", "bg-orange-600");
+
+        Station upStation = new Station("대화");
+        Station downStation  = new Station("수서");
+        Distance distance = Distance.valueOf(100);
+
+        Section section = Section.valueOf(upStation, downStation, distance);
+        section.addSectionAtLine(expectedLine);
+
+        when(lineRepository.save(any(Line.class))).thenReturn(expectedLine);
+        
+        // when
+        Line line = lineService.saveLine(expectedLine);
+
+        // then
+        Assertions.assertThat(line).isEqualTo(expectedLine);
     }
 }

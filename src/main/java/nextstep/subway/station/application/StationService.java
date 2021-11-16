@@ -33,6 +33,12 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public Station findStationById(Long stationId) {
+        return stationRepository.findById(stationId)
+                                .orElseThrow();
+    }
+
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
