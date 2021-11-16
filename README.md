@@ -63,3 +63,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     + 인수테스트가 모두 성공할 수 있도록 LineController 및 LineService, LineRepository를 모두 구현한다. 
 * 인수 테스트 리펙터링
   + 인수테스트의 각 스텝들을 메서드로 분리하여 재사용한다.
+
+## 2단계 - 인수테스트 리팩터링
+### 요구사항
+* 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
+  + 두 종점역은 구간의 형태로 관리되어야 함
+* 노선 조회 시 응답 결과에 역 목록 추가하기
+  + 상행역 부터 하행역 순으로 정렬되어야 함
