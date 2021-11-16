@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import nextstep.subway.common.EntityNotFoundException;
 import nextstep.subway.common.ErrorResponse;
-import nextstep.subway.line.exception.LineNotFoundException;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
@@ -22,7 +22,7 @@ public class RestExceptionHandler {
 	}
 
 	@ExceptionHandler
-	public ResponseEntity<ErrorResponse> handle(LineNotFoundException e) {
+	public ResponseEntity<ErrorResponse> handle(EntityNotFoundException e) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 			.body(ErrorResponse.of(e.getMessage()));
 	}
