@@ -136,18 +136,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createLine = 지하철_노선_등록되어_있음(수인분당선);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createLine, 신분당선);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(createLine.header("Location"), 신분당선);
 
         // then
         지하철_노선_수정됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> createLine, LineRequest updatedLineRequest) {
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(String location, LineRequest updatedLineRequest) {
         return RestAssured
                 .given().log().all()
                 .body(updatedLineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(createLine.header("Location"))
+                .when().put(location)
                 .then().log().all().extract();
     }
 
@@ -166,12 +166,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 존재하지_않는_지하철_노선_수정_요청(LineRequest updatedLineRequest) {
-        return RestAssured
-                .given().log().all()
-                .body(updatedLineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/1")
-                .then().log().all().extract();
+        return 지하철_노선_수정_요청("/lines/1", updatedLineRequest);
     }
 
     private void 지하철_노선_수정_실패(ExtractableResponse<Response> response) {
@@ -185,20 +180,38 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createLine = 지하철_노선_등록되어_있음(수인분당선);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(createLine);
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(createLine.header("Location"));
 
         // then
         지하철_노선_삭제됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> createLine) {
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(String location) {
         return RestAssured
                 .given().log().all()
-                .when().delete(createLine.header("Location"))
+                .when().delete(location)
                 .then().log().all().extract();
     }
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         요청_결과_검증(response, HttpStatus.NO_CONTENT);
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 제거한다.")
+    @Test
+    void deleteNotFoundLine() {
+        // when
+        ExtractableResponse<Response> response = 존재하지_않는_지하철_노선_제거_요청();
+
+        // then
+        지하철_노선_삭제_실패(response);
+    }
+
+    private ExtractableResponse<Response> 존재하지_않는_지하철_노선_제거_요청() {
+        return 지하철_노선_제거_요청("/lines/1");
+    }
+
+    private void 지하철_노선_삭제_실패(ExtractableResponse<Response> response) {
+        요청_결과_검증(response, HttpStatus.BAD_REQUEST);
     }
 }
