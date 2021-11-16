@@ -61,5 +61,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] 목록 조회
   - [X] 조회
   - [X] 수정
-  - [ ] 삭제
-- [ ] 기능 구현 후 인수 테스트 리팩터링
+  - [X] 삭제
+- [X] 기능 구현 후 인수 테스트 리팩터링
+  - [X] 중복 제거
+  - [X] 스텝 메서드 만들기
+  - [X] 스텝 메서드 한글명으로 바꾸기
+  - [X] 스텝 메서드들을 다른 인수 테스트에서 재사용 가능하게 함
+  
