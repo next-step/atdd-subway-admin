@@ -1,5 +1,7 @@
 package nextstep.subway.excetpion;
 
+import nextstep.subway.line.exception.DistanceLengthException;
+import nextstep.subway.line.exception.DuplicateLineStationException;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,6 +23,25 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(LineNotFoundException.class)
     public ResponseEntity handleLineNotFoundException(LineNotFoundException e) {
+        e.printStackTrace();
+        ErrorResponse response = ErrorResponse.build()
+                .httpStatus(e.getErrorCode().getHttpStatus())
+                .message(e.getMessage());
+        return new ResponseEntity(response, response.getHttpStatus());
+    }
+
+    @ExceptionHandler(DuplicateLineStationException.class)
+    public ResponseEntity handleDuplicateLineStationException(DuplicateLineStationException e) {
+        e.printStackTrace();
+        ErrorResponse response = ErrorResponse.build()
+                .httpStatus(e.getErrorCode().getHttpStatus())
+                .message(e.getMessage());
+        return new ResponseEntity(response, response.getHttpStatus());
+    }
+
+    @ExceptionHandler(DistanceLengthException.class)
+    public ResponseEntity handleDistanceLengthException(DistanceLengthException e) {
+        e.printStackTrace();
         ErrorResponse response = ErrorResponse.build()
                 .httpStatus(e.getErrorCode().getHttpStatus())
                 .message(e.getMessage());
@@ -29,6 +50,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(StationNotFoundException.class)
     public ResponseEntity handleStationNotFoundException(StationNotFoundException e) {
+        e.printStackTrace();
         ErrorResponse response = ErrorResponse.build()
                 .httpStatus(e.getErrorCode().getHttpStatus())
                 .message(e.getMessage());
@@ -37,6 +59,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+        e.printStackTrace();
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());
