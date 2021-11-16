@@ -6,8 +6,6 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.testFactory.AcceptanceTestFactory;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -51,7 +49,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		예외_발생_확인(강남역_중복_생성_결과);
 	}
 
-	@DisplayName("지하철역을 조회한다.")
+	@DisplayName("지하철역 목록을 조회한다.")
 	@Test
 	void getStations() {
 		// given
@@ -64,6 +62,25 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		// then
 		정상_처리_확인(지하철역_목록_결과);
 		생성된_지하철역이_응답_목록에_포함되어있는_확인(Arrays.asList(강남역_생성_되어있음, 역삼역_생성_되어있음), 지하철역_목록_결과);
+	}
+
+	@DisplayName("특정 지하철역을 조회한다.")
+	@Test
+	void getStation() {
+		// given
+		ExtractableResponse<Response> 강남역_생성_되어있음 = 지하철역_생성(강남역_정보);
+		String 강남역_요청_경로 = 강남역_생성_되어있음.header("Location");
+		// when
+		ExtractableResponse<Response> 강남역_조회_결과 = 지하철역_조회(강남역_요청_경로);
+
+		// then
+		정상_처리_확인(강남역_조회_결과);
+		생성된_지하철역이_응답에_포함되어있는_확인(강남역_조회_결과, 강남역_요청_경로);
+	}
+
+	private void 생성된_지하철역이_응답에_포함되어있는_확인(ExtractableResponse<Response> response, String createdUri) {
+		assertThat(response.jsonPath().getObject(".", LineResponse.class).getId()).isEqualTo(
+			Long.parseLong(createdUri.split("/")[2]));
 	}
 
 	@DisplayName("지하철역을 제거한다.")
