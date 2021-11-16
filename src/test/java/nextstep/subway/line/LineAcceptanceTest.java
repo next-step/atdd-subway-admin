@@ -17,7 +17,6 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.opentest4j.MultipleFailuresError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -38,9 +37,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        verifyLineResponse(response.as(LineResponse.class), LineResponse.of(new Line(lineRequest.getName(), lineRequest.getColor())));
+        assertAll(
+            () -> Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+            () -> Assertions.assertThat(response.as(LineResponse.class)).isEqualTo(LineResponse.of(new Line(lineRequest.getName(), lineRequest.getColor())))
+        );
     }
 
     @DisplayName("구간을 포함하여 지하철 노선을 생성한다.")
@@ -58,9 +58,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        verifyLineResponse(response.as(LineResponse.class), LineResponse.of(new Line(lineRequest.getName(), lineRequest.getColor())));
+        assertAll(
+            () -> Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+            () -> Assertions.assertThat(response.as(LineResponse.class)).isEqualTo(LineResponse.of(new Line(lineRequest.getName(), lineRequest.getColor())))
+        );
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -86,12 +87,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
-        LineResponse redLine = createSubwayLine(new LineRequest("신분당선", "bg-red-600"));
-        LineResponse secondLine = createSubwayLine(new LineRequest("2호선", "bg-green-600"));
+        createSubwayLine(new LineRequest("신분당선", "bg-red-600"));
+        createSubwayLine(new LineRequest("2호선", "bg-green-600"));
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = requestSearchLineInfo("");
+        ExtractableResponse<Response> response = requestSearchLineInfo(null);
 
         // then
         // 지하철_노선_목록_응답됨
@@ -109,16 +110,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLineWithoutSection() {
         // given
         // 지하철_노선_등록되어_있음
-        LineResponse redLine = createSubwayLine(new LineRequest("신분당선", "bg-red-600"));
-        LineResponse secondLine = createSubwayLine(new LineRequest("2호선", "bg-green-600"));
+        createSubwayLine(new LineRequest("신분당선", "bg-red-600"));
+        createSubwayLine(new LineRequest("2호선", "bg-green-600"));
 
-        LineInfoResponse searchingLine = Arrays.stream(requestSearchLineInfo("").as(LineInfoResponse[].class))
+        LineInfoResponse searchingLine = Arrays.stream(requestSearchLineInfo(null).as(LineInfoResponse[].class))
                                                 .filter(item -> item.getName().equals("2호선"))
                                                 .findFirst()
                                                 .get();
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = requestSearchLineInfo(String.valueOf(searchingLine.getId()));
+        ExtractableResponse<Response> response = requestSearchLineInfo(searchingLine.getId());
 
         // then
         // 지하철_노선_응답됨
@@ -137,30 +138,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationResponse downStation =  StationAcceptanceTest.createStation("수서");
 
         LineResponse redLine = createSubwayLine(new LineRequest("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10));
-        LineResponse secondLine = createSubwayLine(new LineRequest("2호선", "bg-green-600"));
+        createSubwayLine(new LineRequest("2호선", "bg-green-600"));
 
-        LineInfoResponse searchingLine = Arrays.stream(requestSearchLineInfo("").as(LineInfoResponse[].class))
+        LineInfoResponse searchingLine = Arrays.stream(requestSearchLineInfo(null).as(LineInfoResponse[].class))
                                                 .filter(item -> item.getName().equals("신분당선"))
                                                 .findFirst()
                                                 .get();
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = requestSearchLineInfo(String.valueOf(searchingLine.getId()));
-        LineInfoResponse searchedLineInfoResponse = response.as(LineInfoResponse.class);
+        ExtractableResponse<Response> response = requestSearchLineInfo(searchingLine.getId());
 
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
-        List<StationResponse> expectedStations =  new ArrayList<>();
-        expectedStations.add(upStation);
-        expectedStations.add(downStation);
+        List<StationResponse> expectedStations = List.of(upStation, downStation);
 
-        LineInfoResponse lineInfoResponse = LineInfoResponse.of(new Line(redLine.getName(), redLine.getColor()), expectedStations);
+        LineInfoResponse expectedlineInfoResponse = LineInfoResponse.of(new Line(redLine.getName(), redLine.getColor()), expectedStations);
 
         assertAll(
             () -> Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> Assertions.assertThat(searchedLineInfoResponse).isEqualTo(lineInfoResponse)
+            () -> Assertions.assertThat(response.as(LineInfoResponse.class)).isEqualTo(expectedlineInfoResponse)
         );
     }
 
@@ -178,10 +176,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> searchResponse = requestSearchLineInfo(null);
 
-        ExtractableResponse<Response> searchResponse = requestSearchLineInfo("");
-        Assertions.assertThat(searchResponse.as(LineInfoResponse[].class)[0]).isEqualTo(LineInfoResponse.of(new Line(lineRequest.getName(), lineRequest.getColor())));
+        assertAll(
+            () -> Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+            () -> Assertions.assertThat(searchResponse.as(LineInfoResponse[].class)[0]).isEqualTo(LineInfoResponse.of(new Line(lineRequest.getName(), lineRequest.getColor())))
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -197,16 +197,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> searchResponse = requestSearchLineInfo(null);
 
-        ExtractableResponse<Response> searchResponse = requestSearchLineInfo("");
-        Assertions.assertThat(searchResponse.as(LineInfoResponse[].class)).isEmpty();
-    }
-
-    private void verifyLineResponse(LineResponse response, LineResponse expectedResponse) throws MultipleFailuresError {
         assertAll(
-            () -> Assertions.assertThat(response.getColor()).isEqualTo(expectedResponse.getColor()),
-            () -> Assertions.assertThat(response.getName()).isEqualTo(expectedResponse.getName())
+            () -> Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+            () -> Assertions.assertThat(searchResponse.as(LineInfoResponse[].class)).isEmpty()
         );
     }
 
@@ -227,10 +222,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
                             extract();
     }
 
-    private ExtractableResponse<Response> requestSearchLineInfo(String subwayLineId) {
+    private ExtractableResponse<Response> requestSearchLineInfo(Long subwayLineId) {
         String requestLineIdURL = "";
 
-        if (subwayLineId != "") {
+        if (subwayLineId != null) {
             requestLineIdURL = "/" + subwayLineId;
         }
 

@@ -118,11 +118,7 @@ public class LineServiceTest {
         // given
         Line expectedLine = new Line("3호선", "bg-orange-600");
 
-        Station upStation = new Station("대화");
-        Station downStation  = new Station("수서");
-        Distance distance = Distance.valueOf(100);
-
-        Section section = Section.valueOf(upStation, downStation, distance);
+        Section section = Section.valueOf(new Station("대화"), new Station("수서"), Distance.valueOf(100));
         section.addSectionAtLine(expectedLine);
 
         when(lineRepository.save(any(Line.class))).thenReturn(expectedLine);
