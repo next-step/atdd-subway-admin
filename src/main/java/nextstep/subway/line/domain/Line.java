@@ -36,8 +36,8 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void add(Section section) {
-        this.lineSections.addTerminal(this, section);
+    public void add(List<Section> sections) {
+        lineSections.add(this, sections);
     }
 
     public List<Station> getStationsFromUpTerminal() {

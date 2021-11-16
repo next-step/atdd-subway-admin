@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,18 +23,24 @@ public class LineService {
 
 	private final LineRepository lineRepository;
 	private final StationService stationService;
+	private final SectionService sectionService;
 
-	public LineService(LineRepository lineRepository, StationService stationService) {
+	public LineService(LineRepository lineRepository, StationService stationService, SectionService sectionService) {
 		this.lineRepository = lineRepository;
 		this.stationService = stationService;
+		this.sectionService = sectionService;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
 		final Line line = request.toLine();
-		final Station upStation = stationService.getStation(request.getUpStationId());
-		final Station downStation = stationService.getStation(request.getDownStationId());
-		line.add(new Section(upStation, downStation, request.getDistance()));
+		line.add(getTerminalSections(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
 		return LineResponse.of(lineRepository.save(line));
+	}
+
+	private List<Section> getTerminalSections(Long upStationId, Long downStationId, int distance) {
+		final Station upStation = stationService.getStation(upStationId);
+		final Station downStation = stationService.getStation(downStationId);
+		return sectionService.getTerminalSections(upStation, downStation, distance);
 	}
 
 	public List<LineResponse> getLines() {

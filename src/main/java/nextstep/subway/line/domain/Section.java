@@ -8,11 +8,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import nextstep.subway.line.exception.IllegalSectionException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
+@Table(uniqueConstraints = {
+	@UniqueConstraint(columnNames = {"up_station_id", "down_station_id"})
+})
 public class Section {
 
 	@Id

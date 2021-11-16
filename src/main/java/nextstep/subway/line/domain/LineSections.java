@@ -12,7 +12,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
-import nextstep.subway.line.exception.DuplicatedTerminalSectionException;
 import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 
@@ -22,31 +21,11 @@ public class LineSections {
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
 	private List<LineSection> lineSections = new ArrayList<>();
 
-	public void addTerminal(Line line, Section sectionToAdd) {
+	public void add(Line line, List<Section> sections) {
 		lineSections.addAll(
-			createTerminalSections(sectionToAdd).stream()
-				.map(section -> new LineSection(line, section))
+			sections.stream().map(section -> new LineSection(line, section))
 				.collect(Collectors.toList())
 		);
-	}
-
-	private List<Section> createTerminalSections(Section section) {
-		if (hasUpTerminalSection() || hasDownTerminalStation()) {
-			throw new DuplicatedTerminalSectionException();
-		}
-		return new ArrayList<Section>() {{
-			add(new Section(null, section.getUpStation()));
-			add(section);
-			add(new Section(section.getDownStation(), null));
-		}};
-	}
-
-	private boolean hasUpTerminalSection() {
-		return lineSections.stream().anyMatch(LineSection::isUpTerminal);
-	}
-
-	private boolean hasDownTerminalStation() {
-		return lineSections.stream().anyMatch(LineSection::isDownTerminal);
 	}
 
 	public List<Station> getStationsFromUpTerminal() {
