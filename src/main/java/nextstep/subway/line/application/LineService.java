@@ -14,7 +14,8 @@ import nextstep.subway.line.dto.LineResponse;
 @Service
 @Transactional
 public class LineService {
-	private LineRepository lineRepository;
+
+	private final LineRepository lineRepository;
 
 	public LineService(LineRepository lineRepository) {
 		this.lineRepository = lineRepository;
@@ -34,14 +35,12 @@ public class LineService {
 	}
 
 	public LineResponse findById(Long id) {
-		Line line = lineRepository.findById(id)
-			.orElseThrow(IllegalArgumentException::new);
+		Line line = lineFindById(id);
 		return LineResponse.of(line);
 	}
 
 	public LineResponse updateLine(Long id, LineRequest lineRequest) {
-		Line line = lineRepository.findById(id)
-			.orElseThrow(IllegalArgumentException::new);
+		Line line = lineFindById(id);
 
 		line.update(lineRequest.toLine());
 		lineRepository.save(line);
@@ -50,9 +49,13 @@ public class LineService {
 	}
 
 	public void deleteLine(Long id) {
-		Line line = lineRepository.findById(id)
-			.orElseThrow(IllegalArgumentException::new);
+		Line line = lineFindById(id);
 
 		lineRepository.delete(line);
+	}
+
+	private Line lineFindById(Long id) {
+		return lineRepository.findById(id)
+			.orElseThrow(IllegalArgumentException::new);
 	}
 }
