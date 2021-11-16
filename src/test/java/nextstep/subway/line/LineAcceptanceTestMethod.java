@@ -36,6 +36,12 @@ public class LineAcceptanceTestMethod {
         );
     }
 
+    public static void 구간_추가(LineResponse line, StationResponse pre, StationResponse next, int distance) {
+        Long lineId = line.getId();
+        ExtractableResponse<Response> actual
+                = post("/lines/{id}/lineStations", 구간_추가(pre, next, distance), lineId);
+    }
+
     public static void 지하철_노선_목록_확인(ExtractableResponse<Response> actual, List<Station> excepted) {
         List<LineResponse> responses = actual.jsonPath().getList(".", LineResponse.class);
         List<Station> actualStations = new ArrayList<>();

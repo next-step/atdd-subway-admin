@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -45,9 +46,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void findAllLine() {
-        LineResponse response1 = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 역_생성(강남역), 역_생성(광교역)).as(LineResponse.class);
+        StationResponse 강남 = 역_생성(강남역);
+        LineResponse response1 = 신규_지하철_노선_생성_요청("/lines", 신분당선, 14, 강남, 역_생성(광교역)).as(LineResponse.class);
         LineResponse response2 = 신규_지하철_노선_생성_요청("/lines", 이호선, 16, 역_생성(홍대역), 역_생성(신촌역)).as(LineResponse.class);
-
+        구간_추가(response1, 강남, 역_생성(판교역), 4);
+        구간_추가(response1, 강남, 역_생성(수지역), 6);
+        
         // when
         ExtractableResponse<Response> actual = 지하철_노선_목록_조회_요청("/lines");
 

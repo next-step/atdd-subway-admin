@@ -19,6 +19,7 @@ public class Fixture {
     public static StationRequest 홍대역 = new StationRequest("홍대역");
     public static StationRequest 신촌역 = new StationRequest("신촌역");
     public static StationRequest 판교역 = new StationRequest("판교역");
+    public static StationRequest 수지역 = new StationRequest("수지역");
 
     public static ExtractableResponse<Response> get(String path, Object... params) {
         return response(request().get(path, params));
