@@ -27,18 +27,18 @@ public class Sections {
     }
 
     private List<Station> getStations(List<Station> stations) {
-        Map<Station, Station> map = getStationMap();
+        Map<Station, Station> upToDown = getUpToDownStation();
         Station upStation = getUpStation();
 
         while (upStation != null) {
             stations.add(upStation);
-            upStation = map.get(upStation);
+            upStation = upToDown.get(upStation);
         }
 
         return stations;
     }
 
-    private Map<Station, Station> getStationMap() {
+    private Map<Station, Station> getUpToDownStation() {
         return sections.stream()
                 .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
     }
