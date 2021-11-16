@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -22,5 +23,9 @@ public class LineService {
 
     public LineResponses findAll() {
         return LineResponses.of(lineRepository.findAll());
+    }
+
+    public LineResponse findById(Long id) {
+        return LineResponse.of(lineRepository.findById(id).orElse(new Line()));
     }
 }
