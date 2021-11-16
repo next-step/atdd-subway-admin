@@ -7,6 +7,8 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 public class LineService {
@@ -17,6 +19,7 @@ public class LineService {
     }
 
     public LineResponse saveLine(final LineRequest request) {
+        Optional<Line> byName = lineRepository.findByName(request.getName());
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
