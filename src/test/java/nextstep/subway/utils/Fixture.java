@@ -26,7 +26,8 @@ public class Fixture {
 	}
 
 	private static RequestSpecification request() {
-		return RestAssured.given().log().all().when();
+		return RestAssured.given().log().all()
+			.accept(MediaType.APPLICATION_JSON_VALUE);
 	}
 
 	private static RequestSpecification request(Object body) {
