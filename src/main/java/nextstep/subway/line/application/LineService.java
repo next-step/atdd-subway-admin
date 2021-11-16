@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.SectionRepository;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.StationService;
@@ -52,6 +53,13 @@ public class LineService {
 			.collect(Collectors.toList());
 	}
 
+	public List<LineResponse> findAllLineWithSections(){
+		List<Line> lines = lineRepository.findAllLinesWithSectionsAndStations();
+		return lines.stream()
+			.map(LineResponse::of)
+			.collect(Collectors.toList());
+	}
+
 	@Transactional
 	public void deleteLineById(Long id) {
 		sectionRepository.deleteAllByLineId(id);
@@ -59,7 +67,20 @@ public class LineService {
 	}
 
 	public LineResponse findLineById(Long id) {
-		return LineResponse.of(getLine(id));
+		Line line = getLine(id);
+		return LineResponse.of(line);
+	}
+
+	public LineResponse findLineWithSectionsById(Long id){
+		Line line = lineRepository.findLineWithSectionsAndStationsById(id);
+		validateExistLine(line);
+		return LineResponse.of(line);
+	}
+
+	private void validateExistLine(Line line) {
+		if(line == null){
+			throw new IllegalArgumentException("없는 노선입니다.");
+		}
 	}
 
 	@Transactional

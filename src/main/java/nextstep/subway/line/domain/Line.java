@@ -1,14 +1,10 @@
 package nextstep.subway.line.domain;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import nextstep.subway.common.BaseEntity;
 
 import javax.persistence.*;
-
-import org.hibernate.engine.internal.Cascade;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,8 +15,8 @@ public class Line extends BaseEntity {
 	private String name;
 	private String color;
 
-	@OneToMany(mappedBy = "line")
-	private List<Section> sections = new ArrayList<>();
+	@Embedded
+	private Sections sections = new Sections();
 
 	public Line() {
 	}
@@ -28,7 +24,6 @@ public class Line extends BaseEntity {
 	public Line(String name, String color) {
 		this.name = name;
 		this.color = color;
-		// this.sections.add(section);
 	}
 
 	public void addSection(Section section) {
@@ -52,7 +47,7 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public List<Section> getSections() {
+	public Sections getSections() {
 		return sections;
 	}
 
@@ -83,5 +78,4 @@ public class Line extends BaseEntity {
 			", color='" + color + '\'' +
 			'}';
 	}
-
 }
