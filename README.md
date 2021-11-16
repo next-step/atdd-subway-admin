@@ -66,9 +66,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 #### 3.도커파일 빌드
  - frontend 내 node_modules 디렉터리가 있으면 정상적으로 빌드되지 않음. 삭제 후 빌드
- - #####``` docker build -t atdd-web:0.0 .```
+ - ``` docker build -t atdd-web:0.0 .```
 
 #### 4.도커 컨테이너 실행
- - #####```docker run -it --name atdd_web -p 8081:8081 atdd_web:0.0```
+ - ```docker run -it --name atdd_web -p 8081:8081 atdd-web:0.0```
 
 
