@@ -35,14 +35,14 @@ public class LineStation {
     }
 
     public LineStation(Line line, Station nextStation, Station preStation, int distance) {
-        sectionValidation(line, nextStation, preStation, distance);
+        lineStationValidation(line, nextStation, preStation, distance);
         this.line = line;
         this.nextStation = nextStation;
         this.preStation = preStation;
         this.distance = new Distance(distance);
     }
 
-    private void sectionValidation(Line line, Station preStation, Station nextStation, int distance) {
+    private void lineStationValidation(Line line, Station preStation, Station nextStation, int distance) {
         if (isNull(line)) {
             throw new StationNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "구간 정보가 없습니다.");
         }
@@ -58,8 +58,9 @@ public class LineStation {
         return preStation.equals(lineStation.preStation) && nextStation.equals(lineStation.nextStation);
     }
 
-    public void changeDistance(LineStation lineStation) {
-        distance.change(lineStation.getDistance());
+    public void updateToPreStation(LineStation lineStation) {
+        preStation = lineStation.nextStation;
+        distance.minus(lineStation.getDistance());
     }
 
     public Station getNextStation() {
@@ -73,4 +74,6 @@ public class LineStation {
     public Distance getDistance() {
         return distance;
     }
+
+
 }

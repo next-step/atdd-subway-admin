@@ -3,6 +3,7 @@ package nextstep.subway.excetpion;
 import nextstep.subway.line.exception.DistanceLengthException;
 import nextstep.subway.line.exception.DuplicateLineStationException;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.line.exception.LineStationNotConnectException;
 import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,15 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(DuplicateLineStationException.class)
     public ResponseEntity handleDuplicateLineStationException(DuplicateLineStationException e) {
+        e.printStackTrace();
+        ErrorResponse response = ErrorResponse.build()
+                .httpStatus(e.getErrorCode().getHttpStatus())
+                .message(e.getMessage());
+        return new ResponseEntity(response, response.getHttpStatus());
+    }
+
+    @ExceptionHandler(LineStationNotConnectException.class)
+    public ResponseEntity handleLineStationNotConnectException(LineStationNotConnectException e) {
         e.printStackTrace();
         ErrorResponse response = ErrorResponse.build()
                 .httpStatus(e.getErrorCode().getHttpStatus())

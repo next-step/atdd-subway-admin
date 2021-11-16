@@ -29,11 +29,10 @@ public class Distance {
         }
     }
 
-    public void change(Distance distance) {
+    public void minus(Distance distance) {
         if (this.distance <= distance.distance) {
             throw new DistanceLengthException(ErrorCode.BAD_ARGUMENT, "구간의 길이가 잘못되었습니다.");
         }
-        this.distance = distance.distance;
+        this.distance = this.distance - distance.distance;
     }
-
 }

@@ -43,6 +43,18 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
         응답_확인_BAD_REQUEST(actual);
     }
 
+    @DisplayName("지하철 노선의 구간을 추가한다.(연결 못하는 오류 발생)")
+    @Test
+    void addSection_연결_실패() {
+        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 역_생성(강남역), 역_생성(광교역));
+        Long id = response.as(LineResponse.class).getId();
+
+        ExtractableResponse<Response> actual
+                = 지하철_노선_구간_추가("/lines/{id}/lineStations", id, 구간_추가(역_생성(홍대역), 역_생성(신촌역), 5));
+
+        응답_확인_BAD_REQUEST(actual);
+    }
+
     private ExtractableResponse<Response> 지하철_노선_구간_추가(String path, Long id, LineStationRequest 판교역) {
         return post(path, 판교역, id);
     }

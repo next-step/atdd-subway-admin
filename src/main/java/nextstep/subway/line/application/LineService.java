@@ -83,6 +83,7 @@ public class LineService {
         lineRepository.delete(line);
     }
 
+    @Transactional
     public void addSection(Long id, LineStationRequest lineStationRequest) {
         Line persistLine = findLineById(id).orElse(null);
 
