@@ -66,7 +66,7 @@ public class Sections {
     }
 
     private boolean isAddFirst() {
-        return sections.size() == 0;
+        return sections.isEmpty();
     }
 
     private boolean isAddNextEndStation(Section section) {
