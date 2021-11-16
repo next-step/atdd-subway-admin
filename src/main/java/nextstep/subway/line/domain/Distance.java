@@ -24,10 +24,8 @@ public class Distance {
         return this.distance - distance.distance;
     }
 
-    private void validate(int distance) {
-        if (distance <= 0) {
-            throw new IllegalArgumentException("거리는 0보다 커야 합니다.");
-        }
+    public int getMergedDistance(Distance distance) {
+        return this.distance + distance.distance;
     }
 
     @Override
@@ -41,5 +39,11 @@ public class Distance {
     @Override
     public int hashCode() {
         return Objects.hash(distance);
+    }
+
+    private void validate(int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("거리는 0보다 커야 합니다.");
+        }
     }
 }

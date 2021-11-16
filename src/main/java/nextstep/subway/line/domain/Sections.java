@@ -41,13 +41,8 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        if (findByUpStation(station) == Section.EMPTY && findByDownStation(station) == Section.EMPTY) {
-            throw new SectionRemoveFailedException("노선에 등록되어 있지 않은 역입니다.");
-        }
-        if (sections.size() == 1) {
-            throw new SectionRemoveFailedException("구간이 하나인 노선은 구간을 제거할 수 없습니다.");
-        }
-
+        validateRemove(station);
+        removeSection(station);
     }
 
     @Override
@@ -126,6 +121,27 @@ public class Sections {
             addSplitSections(section, sectionDownStationMatched, sectionDownStationMatched.getUpStation(),
                     section.getUpStation());
         }
+    }
+
+    private void validateRemove(Station station) {
+        if (findByUpStation(station) == Section.EMPTY && findByDownStation(station) == Section.EMPTY) {
+            throw new SectionRemoveFailedException("노선에 등록되어 있지 않은 역입니다.");
+        }
+        if (sections.size() == 1) {
+            throw new SectionRemoveFailedException("구간이 하나인 노선은 구간을 제거할 수 없습니다.");
+        }
+    }
+
+    private void removeSection(Station station) {
+        Section previousSection = findByDownStation(station);
+        Section nextSection = findByUpStation(station);
+
+        Section mergedSection = new Section(previousSection.getUpStation(), nextSection.getDownStation(), previousSection.getMergedDistance(nextSection));
+        mergedSection.changeLine(previousSection);
+
+        sections.add(mergedSection);
+        sections.remove(previousSection);
+        sections.remove(nextSection);
     }
 
     private Section findByUpStation(Section section) {

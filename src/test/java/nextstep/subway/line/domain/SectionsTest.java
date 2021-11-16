@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -131,21 +132,24 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("지하철 구간 순서에 맞는 지하철역 목록을 반환한다.")
-    void toStations() {
+    @DisplayName("지하철 노선에서 가구간을 제거한다.")
+    void remove() {
         // given
-        sections.add(new Section(사당역, 역삼역, new Distance(6)));
-        sections.add(new Section(방배역, 강남역, new Distance(10)));
+        sections.add(new Section(역삼역, 방배역, new Distance(15)));
 
         // when
-        List<Station> stations = sections.toStations();
+        sections.remove(역삼역);
 
         // then
-        assertThat(stations).containsExactly(방배역, 강남역, 사당역, 역삼역);
+        assertThat(sections).isEqualTo(new Sections(
+                Collections.singletonList(
+                        new Section(강남역, 방배역, new Distance(25))
+                )
+        ));
     }
 
     @Test
-    @DisplayName("노선에 등록되어 있지 않은 역을 제거하면 예외가 발생한다.")
+    @DisplayName("지하철 노선에 등록되어 있지 않은 역을 제거하면 예외가 발생한다.")
     void removeThrowException1() {
         // given
         sections.add(new Section(역삼역, 방배역, new Distance(6)));
@@ -157,7 +161,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("구간이 하나인 노선에서 상행 종점역을 제거하면 예외가 발생한다.")
+    @DisplayName("지하철 구간이 하나인 노선에서 상행 종점역을 제거하면 예외가 발생한다.")
     void removeThrowException2() {
         // when & then
         assertThatExceptionOfType(SectionRemoveFailedException.class)
@@ -166,11 +170,25 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("구간이 하나인 노선에서 상행 종점역을 제거하면 예외가 발생한다.")
+    @DisplayName("지하철 구간이 하나인 노선에서 상행 종점역을 제거하면 예외가 발생한다.")
     void removeThrowException3() {
         // when & then
         assertThatExceptionOfType(SectionRemoveFailedException.class)
                 .isThrownBy(() -> sections.remove(역삼역))
                 .withMessageMatching("구간이 하나인 노선은 구간을 제거할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("지하철 구간 순서에 맞는 지하철역 목록을 반환한다.")
+    void toStations() {
+        // given
+        sections.add(new Section(사당역, 역삼역, new Distance(6)));
+        sections.add(new Section(방배역, 강남역, new Distance(10)));
+
+        // when
+        List<Station> stations = sections.toStations();
+
+        // then
+        assertThat(stations).containsExactly(방배역, 강남역, 사당역, 역삼역);
     }
 }

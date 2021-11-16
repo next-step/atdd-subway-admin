@@ -56,10 +56,6 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public Distance getDistance() {
-        return distance;
-    }
-
     public boolean isLessThanOrEquals(Section section) {
         return this.distance.isLessThanOrEquals(section.distance);
     }
@@ -82,6 +78,10 @@ public class Section extends BaseEntity {
 
     public Distance getRemainDistance(Section section) {
         return new Distance(this.distance.getRemainDistance(section.distance));
+    }
+
+    public Distance getMergedDistance(Section section) {
+        return new Distance(this.distance.getMergedDistance(section.distance));
     }
 
     public boolean isEmpty() {
