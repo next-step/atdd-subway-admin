@@ -49,9 +49,21 @@ public class Section {
         this.distance = distance;
     }
 
+    private Section(Long id, Station upStation, Station downStation, Distance distance) {
+        this.id = id;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
     public static Section of(Station upStation, Station downStation, Distance distance) {
         validateCreateSection(upStation, downStation, distance);
         return new Section(upStation, downStation, distance);
+    }
+
+    public static Section of(Long id, Station upStation, Station downStation, Distance distance) {
+        validateCreateSection(upStation, downStation, distance);
+        return new Section(id, upStation, downStation, distance);
     }
 
     public void registerLine(Line line) {

@@ -58,7 +58,7 @@ public class Line extends BaseEntity {
         section.registerLine(this);
     }
 
-    public void removeStation(Station station) {
+    public void remove(Station station) {
         validateHasOnlyOneSectionWhenDeleteStation();
         validateNotIncludeStation(station);
 
