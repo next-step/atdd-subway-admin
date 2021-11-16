@@ -11,7 +11,8 @@ import static nextstep.subway.common.utils.ValidationUtils.isNull;
 @Entity
 public class LineStation {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -23,13 +24,14 @@ public class LineStation {
     private Station nextStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "line_id" , nullable = false, foreignKey = @ForeignKey(name = "fk_section_line"))
+    @JoinColumn(name = "line_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_line"))
     private Line line;
 
     @Embedded
     private Distance distance;
 
-    protected LineStation() {}
+    protected LineStation() {
+    }
 
     public LineStation(Line line, Station nextStation, Station preStation, int distance) {
         sectionValidation(line, nextStation, preStation, distance);
@@ -52,10 +54,11 @@ public class LineStation {
     }
 
     public boolean isSame(LineStation lineStation) {
-        if (preStation.equals(lineStation.preStation) && nextStation.equals(lineStation.nextStation)) {
-            return true;
-        }
-        return false;
+        return preStation.equals(lineStation.preStation) && nextStation.equals(lineStation.nextStation);
+    }
+
+    public void changeDistance(LineStation lineStation) {
+        distance.change(lineStation.getDistance());
     }
 
     public Station getNextStation() {
@@ -66,4 +69,7 @@ public class LineStation {
         return preStation;
     }
 
+    public Distance getDistance() {
+        return distance;
+    }
 }

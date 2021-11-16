@@ -47,7 +47,7 @@ public class LineService {
     @Transactional
     public LineResponse saveLineAndTerminalStation(LineRequest request) {
         Line persistLine = saveLine(request.toLine());
-        saveTerminalStation(persistLine, request.getUpStationId(), request.getDownStationId(), request.getDistance());
+        saveTerminalStation(persistLine, request.getPreStationId(), request.getNextStationId(), request.getDistance());
         return LineResponse.of(persistLine);
     }
 
@@ -70,7 +70,7 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findLineById(id).orElseThrow(() ->
-                new LineNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "노선이 존재하지 않습니다."))
+                        new LineNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "노선이 존재하지 않습니다."))
                 .update(lineRequest.toLine());
 
         lineRepository.save(line);
@@ -86,7 +86,8 @@ public class LineService {
     public void addSection(Long id, LineStationRequest lineStationRequest) {
         Line persistLine = findLineById(id).orElse(null);
 
-        saveTerminalStation(persistLine, lineStationRequest.getUpStationId(), lineStationRequest.getDownStationId(), lineStationRequest.getDistance());
+        saveTerminalStation(persistLine, lineStationRequest.getPreStationId(),
+                lineStationRequest.getNextStationId(), lineStationRequest.getDistance());
     }
 
     private Optional<Line> findLineById(Long id) {

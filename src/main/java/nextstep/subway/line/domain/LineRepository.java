@@ -12,15 +12,15 @@ import java.util.Optional;
 public interface LineRepository extends JpaRepository<Line, Long> {
 
     @Query("select l from Line l " +
-            "left join fetch l.stations.sections sec " +
-            "left join fetch sec.downStation " +
-            "left join fetch sec.upStation " +
+            "left join fetch l.stations.lineStations ls " +
+            "left join fetch ls.nextStation " +
+            "left join fetch ls.preStation " +
             "where l.id = :id")
     Optional<Line> findOneWithStations(@Param("id") Long id);
 
     @Query("select l from Line l " +
-            "left join fetch l.stations.sections sec " +
-            "left join fetch sec.downStation " +
-            "left join fetch sec.upStation")
+            "left join fetch l.stations.lineStations ls " +
+            "left join fetch ls.nextStation " +
+            "left join fetch ls.preStation ")
     List<Line> findAllWithStations();
 }

@@ -16,32 +16,37 @@ import java.util.Set;
 public class LineStations {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    private final List<LineStation> stations = new ArrayList<>();
+    private final List<LineStation> lineStations = new ArrayList<>();
 
     public LineStations() {
     }
 
     public void addLineStation(LineStation lineStation) {
         validation(lineStation);
-        stations.add(lineStation);
+
+        lineStations.stream()
+                .filter(f -> f.getPreStation() == f.getPreStation())
+                .findFirst()
+                .ifPresent(f -> f.changeDistance(lineStation));
+
+        lineStations.add(lineStation);
     }
 
     private void validation(LineStation lineStation) {
-        validateDuplicateStations(lineStation);
-
+        validateDuplicateStation(lineStation);
     }
 
-    private void validateDuplicateStations(LineStation newLineStation) {
-        stations.forEach(station -> {
-            if (station.isSame(newLineStation)) {
-                throw new DuplicateLineStationException(ErrorCode.ALREADY_EXIST_ENTITY,"상행과 하행이 모두 이미 존재합니다.");
+    private void validateDuplicateStation(LineStation lineStation) {
+        lineStations.forEach(station -> {
+            if (station.isSame(lineStation)) {
+                throw new DuplicateLineStationException(ErrorCode.ALREADY_EXIST_ENTITY, "상행과 하행이 모두 이미 존재합니다.");
             }
         });
     }
 
-    public List<Station> getStations() {
+    public List<Station> getLineStations() {
         Set<Station> result = new LinkedHashSet<>();
-        stations.forEach(station -> {
+        lineStations.forEach(station -> {
             result.add(station.getPreStation());
             result.add(station.getNextStation());
         });

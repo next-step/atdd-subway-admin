@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.excetpion.ErrorCode;
+import nextstep.subway.line.exception.DistanceLengthException;
 import nextstep.subway.station.exception.StationNotFoundException;
 
 import javax.persistence.Embeddable;
@@ -14,7 +15,8 @@ public class Distance {
 
     private int distance;
 
-    protected Distance() {}
+    protected Distance() {
+    }
 
     public Distance(int distance) {
         validation(distance);
@@ -26,4 +28,12 @@ public class Distance {
             throw new StationNotFoundException(ErrorCode.NOT_FOUND_ARGUMENT, "구간의 길이가 없습니다.");
         }
     }
+
+    public void change(Distance distance) {
+        if (this.distance <= distance.distance) {
+            throw new DistanceLengthException(ErrorCode.BAD_ARGUMENT, "구간의 길이가 잘못되었습니다.");
+        }
+        this.distance = distance.distance;
+    }
+
 }
