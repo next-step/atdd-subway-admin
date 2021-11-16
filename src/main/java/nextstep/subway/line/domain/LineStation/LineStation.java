@@ -34,7 +34,7 @@ public class LineStation {
     protected LineStation() {
     }
 
-    public LineStation(Line line, Station nextStation, Station preStation, int distance) {
+    public LineStation(Line line, Station preStation, Station nextStation, int distance) {
         lineStationValidation(line, nextStation, preStation, distance);
         this.line = line;
         this.nextStation = nextStation;
@@ -74,6 +74,5 @@ public class LineStation {
     public Distance getDistance() {
         return distance;
     }
-
 
 }

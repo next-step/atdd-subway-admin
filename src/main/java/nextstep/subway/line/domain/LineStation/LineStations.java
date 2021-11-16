@@ -9,9 +9,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -50,20 +49,40 @@ public class LineStations {
     }
 
     private void validateConnectPossible(LineStation lineStation) {
-        List<Station> preStations = lineStations.stream().map(LineStation::getPreStation).collect(Collectors.toList());
-        List<Station> nextStations = lineStations.stream().map(LineStation::getNextStation).collect(Collectors.toList());
-        if (!preStations.contains(lineStation.getNextStation()) || !nextStations.contains(lineStation.getPreStation())) {
+        if (!isContains(lineStation.getNextStation()) && !isContains(lineStation.getPreStation())) {
             throw new LineStationNotConnectException(ErrorCode.BAD_ARGUMENT, "역을 연결 할 수 없습니다.");
         }
     }
 
-    public List<Station> getLineStations() {
-        Set<Station> result = new LinkedHashSet<>();
-        lineStations.forEach(station -> {
-            result.add(station.getPreStation());
-            result.add(station.getNextStation());
-        });
-        return new ArrayList<>(result);
+    private boolean isContains(Station station) {
+        List<Station> preStations = lineStations.stream().map(LineStation::getPreStation).collect(Collectors.toList());
+        List<Station> nextStations = lineStations.stream().map(LineStation::getNextStation).collect(Collectors.toList());
+        return preStations.contains(station) || nextStations.contains(station);
     }
+
+    public List<Station> getLineStations() {
+        List<Station> result = new ArrayList<>();
+
+        Optional<LineStation> first = lineStations.stream()
+                .filter(f -> !firstStation(f.getPreStation()))
+                .findFirst();
+
+        while (first.isPresent()) {
+            LineStation station = first.get();
+            result.add(first.get().getPreStation());
+            first = lineStations.stream()
+                    .filter(f -> f.getPreStation() == station.getNextStation())
+                    .findFirst();
+        }
+        return result;
+    }
+
+    private boolean firstStation(Station station) {
+        return lineStations.stream()
+                .map(LineStation::getNextStation)
+                .collect(Collectors.toList())
+                .contains(station);
+    }
+
 
 }

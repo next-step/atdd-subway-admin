@@ -8,6 +8,7 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,18 +48,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findAllLine() {
         StationResponse 강남 = 역_생성(강남역);
-        LineResponse response1 = 신규_지하철_노선_생성_요청("/lines", 신분당선, 14, 강남, 역_생성(광교역)).as(LineResponse.class);
-        LineResponse response2 = 신규_지하철_노선_생성_요청("/lines", 이호선, 16, 역_생성(홍대역), 역_생성(신촌역)).as(LineResponse.class);
-        구간_추가(response1, 강남, 역_생성(판교역), 4);
-        구간_추가(response1, 강남, 역_생성(수지역), 6);
-        
+        StationResponse 판교 = 역_생성(판교역);
+        StationResponse 수지 = 역_생성(수지역);
+        StationResponse 광교 = 역_생성(광교역);
+        LineResponse response1 = 신규_지하철_노선_생성_요청("/lines", 신분당선, 14, 강남, 광교).as(LineResponse.class);
+        구간_추가(response1, 강남, 판교, 4);
+        구간_추가(response1, 판교, 수지, 6);
+
         // when
         ExtractableResponse<Response> actual = 지하철_노선_목록_조회_요청("/lines");
 
         // then
         응답_확인_OK(actual);
-        지하철_노선_목록_확인(actual, Stream.concat(response1.getStations().stream(),
-                response2.getStations().stream()).collect(Collectors.toList()));
+        지하철_노선_목록_확인(actual, response1.getStations());
     }
 
 
