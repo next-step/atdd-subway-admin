@@ -10,8 +10,8 @@ import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,22 +19,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
+
 	private final LineRepository lineRepository;
 	private final SectionRepository sectionRepository;
 
-	public LineService(LineRepository lineRepository, SectionRepository sectionRepository) {
+	/*	Station은 도메인이 다르므로  StationRepository를 바로 접근하지 않고 StationService 계층을 통해서 접근	*/
+	private final StationService stationService;
+
+	public LineService(LineRepository lineRepository, SectionRepository sectionRepository,
+		StationService stationService) {
 		this.lineRepository = lineRepository;
 		this.sectionRepository = sectionRepository;
+		this.stationService = stationService;
 	}
 
 	@Transactional
 	public LineResponse saveLine(LineRequest request) {
+
+		Station upStation = stationService.getStationEntity(request.getUpStationId());
+		Station downStation = stationService.getStationEntity(request.getDownStationId());
+
 		Line persistLine = lineRepository.save(request.toLine());
-
-		Section endToend = new Section(persistLine, new Station(request.getUpStationId()),
-			new Station(request.getDownStationId()),
-			request.getDistance());
-
+		Section endToend = new Section(persistLine, upStation, downStation, request.getDistance());
 		sectionRepository.save(endToend);
 		return LineResponse.of(persistLine);
 	}
