@@ -6,6 +6,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.testFactory.AcceptanceTestFactory;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,15 +24,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
 	private static final String STATION_SERVICE_PATH = "/stations";
 
-	private Map<String, String> 강남역_정보;
-	private Map<String, String> 역삼역_정보;
-
-	@BeforeEach
-	public void setUpStationAcceptance() {
-		//	given
-		강남역_정보 = 지하철역_이름_정의("강남역");
-		역삼역_정보 = 지하철역_이름_정의("역삼역");
-	}
+	//	given
+	public static final Map<String, String> 강남역_정보 = 지하철역_이름_정의("강남역");
+	public static final Map<String, String> 역삼역_정보 = 지하철역_이름_정의("역삼역");
 
 	@DisplayName("지하철역을 생성한다.")
 	@Test
@@ -85,11 +80,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		삭제_완료_확인(강남역_삭제_결과);
 	}
 
-	private static Map<String, String> 지하철역_이름_정의(String name) {
+	public static Map<String, String> 지하철역_이름_정의(String name) {
 		return AcceptanceTestFactory.getNameContent(name);
 	}
 
-	private ExtractableResponse<Response> 지하철역_생성(Map<String, String> params) {
+	public static ExtractableResponse<Response> 지하철역_생성(Map<String, String> params) {
 		return AcceptanceTestFactory.post(params, STATION_SERVICE_PATH);
 	}
 

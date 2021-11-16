@@ -11,26 +11,30 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.testFactory.AcceptanceTestFactory;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 @DisplayName("지하철 노선 관련 기능")
+// @Transactional
 public class LineAcceptanceTest extends AcceptanceTest {
 
 	private static final String LINE_SERVICE_PATH = "/lines";
 
-	private Map<String, String> 신분당선_정보;
-	private Map<String, String> 이호선_정보;
+	//	given
+	public static final Map<String, String> 신분당선_정보 = 지하철_노선_정보_정의("신분당선", "bg-red-600",1L,2L,10);
+	public static final Map<String, String> 이호선_정보 = 지하철_노선_정보_정의("2호", "bg-이호선_정보-600",1L,2L,10);
 
 	@BeforeEach
 	public void setUpLineAcceptance() {
 		//	given
-		신분당선_정보 = 지하철_노선_정보_정의("신분당선", "bg-red-600",1L,2L,10);
-		이호선_정보 = 지하철_노선_정보_정의("2호", "bg-이호선_정보-600",1L,2L,10);
+		StationAcceptanceTest.지하철역_생성(StationAcceptanceTest.강남역_정보);
+		StationAcceptanceTest.지하철역_생성(StationAcceptanceTest.역삼역_정보);
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
