@@ -69,7 +69,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 노선 목록 조회 기능
 - [x] 노선 목록 조회 기능 인수 테스트 작성
-- [ ] 노선 목록 조회 기능 구현
+- [x] 노선 목록 조회 기능 구현
 
 ### 노선 조회 기능
 - [ ] 노선 조회 기능 인수 테스트 작성
