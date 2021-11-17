@@ -79,10 +79,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        지하철_노선_등록되어_있음(노선_2호선_생성_요청값());
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선_생성_요청값());
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선_생성_요청값);
 
         // then
         잘못된_요청으로_지하철_노선_생성_실패됨(response);
@@ -214,7 +217,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값());
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(노선_2호선_생성_응답.getId());
