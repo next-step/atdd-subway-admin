@@ -76,4 +76,9 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
     }
+
+    public void update(Station station, int distance) {
+        this.upStation = station;
+        this.distance -= distance;
+    }
 }
