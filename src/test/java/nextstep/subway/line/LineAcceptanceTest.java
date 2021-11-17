@@ -103,7 +103,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .log().all()
                 .when()
                 .get("/lines")
-                .then().log().all()
+                .then()
+                .log().all()
                 .extract();
     }
 
@@ -112,7 +113,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .log().all()
                 .when()
                 .get(String.format("/lines/%s", id))
-                .then().log().all()
+                .then()
+                .log().all()
                 .extract();
     }
 
@@ -163,7 +165,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .put(String.format("/lines/%s", id))
-                .then().log().all()
+                .then()
+                .log().all()
                 .extract();
     }
 
@@ -196,7 +199,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
-                .then().log().all()
+                .then()
+                .log().all()
                 .extract();
     }
 
@@ -206,7 +210,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .delete(String.format("/lines/%s", id))
-                .then().log().all()
+                .then()
+                .log().all()
                 .extract();
     }
 
