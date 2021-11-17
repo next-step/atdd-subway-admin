@@ -47,6 +47,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> line = new HashMap<>();
         line.put("name", "신분당선");
         line.put("color", "bg-red-600");
+        
+        RestAssured
+                .given().log().all()
+                .body(line)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all().extract();
 
         // when
         // 지하철_노선_생성_요청
