@@ -5,7 +5,7 @@ import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
 
-public class StationResponse {
+public class StationResponse implements BaseResponse {
     private Long id;
     private String name;
     private LocalDateTime createdDate;
