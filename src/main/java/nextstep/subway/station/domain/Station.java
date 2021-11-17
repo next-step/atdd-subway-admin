@@ -5,18 +5,23 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import nextstep.subway.common.BaseEntity;
 
 @Entity
+@Table(name = "station")
 public class Station extends BaseEntity {
+    @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+
+    @Column(name = "name", unique = true)
     private String name;
 
-    public Station() {
+    protected Station() {
+
     }
 
     private Station(String name) {
