@@ -30,7 +30,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
         return new LineAndLineStation(response, Arrays.asList(강남, 광교));
     }
 
-    @DisplayName("[상행기준] 지하철 노선의 구간을 추가한다.")
+    @DisplayName("[상행기준] 지하철 노선의 구간을 추가한다. (강남 -> 광교) => ([기준]강남 -> 홍대 -> 광교)")
     @Test
     void 상행을_기준으로_신규_노선_추가() {
         // given
@@ -78,16 +78,20 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
         응답_확인_BAD_REQUEST(actual);
     }
 
-    @DisplayName("[상행기준] 지하철 신규 상행 종점 추가")
+    @DisplayName("[상행기준] 지하철 신규 상행 종점 추가 (강남 -> 광교) => (홍대 -> 강남 -> 광교)")
     @Test
     void 지하철역_상행_신규_종점_추가() {
         // given
         LineAndLineStation 신분당선_생성_강남_광교 = 신분당선_생성_강남_광교();
-        StationResponse 추가역 = 역_생성(홍대역);
         Long 신분당선_아이디 = 신분당선_생성_강남_광교.getLineResponse().getId();
+        StationResponse 추가역 = 역_생성(홍대역);
         StationResponse 강남역 = 신분당선_생성_강남_광교.getStationResponses()
                 .stream()
                 .filter(f -> f.getName().equals("강남역"))
+                .findFirst().get();
+        StationResponse 광교역 = 신분당선_생성_강남_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("광교역"))
                 .findFirst().get();
 
         // when
@@ -98,9 +102,10 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
         // then
         응답_확인_OK(actual);
         상행_혹은_하행_추가_검증(lines, 추가역);
+        순서_검증(신분당선_아이디, 추가역, 강남역, 광교역);
     }
 
-    @DisplayName("[하행기준] 지하철 노선의 구간을 추가한다.")
+    @DisplayName("[하행기준] 지하철 노선의 구간을 추가한다. (강남 -> 광교) => (강남 -> 홍대 -> [기준]광교)")
     @Test
     void 하행을_기준으로_신규_노선_추가() {
         // given
@@ -139,7 +144,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
         응답_확인_BAD_REQUEST(actual);
     }
 
-    @DisplayName("[하행기준] 지하철 하행 신규 종점 추가")
+    @DisplayName("[하행기준] 지하철 하행 신규 종점 추가 (강남 -> 광교) => (강남 -> 광교 -> 홍대)")
     @Test
     void 지하철역_하행_신규_종점_추가() {
         // given
