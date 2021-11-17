@@ -38,8 +38,12 @@ public class LineRequest {
         return new Line(name, color);
     }
 
-    public Line toLine(Station upStation, Station downStation) {
+    public Line toLine(Station upStation, Station downStation, int distance) {
         return new Line(name, color, upStation, downStation, distance);
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     public Long getUpStationId() {

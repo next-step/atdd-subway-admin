@@ -28,13 +28,13 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = getStationById(request.getUpStationId());
-        Station downStation = getStationById(request.getDownStationId());
-        Line line = lineRepository.save(request.toLine(upStation, downStation));
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+        Line line = lineRepository.save(request.toLine(upStation, downStation, request.getDistance()));
         return LineResponse.of(line);
     }
 
-    private Station getStationById(Long upStationId) {
+    private Station findStationById(Long upStationId) {
         return stationRepository.findById(upStationId)
                 .orElseThrow(StationNotFoundException::new);
     }
