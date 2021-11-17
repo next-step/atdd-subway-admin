@@ -12,4 +12,12 @@ public class StationFixture {
 	public static StationRequest 역삼역_생성_요청값() {
 		return new StationRequest("역삼역");
 	}
+
+	public static StationRequest 사당역_생성_요청값() {
+		return new StationRequest("사당역");
+	}
+
+	public static StationRequest 동작역_생성_요청값() {
+		return new StationRequest("동작역");
+	}
 }

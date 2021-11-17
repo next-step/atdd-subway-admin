@@ -6,6 +6,8 @@ import static nextstep.subway.station.StationFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,6 +41,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_생성됨(response);
+        지하철_노선_응답_내_역_목록에_종점들이_등록됨(response, 강남역_생성_응답, 역삼역_생성_응답);
+        지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response);
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
@@ -56,6 +60,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
             () -> assertThat(response.header("Location")).isNotBlank()
         );
+    }
+
+    private void 지하철_노선_응답_내_역_목록에_종점들이_등록됨(
+        ExtractableResponse<Response> response,
+        StationResponse... stationCreateResponses
+    ) {
+        List<Long> actualIds = response.jsonPath().getObject(".", LineResponse.class).getStations().stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+        List<Long> expectIds = Arrays.stream(stationCreateResponses)
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(actualIds).containsAll(expectIds);
+    }
+
+    private void 지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(ExtractableResponse<Response> response) {
+        지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response.jsonPath().getObject(".", LineResponse.class));
+    }
+
+    private void 지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(LineResponse response) {
+        // TODO : 현재 응답값으로는 정렬된지 어떻게 검증할 수 있을까?
     }
 
     @DisplayName("존재하지 않는 지하철 역을 종점으로 하는 노선을 생성한다.")
@@ -105,8 +130,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값());
-        LineResponse 노선_4호선_생성_응답 = 지하철_노선_등록되어_있음(노선_4호선_생성_요청값());
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
+
+        StationResponse 사당역_생성_응답 = 지하철_역_등록되어_있음(사당역_생성_요청값());
+        StationResponse 동작역_생성_응답 = 지하철_역_등록되어_있음(동작역_생성_요청값());
+        LineRequest 노선_4호선_생성_요청값 = 노선_4호선_생성_요청값(사당역_생성_응답.getId(), 동작역_생성_응답.getId(), 30);
+        LineResponse 노선_4호선_생성_응답 = 지하철_노선_등록되어_있음(노선_4호선_생성_요청값);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -114,6 +146,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_목록_응답됨(response);
         지하철_노선_목록_포함됨(response, 노선_2호선_생성_응답, 노선_4호선_생성_응답);
+        지하철_노선_목록_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response);
+    }
+
+    private void 지하철_노선_목록_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(ExtractableResponse<Response> response) {
+        List<LineResponse> lineResponses = new ArrayList<>(response.jsonPath().getList(".", LineResponse.class));
+
+        for (LineResponse lineResponse : lineResponses) {
+            지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(lineResponse);
+        }
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
@@ -142,13 +183,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값());
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(노선_2호선_생성_응답.getId());
 
         // then
         지하철_노선_응답됨(response);
+        지하철_노선_응답_내_역_목록에_종점들이_등록됨(response, 강남역_생성_응답, 역삼역_생성_응답);
+        지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response);
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
