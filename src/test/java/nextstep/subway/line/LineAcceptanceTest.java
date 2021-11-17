@@ -10,7 +10,6 @@ import nextstep.subway.station.dto.StationResponse;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

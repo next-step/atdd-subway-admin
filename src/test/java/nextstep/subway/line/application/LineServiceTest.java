@@ -18,11 +18,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineInfoResponse;
-import nextstep.subway.section.domain.Distance;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 
 @DisplayName("지하철 노선 서비스 관련 기능")
@@ -30,6 +31,9 @@ import nextstep.subway.station.domain.Station;
 public class LineServiceTest {
     @Mock
     LineRepository lineRepository;
+    
+    @Mock
+    SectionRepository sectionRepository;
 
     @InjectMocks
     LineService lineService;
@@ -128,5 +132,27 @@ public class LineServiceTest {
 
         // then
         Assertions.assertThat(line).isEqualTo(expectedLine);
+    }
+
+    @DisplayName("구간을 저장한다.")
+    @Test
+    void saveSection() {
+        // given
+        Station upStation = new Station("대화");
+        Station downStation = new Station("수서");
+        Distance distance = Distance.valueOf(200);
+        Section section = Section.valueOf(upStation, downStation, distance);
+
+        when(sectionRepository.save(any(Section.class))).thenReturn(section);
+
+        // when
+        Section savedSection = lineService.saveSection(section);
+
+        // then
+        assertAll("validateValue",
+            () -> Assertions.assertThat(savedSection.getUpStation()).isEqualTo(upStation),
+            () -> Assertions.assertThat(savedSection.getDownStation()).isEqualTo(downStation),
+            () -> Assertions.assertThat(savedSection.getDistance()).isEqualTo(distance)
+        );
     }
 }

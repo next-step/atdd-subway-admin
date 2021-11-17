@@ -1,4 +1,4 @@
-package nextstep.subway.section.domain;
+package nextstep.subway.line.domain;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -13,7 +13,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"up_station", "down_station"}))

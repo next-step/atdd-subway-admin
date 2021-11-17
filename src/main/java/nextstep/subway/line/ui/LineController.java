@@ -1,12 +1,12 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineInfoResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Distance;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
