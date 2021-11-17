@@ -63,11 +63,6 @@ public class Sections {
         sections.add(section);
     }
 
-    public boolean hasUpStation(Station upStation) {
-        return sections.stream()
-                .anyMatch(section -> section.isUpStation(upStation));
-    }
-
     public void update(Station upStation, Station downStation, int distance) {
         sections.stream()
                 .filter(section -> section.isUpStation(upStation))
