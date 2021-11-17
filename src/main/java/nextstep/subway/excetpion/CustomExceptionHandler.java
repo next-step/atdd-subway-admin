@@ -1,9 +1,6 @@
 package nextstep.subway.excetpion;
 
-import nextstep.subway.line.exception.DistanceLengthException;
-import nextstep.subway.line.exception.DuplicateLineStationException;
-import nextstep.subway.line.exception.LineNotFoundException;
-import nextstep.subway.line.exception.LineStationNotConnectException;
+import nextstep.subway.line.exception.*;
 import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -22,35 +19,8 @@ public class CustomExceptionHandler {
                 .body(ErrorCode.DEFAULT_ERROR.getMessage());
     }
 
-    @ExceptionHandler(LineNotFoundException.class)
-    public ResponseEntity handleLineNotFoundException(LineNotFoundException e) {
-        e.printStackTrace();
-        ErrorResponse response = ErrorResponse.build()
-                .httpStatus(e.getErrorCode().getHttpStatus())
-                .message(e.getMessage());
-        return new ResponseEntity(response, response.getHttpStatus());
-    }
-
-    @ExceptionHandler(DuplicateLineStationException.class)
-    public ResponseEntity handleDuplicateLineStationException(DuplicateLineStationException e) {
-        e.printStackTrace();
-        ErrorResponse response = ErrorResponse.build()
-                .httpStatus(e.getErrorCode().getHttpStatus())
-                .message(e.getMessage());
-        return new ResponseEntity(response, response.getHttpStatus());
-    }
-
-    @ExceptionHandler(LineStationNotConnectException.class)
-    public ResponseEntity handleLineStationNotConnectException(LineStationNotConnectException e) {
-        e.printStackTrace();
-        ErrorResponse response = ErrorResponse.build()
-                .httpStatus(e.getErrorCode().getHttpStatus())
-                .message(e.getMessage());
-        return new ResponseEntity(response, response.getHttpStatus());
-    }
-
-    @ExceptionHandler(DistanceLengthException.class)
-    public ResponseEntity handleDistanceLengthException(DistanceLengthException e) {
+    @ExceptionHandler(LineException.class)
+    public ResponseEntity handleLineException(LineException e) {
         e.printStackTrace();
         ErrorResponse response = ErrorResponse.build()
                 .httpStatus(e.getErrorCode().getHttpStatus())
@@ -74,5 +44,7 @@ public class CustomExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());
     }
+
+
 
 }

@@ -2,19 +2,13 @@ package nextstep.subway.line.exception;
 
 import nextstep.subway.excetpion.ErrorCode;
 
-public class DuplicateLineStationException extends RuntimeException {
+public class DuplicateLineStationException extends LineException {
 
-    private ErrorCode errorCode;
-
-    public DuplicateLineStationException() {
+    public DuplicateLineStationException(ErrorCode errorCode) {
+        super(errorCode);
     }
 
     public DuplicateLineStationException(ErrorCode errorCode, String message) {
-        super(message);
-        this.errorCode = errorCode;
-    }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
+        super(errorCode, message);
     }
 }
