@@ -85,7 +85,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = get(10L);
+        ExtractableResponse<Response> response = get(id);
 
         // then
         // 지하철_노선_응답됨
