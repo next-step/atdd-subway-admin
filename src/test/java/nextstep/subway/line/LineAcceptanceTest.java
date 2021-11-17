@@ -20,13 +20,14 @@ import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    
+    private static LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600");
+    private static LineRequest 이호선 = LineRequest.of("2호선", "bg-red-600");
+    private static LineRequest 구분당선 = LineRequest.of("구분당선", "bg-blue-600");
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // given
-        LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600");
-        
         // when
         // 지하철_노선_생성_요청
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선);
@@ -40,7 +41,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600");
         // 지하철_노선_등록되어_있음
         지하철_노선_등록되어_있음(신분당선);
 
@@ -57,9 +57,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600");
-        LineRequest 이호선 = LineRequest.of("2호선", "bg-red-600");
-        
         // 지하철_노선_등록되어_있음
         LineResponse 신분당선_응답 = 지하철_노선_등록되어_있음(신분당선);
         
@@ -89,7 +86,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineRequest 신분당선 = LineRequest.of("신분당선", "bg-red-600");
         // 지하철_노선_등록되어_있음
         LineResponse 신분당선_응답 = 지하철_노선_등록되어_있음(신분당선);
 
@@ -106,8 +102,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineRequest 구분당선 = LineRequest.of("구분당선", "bg-blue-600");
-        LineRequest 신분당선 = LineRequest.of("신분당선","bg-blue-700");
         // 지하철_노선_등록되어_있음
         LineResponse 구분당선_응답 = 지하철_노선_등록되어_있음(구분당선);
 
@@ -131,7 +125,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineRequest 신분당선 = LineRequest.of("신분당선","bg-blue-700");
         // 지하철_노선_등록되어_있음
         LineResponse 신분당선_응답 = 지하철_노선_등록되어_있음(신분당선);
 
