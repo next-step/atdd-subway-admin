@@ -51,15 +51,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Long 일호선ID = 지하철_노선_등록되어_있음(일호선);
-        Long 이호선ID = 지하철_노선_등록되어_있음(이호선);
+        Long 일호선_ID = 지하철_노선_등록되어_있음(일호선);
+        Long 이호선_ID = 지하철_노선_등록되어_있음(이호선);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         지하철_노선_목록_응답됨(response);
-        지하철_노선_목록_포함됨(response, Arrays.asList(일호선ID, 이호선ID));
+        지하철_노선_목록_포함됨(response, Arrays.asList(일호선_ID, 이호선_ID));
 
     }
 
@@ -67,10 +67,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        Long 일호선ID = 지하철_노선_등록되어_있음(일호선);
+        Long 일호선_ID = 지하철_노선_등록되어_있음(일호선);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(일호선ID);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(일호선_ID);
 
         // then
         지하철_노선_응답됨(response);
@@ -80,10 +80,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Long 일호선ID = 지하철_노선_등록되어_있음(일호선);
+        Long 일호선_ID = 지하철_노선_등록되어_있음(일호선);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(일호선ID, 이호선);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(일호선_ID, 이호선);
 
         // then
         지하철_노선_수정됨(response, 이호선);
@@ -149,7 +149,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private Long 지하철_노선_등록되어_있음(LineRequest request) {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(request);
         지하철_노선_생성됨(response);
-        return response.jsonPath().getObject("", LineResponse.class).getId();
+        return responseLine(response).getId();
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
