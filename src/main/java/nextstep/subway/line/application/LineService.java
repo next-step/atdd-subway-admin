@@ -3,9 +3,9 @@ package nextstep.subway.line.application;
 import static java.util.stream.Collectors.*;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +26,8 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        try {
-            Line persistLine = lineRepository.save(request.toLine());
-            return LineResponse.of(persistLine);
-        } catch (DataAccessException e) {
-            throw new DuplicationKeyException();
-        }
+        Line persistLine = lineRepository.save(request.toLine());
+        return LineResponse.of(persistLine);
     }
 
     public List<LineResponse> findAllLine(Pageable pageable) {

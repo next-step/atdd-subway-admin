@@ -1,16 +1,15 @@
 package nextstep.subway.line.ui;
 
 import static org.springframework.http.MediaType.*;
-import static org.springframework.http.ResponseEntity.*;
 
-import nextstep.subway.line.application.DuplicationKeyException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.NotExistsLineException;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -68,7 +67,7 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(value = {NotExistsLineException.class, DuplicationKeyException.class})
+    @ExceptionHandler(value = {NotExistsLineException.class, DataIntegrityViolationException.class})
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
