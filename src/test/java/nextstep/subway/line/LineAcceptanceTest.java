@@ -83,12 +83,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600").as(LineResponse.class);
 
         // when
         // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response =  지하철_노선_조회_요청(신분당선.getId());
 
         // then
         // 지하철_노선_응답됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -136,6 +139,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .when()
                 .get("/lines")
+                .then().log().all().extract();
+    }
+    
+    private ExtractableResponse<Response> 지하철_노선_조회_요청 (Long id) {
+        return RestAssured
+                .given().log().all()
+                .when()
+                .get("/lines/{id}", id)
                 .then().log().all().extract();
     }
 }
