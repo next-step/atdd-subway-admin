@@ -22,8 +22,8 @@ public class StationService {
     }
 
     @Transactional
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
+    public StationResponse saveStation(StationRequest request) {
+        Station persistStation = stationRepository.save(Station.of(request.getName()));
         return StationResponse.of(persistStation);
     }
 

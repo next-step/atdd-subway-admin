@@ -1,8 +1,12 @@
 package nextstep.subway.station.domain;
 
-import nextstep.subway.common.BaseEntity;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-import javax.persistence.*;
+import nextstep.subway.common.BaseEntity;
 
 @Entity
 public class Station extends BaseEntity {
@@ -15,8 +19,12 @@ public class Station extends BaseEntity {
     public Station() {
     }
 
-    public Station(String name) {
+    private Station(String name) {
         this.name = name;
+    }
+
+    public static Station of(String name) {
+        return new Station(name);
     }
 
     public Long getId() {
