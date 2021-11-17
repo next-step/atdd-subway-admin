@@ -59,7 +59,7 @@ public class LineStation {
     }
 
     public void updateToPreStation(Station station, Distance distance) {
-        preStation = station;
+        this.preStation = station;
         this.distance.minus(distance);
     }
 
@@ -75,4 +75,8 @@ public class LineStation {
         return distance;
     }
 
+    public void updateToNextStation(Station station, Distance distance) {
+        this.nextStation = station;
+        this.distance.minus(distance);
+    }
 }

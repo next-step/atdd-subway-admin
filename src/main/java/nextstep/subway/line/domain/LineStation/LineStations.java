@@ -28,6 +28,11 @@ public class LineStations {
                 .findFirst()
                 .ifPresent(f -> f.updateToPreStation(lineStation.getNextStation(), lineStation.getDistance()));
 
+        lineStations.stream()
+                .filter(f -> f.getNextStation() == lineStation.getNextStation())
+                .findFirst()
+                .ifPresent(f -> f.updateToNextStation(lineStation.getPreStation(), lineStation.getDistance()));
+
         lineStations.add(lineStation);
     }
 
