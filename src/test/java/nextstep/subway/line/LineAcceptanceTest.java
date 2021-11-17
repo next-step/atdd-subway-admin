@@ -1,17 +1,22 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import nextstep.subway.AcceptanceTest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.Map;
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -19,20 +24,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // given
-        Map<String, String> line = new HashMap<>();
-        line.put("name", "신분당선");
-        line.put("color", "bg-red-600");
-
-        // when
+        // given, when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(line)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600");
         
         // then
         // 지하철_노선_생성됨
@@ -44,27 +38,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        Map<String, String> line = new HashMap<>();
-        line.put("name", "신분당선");
-        line.put("color", "bg-red-600");
-        
-        RestAssured
-                .given().log().all()
-                .body(line)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all().extract();
+        지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(line)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("신분당선", "bg-red-600");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -76,14 +54,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         // 지하철_노선_등록되어_있음
+        LineResponse 신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600").as(LineResponse.class);
+        
         // 지하철_노선_등록되어_있음
+        LineResponse 이호선 = 지하철_노선_생성_요청("2호선", "bg-red-600").as(LineResponse.class);
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         // 지하철_노선_목록_응답됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        
         // 지하철_노선_목록_포함됨
+        List<Long> expected = new ArrayList<Long>();
+        expected.add(신분당선.getId());
+        expected.add(이호선.getId());
+        List<Long> actual = new ArrayList<>(response.jsonPath().getList(".",LineResponse.class))
+                .stream()
+                .map(LineResponse::getId)
+                .collect(Collectors.toList());
+        Assertions.assertThat(actual).containsAll(expected);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -123,5 +115,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+    
+    private ExtractableResponse<Response> 지하철_노선_생성_요청 (String name, String color) {
+        Map<String, String> line = new HashMap<>();
+        line.put("name", name);
+        line.put("color", color);
+        
+        return RestAssured
+                .given().log().all()
+                .body(line)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines")
+                .then().log().all().extract();
+    }
+    
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청 () {
+        return RestAssured
+                .given().log().all()
+                .when()
+                .get("/lines")
+                .then().log().all().extract();
     }
 }
