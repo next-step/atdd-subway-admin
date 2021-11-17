@@ -68,13 +68,10 @@ public class Line extends BaseEntity {
     }
 
     public void updateSection(Station upStation, Station downStation, int distance) {
-        this.sections.getSections().stream()
-                .filter(section -> section.isUpStation(upStation))
-                .findFirst()
-                .ifPresent(section -> section.update(downStation, distance));
+        sections.update(upStation, downStation, distance);
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        this.sections.add(new Section(this, upStation, downStation, distance));
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 }

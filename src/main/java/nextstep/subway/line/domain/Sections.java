@@ -60,11 +60,18 @@ public class Sections {
     }
 
     public void add(Section section) {
-        this.sections.add(section);
+        sections.add(section);
     }
 
     public boolean hasUpStation(Station upStation) {
         return sections.stream()
                 .anyMatch(section -> section.isUpStation(upStation));
+    }
+
+    public void update(Station upStation, Station downStation, int distance) {
+        sections.stream()
+                .filter(section -> section.isUpStation(upStation))
+                .findFirst()
+                .ifPresent(section -> section.update(downStation, distance));
     }
 }

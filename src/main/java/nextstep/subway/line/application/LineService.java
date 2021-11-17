@@ -67,6 +67,14 @@ public class LineService {
 
     public LineResponse addLineSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+
+        if (line.hasUpStation(upStation)) {
+            line.updateSection(upStation, downStation, sectionRequest.getDistance());
+            line.addSection(upStation, downStation, sectionRequest.getDistance());
+        }
+
         return LineResponse.of(line);
     }
 }
