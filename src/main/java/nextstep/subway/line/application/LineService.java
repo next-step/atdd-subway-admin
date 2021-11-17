@@ -13,6 +13,7 @@ import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -57,7 +58,7 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Long id, LineRequest request) {
+    public void updateLine(Long id, LineUpdateRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
         line.update(Line.of(request.getName(), request.getColor()));
     }

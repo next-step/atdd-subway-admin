@@ -21,6 +21,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -180,18 +181,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값());
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(노선_2호선_생성_응답.getId(), 노선_4호선_생성_요청값());
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(노선_2호선_생성_응답.getId(), 노선_수정_요청값());
 
         // then
         지하철_노선_수정됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineRequest lineRequest) {
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineUpdateRequest body) {
         return RestAssured.given().log().all()
-            .body(lineRequest)
+            .body(body)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put("/lines/{lineId}", id)
@@ -207,7 +211,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updatedNotCreatedLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(UNKNOWN_LINE_ID, 노선_4호선_생성_요청값());
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(UNKNOWN_LINE_ID, 노선_수정_요청값());
 
         // then
         지하철_노선_찾지_못함(response);
