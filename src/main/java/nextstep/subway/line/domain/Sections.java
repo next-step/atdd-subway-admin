@@ -69,4 +69,11 @@ public class Sections {
                 .findFirst()
                 .ifPresent(section -> section.updateUpStation(downStation, distance));
     }
+
+    public void updateDownStation(Station upStation, Station downStation, int distance) {
+        sections.stream()
+                .filter(section -> section.isDownStation(downStation))
+                .findFirst()
+                .ifPresent(section -> section.updateDownStation(upStation, distance));
+    }
 }

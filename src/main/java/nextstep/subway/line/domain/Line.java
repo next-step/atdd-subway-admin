@@ -70,6 +70,10 @@ public class Line extends BaseEntity {
         sections.updateUpStation(upStation, downStation, distance);
     }
 
+    public void updateDownStation(Station upStation, Station downStation, int distance) {
+        sections.updateDownStation(upStation, downStation, distance);
+    }
+
     public void addSection(Station upStation, Station downStation, int distance) {
         sections.add(new Section(this, upStation, downStation, distance));
     }

@@ -53,4 +53,11 @@ class LineTest {
         이호선.addSection(강남역, 역삼역, 3);
         assertThat(이호선.getSections()).contains(new Section(이호선, 강남역, 역삼역, 3));
     }
+
+    @Test
+    void updateDownStation_하행역을_업데이트한다() {
+        Line 이호선 = new Line("2호선", "green", 강남역, 삼성역, 10);
+        이호선.updateDownStation(역삼역, 삼성역, 3);
+        assertThat(이호선.getSections()).contains(new Section(이호선, 강남역, 역삼역, 7));
+    }
 }
