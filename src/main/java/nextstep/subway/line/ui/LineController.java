@@ -3,13 +3,11 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
 
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,19 +29,21 @@ public class LineController {
 	}
 
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
 		LineResponse line = lineService.saveLine(lineRequest);
 		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
 	}
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<LineResponse>> showLines() {
-		return ResponseEntity.ok().body(lineService.findAllLines());
+		List<LineResponse> lines = lineService.findAllLineWithSections();
+		return ResponseEntity.ok().body(lines);
 	}
 
 	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity showLine(@PathVariable Long id) {
-		return ResponseEntity.ok().body(lineService.findLineById(id));
+	public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+		LineResponse lineResponse = lineService.findLineWithSectionsById(id);
+		return new ResponseEntity<>(lineResponse, HttpStatus.OK);
 	}
 
 	@PutMapping("/{id}")
@@ -56,15 +56,5 @@ public class LineController {
 	public ResponseEntity deleteLine(@PathVariable Long id) {
 		lineService.deleteLineById(id);
 		return ResponseEntity.noContent().build();
-	}
-
-	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-		return ResponseEntity.badRequest().build();
-	}
-
-	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity handleIllegalArgsException(IllegalArgumentException e) {
-		return ResponseEntity.badRequest().build();
 	}
 }

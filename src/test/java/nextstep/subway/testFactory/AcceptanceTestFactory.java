@@ -12,13 +12,6 @@ import io.restassured.specification.RequestSpecification;
 
 public class AcceptanceTestFactory {
 
-	public static Map<String, String> getNameAndColorContent(String name, String color) {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
-		params.put("color", color);
-		return params;
-	}
-
 	public static Map<String, String> getNameContent(String name) {
 		Map<String, String> params = new HashMap<>();
 		params.put("name", name);
@@ -41,23 +34,34 @@ public class AcceptanceTestFactory {
 		return postBase(preBase().delete(path));
 	}
 
-	private static RequestSpecification preBase(Map<String, String> params){
+	private static RequestSpecification preBase(Map<String, String> params) {
 		return RestAssured.given().log().all()
 			.body(params)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when();
 	}
 
-	private static RequestSpecification preBase(){
+	private static RequestSpecification preBase() {
 		return RestAssured.given().log().all()
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when();
 	}
 
-	private static ExtractableResponse<Response> postBase(Response response){
+	private static ExtractableResponse<Response> postBase(Response response) {
 		return response
 			.then().log().all()
 			.extract();
+	}
+
+	public static Map<String, String> getLineInfo(String name, String color, Long upStationId, Long downStationId,
+		int distance) {
+		Map<String, String> params = new HashMap<>();
+		params.put("name", name);
+		params.put("color", color);
+		params.put("upStationId", String.valueOf(upStationId));
+		params.put("downStationId", String.valueOf(downStationId));
+		params.put("distance", String.valueOf(distance));
+		return params;
 	}
 }
 
