@@ -1,6 +1,6 @@
 package nextstep.subway.common.exception;
 
-public class NotFoundException extends Exception {
+public class NotFoundException extends RuntimeException {
 
     public NotFoundException() {
         super("결과를 찾을 수 없습니다.");
