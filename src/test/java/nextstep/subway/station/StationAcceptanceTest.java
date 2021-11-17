@@ -1,5 +1,6 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.station.StationFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
@@ -20,21 +21,17 @@ import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-    private static final StationRequest 강남역_생성_요청값 = new StationRequest("강남역");
-    private static final StationRequest 역삼역_생성_요청값 = new StationRequest("역삼역");
-    private static final Long UNKNOWN_STATION_ID = 7L;
-
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 지하철_역_생성_요청(강남역_생성_요청값);
+        ExtractableResponse<Response> response = 지하철_역_생성_요청(강남역_생성_요청값());
 
         // then
         지하철_역_생성됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest stationRequest) {
+    private static ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest stationRequest) {
         return RestAssured.given().log().all()
             .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -53,16 +50,16 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        지하철_역_등록되어_있음(강남역_생성_요청값);
+        지하철_역_등록되어_있음(강남역_생성_요청값());
 
         // when
-        ExtractableResponse<Response> response = 지하철_역_생성_요청(강남역_생성_요청값);
+        ExtractableResponse<Response> response = 지하철_역_생성_요청(강남역_생성_요청값());
 
         // then
         지하철_역_생성_실패됨(response);
     }
 
-    private StationResponse 지하철_역_등록되어_있음(StationRequest stationRequest) {
+    public static StationResponse 지하철_역_등록되어_있음(StationRequest stationRequest) {
         ExtractableResponse<Response> response = 지하철_역_생성_요청(stationRequest);
         return response.jsonPath().getObject(".", StationResponse.class);
     }
@@ -75,8 +72,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값);
-        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값);
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
 
         // when
         ExtractableResponse<Response> response = 지하철_역_목록_조회_요청();
@@ -112,7 +109,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값);
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
 
         // when
         ExtractableResponse<Response> response = 지하철_역_제거_요청(강남역_생성_응답.getId());
