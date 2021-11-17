@@ -27,4 +27,9 @@ public class RestControllerAdvice {
     public ResponseEntity<String> handleIllegalStationDistanceException(IllegalStationDistanceException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(SectionExistException.class)
+    public ResponseEntity<String> handleSectionExistException(SectionExistException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

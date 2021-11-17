@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.exception.LineNotFoundException;
+import nextstep.subway.exception.SectionExistException;
 import nextstep.subway.exception.StationNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -69,6 +70,10 @@ public class LineService {
         Line line = findLineById(lineId);
         Station upStation = findStationById(sectionRequest.getUpStationId());
         Station downStation = findStationById(sectionRequest.getDownStationId());
+
+        if (line.hasStation(upStation) && line.hasStation(downStation)) {
+            throw new SectionExistException();
+        }
 
         if (line.hasStation(upStation)) {
             line.updateUpStation(upStation, downStation, sectionRequest.getDistance());
