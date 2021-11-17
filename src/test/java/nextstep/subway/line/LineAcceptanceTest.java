@@ -123,12 +123,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineResponse 구분당선 = 지하철_노선_생성_요청("구분당선", "bg-blue-600").as(LineResponse.class);
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response =  RestAssured
+                .given().log().all()
+                .when()
+                .delete("/lines/{id}", 구분당선.getId())
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_삭제됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
     
     private ExtractableResponse<Response> 지하철_노선_생성_요청 (String name, String color) {
