@@ -31,4 +31,8 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+    
+    public LineResponse findLineById(Long id) {
+        return LineResponse.of(lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("노선이 없습니다.")));
+    }
 }
