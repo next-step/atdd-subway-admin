@@ -8,9 +8,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -23,17 +21,17 @@ public class LineStations {
     }
 
     public void addLineStation(LineStation lineStation) {
-        validation(lineStation);
+        validationAdd(lineStation);
 
         lineStations.stream()
                 .filter(f -> f.getPreStation() == lineStation.getPreStation())
                 .findFirst()
-                .ifPresent(f -> f.updateToPreStation(lineStation));
+                .ifPresent(f -> f.updateToPreStation(lineStation.getNextStation(), lineStation.getDistance()));
 
         lineStations.add(lineStation);
     }
 
-    private void validation(LineStation lineStation) {
+    private void validationAdd(LineStation lineStation) {
         if (lineStations.size() > 0) {
             validateDuplicateStation(lineStation);
             validateConnectPossible(lineStation);
@@ -61,7 +59,7 @@ public class LineStations {
     }
 
     public List<Station> getLineStations() {
-        List<Station> result = new ArrayList<>();
+        Set<Station> result = new LinkedHashSet<>();
 
         Optional<LineStation> first = lineStations.stream()
                 .filter(f -> !firstStation(f.getPreStation()))
@@ -70,11 +68,12 @@ public class LineStations {
         while (first.isPresent()) {
             LineStation station = first.get();
             result.add(first.get().getPreStation());
+            result.add(first.get().getNextStation());
             first = lineStations.stream()
                     .filter(f -> f.getPreStation() == station.getNextStation())
                     .findFirst();
         }
-        return result;
+        return new ArrayList<>(result);
     }
 
     private boolean firstStation(Station station) {
@@ -83,6 +82,5 @@ public class LineStations {
                 .collect(Collectors.toList())
                 .contains(station);
     }
-
 
 }

@@ -35,4 +35,8 @@ public class Distance {
         }
         this.distance = this.distance - distance.distance;
     }
+
+    public void plus(Distance distance) {
+        this.distance += distance.distance;
+    }
 }

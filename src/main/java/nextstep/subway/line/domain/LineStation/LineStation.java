@@ -58,9 +58,9 @@ public class LineStation {
         return preStation.equals(lineStation.preStation) && nextStation.equals(lineStation.nextStation);
     }
 
-    public void updateToPreStation(LineStation lineStation) {
-        preStation = lineStation.nextStation;
-        distance.minus(lineStation.getDistance());
+    public void updateToPreStation(Station station, Distance distance) {
+        preStation = station;
+        this.distance.minus(distance);
     }
 
     public Station getNextStation() {

@@ -84,7 +84,7 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(Long id, LineStationRequest lineStationRequest) {
+    public void addLineStation(Long id, LineStationRequest lineStationRequest) {
         Line persistLine = findLineById(id).orElse(null);
 
         saveTerminalStation(persistLine, lineStationRequest.getPreStationId(),
@@ -101,4 +101,5 @@ public class LineService {
     private List<Line> findLineAll() {
         return lineRepository.findAllWithStations();
     }
+
 }
