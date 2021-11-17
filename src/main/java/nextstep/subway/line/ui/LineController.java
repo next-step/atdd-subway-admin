@@ -54,9 +54,7 @@ public class LineController {
 
     @PatchMapping(value ="{id}",consumes = {APPLICATION_JSON_VALUE})
     public ResponseEntity<LineResponse> updateLine(final @PathVariable(value = "id") Long id,
-        @RequestBody LineRequest lineRequest) {
-        if (lineRequest == null)
-            throw new IllegalArgumentException();
+        @RequestBody() LineRequest lineRequest) {
         LineResponse lineResponse = lineService.updateLine(id, lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
