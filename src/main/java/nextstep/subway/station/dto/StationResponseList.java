@@ -5,25 +5,25 @@ import nextstep.subway.station.domain.Station;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class StationsResponse {
+public class StationResponseList {
 
-    private List<StationResponse> list;
+    private List<StationResponse> stationResponseList;
 
-    public StationsResponse() {
+    public StationResponseList() {
     }
 
-    public StationsResponse(final List<Station> list) {
-        this.list = list.stream()
+    public StationResponseList(final List<Station> list) {
+        this.stationResponseList = list.stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
     public List<StationResponse> getList() {
-        return list;
+        return stationResponseList;
     }
 
     public int size() {
-        return list.size();
+        return stationResponseList.size();
     }
 
 }

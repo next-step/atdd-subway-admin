@@ -4,7 +4,7 @@ import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LinesResponse;
+import nextstep.subway.line.dto.LineResponseList;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +39,7 @@ public class LineController {
      */
     @GetMapping
     public ResponseEntity findAll() {
-        LinesResponse lines = lineService.findAll();
+        LineResponseList lines = lineService.findAll();
         return ResponseEntity.ok(lines);
     }
 

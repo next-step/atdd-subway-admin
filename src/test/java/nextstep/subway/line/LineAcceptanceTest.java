@@ -7,7 +7,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.exception.ApiErrorMessage;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LinesResponse;
+import nextstep.subway.line.dto.LineResponseList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -123,7 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_목록_포함됨(final ExtractableResponse<Response> response, final LineResponse... lineResponses) {
-        LinesResponse linesResponse = response.as(LinesResponse.class);
+        LineResponseList linesResponse = response.as(LineResponseList.class);
         List<String> lineNames = linesResponse.getList()
                 .stream()
                 .map(LineResponse::getName)
