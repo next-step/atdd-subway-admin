@@ -5,10 +5,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.utils.RestAssuredUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +31,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "blue");
+
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
@@ -56,6 +59,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post(BASE_URI)
                 .then().log().all()
                 .extract();
+
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
@@ -64,6 +68,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post(BASE_URI)
                 .then().log().all()
                 .extract();
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -75,28 +80,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "blue");
-        ExtractableResponse<Response> postResponse1 = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(BASE_URI)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> postResponse1 = RestAssuredUtils.postResponse(params, BASE_URI).then().log().all().extract();
+
         params.put("name", "2호선");
         params.put("color", "green");
-        ExtractableResponse<Response> postResponse2 = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(BASE_URI)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> postResponse2 = RestAssuredUtils.postResponse(params, BASE_URI).then().log().all().extract();
+
         // when
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
                 .when()
                 .get(BASE_URI)
                 .then().log().all()
                 .extract();
+
         // then
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedIds = Arrays.asList(postResponse1, postResponse2).stream()
@@ -115,19 +111,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "blue");
-        ExtractableResponse<Response> postResponse1 = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(BASE_URI)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> postResponse1 = RestAssuredUtils.postResponse(params, BASE_URI).then().log().all().extract();
         String uri = postResponse1.header("Location");
+
         // when
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
                 .when().get(uri)
                 .then().log().all()
                 .extract();
+
         // then
         LineResponse resultLine = getResponse.jsonPath().getObject("", LineResponse.class);
         assertThat(resultLine).isNotNull();
@@ -144,16 +136,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "blue");
-        ExtractableResponse<Response> postResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(BASE_URI)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> postResponse = RestAssuredUtils.postResponse(params, BASE_URI).then().log().all().extract();
         String uri = postResponse.header("Location");
         params.put("name", "2호선");
         params.put("color", "green");
+
         // when
         ExtractableResponse<Response> putResponse = RestAssured.given().log().all()
                 .body(params)
@@ -162,6 +149,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .put(uri)
                 .then().log().all()
                 .extract();
+
         // then
         assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(putResponse.header("Location")).isNotBlank();
@@ -179,20 +167,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
         params.put("color", "blue");
-        ExtractableResponse<Response> postResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post(BASE_URI)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> postResponse = RestAssuredUtils.postResponse(params, BASE_URI).then().log().all().extract();
         String uri = postResponse.header("Location");
+
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .delete(uri)
                 .then().log().all()
                 .extract();
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }

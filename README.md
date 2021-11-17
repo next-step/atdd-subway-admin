@@ -81,7 +81,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 #### 요구사항 1
 - [x] : 기능 목록: 생성/목록 조회/조회/수정/삭제
 - [x] : 기능 구현 전 인수 테스트 작성 
-- [ ] : 기능 구현 후 인수 테스트 리팩터링
+- [x] : 기능 구현 후 인수 테스트 리팩터링
 
 #### 요구사항 설명 
 - ##### 지하철 노선 관련 기능의 인수 테스트를 작성하기
