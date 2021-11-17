@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -62,5 +63,10 @@ public class LineService {
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(LineNotFoundException::new);
+    }
+
+    public LineResponse addLineSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findLineById(lineId);
+        return LineResponse.of(line);
     }
 }

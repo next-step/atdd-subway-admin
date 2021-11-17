@@ -69,6 +69,10 @@ public class LineStep {
                 .extract();
     }
 
+    public static LineResponse 지하철_노선_조회되어_있음(LineResponse lineResponse) {
+        return 지하철_노선_조회_요청(lineResponse).as(LineResponse.class);
+    }
+
     public static void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
