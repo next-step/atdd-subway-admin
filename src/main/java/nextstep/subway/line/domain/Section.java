@@ -8,26 +8,25 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"up_station", "down_station"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"up_station_id", "down_station_id"}))
 @Entity
 public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
     private Station downStation;
 
     @Embedded

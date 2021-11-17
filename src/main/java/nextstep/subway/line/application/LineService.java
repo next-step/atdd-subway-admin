@@ -24,7 +24,11 @@ public class LineService {
     }
 
     @Transactional
-    public Line saveLine(Line line) {
+    public Line saveLine(Line line, Section section) {
+        if (section != null) {
+            section.addSectionAtLine(line);
+        }
+        
         return lineRepository.save(line);
     }
 
@@ -38,14 +42,17 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineInfoResponse findLineInfo(Long lineId) {
-        return lineRepository.findById(lineId)
-                                .map(LineInfoResponse::of)
-                                .orElseThrow();
+        Line line = lineRepository.findById(lineId)
+                                    .orElseThrow(() -> new NoSuchElementException("조회된 라인이 없습니다."));
+
+        return LineInfoResponse.of(line);
     }
 
     @Transactional
     public void updateLineInfo(Long lineId, Line newLine) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+        Line line = lineRepository.findById(lineId)
+                                    .orElseThrow(() -> new NoSuchElementException("조회된 라인이 없습니다."));
+
         line.update(newLine);
     }
 

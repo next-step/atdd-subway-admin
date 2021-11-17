@@ -28,8 +28,7 @@ import java.util.NoSuchElementException;
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
-
-    private StationService stationService;
+    private final StationService stationService;
 
     public LineController(LineService lineService, StationService stationService) {
         this.lineService = lineService;
@@ -39,17 +38,18 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         Line savingLine = lineRequest.toLine();
+        Section section = null;
 
         try {
             Station upStation = stationService.findStationById(lineRequest.getUpStationId());
             Station downStation = stationService.findStationById(lineRequest.getDownStationId());
 
-            Section section = Section.valueOf(upStation, downStation, Distance.valueOf(lineRequest.getDistance()));
-            section.addSectionAtLine(savingLine);
+            section = Section.valueOf(upStation, downStation, Distance.valueOf(lineRequest.getDistance()));
         } catch(NoSuchElementException ex) {
         }
 
-        LineResponse line = LineResponse.of(lineService.saveLine(savingLine));
+        LineResponse line = LineResponse.of(lineService.saveLine(savingLine, section));
+        
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 

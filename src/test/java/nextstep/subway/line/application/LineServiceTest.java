@@ -128,7 +128,7 @@ public class LineServiceTest {
         when(lineRepository.save(any(Line.class))).thenReturn(expectedLine);
         
         // when
-        Line line = lineService.saveLine(expectedLine);
+        Line line = lineService.saveLine(expectedLine, section);
 
         // then
         Assertions.assertThat(line).isEqualTo(expectedLine);

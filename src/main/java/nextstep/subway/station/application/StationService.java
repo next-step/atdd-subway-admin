@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +37,7 @@ public class StationService {
     @Transactional(readOnly = true)
     public Station findStationById(Long stationId) {
         return stationRepository.findById(stationId)
-                                .orElseThrow();
+                                .orElseThrow(() -> new NoSuchElementException("조회된 역이 없습니다."));
     }
 
     public void deleteStationById(Long id) {
