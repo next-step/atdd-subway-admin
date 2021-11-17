@@ -8,7 +8,6 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -193,16 +192,50 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선에_구간_등록_실패됨(response);
     }
 
+    @Test
+    @DisplayName("지하철 노선에서 구간을 제거한다.")
+    void removeSection1() {
+        // given
+        SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 사당역.getId(), 15);
+        지하철_노선에_구간_등록_요청(이호선.getId(), sectionRequest);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(이호선.getId(), 역삼역.getId());
+
+        // then
+        지하철_노선에_구간_제거됨(response);
+    }
+
+    @Test
+    @DisplayName("구간이 하나인 노선에서 상행 종점역을 제거한다.")
+    void removeSection2() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(이호선.getId(), 강남역.getId());
+
+        // then
+        지하철_노선에_구간_제거_실패됨(response);
+    }
+
+    @Test
+    @DisplayName("구간이 하나인 노선에서 하행 종점역을 제거한다.")
+    void removeSection3() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_제거_요청(이호선.getId(), 역삼역.getId());
+
+        // then
+        지하철_노선에_구간_제거_실패됨(response);
+    }
+
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private void 지하철_노선_목록_포함됨(ExtractableResponse<Response> response, List<LineResponse> lineResponses) {
@@ -229,10 +262,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선에_구간_등록됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private void 지하철_노선에_구간_등록_실패됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철_노선에_구간_제거됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void 지하철_노선에_구간_제거_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

@@ -67,13 +67,18 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void addSection(Long id, SectionRequest sectionRequest) {
-        Line line = findLineById(id);
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findLineById(lineId);
         Section section = sectionRequest.toSection(
                 findStationById(sectionRequest.getUpStationId()),
                 findStationById(sectionRequest.getDownStationId())
         );
         line.addSection(section);
+    }
+
+    public void removeSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        line.removeSection(findStationById(stationId));
     }
 
     private void validateLine(LineRequest request) {

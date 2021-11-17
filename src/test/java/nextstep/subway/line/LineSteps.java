@@ -34,38 +34,47 @@ public class LineSteps {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
         return RestAssured
                 .given().log().all()
-                .when().get(LINE_URI + "/{id}", id)
+                .when().get(LINE_URI + "/{lineId}", lineId)
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long lineId, LineRequest lineRequest) {
         return RestAssured
                 .given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(LINE_URI + "/{id}", id)
+                .when().put(LINE_URI + "/{lineId}", lineId)
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_삭제_요청(Long id) {
+    public static ExtractableResponse<Response> 지하철_노선_삭제_요청(Long lineId) {
         return RestAssured
                 .given().log().all()
-                .when().delete(LINE_URI + "/{id}", id)
+                .when().delete(LINE_URI + "/{lineId}", lineId)
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(Long id, SectionRequest sectionRequest) {
+    public static ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(Long lineId, SectionRequest sectionRequest) {
         return RestAssured
                 .given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(LINE_URI + "/{id}/sections", id)
+                .when().post(LINE_URI + "/{lineId}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선에_구간_제거_요청(Long lineId, Long stationId) {
+        return RestAssured
+                .given().log().all()
+                .param("stationId", stationId)
+                .when().delete(LINE_URI + "/{lineId}/sections", lineId)
                 .then().log().all()
                 .extract();
     }

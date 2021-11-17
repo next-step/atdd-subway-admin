@@ -13,6 +13,8 @@ import java.util.Objects;
 @Entity
 public class Section extends BaseEntity {
 
+    public final static Section EMPTY = new Section();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -54,24 +56,12 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public Distance getDistance() {
-        return distance;
-    }
-
     public boolean isLessThanOrEquals(Section section) {
         return this.distance.isLessThanOrEquals(section.distance);
     }
 
-    public boolean isUpStationEquals(Section section) {
-        return this.upStation.equals(section.upStation);
-    }
-
     public boolean isUpStationEquals(Station station) {
         return this.upStation.equals(station);
-    }
-
-    public boolean isDownStationEquals(Section section) {
-        return this.downStation.equals(section.downStation);
     }
 
     public boolean isDownStationEquals(Station station) {
@@ -88,6 +78,14 @@ public class Section extends BaseEntity {
 
     public Distance getRemainDistance(Section section) {
         return new Distance(this.distance.getRemainDistance(section.distance));
+    }
+
+    public Distance getMergedDistance(Section section) {
+        return new Distance(this.distance.getMergedDistance(section.distance));
+    }
+
+    public boolean isEmpty() {
+        return this == EMPTY;
     }
 
     @Override

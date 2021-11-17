@@ -8,10 +8,13 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Embeddable
 public class Sections {
+
+    private static final boolean SPLIT_SECTIONS_ADDED = true;
+    private static final boolean SPLIT_SECTIONS_NOT_ADDED = false;
+    private static final int HAS_ONE_SECTION = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -29,12 +32,17 @@ public class Sections {
             return;
         }
 
-        validate(section);
+        validateAdd(section);
 
-        if (addSectionsUpStationMatched(section)) {
+        if (addSectionsUpStationMatched(section) == SPLIT_SECTIONS_ADDED) {
             return;
         }
         addSectionsDownStationMatched(section);
+    }
+
+    public void remove(Station station) {
+        validateRemove(station);
+        removeSection(station);
     }
 
     public List<Station> toStations() {
@@ -44,8 +52,21 @@ public class Sections {
         return makeStations();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sections sections1 = (Sections) o;
+        return Objects.equals(sections, sections1.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sections);
+    }
+
     private boolean isAddFirst() {
-        return sections.size() == 0;
+        return sections.isEmpty();
     }
 
     private boolean isAddNextEndStation(Section section) {
@@ -66,52 +87,87 @@ public class Sections {
                 .allMatch(section::isDownStationEqualsWithUpStation);
     }
 
-    private void validate(Section section) {
-        Optional<Section> sectionUpStationMatchedOptional = findByUpStation(section);
-        Optional<Section> sectionDownStationMatchedOptional = findByDownStation(section);
+    private void validateAdd(Section section) {
+        Section sectionUpStationMatched = findByUpStation(section);
+        Section sectionDownStationMatched = findByDownStation(section);
 
-        if (sectionUpStationMatchedOptional.isPresent() && sectionDownStationMatchedOptional.isPresent()) {
-            throw new SectionAddFailedException("상행역과 하행역이 노선에 포함되어 있는 구간은 등록할 수 없습니다.");
-        }
-        if (!sectionUpStationMatchedOptional.isPresent() && !sectionDownStationMatchedOptional.isPresent()) {
+        if (sectionUpStationMatched.isEmpty() && sectionDownStationMatched.isEmpty()) {
             throw new SectionAddFailedException("상행역과 하행역중 1개는 노선에 포함되어야 합니다.");
         }
-        if (sectionUpStationMatchedOptional.isPresent() && sectionUpStationMatchedOptional.get().isLessThanOrEquals(section)) {
+        if (!sectionUpStationMatched.isEmpty() && !sectionDownStationMatched.isEmpty()) {
+            throw new SectionAddFailedException("상행역과 하행역이 노선에 포함되어 있는 구간은 등록할 수 없습니다.");
+        }
+        if (!sectionUpStationMatched.isEmpty() && sectionUpStationMatched.isLessThanOrEquals(section)) {
             throw new SectionAddFailedException("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
         }
-        if (sectionDownStationMatchedOptional.isPresent() && sectionDownStationMatchedOptional.get().isLessThanOrEquals(section)) {
+        if (!sectionDownStationMatched.isEmpty() && sectionDownStationMatched.isLessThanOrEquals(section)) {
             throw new SectionAddFailedException("역 사이에 구간을 등록 할 경우 기존 역 사이 거리보다 작아야 합니다.");
         }
     }
 
     private boolean addSectionsUpStationMatched(Section section) {
-        Optional<Section> sectionUpStationMatchedOptional = findByUpStation(section);
-        if (sectionUpStationMatchedOptional.isPresent()) {
-            Section sectionUpStationMatched = sectionUpStationMatchedOptional.get();
-            addSplitSections(section, sectionUpStationMatched, section.getDownStation(), sectionUpStationMatched.getDownStation());
-            return true;
+        Section sectionUpStationMatched = findByUpStation(section);
+        if (!sectionUpStationMatched.isEmpty()) {
+            addSplitSections(section, sectionUpStationMatched, section.getDownStation(),
+                    sectionUpStationMatched.getDownStation());
+            return SPLIT_SECTIONS_ADDED;
         }
-        return false;
+        return SPLIT_SECTIONS_NOT_ADDED;
     }
 
     private void addSectionsDownStationMatched(Section section) {
-        Optional<Section> sectionDownStationMatchedOptional = findByDownStation(section);
-        if (sectionDownStationMatchedOptional.isPresent()) {
-            Section sectionDownStationMatched = sectionDownStationMatchedOptional.get();
-            addSplitSections(section, sectionDownStationMatched, sectionDownStationMatched.getUpStation(), section.getUpStation());
+        Section sectionDownStationMatched = findByDownStation(section);
+        if (!sectionDownStationMatched.isEmpty()) {
+            addSplitSections(section, sectionDownStationMatched, sectionDownStationMatched.getUpStation(),
+                    section.getUpStation());
         }
     }
 
-    private Optional<Section> findByUpStation(Section section) {
-        return sections.stream()
-                .filter(section::isUpStationEquals)
-                .findFirst();
+    private void validateRemove(Station station) {
+        if (findByUpStation(station).isEmpty() && findByDownStation(station).isEmpty()) {
+            throw new SectionRemoveFailedException("노선에 등록되어 있지 않은 역입니다.");
+        }
+        if (sections.size() == HAS_ONE_SECTION) {
+            throw new SectionRemoveFailedException("구간이 하나인 노선은 구간을 제거할 수 없습니다.");
+        }
     }
 
-    private Optional<Section> findByDownStation(Section section) {
+    private void removeSection(Station station) {
+        Section previousSection = findByDownStation(station);
+        Section nextSection = findByUpStation(station);
+        sections.remove(previousSection);
+        sections.remove(nextSection);
+        addMergedSection(previousSection, nextSection);
+    }
+
+    private void addMergedSection(Section previousSection, Section nextSection) {
+        if (previousSection != Section.EMPTY && nextSection != Section.EMPTY) {
+            Section mergedSection = new Section(previousSection.getUpStation(), nextSection.getDownStation(), previousSection.getMergedDistance(nextSection));
+            mergedSection.changeLine(previousSection);
+            sections.add(mergedSection);
+        }
+    }
+
+    private Section findByUpStation(Section section) {
+        return findByUpStation(section.getUpStation());
+    }
+
+    private Section findByUpStation(Station station) {
         return sections.stream()
-                .filter(section::isDownStationEquals)
-                .findFirst();
+                .filter(section -> section.isUpStationEquals(station))
+                .findFirst()
+                .orElse(Section.EMPTY);
+    }
+
+    private Section findByDownStation(Section section) {
+        return findByDownStation(section.getDownStation());
+    }
+
+    private Section findByDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isDownStationEquals(station))
+                .findFirst()
+                .orElse(Section.EMPTY);
     }
 
     private void addSplitSections(Section section, Section matchedSection, Station newUpStation, Station newDownStation) {
@@ -123,63 +179,54 @@ public class Sections {
     }
 
     private Station findStartStation() {
+        Station findStation = Station.EMPTY;
         Section section = sections.get(0);
-        Optional<Section> sectionOptional = Optional.of(section);
 
-        while (sectionOptional.isPresent()) {
-            section = sectionOptional.get();
-            sectionOptional = sections.stream()
+        while (!section.isEmpty()) {
+            findStation = section.getUpStation();
+            section = sections.stream()
                     .filter(section::isUpStationEqualsWithDownStation)
-                    .findFirst();
+                    .findFirst()
+                    .orElse(Section.EMPTY);
         }
-        return section.getUpStation();
+        return findStation;
     }
 
     private Station findEndStation() {
+        Station findStation = Station.EMPTY;
         Section section = sections.get(0);
-        Optional<Section> sectionOptional = Optional.of(section);
 
-        while (sectionOptional.isPresent()) {
-            section = sectionOptional.get();
-            sectionOptional = sections.stream()
+        while (!section.isEmpty()) {
+            findStation = section.getDownStation();
+            section = sections.stream()
                     .filter(section::isDownStationEqualsWithUpStation)
-                    .findFirst();
+                    .findFirst()
+                    .orElse(Section.EMPTY);
         }
-        return section.getDownStation();
+        return findStation;
     }
 
     private List<Station> makeStations() {
         List<Station> stations = new ArrayList<>();
-        Optional<Section> sectionOptional = findFirstSection();
+        Section section = findFirstSection();
 
-        while (sectionOptional.isPresent()) {
-            Section section = sectionOptional.get();
-            stations.add(section.getUpStation());
-            sectionOptional = sections.stream()
-                    .filter(it -> it.isUpStationEqualsWithDownStation(section))
-                    .findFirst();
+        while (!section.isEmpty()) {
+            Section finalSection = section;
+            stations.add(finalSection.getUpStation());
+            section = sections.stream()
+                    .filter(it -> it.isUpStationEqualsWithDownStation(finalSection))
+                    .findFirst()
+                    .orElse(Section.EMPTY);
         }
 
         stations.add(findEndStation());
         return stations;
     }
 
-    private Optional<Section> findFirstSection() {
+    private Section findFirstSection() {
         return sections.stream()
                 .filter(section -> section.isUpStationEquals(findStartStation()))
-                .findFirst();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Sections sections1 = (Sections) o;
-        return Objects.equals(sections, sections1.sections);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(sections);
+                .findFirst()
+                .orElse(Section.EMPTY);
     }
 }
