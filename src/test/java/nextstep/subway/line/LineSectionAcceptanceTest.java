@@ -44,7 +44,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void addLineSection_역_사이에_새로운_역을_등록한다() {
+    void addLineSection_역_사이에_하행역을_등록한다() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 강남역, 역삼역, 3);
 
