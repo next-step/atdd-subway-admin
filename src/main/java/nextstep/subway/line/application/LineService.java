@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
@@ -22,24 +21,21 @@ import nextstep.subway.station.domain.StationRepository;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
 
     public LineService(
         LineRepository lineRepository,
-        StationRepository stationRepository,
-        SectionRepository sectionRepository
+        StationRepository stationRepository
     ) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Line line = lineRepository.save(Line.of(request.getName(), request.getColor()));
         Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NoSuchElementException::new);
         Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NoSuchElementException::new);
-        Section section = sectionRepository.save(Section.of(line, upStation, downStation, request.getDistance()));
+        Line line = lineRepository.save(Line.of(request.getName(), request.getColor()));
+        Section section = Section.of(line, upStation, downStation, request.getDistance());
         line.addSection(section);
         return LineResponse.of(line);
     }

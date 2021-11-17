@@ -15,7 +15,7 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "line")
+	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY, mappedBy = "line")
 	private List<Section> values = new ArrayList<>();
 
 	protected Sections() {
