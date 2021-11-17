@@ -69,26 +69,26 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(LineResponse 신분당선) {
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(LineResponse lineResponse, LineRequest lineRequest) {
         return RestAssured.given()
                 .log()
                 .all()
-                .body(구분당선_요청_데이터())
+                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put(BASE_LINE_URL + "/" + 신분당선.getId())
+                .put(BASE_LINE_URL + "/" + lineResponse.getId())
                 .then()
                 .log()
                 .all()
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_제거_요청(LineResponse 신분당선) {
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(LineResponse lineResponse) {
         return RestAssured.given()
                 .log()
                 .all()
                 .when()
-                .delete(BASE_LINE_URL + "/" + 신분당선.getId())
+                .delete(BASE_LINE_URL + "/" + lineResponse.getId())
                 .then()
                 .log()
                 .all()
@@ -200,7 +200,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineResponse 신분당선 = 지하철_노선_등록되어_있음(신분당선_요청_데이터());
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(신분당선);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(신분당선, 구분당선_요청_데이터());
 
         // then
         assertThat(response.statusCode())
