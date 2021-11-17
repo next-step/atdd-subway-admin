@@ -1,21 +1,19 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.StationStep;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Arrays;
+
+import static nextstep.subway.line.LineStep.*;
 
 public class LineSectionAcceptanceTest extends AcceptanceTest {
 
@@ -45,16 +43,12 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     @Test
     void addLineSection_역_사이에_새로운_역을_등록한다() {
-        ExtractableResponse<Response> response = RestAssured
-                                                    .given().log().all()
-                                                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                    .body(new SectionRequest(강남역.getId(), 역삼역.getId(), 3))
-                                                    .when().post("/lines/{lineId}/sections", 이호선.getId())
-                                                    .then().log().all()
-                                                    .extract();
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 강남역, 역삼역, 3);
 
+        // then
         LineResponse lineResponse = LineStep.지하철_노선_조회되어_있음(이호선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(lineResponse.getStations()).containsExactly(강남역, 역삼역, 삼성역);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_정렬됨(lineResponse, Arrays.asList(강남역, 역삼역, 삼성역));
     }
 }
