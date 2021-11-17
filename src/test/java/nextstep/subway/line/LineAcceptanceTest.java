@@ -21,7 +21,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.dto.StationResponse;
@@ -36,7 +36,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
 
         // when
-        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선_생성_요청값);
 
         // then
@@ -45,9 +45,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineCreateRequest request) {
         return RestAssured.given().log().all()
-            .body(lineRequest)
+            .body(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/lines")
@@ -90,7 +90,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
 
         // when
-        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), UNKNOWN_STATION_ID, 10);
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), UNKNOWN_STATION_ID, 10);
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선_생성_요청값);
 
         // then
@@ -107,7 +107,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
         StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
-        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
         지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
 
         // when
@@ -117,8 +117,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         잘못된_요청으로_지하철_노선_생성_실패됨(response);
     }
 
-    private LineResponse 지하철_노선_등록되어_있음(LineRequest lineRequest) {
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
+    private LineResponse 지하철_노선_등록되어_있음(LineCreateRequest request) {
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(request);
         return response.jsonPath().getObject(".", LineResponse.class);
     }
 
@@ -132,12 +132,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
         StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
-        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
         LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
 
         StationResponse 사당역_생성_응답 = 지하철_역_등록되어_있음(사당역_생성_요청값());
         StationResponse 동작역_생성_응답 = 지하철_역_등록되어_있음(동작역_생성_요청값());
-        LineRequest 노선_4호선_생성_요청값 = 노선_4호선_생성_요청값(사당역_생성_응답.getId(), 동작역_생성_응답.getId(), 30);
+        LineCreateRequest 노선_4호선_생성_요청값 = 노선_4호선_생성_요청값(사당역_생성_응답.getId(), 동작역_생성_응답.getId(), 30);
         LineResponse 노선_4호선_생성_응답 = 지하철_노선_등록되어_있음(노선_4호선_생성_요청값);
 
         // when
@@ -185,7 +185,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
         StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
-        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
         LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
 
         // when
@@ -229,7 +229,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
         StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
-        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
         LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
 
         // when
@@ -239,9 +239,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정됨(response);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineUpdateRequest body) {
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineUpdateRequest request) {
         return RestAssured.given().log().all()
-            .body(body)
+            .body(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .put("/lines/{lineId}", id)
@@ -269,7 +269,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
         StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
-        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
         LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
 
         // when
