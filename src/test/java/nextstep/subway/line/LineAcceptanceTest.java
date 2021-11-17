@@ -16,6 +16,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -99,12 +100,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        LineResponse 구분당선 = 지하철_노선_생성_요청("구분당선", "bg-blue-600").as(LineResponse.class);
+        LineRequest 신분당선 = new LineRequest("신분당선","bg-blue-700");
 
         // when
         // 지하철_노선_수정_요청
+        ExtractableResponse<Response> response =  RestAssured
+                                .given().log().all()
+                                .body(신분당선)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .when()
+                                .put("/lines/{id}", 구분당선.getId())
+                                .then().log().all().extract();
 
         // then
         // 지하철_노선_수정됨
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")

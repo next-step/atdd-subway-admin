@@ -76,7 +76,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [x] 노선 조회 기능 구현
 
 ### 노선 수정 기능
-- [ ] 노선 수정 기능 인수 테스트 작성
+- [x] 노선 수정 기능 인수 테스트 작성
 - [ ] 노선 수정 기능 구현
 
 ### 노선 삭제 기능
