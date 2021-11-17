@@ -38,7 +38,7 @@ class StationAcceptanceTest extends AcceptanceTest {
                 .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/stations")
+                .post(BASE_STATION_URL)
                 .then()
                 .log()
                 .all()
