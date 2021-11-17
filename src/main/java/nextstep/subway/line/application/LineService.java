@@ -40,23 +40,23 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> findById(Long id) throws CannotFindEntityException {
-        Optional<Line> line = lineRepository.findById(id);
+        Line line = findLineById(id);
 
-        if (!line.isPresent()) {
-            throw new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_ENTITY);
-        }
-
-        return Collections.singletonList(LineResponse.of(line.get()));
+        return Collections.singletonList(LineResponse.of(line));
     }
 
     public void updateById(Long id, LineRequest lineRequest) throws CannotFindEntityException {
+        Line line = findLineById(id);
+        line.update(lineRequest.toLine());
+    }
+
+    private Line findLineById(Long id) throws CannotFindEntityException {
         Optional<Line> optionalLine = lineRepository.findById(id);
 
         if (!optionalLine.isPresent()) {
             throw new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_ENTITY);
         }
 
-        Line line = optionalLine.get();
-        line.update(lineRequest.toLine());
+        return optionalLine.get();
     }
 }
