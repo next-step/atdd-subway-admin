@@ -104,4 +104,13 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @Test
+    void addLineSection_상행역_하행역에_포함안된_경우_에러를_발생한다() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 잠실역, 교대역, 3);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

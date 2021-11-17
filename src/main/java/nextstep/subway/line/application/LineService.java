@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.exception.SectionExistException;
+import nextstep.subway.exception.StationNotContainInUpOrDownStation;
 import nextstep.subway.exception.StationNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -86,6 +87,6 @@ public class LineService {
             return LineResponse.of(line);
         }
 
-        return LineResponse.of(line);
+        throw new StationNotContainInUpOrDownStation();
     }
 }

@@ -32,4 +32,9 @@ public class RestControllerAdvice {
     public ResponseEntity<String> handleSectionExistException(SectionExistException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(StationNotContainInUpOrDownStation.class)
+    public ResponseEntity<String> handleStationNotContainInUpOrDownStation(StationNotContainInUpOrDownStation e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }
