@@ -52,8 +52,8 @@ class LineTest {
     void registerSection() {
         // given
         Line 신분당선 = Line.of("신분당선", "RED");
-        Station 판교역 = Station.from("판교역");
-        Station 정자역 = Station.from("정자역");
+        Station 판교역 = Station.from(1L, "판교역");
+        Station 정자역 = Station.from(2L, "정자역");
         Distance distance = Distance.from(10);
         Section 판교_정자_구간 = Section.of(판교역, 정자역, distance);
 
@@ -69,8 +69,8 @@ class LineTest {
     void deleteStation1() {
         // given
         Line 신분당선 = Line.of("신분당선", "RED");
-        Station 판교역 = Station.from("판교역");
-        Station 정자역 = Station.from("정자역");
+        Station 판교역 = Station.from(1L, "판교역");
+        Station 정자역 = Station.from(2L, "정자역");
         Distance distance = Distance.from(10);
         Section 판교_정자_구간 = Section.of(판교역, 정자역, distance);
 

@@ -18,7 +18,9 @@ public class Sections {
     private static final String NOT_EXIST_LAST_SECTION = "마지막 구간이 존재하지 않습니다.";
     private static final String NOT_EXIST_UP_STATION = "구간에 상행 역이 존재하지 않습니다.";
     private static final String NOT_EXIST_SECTION_BY_STATION = "역이 포함된 구간이 없습니다.";
+    private static final String NOT_EXIST_STATION = "존재하지 않는 지하철 역입니다.";
     private static final String IS_GREATER_OR_EQUAL_DISTANCE = "새로운 구간의 길이가 기존 구간길이보다 크거나 같습니다.";
+    private static final String CAN_NOT_DELETE_STATION_WHEN_ONLY_ONE_SECTIONS_MESSAGE = "노선의 구간이 1개인 경우 지하철 역을 삭제 할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -75,8 +77,11 @@ public class Sections {
     }
 
     public void removeEndStation(Station station) {
+        validateNoExistStationWhenDeleteStation(station);
+
         if (isFirstEndStation(station)) {
             remove(findFirstSection());
+            return;
         }
 
         remove(findLastSection());
@@ -128,6 +133,7 @@ public class Sections {
     }
 
     private void remove(Section section) {
+        validateHasOnlyOneSection();
         this.sections.remove(section);
     }
 
@@ -194,6 +200,18 @@ public class Sections {
     private void validateAddableSectionDistance(Section section, Section middleSection) {
         if (section.isGreaterThanOrEqualDistanceTo(middleSection)) {
             throw new IllegalArgumentException(IS_GREATER_OR_EQUAL_DISTANCE);
+        }
+    }
+
+    private void validateNoExistStationWhenDeleteStation(Station station) {
+        if (!findAllStations().contains(station)) {
+            throw new IllegalArgumentException(NOT_EXIST_STATION);
+        }
+    }
+
+    private void validateHasOnlyOneSection() {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException(CAN_NOT_DELETE_STATION_WHEN_ONLY_ONE_SECTIONS_MESSAGE);
         }
     }
 }

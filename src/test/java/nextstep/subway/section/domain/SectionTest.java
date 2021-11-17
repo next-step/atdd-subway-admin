@@ -18,8 +18,8 @@ class SectionTest {
 
     @BeforeEach
     void setUp() {
-        판교역 = Station.from("판교역");
-        정자역 = Station.from("정자역");
+        판교역 = Station.from(1L, "판교역");
+        정자역 = Station.from(2L, "정자역");
         distance = Distance.from(DISTANCE);
     }
 
@@ -59,5 +59,13 @@ class SectionTest {
         // when & then
         assertThatIllegalArgumentException().isThrownBy(() -> Section.of(판교역, 정자역, null))
                                             .withMessageContaining("Section 생성에 필요한 필수 정보를 확인해주세요.");
+    }
+
+    @DisplayName("상행역, 하행역이 같으면 예외가 발생한다.")
+    @Test
+    void create5() {
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(() -> Section.of(판교역, 판교역, distance))
+                                            .withMessageContaining("상행역과 하행역은 같을 수 없습니다.");
     }
 }

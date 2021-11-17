@@ -113,4 +113,56 @@ class SectionsTest {
         // then
         assertFalse(sections.contains(동천역));
     }
+
+    @DisplayName("구간이 1개만 존재할 때 역을 삭제할 수 없다.")
+    @Test
+    void removeStationWhenOnlySection() {
+        // given
+        List<Section> sectionsList = new ArrayList<>();
+        sectionsList.add(판교_정자_구간);
+
+        Sections sections = Sections.from(sectionsList);
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.removeEndStation(판교역))
+                                            .withMessageContaining("노선의 구간이 1개인 경우 지하철 역을 삭제 할 수 없습니다.");
+    }
+
+    @DisplayName("존해하지 않는 종점역을 삭제할 수 없다.")
+    @Test
+    void removeNonExistentEndStation() {
+        // given
+        List<Section> sectionsList = new ArrayList<>();
+        sectionsList.add(판교_정자_구간);
+        sectionsList.add(정자_미금_구간);
+        sectionsList.add(미금_동천_구간);
+
+        Sections sections = Sections.from(sectionsList);
+
+        // when
+        Station 수원역 = Station.from(10L, "수원역");
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.removeEndStation(수원역))
+                                            .withMessageContaining("존재하지 않는 지하철 역입니다.");
+    }
+
+    @DisplayName("존해하지 않는 중간역을 삭제할 수 없다.")
+    @Test
+    void removeNonExistentMiddleStation() {
+        // given
+        List<Section> sectionsList = new ArrayList<>();
+        sectionsList.add(판교_정자_구간);
+        sectionsList.add(정자_미금_구간);
+        sectionsList.add(미금_동천_구간);
+
+        Sections sections = Sections.from(sectionsList);
+
+        // when
+        Station 수원역 = Station.from(10L, "수원역");
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.removeEndStation(수원역))
+                                            .withMessageContaining("존재하지 않는 지하철 역입니다.");
+    }
 }
