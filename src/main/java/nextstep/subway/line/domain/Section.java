@@ -84,4 +84,9 @@ public class Section {
         this.upStation = station;
         this.distance -= distance;
     }
+
+    public void updateDownStation(Station downStation, int distance) {
+        this.downStation = downStation;
+        this.distance -= distance;
+    }
 }

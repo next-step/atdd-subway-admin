@@ -26,4 +26,11 @@ public class SectionTest {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> 구간.updateUpStation(역삼역, 20));
     }
+
+    @Test
+    void updateDownStation_하행역을_업데이트한다() {
+        Section 구간 = new Section(이호선, 강남역, 삼성역, 10);
+        구간.updateDownStation(역삼역, 3);
+        assertThat(구간).isEqualTo(new Section(이호선, 강남역, 역삼역, 7));
+    }
 }
