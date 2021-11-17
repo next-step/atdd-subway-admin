@@ -1,10 +1,11 @@
 package nextstep.subway.line.dto;
 
+import nextstep.subway.common.BaseResponse;
 import nextstep.subway.line.domain.Line;
 
 import java.time.LocalDateTime;
 
-public class LineResponse {
+public class LineResponse implements BaseResponse {
     private Long id;
     private String name;
     private String color;
