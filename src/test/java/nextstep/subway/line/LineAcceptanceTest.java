@@ -64,7 +64,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post(BASE_URI)
                 .then().log().all()
                 .extract();
-
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -83,7 +82,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post(BASE_URI)
                 .then().log().all()
                 .extract();
-
         params.put("name", "2호선");
         params.put("color", "green");
         ExtractableResponse<Response> postResponse2 = RestAssured.given().log().all()
@@ -93,14 +91,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post(BASE_URI)
                 .then().log().all()
                 .extract();
-
         // when
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
                 .when()
                 .get(BASE_URI)
                 .then().log().all()
                 .extract();
-
         // then
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<Long> expectedIds = Arrays.asList(postResponse1, postResponse2).stream()
@@ -126,14 +122,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post(BASE_URI)
                 .then().log().all()
                 .extract();
-
         String uri = postResponse1.header("Location");
         // when
         ExtractableResponse<Response> getResponse = RestAssured.given().log().all()
                 .when().get(uri)
                 .then().log().all()
                 .extract();
-
         // then
         LineResponse resultLine = getResponse.jsonPath().getObject("", LineResponse.class);
         assertThat(resultLine).isNotNull();
@@ -157,7 +151,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .post(BASE_URI)
                 .then().log().all()
                 .extract();
-
         String uri = postResponse.header("Location");
         params.put("name", "2호선");
         params.put("color", "green");
