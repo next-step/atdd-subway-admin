@@ -1,10 +1,11 @@
 package nextstep.subway.line;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         
         // then
         // 지하철_노선_생성됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -49,7 +50,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_생성_실패됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -71,7 +72,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_목록_응답됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         
         // 지하철_노선_목록_포함됨
         List<Long> expected = new ArrayList<Long>();
@@ -81,7 +82,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
-        Assertions.assertThat(actual).containsAll(expected);
+        assertThat(actual).containsAll(expected);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -98,7 +99,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_응답됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -123,7 +124,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_수정됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -145,7 +146,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
     
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
