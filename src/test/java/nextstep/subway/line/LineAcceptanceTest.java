@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -7,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +22,36 @@ import io.restassured.response.ValidatableResponse;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.station.dto.StationRequest;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     @Autowired
     private LineRepository lineRepository;
+    private Long upStationId;
+    private Long downStationId;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        upStationId = 지하철_역_생성_요청(new StationRequest("강남역"));
+        downStationId = 지하철_역_생성_요청(new StationRequest("방배역"));
+    }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(
-            createRequestLine("2호선", "bg-green"));
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(new LineRequest(
+            "2호선", "bg-green", upStationId, downStationId, 10
+        ));
 
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -48,7 +63,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(createRequestLine("2호선", "bg-green"));
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(new LineRequest(
+            "2호선", "bg-green", upStationId, downStationId, 10
+        ));
 
         // then
         // 지하철_노선_생성_실패됨
@@ -158,10 +175,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertNull(findLine);
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
         return RestAssured
             .given().log().all()
-            .body(params)
+            .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .when()
