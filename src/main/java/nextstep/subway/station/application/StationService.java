@@ -1,5 +1,7 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.common.exception.NotFoundException;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -19,11 +21,6 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationResponse.of(persistStation);
-    }
-
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
@@ -32,7 +29,20 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
+    @Transactional(readOnly = true)
+    public Station findByStationId(Long id) throws NotFoundException {
+        return stationRepository.findById(id).orElseThrow(() -> new NotFoundException("데이터가 존재하지 않습니다."));
     }
+
+    public StationResponse saveStation(StationRequest stationRequest) {
+        Station persistStation = stationRepository.save(stationRequest.toStation());
+        return StationResponse.of(persistStation);
+    }
+
+    public void deleteStationById(Long id) {
+        Station station = findByStationId(id);
+        stationRepository.deleteById(station.getId());
+    }
+
+
 }
