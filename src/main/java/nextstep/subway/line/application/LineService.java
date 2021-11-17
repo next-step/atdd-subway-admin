@@ -48,7 +48,8 @@ public class LineService {
             .orElseThrow(NotExistsLineException::new);
 
         line.update(lineRequest.toLine());
-        return LineResponse.of(lineRepository.save(line));
+
+        return LineResponse.of(line);
     }
 
     public void delete(Long id) {

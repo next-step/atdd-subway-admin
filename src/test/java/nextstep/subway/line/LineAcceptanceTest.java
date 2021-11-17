@@ -103,7 +103,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        ExtractableResponse<Response> updateResponse = update(id, lineRequest);
+        LineRequest updateRequest = new LineRequest(LINE_THREE, LINE_THREE_YELLOW);
+        ExtractableResponse<Response> updateResponse = update(id, updateRequest);
 
         // then
         // 지하철_노선_수정됨
