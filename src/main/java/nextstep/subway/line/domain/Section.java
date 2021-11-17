@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.exception.IllegalStationDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -90,8 +91,8 @@ public class Section {
     }
 
     private void checkDistance(int distance) {
-        if (this.distance < distance) {
-            throw new IllegalArgumentException("등록되는 구간 길이는 기존 길이보다 클 수 없습니다.");
+        if (this.distance <= distance) {
+            throw new IllegalStationDistanceException();
         }
     }
 }

@@ -22,4 +22,9 @@ public class RestControllerAdvice {
     public ResponseEntity<String> handleStationNotFoundException(StationNotFoundException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(IllegalStationDistanceException.class)
+    public ResponseEntity<String> handleIllegalStationDistanceException(IllegalStationDistanceException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

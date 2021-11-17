@@ -10,10 +10,12 @@ import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 
 import static nextstep.subway.line.LineStep.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineSectionAcceptanceTest extends AcceptanceTest {
 
@@ -83,5 +85,14 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         LineResponse lineResponse = LineStep.지하철_노선_조회되어_있음(이호선);
         지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_정렬됨(lineResponse, Arrays.asList(역삼역, 강남역, 삼성역));
+    }
+
+    @Test
+    void addLineSection_새로운_역_사이의_길이가_기존_역_사이의_길이보다_크거나_같으면_에러를_발생한다() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 역삼역, 삼성역, 10);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
