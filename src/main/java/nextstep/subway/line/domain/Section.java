@@ -78,15 +78,20 @@ public class Section {
     }
 
     public void updateUpStation(Station station, int distance) {
-        if (this.distance < distance) {
-            throw new IllegalArgumentException("등록되는 구간 길이는 기존 길이보다 클 수 없습니다.");
-        }
+        checkDistance(distance);
         this.upStation = station;
         this.distance -= distance;
     }
 
     public void updateDownStation(Station downStation, int distance) {
+        checkDistance(distance);
         this.downStation = downStation;
         this.distance -= distance;
+    }
+
+    private void checkDistance(int distance) {
+        if (this.distance < distance) {
+            throw new IllegalArgumentException("등록되는 구간 길이는 기존 길이보다 클 수 없습니다.");
+        }
     }
 }

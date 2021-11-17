@@ -33,4 +33,11 @@ public class SectionTest {
         구간.updateDownStation(역삼역, 3);
         assertThat(구간).isEqualTo(new Section(이호선, 강남역, 역삼역, 7));
     }
+
+    @Test
+    void updateDownStation_기존_길이보다_새로운_구간의_길이가_길면_에러를_발생한다() {
+        Section 구간 = new Section(이호선, 강남역, 삼성역, 10);
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> 구간.updateDownStation(역삼역, 20));
+    }
 }
