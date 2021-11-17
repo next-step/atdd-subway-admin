@@ -69,5 +69,14 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [x] 지하철 노선 수정 
   - [x] put 방식
 
-- 지하철 노선 삭제
+- [x] 지하철 노선 삭제
   - [x] delete 방식
+  
+- [x] 지하철 구간 추가
+  - [x] 상행 하행 똑같을 경우 예외
+  - [x] 상행 기준으로 종점 추가
+  - [x] 상행 기준으로 노선 추가
+  - [x] 상행 기준으로 노선 추가시 길이 체크
+  - [x] 하행 기준으로 종점 추가
+  - [x] 하행 기준으로 노선 추가
+  - [x] 하행 기준으로 노선 추가시 길이 체크
