@@ -14,16 +14,16 @@ public class SectionTest {
     private static final Station 삼성역 = new Station("삼성역");
 
     @Test
-    void update_새로운_구간으로_업데이트_한다() {
+    void updateUpStation_새로운_구간으로_업데이트_한다() {
         Section 구간 = new Section(이호선, 강남역, 삼성역, 10);
-        구간.update(역삼역, 3);
+        구간.updateUpStation(역삼역, 3);
         assertThat(구간).isEqualTo(new Section(이호선, 역삼역, 삼성역, 7));
     }
 
     @Test
-    void update_기존_길이보다_새로운_구간의_길이가_길면_에러를_발생한다() {
+    void updateUpStation_기존_길이보다_새로운_구간의_길이가_길면_에러를_발생한다() {
         Section 구간 = new Section(이호선, 강남역, 삼성역, 10);
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> 구간.update(역삼역, 20));
+                .isThrownBy(() -> 구간.updateUpStation(역삼역, 20));
     }
 }

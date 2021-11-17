@@ -77,7 +77,7 @@ public class Section {
         return Objects.hash(id, line, upStation, downStation, distance);
     }
 
-    public void update(Station station, int distance) {
+    public void updateUpStation(Station station, int distance) {
         if (this.distance < distance) {
             throw new IllegalArgumentException("등록되는 구간 길이는 기존 길이보다 클 수 없습니다.");
         }

@@ -67,6 +67,6 @@ public class Sections {
         sections.stream()
                 .filter(section -> section.isUpStation(upStation))
                 .findFirst()
-                .ifPresent(section -> section.update(downStation, distance));
+                .ifPresent(section -> section.updateUpStation(downStation, distance));
     }
 }
