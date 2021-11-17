@@ -14,4 +14,10 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest()
                 .build();
     }
+
+    @ExceptionHandler(CannotFindEntityException.class)
+    public ResponseEntity<BaseResponse> handleCannotFindEntityException() {
+        return ResponseEntity.badRequest()
+                .build();
+    }
 }
