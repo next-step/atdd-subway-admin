@@ -1,7 +1,10 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineFixture.*;
+import static nextstep.subway.station.StationAcceptanceTest.*;
+import static nextstep.subway.station.StationFixture.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,14 +21,20 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        // given
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선_생성_요청값());
+        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선_생성_요청값);
 
         // then
         지하철_노선_생성됨(response);
@@ -42,8 +51,28 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+            () -> assertThat(response.header("Location")).isNotBlank()
+        );
+    }
+
+    @DisplayName("존재하지 않는 지하철 역을 종점으로 하는 노선을 생성한다.")
+    @Test
+    void createLineWithUnknownStationId() {
+        // given
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+
+        // when
+        LineRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), UNKNOWN_STATION_ID, 10);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선_생성_요청값);
+
+        // then
+        대상을_찾지_못해_지하철_노선_생성_실패됨(response);
+    }
+
+    private void 대상을_찾지_못해_지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -56,7 +85,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선_생성_요청값());
 
         // then
-        지하철_노선_생성_실패됨(response);
+        잘못된_요청으로_지하철_노선_생성_실패됨(response);
     }
 
     private LineResponse 지하철_노선_등록되어_있음(LineRequest lineRequest) {
@@ -64,7 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return response.jsonPath().getObject(".", LineResponse.class);
     }
 
-    private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+    private void 잘못된_요청으로_지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
