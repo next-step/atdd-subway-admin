@@ -73,6 +73,12 @@ public class LineService {
         if (line.hasStation(upStation)) {
             line.updateUpStation(upStation, downStation, sectionRequest.getDistance());
             line.addSection(upStation, downStation, sectionRequest.getDistance());
+            return LineResponse.of(line);
+        }
+        if (line.hasStation(downStation)) {
+            line.updateDownStation(upStation, downStation, sectionRequest.getDistance());
+            line.addSection(upStation, downStation, sectionRequest.getDistance());
+            return LineResponse.of(line);
         }
 
         return LineResponse.of(line);

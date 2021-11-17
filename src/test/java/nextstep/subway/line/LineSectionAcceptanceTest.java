@@ -62,4 +62,15 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_정렬됨(lineResponse, Arrays.asList(강남역, 삼성역, 잠실역));
     }
+
+    @Test
+    void addLineSection_역_사이에_상행역을_등록한다() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 역삼역, 삼성역, 3);
+
+        // then
+        LineResponse lineResponse = LineStep.지하철_노선_조회되어_있음(이호선);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_정렬됨(lineResponse, Arrays.asList(강남역, 역삼역, 삼성역));
+    }
 }
