@@ -63,9 +63,9 @@ public class Line extends BaseEntity {
         return sections.getStations();
     }
 
-    public boolean hasUpStation(Station upStation) {
+    public boolean hasStation(Station newStation) {
         return getStations().stream()
-                .anyMatch(station -> station == upStation);
+                .anyMatch(station -> station == newStation);
     }
 
     public void updateSection(Station upStation, Station downStation, int distance) {

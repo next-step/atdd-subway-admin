@@ -35,9 +35,9 @@ class LineTest {
     }
 
     @Test
-    void hasUpStation_상행역이_존재하는지_확인한다() {
+    void hasStation_역이_존재하는지_확인한다() {
         Line 이호선 = new Line("2호선", "green", 강남역, 삼성역, 10);
-        assertThat(이호선.hasUpStation(강남역)).isTrue();
+        assertThat(이호선.hasStation(강남역)).isTrue();
     }
 
     @Test

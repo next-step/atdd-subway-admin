@@ -70,7 +70,7 @@ public class LineService {
         Station upStation = findStationById(sectionRequest.getUpStationId());
         Station downStation = findStationById(sectionRequest.getDownStationId());
 
-        if (line.hasUpStation(upStation)) {
+        if (line.hasStation(upStation)) {
             line.updateSection(upStation, downStation, sectionRequest.getDistance());
             line.addSection(upStation, downStation, sectionRequest.getDistance());
         }
