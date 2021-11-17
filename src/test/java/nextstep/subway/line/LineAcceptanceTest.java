@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -142,7 +141,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(resultLine.getName()).isEqualTo(params.get("name")),
                 () -> assertThat(resultLine.getColor()).isEqualTo(params.get("color"))
         );
-
     }
 
     @DisplayName("지하철 노선을 수정한다.")

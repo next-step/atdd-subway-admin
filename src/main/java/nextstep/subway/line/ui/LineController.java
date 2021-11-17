@@ -6,7 +6,6 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping
+    @PostMapping("/lines")
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
