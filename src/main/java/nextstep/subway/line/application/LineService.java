@@ -48,4 +48,15 @@ public class LineService {
 
         return Collections.singletonList(LineResponse.of(line.get()));
     }
+
+    public void updateById(Long id, LineRequest lineRequest) throws CannotFindEntityException {
+        Optional<Line> optionalLine = lineRepository.findById(id);
+
+        if (!optionalLine.isPresent()) {
+            throw new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_ENTITY);
+        }
+
+        Line line = optionalLine.get();
+        line.update(lineRequest.toLine());
+    }
 }
