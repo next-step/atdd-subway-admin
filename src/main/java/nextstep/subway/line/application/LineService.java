@@ -22,7 +22,7 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findOne(Long id) throws NotFoundException {
+    public LineResponse findOne(Long id) {
         Line persistLine = this.findById(id);
         return LineResponse.of(persistLine);
     }
@@ -38,7 +38,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public LineResponse updateLine(Long id, LineRequest request) throws NotFoundException {
+    public LineResponse updateLine(Long id, LineRequest request) {
         Line line = this.findById(id);
         line.update(request.toLine());
         Line persistLine = lineRepository.save(line);
@@ -49,7 +49,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private Line findById(Long id) throws NotFoundException {
+    private Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("찾을 수 없는 노선입니다."));
     }

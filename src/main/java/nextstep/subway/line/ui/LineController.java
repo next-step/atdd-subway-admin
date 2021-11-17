@@ -24,10 +24,9 @@ public class LineController {
      *
      * @param id
      * @return
-     * @throws NotFoundException
      */
     @GetMapping("/{id}")
-    public ResponseEntity findById(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity findById(@PathVariable Long id) {
         LineResponse line = lineService.findOne(id);
         return ResponseEntity.ok(line);
     }
