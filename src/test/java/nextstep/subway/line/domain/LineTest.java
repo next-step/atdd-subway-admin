@@ -41,9 +41,9 @@ class LineTest {
     }
 
     @Test
-    void updateSection_구간을_업데이트한다() {
+    void updateUpStation_상행역을_업데이트한다() {
         Line 이호선 = new Line("2호선", "green", 강남역, 삼성역, 10);
-        이호선.updateSection(강남역, 역삼역, 3);
+        이호선.updateUpStation(강남역, 역삼역, 3);
         assertThat(이호선.getSections()).contains(new Section(이호선, 역삼역, 삼성역, 7));
     }
 

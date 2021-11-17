@@ -4,9 +4,7 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -68,8 +66,8 @@ public class Line extends BaseEntity {
                 .anyMatch(station -> station == newStation);
     }
 
-    public void updateSection(Station upStation, Station downStation, int distance) {
-        sections.update(upStation, downStation, distance);
+    public void updateUpStation(Station upStation, Station downStation, int distance) {
+        sections.updateUpStation(upStation, downStation, distance);
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {

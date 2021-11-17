@@ -63,7 +63,7 @@ public class Sections {
         sections.add(section);
     }
 
-    public void update(Station upStation, Station downStation, int distance) {
+    public void updateUpStation(Station upStation, Station downStation, int distance) {
         sections.stream()
                 .filter(section -> section.isUpStation(upStation))
                 .findFirst()
