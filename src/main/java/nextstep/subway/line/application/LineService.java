@@ -21,11 +21,13 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findOne(Long id) throws NotFoundException {
         Line persistLine = this.findById(id);
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public LinesResponse findAll() {
         List<Line> persistLines = lineRepository.findAll();
         return new LinesResponse(persistLines);
