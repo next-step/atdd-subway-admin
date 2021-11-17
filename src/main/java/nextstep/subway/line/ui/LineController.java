@@ -28,38 +28,38 @@ import javax.persistence.EntityNotFoundException;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
+
     private final LineService lineService;
-    private Long id;
 
     public LineController(final LineService lineService) {
         this.lineService = lineService;
     }
 
-    @PostMapping(consumes = {APPLICATION_JSON_VALUE})
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @GetMapping(consumes = {APPLICATION_JSON_VALUE})
+    @GetMapping
     public ResponseEntity<List<LineResponse>> findAll(Pageable pageable) {
         List<LineResponse> lineAll = lineService.findAllLine(pageable);
         return ResponseEntity.ok(lineAll);
     }
 
-    @GetMapping(value ="{id}",consumes = {APPLICATION_JSON_VALUE})
+    @GetMapping(value ="{id}")
     public ResponseEntity<LineResponse> findLineById(final @PathVariable(value = "id") Long id) {
         return ResponseEntity.ok(lineService.findLineById(id));
     }
 
-    @PatchMapping(value ="{id}",consumes = {APPLICATION_JSON_VALUE})
+    @PatchMapping(value ="{id}")
     public ResponseEntity<LineResponse> updateLine(final @PathVariable(value = "id") Long id,
         @RequestBody() LineRequest lineRequest) {
         LineResponse lineResponse = lineService.updateLine(id, lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
-    @DeleteMapping(consumes = {APPLICATION_JSON_VALUE})
+    @DeleteMapping
     public ResponseEntity updateLine(final @RequestParam Long id) {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
