@@ -73,4 +73,8 @@ public class Line extends BaseEntity {
                 .findFirst()
                 .ifPresent(section -> section.update(downStation, distance));
     }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.add(new Section(this, upStation, downStation, distance));
+    }
 }
