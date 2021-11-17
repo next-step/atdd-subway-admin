@@ -20,19 +20,28 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
-    public LineResponse saveLine(LineRequest request) {
+    public LineResponse save(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
 
-    public List<LineResponse> findLines() {
+    public List<LineResponse> findAll() {
         return lineRepository.findAll()
                 .stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
     
-    public LineResponse findLineById(Long id) {
-        return LineResponse.of(lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("노선이 없습니다.")));
+    public LineResponse find(Long id) {
+        return LineResponse.of(findById(id));
+    }
+    
+    public void update(Long id, LineRequest request) {
+        Line line = findById(id);
+        line.update(request.toLine());
+    }
+    
+    private Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("노선이 없습니다."));
     }
 }
