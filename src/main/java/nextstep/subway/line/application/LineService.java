@@ -4,8 +4,8 @@ import static java.util.stream.Collectors.*;
 
 import java.util.List;
 
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +14,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.exception.NotExistsLineException;
 
 @Service
 @Transactional
@@ -37,15 +36,16 @@ public class LineService {
     }
 
     public LineResponse findLineById(final Long id) {
-        return LineResponse.of(
-            lineRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new)
-        );
+
+        Line line = lineRepository.findById(id)
+            .orElseThrow(EntityNotFoundException::new);
+
+        return LineResponse.of(line);
     }
 
     public LineResponse updateLine(final Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id)
-            .orElseThrow(NotExistsLineException::new);
+            .orElseThrow(EntityNotFoundException::new);
 
         line.update(lineRequest.toLine());
 
@@ -54,7 +54,7 @@ public class LineService {
 
     public void delete(Long id) {
         Line line = lineRepository.findById(id)
-            .orElseThrow(NotExistsLineException::new);
+            .orElseThrow(EntityNotFoundException::new);
         lineRepository.delete(line);
     }
 }
