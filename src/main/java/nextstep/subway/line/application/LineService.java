@@ -41,6 +41,11 @@ public class LineService {
         line.update(request.toLine());
     }
     
+    public void delete(Long id) {
+        Line line = findById(id);
+        lineRepository.delete(line);
+    }
+    
     private Line findById(Long id) {
         return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("노선이 없습니다."));
     }

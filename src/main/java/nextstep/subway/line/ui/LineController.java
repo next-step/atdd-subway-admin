@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,6 +48,12 @@ public class LineController {
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
         lineService.update(id, request);
         return ResponseEntity.ok().build();
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {
+        lineService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
