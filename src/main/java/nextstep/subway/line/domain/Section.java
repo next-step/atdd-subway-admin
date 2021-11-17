@@ -24,6 +24,8 @@ public class Section {
 
     private int distance;
 
+    private int orders;
+
     public Section() {
 
     }
@@ -41,5 +43,34 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void updateUpStation(Station upStation, int distance) {
+        this.upStation = upStation;
+        this.distance = distance;
+    }
+
+    public void updateDownStation(Station downStation, int distance) {
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public void setOrders(int orders) {
+        this.orders = orders;
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", line=" + line.getId() +
+                ", upStation=" + upStation.getName() +
+                ", downStation=" + downStation.getName() +
+                ", distance=" + distance +
+                '}';
     }
 }
