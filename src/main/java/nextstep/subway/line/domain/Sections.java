@@ -62,4 +62,9 @@ public class Sections {
     public void add(Section section) {
         this.sections.add(section);
     }
+
+    public boolean hasUpStation(Station upStation) {
+        return sections.stream()
+                .anyMatch(section -> section.isUpStation(upStation));
+    }
 }

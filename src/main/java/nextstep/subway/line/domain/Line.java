@@ -63,4 +63,7 @@ public class Line extends BaseEntity {
         return sections.getStations();
     }
 
+    public boolean hasUpStation(Station upStation) {
+        return sections.hasUpStation(upStation);
+    }
 }
