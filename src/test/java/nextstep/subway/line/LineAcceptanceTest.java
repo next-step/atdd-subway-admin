@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,8 +40,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_생성됨(response);
-        지하철_노선_응답_내_역_목록에_종점들이_등록됨(response, 강남역_생성_응답, 역삼역_생성_응답);
-        지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response);
+        지하철_노선_응답_내_역_목록에_상행역_하행역_순으로_조회됨(response.as(LineResponse.class), 강남역_생성_응답, 역삼역_생성_응답);
     }
 
     @DisplayName("존재하지 않는 지하철 역을 종점으로 하는 노선을 생성한다.")
@@ -95,7 +93,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_목록_응답됨(response);
         지하철_노선_목록_포함됨(response, 노선_2호선_생성_응답, 노선_4호선_생성_응답);
-        지하철_노선_목록_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response);
+        지하철_노선_응답_내_역_목록에_상행역_하행역_순으로_조회됨(response.jsonPath().getList(".", LineResponse.class).get(0), 강남역_생성_응답, 역삼역_생성_응답);
+        지하철_노선_응답_내_역_목록에_상행역_하행역_순으로_조회됨(response.jsonPath().getList(".", LineResponse.class).get(1), 사당역_생성_응답, 동작역_생성_응답);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -112,8 +111,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_응답됨(response);
-        지하철_노선_응답_내_역_목록에_종점들이_등록됨(response, 강남역_생성_응답, 역삼역_생성_응답);
-        지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response);
+        지하철_노선_응답_내_역_목록에_상행역_하행역_순으로_조회됨(response.as(LineResponse.class), 강남역_생성_응답, 역삼역_생성_응답);
     }
 
     @DisplayName("생성되지 않은 지하철 노선을 조회한다.")
@@ -195,21 +193,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private void 지하철_노선_응답_내_역_목록에_종점들이_등록됨(
-        ExtractableResponse<Response> response,
-        StationResponse... stationCreateResponses
+    private void 지하철_노선_응답_내_역_목록에_상행역_하행역_순으로_조회됨(
+        LineResponse lineCreateResponse,
+        StationResponse upStationCreateResponse,
+        StationResponse downStationCreateResponse
     ) {
-        List<Long> actualIds = response.jsonPath().getObject(".", LineResponse.class).getStations().stream()
+        List<Long> actualIds = lineCreateResponse.getStations().stream()
             .map(StationResponse::getId)
             .collect(Collectors.toList());
-        List<Long> expectIds = Arrays.stream(stationCreateResponses)
+        List<Long> expectIds = Stream.of(upStationCreateResponse, downStationCreateResponse)
             .map(StationResponse::getId)
             .collect(Collectors.toList());
-        assertThat(actualIds).containsAll(expectIds);
-    }
-
-    private void 지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(ExtractableResponse<Response> response) {
-        지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response.jsonPath().getObject(".", LineResponse.class));
+        assertThat(actualIds).isEqualTo(expectIds);
     }
 
     private void 지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(LineResponse response) {
@@ -227,14 +222,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 대상을_찾지_못해_지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    }
-
-    private void 지하철_노선_목록_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(ExtractableResponse<Response> response) {
-        List<LineResponse> lineResponses = new ArrayList<>(response.jsonPath().getList(".", LineResponse.class));
-
-        for (LineResponse lineResponse : lineResponses) {
-            지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(lineResponse);
-        }
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
