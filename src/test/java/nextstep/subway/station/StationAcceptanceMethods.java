@@ -12,6 +12,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.utils.StreamUtils;
 
 public class StationAcceptanceMethods extends AcceptanceTest {
     private static final String STATION_URL_PATH = "/stations";
@@ -52,11 +53,10 @@ public class StationAcceptanceMethods extends AcceptanceTest {
     }
 
     public static void 지하철_역_목록_포함됨(ExtractableResponse<Response> response, List<Long> expectedStationIds) {
-        List<Long> resultStationIds = response.jsonPath()
-                                              .getList(".", StationResponse.class)
-                                              .stream()
-                                              .map(StationResponse::getId)
-                                              .collect(Collectors.toList());
+        List<StationResponse> stationResponses = response.jsonPath()
+                                                         .getList(".", StationResponse.class);
+        List<Long> resultStationIds = StreamUtils.mapToList(stationResponses, StationResponse::getId);
+
         assertThat(resultStationIds).containsAll(expectedStationIds);
     }
 }

@@ -20,7 +20,8 @@ import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section {
-    private static final String CREATION_FAIL_MESSAGE = "Section 생성에 필요한 필수 정보를 확인해주세요. upStation=%s, downStation=%s, distance=%s";
+    private static final String CREATION_FAIL_ERROR_MESSAGE = "Section 생성에 필요한 필수 정보를 확인해주세요. upStation=%s, downStation=%s, distance=%s";
+    private static final String SAME_UP_AND_DOWN_STATION_ERROR_MESSAGE = "상행역과 하행역은 같을 수 없습니다. upStation=%s, downStation=%s";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,9 +50,21 @@ public class Section {
         this.distance = distance;
     }
 
+    private Section(Long id, Station upStation, Station downStation, Distance distance) {
+        this.id = id;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
     public static Section of(Station upStation, Station downStation, Distance distance) {
         validateCreateSection(upStation, downStation, distance);
         return new Section(upStation, downStation, distance);
+    }
+
+    public static Section of(Long id, Station upStation, Station downStation, Distance distance) {
+        validateCreateSection(upStation, downStation, distance);
+        return new Section(id, upStation, downStation, distance);
     }
 
     public void registerLine(Line line) {
@@ -82,6 +95,10 @@ public class Section {
         this.downStation = downStation;
     }
 
+    public void changeDistance(Distance distance) {
+        this.distance = distance;
+    }
+
     public Long getId() {
         return id;
     }
@@ -98,9 +115,25 @@ public class Section {
         return Arrays.asList(upStation, downStation);
     }
 
+    public Distance getDistance() {
+        return distance;
+    }
+
     private static void validateCreateSection(Station upStation, Station downStation, Distance distance) {
+        validateHasRequired(upStation, downStation, distance);
+        validateSameUpAndSownStation(upStation, downStation);
+    }
+
+    private static void validateHasRequired(Station upStation, Station downStation, Distance distance) {
         if (Objects.isNull(upStation) || Objects.isNull(downStation) || Objects.isNull(distance)) {
-            throw new IllegalArgumentException(String.format(CREATION_FAIL_MESSAGE, upStation, downStation, distance));
+            throw new IllegalArgumentException(String.format(CREATION_FAIL_ERROR_MESSAGE, upStation, downStation,
+                                                             distance));
+        }
+    }
+
+    private static void validateSameUpAndSownStation(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException(String.format(SAME_UP_AND_DOWN_STATION_ERROR_MESSAGE, upStation.getId(), downStation.getId()));
         }
     }
 
