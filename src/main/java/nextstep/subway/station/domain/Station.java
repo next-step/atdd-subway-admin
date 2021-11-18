@@ -23,8 +23,12 @@ public class Station extends BaseEntity {
     protected Station() {
     }
 
-    public Station(String name) {
+    private Station(String name) {
         this.name = name;
+    }
+
+    public static Station of(String name) {
+        return new Station(name);
     }
 
     public Long getId() {

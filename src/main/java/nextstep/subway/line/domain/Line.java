@@ -26,22 +26,33 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private LineSections lineSections = new LineSections();
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public void add(List<Section> sections) {
-        lineSections.add(this, sections);
+    private Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = name;
+        this.color = color;
+        sections.add(Section.of(this, upStation, downStation, distance));
+    }
+
+    public static Line of(String name, String color) {
+        return new Line(name, color);
+    }
+
+    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+        return new Line(name, color, upStation, downStation, distance);
     }
 
     public List<Station> getStationsFromUpTerminal() {
-        return lineSections.getStationsFromUpTerminal();
+        final Section upTerminalSection = sections.getUpTerminalSection();
+        return sections.getAllStationSortedByUpToDownFrom(upTerminalSection);
     }
 
     public void update(Line line) {
@@ -68,12 +79,11 @@ public class Line extends BaseEntity {
         if (!(o instanceof Line))
             return false;
         Line line = (Line)o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name)
-            && Objects.equals(color, line.color) && Objects.equals(lineSections, line.lineSections);
+        return Objects.equals(id, line.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, lineSections);
+        return Objects.hash(id);
     }
 }

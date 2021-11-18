@@ -7,16 +7,18 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import nextstep.subway.line.exception.IllegalSectionException;
+import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
 
 @Entity
 @Table(uniqueConstraints = {
-	@UniqueConstraint(columnNames = {"up_station_id", "down_station_id"})
+	@UniqueConstraint(columnNames = {"line_id", "up_station_id", "down_station_id"})
 })
 public class Section {
 
@@ -25,9 +27,15 @@ public class Section {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(nullable = false)
+	private Line line;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(nullable = false)
 	private Station upStation;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(nullable = false)
 	private Station downStation;
 
 	private int distance;
@@ -35,33 +43,36 @@ public class Section {
 	protected Section() {
 	}
 
-	public Section(Station upStation, Station downStation) {
-		this(upStation, downStation, 0);
-	}
-
-	public Section(Station upStation, Station downStation, int distance) {
-		validate(upStation, downStation);
+	private Section(Line line, Station upStation, Station downStation, int distance) {
+		validate(line, upStation, downStation);
+		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
 	}
 
-	private void validate(Station upStation, Station downStation) {
-		if (null == upStation && null == downStation) {
-			throw new IllegalSectionException();
+	public static Section of(Line line, Station upStation, Station downStation, int distance) {
+		return new Section(line, upStation, downStation, distance);
+	}
+
+	private void validate(Line line, Station upStation, Station downStation) {
+		if (null == line) {
+			throw new LineNotFoundException();
 		}
-	}
-
-	public boolean isUpTerminal() {
-		return null == upStation && null != downStation;
-	}
-
-	public boolean isDownTerminal() {
-		return null != upStation && null == downStation;
+		if (null == upStation) {
+			throw new StationNotFoundException();
+		}
+		if (null == downStation) {
+			throw new StationNotFoundException();
+		}
 	}
 
 	public Long getId() {
 		return id;
+	}
+
+	public Line getLine() {
+		return line;
 	}
 
 	public Station getUpStation() {
@@ -83,12 +94,11 @@ public class Section {
 		if (!(o instanceof Section))
 			return false;
 		Section section = (Section)o;
-		return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(
-			upStation, section.upStation) && Objects.equals(downStation, section.downStation);
+		return Objects.equals(id, section.id);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, upStation, downStation, distance);
+		return Objects.hash(id);
 	}
 }

@@ -3,14 +3,12 @@ package nextstep.subway.line.application;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
@@ -23,24 +21,17 @@ public class LineService {
 
 	private final LineRepository lineRepository;
 	private final StationService stationService;
-	private final SectionService sectionService;
 
-	public LineService(LineRepository lineRepository, StationService stationService, SectionService sectionService) {
+	public LineService(LineRepository lineRepository, StationService stationService) {
 		this.lineRepository = lineRepository;
 		this.stationService = stationService;
-		this.sectionService = sectionService;
 	}
 
 	public LineResponse saveLine(LineRequest request) {
-		final Line line = request.toLine();
-		line.add(getTerminalSections(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
-		return LineResponse.of(lineRepository.save(line));
-	}
-
-	private List<Section> getTerminalSections(Long upStationId, Long downStationId, int distance) {
-		final Station upStation = stationService.getStation(upStationId);
-		final Station downStation = stationService.getStation(downStationId);
-		return sectionService.getTerminalSections(upStation, downStation, distance);
+		final Station upStation = stationService.getStation(request.getUpStationId());
+		final Station downStation = stationService.getStation(request.getDownStationId());
+		final Line line = lineRepository.save(Line.of(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
+		return LineResponse.of(line);
 	}
 
 	public List<LineResponse> getLines() {
