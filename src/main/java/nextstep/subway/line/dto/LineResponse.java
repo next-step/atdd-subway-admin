@@ -45,4 +45,23 @@ public class LineResponse {
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof LineResponse) || o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        LineResponse that = (LineResponse) o;
+        if (this.id.equals(that.getId()) && this.id == that.getId() && this.name.equals(that.getName())) {
+            return true;
+        }
+
+        return false;
+    }
+
 }
