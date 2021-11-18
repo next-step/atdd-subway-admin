@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,24 +39,17 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> findById(Long id) throws CannotFindEntityException {
-        Line line = findLineById(id);
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_ENTITY));
 
         return Collections.singletonList(LineResponse.of(line));
     }
 
     public void updateById(Long id, LineRequest lineRequest) throws CannotFindEntityException {
-        Line line = findLineById(id);
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_ENTITY));
+
         line.update(lineRequest.toLine());
-    }
-
-    private Line findLineById(Long id) throws CannotFindEntityException {
-        Optional<Line> optionalLine = lineRepository.findById(id);
-
-        if (!optionalLine.isPresent()) {
-            throw new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_ENTITY);
-        }
-
-        return optionalLine.get();
     }
 
     public void deleteLineById(Long id) {
