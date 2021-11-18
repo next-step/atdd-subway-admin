@@ -65,7 +65,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        // 지하철_노선_목록_응답됨
+        지하철_노선_목록_응답됨(response);
         // 지하철_노선_목록_포함됨
     }
 
@@ -133,5 +133,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .given().log().all()
             .when().get("/lines")
             .then().log().all().extract();
+    }
+
+    private void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
