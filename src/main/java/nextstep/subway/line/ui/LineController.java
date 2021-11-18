@@ -43,17 +43,17 @@ public class LineController {
 	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
 		LineResponse lineResponse = lineService.findLineWithSectionsById(id);
-		return new ResponseEntity<>(lineResponse, HttpStatus.OK);
+		return ResponseEntity.ok().body(lineResponse);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+	public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
 		lineService.updateLine(id, lineRequest);
 		return ResponseEntity.ok().build();
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity deleteLine(@PathVariable Long id) {
+	public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
 		lineService.deleteLineById(id);
 		return ResponseEntity.noContent().build();
 	}
