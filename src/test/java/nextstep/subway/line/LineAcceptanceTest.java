@@ -126,11 +126,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_생성("2호선", "green");
 
         // when
         // 지하철_노선_제거_요청
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new LineRequest("2호선", "green"))
+                .when().delete("/lines")
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

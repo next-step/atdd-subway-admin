@@ -38,4 +38,11 @@ public class LineService {
 
         return LineResponse.of(findLine);
     }
+
+    public void deleteLine(final LineRequest lineRequest) {
+        final Line findLine = lineRepository.findByName(lineRequest.getName())
+                .orElseThrow(() -> new IllegalArgumentException("해당 지하철 노선은 존재하지 않습니다."));
+
+        lineRepository.delete(findLine);
+    }
 }
