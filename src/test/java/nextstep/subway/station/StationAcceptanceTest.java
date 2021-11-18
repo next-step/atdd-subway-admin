@@ -3,7 +3,7 @@ package nextstep.subway.station;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.testFactory.AcceptanceTestFactory;
 
 import org.junit.jupiter.api.DisplayName;
@@ -79,7 +79,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	}
 
 	private void 생성된_지하철역이_응답에_포함되어있는_확인(ExtractableResponse<Response> response, String createdUri) {
-		assertThat(response.jsonPath().getObject(".", LineResponse.class).getId()).isEqualTo(
+		assertThat(response.jsonPath().getObject(".", StationResponse.class).getId()).isEqualTo(
 			Long.parseLong(createdUri.split("/")[2]));
 	}
 
@@ -104,13 +104,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
 	private void 생성된_지하철역이_응답_목록에_포함되어있는_확인(List<ExtractableResponse<Response>> registeredStationResponses,
 		ExtractableResponse<Response> response) {
-		List<Long> expectedLineIds = registeredStationResponses.stream()
+		List<Long> expectedStationIds = registeredStationResponses.stream()
 			.map(it -> Long.parseLong(it.header("Location").split("/")[2]))
 			.collect(Collectors.toList());
-		List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+		List<Long> resultStationIds = response.jsonPath().getList(".", StationResponse.class).stream()
 			.map(it -> it.getId())
 			.collect(Collectors.toList());
-		assertThat(resultLineIds).containsAll(expectedLineIds);
+		assertThat(resultStationIds).containsAll(expectedStationIds);
 	}
 
 
