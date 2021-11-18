@@ -9,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -45,7 +46,7 @@ public class Sections {
         return sections.stream()
             .filter(section -> !stations.contains(section.getUpStation()))
             .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(NotFoundException::new);
     }
 
     private boolean isLastStation(Station downStation) {
@@ -57,7 +58,7 @@ public class Sections {
         return sections.stream()
             .filter(section -> section.getUpStation().equals(station))
             .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(NotFoundException::new);
     }
 
     private Set<Station> createUpStations() {

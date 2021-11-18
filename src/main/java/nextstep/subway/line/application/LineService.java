@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -76,11 +77,11 @@ public class LineService {
 
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("not found line id : " + id));
+            .orElseThrow(NotFoundException::new);
     }
 
     private Line findLineByIdWithSections(Long id) {
         return lineRepository.findByIdWithSections(id)
-            .orElseThrow(() -> new IllegalArgumentException("not found line id : " + id));
+            .orElseThrow(NotFoundException::new);
     }
 }
