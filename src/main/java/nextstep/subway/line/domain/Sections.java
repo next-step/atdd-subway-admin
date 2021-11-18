@@ -19,7 +19,7 @@ public class Sections {
 	@OneToMany(mappedBy = "line")
 	private List<Section> sections = new ArrayList<>();
 
-	public Sections() {
+	protected Sections() {
 	}
 
 	public Sections(List<Section> sections) {
