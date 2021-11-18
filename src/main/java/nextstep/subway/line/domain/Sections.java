@@ -45,14 +45,15 @@ public class Sections {
 
 	private Map<Station, Station> getUpDownRoute() {
 		return sections.stream()
-			.collect(Collectors.toMap(entry -> entry.getUpStation(), entry -> entry.getDownStation(),
-				(o1, o2) -> o1, HashMap::new));
+			.collect(Collectors.toMap(Section::getUpStation, Section::getDownStation, (o1, o2) -> o1, HashMap::new));
 	}
 
 	private Station findStartStation() {
-		Set<Station> downStations = sections.stream().map(it -> it.getDownStation()).collect(Collectors.toSet());
+		Set<Station> downStations = sections.stream()
+			.map(Section::getDownStation)
+			.collect(Collectors.toSet());
 		Optional<Station> notDownStation = sections.stream()
-			.map(it -> it.getUpStation())
+			.map(Section::getUpStation)
 			.filter(it -> !downStations.contains(it))
 			.findFirst();
 		return notDownStation.orElseThrow(() -> new IllegalStateException("구간 정보가 올바르지 않습니다."));
