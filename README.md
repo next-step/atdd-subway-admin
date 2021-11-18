@@ -67,4 +67,31 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] 스텝 메서드 만들기
   - [X] 스텝 메서드 한글명으로 바꾸기
   - [X] 스텝 메서드들을 다른 인수 테스트에서 재사용 가능하게 함
-  
+
+### [2단계] 인수 테스트 리팩터링
+
+- [ ] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
+  ```
+  public class LineRequest {
+    private String name;
+    private String color;
+    private Long upStationId;       // 추가
+    private Long downStationId;     // 추가
+    private int distance;           // 추가
+    ...
+  }
+  ```
+  - 두 종점역은 구간의 형태로 관리되어야 함
+  - [ ] 노선 객체에서 구간 정보 관리(양방향 연관관계)
+    ```
+      public class Line {
+      ...
+      private List<Section> sections;
+      ...
+      }
+    ```
+  - [ ] DTO 수정
+  - [ ] 인수 테스트 수정
+- [ ] 노선 조회 시 응답 결과에 역 목록 추가하기
+  - [ ] 노선 조회 시 역 목록을 함께 응답함
+  - [ ] 상행역 부터 하행역 순으로 정렬되어야 함
