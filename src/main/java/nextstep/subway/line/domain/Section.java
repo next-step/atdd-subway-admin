@@ -37,13 +37,14 @@ public class Section {
 	protected Section() {
 	}
 
-	public Section(Line line, Station upStation, Station downStation, int distance) {
-		this.line = line;
+	public Section(Station upStation, Station downStation, int distance) {
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
+	}
 
-		line.addSection(this);
+	public void assignLine(Line line){
+		this.line = line;
 	}
 
 	public Long getId() {
@@ -60,6 +61,10 @@ public class Section {
 
 	public Station getDownStation() {
 		return downStation;
+	}
+
+	public int getDistance() {
+		return distance;
 	}
 
 	@Override
@@ -89,4 +94,11 @@ public class Section {
 			'}';
 	}
 
+	public void changeDownSection(Station station) {
+		this.downStation=station;
+	}
+
+	public void changeDistance(int distance) {
+		this.distance=distance;
+	}
 }

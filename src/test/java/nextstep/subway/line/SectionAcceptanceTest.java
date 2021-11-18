@@ -38,7 +38,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		신분당선 = LineTestFactory.지하철_노선_생성(신분당선_정보).as(LineResponse.class);
 	}
 
-	@DisplayName("노선에 구간을 등록한다.")
+	@DisplayName("노선 중간에 구간을 등록한다.(상행역과 맞닿음)")
 	@Test
 	void addSection() {
 		// when
@@ -51,6 +51,51 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		AcceptanceTestFactory.정상_생성_확인(강남_성복_구간_등록_결과);
+	}
+
+	@DisplayName("노선 중간에 구간을 등록한다.(하행역과 맞닿음)")
+	@Test
+	void addSection2() {
+		// when
+		Map<String, String> 성복역_정보 = StationTestFactory.지하철역_이름_정의("성복역");
+		StationResponse 성복역 = StationTestFactory.지하철역_생성(성복역_정보).as(StationResponse.class);
+
+		Map<String, String> 성복_광교_구간_정보 = 구간_정보_정의(성복역.getId(),광교역.getId(), 7);
+		ExtractableResponse<Response> 성복_광교_구간_등록_결과 = 지하철_노선에_구간_등록_요청(성복_광교_구간_정보,
+			getLineSectionServicePath(신분당선.getId()));
+
+		// then
+		AcceptanceTestFactory.정상_생성_확인(성복_광교_구간_등록_결과);
+	}
+
+	@DisplayName("상행 종점 앞에 구간 추가")
+	@Test
+	void addSection3() {
+		// when
+		Map<String, String> 신논현_정보 = StationTestFactory.지하철역_이름_정의("신논현");
+		StationResponse 신논현 = StationTestFactory.지하철역_생성(신논현_정보).as(StationResponse.class);
+
+		Map<String, String> 신논현_강남_구간_정보 = 구간_정보_정의(신논현.getId(),강남역.getId(), 12);
+		ExtractableResponse<Response> 신논현_강남_구간_등록_결과 = 지하철_노선에_구간_등록_요청(신논현_강남_구간_정보,
+			getLineSectionServicePath(신분당선.getId()));
+
+		// then
+		AcceptanceTestFactory.정상_생성_확인(신논현_강남_구간_등록_결과);
+	}
+
+	@DisplayName("하행 종점 뒤에 구간 추가")
+	@Test
+	void addSection4() {
+		// when
+		Map<String, String> 호매실_정보 = StationTestFactory.지하철역_이름_정의("호매실");
+		StationResponse 호매실 = StationTestFactory.지하철역_생성(호매실_정보).as(StationResponse.class);
+
+		Map<String, String> 광교_호매실_구간_정보 = 구간_정보_정의(광교역.getId(),호매실.getId(), 15);
+		ExtractableResponse<Response> 광교_호매실_구간_등록_결과 = 지하철_노선에_구간_등록_요청(광교_호매실_구간_정보,
+			getLineSectionServicePath(신분당선.getId()));
+
+		// then
+		AcceptanceTestFactory.정상_생성_확인(광교_호매실_구간_등록_결과);
 	}
 
 	private ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(Map<String, String> params, String path) {
