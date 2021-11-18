@@ -39,13 +39,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-
+        String lineName = "2호선";
+        지하철_노선_생성(lineName,"green");
 
         // when
         // 지하철_노선_생성_요청
+        final ExtractableResponse<Response> response = 지하철_노선_생성(lineName, "red");
 
         // then
         // 지하철_노선_생성_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
