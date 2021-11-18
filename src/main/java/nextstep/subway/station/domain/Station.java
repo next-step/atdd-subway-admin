@@ -26,12 +26,17 @@ public class Station extends BaseEntity {
 
     }
 
-    private Station(String name) {
+    private Station(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 
+    public static Station of(Long id, String name) {
+        return new Station(id, name);
+    }
+
     public static Station of(String name) {
-        return new Station(name);
+        return Station.of(null, name);
     }
 
     public Long getId() {

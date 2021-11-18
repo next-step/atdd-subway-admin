@@ -26,6 +26,14 @@ public class Sections {
 
 	}
 
+	private Sections(List<Section> values) {
+		this.values = values;
+	}
+
+	public static Sections of(List<Section> values) {
+		return new Sections(values);
+	}
+
 	public void add(Section value) {
 		values.add(value);
 	}
@@ -73,5 +81,9 @@ public class Sections {
 			.filter(upStation -> !downStations.contains(upStation))
 			.findFirst()
 			.orElseThrow(IllegalStateException::new);
+	}
+
+	public int size() {
+		return values.size();
 	}
 }
