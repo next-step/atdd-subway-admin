@@ -45,6 +45,139 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response);
     }
 
+    @DisplayName("존재하지 않는 지하철 역을 종점으로 하는 노선을 생성한다.")
+    @Test
+    void createLineWithUnknownStationId() {
+        // given
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+
+        // when
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), UNKNOWN_STATION_ID, 10);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선_생성_요청값);
+
+        // then
+        대상을_찾지_못해_지하철_노선_생성_실패됨(response);
+    }
+
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
+    @Test
+    void createLineWithDuplicateName() {
+        // given
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선_생성_요청값);
+
+        // then
+        잘못된_요청으로_지하철_노선_생성_실패됨(response);
+    }
+
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void getLines() {
+        // given
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
+
+        StationResponse 사당역_생성_응답 = 지하철_역_등록되어_있음(사당역_생성_요청값());
+        StationResponse 동작역_생성_응답 = 지하철_역_등록되어_있음(동작역_생성_요청값());
+        LineCreateRequest 노선_4호선_생성_요청값 = 노선_4호선_생성_요청값(사당역_생성_응답.getId(), 동작역_생성_응답.getId(), 30);
+        LineResponse 노선_4호선_생성_응답 = 지하철_노선_등록되어_있음(노선_4호선_생성_요청값);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
+
+        // then
+        지하철_노선_목록_응답됨(response);
+        지하철_노선_목록_포함됨(response, 노선_2호선_생성_응답, 노선_4호선_생성_응답);
+        지하철_노선_목록_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response);
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void getLine() {
+        // given
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(노선_2호선_생성_응답.getId());
+
+        // then
+        지하철_노선_응답됨(response);
+        지하철_노선_응답_내_역_목록에_종점들이_등록됨(response, 강남역_생성_응답, 역삼역_생성_응답);
+        지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response);
+    }
+
+    @DisplayName("생성되지 않은 지하철 노선을 조회한다.")
+    @Test
+    void getNotCreatedLine() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(UNKNOWN_LINE_ID);
+
+        // then
+        지하철_노선_찾지_못함(response);
+    }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(노선_2호선_생성_응답.getId(), 노선_수정_요청값());
+
+        // then
+        지하철_노선_수정됨(response);
+    }
+
+    @DisplayName("생성되지 않은 지하철 노선을 수정한다.")
+    @Test
+    void updatedNotCreatedLine() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(UNKNOWN_LINE_ID, 노선_수정_요청값());
+
+        // then
+        지하철_노선_찾지_못함(response);
+    }
+
+    @DisplayName("지하철 노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
+        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
+        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
+        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(노선_2호선_생성_응답.getId());
+
+        // then
+        지하철_노선_삭제됨(response);
+    }
+
+    @DisplayName("생성되지 않은 지하철 노선을 제거한다.")
+    @Test
+    void deleteNotCreatedLine() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(UNKNOWN_LINE_ID);
+
+        // then
+        지하철_노선_찾지_못함(response);
+    }
+
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineCreateRequest request) {
         return RestAssured.given().log().all()
             .body(request)
@@ -83,40 +216,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // TODO : 현재 응답값으로는 정렬된지 어떻게 검증할 수 있을까?
     }
 
-    @DisplayName("존재하지 않는 지하철 역을 종점으로 하는 노선을 생성한다.")
-    @Test
-    void createLineWithUnknownStationId() {
-        // given
-        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
-
-        // when
-        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), UNKNOWN_STATION_ID, 10);
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선_생성_요청값);
-
-        // then
-        대상을_찾지_못해_지하철_노선_생성_실패됨(response);
-    }
-
-    private void 대상을_찾지_못해_지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    }
-
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
-    @Test
-    void createLineWithDuplicateName() {
-        // given
-        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
-        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
-        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
-        지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(노선_2호선_생성_요청값);
-
-        // then
-        잘못된_요청으로_지하철_노선_생성_실패됨(response);
-    }
-
     private LineResponse 지하철_노선_등록되어_있음(LineCreateRequest request) {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(request);
         return response.jsonPath().getObject(".", LineResponse.class);
@@ -126,27 +225,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("지하철 노선 목록을 조회한다.")
-    @Test
-    void getLines() {
-        // given
-        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
-        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
-        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
-        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
-
-        StationResponse 사당역_생성_응답 = 지하철_역_등록되어_있음(사당역_생성_요청값());
-        StationResponse 동작역_생성_응답 = 지하철_역_등록되어_있음(동작역_생성_요청값());
-        LineCreateRequest 노선_4호선_생성_요청값 = 노선_4호선_생성_요청값(사당역_생성_응답.getId(), 동작역_생성_응답.getId(), 30);
-        LineResponse 노선_4호선_생성_응답 = 지하철_노선_등록되어_있음(노선_4호선_생성_요청값);
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
-
-        // then
-        지하철_노선_목록_응답됨(response);
-        지하철_노선_목록_포함됨(response, 노선_2호선_생성_응답, 노선_4호선_생성_응답);
-        지하철_노선_목록_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response);
+    private void 대상을_찾지_못해_지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private void 지하철_노선_목록_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(ExtractableResponse<Response> response) {
@@ -179,24 +259,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void getLine() {
-        // given
-        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
-        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
-        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
-        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(노선_2호선_생성_응답.getId());
-
-        // then
-        지하철_노선_응답됨(response);
-        지하철_노선_응답_내_역_목록에_종점들이_등록됨(response, 강남역_생성_응답, 역삼역_생성_응답);
-        지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(response);
-    }
-
     private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
         return RestAssured.given().log().all()
             .when()
@@ -209,34 +271,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("생성되지 않은 지하철 노선을 조회한다.")
-    @Test
-    void getNotCreatedLine() {
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(UNKNOWN_LINE_ID);
-
-        // then
-        지하철_노선_찾지_못함(response);
-    }
-
     private void 지하철_노선_찾지_못함(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    }
-
-    @DisplayName("지하철 노선을 수정한다.")
-    @Test
-    void updateLine() {
-        // given
-        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
-        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
-        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
-        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(노선_2호선_생성_응답.getId(), 노선_수정_요청값());
-
-        // then
-        지하철_노선_수정됨(response);
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineUpdateRequest request) {
@@ -253,32 +289,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("생성되지 않은 지하철 노선을 수정한다.")
-    @Test
-    void updatedNotCreatedLine() {
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(UNKNOWN_LINE_ID, 노선_수정_요청값());
-
-        // then
-        지하철_노선_찾지_못함(response);
-    }
-
-    @DisplayName("지하철 노선을 제거한다.")
-    @Test
-    void deleteLine() {
-        // given
-        StationResponse 강남역_생성_응답 = 지하철_역_등록되어_있음(강남역_생성_요청값());
-        StationResponse 역삼역_생성_응답 = 지하철_역_등록되어_있음(역삼역_생성_요청값());
-        LineCreateRequest 노선_2호선_생성_요청값 = 노선_2호선_생성_요청값(강남역_생성_응답.getId(), 역삼역_생성_응답.getId(), 10);
-        LineResponse 노선_2호선_생성_응답 = 지하철_노선_등록되어_있음(노선_2호선_생성_요청값);
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(노선_2호선_생성_응답.getId());
-
-        // then
-        지하철_노선_삭제됨(response);
-    }
-
     private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when()
@@ -290,15 +300,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    @DisplayName("생성되지 않은 지하철 노선을 제거한다.")
-    @Test
-    void deleteNotCreatedLine() {
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(UNKNOWN_LINE_ID);
-
-        // then
-        지하철_노선_찾지_못함(response);
     }
 }
