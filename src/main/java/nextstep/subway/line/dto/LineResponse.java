@@ -1,7 +1,6 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
@@ -40,6 +39,4 @@ public class LineResponse {
     public String getName() {
         return name;
     }
-
-
 }
