@@ -23,9 +23,11 @@ public class Section {
     public Line line;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
     public Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
     public Station downStation;
 
     private int distance;
