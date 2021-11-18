@@ -38,14 +38,14 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<LineResponse> findById(Long id) throws CannotFindEntityException {
+    public List<LineResponse> findById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_ENTITY));
 
         return Collections.singletonList(LineResponse.of(line));
     }
 
-    public void updateById(Long id, LineRequest lineRequest) throws CannotFindEntityException {
+    public void updateById(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new CannotFindEntityException(ERROR_MESSAGE_CANNOT_FIND_ENTITY));
 

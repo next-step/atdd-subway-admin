@@ -1,6 +1,5 @@
 package nextstep.subway.line.ui;
 
-import nextstep.subway.exception.CannotFindEntityException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -41,13 +40,13 @@ public class LineController {
     }
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LineResponse>> showLinesById(@PathVariable Long id) throws CannotFindEntityException {
+    public ResponseEntity<List<LineResponse>> showLinesById(@PathVariable Long id) {
         return ResponseEntity.ok()
                 .body(lineService.findById(id));
     }
 
     @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) throws CannotFindEntityException {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateById(id, lineRequest);
         return ResponseEntity.ok()
                 .build();
