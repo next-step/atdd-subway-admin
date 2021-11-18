@@ -46,11 +46,19 @@ public class Section extends BaseEntity {
 	}
 
 	private Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+		throwIfUpStationAndDownStationIsEqual(upStation, downStation);
+
 		this.id = id;
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
 		this.distance = distance;
+	}
+
+	private void throwIfUpStationAndDownStationIsEqual(Station upStation, Station downStation) {
+		if (upStation.equals(downStation)) {
+			throw new IllegalArgumentException("상행역과 하행역은 같을 수 없습니다.");
+		}
 	}
 
 	public static Section of(Long id, Station upStation, Station downStation, int distance) {
