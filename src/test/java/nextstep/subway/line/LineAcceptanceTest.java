@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -27,14 +28,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_생성(String name, String color) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new LineRequest(name, color))
-                .when().post("/lines")
-                .then().log().all().extract();
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -73,12 +66,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(lineResponses.size()).isEqualTo(2);
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_목록_조회() {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all().extract();
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -139,5 +126,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_목록_조회() {
+        return RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_생성(String name, String color) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new LineRequest(name, color))
+                .when().post("/lines")
+                .then().log().all().extract();
     }
 }
