@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 class SectionsTest {
 
@@ -25,7 +26,7 @@ class SectionsTest {
 		Sections sections = new Sections(Arrays.asList(section1, section2));
 
 		// when
-		List<Station> stationList = sections.getStations();
+		List<StationResponse> stationList = sections.getStations();
 
 		// then
 		assertThat(stationList).hasSize(4);
