@@ -20,18 +20,13 @@ public class LineResponse {
     private LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color,Sections sections, LocalDateTime createdDate, LocalDateTime modifiedDate ) {
-       this(id,name,color,sections.getStations(),createdDate,modifiedDate);
-    }
-
-    public LineResponse(Long id, String name, String color, List<Station> stations, LocalDateTime createdDate,
-        LocalDateTime modifiedDate) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.stations = stations;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
+    private LineResponse(Long id, String name, String color,Sections sections, LocalDateTime createdDate, LocalDateTime modifiedDate ) {
+            this.id = id;
+            this.name = name;
+            this.color = color;
+            this.stations = sections.getStations();
+            this.createdDate = createdDate;
+            this.modifiedDate = modifiedDate;
     }
 
     public static LineResponse of(Line line) {
