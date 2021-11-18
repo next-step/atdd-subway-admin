@@ -5,10 +5,13 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,13 +60,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
+        지하철_노선_생성("1호선","blue");
+        지하철_노선_생성("2호선","green");
 
         // when
         // 지하철_노선_목록_조회_요청
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_목록_응답됨
         // 지하철_노선_목록_포함됨
+        final List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lineResponses.size()).isEqualTo(2);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
