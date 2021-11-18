@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import java.util.Objects;
+
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -68,5 +70,21 @@ public class Section extends BaseEntity {
 
     public Distance getDistance() {
         return this.distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance) && Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, upStation, downStation, distance, line);
     }
 }

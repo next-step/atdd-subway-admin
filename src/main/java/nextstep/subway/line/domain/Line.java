@@ -6,6 +6,7 @@ import nextstep.subway.station.domain.Station;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.persistence.*;
@@ -71,5 +72,21 @@ public class Line extends BaseEntity {
         stations.add(lastSection.getDownStation());
 
         return stations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Line)) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(sections, line.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color, sections);
     }
 }
