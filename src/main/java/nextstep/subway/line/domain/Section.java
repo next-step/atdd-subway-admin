@@ -37,6 +37,10 @@ public class Section extends BaseEntity {
 	@Column(name = "distance")
 	private int distance;
 
+	public void setLine(Line line) {
+		this.line = line;
+	}
+
 	protected Section() {
 
 	}
@@ -49,8 +53,8 @@ public class Section extends BaseEntity {
 		this.distance = distance;
 	}
 
-	public static Section of(Line line, Station upStation, Station downStation, int distance) {
-		return new Section(null, line, upStation, downStation, distance);
+	public static Section of(Station upStation, Station downStation, int distance) {
+		return new Section(null, null, upStation, downStation, distance);
 	}
 
 	public Station getUpStation() {

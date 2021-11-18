@@ -32,24 +32,27 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         sections.add(section);
+        section.setLine(this);
     }
 
     protected Line() {
 
     }
 
-    private Line(String name, String color) {
+    private Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
+
+        addSection(section);
     }
 
-    public static Line of(String name, String color) {
-        return new Line(name, color);
+    public static Line of(String name, String color, Section section) {
+        return new Line(name, color, section);
     }
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public Long getId() {
