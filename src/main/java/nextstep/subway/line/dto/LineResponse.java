@@ -16,7 +16,7 @@ public class LineResponse {
 	private final LocalDateTime createdDate;
 	private final LocalDateTime modifiedDate;
 
-	public LineResponse(Long id, String name, String color, List<Station> stations, LocalDateTime createdDate,
+	private LineResponse(Long id, String name, String color, List<Station> stations, LocalDateTime createdDate,
 		LocalDateTime modifiedDate) {
 		this.id = id;
 		this.name = name;
