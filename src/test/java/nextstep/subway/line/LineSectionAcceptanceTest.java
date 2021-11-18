@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +47,143 @@ public class LineSectionAcceptanceTest extends AcceptanceTest{
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
+    }
+
+    @DisplayName("지하철 노선 구간추가를 한다.(상행역 동일)")
+    @Test
+    void addLineSection1() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse1.getId(), stationResponse3.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        String lineId = response.header("Location").split("/")[2];
+
+        SectionRequest sectionRequest = new SectionRequest(stationResponse1.getId(), stationResponse2.getId(), 4);
+        addSubwayLineSection(lineId, sectionRequest);
+
+        // 지하철_구간_목록_조회_요청
+        LineResponse lineResponse = getSubwayLine(response).jsonPath().getObject(".", LineResponse.class);
+
+        // then
+        // 지하철_구간_추가되고 정렬되어 조회됨
+        assertThat(lineResponse.getStations()).extracting("name").containsExactly(stationResponse1.getName(), stationResponse2.getName(), stationResponse3.getName());
+    }
+
+    @DisplayName("지하철 노선 구간추가를 한다.(하행역 동일)")
+    @Test
+    void addLineSection2() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse1.getId(), stationResponse3.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        String lineId = response.header("Location").split("/")[2];
+
+        SectionRequest sectionRequest = new SectionRequest(stationResponse2.getId(), stationResponse3.getId(), 4);
+        addSubwayLineSection(lineId, sectionRequest);
+
+        // 지하철_구간_목록_조회_요청
+        LineResponse lineResponse = getSubwayLine(response).jsonPath().getObject(".", LineResponse.class);
+
+        // then
+        // 지하철_구간_추가되고 정렬되어 조회됨
+        assertThat(lineResponse.getStations()).extracting("name").containsExactly(stationResponse1.getName(), stationResponse2.getName(), stationResponse3.getName());
+    }
+    @DisplayName("지하철 노선 구간추가를 한다.(상행역 신규 종점)")
+    @Test
+    void addLineSection3() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse2.getId(), stationResponse3.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        String lineId = response.header("Location").split("/")[2];
+
+        SectionRequest sectionRequest = new SectionRequest(stationResponse1.getId(), stationResponse2.getId(), 11);
+        addSubwayLineSection(lineId, sectionRequest);
+
+        // 지하철_구간_목록_조회_요청
+        LineResponse lineResponse = getSubwayLine(response).jsonPath().getObject(".", LineResponse.class);
+
+        // then
+        // 지하철_구간_추가되고 정렬되어 조회됨
+        assertThat(lineResponse.getStations()).extracting("name").containsExactly(stationResponse1.getName(), stationResponse2.getName(), stationResponse3.getName());
+    }
+
+    @DisplayName("지하철 노선 구간추가를 한다.(하행역 신규 종점)")
+    @Test
+    void addLineSection4() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse1.getId(), stationResponse2.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        String lineId = response.header("Location").split("/")[2];
+
+        SectionRequest sectionRequest = new SectionRequest(stationResponse2.getId(), stationResponse3.getId(), 11);
+        addSubwayLineSection(lineId, sectionRequest);
+
+        // 지하철_구간_목록_조회_요청
+        LineResponse lineResponse = getSubwayLine(response).jsonPath().getObject(".", LineResponse.class);
+
+        // then
+        // 지하철_구간_추가되고 정렬되어 조회됨
+        assertThat(lineResponse.getStations()).extracting("name").containsExactly(stationResponse1.getName(), stationResponse2.getName(), stationResponse3.getName());
+    }
+
+    @DisplayName("지하철 노선 구간추가를 한다.(신규 구간이 더 길 경우 400 에러)")
+    @Test
+    void addLineSection_Error1() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse1.getId(), stationResponse3.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        // 지하철_구간_생성_요청
+        String lineId = response.header("Location").split("/")[2];
+
+        SectionRequest sectionRequest = new SectionRequest(stationResponse2.getId(), stationResponse3.getId(), 11);
+        ExtractableResponse<Response> createResponse = addSubwayLineSection(lineId, sectionRequest);
+        // then
+        // BAD_REQUEST(400) ERROR 발생
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 노선 구간추가를 한다.(기존에 등록된 구간에 대해서 중복으로 등록 요청할 경우 400 에러)")
+    @Test
+    void addLineSection_Error2() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse1.getId(), stationResponse3.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        // 지하철_구간_생성_요청
+        String lineId = response.header("Location").split("/")[2];
+
+        SectionRequest sectionRequest = new SectionRequest(stationResponse1.getId(), stationResponse3.getId(), 11);
+        ExtractableResponse<Response> createResponse = addSubwayLineSection(lineId, sectionRequest);
+        // then
+        // BAD_REQUEST(400) ERROR 발생
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 노선 구간추가를 한다.(상행, 하행역 중 하나라도 등록이 되어있지 않을 경우 400 에러)")
+    @Test
+    void addLineSection_Error3() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse1.getId(), stationResponse3.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        // 지하철_구간_생성_요청
+        String lineId = response.header("Location").split("/")[2];
+
+        SectionRequest sectionRequest = new SectionRequest(stationResponse2.getId(), stationResponse4.getId(), 11);
+        ExtractableResponse<Response> createResponse = addSubwayLineSection(lineId, sectionRequest);
+        // then
+        // BAD_REQUEST(400) ERROR 발생
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 모든 노선 목록을 조회한다.")
@@ -105,6 +243,18 @@ public class LineSectionAcceptanceTest extends AcceptanceTest{
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> addSubwayLineSection(String lineId, SectionRequest sectionRequest) {
+
+        return RestAssured.given()
+                .log().all()
+                .when()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .post("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .extract();
     }
