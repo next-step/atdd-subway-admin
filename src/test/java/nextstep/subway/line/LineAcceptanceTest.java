@@ -50,11 +50,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "red");
+        지하철_노선_생성_요청(params);
+        
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "신분당선");
+        params2.put("color", "red");
+        지하철_노선_생성_요청(params2);
 
         // when
         // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         // 지하철_노선_목록_응답됨
@@ -117,5 +125,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+    
+    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        // when
+        return RestAssured
+            .given().log().all()
+            .when().get("/lines")
+            .then().log().all().extract();
     }
 }
