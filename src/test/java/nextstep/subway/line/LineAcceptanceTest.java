@@ -6,6 +6,8 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -15,14 +17,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
     //given
-    public static final LineRequest 수인분당선 = new LineRequest("수인분당선", "yellow");
-    public static final LineRequest 신분당선 = new LineRequest("신분당선", "red");
+    public LineRequest 수인분당선;
+    public LineRequest 신분당선;
+
+    private StationResponse response_강남역;
+    private StationResponse response_역삼역;
 
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
         return 지하철_노선_생성_요청(lineRequest);
@@ -35,6 +40,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all().extract();
+    }
+
+    @BeforeEach
+    void beforeEach() {
+        response_강남역 = 지하철_역_등록되어_있음(강남역).as(StationResponse.class);
+        response_역삼역 = 지하철_역_등록되어_있음(역삼역).as(StationResponse.class);
+
+        수인분당선 = new LineRequest("수인분당선", "yellow");
+        신분당선 = new LineRequest("신분당선", "red");
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -213,5 +227,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_삭제_실패(ExtractableResponse<Response> response) {
         요청_결과_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @DisplayName("노선 등록시 구간정보도 같이 저장한다.")
+    @Test
+    void createLineAndSection() {
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(신분당선)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 }

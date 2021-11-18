@@ -70,6 +70,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### [2단계] 인수 테스트 리팩터링
 
+- [X] 인수 테스트 수정
+- [ ] DTO 수정
 - [ ] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
   ```
   public class LineRequest {
@@ -81,17 +83,17 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     ...
   }
   ```
-  - 두 종점역은 구간의 형태로 관리되어야 함
-  - [ ] 노선 객체에서 구간 정보 관리(양방향 연관관계)
-    ```
-      public class Line {
-      ...
+- 두 종점역은 구간의 형태로 관리되어야 함
+- [ ] 노선 객체에서 구간 정보 관리(양방향 연관관계)
+  ```
+    public class Line {
+    ...
       private List<Section> sections;
-      ...
-      }
-    ```
-  - [ ] DTO 수정
-  - [ ] 인수 테스트 수정
+    ...
+    }
+  ```
+
+
 - [ ] 노선 조회 시 응답 결과에 역 목록 추가하기
   - [ ] 노선 조회 시 역 목록을 함께 응답함
   - [ ] 상행역 부터 하행역 순으로 정렬되어야 함
