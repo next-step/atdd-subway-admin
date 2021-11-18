@@ -114,7 +114,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_역_삭제_요청(uri);
 
         // then
-
+        지하철_역_삭제됨(response);
     }
 
     private ExtractableResponse<Response> 지하철_역_삭제_요청(String uri) {
