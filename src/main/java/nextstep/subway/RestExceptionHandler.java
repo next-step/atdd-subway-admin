@@ -22,6 +22,12 @@ public class RestExceptionHandler {
 	}
 
 	@ExceptionHandler
+	public ResponseEntity<ErrorResponse> handle(IllegalArgumentException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(ErrorResponse.of(e.getMessage()));
+	}
+
+	@ExceptionHandler
 	public ResponseEntity<ErrorResponse> handle(EntityNotFoundException e) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 			.body(ErrorResponse.of(e.getMessage()));

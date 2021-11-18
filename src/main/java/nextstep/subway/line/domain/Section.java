@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import nextstep.subway.line.exception.IllegalSectionException;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.StationNotFoundException;
@@ -64,6 +65,9 @@ public class Section {
 		}
 		if (null == downStation) {
 			throw new StationNotFoundException();
+		}
+		if (upStation.equals(downStation)) {
+			throw new IllegalSectionException();
 		}
 	}
 
