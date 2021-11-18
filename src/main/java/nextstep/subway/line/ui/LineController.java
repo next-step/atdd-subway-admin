@@ -29,9 +29,10 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findAllLine());
     }
 
-    @PatchMapping
-    public ResponseEntity<LineResponse> updateLine(@RequestBody LineRequest lineRequest) {
-        return ResponseEntity.ok().body(lineService.modifyLine(lineRequest));
+    @PutMapping("/{lineId}")
+    public ResponseEntity<LineResponse> updateLine(@PathVariable("lineId") Long lineId,
+                                                   @RequestBody LineRequest lineRequest) {
+        return ResponseEntity.ok().body(lineService.modifyLine(lineId, lineRequest));
     }
 
     @DeleteMapping("/{lineId}")

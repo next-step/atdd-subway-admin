@@ -91,23 +91,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        String lineName = "5호선";
-        String updateLineColor = "brown";
-        지하철_노선_생성(lineName,"purple");
+        final ExtractableResponse<Response> lineCreateResponse = 지하철_노선_생성("5호선","purple");
+        final LineResponse lineResponse = lineCreateResponse.as(LineResponse.class);
 
         // when
         // 지하철_노선_수정_요청
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new LineRequest(lineName, updateLineColor))
-                .when().patch("/lines")
+                .body(new LineRequest("9호선", "golden"))
+                .pathParam("lineId", lineResponse.getId())
+                .when().put("/lines/{lineId}")
                 .then().log().all().extract();
 
         // then
         // 지하철_노선_수정됨
         final LineResponse line = response.as(LineResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(line.getColor()).isEqualTo(updateLineColor);
+        assertThat(line.getName()).isEqualTo("9호선");
+        assertThat(line.getColor()).isEqualTo("golden");
     }
 
     @DisplayName("지하철 노선을 제거한다.")

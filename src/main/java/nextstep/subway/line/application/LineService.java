@@ -31,10 +31,10 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse modifyLine(final LineRequest lineRequest) {
-        final Line findLine = lineRepository.findByName(lineRequest.getName())
+    public LineResponse modifyLine(final Long lineId, final LineRequest lineRequest) {
+        final Line findLine = lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 지하철 노선은 존재하지 않습니다."));
-        findLine.update(new Line(findLine.getName(), lineRequest.getColor()));
+        findLine.update(new Line(lineRequest.getName(), lineRequest.getColor()));
 
         return LineResponse.of(findLine);
     }
