@@ -20,13 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    //given
-    public static final StationRequest 강남역 = new StationRequest("강남역");
-    public static final StationRequest 역삼역 = new StationRequest("역삼역");
+    public static ExtractableResponse<Response> 지하철_역_등록되어_있음(String name) {
+        return 지하철_역_생성_요청(name);
+    }
 
-    public static ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest request) {
+    public static ExtractableResponse<Response> 지하철_역_생성_요청(String name) {
         return RestAssured.given().log().all()
-                .body(request)
+                .body(new StationRequest(name))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/stations")
@@ -34,15 +34,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_역_등록되어_있음(StationRequest request) {
-        return 지하철_역_생성_요청(request);
-    }
-
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 지하철_역_생성_요청(강남역);
+        ExtractableResponse<Response> response = 지하철_역_생성_요청("강남역");
 
         // then
         지하철_역_생성됨(response);
@@ -57,10 +53,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        지하철_역_등록되어_있음(강남역);
+        지하철_역_등록되어_있음("강남역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_역_생성_요청(강남역);
+        ExtractableResponse<Response> response = 지하철_역_생성_요청("강남역");
 
         // then
         지하철_역_생성_실패(response);
@@ -74,8 +70,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = 지하철_역_생성_요청(강남역);
-        ExtractableResponse<Response> createResponse2 = 지하철_역_생성_요청(역삼역);
+        ExtractableResponse<Response> createResponse1 = 지하철_역_등록되어_있음("강남역");
+        ExtractableResponse<Response> createResponse2 = 지하철_역_등록되어_있음("역삼역");
 
         // when
         ExtractableResponse<Response> response = 지하철_역_조회();
@@ -107,7 +103,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_역_등록되어_있음(강남역);
+        ExtractableResponse<Response> createResponse = 지하철_역_등록되어_있음("강남역");
 
         // when
         String uri = createResponse.header("Location");

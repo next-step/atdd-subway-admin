@@ -71,8 +71,8 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ### [2단계] 인수 테스트 리팩터링
 
 - [X] 인수 테스트 수정
-- [ ] DTO 수정
-- [ ] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
+- [X] DTO 수정
+- [X] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
   ```
   public class LineRequest {
     private String name;
