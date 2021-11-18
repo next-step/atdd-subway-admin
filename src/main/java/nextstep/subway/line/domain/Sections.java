@@ -5,9 +5,23 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+
+import nextstep.subway.station.domain.Station;
+
+@Embeddable
 public class Sections {
-    private final List<Section> values;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id", cascade = CascadeType.ALL)
+    private List<Section> values;
+
+    protected Sections() {
+
+    }
 
     private Sections(List<Section> sections) {
         this.values = sections;
@@ -21,6 +35,23 @@ public class Sections {
         return new Sections(sections);
     }
 
+    public boolean isEmpty() {
+        return this.values.isEmpty();
+    }
+
+    public Section get(int index) {
+        return this.values.get(index);
+    }
+
+    public Integer size() {
+        return this.values.size();
+    }
+
+    public List<Station> findUpStations() {
+        return this.values.stream()
+                        .map(Section::getUpStation)
+                        .collect(Collectors.toList());
+    }
     class AddSectionItem {
        int index;
        Section newUpSection;

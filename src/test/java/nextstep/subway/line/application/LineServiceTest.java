@@ -31,7 +31,7 @@ import nextstep.subway.station.domain.Station;
 public class LineServiceTest {
     @Mock
     LineRepository lineRepository;
-    
+
     @Mock
     SectionRepository sectionRepository;
 
@@ -43,7 +43,7 @@ public class LineServiceTest {
     void find_allLineInfos() {
         // given
         List<Line> sample = List.of(new Line("신분당선", "bg-red-600"), new Line("2호선", "bg-green-600"));
-        
+
         when(lineRepository.findAll()).thenReturn(sample);
 
         // when
@@ -70,7 +70,7 @@ public class LineServiceTest {
     void find_lineInfo() {
         // given
         Line sample = new Line("신분당선", "bg-red-600");
-        
+
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(sample));
 
         // when
@@ -89,7 +89,7 @@ public class LineServiceTest {
     void update_lineInfo() {
         // given
         Line sample = new Line("신분당선", "bg-red-600");
-        
+
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(sample));
 
         // when
@@ -120,18 +120,19 @@ public class LineServiceTest {
     @Test
     void create_lineWithSection() {
         // given
-        Line expectedLine = new Line("3호선", "bg-orange-600");
-
         Section section = Section.valueOf(new Station("대화"), new Station("수서"), Distance.valueOf(100));
+
+        Line expectedLine = new Line("3호선", "bg-orange-600");
         section.addSectionAtLine(expectedLine);
 
         when(lineRepository.save(any(Line.class))).thenReturn(expectedLine);
-        
+
+        Line savingLine = new Line("3호선", "bg-orange-600");
         // when
-        Line line = lineService.saveLine(expectedLine, section);
+        Line savedLine = lineService.saveLine(savingLine, section);
 
         // then
-        Assertions.assertThat(line).isEqualTo(expectedLine);
+        Assertions.assertThat(savedLine).isEqualTo(expectedLine);
     }
 
     @DisplayName("구간을 저장한다.")

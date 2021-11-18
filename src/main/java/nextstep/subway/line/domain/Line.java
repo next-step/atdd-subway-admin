@@ -20,8 +20,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id", cascade = CascadeType.ALL)
-    private List<Section> sections;
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
@@ -30,7 +30,7 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
 
-        sections = new ArrayList<>();
+        sections = Sections.valueOf();
     }
 
     public void update(Line line) {
@@ -38,8 +38,8 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public boolean addSection(Section section) {
-        return this.sections.add(section);
+    public void addSection(Section section) {
+        this.sections.add(section);
     }
 
     public Long getId() {
@@ -54,8 +54,8 @@ public class Line extends BaseEntity {
         return this.color;
     }
 
-    public List<Section> getSections() {
-        return Collections.unmodifiableList(this.sections);
+    public Sections getSections() {
+        return this.sections;
     }
 
     public List<Station> getStations() {
@@ -63,9 +63,7 @@ public class Line extends BaseEntity {
             return new ArrayList<>();
         }
 
-        List<Station> stations = this.sections.stream()
-                                                .map(Section::getUpStation)
-                                                .collect(Collectors.toList());
+        List<Station> stations = this.sections.findUpStations();
 
         Section lastSection = this.sections.get(this.sections.size() - 1);
 
