@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.dto.LineRequest;
 
 import javax.persistence.*;
 
@@ -21,7 +22,11 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void update(Line line) {
+    public static Line of(LineRequest lineRequest) {
+        return new Line(lineRequest.getName(), lineRequest.getColor());
+    }
+
+    public void update(final Line line) {
         this.name = line.getName();
         this.color = line.getColor();
     }
