@@ -13,7 +13,6 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 
 @Service
-@Transactional
 public class LineService {
     private final LineRepository lineRepository;
     private final SectionService sectionService;
@@ -23,6 +22,7 @@ public class LineService {
         this.sectionService = sectionService;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         sectionService.saveSection(
@@ -39,15 +39,17 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse getLine(Long id) {
-        Line findLine = findLineById(id);
-        return LineResponse.of(findLine);
+        Line findLine = findLineByIdWithSections(id);
+        return LineResponse.of(findLine, new ArrayList<>());
     }
 
+    @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line findLine = findLineById(id);
         findLine.update(lineRequest.toLine());
     }
 
+    @Transactional
     public void deleteLine(Long id) {
         Line findLine = findLineById(id);
         lineRepository.delete(findLine);
@@ -63,6 +65,11 @@ public class LineService {
 
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("not found line id : " + id));
+    }
+
+    private Line findLineByIdWithSections(Long id) {
+        return lineRepository.findByIdWithSections(id)
             .orElseThrow(() -> new IllegalArgumentException("not found line id : " + id));
     }
 }
