@@ -23,15 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineService {
 
 	private final LineRepository lineRepository;
-	private final SectionRepository sectionRepository;
 
 	/*	Station은 도메인이 다르므로  StationRepository를 바로 접근하지 않고 StationService 계층을 통해서 접근	*/
 	private final StationService stationService;
 
-	public LineService(LineRepository lineRepository, SectionRepository sectionRepository,
-		StationService stationService) {
+	public LineService(LineRepository lineRepository, StationService stationService) {
 		this.lineRepository = lineRepository;
-		this.sectionRepository = sectionRepository;
 		this.stationService = stationService;
 	}
 
@@ -42,12 +39,11 @@ public class LineService {
 
 		Line persistLine = lineRepository.save(request.toLine());
 		Section endToend = new Section(upStation, downStation, request.getDistance());
-		sectionRepository.save(endToend);
 		persistLine.addSection(endToend);
 		return LineResponse.from(persistLine);
 	}
 
-	public List<LineResponse> findAllLineWithSections(){
+	public List<LineResponse> findAllLineWithSections() {
 		List<Line> lines = lineRepository.findAllLinesWithSectionsAndStations();
 		return lines.stream()
 			.map(LineResponse::from)
@@ -56,18 +52,17 @@ public class LineService {
 
 	@Transactional
 	public void deleteLineById(Long id) {
-		sectionRepository.deleteAllByLineId(id);
 		lineRepository.deleteById(id);
 	}
 
-	public LineResponse findLineWithSectionsById(Long id){
+	public LineResponse findLineWithSectionsById(Long id) {
 		Line line = lineRepository.findLineWithSectionsAndStationsById(id);
 		validateExistLine(line);
 		return LineResponse.from(line);
 	}
 
 	private void validateExistLine(Line line) {
-		if(line == null){
+		if (line == null) {
 			throw new IllegalArgumentException("없는 노선입니다.");
 		}
 	}
@@ -84,7 +79,7 @@ public class LineService {
 	}
 
 	@Transactional
-	public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
+	public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
 		Line line = lineRepository.findLineWithSectionsAndStationsById(lineId);
 
 		Station upStation = stationService.getStationEntity(sectionRequest.getUpStationId());
@@ -92,7 +87,6 @@ public class LineService {
 		Section section = new Section(upStation, downStation, sectionRequest.getDistance());
 
 		line.addSection(section);
-		Section persistenceSection = sectionRepository.save(section);
-		return SectionResponse.from(persistenceSection);
+		return LineResponse.from(line);
 	}
 }
