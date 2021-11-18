@@ -36,7 +36,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> getLines() {
-        List<Line> lines = lineRepository.findAll();
+        List<Line> lines = lineRepository.findAllByWithSections();
         return convertToLineResponses(lines);
     }
 
@@ -59,18 +59,19 @@ public class LineService {
         lineRepository.delete(findLine);
     }
 
+    private List<LineResponse> convertToLineResponses(List<Line> lines) {
+        List<LineResponse> responseLines = new ArrayList<>();
+        for (Line line : lines) {
+            responseLines.add(LineResponse.of(line,
+                convertToStationResponse(line.getSections().createStations())));
+        }
+        return responseLines;
+    }
+
     private List<StationResponse> convertToStationResponse(List<Station> stations) {
         return stations.stream()
             .map(StationResponse::of)
             .collect(Collectors.toList());
-    }
-
-    private List<LineResponse> convertToLineResponses(List<Line> lines) {
-        List<LineResponse> responseLines = new ArrayList<>();
-        for (Line line : lines) {
-            responseLines.add(LineResponse.of(line));
-        }
-        return responseLines;
     }
 
     private Line findLineById(Long id) {

@@ -78,8 +78,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         // 지하철_노선_등록되어_있음
-        Line lineTwo = 지하철_노선_등록되어_있음("2호선", "bg-green");
-        Line lineFour = 지하철_노선_등록되어_있음("4호선", "bg-blue");
+        Long lineFourUpStationId = 지하철_역_생성_요청(new StationRequest("명동역"));
+        Long lineFourDownStationId = 지하철_역_생성_요청(new StationRequest("사당역"));
+
+        int lineTwoId = 지하철_노선_생성_요청(new LineRequest(
+            "2호선", "bg-green", upStationId, downStationId, 10
+        )).jsonPath().getInt("id");
+        int lineFourId = 지하철_노선_생성_요청(new LineRequest(
+            "4호선", "bg-blue", lineFourUpStationId, lineFourDownStationId, 10
+        )).jsonPath().getInt("id");
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -96,7 +103,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         ValidatableResponse then = response.then().log().all();
         then.body("$", hasSize(2));
-        then.body("id", hasItems(lineTwo.getId().intValue(), lineFour.getId().intValue()));
+        then.body("id", hasItems(lineTwoId, lineFourId));
         then.extract();
     }
 
