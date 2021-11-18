@@ -18,7 +18,6 @@ import nextstep.subway.testFactory.AcceptanceTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -32,7 +31,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		"bg-green-600", 1L, 2L, 10);
 
 	@BeforeEach
-	public void setUpLineAcceptance() {
+	public void setUp() {
+		super.setUp();
 		//	given
 		StationTestFactory.지하철역_생성(StationAcceptanceTest.강남역_정보);
 		StationTestFactory.지하철역_생성(StationAcceptanceTest.역삼역_정보);
