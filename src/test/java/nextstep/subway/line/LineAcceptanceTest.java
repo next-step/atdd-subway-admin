@@ -20,10 +20,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // when
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
+
+        // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
@@ -34,10 +36,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
+        지하철_노선_등록되어_있음("신분당선", "red");
         Map<String, String> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "red");
-        지하철_노선_생성_요청(params);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
@@ -50,15 +52,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "red");
-        지하철_노선_생성_요청(params);
-        
-        Map<String, String> params2 = new HashMap<>();
-        params2.put("name", "신분당선");
-        params2.put("color", "red");
-        지하철_노선_생성_요청(params2);
+        지하철_노선_등록되어_있음("신분당선", "red");
+        지하철_노선_등록되어_있음("신분당선", "red");
 
         // when
         // 지하철_노선_목록_조회_요청
@@ -73,7 +68,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("신분당선", "red");
 
         // when
         // 지하철_노선_조회_요청
@@ -86,7 +81,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("신분당선", "red");
 
         // when
         // 지하철_노선_수정_요청
@@ -99,7 +94,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        지하철_노선_등록되어_있음("신분당선", "red");
 
         // when
         // 지하철_노선_제거_요청
@@ -123,10 +118,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        return 지하철_노선_생성_요청(params);
+    }
+
     private void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
-    
+
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         // when
         return RestAssured
