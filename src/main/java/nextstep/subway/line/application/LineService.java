@@ -8,7 +8,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.SectionRepository;
-import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.application.StationService;
@@ -43,20 +42,20 @@ public class LineService {
 		Line persistLine = lineRepository.save(request.toLine());
 		Section endToend = new Section(persistLine, upStation, downStation, request.getDistance());
 		sectionRepository.save(endToend);
-		return LineResponse.of(persistLine);
+		return LineResponse.from(persistLine);
 	}
 
 	public List<LineResponse> findAllLines() {
 		List<Line> lines = lineRepository.findAll();
 		return lines.stream()
-			.map(LineResponse::of)
+			.map(LineResponse::from)
 			.collect(Collectors.toList());
 	}
 
 	public List<LineResponse> findAllLineWithSections(){
 		List<Line> lines = lineRepository.findAllLinesWithSectionsAndStations();
 		return lines.stream()
-			.map(LineResponse::of)
+			.map(LineResponse::from)
 			.collect(Collectors.toList());
 	}
 
@@ -68,13 +67,13 @@ public class LineService {
 
 	public LineResponse findLineById(Long id) {
 		Line line = getLine(id);
-		return LineResponse.of(line);
+		return LineResponse.from(line);
 	}
 
 	public LineResponse findLineWithSectionsById(Long id){
 		Line line = lineRepository.findLineWithSectionsAndStationsById(id);
 		validateExistLine(line);
-		return LineResponse.of(line);
+		return LineResponse.from(line);
 	}
 
 	private void validateExistLine(Line line) {
