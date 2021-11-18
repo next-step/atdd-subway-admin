@@ -27,35 +27,52 @@ public class Sections {
 	}
 
 	public List<Station> getStations() {
-		Station startStation = findStartStation();
-		return getOrderedStations(startStation);
+
+		List<Section> orderedSections = getOrderedSections();
+		return converToStations(orderedSections);
 	}
 
-	private List<Station> getOrderedStations(Station startStation) {
-		Map<Station, Station> upDownStations = getUpDownRoute();
+	private List<Station> converToStations(List<Section> orderedSections) {
 		List<Station> stations = new ArrayList<>();
-		Station nextStation = startStation;
-		while (upDownStations.containsKey(nextStation)) {
-			stations.add(nextStation);
-			stations.add(upDownStations.get(nextStation));
-			nextStation = upDownStations.get(nextStation);
+		for(Section section : orderedSections){
+			stations.add(section.getUpStation());
+			stations.add(section.getDownStation());
 		}
 		return stations;
 	}
 
-	private Map<Station, Station> getUpDownRoute() {
-		return sections.stream()
-			.collect(Collectors.toMap(Section::getUpStation, Section::getDownStation, (o1, o2) -> o1, HashMap::new));
+	public List<Section> getOrderedSections(){
+		Section startSection = findStartStation();
+		return orderedSections(startSection);
 	}
 
-	private Station findStartStation() {
+	private List<Section> orderedSections(Section startSection) {
+		Map<Station, Section> upStationAndSectionRoute = getSectionRoute();
+		List<Section> sections = new ArrayList<>();
+
+		Section nextSection = startSection;
+		while (nextSection!=null) {
+			sections.add(nextSection);
+			Station curDownStation = nextSection.getDownStation();
+			nextSection = upStationAndSectionRoute.get(curDownStation);
+		}
+		return sections;
+	}
+
+	private Map<Station, Section> getSectionRoute() {
+		return sections.stream()
+			.collect(Collectors.toMap(Section::getUpStation,it->it, (o1, o2) -> o1, HashMap::new));
+	}
+
+	private Section findStartStation() {
+		// 전체 하행역 콜렉션 생성
 		Set<Station> downStations = sections.stream()
 			.map(Section::getDownStation)
 			.collect(Collectors.toSet());
-		Optional<Station> notDownStation = sections.stream()
-			.map(Section::getUpStation)
-			.filter(it -> !downStations.contains(it))
+		// 전체 상행역 중 하행역이 아닌 상행역 추출(=> 시작점)
+		Optional<Section> startSection = sections.stream()
+			.filter(it -> !downStations.contains(it.getUpStation()))
 			.findFirst();
-		return notDownStation.orElseThrow(() -> new IllegalStateException("구간 정보가 올바르지 않습니다."));
+		return startSection.orElseThrow(() -> new IllegalStateException("구간 정보가 올바르지 않습니다."));
 	}
 }
