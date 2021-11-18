@@ -63,7 +63,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> selectResponse = selectOneLine(savedLineId);
         // then
         // 지하철_노선_응답됨
-        checkLine(selectResponse);
+        isOkResponse(selectResponse);
         validLine(createResponse, selectResponse);
     }
 
@@ -170,7 +170,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void checkLine(ExtractableResponse<Response> response) {
+    private void isOkResponse(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
