@@ -207,10 +207,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actualIds).isEqualTo(expectIds);
     }
 
-    private void 지하철_노선_응답_내_역_목록이_상행역부터_하행역_순으로_정렬됨(LineResponse response) {
-        // TODO : 현재 응답값으로는 정렬된지 어떻게 검증할 수 있을까?
-    }
-
     private LineResponse 지하철_노선_등록되어_있음(LineCreateRequest request) {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(request);
         return response.jsonPath().getObject(".", LineResponse.class);
