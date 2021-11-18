@@ -51,7 +51,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(response.as(ApiErrorMessage.class).getMessage())
-                        .isEqualTo("고유 인덱스 또는 기본 키 위반입니다.")
+                        .isEqualTo("중복된 역을 추가할 수 없습니다.")
         );
     }
 
@@ -67,17 +67,24 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철_역_목록_조회_요청();
-        StationResponseList stationResponseList = response.as(StationResponseList.class);
 
         // then
+        지하철_역_목록_응답됨(response);
+        지하철_역_목록에_포함_검증(response, stationResponse, stationResponse2);
+    }
+
+    private void 지하철_역_목록_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_역_목록에_포함_검증(final ExtractableResponse<Response> response, final StationResponse... stationResponses) {
+        StationResponseList stationResponseList = response.as(StationResponseList.class);
+
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(stationResponseList).isNotNull(),
                 () -> {
-                    List<StationResponse> stationResponses = Arrays.asList(stationResponse, stationResponse2)
-                            .stream()
-                            .collect(Collectors.toList());
-                    assertThat(stationResponseList.getStationResponseList()).containsAll(stationResponses);
+                    List<StationResponse> createdLines = Arrays.stream(stationResponses).collect(Collectors.toList());
+                    assertThat(stationResponseList.getStationResponseList()).containsAll(createdLines);
                 }
         );
     }

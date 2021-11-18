@@ -6,10 +6,12 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponseList;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -34,8 +36,16 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
+        validateDuplicatedLine(request.getName());
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    private void validateDuplicatedLine(String name) {
+        Optional<Line> exist = lineRepository.findByName(name);
+        if (exist.isPresent()) {
+            throw new DataIntegrityViolationException("중복된 노선을 추가할 수 없습니다.");
+        }
     }
 
     public LineResponse updateLine(Long id, LineRequest request) {
@@ -45,13 +55,13 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public void deleteLine(Long id) {
-        lineRepository.deleteById(id);
-    }
-
     private Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("찾을 수 없는 노선입니다."));
+    }
+
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
     }
 
 }

@@ -55,7 +55,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(response.as(ApiErrorMessage.class).getMessage())
-                        .isEqualTo("고유 인덱스 또는 기본 키 위반입니다.")
+                        .isEqualTo("중복된 노선을 추가할 수 없습니다.")
         );
     }
 
@@ -123,16 +123,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_목록에_포함_검증(final ExtractableResponse<Response> response, final LineResponse... lineResponses) {
-        LineResponseList linesResponse = response.as(LineResponseList.class);
-        List<String> lineNames = linesResponse.getLineResponseList()
-                .stream()
-                .map(LineResponse::getName)
-                .collect(Collectors.toList());
-        List<String> createdLineNames = Arrays.stream(lineResponses)
-                .map(LineResponse::getName)
-                .collect(Collectors.toList());
+        LineResponseList lineResponseList = response.as(LineResponseList.class);
 
-        assertThat(lineNames).containsAll(createdLineNames);
+        assertAll(
+                () -> assertThat(lineResponseList).isNotNull(),
+                () -> {
+                    List<LineResponse> createdLines = Arrays.stream(lineResponses).collect(Collectors.toList());
+                    assertThat(lineResponseList.getLineResponseList()).containsAll(createdLines);
+                }
+        );
     }
 
     @DisplayName("지하철 노선을 수정한다.")
