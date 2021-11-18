@@ -105,7 +105,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        Line lineTwo = 지하철_노선_등록되어_있음("2호선", "bg-green");
+        Long savedLineId = 지하철_노선_생성_요청(new LineRequest(
+            "2호선", "bg-green", upStationId, downStationId, 10
+        )).jsonPath().getLong("id");
 
         // when
         // 지하철_노선_조회_요청
@@ -113,7 +115,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .given().log().all()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .get("/lines/{id}", lineTwo.getId())
+            .get("/lines/{id}", savedLineId)
             .then().log().all().extract();
 
         // then
