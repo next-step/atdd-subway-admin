@@ -22,16 +22,8 @@ public class Sections {
 	protected Sections() {
 	}
 
-	public Sections(List<Section> sections) {
-		this.sections = sections;
-	}
-
 	public void add(Section section) {
 		sections.add(section);
-	}
-
-	public List<Section> getSections() {
-		return sections;
 	}
 
 	public List<Station> getStations() {

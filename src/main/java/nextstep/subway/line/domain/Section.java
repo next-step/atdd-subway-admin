@@ -62,10 +62,6 @@ public class Section {
 		return downStation;
 	}
 
-	public int getDistance() {
-		return distance;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
