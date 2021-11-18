@@ -1,6 +1,9 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.SectionExistException;
+import nextstep.subway.exception.StationNotContainInUpOrDownStation;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -76,5 +79,25 @@ public class Line extends BaseEntity {
 
     public void addSection(Station upStation, Station downStation, int distance) {
         sections.add(new Section(this, upStation, downStation, distance));
+    }
+
+    public Line updateSection(Station upStation, Station downStation, int distance) {
+        if (hasStation(upStation) && hasStation(downStation)) {
+            throw new SectionExistException();
+        }
+
+        if (hasStation(upStation)) {
+            updateUpStation(upStation, downStation, distance);
+            addSection(upStation, downStation, distance);
+            return this;
+        }
+
+        if (hasStation(downStation)) {
+            updateDownStation(upStation, downStation, distance);
+            addSection(upStation, downStation, distance);
+            return this;
+        }
+
+        throw new StationNotContainInUpOrDownStation();
     }
 }
