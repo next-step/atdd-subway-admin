@@ -39,4 +39,23 @@ public class StationResponse {
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof StationResponse) || o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        StationResponse that = (StationResponse) o;
+        if (this.id.equals(that.getId()) && this.id == that.getId() && this.name.equals(that.getName())) {
+            return true;
+        }
+
+        return false;
+    }
+
 }

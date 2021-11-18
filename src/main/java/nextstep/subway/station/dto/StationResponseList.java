@@ -18,7 +18,7 @@ public class StationResponseList {
                 .collect(Collectors.toList());
     }
 
-    public List<StationResponse> getList() {
+    public List<StationResponse> getStationResponseList() {
         return stationResponseList;
     }
 

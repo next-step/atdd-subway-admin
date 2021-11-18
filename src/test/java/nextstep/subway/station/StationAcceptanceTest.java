@@ -7,6 +7,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.exception.ApiErrorMessage;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.dto.StationResponseList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -59,27 +60,24 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void getStations() {
         /// given
         StationRequest stationRequest = new StationRequest("강남역");
-        ExtractableResponse<Response> stationResponse = 지하철_역_생성_요청(stationRequest);
+        StationResponse stationResponse = 지하철_역_등록되어_있음(stationRequest);
 
         StationRequest stationRequest2 = new StationRequest("역삼역");
-        ExtractableResponse<Response> stationResponse2 = 지하철_역_생성_요청(stationRequest2);
+        StationResponse stationResponse2 = 지하철_역_등록되어_있음(stationRequest2);
 
         // when
         ExtractableResponse<Response> response = 지하철_역_목록_조회_요청();
+        StationResponseList stationResponseList = response.as(StationResponseList.class);
 
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(stationResponseList).isNotNull(),
                 () -> {
-                    List<Long> expectedLineIds = Arrays.asList(stationResponse, stationResponse2)
+                    List<StationResponse> stationResponses = Arrays.asList(stationResponse, stationResponse2)
                             .stream()
-                            .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                             .collect(Collectors.toList());
-                    List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class)
-                            .stream()
-                            .map(it -> it.getId())
-                            .collect(Collectors.toList());
-                    assertThat(resultLineIds).containsAll(expectedLineIds);
+                    assertThat(stationResponseList.getStationResponseList()).containsAll(stationResponses);
                 }
         );
     }

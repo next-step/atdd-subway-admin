@@ -124,7 +124,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_목록에_포함_검증(final ExtractableResponse<Response> response, final LineResponse... lineResponses) {
         LineResponseList linesResponse = response.as(LineResponseList.class);
-        List<String> lineNames = linesResponse.getList()
+        List<String> lineNames = linesResponse.getLineResponseList()
                 .stream()
                 .map(LineResponse::getName)
                 .collect(Collectors.toList());

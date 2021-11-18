@@ -18,7 +18,7 @@ public class LineResponseList {
                 .collect(Collectors.toList());
     }
 
-    public List<LineResponse> getList() {
+    public List<LineResponse> getLineResponseList() {
         return lineResponseList;
     }
 
