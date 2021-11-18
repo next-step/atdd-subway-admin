@@ -5,11 +5,11 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.domain.Lines;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,7 +22,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public List<LineResponse> showAllLines() {
-        return lineRepository.findAll().stream().map(LineResponse::of).collect(Collectors.toList());
+        return Lines.of(lineRepository.findAll()).toDto();
     }
 
     @Transactional(readOnly = true)
@@ -36,18 +36,18 @@ public class LineService {
     }
 
     public LineResponse findOne(Long id) {
-        Line line = this.findByLineId(id);
+        Line line = findByLineId(id);
         return LineResponse.of(line);
     }
 
     public LineResponse update(Long id, LineRequest request) {
-        Line line = this.findByLineId(id);
+        Line line = findByLineId(id);
         line.update(request.toLine());
         return LineResponse.of(line);
     }
 
     public void delete(Long id) {
-        Line line = this.findByLineId(id);
+        Line line = findByLineId(id);
         lineRepository.deleteById(line.getId());
     }
 }

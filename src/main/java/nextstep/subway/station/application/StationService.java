@@ -1,16 +1,15 @@
 package nextstep.subway.station.application;
 
 import nextstep.subway.common.exception.NotFoundException;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.domain.Stations;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -23,10 +22,7 @@ public class StationService {
 
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
-        List<Station> stations = stationRepository.findAll();
-        return stations.stream()
-                .map(station -> StationResponse.of(station))
-                .collect(Collectors.toList());
+        return Stations.of(stationRepository.findAll()).toDto();
     }
 
     @Transactional(readOnly = true)
@@ -43,6 +39,4 @@ public class StationService {
         Station station = findByStationId(id);
         stationRepository.deleteById(station.getId());
     }
-
-
 }
