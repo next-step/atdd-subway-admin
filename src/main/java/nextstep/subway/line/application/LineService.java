@@ -2,9 +2,9 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineInfoResponse;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -16,15 +16,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class LineService {
     private LineRepository lineRepository;
+    private SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+    public Line saveLine(Line line, Section section) {
+        if (section != null) {
+            section.addSectionAtLine(line);
+        }
+        
+        return lineRepository.save(line);
     }
 
     @Transactional(readOnly = true)
@@ -37,19 +42,27 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineInfoResponse findLineInfo(Long lineId) {
-        return lineRepository.findById(lineId)
-                                .map(LineInfoResponse::of)
-                                .orElse(new LineInfoResponse());
+        Line line = lineRepository.findById(lineId)
+                                    .orElseThrow(() -> new NoSuchElementException("조회된 라인이 없습니다."));
+
+        return LineInfoResponse.of(line);
     }
 
     @Transactional
     public void updateLineInfo(Long lineId, Line newLine) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+        Line line = lineRepository.findById(lineId)
+                                    .orElseThrow(() -> new NoSuchElementException("조회된 라인이 없습니다."));
+
         line.update(newLine);
     }
 
     @Transactional
     public void deleteLineInfo(Long lineId) {
         lineRepository.deleteById(lineId);
+    }
+
+    @Transactional
+    public Section saveSection(Section section) {
+        return sectionRepository.save(section);
     }
 }

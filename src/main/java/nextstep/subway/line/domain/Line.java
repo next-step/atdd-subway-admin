@@ -3,7 +3,10 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.*;
 
@@ -16,8 +19,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Station> stations;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id", cascade = CascadeType.ALL)
+    private List<Section> sections;
 
     protected Line() {
     }
@@ -25,11 +28,17 @@ public class Line extends BaseEntity {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+
+        sections = new ArrayList<>();
     }
 
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public boolean addSection(Section section) {
+        return this.sections.add(section);
     }
 
     public Long getId() {
@@ -44,7 +53,23 @@ public class Line extends BaseEntity {
         return this.color;
     }
 
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(this.sections);
+    }
+
     public List<Station> getStations() {
-        return this.stations;
+        if (this.sections.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Station> stations = this.sections.stream()
+                                                .map(Section::getUpStation)
+                                                .collect(Collectors.toList());
+
+        Section lastSection = this.sections.get(this.sections.size() - 1);
+
+        stations.add(lastSection.getDownStation());
+
+        return stations;
     }
 }
