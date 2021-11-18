@@ -7,6 +7,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import nextstep.subway.station.domain.Station;
@@ -18,6 +19,7 @@ public class Section {
     public Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id")
     public Line line;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,6 +42,14 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public void changeLine(Line line) {
