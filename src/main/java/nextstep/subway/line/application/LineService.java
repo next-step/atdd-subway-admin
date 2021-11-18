@@ -19,6 +19,8 @@ import nextstep.subway.station.domain.StationRepository;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
+    private static final String MESSAGE_ON_LINE_NOT_FOUND = "노선을 찾을 수 없습니다.";
+
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
@@ -32,8 +34,11 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineCreateRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NoSuchElementException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NoSuchElementException::new);
+        Station upStation = stationRepository.findById(request.getUpStationId())
+            .orElseThrow(() -> new NoSuchElementException("상행역을 찾을 수 없습니다."));
+        Station downStation = stationRepository.findById(request.getDownStationId())
+            .orElseThrow(() -> new NoSuchElementException("하행역을 찾을 수 없습니다."));
+
         Section section = Section.of(upStation, downStation, request.getDistance());
         Line line = lineRepository.save(Line.of(request.getName(), request.getColor(), section));
         return LineResponse.of(line);
@@ -48,19 +53,25 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
+
         return LineResponse.of(line);
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
+
         line.update(request.getName(), request.getColor());
     }
 
     @Transactional
     public void deleteLineById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException(MESSAGE_ON_LINE_NOT_FOUND));
+
         lineRepository.delete(line);
     }
 }
