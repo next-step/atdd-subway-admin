@@ -1,18 +1,19 @@
 package nextstep.subway.station.application;
 
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.dto.StationRequest;
-import nextstep.subway.station.dto.StationResponse;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
+
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class StationService {
     private final StationRepository stationRepository;
 
@@ -20,12 +21,12 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
+    @Transactional
+    public StationResponse saveStation(StationRequest request) {
+        Station persistStation = stationRepository.save(Station.of(request.getName()));
         return StationResponse.of(persistStation);
     }
 
-    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
@@ -34,6 +35,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteStationById(Long id) {
         Station station = stationRepository.findById(id).orElseThrow(NoSuchElementException::new);
         stationRepository.delete(station);
