@@ -39,4 +39,20 @@ public class LineResponse {
     public String getName() {
         return name;
     }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<Station> getStations() {
+        return stations;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
+    }
 }
