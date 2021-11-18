@@ -51,7 +51,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -139,7 +138,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_수정_요청
-        // when
         String updateLine = "4호선";
         String updateColor = "bg-blue";
         ExtractableResponse<Response> response = RestAssured
@@ -151,13 +149,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all().extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        // then
         // 지하철_노선_수정됨
-        Line findLine = findLineByIdOrElseNull(lineTwo.getId());
-        assertNotNull(findLine);
-        assertEquals(updateLine, findLine.getName());
-        assertEquals(updateColor, findLine.getColor());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -169,7 +162,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_제거_요청
-        // when
         ExtractableResponse<Response> response = RestAssured
             .given().log().all()
             .when()
@@ -177,11 +169,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
             .then().log().all().extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        // then
         // 지하철_노선_삭제됨
-        Line findLine = findLineByIdOrElseNull(lineTwo.getId());
-        assertNull(findLine);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
@@ -200,9 +189,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return lineRepository.save(new Line(name, color));
     }
 
-    private Line findLineByIdOrElseNull(Long lineId) {
-        return lineRepository.findById(lineId).orElse(null);
-    }
 
     private Map<String, String> createRequestLine(String name, String color) {
         Map<String, String> params = new HashMap<>();
