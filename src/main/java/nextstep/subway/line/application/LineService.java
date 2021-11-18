@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -29,9 +30,11 @@ public class LineService {
 	}
 
 	public LineResponse saveLine(LineAddRequest request) {
-		final Station upStation = stationService.getStation(request.getUpStationId());
-		final Station downStation = stationService.getStation(request.getDownStationId());
-		final Line line = lineRepository.save(Line.of(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
+		final Map<Long, Station> stations = stationService.getStationsIn(request.getUpStationId(), request.getDownStationId());
+		final Station upStation = stations.get(request.getUpStationId());
+		final Station downStation = stations.get(request.getDownStationId());
+		final Line line = lineRepository.save(
+			Line.of(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
 		return LineResponse.of(line);
 	}
 
