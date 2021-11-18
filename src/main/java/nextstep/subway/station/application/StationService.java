@@ -30,13 +30,13 @@ public class StationService {
         return stationRepository.findById(id).orElseThrow(() -> new NotFoundException("데이터가 존재하지 않습니다."));
     }
 
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationResponse.of(persistStation);
+    public StationResponse saveStation(StationRequest request) {
+        final Station savedStation = stationRepository.save(request.toStation());
+        return savedStation.toDto();
     }
 
     public void deleteStationById(Long id) {
-        Station station = findByStationId(id);
+        final Station station = findByStationId(id);
         stationRepository.deleteById(station.getId());
     }
 }

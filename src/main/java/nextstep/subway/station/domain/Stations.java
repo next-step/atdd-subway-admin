@@ -29,6 +29,6 @@ public class Stations {
     }
 
     public List<StationResponse> toDto() {
-        return this.stations.stream().map(StationResponse::of).collect(Collectors.toList());
+        return this.stations.stream().map(Station::toDto).collect(Collectors.toList());
     }
 }

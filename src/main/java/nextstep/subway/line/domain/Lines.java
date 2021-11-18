@@ -29,6 +29,6 @@ public class Lines {
     }
 
     public List<LineResponse> toDto() {
-        return this.lines.stream().map(LineResponse::of).collect(Collectors.toList());
+        return this.lines.stream().map(Line::toDto).collect(Collectors.toList());
     }
 }

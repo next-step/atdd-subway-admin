@@ -31,19 +31,19 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
-        return LineResponse.of(persistLine);
+        final Line line = lineRepository.save(request.toLine());
+        return line.toDto();
     }
 
     public LineResponse findOne(Long id) {
-        Line line = findByLineId(id);
-        return LineResponse.of(line);
+        final Line line = findByLineId(id);
+        return line.toDto();
     }
 
     public LineResponse update(Long id, LineRequest request) {
-        Line line = findByLineId(id);
+        final Line line = findByLineId(id);
         line.update(request.toLine());
-        return LineResponse.of(line);
+        return line.toDto();
     }
 
     public void delete(Long id) {

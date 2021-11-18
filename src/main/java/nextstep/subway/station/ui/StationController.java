@@ -1,13 +1,10 @@
 package nextstep.subway.station.ui;
 
-import nextstep.subway.common.exception.NotFoundException;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
