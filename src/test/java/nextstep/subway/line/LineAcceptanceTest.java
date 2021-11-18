@@ -15,7 +15,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -63,9 +62,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList(".", LineResponse.class)).hasSize(2);
-        assertThat(response.jsonPath().getList("..name", String.class)).contains("신분당선", "1호선");
-        assertThat(response.jsonPath().getList("..color", String.class)).contains("red", "indigo");
-        assertThat(response.jsonPath().getList("..stations[1]", StationResponse.class)).isNotNull();
+        assertThat(response.jsonPath().getList("name", String.class)).contains("신분당선", "1호선");
+        assertThat(response.jsonPath().getList("color", String.class)).contains("red", "indigo");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
