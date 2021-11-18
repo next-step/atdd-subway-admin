@@ -30,4 +30,12 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public LineResponse modifyLine(final LineRequest lineRequest) {
+        final Line findLine = lineRepository.findByName(lineRequest.getName())
+                .orElseThrow(() -> new IllegalArgumentException("해당 지하철 노선은 존재하지 않습니다."));
+        findLine.update(new Line(findLine.getName(), lineRequest.getColor()));
+
+        return LineResponse.of(findLine);
+    }
 }

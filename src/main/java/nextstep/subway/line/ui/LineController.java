@@ -28,4 +28,9 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> findAllLines() {
         return ResponseEntity.ok().body(lineService.findAllLine());
     }
+
+    @PatchMapping
+    public ResponseEntity<LineResponse> updateLine(@RequestBody LineRequest lineRequest) {
+        return ResponseEntity.ok().body(lineService.modifyLine(lineRequest));
+    }
 }

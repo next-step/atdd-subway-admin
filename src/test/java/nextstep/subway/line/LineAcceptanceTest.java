@@ -86,12 +86,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_생성("신분당선","red");
 
         // when
         // 지하철_노선_조회_요청
+        final ExtractableResponse<Response> lineResponse = 지하철_노선_목록_조회();
 
         // then
         // 지하철_노선_응답됨
+        final List<LineResponse> lines = lineResponse.jsonPath().getList(".", LineResponse.class);
+        assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(lines.size()).isOne();
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -99,12 +104,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        지하철_노선_생성("5호선","purple");
 
         // when
         // 지하철_노선_수정_요청
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new LineRequest("5호선", "brown"))
+                .when().patch("/lines")
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_수정됨
+        final LineResponse line = response.as(LineResponse.class);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(line.getColor()).isEqualTo("brown");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
