@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.line.domain.Line;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,16 +11,16 @@ import java.util.Optional;
 @Repository
 public interface LineRepository extends JpaRepository<Line, Long> {
 
-    @Query("select l from Line l " +
-            "left join fetch l.sections.sections sec " +
-            "left join fetch sec.downStation " +
-            "left join fetch sec.upStation " +
+    @Query("select distinct l from Line l " +
+            "left join fetch l.stations.lineStations ls " +
+            "left join fetch ls.nextStation " +
+            "left join fetch ls.preStation " +
             "where l.id = :id")
     Optional<Line> findOneWithStations(@Param("id") Long id);
 
-    @Query("select l from Line l " +
-            "left join fetch l.sections.sections sec " +
-            "left join fetch sec.downStation " +
-            "left join fetch sec.upStation")
+    @Query("select distinct l from Line l " +
+            "left join fetch l.stations.lineStations ls " +
+            "left join fetch ls.nextStation " +
+            "left join fetch ls.preStation ")
     List<Line> findAllWithStations();
 }

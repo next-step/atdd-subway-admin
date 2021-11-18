@@ -2,22 +2,13 @@ package nextstep.subway.line.exception;
 
 import nextstep.subway.excetpion.ErrorCode;
 
-public class LineNotFoundException extends RuntimeException{
-
-    private ErrorCode errorCode;
+public class LineNotFoundException extends LineException {
 
     public LineNotFoundException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 
     public LineNotFoundException(ErrorCode errorCode, String message) {
-        super(message);
-        this.errorCode = errorCode;
+        super(errorCode, message);
     }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
-
 }

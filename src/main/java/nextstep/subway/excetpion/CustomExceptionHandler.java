@@ -1,6 +1,6 @@
 package nextstep.subway.excetpion;
 
-import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.line.exception.*;
 import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -19,8 +19,9 @@ public class CustomExceptionHandler {
                 .body(ErrorCode.DEFAULT_ERROR.getMessage());
     }
 
-    @ExceptionHandler(LineNotFoundException.class)
-    public ResponseEntity handleLineNotFoundException(LineNotFoundException e) {
+    @ExceptionHandler(LineException.class)
+    public ResponseEntity handleLineException(LineException e) {
+        e.printStackTrace();
         ErrorResponse response = ErrorResponse.build()
                 .httpStatus(e.getErrorCode().getHttpStatus())
                 .message(e.getMessage());
@@ -29,6 +30,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(StationNotFoundException.class)
     public ResponseEntity handleStationNotFoundException(StationNotFoundException e) {
+        e.printStackTrace();
         ErrorResponse response = ErrorResponse.build()
                 .httpStatus(e.getErrorCode().getHttpStatus())
                 .message(e.getMessage());
@@ -37,9 +39,12 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+        e.printStackTrace();
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());
     }
+
+
 
 }

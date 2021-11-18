@@ -1,6 +1,6 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Line.Line;
 import nextstep.subway.station.domain.Station;
 
 import java.time.LocalDateTime;
@@ -29,7 +29,7 @@ public class LineResponse {
         this.color = line.getColor();
         this.createdDate = line.getCreatedDate();
         this.modifiedDate = line.getModifiedDate();
-        this.stations = line.getSections().getStations();
+        this.stations = line.getLineStations().getLineStations();
     }
 
     public static LineResponse of(Line line) {

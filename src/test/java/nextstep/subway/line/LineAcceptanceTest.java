@@ -3,33 +3,26 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static nextstep.subway.line.LineAcceptanceTestMethod.*;
+import static nextstep.subway.utils.Fixture.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    private static final LineRequest 신분당선 = new LineRequest("신분당선", "bg-red-600");
-    private static final LineRequest 이호선 = new LineRequest("2호선", "green");
-    private static final StationRequest 강남역 = new StationRequest("강남역");
-    private static final StationRequest 광교역 = new StationRequest("광교역");
-    private static final StationRequest 홍대역 = new StationRequest("홍대역");
-    private static final StationRequest 신촌역 = new StationRequest("신촌역");
-
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역);
+        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 역_생성(강남역), 역_생성(광교역));
 
         // then
         응답_확인_CREATED(response);
@@ -41,10 +34,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역);
+        신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 역_생성(강남역), 역_생성(광교역));
 
         // when
-        ExtractableResponse<Response> actual = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 홍대역, 신촌역);
+        ExtractableResponse<Response> actual = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 역_생성(홍대역), 역_생성(신촌역));
 
         // then
         응답_확인_BAD_REQUEST(actual);
@@ -54,16 +47,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void findAllLine() {
-        LineResponse response1 = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역).as(LineResponse.class);
-        LineResponse response2 = 신규_지하철_노선_생성_요청("/lines", 이호선, 16, 홍대역, 신촌역).as(LineResponse.class);
+        StationResponse 강남 = 역_생성(강남역);
+        StationResponse 판교 = 역_생성(판교역);
+        StationResponse 수지 = 역_생성(수지역);
+        StationResponse 광교 = 역_생성(광교역);
+        LineResponse response1 = 신규_지하철_노선_생성_요청("/lines", 신분당선, 14, 강남, 광교).as(LineResponse.class);
+        구간_추가(response1, 강남, 판교, 4);
+        구간_추가(response1, 판교, 수지, 6);
 
         // when
         ExtractableResponse<Response> actual = 지하철_노선_목록_조회_요청("/lines");
 
         // then
         응답_확인_OK(actual);
-        지하철_노선_목록_확인(actual, Stream.concat(response1.getStations().stream(),
-                response2.getStations().stream()).collect(Collectors.toList()));
+        지하철_노선_목록_확인(actual, response1.getStations());
     }
 
 
@@ -71,7 +68,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findOneLine() {
         // given
-        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역);
+        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 역_생성(강남역), 역_생성(광교역));
 
         // when
         ExtractableResponse<Response> actual = 지하철_노선_단건_조회("/lines/{id}", response.as(LineResponse.class).getId());
@@ -86,7 +83,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역);
+        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 역_생성(강남역), 역_생성(광교역));
 
         // when
         ExtractableResponse<Response> actual = 지하철_노선_수정_요청("/lines/{id}", 이호선, response.as(LineResponse.class).getId());
@@ -99,7 +96,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateEmptyLine() {
         // given
-        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역);
+        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 역_생성(강남역), 역_생성(광교역));
 
         // when
         ExtractableResponse<Response> actual = 지하철_노선_수정_요청("/lines/{id}", 이호선, response.as(LineResponse.class).getId() + 1);
@@ -112,7 +109,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역);
+        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 역_생성(강남역), 역_생성(광교역));
 
         // when
         ExtractableResponse<Response> actual = 지하철_노선_삭제_요청("/lines/{id}", response.as(LineResponse.class).getId());
@@ -125,7 +122,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteEmptyLine() {
         // given
-        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 강남역, 광교역);
+        ExtractableResponse<Response> response = 신규_지하철_노선_생성_요청("/lines", 신분당선, 10, 역_생성(강남역), 역_생성(광교역));
 
         // when
         ExtractableResponse<Response> actual = 지하철_노선_삭제_요청("/lines/{id}", response.as(LineResponse.class).getId() + 1);
