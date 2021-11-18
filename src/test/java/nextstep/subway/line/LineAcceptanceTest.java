@@ -13,6 +13,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.StationTestFactory;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.testFactory.AcceptanceTestFactory;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -24,18 +25,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 	public static final String LINE_SERVICE_PATH = "/lines";
 
-	//	given
-	public static final Map<String, String> 신분당선_정보 = LineTestFactory.지하철_노선_정보_정의("신분당선",
-		"bg-red-600", 1L, 2L, 10);
-	public static final Map<String, String> 이호선_정보 = LineTestFactory.지하철_노선_정보_정의("2호",
-		"bg-green-600", 1L, 2L, 10);
+	private StationResponse 강남역;
+	private StationResponse 역삼역;
+	private Map<String, String> 신분당선_정보;
+	private Map<String, String> 이호선_정보;
 
 	@BeforeEach
 	public void setUp() {
 		super.setUp();
 		//	given
-		StationTestFactory.지하철역_생성(StationAcceptanceTest.강남역_정보);
-		StationTestFactory.지하철역_생성(StationAcceptanceTest.역삼역_정보);
+		강남역 = StationTestFactory.지하철역_생성(StationAcceptanceTest.강남역_정보).as(StationResponse.class);
+		역삼역 = StationTestFactory.지하철역_생성(StationAcceptanceTest.역삼역_정보).as(StationResponse.class);
+
+		신분당선_정보 = LineTestFactory.지하철_노선_정보_정의("신분당선",
+			"bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+		이호선_정보 = LineTestFactory.지하철_노선_정보_정의("2호",
+			"bg-green-600", 강남역.getId(), 역삼역.getId(), 10);
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
