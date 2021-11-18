@@ -9,50 +9,52 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LineResponse {
-    private Long id;
-    private String name;
-    private String color;
-    private List<Station> stations = new ArrayList<>();
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
+	private Long id;
+	private String name;
+	private String color;
+	private List<Station> stations = new ArrayList<>();
+	private LocalDateTime createdDate;
+	private LocalDateTime modifiedDate;
 
-    private LineResponse() {
-    }
+	private LineResponse() {
+	}
 
-    private LineResponse(Long id, String name, String color,Sections sections, LocalDateTime createdDate, LocalDateTime modifiedDate ) {
-            this.id = id;
-            this.name = name;
-            this.color = color;
-            this.stations = sections.getStations();
-            this.createdDate = createdDate;
-            this.modifiedDate = modifiedDate;
-    }
+	private LineResponse(Long id, String name, String color, Sections sections, LocalDateTime createdDate,
+		LocalDateTime modifiedDate) {
+		this.id = id;
+		this.name = name;
+		this.color = color;
+		this.stations = sections.getOrderedStatons();
+		this.createdDate = createdDate;
+		this.modifiedDate = modifiedDate;
+	}
 
-    public static LineResponse from(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getSections(), line.getCreatedDate(), line.getModifiedDate());
-    }
+	public static LineResponse from(Line line) {
+		return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getSections(),
+			line.getCreatedDate(), line.getModifiedDate());
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getColor() {
-        return color;
-    }
+	public String getColor() {
+		return color;
+	}
 
-    public List<Station> getStations() {
-        return stations;
-    }
+	public List<Station> getStations() {
+		return stations;
+	}
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
+	public LocalDateTime getCreatedDate() {
+		return createdDate;
+	}
 
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
+	public LocalDateTime getModifiedDate() {
+		return modifiedDate;
+	}
 }
