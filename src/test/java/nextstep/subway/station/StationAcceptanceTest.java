@@ -24,6 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 	//	given
 	public static final Map<String, String> 강남역_정보 = StationTestFactory.지하철역_이름_정의("강남역");
 	public static final Map<String, String> 역삼역_정보 = StationTestFactory.지하철역_이름_정의("역삼역");
+	public static final Map<String, String> 광교역_정보 = StationTestFactory.지하철역_이름_정의("광교역");
 
 	@DisplayName("지하철역을 생성한다.")
 	@Test

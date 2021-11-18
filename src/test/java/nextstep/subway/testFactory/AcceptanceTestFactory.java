@@ -15,11 +15,7 @@ import io.restassured.specification.RequestSpecification;
 
 public class AcceptanceTestFactory {
 
-	public static Map<String, String> getNameContent(String name) {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
-		return params;
-	}
+
 
 	public static void 정상_생성_확인(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -71,17 +67,6 @@ public class AcceptanceTestFactory {
 		return response
 			.then().log().all()
 			.extract();
-	}
-
-	public static Map<String, String> getLineInfo(String name, String color, Long upStationId, Long downStationId,
-		int distance) {
-		Map<String, String> params = new HashMap<>();
-		params.put("name", name);
-		params.put("color", color);
-		params.put("upStationId", String.valueOf(upStationId));
-		params.put("downStationId", String.valueOf(downStationId));
-		params.put("distance", String.valueOf(distance));
-		return params;
 	}
 }
 
