@@ -121,7 +121,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_제거_요청
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new LineRequest("2호선", "green"))
+                .body(new LineRequest("2호선", null))
                 .when().delete("/lines")
                 .then().log().all().extract();
 
