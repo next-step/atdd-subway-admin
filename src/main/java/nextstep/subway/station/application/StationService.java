@@ -1,14 +1,15 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.domain.Stations;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -19,21 +20,23 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationResponse.of(persistStation);
+    @Transactional(readOnly = true)
+    public List<StationResponse> findAllStations() {
+        return Stations.of(stationRepository.findAll()).toDto();
     }
 
     @Transactional(readOnly = true)
-    public List<StationResponse> findAllStations() {
-        List<Station> stations = stationRepository.findAll();
+    public Station findByStationId(Long id) throws NotFoundException {
+        return stationRepository.findById(id).orElseThrow(() -> new NotFoundException("데이터가 존재하지 않습니다."));
+    }
 
-        return stations.stream()
-                .map(station -> StationResponse.of(station))
-                .collect(Collectors.toList());
+    public StationResponse saveStation(StationRequest request) {
+        final Station savedStation = stationRepository.save(request.toStation());
+        return savedStation.toDto();
     }
 
     public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
+        final Station station = findByStationId(id);
+        stationRepository.deleteById(station.getId());
     }
 }

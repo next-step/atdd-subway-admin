@@ -52,3 +52,53 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+
+
+---
+### atdd-subway-web 도커 컨테이너로 실행하기
+
+#### 1. Dockerfile 복사해서 워크스페이스 경로에 넣기
+
+#### 2. 워크스페이스 경로로 이동
+```cd ${workspace}```
+
+#### 3. 프록시 설정 변경(로컬 아이피 넣기)
+ - 127.0.0.1 => 로컬 아이피주소
+![image info](./image.png) 
+
+#### 3.도커파일 빌드
+ - frontend 내 node_modules 디렉터리가 있으면 정상적으로 빌드되지 않음. 삭제 후 빌드
+ - ``` docker build -t atdd-web:0.0 .```
+
+#### 4.도커 컨테이너 실행
+ - ```docker run -it --name atdd_web -p 8081:8081 atdd-web:0.0```
+---
+
+
+## 1단계(step1) - 지하철 노선 관리
+
+#### 요구사항 1
+- [x] : 기능 목록: 생성/목록 조회/조회/수정/삭제
+- [x] : 기능 구현 전 인수 테스트 작성 
+- [x] : 기능 구현 후 인수 테스트 리팩터링
+
+#### 요구사항 설명 
+- ##### 지하철 노선 관련 기능의 인수 테스트를 작성하기
+  - ```LinkAcceptanceTest```를 완성시키세요.
+- ##### 지하철 노선 관련 기능 구현하기
+  - 인수 테스트가 모두 성공할 수 있도록 ```LineController```를 통해 요청을 받고 처리하는 기능을 구현하세요.
+- ##### 인수 테스트 리팩터링
+  - 인수 테스트의 각 스텝들을 메서드로 분리하여 재사용하세요.
+    - ex) 인수 테스트 요청 로직 중복 제거 등 
+  
+#### 힌트 
+- ##### RestAssured  [link](https://github.com/rest-assured/rest-assured/wiki/Usage#examples)
+  - given 
+    - 요청을 위한 값을 설정(header, content Type 등)
+    - body가 있는 경우 body 값을 설정함
+  - when 
+    - 요청의 url과 method를 설정
+  - then
+    - 응답의 결과를 관리
+    - response를 추출하거나 response값을 관리할 수 있음 
