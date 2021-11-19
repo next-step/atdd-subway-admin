@@ -5,6 +5,8 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.UpdateLineResponseDto;
+import nextstep.subway.line.exception.DuplicateLineNameException;
+import nextstep.subway.line.exception.NotFoundLineByIdException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +16,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
-    private static final String NOT_FOUND_ERROR_MESSAGE = "해당 노선의 아이디가 존재하지 않습니다.";
-    private static final String DUPLICATED_NAME_ERROR_MESSAGE = "노선의 이름이 중복되었습니다.";
-
     private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -30,17 +29,24 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional
+    public UpdateLineResponseDto updateLine(long id, LineRequest lineRequest) {
+        validateExistsByName(lineRequest.getName());
+        final Line line = getLineByIdOrElseThrow(id);
+        line.update(lineRequest.toLine());
+        lineRepository.flush();
+        return UpdateLineResponseDto.of(line);
+    }
+
     private void validateExistsByName(String name) {
         if (lineRepository.existsByName(name)) {
-            throw new IllegalArgumentException(DUPLICATED_NAME_ERROR_MESSAGE);
+            throw new DuplicateLineNameException();
         }
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
-        List<Line> lines = lineRepository.findAll();
-
-        return lines.stream()
+        return lineRepository.findAll().stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
@@ -51,20 +57,9 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    @Transactional
-    public UpdateLineResponseDto updateLine(long id, LineRequest lineRequest) {
-        validateExistsByName(lineRequest.getName());
-        final Line line = getLineByIdOrElseThrow(id);
-        line.update(lineRequest.toLine());
-        lineRepository.flush();
-        return UpdateLineResponseDto.of(line);
-    }
-
     private Line getLineByIdOrElseThrow(long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> {
-                    throw new IllegalArgumentException(NOT_FOUND_ERROR_MESSAGE);
-                });
+                .orElseThrow(NotFoundLineByIdException::new);
     }
 
     @Transactional
@@ -73,6 +68,6 @@ public class LineService {
             lineRepository.deleteById(id);
             return;
         }
-        throw new IllegalArgumentException(NOT_FOUND_ERROR_MESSAGE);
+        throw new NotFoundLineByIdException();
     }
 }

@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.exception.NotEmptyLineColorException;
+import nextstep.subway.line.exception.NotEmptyLineNameException;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.Column;
@@ -32,10 +34,10 @@ public class Line extends BaseEntity {
 
     private void validate(String name, String color) {
         if (!StringUtils.hasText(name)) {
-            throw new IllegalArgumentException("노선의 이름이 빈값일 수 없습니다.");
+            throw new NotEmptyLineNameException();
         }
         if (!StringUtils.hasText(color)) {
-            throw new IllegalArgumentException("노선의 색상값이 빈값일 수 없습니다.");
+            throw new NotEmptyLineColorException();
         }
     }
 
