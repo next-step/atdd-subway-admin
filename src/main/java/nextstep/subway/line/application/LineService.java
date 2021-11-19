@@ -8,7 +8,9 @@ import nextstep.subway.line.exception.DuplicateLineNameException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -30,5 +32,12 @@ public class LineService {
         if (savedLine.isPresent()) {
             throw new DuplicateLineNameException("중복된 노선명이 있습니다.");
         }
+    }
+
+    public List<LineResponse> getLines() {
+        return lineRepository.findAll()
+                .stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 }
