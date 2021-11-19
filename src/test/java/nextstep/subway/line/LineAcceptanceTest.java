@@ -13,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.station.StationAcceptanceTest.*;
@@ -44,7 +42,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithSections() {
         // given
-        LineRequest 삼호선 = LineRequest.of("3호선","orange", 지하철_역_등록되어_있음(강남역), 지하철_역_등록되어_있음(역삼역), 거리_5);
+        LineRequest 삼호선 = LineRequest.of("3호선", "orange", 지하철_역_등록되어_있음(강남역), 지하철_역_등록되어_있음(역삼역), 거리_5);
 
         // when
         ExtractableResponse<Response> response = RestAssured

@@ -20,10 +20,6 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
-    public StationResponse toDto() {
-        return StationResponse.of(id, name, getCreatedDate(), getModifiedDate());
-    }
-
     public Long getId() {
         return id;
     }
