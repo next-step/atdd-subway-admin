@@ -255,7 +255,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
         신분당선_생성_강남_판교_광교.getStationResponses().remove(판교역);
 
         //then
-        응답_확인_NO_CONTENT(actual);
+        응답_확인_OK(actual);
         상행_혹은_하행_삭제_검증(신분당선_아이디, 신분당선_생성_강남_판교_광교.getStationResponses());
         순서_검증(신분당선_아이디, 강남역, 광교역);
     }
