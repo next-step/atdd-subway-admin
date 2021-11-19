@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class LineService {
+
     private LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
@@ -17,7 +18,15 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
+        validateDuplicatedLineName(request);
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    private void validateDuplicatedLineName(LineRequest request) {
+        String requestLineName = request.getName();
+        if (lineRepository.findByName(requestLineName).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 노선 이름입니다. (입력값: " + requestLineName + ")");
+        }
     }
 }

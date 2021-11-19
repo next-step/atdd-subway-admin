@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import java.time.LocalDateTime;
 
 public class LineResponse {
+
     private Long id;
     private String name;
     private String color;
@@ -32,17 +33,5 @@ public class LineResponse {
 
     public String getName() {
         return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
     }
 }
