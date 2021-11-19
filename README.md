@@ -54,6 +54,12 @@ npm run dev
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
 
 
+## step2 요구사항
+* 노선 생성시 종점역(상행, 하행) 정보 추가
+  * 두 종점역은 구간의 형태로 관리
+* 노선 조회시 응답 결과에 역 목록 추가
+  * 상행역부터 하행역 순으로 정렬
+
 ## step1 요구사항
 * 지하철 노선 관련 기능 인수 테스트 작성
   * 생성, 목록조회, 조회, 수정, 삭제
