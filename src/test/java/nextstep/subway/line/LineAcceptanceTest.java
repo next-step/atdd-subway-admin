@@ -5,6 +5,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.utils.Asserts;
+import nextstep.subway.utils.Methods;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -211,19 +213,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_생성이_실패한다(ExtractableResponse<Response> response) {
-        assertIsBadRequest(response);
+        Asserts.assertIsBadRequest(response);
     }
 
     private void 지하철_노선_응답이_실패한다(ExtractableResponse<Response> response) {
-        assertIsNotFound(response);
+        Asserts.assertIsNotFound(response);
     }
 
     private void 지하철_노선_목록이_응답된다(ExtractableResponse<Response> response) {
-        assertIsOk(response);
+        Asserts.assertIsOk(response);
     }
 
     private void 지하철_노선을_응답한다(ExtractableResponse<Response> response) {
-        assertIsOk(response);
+        Asserts.assertIsOk(response);
     }
 
     private void 지하철_노선이_수정된다(ExtractableResponse<Response> response) {
@@ -231,11 +233,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선을_찾을_수_없어_실패한다(ExtractableResponse<Response> response) {
-        assertIsNotFound(response);
+        Asserts.assertIsNotFound(response);
     }
 
     private void 지하철_노선_수정에_실패한다(ExtractableResponse<Response> response) {
-        assertIsBadRequest(response);
+        Asserts.assertIsBadRequest(response);
     }
 
     /**
@@ -281,31 +283,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return get("/lines");
+        return Methods.get("/lines");
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> response) {
-        return get(response.header("Location"));
+        return Methods.get(response.header("Location"));
     }
 
     private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
-        return get("/lines/" + id);
+        return Methods.get("/lines/" + id);
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> createResponse, Map<String, String> toBeParams) {
-        return patch(createResponse.header("Location"), toBeParams);
+        return Methods.patch(createResponse.header("Location"), toBeParams);
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Map<String, String> toBeParams) {
-        return patch("/lines/" + id, toBeParams);
+        return Methods.patch("/lines/" + id, toBeParams);
     }
 
     private ExtractableResponse<Response> 지하철_노선_삭제_요청(ExtractableResponse<Response> createResponse) {
-        return delete(createResponse.header("Location"));
+        return Methods.delete(createResponse.header("Location"));
     }
 
     private ExtractableResponse<Response> 지하철_노선_삭제_요청(Long id) {
-        return delete("/lines/" + id);
+        return Methods.delete("/lines/" + id);
     }
 
     /**
@@ -316,42 +318,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
         toBeParams.put("name", name);
         toBeParams.put("color", color);
         return toBeParams;
-    }
-
-    private ExtractableResponse<Response> get(String url) {
-        return RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(url)
-                .then().log().all().extract();
-    }
-
-    private ExtractableResponse<Response> patch(String url, Map<String, String> toBeParams) {
-        return RestAssured
-                .given().log().all()
-                .body(toBeParams)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().patch(url)
-                .then().log().all().extract();
-    }
-
-    private ExtractableResponse<Response> delete(String url) {
-        return RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete(url)
-                .then().log().all().extract();
-    }
-
-    private void assertIsBadRequest(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private void assertIsOk(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private void assertIsNotFound(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }
