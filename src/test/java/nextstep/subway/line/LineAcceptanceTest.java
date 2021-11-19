@@ -22,7 +22,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        // 지하철_노선_생성_요청
         final ExtractableResponse<Response> response = 지하철_노선_생성("2호선", "green");
 
         // then
@@ -34,12 +33,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        // 지하철_노선_등록되어_있음
         String lineName = "2호선";
         지하철_노선_생성(lineName,"green");
 
         // when
-        // 지하철_노선_생성_요청
         final ExtractableResponse<Response> response = 지하철_노선_생성(lineName, "red");
 
         // then
@@ -51,13 +48,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
         지하철_노선_생성("1호선","blue");
         지하철_노선_생성("2호선","green");
 
         // when
-        // 지하철_노선_목록_조회_요청
         final ExtractableResponse<Response> response = 지하철_노선_목록_조회();
 
         // then
@@ -72,11 +66,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // 지하철_노선_등록되어_있음
         지하철_노선_생성("신분당선","red");
 
         // when
-        // 지하철_노선_조회_요청
         final ExtractableResponse<Response> lineResponse = 지하철_노선_목록_조회();
 
         // then
@@ -90,7 +82,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
         final ExtractableResponse<Response> lineCreateResponse = 지하철_노선_생성("5호선","purple");
         final LineResponse lineResponse = lineCreateResponse.as(LineResponse.class);
 
@@ -115,7 +106,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
         final ExtractableResponse<Response> lineCreateResponse = 지하철_노선_생성("2호선", "green");
         final LineResponse lineResponse = lineCreateResponse.as(LineResponse.class);
 
