@@ -139,13 +139,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    public static Long 지하철_역_생성_요청(StationRequest request) {
+    public static ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest request) {
         return RestAssured.given().log().all()
             .body(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post("/stations")
-            .jsonPath()
-            .getLong("id");
+            .then().log().all()
+            .extract();
     }
 }
