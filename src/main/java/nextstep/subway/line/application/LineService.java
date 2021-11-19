@@ -33,17 +33,20 @@ public class LineService {
     }
 
     public LineResponse modifyLine(final Long lineId, final LineRequest lineRequest) {
-        final Line findLine = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 지하철 노선은 존재하지 않습니다."));
+        final Line findLine = findLine(lineId);
         findLine.update(new Line(lineRequest.getName(), lineRequest.getColor()));
 
         return LineResponse.of(findLine);
     }
 
     public void deleteLine(final Long lineId) {
-        final Line findLine = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 지하철 노선은 존재하지 않습니다."));
-
+        final Line findLine = findLine(lineId);
         lineRepository.delete(findLine);
+    }
+
+    @Transactional(readOnly = true)
+    public Line findLine(final Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 지하철 노선은 존재하지 않습니다."));
     }
 }
