@@ -7,6 +7,8 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class LineService {
@@ -19,5 +21,11 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    @Transactional(readOnly = true)
+    public List<LineResponse> readAllLines() {
+        final List<Line> lines = lineRepository.findAll();
+        return LineResponse.of(lines);
     }
 }

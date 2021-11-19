@@ -3,6 +3,9 @@ package nextstep.subway.line.dto;
 import nextstep.subway.line.domain.Line;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class LineResponse {
     private Long id;
@@ -11,10 +14,7 @@ public class LineResponse {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
-    public LineResponse() {
-    }
-
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    private LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -26,6 +26,12 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
     }
 
+    public static List<LineResponse> of(List<Line> lines) {
+        return lines.stream()
+                    .map(LineResponse::of)
+                    .collect(toList());
+    }
+
     public Long getId() {
         return id;
     }
@@ -34,15 +40,4 @@ public class LineResponse {
         return name;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
 }
