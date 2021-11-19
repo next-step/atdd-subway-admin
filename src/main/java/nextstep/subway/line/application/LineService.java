@@ -49,4 +49,8 @@ public class LineService {
 
         return LineResponse.of(line);
     }
+
+    public void delete(Long lineId) {
+        lineRepository.deleteById(lineId);
+    }
 }
