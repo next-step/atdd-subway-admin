@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +46,17 @@ public class LineService {
     public LineResponse getLine(Long id) {
         return lineRepository.findById(id)
                 .map(LineResponse::of)
-                .orElseThrow(() -> new LineNotFoundException(String.format("아이디 %d는 없는 노선입니다.", id)));
+                .orElseThrow(throwLineNotFoundException(id));
+    }
+
+    public LineResponse modifyLine(Long id, LineRequest lineRequest) {
+        return lineRepository.findById(id)
+                .map(line -> line.update(lineRequest.toLine()))
+                .map(LineResponse::of)
+                .orElseThrow(throwLineNotFoundException(id));
+    }
+
+    private Supplier<LineNotFoundException> throwLineNotFoundException(Long id) {
+        return () -> new LineNotFoundException(String.format("아이디 %d는 없는 노선입니다.", id));
     }
 }
