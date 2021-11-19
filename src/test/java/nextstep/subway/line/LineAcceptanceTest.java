@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -112,7 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        final LineResponse 초록노선 = 지하철_노선_등록되어_있음("초록노선", "초록노선").as(LineResponse.class);
+        final LineResponse 초록노선 = 지하철_노선_등록되어_있음("초록노선", "초록색").as(LineResponse.class);
         // when
         final ExtractableResponse<Response> response = 지하철_노선_조회_요청(초록노선.getId());
         // then
@@ -125,13 +127,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
-
+        final LineResponse 파란노선 = 지하철_노선_등록되어_있음("파란노선", "파란색").as(LineResponse.class);
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", "초록노선");
+        params.put("color", "초록");
         // when
-        // 지하철_노선_수정_요청
-
+        final ExtractableResponse<Response> response = 지하철_노선_수정_요청(파란노선.getId(), params);
         // then
-        // 지하철_노선_수정됨
+        지하철_노선_수정됨(response);
+        지하철_노선_수정_시간_검증(response, 파란노선);
+    }
+
+    private void 지하철_노선_수정_시간_검증(ExtractableResponse<Response> response, LineResponse lineResponse) {
+        final String modifiedDate = response.jsonPath().getString("modifiedDate");
+        assertTrue(LocalDateTime.parse(modifiedDate).isAfter(lineResponse.getModifiedDate()));
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -145,6 +154,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선_삭제됨
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Map<String, String> params) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when()
+                .put(LINE_BASE_API_URL + "/{id}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private void assertBadRequestAndMessage(ExtractableResponse<Response> response, String errorMessage) {
