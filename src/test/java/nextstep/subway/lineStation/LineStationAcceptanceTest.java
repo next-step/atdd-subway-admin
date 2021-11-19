@@ -234,12 +234,19 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_구간_삭제() {
         // given
-        // given
         LineAndLineStation 신분당선_생성_강남_판교_광교 = 신분당선_생성_강남_판교_광교();
         Long 신분당선_아이디 = 신분당선_생성_강남_판교_광교.getLineResponse().getId();
+        StationResponse 강남역 = 신분당선_생성_강남_판교_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("강남역"))
+                .findFirst().get();
         StationResponse 판교역 = 신분당선_생성_강남_판교_광교.getStationResponses()
                 .stream()
                 .filter(f -> f.getName().equals("판교역"))
+                .findFirst().get();
+        StationResponse 광교역 = 신분당선_생성_강남_판교_광교.getStationResponses()
+                .stream()
+                .filter(f -> f.getName().equals("광교역"))
                 .findFirst().get();
 
         // when
@@ -249,8 +256,8 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
 
         //then
         응답_확인_NO_CONTENT(actual);
-
         상행_혹은_하행_삭제_검증(신분당선_아이디, 신분당선_생성_강남_판교_광교.getStationResponses());
+        순서_검증(신분당선_아이디, 강남역, 광교역);
     }
 
     @DisplayName("지하철 노선의 구간을 삭제 한다.(마지막 구간은 삭제 못하도록)")
