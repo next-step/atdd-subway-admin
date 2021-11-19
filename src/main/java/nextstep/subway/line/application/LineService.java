@@ -47,22 +47,24 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(long id) {
-        final Line line = lineRepository.findById(id)
-                .orElseThrow(() -> {
-                    throw new IllegalArgumentException(NOT_FOUND_ERROR_MESSAGE);
-                });
+        final Line line = getLineByIdOrElseThrow(id);
         return LineResponse.of(line);
     }
 
     @Transactional
     public UpdateLineResponseDto updateLine(long id, LineRequest lineRequest) {
-        final Line line = lineRepository.findById(id)
-                .orElseThrow(() -> {
-                    throw new IllegalArgumentException(NOT_FOUND_ERROR_MESSAGE);
-                });
+        validateExistsByName(lineRequest.getName());
+        final Line line = getLineByIdOrElseThrow(id);
         line.update(lineRequest.toLine());
         lineRepository.flush();
         return UpdateLineResponseDto.of(line);
+    }
+
+    private Line getLineByIdOrElseThrow(long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> {
+                    throw new IllegalArgumentException(NOT_FOUND_ERROR_MESSAGE);
+                });
     }
 
     @Transactional

@@ -36,7 +36,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         // given
         final Map<String, String> params = getLineCreateParams("초록노선", "초록");
-
         // when
         final ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
         // then
@@ -57,6 +56,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_실패됨(response, "노선의 이름이 빈값일 수 없습니다.");
     }
 
+    static Stream<String> blankStrings() {
+        return Stream.of("", "   ", null);
+    }
 
     @ParameterizedTest(name = "노선의 색상값이 \"{0}\" 일 경우 지하철 노선을 생성하지 못하고 예외 메시지가 발생한다.")
     @MethodSource("blankStrings")
@@ -73,9 +75,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicatedName() {
         // given
-        지하철_노선_등록되어_있음("name", "color");
+        지하철_노선_등록되어_있음("중복될이름", "중복되도되는색상");
         // when
-        final ExtractableResponse<Response> response = 지하철_노선_등록되어_있음("name", "color");
+        final ExtractableResponse<Response> response = 지하철_노선_등록되어_있음("중복될이름", "중복되도되는색상");
         // then
         지하철_노선_생성_실패됨(response, "노선의 이름이 중복되었습니다.");
     }
@@ -93,7 +95,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_포함됨(response, Arrays.asList(노란노선, 초록노선));
         지하철_노선_목록의_항목_검증(response, Arrays.asList(노란노선, 초록노선));
     }
-
 
     @DisplayName("해당 아이디의 지하철 노선이 없는 경우 에러가 발생한다.")
     @Test
@@ -127,6 +128,60 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_수정됨(response);
         지하철_노선_수정_시간_검증(response, 파란노선);
+    }
+
+    @DisplayName("노선의 이름 빈값일 경우 노선 수정이 실패하며 에러 메시지가 발생한다.")
+    @Test
+    void updateLineWithEmptyName() {
+        // given
+        final LineResponse 파란노선 = 지하철_노선_등록되어_있음("파란노선", "파란색").as(LineResponse.class);
+        final Map<String, String> params = getLineCreateParams("", "초록");
+        // given
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선_수정_요청(파란노선.getId(), params);
+        // then
+        지하철_노선_수정이_실패됨(response, "노선의 이름이 빈값일 수 없습니다.");
+    }
+
+
+    @DisplayName("노선의 색상값이 빈값일 경우 노선 수정이 실패하며 에러 메시지가 발생한다.")
+    @Test
+    void updateLineWithEmptyColor() {
+        // given
+        final LineResponse 파란노선 = 지하철_노선_등록되어_있음("파란노선", "파란색").as(LineResponse.class);
+        final Map<String, String> params = getLineCreateParams("초록노선", "");
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선_수정_요청(파란노선.getId(), params);
+        // then
+        지하철_노선_수정이_실패됨(response, "노선의 색상값이 빈값일 수 없습니다.");
+    }
+
+    @DisplayName("노선의 이름이 이미 존재할 경우 노선 수정이 실패하여 에러 메시지가 발생한다.")
+    @Test
+    void updateLineWithDuplicatedName() {
+        // given
+        final LineResponse 파란노선 = 지하철_노선_등록되어_있음("파란노선", "파란색").as(LineResponse.class);
+        final Map<String, String> params = getLineCreateParams("파란노선", "색상");
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선_수정_요청(파란노선.getId(), params);
+        // then
+        지하철_노선_수정이_실패됨(response, "노선의 이름이 중복되었습니다.");
+    }
+
+    @DisplayName("해당 아이디의 노선이 존재하지 않을 경우 에러 메시지가 발생한다.")
+    @Test
+    void updateLineWithNotFound() {
+        // given
+        지하철_노선_등록되어_있음("파란노선", "파란색").as(LineResponse.class);
+        final Map<String, String> params = getLineCreateParams("초록노선", "초록색");
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선_수정_요청(10L, params);
+        // then
+        지하철_노선_수정이_실패됨(response, "해당 노선의 아이디가 존재하지 않습니다.");
+    }
+
+    private void 지하철_노선_수정이_실패됨(ExtractableResponse<Response> response, String errorMessage) {
+        assertBadRequestAndMessage(response, errorMessage);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -296,7 +351,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return Collections.unmodifiableMap(params);
     }
 
-    static Stream<String> blankStrings() {
-        return Stream.of("", "   ", null);
-    }
 }
