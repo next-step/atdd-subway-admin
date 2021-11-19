@@ -52,6 +52,14 @@ npm run dev
     - [x] 수정
     - [x] 삭제
     
+## 2단계 - 인수 테스트 리팩터링
+### 요구사항
+API 변경 대응하기
+- [x] 노선 생성 시 종점역(상행, 하행) 정보를 요청 파라미터에 함께 추가하기
+  - [x] 두 종점역은 구간의 형태로 관리되어야 함
+- [x] 노선 조회 시 응답 결과에 역 목록 추가하기
+  - [x] 상행역 부터 하행역 순으로 정렬되어야 함
+  
 ## ✏️ Code Review Process
 [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
