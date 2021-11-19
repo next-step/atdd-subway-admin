@@ -74,8 +74,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [X] Controller에서 필수 파라메터를 검증한다
     - [X] LineControllerAdvice로 예외 상황을 관리한다
 - [ ] 지하철 노선 목록 조회
-  - [ ] 인수 테스트 시나리오 및 테스트 작성
+  - [X] 인수 테스트 시나리오 및 테스트 작성
+    - [X] 지하철 노선 목록을 조회한다
   - [ ] 기능 테스트 및 구현
+    - [ ] 지하철 노선 목록 조회 기능 추가
 - [ ] 지하철 노선 조회
   - [ ] 인수 테스트 시나리오 및 테스트 작성
   - [ ] 기능 테스트 및 구현
