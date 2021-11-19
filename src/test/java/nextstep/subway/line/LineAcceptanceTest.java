@@ -129,7 +129,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().patch("/lines/" + lineResponse.getId())
+                .when().put("/lines/" + lineResponse.getId())
                 .then().log().all().extract();
 
         // then
