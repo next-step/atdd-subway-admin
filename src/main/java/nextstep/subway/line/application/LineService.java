@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -9,22 +10,32 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineAddRequest;
+import nextstep.subway.line.dto.LineEditRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 
 @Service
 @Transactional
 public class LineService {
 
 	private final LineRepository lineRepository;
+	private final StationService stationService;
 
-	public LineService(LineRepository lineRepository) {
+	public LineService(LineRepository lineRepository, StationService stationService) {
 		this.lineRepository = lineRepository;
+		this.stationService = stationService;
 	}
 
-	public LineResponse saveLine(LineRequest request) {
-		return LineResponse.of(lineRepository.save(request.toLine()));
+	public LineResponse saveLine(LineAddRequest request) {
+		final Map<Long, Station> stations = stationService.getStationsIn(request.getUpStationId(), request.getDownStationId());
+		final Station upStation = stations.get(request.getUpStationId());
+		final Station downStation = stations.get(request.getDownStationId());
+		final Line line = lineRepository.save(
+			Line.of(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
+		return LineResponse.of(line);
 	}
 
 	public List<LineResponse> getLines() {
@@ -37,7 +48,7 @@ public class LineService {
 		return LineResponse.of(findLine(id));
 	}
 
-	public void updateLine(Long id, LineRequest request) {
+	public void updateLine(Long id, LineEditRequest request) {
 		final Line line = findLine(id);
 		line.update(request.toLine());
 	}
