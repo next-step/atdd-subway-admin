@@ -140,6 +140,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(response);
     }
 
+    @DisplayName("노선 아이디를 통해서 지하철 노선을 제거할 때 해당 아이디가 없을 경우 에러가 발생한다.")
+    @Test
+    void deleteLineWithNotFound() {
+        // given
+        final long id = 1L;
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선_제거_요청(id);
+        // then
+        지하철_노선_삭제가_실패됨(response, "해당 노선의 아이디가 존재하지 않습니다.");
+    }
+
+    private void 지하철_노선_삭제가_실패됨(ExtractableResponse<Response> response, String errorMessage) {
+        assertBadRequestAndMessage(response, errorMessage);
+    }
+
     private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
