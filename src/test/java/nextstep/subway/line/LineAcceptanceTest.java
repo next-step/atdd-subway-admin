@@ -2,6 +2,7 @@ package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.StationTestFactory;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.testFactory.AcceptanceTestFactory;
 
@@ -52,6 +54,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		// then
 		AcceptanceTestFactory.정상_생성_확인(신분당선_생성_결과);
+
+		String 신분당선_요청_경로 = 신분당선_생성_결과.header("Location");
+		지하철_노선이_응답에_포함되어있는_확인(신분당선_생성_결과, 신분당선_정보, Arrays.asList(강남역, 역삼역), 신분당선_요청_경로);
 	}
 
 	@DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
@@ -94,7 +99,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		//then
 		AcceptanceTestFactory.정상_처리_확인(신분당선_조회_결과);
-		생성된_지하철_노선이_응답에_포함되어있는_확인(신분당선_조회_결과, 신분당선_요청_경로);
+		지하철_노선이_응답에_포함되어있는_확인(신분당선_조회_결과, 신분당선_정보, Arrays.asList(강남역, 역삼역), 신분당선_요청_경로);
 	}
 
 	@DisplayName("없는 지하철 노선을 조회한다.")
@@ -174,9 +179,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		assertThat(resultLineIds).containsAll(expectedLineIds);
 	}
 
-	private void 생성된_지하철_노선이_응답에_포함되어있는_확인(ExtractableResponse<Response> response, String createdUri) {
-		assertThat(response.jsonPath().getObject(".", LineResponse.class).getId()).isEqualTo(
-			Long.parseLong(createdUri.split("/")[2]));
+	private void 지하철_노선이_응답에_포함되어있는_확인(ExtractableResponse<Response> response, Map<String, String> requestLine,
+		List<StationResponse> requestStations, String resourceUrl) {
+		String createdId = resourceUrl.split("/")[2];
+
+		LineResponse lineResponse = response.as(LineResponse.class);
+		assertLineBaseCheck(lineResponse,createdId,requestLine);
+
+		List<Station> stations = lineResponse.getStations();
+		assertStations(stations,requestStations);
+	}
+
+	private void assertLineBaseCheck(LineResponse lineResponse,String createdId, Map<String, String> requestLine) {
+		assertThat(lineResponse.getId()).isEqualTo(Long.parseLong(createdId));
+		assertThat(lineResponse.getColor()).isEqualTo(requestLine.get("color"));
+		assertThat(lineResponse.getName()).isEqualTo(requestLine.get("name"));
+	}
+
+	private void assertStations(List<Station> stations, List<StationResponse> requestStations) {
+		List<Long> stationIds = stations.stream()
+			.map(it -> it.getId())
+			.collect(Collectors.toList());
+
+		assertThat(requestStations.stream()
+			.map(StationResponse::getId)
+			.filter(id -> stationIds.contains(id))
+			.count())
+			.isEqualTo(requestStations.size());
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_삭제(String createdUri) {

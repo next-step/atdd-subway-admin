@@ -1,6 +1,10 @@
 package nextstep.subway.line;
 
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +17,7 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.StationTestFactory;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.testFactory.AcceptanceTestFactory;
 
@@ -51,6 +56,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		AcceptanceTestFactory.정상_생성_확인(강남_성복_구간_등록_결과);
+		지하철_노선_구간_순서_확인(강남_성복_구간_등록_결과, Arrays.asList(강남역, 성복역, 광교역));
 	}
 
 	@DisplayName("노선 중간에 구간을 등록한다.(하행역과 맞닿음)")
@@ -60,12 +66,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		Map<String, String> 성복역_정보 = StationTestFactory.지하철역_이름_정의("성복역");
 		StationResponse 성복역 = StationTestFactory.지하철역_생성(성복역_정보).as(StationResponse.class);
 
-		Map<String, String> 성복_광교_구간_정보 = 구간_정보_정의(성복역.getId(),광교역.getId(), 7);
+		Map<String, String> 성복_광교_구간_정보 = 구간_정보_정의(성복역.getId(), 광교역.getId(), 7);
 		ExtractableResponse<Response> 성복_광교_구간_등록_결과 = 지하철_노선에_구간_등록_요청(성복_광교_구간_정보,
 			getLineSectionServicePath(신분당선.getId()));
 
 		// then
 		AcceptanceTestFactory.정상_생성_확인(성복_광교_구간_등록_결과);
+		지하철_노선_구간_순서_확인(성복_광교_구간_등록_결과, Arrays.asList(강남역, 성복역, 광교역));
 	}
 
 	@DisplayName("상행 종점 앞에 구간 추가")
@@ -75,27 +82,90 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		Map<String, String> 신논현_정보 = StationTestFactory.지하철역_이름_정의("신논현");
 		StationResponse 신논현 = StationTestFactory.지하철역_생성(신논현_정보).as(StationResponse.class);
 
-		Map<String, String> 신논현_강남_구간_정보 = 구간_정보_정의(신논현.getId(),강남역.getId(), 12);
+		Map<String, String> 신논현_강남_구간_정보 = 구간_정보_정의(신논현.getId(), 강남역.getId(), 12);
 		ExtractableResponse<Response> 신논현_강남_구간_등록_결과 = 지하철_노선에_구간_등록_요청(신논현_강남_구간_정보,
 			getLineSectionServicePath(신분당선.getId()));
 
 		// then
 		AcceptanceTestFactory.정상_생성_확인(신논현_강남_구간_등록_결과);
+		지하철_노선_구간_순서_확인(신논현_강남_구간_등록_결과, Arrays.asList(신논현, 강남역, 광교역));
 	}
 
 	@DisplayName("하행 종점 뒤에 구간 추가")
 	@Test
 	void addSection4() {
 		// when
-		Map<String, String> 호매실_정보 = StationTestFactory.지하철역_이름_정의("호매실");
-		StationResponse 호매실 = StationTestFactory.지하철역_생성(호매실_정보).as(StationResponse.class);
+		Map<String, String> 호매실역_정보 = StationTestFactory.지하철역_이름_정의("호매실");
+		StationResponse 호매실역 = StationTestFactory.지하철역_생성(호매실역_정보).as(StationResponse.class);
 
-		Map<String, String> 광교_호매실_구간_정보 = 구간_정보_정의(광교역.getId(),호매실.getId(), 15);
+		Map<String, String> 광교_호매실_구간_정보 = 구간_정보_정의(광교역.getId(), 호매실역.getId(), 15);
 		ExtractableResponse<Response> 광교_호매실_구간_등록_결과 = 지하철_노선에_구간_등록_요청(광교_호매실_구간_정보,
 			getLineSectionServicePath(신분당선.getId()));
 
 		// then
 		AcceptanceTestFactory.정상_생성_확인(광교_호매실_구간_등록_결과);
+		지하철_노선_구간_순서_확인(광교_호매실_구간_등록_결과, Arrays.asList(강남역, 광교역, 호매실역));
+	}
+
+	@DisplayName("기존 역 사이 길이보다 크거나 같으면 등록할 수 없음")
+	@Test
+	void addSection_exception1() {
+		// when
+		Map<String, String> 성복역_정보 = StationTestFactory.지하철역_이름_정의("성복역");
+		StationResponse 성복역 = StationTestFactory.지하철역_생성(성복역_정보).as(StationResponse.class);
+
+		Map<String, String> 강남_성복_구간_정보 = 구간_정보_정의(강남역.getId(), 성복역.getId(), 10);
+		ExtractableResponse<Response> 강남_성복_구간_등록_결과 = 지하철_노선에_구간_등록_요청(강남_성복_구간_정보,
+			getLineSectionServicePath(신분당선.getId()));
+
+		// then
+		AcceptanceTestFactory.예외_발생_확인(강남_성복_구간_등록_결과);
+	}
+
+	@DisplayName("상행역_하행역_모두_등록되어있으면_추가할_수_없음")
+	@Test
+	void addSection_exception2() {
+		// given
+		Map<String, String> 성복역_정보 = StationTestFactory.지하철역_이름_정의("성복역");
+		StationResponse 성복역 = StationTestFactory.지하철역_생성(성복역_정보).as(StationResponse.class);
+		Map<String, String> 강남_성복_구간_정보 = 구간_정보_정의(강남역.getId(), 성복역.getId(), 5);
+		지하철_노선에_구간_등록_요청(강남_성복_구간_정보, getLineSectionServicePath(신분당선.getId()));
+
+		// when
+		Map<String, String> 강남_광교_구간_정보 = 구간_정보_정의(강남역.getId(), 광교역.getId(), 10);
+		ExtractableResponse<Response> 강남_광교_구간_등록_결과 = 지하철_노선에_구간_등록_요청(강남_광교_구간_정보,
+			getLineSectionServicePath(신분당선.getId()));
+		// then
+		AcceptanceTestFactory.예외_발생_확인(강남_광교_구간_등록_결과);
+	}
+
+	@DisplayName("상행역_하행역_모두_기존에_없는_경우")
+	@Test
+	void addSection_exception3() {
+		// given
+		Map<String, String> 성복역_정보 = StationTestFactory.지하철역_이름_정의("성복역");
+		StationResponse 성복역 = StationTestFactory.지하철역_생성(성복역_정보).as(StationResponse.class);
+		Map<String, String> 수지구청역_정보 = StationTestFactory.지하철역_이름_정의("수지구청역");
+		StationResponse 수지구청역 = StationTestFactory.지하철역_생성(수지구청역_정보).as(StationResponse.class);
+
+		// when
+		Map<String, String> 성복_수지구청_구간_정보 = 구간_정보_정의(성복역.getId(), 수지구청역.getId(), 7);
+		ExtractableResponse<Response> 성복_수지구청_구간_등록_결과 = 지하철_노선에_구간_등록_요청(성복_수지구청_구간_정보, getLineSectionServicePath(신분당선.getId()));
+
+		// then
+		AcceptanceTestFactory.예외_발생_확인(성복_수지구청_구간_등록_결과);
+	}
+
+	private void 지하철_노선_구간_순서_확인(ExtractableResponse<Response> 강남_성복_구간_등록_결과, List<StationResponse> expectedStations) {
+		List<Station> stations = 강남_성복_구간_등록_결과.jsonPath()
+			.getList("stations", Station.class);
+		for (int i = 0; i < stations.size(); i++) {
+			Station station = stations.get(i);
+			StationResponse expectedStation = expectedStations.get(i);
+			assertThat(station.getId()
+				.equals(expectedStation.getId()))
+				.isTrue();
+		}
 	}
 
 	private ExtractableResponse<Response> 지하철_노선에_구간_등록_요청(Map<String, String> params, String path) {

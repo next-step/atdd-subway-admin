@@ -18,4 +18,9 @@ public class SubwayExceptionHandler {
 		return ResponseEntity.badRequest().build();
 	}
 
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity handleIllegalStateException(IllegalStateException e) {
+		return ResponseEntity.badRequest().build();
+	}
+
 }
