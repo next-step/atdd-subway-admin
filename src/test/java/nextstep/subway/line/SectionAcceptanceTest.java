@@ -54,9 +54,33 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		);
 	}
 
+	@DisplayName("구간추가/상행종착")
+	@Test
+	void createSection_upTerminal() {
+		final long 신분당선_ID = createLineId("신분당선", "bg-red-600", 판교역_ID, 광교역_ID, 10);
+
+		final ExtractableResponse<Response> response = postSections(
+			신분당선_ID, sectionAddRequest(강남역_ID, 판교역_ID, 4)
+		);
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(response.header("Location")).isNotBlank();
+	}
+
+	@DisplayName("구간추가/하행종착")
+	@Test
+	void createSection_downTerminal() {
+		final long 신분당선_ID = createLineId("신분당선", "bg-red-600", 강남역_ID, 판교역_ID, 10);
+
+		final ExtractableResponse<Response> response = postSections(
+			신분당선_ID, sectionAddRequest(판교역_ID, 광교역_ID, 4)
+		);
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(response.header("Location")).isNotBlank();
+	}
+
 	@DisplayName("구간추가/구간사이/기존구간 길이보다 크거나 같을 경우 실패")
 	@Test
-	void createSection_betweenStations_tooLongDistance() {
+	void createSection_between_tooLongDistance() {
 		final long 신분당선_ID = createLineId("신분당선", "bg-red-600", 강남역_ID, 광교역_ID, 10);
 		assertThat(postSections(신분당선_ID, sectionAddRequest(판교역_ID, 광교역_ID, 10)).statusCode()).isEqualTo(
 			HttpStatus.BAD_REQUEST.value());
@@ -64,24 +88,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			HttpStatus.BAD_REQUEST.value());
 	}
 
-	@DisplayName("구간추가/상행종착")
-	@Test
-	void createSection_ok_upTerminal() {
-	}
-
-	@DisplayName("구간추가/하행종착")
-	@Test
-	void createSection_ok_downTerminal() {
-	}
-
 	@DisplayName("구간추가/중복이면 실패")
 	@Test
-	void createSection_fail_duplicated() {
+	void createSection_duplicated() {
+		final long 신분당선_ID = createLineId("신분당선", "bg-red-600", 강남역_ID, 광교역_ID, 10);
+
+		final ExtractableResponse<Response> response = postSections(
+			신분당선_ID, sectionAddRequest(강남역_ID, 광교역_ID, 4)
+		);
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@DisplayName("구간 추가/노선에 포함되지 않은 역으로만 요청한 경우 실패")
 	@Test
-	void createSection_fail_notFoundStations() {
+	void createSection_notFoundStations() {
 	}
 
 	private long createLineId(String name, String color, Long upStationId, Long downStationId, int distance) {
