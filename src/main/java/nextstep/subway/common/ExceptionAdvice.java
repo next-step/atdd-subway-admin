@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ExceptionAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
-    public ExceptionMessage badRequestHandler(Exception exception) {
+    @ExceptionHandler(value = {RuntimeException.class})
+    public ExceptionMessage runtimeExceptionHandler(Exception exception) {
         return ExceptionMessage.of(exception);
     }
 }
