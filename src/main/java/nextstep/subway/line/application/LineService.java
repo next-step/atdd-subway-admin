@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.exception.NotFoundResourceException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Lines;
@@ -30,6 +31,11 @@ public class LineService {
     public List<LineFindResponse> findAll() {
         Lines lines = Lines.of(lineRepository.findAll());
         return lines.toLineFindResponses();
+    }
+
+    public LineFindResponse findLine(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundResourceException("존재하지 않는 노선입니다. (입력값: " + id + ")"));
+        return LineFindResponse.of(line);
     }
 
     private void validateDuplicatedLineName(LineRequest request) {

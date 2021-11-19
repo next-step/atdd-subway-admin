@@ -121,6 +121,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lines.size()).isEqualTo(2);
     }
 
+    @DisplayName("조회한 노선이 존재하지 않을 경우 실패한다.")
+    @Test
+    void getLine_존재하지_않는_노선() {
+        // given
+        // 지하철_노선_등록되어_있지 안음
+
+        // when
+        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/{id}", 1)
+                .then().log().all().extract();
+
+        // then
+        // 지하철_노선_조회_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
