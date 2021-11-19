@@ -154,11 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_응답이_실패한다(ExtractableResponse<Response> response) {
-        assertIsBadRequest(response);
-    }
-
-    private void assertIsBadRequest(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private void 지하철_노선_목록이_응답된다(ExtractableResponse<Response> response) {
@@ -167,10 +163,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선을_응답한다(ExtractableResponse<Response> response) {
         assertIsOk(response);
-    }
-
-    private void assertIsOk(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private void 지하철_노선_목록이_포함된다(ExtractableResponse<Response> createResponse1, ExtractableResponse<Response> createResponse2, ExtractableResponse<Response> response) {
@@ -218,5 +210,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get(url)
                 .then().log().all().extract();
+    }
+
+    private void assertIsBadRequest(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void assertIsOk(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }
