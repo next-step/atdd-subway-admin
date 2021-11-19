@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,99 +25,57 @@ public class Sections {
 	protected Sections() {
 	}
 
-	public boolean isEmpty() {
-		return sections.size() == 0;
-	}
-
-	private void add(Section requestSection, Line line) {
+	public void addSection(Section requestSection, Line line) {
+		if (!isEmpty()) {
+			adjustSection(requestSection);
+		}
 		sections.add(requestSection);
 		requestSection.assignLine(line);
 	}
 
-	public void addSection(Section requestSection, Line line) {
-		if (isEmpty()) {
-			add(requestSection, line);
+	public void adjustSection(Section requestSection) {
+		List<Section> orderedSection = getOrderSections();
+
+		if(isOutBoundInsertable(orderedSection,requestSection)){
 			return;
 		}
 
-		validateInsertSection(requestSection);
-
-		List<Section> orderedSections = getOrderedSections();
-		Section firstSection = orderedSections.get(0);
-		Section lastSection = orderedSections.get(orderedSections.size() - 1);
-
-		Section insertSection = null;
-
-		for (Section currentSection : orderedSections) {
-			if (currentSection.getUpStation() == requestSection.getUpStation()) { // 상행선 맞닿음
-				validateInsertableLengthBetween(currentSection, requestSection);
-
-				insertSection = new Section(requestSection.getDownStation(),
-					currentSection.getDownStation(), currentSection.getDistance() - requestSection.getDistance());
-				currentSection.changeDownSection(requestSection.getDownStation());
-				currentSection.changeDistance(requestSection.getDistance());
-				break;
-			}
-
-			if (currentSection.getDownStation() == requestSection.getDownStation()) { // 하행선 맞닿음
-				validateInsertableLengthBetween(currentSection, requestSection);
-
-				insertSection = new Section(requestSection.getUpStation(),
-					currentSection.getDownStation(), requestSection.getDistance());
-				currentSection.changeDownSection(requestSection.getUpStation());
-				currentSection.changeDistance(currentSection.getDistance() - requestSection.getDistance());
-				break;
-			}
-
-			if (currentSection.getUpStation() == requestSection.getDownStation()) { // 새로운 상행 종점
-				if (!currentSection.equals(firstSection)) {
-					continue;
-				}
-
-				insertSection = new Section(requestSection.getUpStation(),
-					requestSection.getDownStation(), requestSection.getDistance());
-				break;
-			}
-
-			if (currentSection.getDownStation() == requestSection.getUpStation()) { // 새로운 상행 종점
-				if (!currentSection.equals(lastSection)) {
-					continue;
-				}
-
-				insertSection = new Section(requestSection.getUpStation(),
-					requestSection.getDownStation(), requestSection.getDistance());
-				break;
-			}
+		validateNotExistSection(requestSection);
+		Optional<Section> matchUpSection = findMatchUpSection(requestSection);
+		if (matchUpSection.isPresent()) {
+			sliceUpSection(matchUpSection.get(), requestSection);
+			return;
 		}
-		add(insertSection, line);
+
+		Optional<Section> matchDownSection = findMatchDownSection(requestSection);
+		if (matchDownSection.isPresent()) {
+			sliceDownSection(matchDownSection.get(), requestSection);
+			return;
+		}
+		throw new IllegalStateException("기존에 존재하는 역을 포함하여 구간 추가를 요청해야 합니다.");
 	}
 
-	private void validateInsertSection(Section requestSection) {
-		Set<Station> stations = getStations();
-
-		Boolean hasUpStation = false;
-		Boolean hasDownStation = false;
-		if (stations.contains(requestSection.getUpStation())) {
-			hasUpStation = true;
-		}
-		if (stations.contains(requestSection.getDownStation())) {
-			hasDownStation = true;
+	private boolean isOutBoundInsertable(List<Section> orderedSection, Section requestSection) {
+		// 상행 종점 앞에 구간 추가하는 경우
+		if (isAheadOfBeginningSection(orderedSection,requestSection)) {
+			return true;
 		}
 
-		if (hasUpStation && hasDownStation) {
-			throw new IllegalArgumentException("이미 있는 구간 입니다.");
-
+		// 하행 종점 뒤에 구간 추가하는 경우
+		if (isBehindLastSection(orderedSection,requestSection)) {
+			return true;
 		}
-
-		if (!hasUpStation && !hasDownStation) {
-			throw new IllegalArgumentException("해당 노선에 추가할 수 없는 구간 정보입니다.");
-		}
+		return false;
 	}
 
-	private void validateInsertableLengthBetween(Section currentSection, Section requestSection) {
-		if (currentSection.getDistance() <= requestSection.getDistance()) { // 기존 역 사이 길이보다 크거나 같으면 등록 불가 예외 발생
-			throw new IllegalArgumentException("기존 역 사이 길이와 같거나 긴 구간은 등록이 불가합니다.");
-		}
+	private boolean isAheadOfBeginningSection(List<Section> orderedSection, Section requestSection) {
+		Section startSection = orderedSection.get(0);
+		return startSection.matchUpStation(requestSection.getDownStation());
+	}
+
+	private boolean isBehindLastSection(List<Section> orderedSection, Section requestSection) {
+		Section lastSection = orderedSection.get(orderedSection.size()-1);
+		return lastSection.matchDownStation(requestSection.getUpStation());
 	}
 
 	private Set<Station> getStations() {
@@ -128,8 +87,43 @@ public class Sections {
 		return stations;
 	}
 
-	public List<Station> getOrderedStatons() {
-		List<Section> orderedSections = getOrderedSections();
+	private void validateNotExistSection(Section requestSection) {
+		Set<Station> stations = getStations();
+		if (stations.containsAll(Arrays.asList(requestSection.getUpStation(), requestSection.getDownStation()))) {
+			throw new IllegalArgumentException("이미 등록된 구간 정보입니다.");
+		}
+	}
+
+	private Optional<Section> findMatchUpSection(Section requestSection) {
+		return sections.stream()
+			.filter(it -> it.matchUpStation(requestSection.getUpStation()))
+			.findAny();
+	}
+
+	private void sliceUpSection(Section currentSection, Section sliceSection) {
+		validateInsertableLengthBetween(currentSection, sliceSection);
+		currentSection.splitUpSection(sliceSection);
+	}
+
+	private Optional<Section> findMatchDownSection(Section requestSection) {
+		return sections.stream()
+			.filter(it -> it.matchDownStation(requestSection.getDownStation()))
+			.findAny();
+	}
+
+	private void sliceDownSection(Section currentSection, Section sliceSection) {
+		validateInsertableLengthBetween(currentSection, sliceSection);
+		currentSection.splitDownSection(sliceSection);
+	}
+
+	private void validateInsertableLengthBetween(Section currentSection, Section requestSection) {
+		if (currentSection.getDistance() <= requestSection.getDistance()) {
+			throw new IllegalArgumentException("기존 역 사이 길이와 같거나 긴 구간은 등록이 불가합니다.");
+		}
+	}
+
+	public List<Station> getOrderedStations() {
+		List<Section> orderedSections = getOrderSections();
 		return converToStations(orderedSections);
 	}
 
@@ -142,22 +136,18 @@ public class Sections {
 		return stations;
 	}
 
-	public List<Section> getOrderedSections() {
-		Section startSection = findStartStation();
-		return orderedSections(startSection);
-	}
+	private List<Section> getOrderSections() {
+		Section startSection = findStartSection();
 
-	private List<Section> orderedSections(Section startSection) {
 		Map<Station, Section> upStationAndSectionRoute = getSectionRoute();
-		List<Section> sections = new ArrayList<>();
-
+		List<Section> orderedSections = new ArrayList<>();
 		Section nextSection = startSection;
 		while (nextSection != null) {
-			sections.add(nextSection);
+			orderedSections.add(nextSection);
 			Station curDownStation = nextSection.getDownStation();
 			nextSection = upStationAndSectionRoute.get(curDownStation);
 		}
-		return sections;
+		return orderedSections;
 	}
 
 	private Map<Station, Section> getSectionRoute() {
@@ -165,7 +155,7 @@ public class Sections {
 			.collect(Collectors.toMap(Section::getUpStation, it -> it, (o1, o2) -> o1, HashMap::new));
 	}
 
-	private Section findStartStation() {
+	private Section findStartSection() {
 		// 전체 하행역 콜렉션 생성
 		Set<Station> downStations = sections.stream()
 			.map(Section::getDownStation)
@@ -175,5 +165,9 @@ public class Sections {
 			.filter(it -> !downStations.contains(it.getUpStation()))
 			.findFirst();
 		return startSection.orElseThrow(() -> new IllegalStateException("구간 정보가 올바르지 않습니다."));
+	}
+
+	private boolean isEmpty() {
+		return sections.size() == 0;
 	}
 }
