@@ -23,6 +23,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.SectionRepository;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.dto.LineInfoResponse;
 import nextstep.subway.station.domain.Station;
 
@@ -120,14 +121,13 @@ public class LineServiceTest {
     @Test
     void create_lineWithSection() {
         // given
-        Section section = Section.valueOf(new Station("대화"), new Station("수서"), Distance.valueOf(100));
+        Line savingLine = new Line("3호선", "bg-orange-600");
+        when(lineRepository.save(any(Line.class))).thenReturn(savingLine);
 
         Line expectedLine = new Line("3호선", "bg-orange-600");
-        section.addSectionAtLine(expectedLine);
+        Section section = Section.valueOf(new Station("대화"), new Station("수서"), Distance.valueOf(100));
+        expectedLine.addSection(section);
 
-        when(lineRepository.save(any(Line.class))).thenReturn(expectedLine);
-
-        Line savingLine = new Line("3호선", "bg-orange-600");
         // when
         Line savedLine = lineService.saveLine(savingLine, section);
 
@@ -155,5 +155,67 @@ public class LineServiceTest {
             () -> Assertions.assertThat(savedSection.getDownStation()).isEqualTo(downStation),
             () -> Assertions.assertThat(savedSection.getDistance()).isEqualTo(distance)
         );
+    }
+
+    @DisplayName("기등록된 구간이 있을때 상행역과 매칭되는 구간을 저장한다.")
+    @Test
+    void addSection_matchUpStation() {
+        // given
+        Sections expectedSections = expectedAddSection_matchUpStation();
+
+        Line savedLine = saveLineWithSection();
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(savedLine));
+
+        Section addingSection = Section.valueOf(new Station("대화"), new Station("양재"), Distance.valueOf(50));
+
+        // when
+        Sections savedSections = lineService.addSection(1L, addingSection);
+
+        // then
+        Assertions.assertThat(savedSections).isEqualTo(expectedSections);
+    }
+
+    @DisplayName("기등록된 구간이 있을때 하행역과 매칭되는 구간을 저장한다.")
+    @Test
+    void addSection_matchDownStation() {
+        // given
+        Sections expectedSections = expectedAddSection_matchDownStation();
+
+        Line savedLine = saveLineWithSection();
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(savedLine));
+
+        Section addingSection = Section.valueOf(new Station("양재"), new Station("수서"), Distance.valueOf(50));
+
+        // when
+        Sections savedSections = lineService.addSection(1L, addingSection);
+
+        // then
+        Assertions.assertThat(savedSections).isEqualTo(expectedSections);
+    }
+
+    private Line saveLineWithSection() {
+        Line savingLine = new Line("3호선", "bg-orange-600");
+        when(lineRepository.save(any(Line.class))).thenReturn(savingLine);
+
+        Section section = Section.valueOf(new Station("대화"), new Station("수서"), Distance.valueOf(100));
+
+        return lineService.saveLine(savingLine, section);
+    }
+
+    private Sections expectedAddSection_matchUpStation() {
+        Line expectedRegistedLine = saveLineWithSection();
+
+        Section expectedAddingSection = Section.valueOf(new Station("대화"), new Station("양재"), Distance.valueOf(50));
+        expectedAddingSection.addSectionAtLine(expectedRegistedLine);
+
+        return expectedRegistedLine.getSections();
+    }
+    private Sections expectedAddSection_matchDownStation() {
+        Line expectedRegistedLine = saveLineWithSection();
+
+        Section expectedAddingSection = Section.valueOf(new Station("양재"), new Station("수서"), Distance.valueOf(50));
+        expectedAddingSection.addSectionAtLine(expectedRegistedLine);
+
+        return expectedRegistedLine.getSections();
     }
 }

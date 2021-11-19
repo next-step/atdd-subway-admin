@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineInfoResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -204,10 +205,43 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("기등록된 구간이 있는 노선에 신규 구간을 추가한다.")
+    @Test
+    void addSection_hasSectionLine() {
+        // given
+        StationResponse upStation = StationAcceptanceTest.createStation("대화");
+        StationResponse downStation =  StationAcceptanceTest.createStation("수서");
+        StationResponse newStation =  StationAcceptanceTest.createStation("양재");
+
+        LineResponse orangeLine = createSubwayLine(new LineRequest("3호선", "bg-orange-600", upStation.getId(), downStation.getId(), 300));
+
+        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), newStation.getId(), 130);
+
+        // when
+        ExtractableResponse<Response> response = requestAddSection(orangeLine.getId(), sectionRequest);
+
+        // then
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> serachResponse = requestSearchLineInfo(orangeLine.getId());
+        Assertions.assertThat(serachResponse.as(LineInfoResponse.class).getStations()).hasSize(3);
+    }
+
     private LineResponse createSubwayLine(LineRequest lineRequest) {
         ExtractableResponse<Response> response = requestCreateLine(lineRequest);
 
         return response.as(LineResponse.class);
+    }
+
+    private ExtractableResponse<Response> requestAddSection(Long lineId, SectionRequest sectionRequest) {
+        return RestAssured.given().log().all().
+                            body(sectionRequest).
+                            contentType(MediaType.APPLICATION_JSON_VALUE).
+                            when().
+                            post("/lines/" + String.valueOf(lineId) + "/sections").
+                            then().
+                            log().all().
+                            extract();
     }
 
     private ExtractableResponse<Response> requestCreateLine(LineRequest lineRequest) {

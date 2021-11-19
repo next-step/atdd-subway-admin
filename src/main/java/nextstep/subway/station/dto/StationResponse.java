@@ -49,7 +49,7 @@ public class StationResponse {
             return false;
         }
         StationResponse stationResponse = (StationResponse) o;
-        return Objects.equals(id, stationResponse.id) && Objects.equals(name, stationResponse.name);//&& Objects.equals(createdDate, stationResponse.createdDate) && Objects.equals(modifiedDate, stationResponse.modifiedDate);
+        return Objects.equals(id, stationResponse.id) && Objects.equals(name, stationResponse.name);
     }
 
     @Override

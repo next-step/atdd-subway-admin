@@ -16,7 +16,7 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Section> values;
 
     protected Sections() {
@@ -33,6 +33,18 @@ public class Sections {
 
     public static Sections valueOf(List<Section> sections) {
         return new Sections(sections);
+    }
+
+    private class SplitSectionItem {
+        int index;
+        Section newUpSection;
+        Section newDownSection;
+
+        public SplitSectionItem(int index, Section newUpSection, Section newDownSection) {
+        this.index = index;
+        this.newUpSection = newUpSection;
+        this.newDownSection = newDownSection;
+        }
     }
 
     public boolean isEmpty() {
@@ -52,17 +64,6 @@ public class Sections {
                         .map(Section::getUpStation)
                         .collect(Collectors.toList());
     }
-    class AddSectionItem {
-       int index;
-       Section newUpSection;
-       Section newDownSection;
-
-       public AddSectionItem(int index, Section newUpSection, Section newDownSection) {
-        this.index = index;
-        this.newUpSection = newUpSection;
-        this.newDownSection = newDownSection;
-       }
-    }
 
     public void add(Section section) {
         if (this.values.isEmpty()) {
@@ -70,76 +71,93 @@ public class Sections {
             return;
         }
 
-        validateContain(section);
-        validateDistance(section);
+        validation(section);
 
-        AddSectionItem addSectionItem = getAddSectionItem(section).orElseThrow();
+        SplitSectionItem splitSectionItem = getSplitSectionItem(section).orElseThrow();
 
-        int index = addSectionItem.index;
+        int index = splitSectionItem.index;
+
         this.values.remove(index);
-        this.values.add(index, addSectionItem.newDownSection);
-        this.values.add(index, addSectionItem.newUpSection);
+        this.values.add(index, splitSectionItem.newDownSection);
+        this.values.add(index, splitSectionItem.newUpSection);
     }
 
-    private Optional<AddSectionItem> getAddSectionItem(Section section) {
-        // 상행 종점 추가
-        Optional<AddSectionItem> addSectionItem1 =  this.values.stream()
-                    .filter(sectionItem -> sectionItem.getUpStation().equals(section.getDownStation()))
-                    .findFirst()
-                    .map(findSection -> new AddSectionItem(this.values.indexOf(findSection), 
-                                                    Section.valueOf(section.getUpStation(), section.getDownStation(), section.getDistance()), 
-                                                    Section.valueOf(findSection.getUpStation(), findSection.getDownStation(), findSection.getDistance())) );
+    private void validation(Section section) {
+        checkContainStaion(section);
+        checkDistance(section);
+    }
 
-        if (addSectionItem1.isPresent()) {
-            return addSectionItem1;
+    private Optional<SplitSectionItem> getSplitSectionItem(Section section) {
+        Optional<SplitSectionItem> upStationTerminalSplitItem = generateUpStationTerminalSplitItem(section);
+
+        if (upStationTerminalSplitItem.isPresent()) {
+            return upStationTerminalSplitItem;
         }
 
-        // 상행 매핑 추가
-        Optional<AddSectionItem> addSectionItem2 = this.values.stream()
-                    .filter(sectionItem -> sectionItem.getUpStation().equals(section.getUpStation()))
-                    .findFirst()
-                    .map(findSection -> new AddSectionItem(this.values.indexOf(findSection), 
-                                                            Section.valueOf(findSection.getUpStation(), section.getDownStation(), findSection.getDistance().minus(section.getDistance())), 
-                                                            Section.valueOf(section.getDownStation(), findSection.getDownStation(), section.getDistance())));
+        Optional<SplitSectionItem> upStationSplitItem = generateUpStationSplitItem(section);
 
-        if (addSectionItem2.isPresent()) {
-            return addSectionItem2;
+        if (upStationSplitItem.isPresent()) {
+            return upStationSplitItem;
         }
-        
-        // 하행 매핑 추가
-        Optional<AddSectionItem> addSectionItem3 = this.values.stream()
-                    .filter(sectionItem -> sectionItem.getDownStation().equals(section.getDownStation()))
-                    .findFirst()
-                    .map(findSection -> new AddSectionItem(this.values.indexOf(findSection), 
-                                                            Section.valueOf(findSection.getUpStation(), section.getUpStation(), findSection.getDistance().minus(section.getDistance())), 
-                                                            Section.valueOf(section.getUpStation(), findSection.getDownStation(), section.getDistance())));
+
+        Optional<SplitSectionItem> downStationSplitItem = generateDownStationSplitItem(section);
 
 
-        if (addSectionItem3.isPresent()) {
-            return addSectionItem3;
+        if (downStationSplitItem.isPresent()) {
+            return downStationSplitItem;
         }
-        // 하행 종점 추가
-        Optional<AddSectionItem> addSectionItem4 = this.values.stream()
-                    .filter(sectionItem -> sectionItem.getDownStation().equals(section.getUpStation()))
-                    .findFirst()
-                    .map(findSection -> new AddSectionItem(this.values.indexOf(findSection), 
-                                                            Section.valueOf(findSection.getUpStation(), findSection.getDownStation(), findSection.getDistance()),
-                                                            Section.valueOf(section.getUpStation(), section.getDownStation(), section.getDistance()))
-                    );
 
-        if (addSectionItem4.isPresent()) {
-            return addSectionItem4;
+        Optional<SplitSectionItem> downStationTerminalSplitItem = generateDownStationTerminalSplitItem(section);
+
+        if (downStationTerminalSplitItem.isPresent()) {
+            return downStationTerminalSplitItem;
         }
 
         return Optional.empty();
     }
 
-    private void validateDistance(Section section) {
-        if (this.values.get(0).getUpStation().equals(section.getDownStation())) {
+    private Optional<SplitSectionItem> generateDownStationTerminalSplitItem(Section section) {
+        return this.values.stream()
+                    .filter(sectionItem -> sectionItem.getDownStation().equals(section.getUpStation()))
+                    .findFirst()
+                    .map(findSection -> new SplitSectionItem(this.values.indexOf(findSection),
+                                                            Section.valueOf(findSection.getUpStation(), findSection.getDownStation(), findSection.getDistance()),
+                                                            Section.valueOf(section.getUpStation(), section.getDownStation(), section.getDistance())));
+    }
+
+    private Optional<SplitSectionItem> generateDownStationSplitItem(Section section) {
+        return this.values.stream()
+                    .filter(sectionItem -> sectionItem.getDownStation().equals(section.getDownStation()))
+                    .findFirst()
+                    .map(findSection -> new SplitSectionItem(this.values.indexOf(findSection),
+                                                            Section.valueOf(findSection.getUpStation(), section.getUpStation(), findSection.getDistance().minus(section.getDistance())),
+                                                            Section.valueOf(section.getUpStation(), findSection.getDownStation(), section.getDistance())));
+    }
+
+    private Optional<SplitSectionItem> generateUpStationSplitItem(Section section) {
+        return this.values.stream()
+                    .filter(sectionItem -> sectionItem.getUpStation().equals(section.getUpStation()))
+                    .findFirst()
+                    .map(findSection -> new SplitSectionItem(this.values.indexOf(findSection),
+                                                            Section.valueOf(findSection.getUpStation(), section.getDownStation(), findSection.getDistance().minus(section.getDistance())),
+                                                            Section.valueOf(section.getDownStation(), findSection.getDownStation(), section.getDistance())));
+    }
+
+    private Optional<SplitSectionItem> generateUpStationTerminalSplitItem(Section section) {
+        return this.values.stream()
+                    .filter(sectionItem -> sectionItem.getUpStation().equals(section.getDownStation()))
+                    .findFirst()
+                    .map(findSection -> new SplitSectionItem(this.values.indexOf(findSection),
+                                                    Section.valueOf(section.getUpStation(), section.getDownStation(), section.getDistance()),
+                                                    Section.valueOf(findSection.getUpStation(), findSection.getDownStation(), findSection.getDistance())));
+    }
+
+    private void checkDistance(Section section) {
+        if (isUpStationTeminal(section)) {
             return;
         }
 
-        if (this.values.get(this.values.size() - 1).getDownStation().equals(section.getUpStation())) {
+        if (isDownStaionTeminal(section)) {
             return;
         }
 
@@ -152,12 +170,20 @@ public class Sections {
         upStationMatchSection.getId();
     }
 
-    private void validateContain(Section section) {
-        if (this.values.get(0).getUpStation().equals(section.getDownStation())) {
+    private boolean isDownStaionTeminal(Section section) {
+        return this.values.get(this.values.size() - 1).getDownStation().equals(section.getUpStation());
+    }
+
+    private boolean isUpStationTeminal(Section section) {
+        return this.values.get(0).getUpStation().equals(section.getDownStation());
+    }
+
+    private void checkContainStaion(Section section) {
+        if (isUpStationTeminal(section)) {
             return;
         }
 
-        if (this.values.get(this.values.size() - 1).getDownStation().equals(section.getUpStation())) {
+        if (isDownStaionTeminal(section)) {
             return;
         }
 

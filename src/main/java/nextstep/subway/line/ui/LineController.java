@@ -7,6 +7,7 @@ import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineInfoResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -74,6 +75,18 @@ public class LineController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLineInfo(@PathVariable Long id) {
         lineService.deleteLineInfo(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+
+        Section section = Section.valueOf(upStation, downStation, Distance.valueOf(sectionRequest.getDistance()));
+
+        lineService.addSection(id, section);
+        
         return ResponseEntity.noContent().build();
     }
 }
