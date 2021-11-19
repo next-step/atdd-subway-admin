@@ -176,17 +176,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    @DisplayName("지하철 노선을 제거한다.")
-    @Test
-    void deleteLine() {
-        // given
-        // 지하철_노선_등록되어_있음
+    @DisplayName("지하철 노선 삭제")
+    @Nested
+    class DeleteLineTest {
+        @DisplayName("지하철 노선을 제거한다.")
+        @Test
+        void deleteLine() {
+            // given
+            ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("박달-강남선", "blue");
 
-        // when
-        // 지하철_노선_제거_요청
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_삭제_요청(createResponse);
 
-        // then
-        // 지하철_노선_삭제됨
+            // then
+            지하철_노선이_삭제된다(createResponse, response);
+        }
+
+        @DisplayName("등록되지 않은 지하철 노선을 제거한다.")
+        @Test
+        void givenHasNotLineThenFail() {
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_삭제_요청(1L);
+
+            // then
+            지하철_노선을_찾을_수_없어_실패한다(response);
+        }
     }
 
     /**
@@ -244,6 +258,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(line.getColor()).isEqualTo(toBeParams.get("color"));
     }
 
+    private void 지하철_노선이_삭제된다(ExtractableResponse<Response> createResponse, ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> deletedResponse = 지하철_노선_조회_요청(createResponse);
+        assertThat(deletedResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     /**
      * 요청
      */
@@ -280,6 +300,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return patch("/lines/" + id, toBeParams);
     }
 
+    private ExtractableResponse<Response> 지하철_노선_삭제_요청(ExtractableResponse<Response> createResponse) {
+        return delete(createResponse.header("Location"));
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_삭제_요청(Long id) {
+        return delete("/lines/" + id);
+    }
+
     /**
      * 공통 메소드
      */
@@ -304,6 +332,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(toBeParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().patch(url)
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> delete(String url) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(url)
                 .then().log().all().extract();
     }
 
