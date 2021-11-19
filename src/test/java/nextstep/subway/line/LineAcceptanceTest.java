@@ -5,15 +5,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.station.dto.StationResponse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,17 +116,64 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
-    @Test
-    void updateLine() {
-        // given
-        // 지하철_노선_등록되어_있음
+    @DisplayName("지하철 노선 수정")
+    @Nested
+    class ModifyLineTest {
+        @DisplayName("지하철 노선을 수정한다.")
+        @Test
+        void updateLine() {
+            // given
+            ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("박달-강남선", "blue");
+            Map<String, String> toBeParams = createLineParams("강남-박달선", "red");
 
-        // when
-        // 지하철_노선_수정_요청
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_수정_요청(createResponse, toBeParams);
 
-        // then
-        // 지하철_노선_수정됨
+            // then
+            지하철_노선이_수정된다(response);
+            지하철_노선이_수정된_이름_색상으로_변경된다(createResponse, toBeParams);
+        }
+
+        @DisplayName("등록되지 않은 지하철 노선을 수정한다.")
+        @Test
+        void givenHasNotIdThenFail() {
+            // given
+            Map<String, String> toBeParams = createLineParams("강남-박달선", "red");
+
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_수정_요청(1L, toBeParams);
+
+            // then
+            지하철_노선을_찾을_수_없어_실패한다(response);
+        }
+
+        @DisplayName("공백의 노선명으로 지하철 노선을 수정한다.")
+        @Test
+        void givenEmptyNameThenFail() {
+            // given
+            ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("박달-강남선", "blue");
+            Map<String, String> toBeParams = createLineParams("", "red");
+
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_수정_요청(createResponse, toBeParams);
+
+            // then
+            지하철_노선_수정에_실패한다(response);
+        }
+
+        @DisplayName("공백의 노선색상으로 지하철 노선을 수정한다.")
+        @Test
+        void givenEmptyColorThenFail() {
+            // given
+            ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("박달-강남선", "blue");
+            Map<String, String> toBeParams = createLineParams("강남-박달선", "");
+
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_수정_요청(createResponse, toBeParams);
+
+            // then
+            지하철_노선_수정에_실패한다(response);
+        }
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -145,6 +189,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_삭제됨
     }
 
+    /**
+     * 응답
+     */
     private void 지하철_노선이_생성된다(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -154,7 +201,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_응답이_실패한다(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertIsNotFound(response);
     }
 
     private void 지하철_노선_목록이_응답된다(ExtractableResponse<Response> response) {
@@ -165,6 +212,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertIsOk(response);
     }
 
+    private void 지하철_노선이_수정된다(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철_노선을_찾을_수_없어_실패한다(ExtractableResponse<Response> response) {
+        assertIsNotFound(response);
+    }
+
+    private void 지하철_노선_수정에_실패한다(ExtractableResponse<Response> response) {
+        assertIsBadRequest(response);
+    }
+
+    /**
+     * 검증
+     */
     private void 지하철_노선_목록이_포함된다(ExtractableResponse<Response> createResponse1, ExtractableResponse<Response> createResponse2, ExtractableResponse<Response> response) {
         List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
@@ -175,19 +237,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(resultLineIds).containsAll(expectedLineIds);
     }
 
+    private void 지하철_노선이_수정된_이름_색상으로_변경된다(ExtractableResponse<Response> createResponse, Map<String, String> toBeParams) {
+        ExtractableResponse<Response> modifiedResponse = 지하철_노선_조회_요청(createResponse);
+        Line line = modifiedResponse.jsonPath().getObject(".", Line.class);
+        assertThat(line.getName()).isEqualTo(toBeParams.get("name"));
+        assertThat(line.getColor()).isEqualTo(toBeParams.get("color"));
+    }
+
+    /**
+     * 요청
+     */
     private ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color) {
         return 지하철_노선_생성_요청(name, color);
     }
 
     private ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
+                .body(createLineParams(name, color))
                 .when().post("/lines")
                 .then().log().all().extract();
     }
@@ -204,11 +272,38 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return get("/lines/" + id);
     }
 
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> createResponse, Map<String, String> toBeParams) {
+        return patch(createResponse.header("Location"), toBeParams);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Map<String, String> toBeParams) {
+        return patch("/lines/" + id, toBeParams);
+    }
+
+    /**
+     * 공통 메소드
+     */
+    private Map<String, String> createLineParams(String name, String color) {
+        Map<String, String> toBeParams = new HashMap<>();
+        toBeParams.put("name", name);
+        toBeParams.put("color", color);
+        return toBeParams;
+    }
+
     private ExtractableResponse<Response> get(String url) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get(url)
+                .then().log().all().extract();
+    }
+
+    private ExtractableResponse<Response> patch(String url, Map<String, String> toBeParams) {
+        return RestAssured
+                .given().log().all()
+                .body(toBeParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch(url)
                 .then().log().all().extract();
     }
 
@@ -218,5 +313,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void assertIsOk(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void assertIsNotFound(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }
