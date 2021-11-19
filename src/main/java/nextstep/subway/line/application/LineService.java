@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.line.application.dto.LineUpdateRequest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -36,6 +37,15 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() ->
                         new EntityNotFoundException("노선이 존재하지 않습니다."));
+
+        return LineResponse.of(line);
+    }
+
+    public LineResponse update(LineUpdateRequest lineUpdateRequest) {
+        Line line = lineRepository.findById(lineUpdateRequest.getId())
+                .orElseThrow(() ->
+                        new EntityNotFoundException("노선이 존재하지 않습니다."));
+        line.update(lineUpdateRequest);
 
         return LineResponse.of(line);
     }
