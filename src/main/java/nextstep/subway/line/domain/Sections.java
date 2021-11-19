@@ -19,7 +19,8 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class Sections {
 
-	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
+	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+		CascadeType.REMOVE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
 	public void add(Section section) {
@@ -73,10 +74,12 @@ public class Sections {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
-		if (!(o instanceof Sections))
+		}
+		if (!(o instanceof Sections)) {
 			return false;
+		}
 		Sections that = (Sections)o;
 		return Objects.equals(sections, that.sections);
 	}

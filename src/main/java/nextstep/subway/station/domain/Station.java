@@ -13,44 +13,46 @@ import nextstep.subway.common.BaseEntity;
 @Entity
 public class Station extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(unique = true)
-    private String name;
+	@Column(unique = true)
+	private String name;
 
-    protected Station() {
-    }
+	protected Station() {
+	}
 
-    private Station(String name) {
-        this.name = name;
-    }
+	private Station(String name) {
+		this.name = name;
+	}
 
-    public static Station of(String name) {
-        return new Station(name);
-    }
+	public static Station of(String name) {
+		return new Station(name);
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
+	@Override
+	public boolean equals(Object o) {
+        if (this == o) {
             return true;
-        if (!(o instanceof Station))
+        }
+        if (!(o instanceof Station)) {
             return false;
-        Station station = (Station)o;
-        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
-    }
+        }
+		Station station = (Station)o;
+		return Objects.equals(id, station.id) && Objects.equals(name, station.name);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, name);
+	}
 }

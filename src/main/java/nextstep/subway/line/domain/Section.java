@@ -93,10 +93,12 @@ public class Section {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
-		if (!(o instanceof Section))
+		}
+		if (!(o instanceof Section)) {
 			return false;
+		}
 		Section section = (Section)o;
 		return Objects.equals(id, section.id);
 	}
