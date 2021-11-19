@@ -3,13 +3,12 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Lines;
-import nextstep.subway.line.dto.LinesResponse;
+import nextstep.subway.line.dto.LineFindResponse;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,10 +27,9 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public List<LinesResponse> findAll() {
+    public List<LineFindResponse> findAll() {
         Lines lines = Lines.of(lineRepository.findAll());
-        List<LinesResponse> linesResponses = lines.toLinesResponses();
-        return linesResponses;
+        return lines.toLineFindResponses();
     }
 
     private void validateDuplicatedLineName(LineRequest request) {

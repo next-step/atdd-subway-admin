@@ -1,22 +1,15 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LinesResponse;
-import nextstep.subway.utils.DatabaseCleanup;
-import org.apache.commons.lang3.CharSet;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.line.dto.LineFindResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +117,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // 지하철_노선_목록_포함됨
-        List<LinesResponse> lines = response.jsonPath().getList(".", LinesResponse.class);
+        List<LineFindResponse> lines = response.jsonPath().getList(".", LineFindResponse.class);
         assertThat(lines.size()).isEqualTo(2);
     }
 

@@ -1,6 +1,6 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.dto.LinesResponse;
+import nextstep.subway.line.dto.LineFindResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +20,11 @@ public class Lines {
         return new Lines(lines);
     }
 
-    public List<LinesResponse> toLinesResponses() {
-        List<LinesResponse> linesResponses = new ArrayList<>();
+    public List<LineFindResponse> toLineFindResponses() {
+        List<LineFindResponse> lineFindResponses = new ArrayList<>();
         for (Line line : this.lines) {
-            linesResponses.add(LinesResponse.of(line));
+            lineFindResponses.add(LineFindResponse.of(line));
         }
-        return linesResponses;
+        return lineFindResponses;
     }
 }

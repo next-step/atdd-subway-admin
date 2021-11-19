@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LinesResponse {
+public class LineFindResponse {
 
     private Long id;
     private String name;
@@ -16,10 +16,10 @@ public class LinesResponse {
     private LocalDateTime modifiedDate;
     private List<StationResponse> stations = new ArrayList<>();
 
-    public LinesResponse() {
+    public LineFindResponse() {
     }
 
-    public LinesResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public LineFindResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -27,8 +27,8 @@ public class LinesResponse {
         this.modifiedDate = modifiedDate;
     }
 
-    public static LinesResponse of(Line line) {
-        return new LinesResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+    public static LineFindResponse of(Line line) {
+        return new LineFindResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
