@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class StationController {
 
-    private StationService stationService;
+    private final StationService stationService;
 
     public StationController(StationService stationService) {
         this.stationService = stationService;
@@ -48,7 +48,8 @@ public class StationController {
     }
 
     @PutMapping(value = "/stations/{id}")
-    public ResponseEntity<Void> updateStation(@PathVariable Long id, @RequestBody StationRequest request) {
+    public ResponseEntity<Void> updateStation(@PathVariable Long id,
+        @RequestBody StationRequest request) {
         stationService.updateStationById(id, request);
         return ResponseEntity.noContent().build();
     }

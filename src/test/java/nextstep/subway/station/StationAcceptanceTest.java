@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +78,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         params1.put("name", "강남역");
         Map<String, String> params2 = new HashMap<>();
         params2.put("name", "역삼역");
-        List<ExtractableResponse<Response>> givenList = givenDataList_저장한다(new Object[]{params1, params2}, API_URL);
+        List<ExtractableResponse<Response>> givenList = givenDataList_저장한다(
+            new Object[]{params1, params2}, API_URL);
 
         // when
         ExtractableResponse<Response> response = 조회한다(API_URL);
@@ -94,6 +94,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         });
     }
 
+    @DisplayName("지하철역 이름을 수정한다.")
     @Override
     @Test
     public void update() {

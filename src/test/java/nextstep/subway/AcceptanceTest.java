@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -49,7 +48,7 @@ public abstract class AcceptanceTest {
 
     protected List<ExtractableResponse<Response>> givenDataList_저장한다(Object[] bodies, String url) {
         List<ExtractableResponse<Response>> responseList = new ArrayList<>();
-        for (Object body: bodies) {
+        for (Object body : bodies) {
             responseList.add(저장한다(body, url));
         }
         return responseList;
@@ -103,9 +102,13 @@ public abstract class AcceptanceTest {
      * 인수 테스트시 필요햔 CURD 에 관한 테스트
      */
     public abstract void create();
+
     public abstract void getOne();
+
     public abstract void getList();
+
     public abstract void update();
+
     public abstract void delete();
 
 }
