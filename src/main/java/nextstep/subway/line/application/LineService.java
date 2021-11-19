@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -27,5 +28,12 @@ public class LineService {
     public List<LineResponse> readAllLines() {
         final List<Line> lines = lineRepository.findAll();
         return LineResponse.of(lines);
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse readLine(Long id) {
+        final Line line = lineRepository.findById(id)
+                                        .orElseThrow(() -> new NotFoundException("해당하는 Line이 없습니다. id = " + id));
+        return LineResponse.of(line);
     }
 }

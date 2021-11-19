@@ -79,7 +79,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getObject(".", LineResponse.class))
-            .extracting("name", "column")
+            .extracting("name", "color")
             .contains("2호선", "green");
     }
 

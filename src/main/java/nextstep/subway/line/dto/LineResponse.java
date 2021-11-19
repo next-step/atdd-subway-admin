@@ -40,4 +40,15 @@ public class LineResponse {
         return name;
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
+    }
 }
