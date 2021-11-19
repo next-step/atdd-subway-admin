@@ -92,17 +92,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
-    @Test
-    void getLine() {
-        // given
-        // 지하철_노선_등록되어_있음
+    @DisplayName("지하철 노선 조회")
+    @Nested
+    class GetLineTest {
+        @DisplayName("지하철 노선을 조회한다.")
+        @Test
+        void getLine() {
+            // given
+            ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음("박달-강남선", "blue");
 
-        // when
-        // 지하철_노선_조회_요청
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
 
-        // then
-        // 지하철_노선_응답됨
+            // then
+            지하철_노선을_응답한다(response);
+        }
+
+        @DisplayName("등록되지 않은 지하철 노선을 조회한다.")
+        @Test
+        void givenHasNotIdThenFail() {
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_조회_요청(1L);
+
+            // then
+            지하철_노선_응답이_실패한다(response);
+        }
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -136,10 +150,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선_생성이_실패한다(ExtractableResponse<Response> response) {
+        assertIsBadRequest(response);
+    }
+
+    private void 지하철_노선_응답이_실패한다(ExtractableResponse<Response> response) {
+        assertIsBadRequest(response);
+    }
+
+    private void assertIsBadRequest(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void 지하철_노선_목록이_응답된다(ExtractableResponse<Response> response) {
+        assertIsOk(response);
+    }
+
+    private void 지하철_노선을_응답한다(ExtractableResponse<Response> response) {
+        assertIsOk(response);
+    }
+
+    private void assertIsOk(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -171,10 +201,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+        return get("/lines");
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> response) {
+        return get(response.header("Location"));
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+        return get("/lines/" + id);
+    }
+
+    private ExtractableResponse<Response> get(String url) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines")
+                .when().get(url)
                 .then().log().all().extract();
     }
 }
