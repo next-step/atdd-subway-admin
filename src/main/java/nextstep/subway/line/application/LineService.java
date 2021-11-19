@@ -36,8 +36,8 @@ public class LineService {
 		Station downStation = stationService.getStationEntity(request.getDownStationId());
 
 		Line persistLine = lineRepository.save(request.toLine());
-		Section endToend = new Section(upStation, downStation, request.getDistance());
-		persistLine.addSection(endToend);
+		Section section = new Section(upStation, downStation, request.getDistance());
+		persistLine.addSection(section);
 		return LineResponse.from(persistLine);
 	}
 
