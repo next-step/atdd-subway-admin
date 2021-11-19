@@ -6,6 +6,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.apache.commons.lang3.CharSet;
 import org.junit.jupiter.api.BeforeEach;
@@ -123,7 +124,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // 지하철_노선_목록_포함됨
-        List<LineResponse> lines = response.jsonPath().getList(".", LineResponse.class);
+        List<LinesResponse> lines = response.jsonPath().getList(".", LinesResponse.class);
         assertThat(lines.size()).isEqualTo(2);
     }
 
