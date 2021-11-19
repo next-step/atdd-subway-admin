@@ -4,11 +4,7 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,9 +15,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
-    @OrderBy("orders")
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -37,12 +32,17 @@ public class Line extends BaseEntity {
             addSectionToList(upStation, downStation, distance);
             return;
         }
-        boolean isUpStationSame = sections.stream().anyMatch(section -> section.getUpStation().equals(upStation));
-        boolean isDownStationSame = sections.stream().anyMatch(section -> section.getDownStation().equals(downStation));
-
-        if (isDownStationSame && isUpStationSame) {
+        Section section = new Section(this, upStation, downStation, distance);
+        if (sections.isContainsSection(section)) {
             throw new IllegalArgumentException("이미 등록된 Section 입니다.");
         }
+
+        boolean isUpStationSame = sections.isAnyMatchUpStation(upStation);
+        boolean isDownStationSame = sections.isAnyMatchDownStation(downStation);
+
+//        if (isDownStationSame && isUpStationSame) {
+//            throw new IllegalArgumentException("이미 등록된 Section 입니다.");
+//        }
         if(!getStations().contains(upStation) && !getStations().contains(downStation) ){
             throw new IllegalArgumentException("상행, 하행 모두 등록되지 않은 역입니다.");
         }
@@ -58,60 +58,48 @@ public class Line extends BaseEntity {
     }
 
     private void addNewEndUpStation(Station upStation, Station downStation, int distance) {
-        System.out.println("upStation = " + upStation);
-        System.out.println("downStation = " + downStation);
-        boolean isNewEndUpStation = sections.get(0).getUpStation().equals(downStation);
+        boolean isNewEndUpStation = sections.isNewEndUpStation(downStation);
         if (isNewEndUpStation) {
             addSectionToList(0, upStation, downStation, distance);
         }
     }
 
     private void addNewEndDownStation(Station upStation, Station downStation, int distance) {
-        boolean isNewEndDownStation = sections.get(sections.size() - 1).getDownStation().equals(upStation);
+        boolean isNewEndDownStation = sections.isNewEndDownStation(upStation);
         if (isNewEndDownStation) {
             addSectionToList(upStation, downStation, distance);
         }
     }
 
     private void addSectionToList(int index, Station upStation, Station downStation, int distance) {
-        this.sections.add(index, new Section(this, upStation, downStation, distance));
-        indexOrders();
+        sections.add(index, new Section(this, upStation, downStation, distance));
+        sections.indexOrders();
     }
 
     private void addSectionToList( Station upStation, Station downStation, int distance) {
-        this.sections.add(new Section(this, upStation, downStation, distance));
-        indexOrders();
+        sections.add(new Section(this, upStation, downStation, distance));
+        sections.indexOrders();
     }
 
     private void upStationSameAndDownStationDiff(Station upStation, Station downStation, int distance) {
-        Section findSection = sections.stream()
-                .filter(section -> section.getUpStation().equals(upStation))
-                .findFirst().get();
+        Section findSection = sections.findUpStationSame(upStation);
 
         if (findSection.getDistance() <= distance) {
             throw new IllegalArgumentException("등록하려는 구간 길이가 더 큽니다.");
         }
-        addSectionToList(sections.indexOf(findSection) + 1, downStation, findSection.getDownStation(), distance);
+        addSectionToList(sections.getSections().indexOf(findSection) + 1, downStation, findSection.getDownStation(), distance);
         findSection.updateDownStation(downStation, findSection.getDistance() - distance);
     }
 
     private void downStationSameAndUpStationDiff(Station upStation, Station downStation, int distance) {
-        Section findSection = sections.stream()
-                .filter(section -> section.getDownStation().equals(downStation))
-                .findFirst().get();
+        Section findSection = sections.findDownStationSame(downStation);
 
         if (findSection.getDistance() <= distance) {
             throw new IllegalArgumentException("등록하려는 구간 길이가 더 큽니다.");
         }
-        addSectionToList(sections.indexOf(findSection), findSection.getUpStation(), upStation, distance);
+        addSectionToList(sections.getSections().indexOf(findSection), findSection.getUpStation(), upStation, distance);
         findSection.updateUpStation(upStation, findSection.getDistance() - distance);
     }
-
-    private void indexOrders() {
-        AtomicInteger index = new AtomicInteger();
-        this.sections.forEach(section -> section.setOrders(index.getAndIncrement()));
-    }
-
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
@@ -131,14 +119,59 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
 
-        return sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .distinct()
-                .collect(Collectors.toList());
+        return sections.getStations();
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public void deleteSection(Station station) {
+
+        if(!getStations().contains(station)){
+            throw new IllegalArgumentException("등록되지 않은 역입니다.");
+        }
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("구간이 하나만 있을 경우 제거할 수 없습니다.");
+        }
+        if (isDeleteEndUpStation(station)) {
+            return;
+        }
+        if (isDeleteEndDownStation(station)) {
+            return;
+        }
+        deleteBetweenSection(station);
+    }
+
+    private boolean isDeleteEndUpStation(Station station) {
+        boolean isEndUpStation = sections.isNewEndUpStation(station);
+        if (isEndUpStation) {
+            sections.remove(0);
+            sections.indexOrders();
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isDeleteEndDownStation(Station station) {
+        boolean isEndDownStation = sections.isNewEndDownStation(station);
+        if (isEndDownStation) {
+            sections.remove(sections.size() - 1);
+            sections.indexOrders();
+            return true;
+        }
+        return false;
+    }
+
+    private void deleteBetweenSection(Station station) {
+
+        Section downStationSame = sections.findDownStationSame(station);
+        Section upStationSame = sections.findUpStationSame(station);
+        Section newSection = new Section(this,
+                downStationSame.getUpStation(),
+                upStationSame.getDownStation(),
+                downStationSame.getDistance() + upStationSame.getDistance());
+        sections.remove(downStationSame);
+        sections.remove(upStationSame);
+        sections.add(newSection);
+        sections.indexOrders();
+
     }
 
     @Override
