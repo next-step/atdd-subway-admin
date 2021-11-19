@@ -146,12 +146,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> saveResponse = 노선_미리생성(new LineRequest("2호선", "green"));
+        LineResponse lineResponse = saveResponse.body().as(LineResponse.class);
 
         // when
         // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().delete("/lines/" + lineResponse.getId())
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private ExtractableResponse<Response> 노선_미리생성(LineRequest lineRequest) {
