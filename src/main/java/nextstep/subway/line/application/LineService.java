@@ -5,19 +5,27 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
     public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public LineResponse saveLine(LineRequest request) {
-        Line persistLine = lineRepository.save(request.toLine());
+        validateExists(request.getName());
+        final Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
+    }
+
+    private void validateExists(String name) {
+        if (lineRepository.existsByName(name)) {
+            throw new IllegalArgumentException("노선의 이름이 중복되었습니다.");
+        }
     }
 }
