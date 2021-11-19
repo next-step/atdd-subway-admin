@@ -40,4 +40,13 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public LineResponse findById(long id) {
+        final Line line = lineRepository.findById(id)
+                .orElseThrow(() -> {
+                    throw new IllegalArgumentException("해당 노선의 아이디가 존재하지 않습니다.");
+                });
+        return LineResponse.of(line);
+    }
 }
