@@ -31,15 +31,16 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> stationResponses = line.getSections()
-            .stream()
-            .sorted(Comparator.comparing(Section::getSortSeq))
-            .map(section -> StationResponse.of(section.getStation()))
-            .collect(Collectors.toList());
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses,
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), convertStationResponses(line.getSections()),
             line.getCreatedDate(), line.getModifiedDate());
     }
 
+    private static List<StationResponse> convertStationResponses(List<Section> sections) {
+        return sections
+            .stream()
+            .map(section -> StationResponse.of(section.getStation()))
+            .collect(Collectors.toList());
+    }
 
     public Long getId() {
         return id;

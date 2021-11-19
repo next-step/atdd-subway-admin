@@ -3,6 +3,7 @@ package nextstep.subway.section.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.Arrays;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.domain.Station;
@@ -41,8 +42,7 @@ class SectionTest {
         Section section2 = sectionRepository.save(new Section(10, 2, yongsanStation));
 
         Line line = lineRepository.save(new Line("1호선", "blue"));
-        line.addSection(section1);
-        line.addSection(section2);
+        line.addSections(Arrays.asList(section1, section2));
 
         //쿼리 확인
         lineRepository.flush();

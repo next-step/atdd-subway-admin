@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.exception.NotFoundException;
@@ -32,7 +33,6 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        System.out.println("save line : " + request.getDistance());
         Station upStation = stationRepository.findById(request.getUpStationId())
             .orElseThrow(() -> new NotFoundException("역정보가 없습니다."));
 
@@ -44,8 +44,7 @@ public class LineService {
             .save(new Section(request.getDistance(), 1, downStation));
 
         Line persistLine = lineRepository.save(request.toLine());
-        persistLine.addSection(section1);
-        persistLine.addSection(section2);
+        persistLine.addSections(Arrays.asList(section1, section2));
 
         return LineResponse.of(persistLine);
     }

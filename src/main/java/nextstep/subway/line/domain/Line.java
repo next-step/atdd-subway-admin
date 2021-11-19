@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,8 +23,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private final List<Section> sections = new ArrayList<>();
+    @Embedded
+    private SectionList sections = new SectionList();
 
     protected Line() {
     }
@@ -36,11 +37,13 @@ public class Line extends BaseEntity {
     /**
      * 연관관계 편의 메서드
      *
-     * @param section
+     * @param sections
      */
-    public void addSection(Section section) {
-        this.sections.add(section);
-        section.setLine(this);
+    public void addSections(List<Section> sections) {
+        for (Section section: sections) {
+            this.sections.add(section);
+            section.setLine(this);
+        }
     }
 
     public void update(Line line) {
@@ -61,6 +64,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSortedList();
     }
 }
