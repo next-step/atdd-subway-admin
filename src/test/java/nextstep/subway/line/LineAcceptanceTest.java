@@ -97,12 +97,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest secondLine = new LineRequest("2호선", "green");
         ExtractableResponse<Response> saveResponse = 노선_미리생성(secondLine);
         Long savedLineId = saveResponse.body().jsonPath().getLong("id");
+
         // when
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                .when().get("/lines/" + Long.toString(savedLineId))
+                .when().get("/lines/" + savedLineId)
                 .then().log().all().extract();
+
         // then
         // 지하철_노선_응답됨
         assertAll(
