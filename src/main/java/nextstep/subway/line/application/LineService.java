@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,23 +28,23 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public List<LineResponse> findAllLine(Pageable pageable) {
-        return lineRepository.findAll(pageable).stream()
-            .map(LineResponse::of)
-            .collect(toList());
+    public List<LineResponse> findAllLine() {
+        return lineRepository.findAll().stream()
+                             .map(LineResponse::of)
+                             .collect(toList());
     }
 
     public LineResponse findLineById(final Long id) {
 
         Line line = lineRepository.findById(id)
-            .orElseThrow(EntityNotFoundException::new);
+                                  .orElseThrow(EntityNotFoundException::new);
 
         return LineResponse.of(line);
     }
 
     public LineResponse updateLine(final Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id)
-            .orElseThrow(EntityNotFoundException::new);
+                                  .orElseThrow(EntityNotFoundException::new);
 
         line.update(lineRequest.toLine());
 
@@ -54,7 +53,7 @@ public class LineService {
 
     public void delete(Long id) {
         Line line = lineRepository.findById(id)
-            .orElseThrow(EntityNotFoundException::new);
+                                  .orElseThrow(EntityNotFoundException::new);
         lineRepository.delete(line);
     }
 }
