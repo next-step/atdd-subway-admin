@@ -29,6 +29,10 @@ public class LineRequest {
         return distance;
     }
 
+    public String getColor() {
+        return color;
+    }
+
     public Line toLine() {
         return new Line(name, color);
     }
