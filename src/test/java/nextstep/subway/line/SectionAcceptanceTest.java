@@ -26,10 +26,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@BeforeEach
 	public void setUp() {
 		super.setUp();
-
-		강남역_ID = postStations("강남역").as(StationResponse.class).getId();
-		판교역_ID = postStations("판교역").as(StationResponse.class).getId();
-		광교역_ID = postStations("광교역").as(StationResponse.class).getId();
+		강남역_ID = createStationId("강남역");
+		판교역_ID = createStationId("판교역");
+		광교역_ID = createStationId("광교역");
 	}
 
 	@DisplayName("구간추가/구간사이")
@@ -102,10 +101,33 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("구간 추가/노선에 포함되지 않은 역으로만 요청한 경우 실패")
 	@Test
 	void createSection_notFoundStations() {
+		final long 신분당선_ID = createLineId("신분당선", "bg-red-600", 강남역_ID, 광교역_ID, 10);
+		final long 신분당선_아닌역1_ID = createStationId("잠실역");
+		final long 신분당선_아닌역2_ID = createStationId("신촌역");
+
+		final ExtractableResponse<Response> response = postSections(
+			신분당선_ID, sectionAddRequest(신분당선_아닌역1_ID, 신분당선_아닌역2_ID, 3)
+		);
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@DisplayName("구간추가/상행역과 하행역이 같으면 실패")
+	@Test
+	void createSection_same_upStation_downStation() {
+		final long 신분당선_ID = createLineId("신분당선", "bg-red-600", 강남역_ID, 광교역_ID, 10);
+
+		final ExtractableResponse<Response> response = postSections(
+			신분당선_ID, sectionAddRequest(판교역_ID, 판교역_ID, 4)
+		);
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	private long createLineId(String name, String color, Long upStationId, Long downStationId, int distance) {
 		return postLines(lineAddRequest(name, color, upStationId, downStationId, distance))
 			.as(LineResponse.class).getId();
+	}
+
+	private long createStationId(String name) {
+		return postStations(name).as(StationResponse.class).getId();
 	}
 }
