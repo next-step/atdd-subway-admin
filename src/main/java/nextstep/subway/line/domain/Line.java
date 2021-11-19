@@ -1,40 +1,69 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.common.BaseEntity;
+import java.util.List;
+import java.util.Objects;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+
+import nextstep.subway.common.BaseEntity;
+import nextstep.subway.station.dto.StationResponse;
 
 @Entity
 public class Line extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
-    private String name;
-    private String color;
+	@Column(unique = true)
+	private String name;
+	private String color;
 
-    public Line() {
-    }
+	@Embedded
+	private Sections sections = new Sections();
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
+	protected Line() {
+	}
 
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
+	public Line(String name, String color) {
+		this.name = name;
+		this.color = color;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void update(Line line) {
+		this.name = line.getName();
+		this.color = line.getColor();
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getColor() {
-        return color;
-    }
+	public String getColor() {
+		return color;
+	}
+
+	public List<StationResponse> getStations() {
+		return sections.getStations();
+	}
+
+	public Sections getSections() {
+		return sections;
+	}
+
+	public void addSection(Section section) {
+		sections.add(section);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Line line = (Line)o;
+		return Objects.equals(getId(), line.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getId());
+	}
 }
