@@ -94,22 +94,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        LineRequest secondLine = new LineRequest("2호선", "green");
-        ExtractableResponse<Response> saveResponse = 노선_미리생성(secondLine);
-        Long savedLineId = saveResponse.body().jsonPath().getLong("id");
+        ExtractableResponse<Response> saveResponse = 노선_미리생성(new LineRequest("2호선", "green"));
+        LineResponse lineResponse = 저장된_노선_응답(saveResponse);
 
         // when
         // 지하철_노선_조회_요청
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                .when().get("/lines/" + savedLineId)
+                .when().get("/lines/" + lineResponse.getId())
                 .then().log().all().extract();
 
         // then
         // 지하철_노선_응답됨
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.body().jsonPath().getLong("id")).isEqualTo(savedLineId)
+                () -> assertThat(response.body().jsonPath().getLong("id")).isEqualTo(lineResponse.getId())
         );
     }
 
@@ -119,7 +118,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> saveResponse = 노선_미리생성(new LineRequest("2호선", "green"));
-        LineResponse lineResponse = saveResponse.body().as(LineResponse.class);
+        LineResponse lineResponse = 저장된_노선_응답(saveResponse);
 
         // when
         // 지하철_노선_수정_요청
@@ -147,7 +146,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         ExtractableResponse<Response> saveResponse = 노선_미리생성(new LineRequest("2호선", "green"));
-        LineResponse lineResponse = saveResponse.body().as(LineResponse.class);
+        LineResponse lineResponse = 저장된_노선_응답(saveResponse);
 
         // when
         // 지하철_노선_제거_요청
@@ -169,5 +168,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .when()
                 .post("/lines")
                 .then().log().all().extract();
+    }
+
+    private LineResponse 저장된_노선_응답(ExtractableResponse<Response> saveResponse) {
+        return saveResponse.body().as(LineResponse.class);
     }
 }
