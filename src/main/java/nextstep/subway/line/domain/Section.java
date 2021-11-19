@@ -67,6 +67,28 @@ public class Section {
 		return distance;
 	}
 
+	public void minusDistance(int distance) {
+		this.distance -= distance;
+	}
+
+	public boolean matchUpStation(Station station) {
+		return upStation.equals(station);
+	}
+
+	public void splitUpSection(Section newPreSection) {
+		this.upStation = newPreSection.getDownStation();
+		minusDistance(newPreSection.getDistance());
+	}
+
+	public boolean matchDownStation(Station station) {
+		return downStation.equals(station);
+	}
+
+	public void splitDownSection(Section newPreSection) {
+		this.downStation = newPreSection.getUpStation();
+		minusDistance(newPreSection.getDistance());
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -94,11 +116,5 @@ public class Section {
 			'}';
 	}
 
-	public void changeDownSection(Station station) {
-		this.downStation=station;
-	}
 
-	public void changeDistance(int distance) {
-		this.distance=distance;
-	}
 }
