@@ -24,6 +24,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLine() {
         return lineRepository.findAll()
                 .stream()
