@@ -23,7 +23,12 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+        if (line == null) {
+            return null;
+        }
+
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(),
+            line.getModifiedDate());
     }
 
     public static List<LineResponse> of(List<Line> lines) {
