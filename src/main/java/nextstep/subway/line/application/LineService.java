@@ -59,4 +59,14 @@ public class LineService {
     private Supplier<LineNotFoundException> throwLineNotFoundException(Long id) {
         return () -> new LineNotFoundException(String.format("아이디 %d는 없는 노선입니다.", id));
     }
+
+    public void deleteLine(Long id) {
+        throwLineNotFoundExceptionIfHasNotLine(id);
+        lineRepository.deleteById(id);
+    }
+
+    private void throwLineNotFoundExceptionIfHasNotLine(Long id) {
+        lineRepository.findById(id)
+                .orElseThrow(throwLineNotFoundException(id));
+    }
 }
