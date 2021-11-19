@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,15 +123,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_응답_항목_검증(response, 초록노선);
     }
 
-
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
         final LineResponse 파란노선 = 지하철_노선_등록되어_있음("파란노선", "파란색").as(LineResponse.class);
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "초록노선");
-        params.put("color", "초록");
+        final Map<String, String> params = getLineCreateParams("초록노선", "초록");
         // when
         final ExtractableResponse<Response> response = 지하철_노선_수정_요청(파란노선.getId(), params);
         // then
@@ -138,22 +136,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정_시간_검증(response, 파란노선);
     }
 
-    private void 지하철_노선_수정_시간_검증(ExtractableResponse<Response> response, LineResponse lineResponse) {
-        final String modifiedDate = response.jsonPath().getString("modifiedDate");
-        assertTrue(LocalDateTime.parse(modifiedDate).isAfter(lineResponse.getModifiedDate()));
+    private Map<String, String> getLineCreateParams(String name, String color) {
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        return Collections.unmodifiableMap(params);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
-
+        final LineResponse 파란노선 = 지하철_노선_등록되어_있음("파란노선", "파란색").as(LineResponse.class);
         // when
-        // 지하철_노선_제거_요청
-
+        final ExtractableResponse<Response> response = 지하철_노선_제거_요청(파란노선.getId());
         // then
-        // 지하철_노선_삭제됨
+        지하철_노선_삭제됨(response);
+    }
+
+    private void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_제거_요청(Long id) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .delete(LINE_BASE_API_URL + "/{id}", id)
+                .then().log().all()
+                .extract();
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Map<String, String> params) {
@@ -165,6 +177,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .put(LINE_BASE_API_URL + "/{id}", id)
                 .then().log().all()
                 .extract();
+    }
+
+    private void 지하철_노선_수정_시간_검증(ExtractableResponse<Response> response, LineResponse lineResponse) {
+        final String modifiedDate = response.jsonPath().getString("modifiedDate");
+        assertTrue(LocalDateTime.parse(modifiedDate).isAfter(lineResponse.getModifiedDate()));
     }
 
     private void 지하철_노선_수정됨(ExtractableResponse<Response> response) {

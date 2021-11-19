@@ -25,12 +25,12 @@ public class LineService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public LineResponse saveLine(LineRequest request) {
-        validateExists(request.getName());
+        validateExistsByName(request.getName());
         final Line persistLine = lineRepository.save(request.toLine());
         return LineResponse.of(persistLine);
     }
 
-    private void validateExists(String name) {
+    private void validateExistsByName(String name) {
         if (lineRepository.existsByName(name)) {
             throw new IllegalArgumentException(DUPLICATED_NAME_ERROR_MESSAGE);
         }
@@ -65,4 +65,12 @@ public class LineService {
         return UpdateLineResponseDto.of(line);
     }
 
+    @Transactional
+    public void deleteLine(long id) {
+        if (lineRepository.existsById(id)) {
+            lineRepository.deleteById(id);
+            return;
+        }
+        throw new IllegalArgumentException(NOT_FOUND_ERROR_MESSAGE);
+    }
 }
