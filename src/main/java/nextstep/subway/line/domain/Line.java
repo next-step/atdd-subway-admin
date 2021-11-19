@@ -2,7 +2,6 @@ package nextstep.subway.line.domain;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
