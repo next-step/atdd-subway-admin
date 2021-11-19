@@ -91,6 +91,12 @@ public class LineService {
                 lineStationRequest.getNextStationId(), lineStationRequest.getDistance());
     }
 
+    @Transactional
+    public void deleteLineStation(Long lineId, Long lineStationsId) {
+        Line persistLine = findLineById(lineId).orElse(null);
+        persistLine.deleteLineByLineStation(lineStationsId);
+    }
+
     private Optional<Line> findLineById(Long id) {
         if (isNull(id)) {
             throw new LineNotFoundException(ErrorCode.NOT_FOUND_ARGUMENT, "검색할 노선 아이디 입력은 필수입니다.");
