@@ -295,11 +295,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> createResponse, Map<String, String> toBeParams) {
-        return Methods.patch(createResponse.header("Location"), toBeParams);
+        return Methods.put(createResponse.header("Location"), toBeParams);
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, Map<String, String> toBeParams) {
-        return Methods.patch("/lines/" + id, toBeParams);
+        return Methods.put("/lines/" + id, toBeParams);
     }
 
     private ExtractableResponse<Response> 지하철_노선_삭제_요청(ExtractableResponse<Response> createResponse) {
