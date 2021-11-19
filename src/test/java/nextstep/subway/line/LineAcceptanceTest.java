@@ -97,6 +97,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getObject(".", LineResponse.class))
+            .extracting("name", "color")
+            .contains("신분당선", "red");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -149,6 +152,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured
             .given().log().all()
             .body(new LineRequest(name, color))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .pathParam("id", lineId)
             .when()
             .put("/lines/{id}")

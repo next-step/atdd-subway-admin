@@ -32,8 +32,18 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse readLine(Long id) {
-        final Line line = lineRepository.findById(id)
-                                        .orElseThrow(() -> new NotFoundException("해당하는 Line이 없습니다. id = " + id));
+        final Line line = readById(id);
         return LineResponse.of(line);
+    }
+
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        final Line line = readById(id);
+        line.update(lineRequest.toLine());
+        return LineResponse.of(line);
+    }
+
+    private Line readById(Long id) {
+        return lineRepository.findById(id)
+                             .orElseThrow(() -> new NotFoundException("해당하는 Line이 없습니다. id = " + id));
     }
 }
