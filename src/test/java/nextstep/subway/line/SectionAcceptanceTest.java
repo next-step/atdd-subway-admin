@@ -35,9 +35,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("구간추가/구간사이")
 	@Test
 	void createSection_between() {
-		final long 신분당선_ID = postLines(
-			lineAddRequest("신분당선", "bg-red-600", 강남역_ID, 광교역_ID, 10)
-		).as(LineResponse.class).getId();
+		final long 신분당선_ID = createLineId("신분당선", "bg-red-600", 강남역_ID, 광교역_ID, 10);
 
 		final ExtractableResponse<Response> response = postSections(
 			신분당선_ID, sectionAddRequest(판교역_ID, 광교역_ID, 4)
@@ -59,6 +57,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("구간추가/구간사이/기존구간 길이보다 크거나 같을 경우 실패")
 	@Test
 	void createSection_betweenStations_tooLongDistance() {
+		final long 신분당선_ID = createLineId("신분당선", "bg-red-600", 강남역_ID, 광교역_ID, 10);
+		assertThat(postSections(신분당선_ID, sectionAddRequest(판교역_ID, 광교역_ID, 10)).statusCode()).isEqualTo(
+			HttpStatus.BAD_REQUEST.value());
+		assertThat(postSections(신분당선_ID, sectionAddRequest(판교역_ID, 광교역_ID, 20)).statusCode()).isEqualTo(
+			HttpStatus.BAD_REQUEST.value());
 	}
 
 	@DisplayName("구간추가/상행종착")
@@ -79,5 +82,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("구간 추가/노선에 포함되지 않은 역으로만 요청한 경우 실패")
 	@Test
 	void createSection_fail_notFoundStations() {
+	}
+
+	private long createLineId(String name, String color, Long upStationId, Long downStationId, int distance) {
+		return postLines(lineAddRequest(name, color, upStationId, downStationId, distance))
+			.as(LineResponse.class).getId();
 	}
 }

@@ -27,11 +27,9 @@ public class Sections {
 		CascadeType.REMOVE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
-	public Section add(Line line, Station upStation, Station downStation, int distance) {
-		final Section section = Section.of(line, upStation, downStation, distance);
+	public void add(Section section) {
 		connect(section.getUpStation(), section.getDownStation(), section.getDistance());
 		sections.add(section);
-		return section;
 	}
 
 	private void connect(Station upStation, Station downStation, int distance) {

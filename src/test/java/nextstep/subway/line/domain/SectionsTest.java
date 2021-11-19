@@ -23,8 +23,9 @@ class SectionsTest {
 	@Test
 	void getUpTerminalSection() {
 		final Sections sections = new Sections();
-		final Section 상행종착구간 = sections.add(신분당선, 강남역, 판교역, 10);
-		sections.add(신분당선, 판교역, 광교역, 10);
+		final Section 상행종착구간 = Section.of(신분당선, 강남역, 판교역, 10);
+		sections.add(상행종착구간);
+		sections.add(Section.of(신분당선, 판교역, 광교역, 10));
 		assertThat(sections.getUpTerminalSection()).isSameAs(상행종착구간);
 	}
 
@@ -41,33 +42,23 @@ class SectionsTest {
 	@Test
 	void getAllStationSortedByUpToDownFrom() {
 		final Sections sections = new Sections();
-		sections.add(신분당선, 강남역, 양재역, 10);
-		final Section firstSection = sections.add(신분당선, 양재역, 판교역, 10);
-		sections.add(신분당선, 판교역, 광교역, 10);
+		sections.add(Section.of(신분당선, 강남역, 양재역, 10));
+		final Section firstSection = Section.of(신분당선, 양재역, 판교역, 10);
+		sections.add(firstSection);
+		sections.add(Section.of(신분당선, 판교역, 광교역, 10));
 
 		assertThat(sections.getAllStationSortedByUpToDownFrom(firstSection))
 			.containsExactly(양재역, 판교역, 광교역);
-	}
-
-	@DisplayName("구간추가/최초시도")
-	@Test
-	void add_for_the_first_time() {
-		final Sections sections = new Sections();
-		final Section actual = sections.add(신분당선, 강남역, 광교역, 10);
-		assertAll(
-			() -> assertThat(actual.getLine()).isEqualTo(신분당선),
-			() -> assertThat(actual.getUpStation()).isEqualTo(강남역),
-			() -> assertThat(actual.getDownStation()).isEqualTo(광교역),
-			() -> assertThat(actual.getDistance()).isEqualTo(10)
-		);
 	}
 
 	@DisplayName("구간추가/상행종착")
 	@Test
 	void add_upTerminal() {
 		final Sections sections = new Sections();
-		sections.add(신분당선, 양재역, 판교역, 10);
-		final Section firstSection = sections.add(신분당선, 강남역, 양재역, 10);
+		sections.add(Section.of(신분당선, 양재역, 판교역, 10));
+
+		final Section firstSection = Section.of(신분당선, 강남역, 양재역, 10);
+		sections.add(firstSection);
 
 		assertThat(sections.getAllStationSortedByUpToDownFrom(firstSection))
 			.containsExactly(강남역, 양재역, 판교역);
@@ -77,8 +68,10 @@ class SectionsTest {
 	@Test
 	void add_downTerminal() {
 		final Sections sections = new Sections();
-		final Section firstSection = sections.add(신분당선, 강남역, 양재역, 10);
-		sections.add(신분당선, 양재역, 판교역, 10);
+		final Section firstSection = Section.of(신분당선, 강남역, 양재역, 10);
+		sections.add(firstSection);
+
+		sections.add(Section.of(신분당선, 양재역, 판교역, 10));
 
 		assertThat(sections.getAllStationSortedByUpToDownFrom(firstSection))
 			.containsExactly(강남역, 양재역, 판교역);
@@ -88,8 +81,10 @@ class SectionsTest {
 	@Test
 	void add_between_same_upStation() {
 		final Sections sections = new Sections();
-		sections.add(신분당선, 강남역, 광교역, 10);
-		final Section firstSection = sections.add(신분당선, 강남역, 양재역, 3);
+		sections.add(Section.of(신분당선, 강남역, 광교역, 10));
+
+		final Section firstSection = Section.of(신분당선, 강남역, 양재역, 3);
+		sections.add(firstSection);
 
 		assertThat(sections.getAllStationSortedByUpToDownFrom(firstSection))
 			.containsExactly(강남역, 양재역, 광교역);
@@ -99,8 +94,8 @@ class SectionsTest {
 	@Test
 	void add_between_same_downStation() {
 		final Sections sections = new Sections();
-		sections.add(신분당선, 강남역, 광교역, 10);
-		sections.add(신분당선, 판교역, 광교역, 4);
+		sections.add(Section.of(신분당선, 강남역, 광교역, 10));
+		sections.add(Section.of(신분당선, 판교역, 광교역, 4));
 
 		final Section upTerminalSection = sections.getUpTerminalSection();
 		assertThat(upTerminalSection.getDownStation()).isEqualTo(판교역);
@@ -113,9 +108,9 @@ class SectionsTest {
 	@Test
 	void add_duplicated_section() {
 		final Sections sections = new Sections();
-		sections.add(신분당선, 강남역, 광교역, 10);
+		sections.add(Section.of(신분당선, 강남역, 광교역, 10));
 		assertThatExceptionOfType(DuplicatedSectionException.class)
-			.isThrownBy(() -> sections.add(신분당선, 강남역, 광교역, 10))
+			.isThrownBy(() -> sections.add(Section.of(신분당선, 강남역, 광교역, 10)))
 			.withMessage(DuplicatedSectionException.MESSAGE);
 	}
 
@@ -126,12 +121,12 @@ class SectionsTest {
 		final Station 신분당선아닌역2 = Station.of("신도림역");
 
 		final Sections sections = new Sections();
-		sections.add(신분당선, 강남역, 양재역, 10);
-		sections.add(신분당선, 양재역, 판교역, 10);
-		sections.add(신분당선, 판교역, 광교역, 10);
+		sections.add(Section.of(신분당선, 강남역, 양재역, 10));
+		sections.add(Section.of(신분당선, 양재역, 판교역, 10));
+		sections.add(Section.of(신분당선, 판교역, 광교역, 10));
 
 		assertThatExceptionOfType(IllegalSectionException.class)
-			.isThrownBy(() -> sections.add(신분당선, 신분당선아닌역1, 신분당선아닌역2, 10))
+			.isThrownBy(() -> sections.add(Section.of(신분당선, 신분당선아닌역1, 신분당선아닌역2, 10)))
 			.withMessage(IllegalSectionException.MESSAGE);
 	}
 
@@ -140,7 +135,7 @@ class SectionsTest {
 	void add_same_upStation_downStation() {
 		final Sections sections = new Sections();
 		assertThatExceptionOfType(IllegalSectionException.class)
-			.isThrownBy(() -> sections.add(신분당선, 강남역, 강남역, 10))
+			.isThrownBy(() -> sections.add(Section.of(신분당선, 강남역, 강남역, 10)))
 			.withMessage(IllegalSectionException.MESSAGE);
 	}
 }
