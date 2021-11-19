@@ -61,7 +61,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ## 기능목록
 * 지하철 노선 생성
-    * 생성시 Null, Black 처리
+    * 생성시 Null, Blank 처리
     * 중복 생성 처리
 * 지하철 노선 조회
   * 목록으로 조회

@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 @Entity
 public class Line extends BaseEntity {
+    private static final String ERROR_MESSAGE = "빈 값을 입력하였습니다.";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,6 +18,7 @@ public class Line extends BaseEntity {
     }
 
     public Line(String name, String color) {
+        validate(name, color);
         this.name = name;
         this.color = color;
     }
@@ -36,5 +38,15 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    private void validate(String name, String color) {
+        if(isBlank(name) || isBlank(color)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE);
+        }
+    }
+
+    private static boolean isBlank(String text) {
+        return text == null || text.isEmpty();
     }
 }
