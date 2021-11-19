@@ -5,10 +5,12 @@ import io.restassured.internal.path.ObjectConverter;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -17,7 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = "test")
-public class AcceptanceTest {
+public abstract class AcceptanceTest {
 
     @LocalServerPort
     int port;
@@ -39,6 +41,18 @@ public class AcceptanceTest {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE);
+    }
+
+    protected ExtractableResponse<Response> givenData_저장한다(Object body, String url) {
+        return 저장한다(body, url);
+    }
+
+    protected List<ExtractableResponse<Response>> givenDataList_저장한다(Object[] bodies, String url) {
+        List<ExtractableResponse<Response>> responseList = new ArrayList<>();
+        for (Object body: bodies) {
+            responseList.add(저장한다(body, url));
+        }
+        return responseList;
     }
 
     protected ExtractableResponse<Response> 저장한다(Object body, String url) {
@@ -84,4 +98,14 @@ public class AcceptanceTest {
                 .convertObjectTo(it.header("Location").split("/")[2], genericType))
             .collect(Collectors.toList());
     }
+
+    /**
+     * 인수 테스트시 필요햔 CURD 에 관한 테스트
+     */
+    public abstract void create();
+    public abstract void getOne();
+    public abstract void getList();
+    public abstract void update();
+    public abstract void delete();
+
 }
