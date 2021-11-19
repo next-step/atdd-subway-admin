@@ -45,6 +45,11 @@ public class LineService {
         line.update(request.toLine());
     }
 
+    public void deleteLine(Long id) {
+        lineRepository.findById(id).orElseThrow(() -> new NotFoundResourceException("존재하지 않는 노선입니다. (입력값: " + id + ")"));
+        lineRepository.deleteById(id);
+    }
+
     private void validateDuplicatedLineName(LineRequest request) {
         String requestLineName = request.getName();
         if (lineRepository.findByName(requestLineName).isPresent()) {

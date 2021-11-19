@@ -258,4 +258,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_삭제됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @DisplayName("제거할 노선이 존재하지 않는 경우")
+    @Test
+    void deleteLine_존재하지_않는_노선() {
+        // given
+        // 지하철_노선_등록되어_있지_않음
+
+        // when
+        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().delete("/lines/{id}", 1)
+                .then().log().all().extract();
+
+        // then
+        // 지하철_노선_삭제됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
 }
