@@ -50,7 +50,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         신분당선 = new LineRequest("신분당선", "red", 강남역.getId(), 역삼역.getId(), 15);
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
+    @DisplayName("노선 등록시 구간정보도 같이 저장한다.")
     @Test
     void createLine() {
         // when
@@ -226,20 +226,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private void 지하철_노선_삭제_실패(ExtractableResponse<Response> response) {
         요청_결과_검증(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @DisplayName("노선 등록시 구간정보도 같이 저장한다.")
-    @Test
-    void createLineAndSection() {
-        // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(신분당선)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 }

@@ -1,0 +1,60 @@
+package nextstep.subway.line.domain;
+
+import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.station.domain.Station;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Embeddable
+public class Sections {
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<Section> sections = new ArrayList<>();
+
+    protected Sections() {
+    }
+
+    public Sections(final List<Section> sections) {
+        this.sections = sections;
+    }
+
+    public void add(Section section) {
+        sections.add(section);
+    }
+
+    public Station findFirstStation() {
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+        return sections.stream().filter(
+                section -> !downStations.contains(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(NotFoundStationException::new)
+                .getUpStation();
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        Station findStation = findFirstStation();
+        while (!Objects.isNull(findStation)) {
+            stations.add(findStation);
+            final Station finalFindStation = findStation;
+            Optional<Section> nextStation = sections.stream()
+                    .filter(section -> section.isEqualsUpStation(finalFindStation))
+                    .findFirst();
+
+            findStation = nextStation
+                    .orElse(new Section())
+                    .getDownStation();
+        }
+
+        return stations;
+    }
+
+}
