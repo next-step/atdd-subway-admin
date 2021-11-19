@@ -35,8 +35,18 @@ public class LineService {
     }
 
     public LineResponse findById(long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(LINE_NOT_FOUND_MESSAGE));
+        Line line = getLine(id);
+        return LineResponse.of(line);
+    }
+
+    private Line getLine(long id) {
+        return lineRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException(LINE_NOT_FOUND_MESSAGE));
+    }
+
+    public LineResponse updateLine(LineRequest lineRequest, long id) {
+        Line line = getLine(id);
+        line.update(lineRequest.toLine());
         return LineResponse.of(line);
     }
 }
