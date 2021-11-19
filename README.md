@@ -84,7 +84,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   }
   ```
 - 두 종점역은 구간의 형태로 관리되어야 함
-- [ ] 노선 객체에서 구간 정보 관리(양방향 연관관계)
+- [X] 노선 객체에서 구간 정보 관리(양방향 연관관계)
   ```
     public class Line {
     ...
@@ -93,7 +93,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     }
   ```
 
-
-- [ ] 노선 조회 시 응답 결과에 역 목록 추가하기
-  - [ ] 노선 조회 시 역 목록을 함께 응답함
-  - [ ] 상행역 부터 하행역 순으로 정렬되어야 함
+- [X] 노선 조회 시 응답 결과에 역 목록 추가하기
+  - [X] 노선 조회 시 역 목록을 함께 응답함
+  - [X] 상행역 부터 하행역 순으로 정렬되어야 함
