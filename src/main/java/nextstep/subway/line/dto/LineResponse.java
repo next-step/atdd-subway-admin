@@ -24,7 +24,7 @@ public class LineResponse {
 		this.id = id;
 		this.name = name;
 		this.color = color;
-		this.stations = sections.getOrderedStatons();
+		this.stations = sections.getOrderedStations();
 		this.createdDate = createdDate;
 		this.modifiedDate = modifiedDate;
 	}
