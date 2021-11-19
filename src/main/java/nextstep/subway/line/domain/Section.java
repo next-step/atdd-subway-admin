@@ -25,6 +25,7 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
+    @Column(name = "distance")
     private int distance;
 
     public Section() {

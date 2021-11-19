@@ -2,10 +2,11 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "line")
@@ -29,14 +30,12 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.name = name;
-        this.color = color;
-        sections.add(new Section(upStation, downStation, this, distance));
-    }
-
     public static Line of(LineRequest lineRequest) {
         return new Line(lineRequest.getName(), lineRequest.getColor());
+    }
+
+    public void addSection(Section section){
+        sections.add(section);
     }
 
     public void update(final Line line) {
@@ -44,8 +43,11 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public List<Station> getStations() {
-        return sections.getStations();
+    public List<StationResponse> getStationResponses() {
+        return sections.getStations()
+                .stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
