@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
-import nextstep.subway.line.dto.LineResponse;
 
 import javax.persistence.*;
 
@@ -20,10 +19,6 @@ public class Line extends BaseEntity {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public LineResponse toDto() {
-        return LineResponse.of(id, name, color, getCreatedDate(), getModifiedDate());
     }
 
     public void update(Line line) {

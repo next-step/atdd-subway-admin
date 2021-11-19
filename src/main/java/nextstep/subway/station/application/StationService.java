@@ -31,7 +31,7 @@ public class StationService {
 
     public StationResponse saveStation(StationRequest request) {
         final Station savedStation = stationRepository.save(request.toStation());
-        return savedStation.toDto();
+        return StationResponse.of(savedStation);
     }
 
     public void deleteStationById(Long id) {

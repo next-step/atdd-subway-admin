@@ -6,15 +6,19 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -23,7 +27,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final String BASE_URI = "lines";
     private final LineRequest 일호선 = LineRequest.of("1호선", "blue");
     private final LineRequest 이호선 = LineRequest.of("2호선", "green");
+    private static final int 거리_5 = 5;
 
+    @Disabled
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -32,6 +38,26 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_생성됨(response);
+    }
+
+    @DisplayName("지하철 노선을 생성한다.")
+    @Test
+    void createLineWithSections() {
+        // given
+        LineRequest 삼호선 = LineRequest.of("3호선","orange", 지하철_역_등록되어_있음(강남역), 지하철_역_등록되어_있음(역삼역), 거리_5);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(삼호선)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post(BASE_URI)
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
