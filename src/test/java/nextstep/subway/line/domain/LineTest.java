@@ -4,6 +4,8 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static nextstep.subway.station.domain.StationTest.강남역;
 import static nextstep.subway.station.domain.StationTest.역삼역;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,9 +17,11 @@ public class LineTest {
     void createLineAndSections(){
 
         Line line = new Line("2호선", "green");
-        line.addSection(new Section(강남역, 역삼역, line, 10));
+        Section section = new Section(강남역, 역삼역, line, 10);
+        line.addSection(section);
 
-        assertThat(line.getStationResponses()).hasSize(2);
-        assertThat(line.getStationResponses()).containsExactly(StationResponse.of(강남역), StationResponse.of(역삼역));
+        assertThat(line.getSections()).isEqualTo(Arrays.asList(section));
+        assertThat(line.getName()).isEqualTo("2호선");
+        assertThat(line.getColor()).isEqualTo("green");
     }
 }
