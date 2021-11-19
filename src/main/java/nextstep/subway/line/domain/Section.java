@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.exception.IllegalSectionDistanceException;
 import nextstep.subway.line.exception.IllegalSectionException;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.station.domain.Station;
@@ -21,7 +23,7 @@ import nextstep.subway.station.exception.StationNotFoundException;
 @Table(uniqueConstraints = {
 	@UniqueConstraint(columnNames = {"line_id", "up_station_id", "down_station_id"})
 })
-public class Section {
+public class Section extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +47,7 @@ public class Section {
 	}
 
 	private Section(Line line, Station upStation, Station downStation, int distance) {
-		validate(line, upStation, downStation);
+		validate(line, upStation, downStation, distance);
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
@@ -56,19 +58,50 @@ public class Section {
 		return new Section(line, upStation, downStation, distance);
 	}
 
-	private void validate(Line line, Station upStation, Station downStation) {
+	private void validate(Line line, Station upStation, Station downStation, int distance) {
 		if (null == line) {
 			throw new LineNotFoundException();
 		}
-		if (null == upStation) {
-			throw new StationNotFoundException();
-		}
-		if (null == downStation) {
-			throw new StationNotFoundException();
-		}
+		validateStations(upStation, downStation);
+		validateDistance(distance);
+	}
+
+	private void validateStations(Station upStation, Station downStation) {
+		validateStation(upStation);
+		validateStation(downStation);
 		if (upStation.equals(downStation)) {
 			throw new IllegalSectionException();
 		}
+	}
+
+	private void validateStation(Station station) {
+		if (null == station) {
+			throw new StationNotFoundException();
+		}
+	}
+
+	private void validateDistance(int distance) {
+		if (distance <= 0) {
+			throw new IllegalSectionDistanceException();
+		}
+	}
+
+	public void updateUpStation(Station station, int distance) {
+		setUpStation(station);
+		setDistance(distance);
+	}
+
+	public void updateDownStation(Station station, int distance) {
+		setDownStation(station);
+		setDistance(distance);
+	}
+
+	public boolean equalsUpStation(Station station) {
+		return upStation.equals(station);
+	}
+
+	public boolean equalsDownStation(Station station) {
+		return downStation.equals(station);
 	}
 
 	public Long getId() {
@@ -89,6 +122,21 @@ public class Section {
 
 	public int getDistance() {
 		return distance;
+	}
+
+	private void setUpStation(Station upStation) {
+		validateStations(upStation, downStation);
+		this.upStation = upStation;
+	}
+
+	private void setDownStation(Station downStation) {
+		validateStations(upStation, downStation);
+		this.downStation = downStation;
+	}
+
+	private void setDistance(int distance) {
+		validateDistance(distance);
+		this.distance = distance;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -11,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -39,7 +41,7 @@ public class Line extends BaseEntity {
 	private Line(String name, String color, Station upStation, Station downStation, int distance) {
 		this.name = name;
 		this.color = color;
-		sections.add(Section.of(this, upStation, downStation, distance));
+		addSection(upStation, downStation, distance);
 	}
 
 	public static Line of(String name, String color) {
@@ -60,6 +62,17 @@ public class Line extends BaseEntity {
 		this.color = line.getColor();
 	}
 
+	public Section addSection(Station upStation, Station downStation, int distance) {
+		return sections.add(this, upStation, downStation, distance);
+	}
+
+	public Section findSectionBy(Station upStation, Station downStation, int distance) {
+		return sections.findAny(section -> section.equalsUpStation(upStation)
+			&& section.equalsDownStation(downStation)
+			&& section.getDistance() == distance
+		).orElseThrow(SectionNotFoundException::new);
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -74,18 +87,18 @@ public class Line extends BaseEntity {
 
 	@Override
 	public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Line)) {
-            return false;
-        }
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Line)) {
+			return false;
+		}
 		Line line = (Line)o;
-		return Objects.equals(id, line.id);
+		return Objects.equals(id, line.id) && Objects.equals(name, line.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(id, name);
 	}
 }

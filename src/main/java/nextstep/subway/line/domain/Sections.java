@@ -5,14 +5,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.line.exception.DuplicatedSectionException;
+import nextstep.subway.line.exception.IllegalSectionException;
 import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 
@@ -23,8 +27,54 @@ public class Sections {
 		CascadeType.REMOVE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
-	public void add(Section section) {
-		this.sections.add(section);
+	public Section add(Line line, Station upStation, Station downStation, int distance) {
+		final Section section = Section.of(line, upStation, downStation, distance);
+		connect(section.getUpStation(), section.getDownStation(), section.getDistance());
+		sections.add(section);
+		return section;
+	}
+
+	private void connect(Station upStation, Station downStation, int distance) {
+		if (sections.isEmpty()) {
+			return;
+		}
+		final List<Station> stations = getAllStationFrom(sections);
+		final boolean hasSameUpStation = stations.contains(upStation);
+		final boolean hasSameDownStation = stations.contains(downStation);
+		validateToConnect(hasSameUpStation, hasSameDownStation);
+		if (hasSameUpStation) {
+			connectUpStationOfSectionToDownStationOf(upStation, downStation, distance);
+		}
+		if (hasSameDownStation) {
+			connectDownStationOfSectionToUpStationOf(upStation, downStation, distance);
+		}
+	}
+
+	private void validateToConnect(boolean hasSameUpStation, boolean hasSameDownStation) {
+		if (hasSameUpStation && hasSameDownStation) {
+			throw new DuplicatedSectionException();
+		}
+		if (!hasSameUpStation && !hasSameDownStation) {
+			throw new IllegalSectionException();
+		}
+	}
+
+	private void connectUpStationOfSectionToDownStationOf(Station upStation, Station downStation, int distance) {
+		findAny(section -> section.equalsUpStation(upStation))
+			.ifPresent(section -> section.updateUpStation(
+				downStation, section.getDistance() - distance
+			));
+	}
+
+	private void connectDownStationOfSectionToUpStationOf(Station upStation, Station downStation, int distance) {
+		findAny(section -> section.equalsDownStation(downStation))
+			.ifPresent(section -> section.updateDownStation(
+				upStation, section.getDistance() - distance
+			));
+	}
+
+	public Optional<Section> findAny(Predicate<? super Section> conditional) {
+		return sections.stream().filter(conditional).findAny();
 	}
 
 	// @note: 순환선인 경우 별도의 종착 구간 정보 필요, but 순환선이 없다고 가정
