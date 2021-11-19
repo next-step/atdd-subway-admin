@@ -28,14 +28,21 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineFindResponse> findAll() {
         Lines lines = Lines.of(lineRepository.findAll());
         return lines.toLineFindResponses();
     }
 
+    @Transactional(readOnly = true)
     public LineFindResponse findLine(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundResourceException("존재하지 않는 노선입니다. (입력값: " + id + ")"));
         return LineFindResponse.of(line);
+    }
+
+    public void updateLine(Long id, LineRequest request) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundResourceException("존재하지 않는 노선입니다. (입력값: " + id + ")"));
+        line.update(request.toLine());
     }
 
     private void validateDuplicatedLineName(LineRequest request) {

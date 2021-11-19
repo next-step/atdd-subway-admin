@@ -121,25 +121,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(lines.size()).isEqualTo(2);
     }
 
-    @DisplayName("조회한 노선이 존재하지 않을 경우 실패한다.")
-    @Test
-    void getLine_존재하지_않는_노선() {
-        // given
-        // 지하철_노선_등록되어_있지 안음
-
-        // when
-        // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/{id}", 1)
-                .then().log().all().extract();
-
-        // then
-        // 지하철_노선_조회_실패됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    }
-
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
@@ -171,6 +152,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @DisplayName("조회한 노선이 존재하지 않을 경우 실패한다.")
+    @Test
+    void getLine_존재하지_않는_노선() {
+        // given
+        // 지하철_노선_등록되어_있지 않음
+
+        // when
+        // 지하철_노선_조회_요청
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/{id}", 1)
+                .then().log().all().extract();
+
+        // then
+        // 지하철_노선_조회_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
@@ -198,12 +198,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines{id}", 1)
+                .when().put("/lines/{id}", 1)
                 .then().log().all().extract();
 
         // then
         // 지하철_노선_수정됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("수정할 노선이 존재하지 않는 경우 실패한다.")
+    @Test
+    void updateLine_존재하지_않는_노선() {
+        // given
+        // 지하철_노선_등록되어_있지_않음
+
+        // when
+        // 지하철_노선_수정_요청
+        HashMap<String, String> params = new HashMap<>();
+        params.put("color", "bg-blue-600");
+        params.put("name", "구분당선");
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}", 1)
+                .then().log().all().extract();
+
+        // then
+        // 지하철_노선_수정_실패됨
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -228,7 +251,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // 지하철_노선_제거_요청
         response = RestAssured
                 .given().log().all()
-                .when().delete("/lines{id}", 1)
+                .when().delete("/lines/{id}", 1)
                 .then().log().all().extract();
 
         // then
