@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.fixtrue.TestFactory.*;
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
@@ -14,6 +15,8 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.fixtrue.TestFactory;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -30,7 +33,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
 
-        LineRequest lineRequest = new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED);
+        StationResponse station1 = 지하철역_등록되어_있음(new StationRequest("신촌역"));
+        StationResponse station2 = 지하철역_등록되어_있음(new StationRequest("강남역"));
+        LineRequest lineRequest = new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10);
 
         // when
         // 지하철_노선_생성_요청
@@ -46,7 +51,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        지하철_노선_등록되어_있음(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
+        StationResponse station1 = 지하철역_등록되어_있음(new StationRequest("신촌역"));
+        StationResponse station2 = 지하철역_등록되어_있음(new StationRequest("강남역"));
+        지하철_노선_등록되어_있음(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10));
 
         // when
         // 존재하는 지하철 노선 생성 요청
@@ -61,8 +68,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
+        StationResponse station1 = 지하철역_등록되어_있음(new StationRequest("신촌역"));
+        StationResponse station2 = 지하철역_등록되어_있음(new StationRequest("강남역"));
         지하철_노선_등록되어_있음(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
-        지하철_노선_등록되어_있음(new LineRequest(LINE_TWO, LINE_TWO_COLOR_GREEN));
+        지하철_노선_등록되어_있음(new LineRequest(LINE_TWO, LINE_TWO_COLOR_GREEN, station1.getId(), station2.getId(), 10));
 
         // when
         ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청();
@@ -75,7 +84,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineResponse lineResponse = 지하철_노선_등록되어_있음(new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED));
+        StationResponse station1 = 지하철역_등록되어_있음(new StationRequest("신촌역"));
+        StationResponse station2 = 지하철역_등록되어_있음(new StationRequest("강남역"));
+        LineResponse lineResponse = 지하철_노선_등록되어_있음(
+            new LineRequest(LINE_ONE, LINE_ONE_COLOR_RED, station1.getId(), station2.getId(), 10));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineResponse.getId());
