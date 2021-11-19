@@ -39,10 +39,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		강남역 = StationTestFactory.지하철역_생성(StationAcceptanceTest.강남역_정보).as(StationResponse.class);
 		역삼역 = StationTestFactory.지하철역_생성(StationAcceptanceTest.역삼역_정보).as(StationResponse.class);
 
-		신분당선_정보 = LineTestFactory.지하철_노선_정보_정의("신분당선",
-			"bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
-		이호선_정보 = LineTestFactory.지하철_노선_정보_정의("2호",
-			"bg-green-600", 강남역.getId(), 역삼역.getId(), 10);
+		신분당선_정보 = LineTestFactory.지하철_노선_정보_정의("신분당선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 10);
+		이호선_정보 = LineTestFactory.지하철_노선_정보_정의("2호", "bg-green-600", 강남역.getId(), 역삼역.getId(), 10);
 	}
 
 	@DisplayName("지하철 노선을 생성한다.")
@@ -184,13 +182,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		String createdId = resourceUrl.split("/")[2];
 
 		LineResponse lineResponse = response.as(LineResponse.class);
-		assertLineBaseCheck(lineResponse,createdId,requestLine);
+		assertLineBaseCheck(lineResponse, createdId, requestLine);
 
 		List<Station> stations = lineResponse.getStations();
-		assertStations(stations,requestStations);
+		assertStations(stations, requestStations);
 	}
 
-	private void assertLineBaseCheck(LineResponse lineResponse,String createdId, Map<String, String> requestLine) {
+	private void assertLineBaseCheck(LineResponse lineResponse, String createdId, Map<String, String> requestLine) {
 		assertThat(lineResponse.getId()).isEqualTo(Long.parseLong(createdId));
 		assertThat(lineResponse.getColor()).isEqualTo(requestLine.get("color"));
 		assertThat(lineResponse.getName()).isEqualTo(requestLine.get("name"));

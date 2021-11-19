@@ -46,10 +46,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("노선 중간에 구간을 등록한다.(상행역과 맞닿음)")
 	@Test
 	void addSection() {
-		// when
+		// given
 		Map<String, String> 성복역_정보 = StationTestFactory.지하철역_이름_정의("성복역");
 		StationResponse 성복역 = StationTestFactory.지하철역_생성(성복역_정보).as(StationResponse.class);
 
+		// when
 		Map<String, String> 강남_성복_구간_정보 = 구간_정보_정의(강남역.getId(), 성복역.getId(), 5);
 		ExtractableResponse<Response> 강남_성복_구간_등록_결과 = 지하철_노선에_구간_등록_요청(강남_성복_구간_정보,
 			getLineSectionServicePath(신분당선.getId()));
@@ -62,10 +63,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("노선 중간에 구간을 등록한다.(하행역과 맞닿음)")
 	@Test
 	void addSection2() {
-		// when
+		// given
 		Map<String, String> 성복역_정보 = StationTestFactory.지하철역_이름_정의("성복역");
 		StationResponse 성복역 = StationTestFactory.지하철역_생성(성복역_정보).as(StationResponse.class);
 
+		// when
 		Map<String, String> 성복_광교_구간_정보 = 구간_정보_정의(성복역.getId(), 광교역.getId(), 7);
 		ExtractableResponse<Response> 성복_광교_구간_등록_결과 = 지하철_노선에_구간_등록_요청(성복_광교_구간_정보,
 			getLineSectionServicePath(신분당선.getId()));
@@ -78,10 +80,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("상행 종점 앞에 구간 추가")
 	@Test
 	void addSection3() {
-		// when
+		// given
 		Map<String, String> 신논현_정보 = StationTestFactory.지하철역_이름_정의("신논현");
 		StationResponse 신논현 = StationTestFactory.지하철역_생성(신논현_정보).as(StationResponse.class);
 
+		// when
 		Map<String, String> 신논현_강남_구간_정보 = 구간_정보_정의(신논현.getId(), 강남역.getId(), 12);
 		ExtractableResponse<Response> 신논현_강남_구간_등록_결과 = 지하철_노선에_구간_등록_요청(신논현_강남_구간_정보,
 			getLineSectionServicePath(신분당선.getId()));
@@ -94,10 +97,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("하행 종점 뒤에 구간 추가")
 	@Test
 	void addSection4() {
-		// when
+		// given
 		Map<String, String> 호매실역_정보 = StationTestFactory.지하철역_이름_정의("호매실");
 		StationResponse 호매실역 = StationTestFactory.지하철역_생성(호매실역_정보).as(StationResponse.class);
 
+		// when
 		Map<String, String> 광교_호매실_구간_정보 = 구간_정보_정의(광교역.getId(), 호매실역.getId(), 15);
 		ExtractableResponse<Response> 광교_호매실_구간_등록_결과 = 지하철_노선에_구간_등록_요청(광교_호매실_구간_정보,
 			getLineSectionServicePath(신분당선.getId()));
@@ -110,10 +114,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@DisplayName("기존 역 사이 길이보다 크거나 같으면 등록할 수 없음")
 	@Test
 	void addSection_exception1() {
-		// when
+		// given
 		Map<String, String> 성복역_정보 = StationTestFactory.지하철역_이름_정의("성복역");
 		StationResponse 성복역 = StationTestFactory.지하철역_생성(성복역_정보).as(StationResponse.class);
 
+		// when
 		Map<String, String> 강남_성복_구간_정보 = 구간_정보_정의(강남역.getId(), 성복역.getId(), 10);
 		ExtractableResponse<Response> 강남_성복_구간_등록_결과 = 지하철_노선에_구간_등록_요청(강남_성복_구간_정보,
 			getLineSectionServicePath(신분당선.getId()));
@@ -132,11 +137,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_구간_등록_요청(강남_성복_구간_정보, getLineSectionServicePath(신분당선.getId()));
 
 		// when
-		Map<String, String> 강남_광교_구간_정보 = 구간_정보_정의(강남역.getId(), 광교역.getId(), 10);
-		ExtractableResponse<Response> 강남_광교_구간_등록_결과 = 지하철_노선에_구간_등록_요청(강남_광교_구간_정보,
+		ExtractableResponse<Response> 강남_성복_구간_등록_결과 = 지하철_노선에_구간_등록_요청(강남_성복_구간_정보,
 			getLineSectionServicePath(신분당선.getId()));
+
 		// then
-		AcceptanceTestFactory.예외_발생_확인(강남_광교_구간_등록_결과);
+		AcceptanceTestFactory.예외_발생_확인(강남_성복_구간_등록_결과);
 	}
 
 	@DisplayName("상행역_하행역_모두_기존에_없는_경우")
@@ -150,7 +155,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
 		// when
 		Map<String, String> 성복_수지구청_구간_정보 = 구간_정보_정의(성복역.getId(), 수지구청역.getId(), 7);
-		ExtractableResponse<Response> 성복_수지구청_구간_등록_결과 = 지하철_노선에_구간_등록_요청(성복_수지구청_구간_정보, getLineSectionServicePath(신분당선.getId()));
+		ExtractableResponse<Response> 성복_수지구청_구간_등록_결과 = 지하철_노선에_구간_등록_요청(성복_수지구청_구간_정보,
+			getLineSectionServicePath(신분당선.getId()));
 
 		// then
 		AcceptanceTestFactory.예외_발생_확인(성복_수지구청_구간_등록_결과);
