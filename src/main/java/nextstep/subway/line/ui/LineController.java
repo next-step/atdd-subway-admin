@@ -59,8 +59,8 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
-    @DeleteMapping
-    public ResponseEntity updateLine(final @RequestParam Long id) {
+    @DeleteMapping("{id}")
+    public ResponseEntity updateLine(final @PathVariable(value = "id") Long id) {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
     }
