@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.Fixture;
 
 @DisplayName("지하철역 관련 기능")
@@ -61,9 +60,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         final List<Long> expectedLineIds = Stream.of(createResponse1, createResponse2)
                 .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
                 .collect(Collectors.toList());
-        final List<Long> actualLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
+        final List<Long> actualLineIds = response.jsonPath().getList("id", Long.class);
         assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 

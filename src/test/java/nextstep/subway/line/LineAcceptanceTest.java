@@ -107,9 +107,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final List<Long> expectedLineIds = Stream.of(postResponse1, postResponse2)
             .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
             .collect(Collectors.toList());
-        final List<Long> actualLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
-            .map(LineResponse::getId)
-            .collect(Collectors.toList());
+        final List<Long> actualLineIds = response.jsonPath().getList("id", Long.class);
         assertThat(actualLineIds).containsAll(expectedLineIds);
     }
 
