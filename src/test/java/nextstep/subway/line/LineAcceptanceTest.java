@@ -94,12 +94,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-
+        LineRequest secondLine = new LineRequest("2호선", "green");
+        ExtractableResponse<Response> saveResponse = 노선_미리생성(secondLine);
+        Long savedLineId = saveResponse.body().jsonPath().getLong("id");
         // when
         // 지하철_노선_조회_요청
-
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .when().get("/lines/" + Long.toString(savedLineId))
+                .then().log().all().extract();
         // then
         // 지하철_노선_응답됨
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.body().jsonPath().getLong("id")).isEqualTo(savedLineId)
+        );
     }
 
     @DisplayName("지하철 노선을 수정한다.")
