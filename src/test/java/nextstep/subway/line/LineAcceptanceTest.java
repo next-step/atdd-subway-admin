@@ -118,12 +118,27 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
+        ExtractableResponse<Response> saveResponse = 노선_미리생성(new LineRequest("2호선", "green"));
+        LineResponse lineResponse = saveResponse.body().as(LineResponse.class);
 
         // when
         // 지하철_노선_수정_요청
+        LineRequest lineRequest = new LineRequest(lineResponse.getName(), "red");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/lines/" + lineResponse.getId())
+                .then().log().all().extract();
 
         // then
         // 지하철_노선_수정됨
+        LineResponse newLineResponse = response.body().as(LineResponse.class);
+        assertAll(
+                () -> assertThat(newLineResponse.getId()).isEqualTo(lineResponse.getId()),
+                () -> assertThat(newLineResponse.getColor()).isEqualTo("red")
+        );
     }
 
     @DisplayName("지하철 노선을 제거한다.")
