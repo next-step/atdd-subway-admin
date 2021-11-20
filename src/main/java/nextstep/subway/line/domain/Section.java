@@ -40,7 +40,7 @@ public class Section extends BaseEntity {
 
     protected Section() {
     }
-    
+
     private Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
@@ -54,6 +54,14 @@ public class Section extends BaseEntity {
     public void addSectionAtLine(Line line) {
         this.line = line;
         this.line.addSection(this);
+    }
+
+    public boolean isEqualUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isEqualDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public Long getId() {
@@ -70,6 +78,41 @@ public class Section extends BaseEntity {
 
     public Distance getDistance() {
         return this.distance;
+    }
+
+    public boolean hasStaion(Section findSection) {
+        if (this.upStation.equals(findSection.upStation) ||
+            this.upStation.equals(findSection.downStation) ||
+            this.downStation.equals(findSection.upStation) ||
+            this.downStation.equals(findSection.downStation)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public Distance minusDistance(Section minusingSection) {
+        return this.distance.minus(minusingSection.getDistance());
+    }
+
+    public SectionMatchingType findMatchingType(Section section) {
+        if (isEqualDownStation(section.getUpStation())) {
+            return SectionMatchingType.DOWN_AND_UP;
+        }
+
+        if (isEqualDownStation(section.getDownStation())) {
+            return SectionMatchingType.DOWN_AND_DOWN;
+        }
+
+        if (isEqualUpStation(section.getUpStation())) {
+            return SectionMatchingType.UP_AND_UP;
+        }
+
+        if (isEqualUpStation(section.getDownStation())) {
+            return SectionMatchingType.UP_AND_DOWN;
+        }
+
+        return SectionMatchingType.UNKNOWN;
     }
 
     @Override

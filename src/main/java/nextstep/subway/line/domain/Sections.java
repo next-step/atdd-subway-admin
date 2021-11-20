@@ -3,15 +3,14 @@ package nextstep.subway.line.domain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -35,24 +34,20 @@ public class Sections {
         return new Sections(sections);
     }
 
-    private class SplitSectionItem {
-        int index;
-        Section newUpSection;
-        Section newDownSection;
-
-        public SplitSectionItem(int index, Section newUpSection, Section newDownSection) {
-        this.index = index;
-        this.newUpSection = newUpSection;
-        this.newDownSection = newDownSection;
-        }
-    }
-
     public boolean isEmpty() {
         return this.values.isEmpty();
     }
 
     public Section get(int index) {
         return this.values.get(index);
+    }
+
+    public Section findFirstItem() {
+        return this.values.get(0);
+    }
+
+    public Section findLastItem() {
+        return this.values.get(this.values.size() - 1);
     }
 
     public Integer size() {
@@ -73,13 +68,26 @@ public class Sections {
 
         validation(section);
 
-        SplitSectionItem splitSectionItem = getSplitSectionItem(section).orElseThrow();
+        adjustSection(section);
+    }
 
-        int index = splitSectionItem.index;
+    private void adjustSection(Section section) {
+        this.values.stream()
+                   .filter(findSection -> findSection.hasStaion(section))
+                   .findFirst()
+                   .ifPresent(findSection -> {
+                        splitSection(findSection, section);
+                    });
+    }
 
-        this.values.remove(index);
-        this.values.add(index, splitSectionItem.newDownSection);
-        this.values.add(index, splitSectionItem.newUpSection);
+    private void splitSection(Section findSection, Section section) {
+        SplitedSectionsFactory.generate(findSection.findMatchingType(section), findSection, section)
+                        .ifPresent(newSections -> { 
+                            int index = this.values.indexOf(findSection);
+                        
+                            this.values.remove(index);
+                            this.values.addAll(index, newSections.values);
+                        });
     }
 
     private void validation(Section section) {
@@ -87,95 +95,28 @@ public class Sections {
         checkDistance(section);
     }
 
-    private Optional<SplitSectionItem> getSplitSectionItem(Section section) {
-        Optional<SplitSectionItem> upStationTerminalSplitItem = generateUpStationTerminalSplitItem(section);
-
-        if (upStationTerminalSplitItem.isPresent()) {
-            return upStationTerminalSplitItem;
-        }
-
-        Optional<SplitSectionItem> upStationSplitItem = generateUpStationSplitItem(section);
-
-        if (upStationSplitItem.isPresent()) {
-            return upStationSplitItem;
-        }
-
-        Optional<SplitSectionItem> downStationSplitItem = generateDownStationSplitItem(section);
-
-
-        if (downStationSplitItem.isPresent()) {
-            return downStationSplitItem;
-        }
-
-        Optional<SplitSectionItem> downStationTerminalSplitItem = generateDownStationTerminalSplitItem(section);
-
-        if (downStationTerminalSplitItem.isPresent()) {
-            return downStationTerminalSplitItem;
-        }
-
-        return Optional.empty();
-    }
-
-    private Optional<SplitSectionItem> generateDownStationTerminalSplitItem(Section section) {
-        return this.values.stream()
-                    .filter(sectionItem -> sectionItem.getDownStation().equals(section.getUpStation()))
-                    .findFirst()
-                    .map(findSection -> new SplitSectionItem(this.values.indexOf(findSection),
-                                                            Section.valueOf(findSection.getUpStation(), findSection.getDownStation(), findSection.getDistance()),
-                                                            Section.valueOf(section.getUpStation(), section.getDownStation(), section.getDistance())));
-    }
-
-    private Optional<SplitSectionItem> generateDownStationSplitItem(Section section) {
-        return this.values.stream()
-                    .filter(sectionItem -> sectionItem.getDownStation().equals(section.getDownStation()))
-                    .findFirst()
-                    .map(findSection -> new SplitSectionItem(this.values.indexOf(findSection),
-                                                            Section.valueOf(findSection.getUpStation(), section.getUpStation(), findSection.getDistance().minus(section.getDistance())),
-                                                            Section.valueOf(section.getUpStation(), findSection.getDownStation(), section.getDistance())));
-    }
-
-    private Optional<SplitSectionItem> generateUpStationSplitItem(Section section) {
-        return this.values.stream()
-                    .filter(sectionItem -> sectionItem.getUpStation().equals(section.getUpStation()))
-                    .findFirst()
-                    .map(findSection -> new SplitSectionItem(this.values.indexOf(findSection),
-                                                            Section.valueOf(findSection.getUpStation(), section.getDownStation(), findSection.getDistance().minus(section.getDistance())),
-                                                            Section.valueOf(section.getDownStation(), findSection.getDownStation(), section.getDistance())));
-    }
-
-    private Optional<SplitSectionItem> generateUpStationTerminalSplitItem(Section section) {
-        return this.values.stream()
-                    .filter(sectionItem -> sectionItem.getUpStation().equals(section.getDownStation()))
-                    .findFirst()
-                    .map(findSection -> new SplitSectionItem(this.values.indexOf(findSection),
-                                                    Section.valueOf(section.getUpStation(), section.getDownStation(), section.getDistance()),
-                                                    Section.valueOf(findSection.getUpStation(), findSection.getDownStation(), findSection.getDistance())));
-    }
-
     private void checkDistance(Section section) {
-        if (isUpStationTeminal(section)) {
+        if (isUpStationTeminal(section) || isDownStaionTeminal(section)) {
             return;
         }
 
-        if (isDownStaionTeminal(section)) {
-            return;
-        }
+        values.stream().filter(findSection -> isNotTerminalStationMatching(findSection, section))
+                        .findFirst()
+                        .orElseThrow(() -> new NoSuchElementException("일치하는 구간이 존재하지 않습니다."));
+    }
 
-        Optional<Section> upStationMaption = values.stream()
-                                            .filter(item-> item.getDownStation().equals(section.getDownStation()) || item.getUpStation().equals(section.getUpStation()))
-                                            .findFirst();
-
-        Section upStationMatchSection = upStationMaption.orElseThrow();
-
-        upStationMatchSection.getId();
+    private boolean isNotTerminalStationMatching(Section findSection, Section section) {
+        return findSection.isEqualDownStation(section.getDownStation()) || findSection.isEqualUpStation(section.getUpStation());
     }
 
     private boolean isDownStaionTeminal(Section section) {
-        return this.values.get(this.values.size() - 1).getDownStation().equals(section.getUpStation());
+        return this.values.get(this.values.size() - 1)
+                            .isEqualDownStation(section.getUpStation());
     }
 
     private boolean isUpStationTeminal(Section section) {
-        return this.values.get(0).getUpStation().equals(section.getDownStation());
+        return this.values.get(0)
+                            .isEqualUpStation(section.getDownStation());
     }
 
     private void checkContainStaion(Section section) {
@@ -187,34 +128,35 @@ public class Sections {
             return;
         }
 
-        Optional<Section> upStationMaption = values.stream()
-                                            .filter(item-> item.getUpStation().equals(section.getUpStation()))
-                                            .findFirst();
+        Optional<Section> upStationMatching = values.stream()
+                                                    .filter(item -> item.isEqualUpStation(section.getUpStation()))
+                                                    .findFirst();
 
-        Optional<Section> downStationMaption = values.stream()
-                                            .filter(item-> item.getDownStation().equals(section.getDownStation()))
-                                            .findFirst();
+        Optional<Section> downStationMatching = values.stream()
+                                                    .filter(item -> item.isEqualDownStation(section.getDownStation()))
+                                                    .findFirst();
 
-        checkNotContainStations(upStationMaption, downStationMaption);
-        checkAllContainStations(upStationMaption, downStationMaption);
+        checkNotContainStations(upStationMatching, downStationMatching);
+        checkAllContainStations(upStationMatching, downStationMatching);
     }
 
     private void checkAllContainStations(Optional<Section> upStationMaption, Optional<Section> downStationMaption) {
-        if(!upStationMaption.isEmpty() && !downStationMaption.isEmpty()) {
+        if (!upStationMaption.isEmpty() && !downStationMaption.isEmpty()) {
             throw new IllegalArgumentException();
         }
     }
 
     private void checkNotContainStations(Optional<Section> upStationMaption, Optional<Section> downStationMaption) {
-        if(upStationMaption.isEmpty() && downStationMaption.isEmpty()) {
+        if (upStationMaption.isEmpty() && downStationMaption.isEmpty()) {
             throw new IllegalArgumentException();
         }
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this)
+        if (o == this) {
             return true;
+        }
         if (!(o instanceof Sections)) {
             return false;
         }

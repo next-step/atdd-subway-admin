@@ -63,7 +63,7 @@ public class Line extends BaseEntity {
 
         List<Station> stations = this.sections.findUpStations();
 
-        Section lastSection = this.sections.get(this.sections.size() - 1);
+        Section lastSection = this.sections.findLastItem();
 
         stations.add(lastSection.getDownStation());
 
@@ -72,13 +72,14 @@ public class Line extends BaseEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this)
+        if (o == this) {
             return true;
+        }
         if (!(o instanceof Line)) {
             return false;
         }
         Line line = (Line) o;
-        return  Objects.equals(name, line.name) && Objects.equals(color, line.color);
+        return  Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(sections, line.sections);
        
     }
 
