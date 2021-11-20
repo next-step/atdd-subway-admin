@@ -13,28 +13,14 @@ public class RestControllerAdvice {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(LineNotFoundException.class)
-    public ResponseEntity<String> handleLineNotFoundException(LineNotFoundException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(StationNotFoundException.class)
-    public ResponseEntity<String> handleStationNotFoundException(StationNotFoundException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(IllegalStationDistanceException.class)
-    public ResponseEntity<String> handleIllegalStationDistanceException(IllegalStationDistanceException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(SectionExistException.class)
-    public ResponseEntity<String> handleSectionExistException(SectionExistException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(StationNotContainInUpOrDownStation.class)
-    public ResponseEntity<String> handleStationNotContainInUpOrDownStation(StationNotContainInUpOrDownStation e) {
+    @ExceptionHandler({
+            StationNotContainInUpOrDownStation.class,
+            IllegalStationDistanceException.class,
+            StationNotFoundException.class,
+            SectionExistException.class,
+            LineNotFoundException.class
+    })
+    public ResponseEntity<String> handleBusinessException(BusinessException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
