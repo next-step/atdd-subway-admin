@@ -25,11 +25,15 @@ public class LineService {
     }
 
     public LineResponse save(final LineRequest request) {
+        Line persistLine = lineRepository.save(request.toLine());
+        addSection(request, persistLine);
+        return LineResponse.of(persistLine);
+    }
+
+    private void addSection(LineRequest request, Line line) {
         Station upStation = stationRepository.findByIdElseThrow(request.getUpStationId());
         Station downStation = stationRepository.findByIdElseThrow(request.getDownStationId());
-        Line line = request.toLine();
         line.addSection(new Section(upStation, downStation, line, request.getDistance()));
-        return LineResponse.of(lineRepository.save(line));
     }
 
     public LineResponses findAll() {
