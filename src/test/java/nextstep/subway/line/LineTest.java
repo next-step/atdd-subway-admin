@@ -15,11 +15,12 @@ import org.junit.jupiter.api.Test;
 
 public class LineTest {
 
-    private static final String LINE_NAME1 = "2호선";
-    private static final String LINE_NAME2 = "5호선";
-    private static final String LINE_COLOR1 = "orange darken-4";
-    private static final String LINE_COLOR2 = "yellow darken-3";
-    private static final Line LINE = new Line(LINE_NAME1, LINE_COLOR1);
+    public static final String LINE_NAME1 = "2호선";
+    public static final String LINE_NAME2 = "5호선";
+    public static final String LINE_COLOR1 = "orange darken-4";
+    public static final String LINE_COLOR2 = "yellow darken-3";
+    public static final Line LINE1 = new Line(LINE_NAME1, LINE_COLOR1);
+    public static final Line LINE2 = new Line(LINE_NAME2, LINE_COLOR2);
 
 
     @Test
@@ -43,12 +44,12 @@ public class LineTest {
         Line actual = new Line(LINE_NAME2, LINE_COLOR2);
 
         // when
-        actual.update(LINE);
+        actual.update(LINE1);
 
         // then
         assertAll(
-            () -> assertThat(actual.getName()).isEqualTo(LINE.getName()),
-            () -> assertThat(actual.getColor()).isEqualTo(LINE.getColor())
+            () -> assertThat(actual.getName()).isEqualTo(LINE1.getName()),
+            () -> assertThat(actual.getColor()).isEqualTo(LINE1.getColor())
         );
     }
 
