@@ -1,16 +1,11 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static nextstep.subway.line.LineScenarioMethod.*;
 
