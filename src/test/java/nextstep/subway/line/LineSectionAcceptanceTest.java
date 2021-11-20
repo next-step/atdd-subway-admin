@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -10,10 +11,12 @@ import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 
 import static nextstep.subway.line.LineStep.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineSectionAcceptanceTest extends AcceptanceTest {
 
@@ -112,5 +115,15 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_실패됨(response);
     }
 
+    @Test
+    void removeLineSection_상행_종점역이_제거될_경우_다음_역이_상행_종점역이_된다() {
+        // given
+        지하철_노선에_지하철역_등록되어_있음(이호선, 강남역, 역삼역, 3);
 
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제거_요청(이호선, 강남역);
+
+        // then
+        지하철_노선에_지하철역_제거됨(response);
+    }
 }
