@@ -67,11 +67,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행 종점과 하행 종점을 같은 역으로 등록한다")
     @Test
     void createLineWithDuplicateStation() {
-        // given
-        LineRequest 삼호선 = LineRequest.of("3호선", "orange", 강남역_ID, 강남역_ID, 거리_5);
-
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(삼호선);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(LineRequest.of("3호선", "orange", 강남역_ID, 강남역_ID, 거리_5));
 
         // then
         지하철_노선_생성_실패됨(response);

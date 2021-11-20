@@ -1,6 +1,5 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.common.exception.DuplicateParameterException;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional
@@ -38,9 +36,6 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        if (isDuplicateStations(request)) {
-            throw new DuplicateParameterException("상행, 하행역은 중복될 수 없습니다.");
-        }
         final Station upStation = stationRepository.findById(request.getUpStationId())
                 .orElseThrow(() -> new NotFoundException("역이 존재하지 않습니다."));
         final Station downStation = stationRepository.findById(request.getDownStationId())
@@ -64,9 +59,5 @@ public class LineService {
     public void delete(Long id) {
         Line line = findByLineId(id);
         lineRepository.deleteById(line.getId());
-    }
-
-    private boolean isDuplicateStations(LineRequest request) {
-        return Objects.equals(request.getUpStationId(), request.getDownStationId());
     }
 }

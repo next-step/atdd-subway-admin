@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 public class SectionTest {
-
+    private static final int DISTANCE_5 = 5;
     @Autowired
     StationRepository stationRepository;
 
@@ -39,13 +39,11 @@ public class SectionTest {
     void create() {
         final Station upStation = stationRepository.save(StationRequest.of("강남역").toStation());
         final Station downStation = stationRepository.save(StationRequest.of("삼성역").toStation());
-        final Line line = lineRepository.save(LineRequest.of("1호선", "blue").toLine());
-        int distance = 5;
+        Line line = new Line("2호선", "녹색");
+        line.addSection(new Section(line, upStation, downStation, DISTANCE_5));
+        final Line savedLine = lineRepository.save(line);
 
-        Section section = new Section(line, upStation, downStation, distance);
-        final Section savedSection = sectionRepository.save(section);
-
-        Section findSection = sectionRepository.findById(savedSection.getId()).get();
+        Section findSection = sectionRepository.findById(savedLine.getSections().get(0).getId()).get();
         assertThat(findSection.getStation().getId()).isEqualTo(upStation.getId());
         assertThat(findSection.getNextStation().getId()).isEqualTo(downStation.getId());
         assertThat(findSection.getLine().getId()).isEqualTo(line.getId());
