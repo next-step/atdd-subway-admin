@@ -5,6 +5,7 @@ import nextstep.subway.line.exception.DuplicateLineStationException;
 import nextstep.subway.line.exception.LineStationNotConnectException;
 import nextstep.subway.line.exception.LineStationSafetyException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -97,8 +98,22 @@ public class LineStations {
 
     public void delete(Long stationId) {
         validationDelete();
-        Optional<LineStation> lineStation = findDeleteByLineStation(stationId);
+        Optional<LineStation> preStation = findDeleteByPreStation(stationId);
 
+        if (!preStation.isPresent()) {
+            Optional<LineStation> nextStation = findDeleteByNextStation(stationId);
+            deleteByNextStation(nextStation);
+        }
+
+        deleteByPreStation(preStation);
+    }
+
+    private void deleteByNextStation(Optional<LineStation> lineStation) {
+        lineStations.remove(lineStation.orElseThrow(() ->
+                new StationNotFoundException(ErrorCode.NOT_FOUND_ENTITY, "삭제 역이 없습니다.")));
+    }
+
+    private void deleteByPreStation(Optional<LineStation> lineStation) {
         lineStation.ifPresent(pre ->
                 lineStations.stream()
                         .filter(f -> f.getNextStation().equals(pre.getPreStation()))
@@ -117,9 +132,14 @@ public class LineStations {
         }
     }
 
-    private Optional<LineStation> findDeleteByLineStation(Long stationId) {
+    private Optional<LineStation> findDeleteByPreStation(Long stationId) {
         return lineStations.stream()
                 .filter(f -> f.getPreStation().isEqualsId(stationId))
+                .findFirst();
+    }
+    private Optional<LineStation> findDeleteByNextStation(Long stationId) {
+        return lineStations.stream()
+                .filter(f -> f.getNextStation().isEqualsId(stationId))
                 .findFirst();
     }
 }
