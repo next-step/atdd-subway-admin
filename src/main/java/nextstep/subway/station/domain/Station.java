@@ -9,10 +9,19 @@ public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
 
-    public Station() {
+    protected Station() {
+    }
+
+    private Station(Long id) {
+        this.id = id;
+    }
+
+    public static Station of(Long id) {
+        return new Station(id);
     }
 
     public Station(String name) {
