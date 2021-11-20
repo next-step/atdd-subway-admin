@@ -80,4 +80,10 @@ public class LineService {
         line.addSection(upStation, downStation, request.getDistance());
     }
 
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findById(lineId);
+        Station station = stationService.findById(stationId);
+        line.deleteSection(station);
+    }
+
 }

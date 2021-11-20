@@ -186,6 +186,129 @@ public class LineSectionAcceptanceTest extends AcceptanceTest{
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("지하철 노선 구간추가를 한다.(이미 등록된 Section의 경우 400 에러)")
+    @Test
+    void addLineSection_Error4() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse1.getId(), stationResponse3.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        // 지하철_구간_생성_요청
+        String lineId = response.header("Location").split("/")[2];
+
+        SectionRequest sectionRequest = new SectionRequest(stationResponse1.getId(), stationResponse3.getId(), 11);
+        ExtractableResponse<Response> createResponse = addSubwayLineSection(lineId, sectionRequest);
+        // then
+        // BAD_REQUEST(400) ERROR 발생
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 노선 구간삭제를 한다.(중간역)")
+    @Test
+    void deleteLineSection1() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse1.getId(), stationResponse2.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        String lineId = response.header("Location").split("/")[2];
+
+        SectionRequest sectionRequest = new SectionRequest(stationResponse2.getId(), stationResponse3.getId(), 11);
+        addSubwayLineSection(lineId, sectionRequest);
+
+        // 지하철_구간_삭제_요청
+        deleteSubwayLineSection(lineId, stationResponse2.getId());
+
+        // then
+        // 지하철역 삭제 되고 정렬되어 조회됨
+        // 지하철_구간_목록_조회_요청
+        LineResponse lineResponse = getSubwayLine(response).jsonPath().getObject(".", LineResponse.class);
+        assertThat(lineResponse.getStations()).extracting("name").containsExactly(stationResponse1.getName(), stationResponse3.getName());
+    }
+
+    @DisplayName("지하철 노선 구간삭제를 한다.(상행종점)")
+    @Test
+    void deleteLineSection2() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse1.getId(), stationResponse2.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        String lineId = response.header("Location").split("/")[2];
+
+        SectionRequest sectionRequest = new SectionRequest(stationResponse2.getId(), stationResponse3.getId(), 11);
+        addSubwayLineSection(lineId, sectionRequest);
+
+        // 지하철_구간_삭제_요청
+        deleteSubwayLineSection(lineId, stationResponse1.getId());
+
+        // then
+        // 지하철역 삭제 되고 정렬되어 조회됨
+        // 지하철_구간_목록_조회_요청
+        LineResponse lineResponse = getSubwayLine(response).jsonPath().getObject(".", LineResponse.class);
+        assertThat(lineResponse.getStations()).extracting("name").containsExactly(stationResponse2.getName(), stationResponse3.getName());
+    }
+
+    @DisplayName("지하철 노선 구간삭제를 한다.(하행종점)")
+    @Test
+    void deleteLineSection3() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse1.getId(), stationResponse2.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        String lineId = response.header("Location").split("/")[2];
+
+        SectionRequest sectionRequest = new SectionRequest(stationResponse2.getId(), stationResponse3.getId(), 11);
+        addSubwayLineSection(lineId, sectionRequest);
+
+        // 지하철_구간_삭제_요청
+        deleteSubwayLineSection(lineId, stationResponse3.getId());
+
+        // then
+        // 지하철역 삭제 되고 정렬되어 조회됨
+        // 지하철_구간_목록_조회_요청
+        LineResponse lineResponse = getSubwayLine(response).jsonPath().getObject(".", LineResponse.class);
+        assertThat(lineResponse.getStations()).extracting("name").containsExactly(stationResponse1.getName(), stationResponse2.getName());
+    }
+
+    @DisplayName("지하철 노선 구간삭제를 한다.(등록된 역이 아닐 경우 400 에러)")
+    @Test
+    void deleteLineSection1_Error() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse1.getId(), stationResponse2.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        String lineId = response.header("Location").split("/")[2];
+
+        SectionRequest sectionRequest = new SectionRequest(stationResponse2.getId(), stationResponse3.getId(), 11);
+        addSubwayLineSection(lineId, sectionRequest);
+
+        // 지하철_구간_삭제_요청
+        ExtractableResponse<Response> deleteResponse = deleteSubwayLineSection(lineId, stationResponse4.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+    @DisplayName("지하철 노선 구간삭제를 한다.(구간이 하나일 경우 400 에러)")
+    @Test
+    void deleteLineSection2_Error() {
+        // when
+        // 지하철_노선_생성_요청
+        LineRequest lineRequest = new LineRequest("2호선", "초록", stationResponse1.getId(), stationResponse2.getId(), 10);
+        ExtractableResponse<Response> response = createSubwayLineSection(lineRequest);
+
+        String lineId = response.header("Location").split("/")[2];
+
+        // 지하철_구간_삭제_요청
+        ExtractableResponse<Response> deleteResponse = deleteSubwayLineSection(lineId, stationResponse1.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("지하철 모든 노선 목록을 조회한다.")
     @Test
     void getLines() {
@@ -218,7 +341,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest{
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
         assertThat(lineResponse.getName().equals("2호선")).isEqualTo(true);
         assertThat(lineResponse.getStations().contains(stationResponse1)).isEqualTo(true);
-
     }
 
     private ExtractableResponse<Response> createStation(String name) {
@@ -259,6 +381,18 @@ public class LineSectionAcceptanceTest extends AcceptanceTest{
                 .extract();
     }
 
+    private ExtractableResponse<Response> deleteSubwayLineSection(String lineId, Long stationId) {
+
+        return RestAssured.given()
+                .log().all()
+                .when()
+                .queryParam("stationId", stationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .delete("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+    }
+    
     private ExtractableResponse<Response> getSubwayLineList() {
 
         return RestAssured.given()
