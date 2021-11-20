@@ -21,7 +21,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private final Sections sections = new Sections();
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -40,9 +40,16 @@ public class Line extends BaseEntity {
         return new Line(id, name, color);
     }
 
+    public void addSection(Section section) {
+        section.setLine(this);
+        this.sections.addSection(section);
+
+    }
+
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+        this.sections = line.getSections();
     }
 
     public Long getId() {

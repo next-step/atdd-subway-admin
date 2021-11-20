@@ -30,6 +30,10 @@ public class Sections {
         return new Sections(sections);
     }
 
+    public void addSection(Section section) {
+        values.add(section);
+    }
+
     public Stations getStations() {
         List<Station> result = new ArrayList<>();
         Set<Station> stationVisit = new HashSet<>();
