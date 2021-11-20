@@ -34,7 +34,7 @@ class LineScenarioMethod {
         return createResponse.header("Location");
     }
 
-    public static void 지하철_노선이_등록되어_있지_않음(Long id) {
+    public static void 지하철_노선_등록되어_있지_않음(Long id) {
         ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청("/lines/" + id);
         지하철_노선_조회_실패됨(findResponse);
     }
@@ -51,7 +51,7 @@ class LineScenarioMethod {
         assertThat(response.statusCode()).isEqualTo(NOT_FOUND.value());
     }
 
-    public static void 지하철_노선_목록_조회_결과에_포함됨(ExtractableResponse<Response> response, LineRequest request) {
+    public static void 지하철_노선_목록_조회_결과_포함됨(ExtractableResponse<Response> response, LineRequest request) {
         List<LineResponse> lineResponses = response.jsonPath().getList(".", LineResponse.class);
         AssertionsForInterfaceTypes.assertThat(lineResponses)
                 .extracting(LineResponse::getColor, LineResponse::getName)

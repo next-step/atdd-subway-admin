@@ -52,8 +52,8 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_조회_응답됨(response);
-        지하철_노선_목록_조회_결과에_포함됨(response, 신분당선);
-        지하철_노선_목록_조회_결과에_포함됨(response, 수인선);
+        지하철_노선_목록_조회_결과_포함됨(response, 신분당선);
+        지하철_노선_목록_조회_결과_포함됨(response, 수인선);
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -74,7 +74,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLineValidateNotFound() {
         // given
-        지하철_노선이_등록되어_있지_않음(1L);
+        지하철_노선_등록되어_있지_않음(1L);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청("/lines/1");
@@ -113,7 +113,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLineValidateEmptyResult() {
         // given
-        지하철_노선이_등록되어_있지_않음(1L);
+        지하철_노선_등록되어_있지_않음(1L);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(1L);

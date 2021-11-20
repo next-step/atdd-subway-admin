@@ -36,10 +36,10 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+    public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findLine(id);
         line.update(lineRequest.toLine());
-        return LineResponse.of(line);
+        LineResponse.of(line);
     }
 
     private Line findLine(Long id) {
