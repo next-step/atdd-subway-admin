@@ -82,22 +82,27 @@ public class Line extends BaseEntity {
     }
 
     public Line updateSection(Station upStation, Station downStation, int distance) {
+        check(upStation, downStation);
+        updateStation(upStation, downStation, distance);
+        addSection(upStation, downStation, distance);
+        return this;
+    }
+
+    private void check(Station upStation, Station downStation) {
         if (hasStation(upStation) && hasStation(downStation)) {
             throw new SectionExistException();
         }
+        if (!hasStation(upStation) && !hasStation(downStation)) {
+            throw new StationNotContainInUpOrDownStation();
+        }
+    }
 
+    private void updateStation(Station upStation, Station downStation, int distance) {
         if (hasStation(upStation)) {
             updateUpStation(upStation, downStation, distance);
-            addSection(upStation, downStation, distance);
-            return this;
         }
-
         if (hasStation(downStation)) {
             updateDownStation(upStation, downStation, distance);
-            addSection(upStation, downStation, distance);
-            return this;
         }
-
-        throw new StationNotContainInUpOrDownStation();
     }
 }
