@@ -27,7 +27,10 @@ public class LineResponse {
             return null;
         }
 
-        return new LineResponse(line.getId(), line.getName().getValue(), line.getColor(), line.getCreatedDate(),
+        return new LineResponse(line.getId(),
+            line.getName().getValue(),
+            line.getColor().getValue(),
+            line.getCreatedDate(),
             line.getModifiedDate());
     }
 

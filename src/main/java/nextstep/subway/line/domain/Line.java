@@ -18,7 +18,7 @@ public class Line extends BaseEntity {
 	private LineName name;
 
 	@Column
-	private String color;
+	private LineColor color;
 
 	@OneToMany(mappedBy = "line", fetch = FetchType.LAZY)
 	private List<Section> sections = new ArrayList<>();
@@ -28,12 +28,12 @@ public class Line extends BaseEntity {
 
 	public Line(String name, String color) {
 		this.name = LineName.from(name);
-		this.color = color;
+		this.color = LineColor.from(color);
 	}
 
 	public Line(String name, String color, Long upStationId, Long downStationId, int distance) {
 		this.name = LineName.from(name);
-		this.color = color;
+		this.color = LineColor.from(color);
 		this.sections.add(Section.of(this, upStationId, downStationId, distance));
 	}
 
@@ -50,7 +50,7 @@ public class Line extends BaseEntity {
 		return name;
 	}
 
-	public String getColor() {
+	public LineColor getColor() {
 		return color;
 	}
 }
