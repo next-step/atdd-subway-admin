@@ -1,5 +1,6 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.line.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
@@ -13,7 +14,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class StationService {
-    private StationRepository stationRepository;
+    private static final String STATION = "역";
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -29,11 +31,22 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
-                .collect(Collectors.toList());
+            .map(station -> StationResponse.of(station))
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public StationResponse getStationResponseById(Long id) {
+        Station station = getStationById(id);
+        return StationResponse.of(station);
     }
 
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    private Station getStationById(Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException(STATION));
     }
 }
