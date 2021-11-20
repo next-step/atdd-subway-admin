@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.List;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -62,5 +63,49 @@ public class LineRepositoryTest {
             () -> assertThat(actual.getName()).isEqualTo(LineTest.LINE2.getName()),
             () -> assertThat(actual.getColor()).isEqualTo(LineTest.LINE2.getColor())
         );
+    }
+
+    @Test
+    @DisplayName("Line 2개 저장 후, findAll 조회시 size 2개 검증")
+    void findAll() {
+        // given
+        lineRepository.save(LineTest.LINE1);
+        lineRepository.save(LineTest.LINE2);
+
+        // when
+        List<Line> actual = lineRepository.findAll();
+
+        // then
+        assertThat(actual).hasSize(2);
+    }
+
+
+    @Test
+    @DisplayName("Line 2개 저장, 1개삭제 후 findAll 조회시 size 1개 검증")
+    void delete_after_findAll() {
+        // given
+        lineRepository.save(LineTest.LINE1);
+        Line deleteLine = lineRepository.save(LineTest.LINE2);
+
+        // when
+        deleteLine.delete();
+        List<Line> actual = lineRepository.findAll();
+
+        // then
+        assertThat(actual).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("soft delete Flush 후 isDelete true(삭제됨) 반환 검증")
+    void deleted() {
+        // given
+        Line persistLine = lineRepository.save(LineTest.LINE1);
+        persistLine.delete();
+
+        // when
+        Line actual = lineRepository.findByName(persistLine.getName());
+
+        // then
+        assertThat(actual.isDeleted()).isTrue();
     }
 }

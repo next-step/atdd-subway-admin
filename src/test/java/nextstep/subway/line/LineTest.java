@@ -80,4 +80,18 @@ public class LineTest {
         lines.add(line3);
         assertThat(lines).hasSize(2);
     }
+
+
+    @Test
+    @DisplayName("soft delete 테스트, delete() 호출 후 isDelete true(삭제됨) 반환 검증")
+    void deleted() {
+        // given
+        Line line = LineTest.LINE1;
+
+        // when
+        line.delete();
+
+        // then
+        assertThat(line.isDeleted()).isTrue();
+    }
 }
