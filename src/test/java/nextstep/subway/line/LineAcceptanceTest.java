@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -17,16 +16,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    String DEFAULT_PATH = "/lines";
+    LineRequest lineRequest = new LineRequest("2호선", "green");
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
         // 지하철_노선_생성_요청
-        ExtractableResponse<Response> response = 노선_미리생성(new LineRequest("2호선", "green"));
+        ExtractableResponse<Response> response = 요청_post(DEFAULT_PATH, lineRequest);
 
         // then
         // 지하철_노선_생성됨
@@ -38,18 +40,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         // 지하철_노선_등록되어_있음
-        노선_미리생성(new LineRequest("2호선", "green"));
+        요청_post(DEFAULT_PATH, lineRequest);
 
         // when
         // 지하철_노선_생성_요청
-        LineRequest lineRequest = new LineRequest("2호선", "green");
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 요청_post(DEFAULT_PATH, lineRequest);
 
         // then
         // 지하철_노선_생성_실패됨
@@ -62,17 +57,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         // 지하철_노선_등록되어_있음
         LineRequest secondLine = new LineRequest("2호선", "green");
-        노선_미리생성(secondLine);
+        요청_post(DEFAULT_PATH, secondLine);
         // 지하철_노선_등록되어_있음
         LineRequest thirdLine = new LineRequest("3호선", "orange");
-        노선_미리생성(thirdLine);
+        요청_post(DEFAULT_PATH, thirdLine);
 
         // when
         // 지하철_노선_목록_조회_요청
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().get("/lines")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 요청_get(DEFAULT_PATH);
 
         // then
         // 지하철_노선_목록_응답됨
@@ -94,15 +86,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> saveResponse = 노선_미리생성(new LineRequest("2호선", "green"));
+        ExtractableResponse<Response> saveResponse = 요청_post(DEFAULT_PATH, lineRequest);
         LineResponse lineResponse = 저장된_노선_응답(saveResponse);
 
         // when
         // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().get("/lines/" + lineResponse.getId())
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 요청_get(DEFAULT_PATH + "/" + lineResponse.getId());
 
         // then
         // 지하철_노선_응답됨
@@ -117,7 +106,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> saveResponse = 노선_미리생성(new LineRequest("2호선", "green"));
+        ExtractableResponse<Response> saveResponse = 요청_post(DEFAULT_PATH, lineRequest);
         LineResponse lineResponse = 저장된_노선_응답(saveResponse);
 
         // when
@@ -145,7 +134,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
         // given
         // 지하철_노선_등록되어_있음
-        ExtractableResponse<Response> saveResponse = 노선_미리생성(new LineRequest("2호선", "green"));
+        ExtractableResponse<Response> saveResponse = 요청_post(DEFAULT_PATH, lineRequest);
         LineResponse lineResponse = 저장된_노선_응답(saveResponse);
 
         // when
@@ -160,17 +149,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private ExtractableResponse<Response> 노선_미리생성(LineRequest lineRequest) {
+    private LineResponse 저장된_노선_응답(ExtractableResponse<Response> saveResponse) {
+        return saveResponse.body().as(LineResponse.class);
+    }
+
+    private ExtractableResponse<Response> 요청_post(String path, LineRequest lineRequest) {
         return RestAssured
                 .given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                .post(path)
                 .then().log().all().extract();
     }
 
-    private LineResponse 저장된_노선_응답(ExtractableResponse<Response> saveResponse) {
-        return saveResponse.body().as(LineResponse.class);
+    private ExtractableResponse<Response> 요청_get(String path) {
+        return RestAssured
+                .given().log().all()
+                .when().get(path)
+                .then().log().all().extract();
     }
 }
