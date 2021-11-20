@@ -75,24 +75,4 @@ public class LineService {
         Line updatedLine = line.updateSection(upStation, downStation, sectionRequest.getDistance());
         return LineResponse.of(updatedLine);
     }
-
-    private LineResponse updateStation(SectionRequest sectionRequest, Line line, Station upStation, Station downStation) {
-        if (line.hasStation(upStation) && line.hasStation(downStation)) {
-            throw new SectionExistException();
-        }
-
-        if (line.hasStation(upStation)) {
-            line.updateUpStation(upStation, downStation, sectionRequest.getDistance());
-            line.addSection(upStation, downStation, sectionRequest.getDistance());
-            return LineResponse.of(line);
-        }
-
-        if (line.hasStation(downStation)) {
-            line.updateDownStation(upStation, downStation, sectionRequest.getDistance());
-            line.addSection(upStation, downStation, sectionRequest.getDistance());
-            return LineResponse.of(line);
-        }
-
-        throw new StationNotContainInUpOrDownStation();
-    }
 }
