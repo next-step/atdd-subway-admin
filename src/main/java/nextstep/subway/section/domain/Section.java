@@ -1,5 +1,6 @@
-package nextstep.subway.section;
+package nextstep.subway.section.domain;
 
+import com.sun.tools.internal.xjc.reader.relaxng.RELAXNGCompiler;
 import nextstep.subway.common.entity.BaseEntity;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
@@ -35,7 +36,7 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "DOWN_STATION_ID")
     private Station downStation;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "LINE_ID")
     private Line line;
 
@@ -55,5 +56,25 @@ public class Section extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Line getLine() {
+        return line;
     }
 }
