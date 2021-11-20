@@ -58,5 +58,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [X] 종점역(상행,하행)과 구간 사이 길이(distance)를 포함한 지하철 노선 생성
   - [ ] 지하철 노선에 해당하는 구간 조회 (GET : /lines/{lineNo})
 - 기능 요구사항 목록
-  - [ ] 노선 생성 시 구간 정보를 저장한다.
+  - [X] 노선 생성 시 구간 정보를 저장한다.
   - [ ] 노선 조회 시 노선에 속한 역 정보를 상행역 -> 하행역 순으로 정렬한 역 정보를 포함한다.

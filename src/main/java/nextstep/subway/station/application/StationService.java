@@ -29,11 +29,17 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(station -> StationResponse.of(station))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Station findStation(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 지하철 역은 존재하지 않습니다."));
     }
 }

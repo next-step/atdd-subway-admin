@@ -20,16 +20,20 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("지하철 노선을 생성한다.")
+    @DisplayName("종점역 정보를 포함한 지하철 노선을 생성한다.")
     @Test
-    void createLine() {
-        // when
-        final ExtractableResponse<Response> response = 지하철_노선_생성("2호선", "green");
+    void createLastStopIncludeLine() {
+        //given
+        final StationResponse lastStopAscending = 종점역_생성("강남역");
+        final StationResponse lastStopDescending = 종점역_생성("역삼역");
 
-        // then
-        // 지하철_노선_생성됨
+        //when
+        final ExtractableResponse<Response> response = 종점역_정보를_포함한_지하철_노선_생성(lastStopAscending, lastStopDescending, "신분당선", "red", 10);
+
+        //then
+        //종점역_정보를_포함한_지하철_노선_생성됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
@@ -37,11 +41,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine2() {
         // given
-        String lineName = "2호선";
-        지하철_노선_생성(lineName,"green");
+        String dupliecatLineName = "2호선";
+        지하철_노선_생성(dupliecatLineName,"green");
 
         // when
-        final ExtractableResponse<Response> response = 지하철_노선_생성(lineName, "red");
+        final ExtractableResponse<Response> response = 지하철_노선_생성(dupliecatLineName, "red");
 
         // then
         // 지하철_노선_생성_실패됨
@@ -52,8 +56,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_생성("1호선","blue");
-        지하철_노선_생성("2호선","green");
+        final StationResponse LineFirstUpStation = 종점역_생성("소요산");
+        final StationResponse LineFirstDownStation = 종점역_생성("인천");
+        final StationResponse LineThirdUpStation = 종점역_생성("대화");
+        final StationResponse LineThirdDownStation = 종점역_생성("오금");
+        종점역_정보를_포함한_지하철_노선_생성(LineFirstUpStation, LineFirstDownStation, "1호선", "blue", 30);
+        종점역_정보를_포함한_지하철_노선_생성(LineThirdUpStation, LineThirdDownStation, "3호선", "Orange", 30);
 
         // when
         final ExtractableResponse<Response> response = 지하철_노선_목록_조회();
@@ -70,7 +78,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        지하철_노선_생성("신분당선","red");
+        final StationResponse upStation = 종점역_생성("강남");
+        final StationResponse downStation = 종점역_생성("광교");
+        종점역_정보를_포함한_지하철_노선_생성(upStation, downStation, "신분당선", "red", 30);
 
         // when
         final ExtractableResponse<Response> lineResponse = 지하철_노선_목록_조회();
@@ -86,7 +96,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        final ExtractableResponse<Response> lineCreateResponse = 지하철_노선_생성("5호선","purple");
+        final StationResponse upStation = 종점역_생성("방화");
+        final StationResponse downStation = 종점역_생성("마천");
+        final ExtractableResponse<Response> lineCreateResponse = 종점역_정보를_포함한_지하철_노선_생성(upStation, downStation, "5호선", "purple", 30);
         final LineResponse lineResponse = lineCreateResponse.as(LineResponse.class);
 
         // when
@@ -110,7 +122,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        final ExtractableResponse<Response> lineCreateResponse = 지하철_노선_생성("2호선", "green");
+        final StationResponse upStation = 종점역_생성("방화");
+        final StationResponse downStation = 종점역_생성("마천");
+        final ExtractableResponse<Response> lineCreateResponse = 종점역_정보를_포함한_지하철_노선_생성(upStation, downStation, "5호선", "purple", 30);
         final LineResponse lineResponse = lineCreateResponse.as(LineResponse.class);
 
         // when
@@ -126,29 +140,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("종점역 정보를 포함한 지하철 노선을 생성한다.")
-    @Test
-    void createLastStopIncludeLine() {
-        //given
-        //종점역_상행_생성
-        //종점역_하행_생성
-        final StationResponse lastStopAscending = 종점역_생성("강남역");
-        final StationResponse lastStopDescending = 종점역_생성("역삼역");
-        int sectionDistance = 10;
-
-        //when
-        //종점역_정보를_포함한_지하철_노선_생성
-        final ExtractableResponse<Response> response = 종점역_정보를_포함한_지하철_노선_생성(lastStopAscending, lastStopDescending, sectionDistance);
-
-        //then
-        //종점역_정보를_포함한_지하철_노선_생성됨
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    private ExtractableResponse<Response> 종점역_정보를_포함한_지하철_노선_생성(final StationResponse lastStopAscending, final StationResponse lastStopDescending, int sectionDistance) {
+    private ExtractableResponse<Response> 종점역_정보를_포함한_지하철_노선_생성(final StationResponse lastStopAscending, final StationResponse lastStopDescending, String lineName, String lineColor, int sectionDistance) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new LineRequest("신분당선", "bg-red-600", lastStopAscending.getId(), lastStopDescending.getId(), sectionDistance))
+                .body(new LineRequest(lineName, lineColor, lastStopAscending.getId(), lastStopDescending.getId(), sectionDistance))
                 .when().post("/lines")
                 .then().log().all().extract();
     }
@@ -168,11 +163,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private StationResponse 종점역_생성(String stationName) {
-        // given
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
-        // when
         final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

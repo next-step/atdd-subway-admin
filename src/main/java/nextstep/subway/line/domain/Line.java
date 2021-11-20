@@ -1,19 +1,28 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+
+    @Column(name = "name", unique = true)
     private String name;
+
+    @Column(name = "color")
     private String color;
 
-    public Line() {
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Section> sections = new ArrayList<>();
+
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -36,5 +45,9 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public void addSection(final Section section) {
+        this.sections.add(section);
     }
 }
