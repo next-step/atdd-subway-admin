@@ -20,25 +20,25 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping
-    public ResponseEntity findLines() {
+    public ResponseEntity<List<LineResponse>> findLines() {
         List<LineResponse> lineResponses = lineService.findLines();
         return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping("/{lineId}")
-    public ResponseEntity findLine(@PathVariable Long lineId) {
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long lineId) {
         LineResponse lineResponse = lineService.findLine(lineId);
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping("/{lineId}")
-    public ResponseEntity updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long lineId, @RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.update(new LineUpdateRequest(lineId, lineRequest));
         return ResponseEntity.ok().body(lineResponse);
     }
