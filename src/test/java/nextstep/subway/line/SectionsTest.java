@@ -47,11 +47,11 @@ class SectionsTest {
 
         // then
         assertAll(
-                () -> assertThat(stations.getValues().get(0))
+                () -> assertThat(stations.getStations().get(0))
                         .isEqualTo(강남역()),
-                () -> assertThat(stations.getValues().get(1))
+                () -> assertThat(stations.getStations().get(1))
                         .isEqualTo(역삼역()),
-                () -> assertThat(stations.getValues().get(2))
+                () -> assertThat(stations.getStations().get(2))
                         .isEqualTo(교대역())
         );
     }
