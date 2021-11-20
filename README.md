@@ -95,6 +95,11 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     Scenario: 지하철 노선을 생성한다.
         When 지하철 노선을 생성 요청한다.
         Then 지하철 노선이 생성된다.
+  
+    Scenario: 지하철 노선 생성이 실패한다.
+        Given 지하철 노선이 등록되어있다.
+        When 지하철 노선을 생성 요청한다.
+        Then 지하철 노선 생성이 실패한다.
 
     Scenario: 지하철 노선 목록을 조회한다.
         Given 지하철 노선이 등록되어있다.
