@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.common.exception.DuplicateParameterException;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -45,6 +46,7 @@ public class LineService {
     }
 
     public LineResponse saveLineWithSection(LineRequest request) {
+        if(request.getUpStationId() == request.getDownStationId()) throw new DuplicateParameterException("역은 중복될 수 없습니다.");
         final Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(() -> new NotFoundException("역이 존재하지 않습니다."));
         final Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new NotFoundException("역이 존재하지 않습니다."));
         Line line = request.toLine();

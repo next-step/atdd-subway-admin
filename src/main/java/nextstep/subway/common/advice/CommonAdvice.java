@@ -1,5 +1,6 @@
 package nextstep.subway.common.advice;
 
+import nextstep.subway.common.exception.DuplicateParameterException;
 import nextstep.subway.common.exception.NotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @RestControllerAdvice
 public class CommonAdvice {
-    @ExceptionHandler({DataIntegrityViolationException.class, NotFoundException.class})
+    @ExceptionHandler({DataIntegrityViolationException.class, NotFoundException.class, DuplicateParameterException.class})
     public ResponseEntity handleIllegalArgsException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
