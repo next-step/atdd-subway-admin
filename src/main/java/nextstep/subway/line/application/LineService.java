@@ -44,14 +44,13 @@ public class LineService {
         return LineResponse.of(lineRepository.save(request.toLine()));
     }
 
-    public LineResponse saveWithSection(LineRequest request) {
+    public LineResponse saveLineWithSection(LineRequest request) {
         final Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(() -> new NotFoundException("역이 존재하지 않습니다."));
         final Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new NotFoundException("역이 존재하지 않습니다."));
-        final Line line = lineRepository.save(request.toLine());
-        final Section section = sectionRepository.save(new Section(line, upStation, downStation, request.getDistance()));
-        line.addSection(section);
-
-        return LineResponse.of(line);
+        Line line = request.toLine();
+        line.addSection(new Section(request.getDistance(), upStation, downStation));
+        Line savedLine = lineRepository.save(line);
+        return LineResponse.of(savedLine);
     }
 
     public LineResponse findOne(Long id) {
@@ -68,5 +67,6 @@ public class LineService {
         Line line = findByLineId(id);
         lineRepository.deleteById(line.getId());
     }
+
 
 }

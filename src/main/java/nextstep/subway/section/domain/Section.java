@@ -1,17 +1,14 @@
 package nextstep.subway.section.domain;
 
-import com.sun.tools.internal.xjc.reader.relaxng.RELAXNGCompiler;
 import nextstep.subway.common.entity.BaseEntity;
 import nextstep.subway.common.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-
 import java.util.Objects;
-import java.util.Optional;
 
-import static javax.persistence.FetchType.*;
+import static javax.persistence.FetchType.LAZY;
 
 /**
  * packageName : nextstep.subway.section
@@ -45,11 +42,11 @@ public class Section extends BaseEntity {
     }
 
     public Section(Line line, Station station, Station nextStation, int distance) {
-        if(Objects.isNull(line)) {
+        if (Objects.isNull(line)) {
             throw new NotFoundException("노선이 존재하지 않습니다.");
         }
 
-        if(Objects.isNull(station) || Objects.isNull(nextStation)) {
+        if (Objects.isNull(station) || Objects.isNull(nextStation)) {
             throw new NotFoundException("역이 존재하지 않습니다.");
         }
         this.line = line;
@@ -58,6 +55,17 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public Section(int distance, Station station, Station nextStation) {
+        this.distance = distance;
+        this.station = station;
+        this.nextStation = nextStation;
+    }
+
+    public Section addLine(Line line) {
+        this.line = line;
+        return this;
+    }
+    
     public Long getId() {
         return id;
     }
@@ -77,4 +85,6 @@ public class Section extends BaseEntity {
     public Line getLine() {
         return line;
     }
+
+
 }

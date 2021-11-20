@@ -3,6 +3,8 @@ package nextstep.subway.line.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.section.application.SectionService;
+import nextstep.subway.station.application.StationService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +16,13 @@ import java.util.List;
 @RequestMapping("lines")
 public class LineController {
     private final LineService lineService;
+    private final SectionService sectionService;
+    private final StationService stationService;
 
-    public LineController(final LineService lineService) {
+    public LineController(final LineService lineService, final SectionService sectionService, StationService stationService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     @PostMapping
@@ -27,7 +33,7 @@ public class LineController {
 
     @PostMapping("section")
     public ResponseEntity createLineWithSection(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveWithSection(lineRequest);
+        final LineResponse line = lineService.saveLineWithSection(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
