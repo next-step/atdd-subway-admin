@@ -70,4 +70,12 @@ public class Section extends BaseEntity {
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
         return new Section(null, line, upStation, downStation, distance);
     }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
 }
