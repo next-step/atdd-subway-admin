@@ -24,4 +24,9 @@ public class BaseEntity {
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
+
+    public void updateModifiedDate() {
+        this.modifiedDate = LocalDateTime.now();
+    }
+
 }
