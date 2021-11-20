@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private final LineRequest 이호선 = LineRequest.of("2호선", "green");
     private static final int 거리_5 = 5;
 
-    @Disabled
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
@@ -38,11 +38,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성됨(response);
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
+    @DisplayName("지하철 노선과 구간을 생성한다.")
     @Test
     void createLineWithSections() {
         // given
-        LineRequest 삼호선 = LineRequest.of("3호선", "orange", 지하철_역_등록되어_있음(강남역), 지하철_역_등록되어_있음(역삼역), 거리_5);
+        Long 강남역_ID = 지하철_역_등록되어_있음(강남역);
+        Long 역삼역_ID = 지하철_역_등록되어_있음(역삼역);
+        LineRequest 삼호선 = LineRequest.of("3호선", "orange", 강남역_ID, 역삼역_ID, 거리_5);
 
         // when
         ExtractableResponse<Response> response = RestAssured
@@ -50,12 +52,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(삼호선)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(BASE_URI)
+                .post("lines/section")
                 .then().log().all()
                 .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        LineResponse result = response.jsonPath().getObject("", LineResponse.class);
+        assertThat(result.getStations()).extracting(StationResponse::getId).contains(강남역_ID, 역삼역_ID);
+        assertThat(response.header("Location")).isNotBlank();
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")

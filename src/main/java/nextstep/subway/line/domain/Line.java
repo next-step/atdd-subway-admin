@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.entity.BaseEntity;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -33,6 +34,10 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
+
     public Long getId() {
         return id;
     }
@@ -43,6 +48,10 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 
     @Override
@@ -60,4 +69,5 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(getId(), getName(), getColor(), sections);
     }
+
 }

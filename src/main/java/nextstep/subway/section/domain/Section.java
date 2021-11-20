@@ -29,12 +29,12 @@ public class Section extends BaseEntity {
     private int distance;
 
     @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "UP_STATION_ID")
-    private Station upStation;
+    @JoinColumn(name = "STATION_ID")
+    private Station station;
 
     @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "DOWN_STATION_ID")
-    private Station downStation;
+    @JoinColumn(name = "NEXT_STATION_ID")
+    private Station nextStation;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "LINE_ID")
@@ -44,17 +44,17 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station station, Station nextStation, int distance) {
         if(Objects.isNull(line)) {
             throw new NotFoundException("노선이 존재하지 않습니다.");
         }
 
-        if(Objects.isNull(upStation) || Objects.isNull(downStation)) {
+        if(Objects.isNull(station) || Objects.isNull(nextStation)) {
             throw new NotFoundException("역이 존재하지 않습니다.");
         }
         this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.station = station;
+        this.nextStation = nextStation;
         this.distance = distance;
     }
 
@@ -66,12 +66,12 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public Station getStation() {
+        return station;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public Station getNextStation() {
+        return nextStation;
     }
 
     public Line getLine() {

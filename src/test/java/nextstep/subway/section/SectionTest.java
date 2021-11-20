@@ -46,8 +46,8 @@ public class SectionTest {
         final Section savedSection = sectionRepository.save(section);
 
         Section findSection = sectionRepository.findById(savedSection.getId()).get();
-        assertThat(findSection.getUpStation().getId()).isEqualTo(upStation.getId());
-        assertThat(findSection.getDownStation().getId()).isEqualTo(downStation.getId());
+        assertThat(findSection.getStation().getId()).isEqualTo(upStation.getId());
+        assertThat(findSection.getNextStation().getId()).isEqualTo(downStation.getId());
         assertThat(findSection.getLine().getId()).isEqualTo(line.getId());
     }
 
