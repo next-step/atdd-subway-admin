@@ -76,4 +76,8 @@ public class Sections {
                 .findFirst()
                 .ifPresent(section -> section.updateDownStation(upStation, distance));
     }
+
+    public void remove(Section section) {
+        sections.remove(section);
+    }
 }

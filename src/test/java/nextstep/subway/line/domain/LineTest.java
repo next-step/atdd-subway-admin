@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
 
@@ -59,5 +60,23 @@ class LineTest {
         Line 이호선 = new Line("2호선", "green", 강남역, 삼성역, 10);
         이호선.updateDownStation(역삼역, 삼성역, 3);
         assertThat(이호선.getSections()).contains(new Section(이호선, 강남역, 역삼역, 7));
+    }
+
+    @Test
+    void removeSection_상행역을_삭제한다() {
+        // given
+        Line 이호선 = new Line("2호선", "green", 역삼역, 삼성역, 10);
+        이호선.addSection(강남역, 역삼역, 3);
+        assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 삼성역);
+
+        // when
+        이호선.removeSection(강남역);
+
+        // then
+        assertAll(
+                () -> assertThat(이호선.getSections().size()).isEqualTo(1),
+                () -> assertThat(이호선.getSections()).contains(new Section(이호선, 역삼역, 삼성역, 10)),
+                () -> assertThat(이호선.getStations()).containsExactly(역삼역, 삼성역)
+        );
     }
 }
